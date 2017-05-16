@@ -1,0 +1,2065 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width">
+	<title>Documentation Class: PointSpriteRenderer</title>
+
+	<!--[if lt IE 9]>
+	<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+	<![endif]-->
+	<link type="text/css" rel="stylesheet" href="styles/sunlight.default.css">
+
+	<link type="text/css" rel="stylesheet" href="styles/site.simplex.css">
+
+</head>
+
+<body>
+
+<div class="navbar navbar-default navbar-fixed-top ">
+<div class="container">
+	<div class="navbar-header">
+		<a class="navbar-brand" href="index.html"><img class="branding-logo" src="../mizar.png"
+		alt="logo"/>Documentation</a>
+		<button class="navbar-toggle" type="button" data-toggle="collapse" data-target="#topNavigation">
+			<span class="icon-bar"></span>
+			<span class="icon-bar"></span>
+			<span class="icon-bar"></span>
+        </button>
+	</div>
+	<div class="navbar-collapse collapse" id="topNavigation">
+		<ul class="nav navbar-nav">
+			
+			<li class="dropdown">
+				<a href="namespaces.list.html" class="dropdown-toggle" data-toggle="dropdown">Constants<b class="caret"></b></a>
+				<ul class="dropdown-menu ">
+					<li><a href="ANIMATION_.html">ANIMATION</a></li><li><a href="ANIMATION_STATUS.html">ANIMATION_STATUS</a></li><li><a href="CONTEXT.html">CONTEXT</a></li><li><a href="CRS.html">CRS</a></li><li><a href="DATA_PRODUCT_TYPE.html">DATA_PRODUCT_TYPE</a></li><li><a href="GENERAL_WAVELENGTH.html">GENERAL_WAVELENGTH</a></li><li><a href="GEOMETRY.html">GEOMETRY</a></li><li><a href="GLOBE.html">GLOBE</a></li><li><a href="HANDLER.html">HANDLER</a></li><li><a href="HIPS_FRAME.html">HIPS_FRAME</a></li><li><a href="HIPS_METADATA.html">HIPS_METADATA</a></li><li><a href="HIPS_TILE_FORMAT.html">HIPS_TILE_FORMAT</a></li><li><a href="LAYER_.html">LAYER</a></li><li><a href="MappingCrsHips2Mizar.html">MappingCrsHips2Mizar</a></li><li><a href="NAVIGATION_.html">NAVIGATION</a></li><li><a href="PIXEL_OVERLAY.html">PIXEL_OVERLAY</a></li><li><a href="PROJECTION_.html">PROJECTION</a></li><li><a href="PROVIDER.html">PROVIDER</a></li><li><a href="SAMPLING.html">SAMPLING</a></li><li><a href="SERVICE.html">SERVICE</a></li><li><a href="SKY_VAL.html">SKY_VAL</a></li><li><a href="SUB_TYPE_DATA.html">SUB_TYPE_DATA</a></li><li><a href="UTILITY.html">UTILITY</a></li>
+				</ul>
+			</li>
+			
+			<li class="dropdown">
+				<a href="modules.list.html" class="dropdown-toggle" data-toggle="dropdown">Packages<b class="caret"></b></a>
+				<ul class="dropdown-menu ">
+					<li><a href="module-Animation.html">Animation</a></li><li><a href="module-Context.html">Context</a></li><li><a href="module-Crs.html">Crs</a></li><li><a href="module-Globe.html">Globe</a></li><li><a href="module-Layer.html">Layer</a></li><li><a href="module-NameResolver.html">NameResolver</a></li><li><a href="module-Navigation.html">Navigation</a></li><li><a href="module-Projection.html">Projection</a></li><li><a href="module-Provider.html">Provider</a></li><li><a href="module-ReverseNameResolver.html">ReverseNameResolver</a></li>
+				</ul>
+			</li>
+			
+			<li class="dropdown">
+				<a href="classes.list.html" class="dropdown-toggle" data-toggle="dropdown">Classes<b class="caret"></b></a>
+				<ul class="dropdown-menu ">
+					<li><a href="AbstractAnimation.html">AbstractAnimation</a></li><li><a href="AbstractContext.html">AbstractContext</a></li><li><a href="AbstractCrs.html">AbstractCrs</a></li><li><a href="AbstractGlobe.html">AbstractGlobe</a></li><li><a href="AbstractHipsLayer.html">AbstractHipsLayer</a></li><li><a href="AbstractLayer.html">AbstractLayer</a></li><li><a href="AbstractNameResolverer.html">AbstractNameResolverer</a></li><li><a href="AbstractNavigation.html">AbstractNavigation</a></li><li><a href="AbstractProjection.html">AbstractProjection</a></li><li><a href="AbstractRasterLayer.html">AbstractRasterLayer</a></li><li><a href="AttributionHandler.html">AttributionHandler</a></li><li><a href="BatchRenderable.html">BatchRenderable</a></li><li><a href="BoundingBox.html">BoundingBox</a></li><li><a href="Bucket.html">Bucket</a></li><li><a href="ConvexPolygonRenderer.html">ConvexPolygonRenderer</a></li><li><a href="DynamicImage.html">DynamicImage</a></li><li><a href="Event.html">Event</a></li><li><a href="FeatureOverlayManager.html">FeatureOverlayManager</a></li><li><a href="FeatureStyle.html">FeatureStyle</a></li><li><a href="Frustum.html">Frustum</a></li><li><a href="GeoBound.html">GeoBound</a></li><li><a href="GeoTiling%2520constructor.html">GeoTiling constructor</a></li><li><a href="GroundOverlayRenderer.html">GroundOverlayRenderer</a></li><li><a href="HEALPixTiling.html">HEALPixTiling</a></li><li><a href="HipsMetadata.html">HipsMetadata</a></li><li><a href="ImageRequest%2520constructor.html">ImageRequest constructor</a></li><li><a href="KMLParser%2520constructor.html">KMLParser constructor</a></li><li><a href="LayerManager.html">LayerManager</a></li><li><a href="LineBucket.html">LineBucket</a></li><li><a href="LineRenderable.html">LineRenderable</a></li><li><a href="LineRenderer.html">LineRenderer</a></li><li><a href="LineStringBucket.html">LineStringBucket</a></li><li><a href="LineStringRenderer.html">LineStringRenderer</a></li><li><a href="Long.html">Long</a></li><li><a href="mat3.html">mat3</a></li><li><a href="mat4.html">mat4</a></li><li><a href="MatrixArray.html">MatrixArray</a></li><li><a href="Mesh%2520constructor.html">Mesh constructor</a></li><li><a href="Mizar.html">Mizar</a></li><li><a href="module-Animation.AnimationFactory.html">Animation.AnimationFactory</a></li><li><a href="module-Animation.InertiaAnimation.html">Animation.InertiaAnimation</a></li><li><a href="module-Animation.InterpolatedAnimation.html">Animation.InterpolatedAnimation</a></li><li><a href="module-Animation.PathAnimation.html">Animation.PathAnimation</a></li><li><a href="module-Animation.SegmentedAnimation.html">Animation.SegmentedAnimation</a></li><li><a href="module-Context.ContextFactory.html">Context.ContextFactory</a></li><li><a href="module-Context.PlanetContext.html">Context.PlanetContext</a></li><li><a href="module-Context.SkyContext.html">Context.SkyContext</a></li><li><a href="module-Crs.CoordinateSystemFactory.html">Crs.CoordinateSystemFactory</a></li><li><a href="module-Crs.EquatorialCrs.html">Crs.EquatorialCrs</a></li><li><a href="module-Crs.GalacticCrs.html">Crs.GalacticCrs</a></li><li><a href="module-Crs.Geoide.html">Crs.Geoide</a></li><li><a href="module-Crs.Mars2000Crs.html">Crs.Mars2000Crs</a></li><li><a href="module-Crs.ProjectedCrs.html">Crs.ProjectedCrs</a></li><li><a href="module-Crs.WGS84Crs.html">Crs.WGS84Crs</a></li><li><a href="module-Globe.GlobeFactory.html">Globe.GlobeFactory</a></li><li><a href="module-Globe.Planet.html">Globe.Planet</a></li><li><a href="module-Globe.Sky.html">Globe.Sky</a></li><li><a href="module-Layer.AtmosphereLayer.html">Layer.AtmosphereLayer</a></li><li><a href="module-Layer.BingLayer.html">Layer.BingLayer</a></li><li><a href="module-Layer.CoordinateGridLayer.html">Layer.CoordinateGridLayer</a></li><li><a href="module-Layer.GeoJsonLayer.html">Layer.GeoJsonLayer</a></li><li><a href="module-Layer.GroundOverlayLayer.html">Layer.GroundOverlayLayer</a></li><li><a href="module-Layer.HipsCatLayer.html">Layer.HipsCatLayer</a></li><li><a href="module-Layer.HipsFitsLayer.html">Layer.HipsFitsLayer</a></li><li><a href="module-Layer.HipsGraphicLayer.html">Layer.HipsGraphicLayer</a></li><li><a href="module-Layer.LayerFactory.html">Layer.LayerFactory</a></li><li><a href="module-Layer.MocLayer.html">Layer.MocLayer</a></li><li><a href="module-Layer.OpenSearchLayer.html">Layer.OpenSearchLayer</a></li><li><a href="module-Layer.OSMLayer.html">Layer.OSMLayer</a></li><li><a href="module-Layer.PlanetLayer.html">Layer.PlanetLayer</a></li><li><a href="module-Layer.TileWireframeLayer.html">Layer.TileWireframeLayer</a></li><li><a href="module-Layer.VectorLayer.html">Layer.VectorLayer</a></li><li><a href="module-Layer.WCSElevationLayer.html">Layer.WCSElevationLayer</a></li><li><a href="module-Layer.WMSElevationLayer.html">Layer.WMSElevationLayer</a></li><li><a href="module-Layer.WMSLayer.html">Layer.WMSLayer</a></li><li><a href="module-Layer.WMTSLayer.html">Layer.WMTSLayer</a></li><li><a href="module-NameResolver.CDSNameResolver.html">NameResolver.CDSNameResolver</a></li><li><a href="module-NameResolver.DefaultNameResolver.html">NameResolver.DefaultNameResolver</a></li><li><a href="module-NameResolver.DictionaryNameResolver.html">NameResolver.DictionaryNameResolver</a></li><li><a href="module-NameResolver.IMCCENameResolver.html">NameResolver.IMCCENameResolver</a></li><li><a href="module-NameResolver.NameResolver.html">NameResolver.NameResolver</a></li><li><a href="module-Navigation.AstroNavigation.html">Navigation.AstroNavigation</a></li><li><a href="module-Navigation.FlatNavigation.html">Navigation.FlatNavigation</a></li><li><a href="module-Navigation.GoogleMouseNavigationHandler.html">Navigation.GoogleMouseNavigationHandler</a></li><li><a href="module-Navigation.KeyboardNavigationHandler.html">Navigation.KeyboardNavigationHandler</a></li><li><a href="module-Navigation.MouseNavigationHandler.html">Navigation.MouseNavigationHandler</a></li><li><a href="module-Navigation.NavigationFactory.html">Navigation.NavigationFactory</a></li><li><a href="module-Navigation.NavigationHandlerFactory.html">Navigation.NavigationHandlerFactory</a></li><li><a href="module-Navigation.PlanetNavigation.html">Navigation.PlanetNavigation</a></li><li><a href="module-Navigation.TouchNavigationHandler.html">Navigation.TouchNavigationHandler</a></li><li><a href="module-Projection.AitoffProjection.html">Projection.AitoffProjection</a></li><li><a href="module-Projection.AugustProjection.html">Projection.AugustProjection</a></li><li><a href="module-Projection.AzimuthProjection.html">Projection.AzimuthProjection</a></li><li><a href="module-Projection.MercatorProjection.html">Projection.MercatorProjection</a></li><li><a href="module-Projection.MollweideProjection.html">Projection.MollweideProjection</a></li><li><a href="module-Projection.PlateProjection.html">Projection.PlateProjection</a></li><li><a href="module-Projection.ProjectionFactory.html">Projection.ProjectionFactory</a></li><li><a href="module-Provider.AbstractProvider.html">Provider.AbstractProvider</a></li><li><a href="module-Provider.ConstellationProvider.html">Provider.ConstellationProvider</a></li><li><a href="module-Provider.CraterProvider.html">Provider.CraterProvider</a></li><li><a href="module-Provider.OpenSearchProvider.html">Provider.OpenSearchProvider</a></li><li><a href="module-Provider.PlanetProvider.html">Provider.PlanetProvider</a></li><li><a href="module-Provider.StarProvider.html">Provider.StarProvider</a></li><li><a href="module-ReverseNameResolver.CDSReverseNameResolver.html">ReverseNameResolver.CDSReverseNameResolver</a></li><li><a href="module-ReverseNameResolver.DefaultReverseNameResolver.html">ReverseNameResolver.DefaultReverseNameResolver</a></li><li><a href="OSData.html">OSData</a></li><li><a href="ParserFactory.html">ParserFactory</a></li><li><a href="Plane.html">Plane</a></li><li><a href="PlanetPolygonBucket.html">PlanetPolygonBucket</a></li><li><a href="PlanetPolygonRenderable.html">PlanetPolygonRenderable</a></li><li><a href="PlanetPolygonRenderer.html">PlanetPolygonRenderer</a></li><li><a href="PointBucket.html">PointBucket</a></li><li><a href="PointRenderable.html">PointRenderable</a></li><li><a href="PointRenderer.html">PointRenderer</a></li><li><a href="PointSet.html">PointSet</a></li><li><a href="PointSpriteRenderer.html">PointSpriteRenderer</a></li><li><a href="PolygonBucket.html">PolygonBucket</a></li><li><a href="PolygonRenderable.html">PolygonRenderable</a></li><li><a href="PolygonRenderer.html">PolygonRenderer</a></li><li><a href="Program.html">Program</a></li><li><a href="quat4.html">quat4</a></li><li><a href="RasterOverlayRenderable.html">RasterOverlayRenderable</a></li><li><a href="RasterOverlayRenderer.html">RasterOverlayRenderer</a></li><li><a href="Ray.html">Ray</a></li><li><a href="Renderable.html">Renderable</a></li><li><a href="RenderContext.html">RenderContext</a></li><li><a href="RendererTileData.html">RendererTileData</a></li><li><a href="Stats.html">Stats</a></li><li><a href="StencilPolygonRenderer.html">StencilPolygonRenderer</a></li><li><a href="Tile.html">Tile</a></li><li><a href="Tile%252520constructor.html">Tile constructor</a></li><li><a href="TiledVectorRenderable%2520constructor.html">TiledVectorRenderable constructor</a></li><li><a href="TiledVectorRenderer%2520constructor.html">TiledVectorRenderer constructor</a></li><li><a href="TileIndexBuffer%250A%2520%2520%2520%2520%2520TileIndexBuffer.html">TileIndexBuffer
+     TileIndexBuffer</a></li><li><a href="TileManager%2520constructor%250A%250A%2520%2520%2520%2520%2520%2520%2520%2520%2520Take%2520in%2520parameters%2520its%2520parent%2520_%2520can%2520be%2520a%2520globe%2520or%2520a%2520sky.html">TileManager constructor
+
+         Take in parameters its parent : can be a globe or a sky</a></li><li><a href="TilePool%2520constructor.html">TilePool constructor</a></li><li><a href="TileRequest%2520constructor.html">TileRequest constructor</a></li><li><a href="vec3.html">vec3</a></li><li><a href="VectorRenderer.html">VectorRenderer</a></li><li><a href="VectorRendererManager.html">VectorRendererManager</a></li>
+				</ul>
+			</li>
+			
+			<li class="dropdown">
+				<a href="events.list.html" class="dropdown-toggle" data-toggle="dropdown">Events<b class="caret"></b></a>
+				<ul class="dropdown-menu ">
+					<li><a href="Context_.html#event:backgroundLayer">Context#event:backgroundLayer</a></li><li><a href="Context_.html#event:backgroundSurveyError">Context#event:backgroundSurveyError</a></li><li><a href="Context_.html#event:baseLayersError">Context#event:baseLayersError</a></li><li><a href="Context_.html#event:baseLayersReady">Context#event:baseLayersReady</a></li><li><a href="Context_.html#event:endBackgroundLoad">Context#event:endBackgroundLoad</a></li><li><a href="Context_.html#event:endLoad">Context#event:endLoad</a></li><li><a href="Context_.html#event:endNavigation">Context#event:endNavigation</a></li><li><a href="Context_.html#event:modifiedCrs">Context#event:modifiedCrs</a></li><li><a href="Context_.html#event:modifiedNavigation">Context#event:modifiedNavigation</a></li><li><a href="Context_.html#event:startBackgroundLoad">Context#event:startBackgroundLoad</a></li><li><a href="Context_.html#event:startLoad">Context#event:startLoad</a></li><li><a href="Context_.html#event:startNavigation">Context#event:startNavigation</a></li><li><a href="Context_.html#event:features:added">Context#features:added</a></li><li><a href="Context_.html#event:layer:add">Context#layer:add</a></li><li><a href="Context_.html#event:layer:remove">Context#layer:remove</a></li><li><a href="Layer.html#event:opacity:changed">Layer#opacity:changed</a></li><li><a href="Layer.html#event:visibility:changed">Layer#visibility:changed</a></li><li><a href="Mizar.html#event:mizarMode:toggle">Mizar#mizarMode:toggle</a></li><li><a href="Mizar.html#event:plugin:not_found">Mizar#plugin:not_found</a></li>
+				</ul>
+			</li>
+			
+			<li class="dropdown">
+				<a href="interfaces.list.html" class="dropdown-toggle" data-toggle="dropdown">Interfaces<b class="caret"></b></a>
+				<ul class="dropdown-menu ">
+					<li><a href="Animation.html">Animation</a></li><li><a href="Context_.html">Context</a></li><li><a href="Crs_.html">Crs</a></li><li><a href="Globe_.html">Globe</a></li><li><a href="Layer.html">Layer</a></li><li><a href="NameResolver.html">NameResolver</a></li><li><a href="Navigation.html">Navigation</a></li><li><a href="Projection.html">Projection</a></li><li><a href="Provider_.html">Provider</a></li><li><a href="ReverseNameResolver.html">ReverseNameResolver</a></li>
+				</ul>
+			</li>
+			
+			<li class="dropdown">
+				<a href="tutorials.list.html" class="dropdown-toggle" data-toggle="dropdown">Tutorials<b class="caret"></b></a>
+				<ul class="dropdown-menu ">
+					<li><a href="tutorial-getting-started-with-Earth.html">Getting Started with Earth</a></li><li><a href="tutorial-getting-started-with-EarthAndSky.html">Getting Started with Earth and Sky</a></li><li><a href="tutorial-getting-started-with-Mars.html">Getting Started with Mars</a></li><li><a href="tutorial-getting-started-with-Sky.html">Getting Started with Sky</a></li><li><a href="tutorial-projection-azimuth.html">Azimuthal pojection</a></li><li><a href="tutorial-projection-complex.html">Projection</a></li><li><a href="tutorial-projection-plate.html">Plate carree projection</a></li>
+				</ul>
+			</li>
+			
+		</ul>
+        
+            <div class="col-sm-3 col-md-3">
+                <form class="navbar-form" role="search">
+                    <div class="input-group">
+                        <input type="text" class="form-control" placeholder="Search" name="q" id="search-input">
+                        <div class="input-group-btn">
+                            <button class="btn btn-default" id="search-submit"><i class="glyphicon glyphicon-search"></i></button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        
+	</div>
+
+</div>
+</div>
+
+
+<div class="container" id="toc-content">
+<div class="row">
+
+	
+	<div class="col-md-8">
+	
+		<div id="main">
+			
+
+	<h1 class="page-title">Class: PointSpriteRenderer</h1>
+<section>
+
+<header>
+    
+        <h2>
+        PointSpriteRenderer
+        </h2>
+        
+            <div class="class-description">PointSpriteRenderer constructor</div>
+        
+    
+</header>
+
+
+<article>
+    <div class="container-overview">
+    
+        
+<hr>
+<dt>
+    <h4 class="name" id="PointSpriteRenderer"><span class="type-signature"></span>new PointSpriteRenderer(glonbe)</h4>
+    
+    
+</dt>
+<dd>
+
+    
+
+    
+
+    
+
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params table table-striped">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>glonbe</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="AbstractGlobe.html">AbstractGlobe</a></span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">AbstractGlobe</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dd>
+
+    
+    </div>
+
+    
+        <h3 class="subsection-title">Extends</h3>
+
+        
+
+
+    <ul>
+        <li><a href="VectorRenderer.html">VectorRenderer</a></li>
+    </ul>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+        <h3 class="subsection-title">Methods</h3>
+
+        <dl>
+            
+<hr>
+<dt>
+    <h4 class="name" id="addGeometry"><span class="type-signature"></span>addGeometry(layer, geometry, style)</h4>
+    
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        Add a geometry to a vector renderer
+    </div>
+    
+
+    
+
+    
+
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params table table-striped">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>layer</code></td>
+            
+
+            <td class="type">
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>geometry</code></td>
+            
+
+            <td class="type">
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>style</code></td>
+            
+
+            <td class="type">
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+	<dt class="inherited-from method-doc-label method-doc-details-label">Inherited From:</dt>
+	<dd class="inherited-from">
+		<ul class="dummy">
+			<li>
+				<a href="VectorRenderer.html#addGeometry">VectorRenderer#addGeometry</a>
+			</li>
+		</ul>
+	</dd>
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dd>
+
+        
+            
+<hr>
+<dt>
+    <h4 class="name" id="addGeometryToTile"><span class="type-signature"></span>addGeometryToTile(layer, geometry, style, tile)</h4>
+    
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        Add a geometry to a tile
+    </div>
+    
+
+    
+
+    
+
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params table table-striped">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>layer</code></td>
+            
+
+            <td class="type">
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>geometry</code></td>
+            
+
+            <td class="type">
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>style</code></td>
+            
+
+            <td class="type">
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>tile</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="Tile.html">Tile</a></span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">Tile</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+	<dt class="inherited-from method-doc-label method-doc-details-label">Inherited From:</dt>
+	<dd class="inherited-from">
+		<ul class="dummy">
+			<li>
+				<a href="VectorRenderer.html#addGeometryToTile">VectorRenderer#addGeometryToTile</a>
+			</li>
+		</ul>
+	</dd>
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dd>
+
+        
+            
+<hr>
+<dt>
+    <h4 class="name" id="canApply"><span class="type-signature"></span>canApply(type, style)</h4>
+    
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        Check if renderer is applicable
+    </div>
+    
+
+    
+
+    
+
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params table table-striped">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>type</code></td>
+            
+
+            <td class="type">
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>style</code></td>
+            
+
+            <td class="type">
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <h5>Returns:</h5>
+    
+            
+<div class="param-desc">
+    Is applicable ?
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Boolean</span>
+
+
+
+    </dd>
+</dl>
+
+
+        
+
+    
+</dd>
+
+        
+            
+<hr>
+<dt>
+    <h4 class="name" id="createBucket"><span class="type-signature"></span>createBucket(layer, style)</h4>
+    
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        Create bucket to render a point
+    </div>
+    
+
+    
+
+    
+
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params table table-striped">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>layer</code></td>
+            
+
+            <td class="type">
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>style</code></td>
+            
+
+            <td class="type">
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <h5>Returns:</h5>
+    
+            
+<div class="param-desc">
+    Bucket
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="Bucket.html">Bucket</a></span>
+
+
+
+    </dd>
+</dl>
+
+
+        
+
+    
+</dd>
+
+        
+            
+<hr>
+<dt>
+    <h4 class="name" id="findBucket"><span class="type-signature"></span>findBucket(layer, style)</h4>
+    
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        Find a compatible bucket
+    </div>
+    
+
+    
+
+    
+
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params table table-striped">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>layer</code></td>
+            
+
+            <td class="type">
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>style</code></td>
+            
+
+            <td class="type">
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+	<dt class="inherited-from method-doc-label method-doc-details-label">Inherited From:</dt>
+	<dd class="inherited-from">
+		<ul class="dummy">
+			<li>
+				<a href="VectorRenderer.html#findBucket">VectorRenderer#findBucket</a>
+			</li>
+		</ul>
+	</dd>
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <h5>Returns:</h5>
+    
+            
+<div class="param-desc">
+    Bucket
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="Bucket.html">Bucket</a></span>
+
+
+
+    </dd>
+</dl>
+
+
+        
+
+    
+</dd>
+
+        
+            
+<hr>
+<dt>
+    <h4 class="name" id="generateLevelZero"><span class="type-signature"></span>generateLevelZero(tile)</h4>
+    
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        Generate the level zero for a tile
+    </div>
+    
+
+    
+
+    
+
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params table table-striped">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>tile</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="Tile.html">Tile</a></span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">Tile</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+	<dt class="inherited-from method-doc-label method-doc-details-label">Inherited From:</dt>
+	<dd class="inherited-from">
+		<ul class="dummy">
+			<li>
+				<a href="VectorRenderer.html#generateLevelZero">VectorRenderer#generateLevelZero</a>
+			</li>
+		</ul>
+	</dd>
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dd>
+
+        
+            
+<hr>
+<dt>
+    <h4 class="name" id="getOrCreateBucket"><span class="type-signature"></span>getOrCreateBucket(layer, geometry, style)</h4>
+    
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        Get or create a bucket for the given configuration
+    </div>
+    
+
+    
+
+    
+
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params table table-striped">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>layer</code></td>
+            
+
+            <td class="type">
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>geometry</code></td>
+            
+
+            <td class="type">
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>style</code></td>
+            
+
+            <td class="type">
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+	<dt class="inherited-from method-doc-label method-doc-details-label">Inherited From:</dt>
+	<dd class="inherited-from">
+		<ul class="dummy">
+			<li>
+				<a href="VectorRenderer.html#getOrCreateBucket">VectorRenderer#getOrCreateBucket</a>
+			</li>
+		</ul>
+	</dd>
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <h5>Returns:</h5>
+    
+            
+<div class="param-desc">
+    Bucket
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="Bucket.html">Bucket</a></span>
+
+
+
+    </dd>
+</dl>
+
+
+        
+
+    
+</dd>
+
+        
+            
+<hr>
+<dt>
+    <h4 class="name" id="removeGeometry"><span class="type-signature"></span>removeGeometry(geometry)</h4>
+    
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        Remove a geometry from a vector renderer
+    </div>
+    
+
+    
+
+    
+
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params table table-striped">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>geometry</code></td>
+            
+
+            <td class="type">
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+	<dt class="inherited-from method-doc-label method-doc-details-label">Inherited From:</dt>
+	<dd class="inherited-from">
+		<ul class="dummy">
+			<li>
+				<a href="VectorRenderer.html#removeGeometry">VectorRenderer#removeGeometry</a>
+			</li>
+		</ul>
+	</dd>
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dd>
+
+        
+            
+<hr>
+<dt>
+    <h4 class="name" id="removeGeometryFromTile"><span class="type-signature"></span>removeGeometryFromTile(geometry, tile)</h4>
+    
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        Remove a geometry from a tile
+    </div>
+    
+
+    
+
+    
+
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params table table-striped">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>geometry</code></td>
+            
+
+            <td class="type">
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>tile</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="Tile.html">Tile</a></span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">Tile</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+	<dt class="inherited-from method-doc-label method-doc-details-label">Inherited From:</dt>
+	<dd class="inherited-from">
+		<ul class="dummy">
+			<li>
+				<a href="VectorRenderer.html#removeGeometryFromTile">VectorRenderer#removeGeometryFromTile</a>
+			</li>
+		</ul>
+	</dd>
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dd>
+
+        
+            
+<hr>
+<dt>
+    <h4 class="name" id="render"><span class="type-signature"></span>render(renderables, start, end)</h4>
+    
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        Render
+    </div>
+    
+
+    
+
+    
+
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params table table-striped">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>renderables</code></td>
+            
+
+            <td class="type">
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>start</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Integer</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">Start index</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>end</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Integer</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">End index</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dd>
+
+        </dl>
+    
+
+    
+
+    
+</article>
+
+</section>
+
+
+
+
+		</div>
+	</div>
+
+	<div class="clearfix"></div>
+
+	
+		<div class="col-md-3">
+			<div id="toc" class="col-md-3 hidden-xs hidden-sm hidden-md"></div>
+		</div>
+	
+
+</div>
+</div>
+
+
+    <div class="modal fade" id="searchResults">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title">Search results</h4>
+          </div>
+          <div class="modal-body"></div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+          </div>
+        </div><!-- /.modal-content -->
+      </div><!-- /.modal-dialog -->
+    </div>
+
+
+<footer>
+
+
+	<span class="copyright">
+	Copyright 2017 CNES - CENTRE NATIONAL d'ETUDES SPATIALES
+	</span>
+
+<span class="jsdoc-message">
+	Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a>
+	
+		on 2017-05-16T02:34:31+02:00
+	
+	using the <a href="https://github.com/docstrap/docstrap">DocStrap template</a>.
+</span>
+</footer>
+
+<script src="scripts/docstrap.lib.js"></script>
+<script src="scripts/toc.js"></script>
+
+    <script type="text/javascript" src="scripts/fulltext-search-ui.js"></script>
+
+
+<script>
+$( function () {
+	$( "[id*='$']" ).each( function () {
+		var $this = $( this );
+
+		$this.attr( "id", $this.attr( "id" ).replace( "$", "__" ) );
+	} );
+
+	$( ".tutorial-section pre, .readme-section pre, pre.prettyprint.source" ).each( function () {
+		var $this = $( this );
+
+		var example = $this.find( "code" );
+		exampleText = example.html();
+		var lang = /{@lang (.*?)}/.exec( exampleText );
+		if ( lang && lang[1] ) {
+			exampleText = exampleText.replace( lang[0], "" );
+			example.html( exampleText );
+			lang = lang[1];
+		} else {
+			var langClassMatch = example.parent()[0].className.match(/lang\-(\S+)/);
+			lang = langClassMatch ? langClassMatch[1] : "javascript";
+		}
+
+		if ( lang ) {
+
+			$this
+			.addClass( "sunlight-highlight-" + lang )
+			.addClass( "linenums" )
+			.html( example.html() );
+
+		}
+	} );
+
+	Sunlight.highlightAll( {
+		lineNumbers : false,
+		showMenu : true,
+		enableDoclinks : true
+	} );
+
+	$.catchAnchorLinks( {
+        navbarOffset: 10
+	} );
+	$( "#toc" ).toc( {
+		anchorName  : function ( i, heading, prefix ) {
+			return $( heading ).attr( "id" ) || ( prefix + i );
+		},
+		selectors   : "#toc-content h1,#toc-content h2,#toc-content h3,#toc-content h4",
+		showAndHide : false,
+		smoothScrolling: true
+	} );
+
+	$( "#main span[id^='toc']" ).addClass( "toc-shim" );
+	$( '.dropdown-toggle' ).dropdown();
+
+    $( "table" ).each( function () {
+      var $this = $( this );
+      $this.addClass('table');
+    } );
+
+} );
+</script>
+
+
+
+<!--Navigation and Symbol Display-->
+
+
+<!--Google Analytics-->
+
+
+
+    <script type="text/javascript">
+        $(document).ready(function() {
+            SearcherDisplay.init();
+        });
+    </script>
+
+
+</body>
+</html>
