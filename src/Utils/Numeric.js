@@ -242,8 +242,7 @@ define(function () {
      *    @param dec Number of decimals
      */
     Numeric.roundNumber = function (num, dec) {
-        var result = Math.round(num * Math.pow(10, dec)) / Math.pow(10, dec);
-        return result;
+        return Math.round(num * Math.pow(10, dec)) / Math.pow(10, dec);
     };
 
     
@@ -257,7 +256,7 @@ define(function () {
     Numeric.sign = function(v) {
         if (v < 0)
             return -1 ;
-        else { if (v > 0) return 1; else return 0; };
+        else { if (v > 0) return 1; else return 0; }
     };
 
     /**************************************************************************************************************/

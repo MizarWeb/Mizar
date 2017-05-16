@@ -169,7 +169,7 @@ define(['../Utils/Utils', './AbstractRasterLayer', '../Utils/Constants','../Tili
             for (i = dataLinesStart; i < lines.length; i++) {
                 var elts = lines[i].trim().split(/\s+/);
                 for (var n = 0; n < elts.length; n++) {
-                    var elevation = parseInt(elts[n]);
+                    var elevation = parseInt(elts[n], 10);
                     if (elevation < this.minElevation) {
                         elevation = this.minElevation;
                     }

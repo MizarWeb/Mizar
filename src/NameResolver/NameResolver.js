@@ -93,8 +93,8 @@ define(["jquery", "underscore-min",
             var matchDegree = degRE.exec(objectName);
             var matchLayer = layerRE.exec(objectName);
             if (matchHealpix) {
-                var order = parseInt(matchHealpix[1]);
-                var pixelIndex = parseInt(matchHealpix[2]);
+                var order = parseInt(matchHealpix[1], 10);
+                var pixelIndex = parseInt(matchHealpix[2], 10);
 
                 // Compute vertices
                 var nside = Math.pow(2, order);
@@ -154,7 +154,7 @@ define(["jquery", "underscore-min",
 
         function searchLayer(objectName, onSuccess, onError, response) {
             var layers = mizarAPI.getLayerManager().searchOnLayerDescription(objectName, mizarAPI.getContextManager().getMode());
-            if (layers.length === 0 && (!response || response.totalResults == 0)) {
+            if (layers.length === 0 && (!response || response.totalResults === 0)) {
                 if (onError) {
                     onError();
                 }
@@ -207,7 +207,7 @@ define(["jquery", "underscore-min",
          */
         function zoomTo(lon, lat, crs, callback, args) {
 
-            if (args != null) {
+            if (args !== null) {
                 // updates the coordinates, which is displayed at the screen in the current CRS
                 var idx = 0;
                 while (idx < args.features.length) {

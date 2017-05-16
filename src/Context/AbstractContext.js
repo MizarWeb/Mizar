@@ -235,7 +235,7 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Laye
         AbstractContext.prototype.removeLayer = function (layerID) {
             var removedLayer = null;
             var indexes = $.map(this.layers, function (obj, index) {
-                if (obj.ID == layerID) {
+                if (obj.ID === layerID) {
                     return index;
                 }
             });
@@ -425,7 +425,7 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Laye
         AbstractContext.prototype.hideComponents = function (uiArray) {
             // Hide all the UI components
             for (var componentId in this.components) {
-                if( $.inArray(componentId , uiArray) == -1 ){
+                if( $.inArray(componentId , uiArray) === -1 ){
                     $("#" + componentId).fadeOut();
                 }
             }

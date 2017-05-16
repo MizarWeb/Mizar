@@ -133,13 +133,13 @@ define(["jquery", "./AbstractProvider", "../Renderer/FeatureStyle", "../Utils/Ut
             // For each known star
             for (var i = 0; i < namesTab.length; i++) {
                 var word = namesTab[i].split(";"); // word[0] = HR, word[1] = name;
-                var HR = parseInt(word[0]);
+                var HR = parseInt(word[0], 10);
                 var starName = word[1];
 
                 // Search corresponding HR in catalogue
                 for (var j = 0; j < catalogueTab.length; j++) {
                     word = catalogueTab[j].split(";");
-                    if (parseInt(word[2]) === HR) {
+                    if (parseInt(word[2], 10) === HR) {
                         // Star found in the catalogue
 
                         var raString = word[6];   // right ascension format : "hours minutes seconds"

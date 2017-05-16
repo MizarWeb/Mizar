@@ -89,6 +89,7 @@ define(['./Frustum', './glMatrix'],
                     gl = canvas.getContext(names[ii], RenderContext.contextAttributes);
                 }
                 catch (e) {
+                    /* continue regardless of error */
                 }
             }
 

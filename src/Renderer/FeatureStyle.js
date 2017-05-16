@@ -238,7 +238,7 @@ define(function () {
      @function fromStringToColor
      @memberof FeatureStyle
      @param {String} color_string Color string
-     @return {Float[]} array with [r,g,b,alpha]
+     @return {float[]} array with [r,g,b,alpha]
      */
     FeatureStyle.fromStringToColor = function (color_string) {
         var r = 0, g = 0, b = 0, a = 255;
@@ -265,17 +265,17 @@ define(function () {
 
         match = parseRgb.exec(color_string);
         if (match) {
-            r = parseInt(match[1]);
-            g = parseInt(match[2]);
-            b = parseInt(match[3]);
+            r = parseInt(match[1], 10);
+            g = parseInt(match[2], 10);
+            b = parseInt(match[3], 10);
         }
 
         match = parseRgba.exec(color_string);
         if (match) {
-            r = parseInt(match[1]);
-            g = parseInt(match[2]);
-            b = parseInt(match[3]);
-            a = parseInt(match[4]);
+            r = parseInt(match[1], 10);
+            g = parseInt(match[2], 10);
+            b = parseInt(match[3], 10);
+            a = parseInt(match[4], 10);
         }
 
         // validate/cleanup values
@@ -293,13 +293,13 @@ define(function () {
      Convert an internal color to a string based color representation
      @function fromColorToString
      @memberof FeatureStyle
-     @param {Float[]} color array with [r,g,b]
+     @param {float[]} color array with [r,g,b]
      @return {String}Color string
      */
     FeatureStyle.fromColorToString = function (color) {
         var hashColor = '#';
         for (var i = 0; i < 3; i++) {
-            var component = parseInt(color[i] * 255.0).toString(16);
+            var component = parseInt(color[i] * 255.0, 10).toString(16);
             hashColor += (component < 10) ? '0' + component : component;
         }
 
@@ -311,7 +311,7 @@ define(function () {
      * @function getExtrusionScale
      * @memberof FeatureStyle.prototype
      *
-     * @return {Float} Extrusion scale
+     * @return {float} Extrusion scale
      */
     FeatureStyle.prototype.getExtrusionScale = function () {
         return this.extrusionScale;
@@ -322,7 +322,7 @@ define(function () {
      * @function setExtrusionScale
      * @memberof FeatureStyle.prototype
      *
-     * @param {Float} value Extrusion scale
+     * @param {float} value Extrusion scale
      */
     FeatureStyle.prototype.setExtrusionScale = function (value) {
         this.extrusionScale = value;

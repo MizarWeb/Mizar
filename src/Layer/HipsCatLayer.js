@@ -42,12 +42,13 @@ define(['../Renderer/FeatureStyle', '../Renderer/VectorRendererManager', '../Uti
          */
         var HipsCatLayer = function (options) {
             AbstractLayer.prototype.constructor.call(this, Constants.LAYER.HipsCat, options);
+            var i;
             var propertiesObj = new Properties(options.serviceUrl + '/properties');
             var properties = propertiesObj.getProperties();
             var hips_order = properties['hips_order'];
             this.serviceUrl = options.serviceUrl;
             this.minOrder = options.minOrder || 2;
-            this.maxOrder = Number.parseInt(hips_order);
+            this.maxOrder = Number.parseInt(hips_order, 10);
             this.maxRequests = options.maxRequests || 4;
             this.invertY = options.invertY || false;
             var xhr = UtilsJsVotable.makeHttpObject();
@@ -62,11 +63,11 @@ define(['../Renderer/FeatureStyle', '../Renderer/VectorRendererManager', '../Uti
             this.sourceId = null;
             for (i = 0; i < this.fields.length; i++) {
                 var ucd = this.fields[i].ucd();
-                if (ucd == 'pos.eq.ra') {
+                if (ucd === 'pos.eq.ra') {
                     this.raColNumber = this.fields[i].name();
-                } else if (ucd == 'pos.eq.dec') {
+                } else if (ucd === 'pos.eq.dec') {
                     this.decColNumber = this.fields[i].name();
-                } else if (ucd == 'meta.id;meta.main') {
+                } else if (ucd === 'meta.id;meta.main') {
                     this.sourceId = this.fields[i].name();
                 }
             }
@@ -84,8 +85,8 @@ define(['../Renderer/FeatureStyle', '../Renderer/VectorRendererManager', '../Uti
             this.tilesToLoad = [];
 
             // Build the request objects
-            for (var i = 0; i < this.maxRequests; i++) {
-                var xhr = new XMLHttpRequest();
+            for (i = 0; i < this.maxRequests; i++) {
+                xhr = new XMLHttpRequest();
                 this.freeRequests.push(xhr);
             }
         };
@@ -103,15 +104,16 @@ define(['../Renderer/FeatureStyle', '../Renderer/VectorRendererManager', '../Uti
          */
         var Properties = function (url) {
             this.properties = {};
+            var i;
             var xhr = new XMLHttpRequest();
             xhr.open("GET", url, false);
             xhr.send();
             var content = xhr.responseText;
             content.trim();
             var lines = content.split('\n');
-            for (i = 0; lines != null && i < lines.length; i++) {
+            for (i = 0; lines !== null && i < lines.length; i++) {
                 var line = lines[i];
-                if (line != null && (line.indexOf("#") > -1 || !line.trim() )) {
+                if (line !== null && (line.indexOf("#") > -1 || !line.trim() )) {
                     continue;
                 }
                 var keywordValue = line.split("=");
@@ -165,7 +167,7 @@ define(['../Renderer/FeatureStyle', '../Renderer/VectorRendererManager', '../Uti
             var tileData = tile.extension[this.extId];
             var index = null;
 
-            if (this.freeRequests.length == 0) {
+            if (this.freeRequests.length === 0) {
                 return;
             }
 
@@ -173,15 +175,15 @@ define(['../Renderer/FeatureStyle', '../Renderer/VectorRendererManager', '../Uti
             tileData.state = HipsCatLayer.TileState.LOADING;
 
             // Pusblish the start load event, only if there is no pending requests
-            if (this.maxRequests == this.freeRequests.length) {
+            if (this.maxRequests === this.freeRequests.length) {
                 this.globe.publishEvent("startLoad", this);
             }
 
             var xhr = this.freeRequests.pop();
             var self = this;
             xhr.onreadystatechange = function (e) {
-                if (xhr.readyState == 4) {
-                    if (xhr.status == 200) {
+                if (xhr.readyState === 4) {
+                    if (xhr.status === 200) {
                         var response = {};
                         var headerInfo = {
                             'name':[],
@@ -199,11 +201,12 @@ define(['../Renderer/FeatureStyle', '../Renderer/VectorRendererManager', '../Uti
 
                         //var response = JSON.parse(xhr.response);
 
-                        tileData.complete = (response.totalResults == response.features.length);
+                        tileData.complete = (response.totalResults === response.features.length);
 
                         //self.updateFeatures(response.features);
 
-                        for (var i = response.features.length - 1; i >= 0; i--) {
+                        var i;
+                        for (i = response.features.length - 1; i >= 0; i--) {
                             var feature = response.features[i];
                             // Eliminate already added features from response
                             var alreadyAdded = self.featuresSet.hasOwnProperty(feature.id);
@@ -229,7 +232,7 @@ define(['../Renderer/FeatureStyle', '../Renderer/VectorRendererManager', '../Uti
                     self.freeRequests.push(xhr);
 
                     // Publish the end load event, only if there is no pending requests
-                    if (self.maxRequests == self.freeRequests.length) {
+                    if (self.maxRequests === self.freeRequests.length) {
                         self.globe.publishEvent("endLoad", self);
                     }
                 }
@@ -310,7 +313,7 @@ define(['../Renderer/FeatureStyle', '../Renderer/VectorRendererManager', '../Uti
                 console.log('HipsCatLayer internal error : tile not found when removing feature');
             }
 
-            if (featureIt.tiles.length == 0) {
+            if (featureIt.tiles.length === 0) {
                 // Remove it from the set
                 delete this.featuresSet[identifier];
 
@@ -336,7 +339,8 @@ define(['../Renderer/FeatureStyle', '../Renderer/VectorRendererManager', '../Uti
             feature.properties.style = style;
             var featureData = this.featuresSet[feature.id];
             if (featureData) {
-                for (var i = 0; i < featureData.tiles.length; i++) {
+                var i;
+                for (i = 0; i < featureData.tiles.length; i++) {
                     var tile = featureData.tiles[i];
                     this.globe.vectorRendererManager.removeGeometryFromTile(feature.geometry, tile);
                     this.globe.vectorRendererManager.addGeometryToTile(this, feature.geometry, style, tile);
@@ -392,21 +396,22 @@ define(['../Renderer/FeatureStyle', '../Renderer/VectorRendererManager', '../Uti
          * @param tile
          */
         OSData.prototype.traverse = function (tile) {
+            var i;
             if (!this.layer.visible)
                 return;
 
-            if (tile.state != Tile.State.LOADED)
+            if (tile.state !== Tile.State.LOADED)
                 return;
 
             // Check if the tile need to be loaded
-            if (this.state == HipsCatLayer.TileState.NOT_LOADED) {
+            if (this.state === HipsCatLayer.TileState.NOT_LOADED) {
                 this.layer.tilesToLoad.push(this);
             }
 
             // Create children if needed
-            if (this.state == HipsCatLayer.TileState.LOADED && !this.complete
-                && tile.state == Tile.State.LOADED && tile.children && !this.childrenCreated) {
-                for (var i = 0; i < 4; i++) {
+            if (this.state === HipsCatLayer.TileState.LOADED && !this.complete
+                && tile.state === Tile.State.LOADED && tile.children && !this.childrenCreated) {
+                for (i = 0; i < 4; i++) {
                     if (!tile.children[i].extension[this.layer.extId])
                         tile.children[i].extension[this.layer.extId] = new OSData(this.layer, tile.children[i], this);
                 }
@@ -415,8 +420,8 @@ define(['../Renderer/FeatureStyle', '../Renderer/VectorRendererManager', '../Uti
 
                 // HACK : set renderable to have children
                 var renderables = tile.extension.renderer ? tile.extension.renderer.renderables : [];
-                for (var i = 0; i < renderables.length; i++) {
-                    if (renderables[i].bucket.layer == this.layer)
+                for (i = 0; i < renderables.length; i++) {
+                    if (renderables[i].bucket.layer === this.layer)
                         renderables[i].hasChildren = true;
                 }
             }
@@ -429,17 +434,18 @@ define(['../Renderer/FeatureStyle', '../Renderer/VectorRendererManager', '../Uti
          * @param tilePool
          */
         OSData.prototype.dispose = function (renderContext, tilePool) {
+            var i;
             if (this.parent && this.parent.childrenCreated) {
                 this.parent.childrenCreated = false;
                 // HACK : set renderable to not have children!
                 var renderables = this.parent.tile.extension.renderer ? this.parent.tile.extension.renderer.renderables : [];
-                for (var i = 0; i < renderables.length; i++) {
-                    if (renderables[i].bucket.layer == this.layer)
+                for (i = 0; i < renderables.length; i++) {
+                    if (renderables[i].bucket.layer === this.layer)
                         renderables[i].hasChildren = false;
                 }
             }
 
-            for (var i = 0; i < this.featureIds.length; i++) {
+            for (i = 0; i < this.featureIds.length; i++) {
                 this.layer.removeFeature(this.featureIds[i], this.tile);
             }
             this.tile = null;
@@ -493,6 +499,7 @@ define(['../Renderer/FeatureStyle', '../Renderer/VectorRendererManager', '../Uti
          * @param tiles The array of tiles to render
          */
         HipsCatLayer.prototype.render = function (tiles) {
+            var i;
             if (!this.visible)
                 return;
 
@@ -500,7 +507,7 @@ define(['../Renderer/FeatureStyle', '../Renderer/VectorRendererManager', '../Uti
             this.tilesToLoad.sort(_sortTilesByDistance);
 
             // Load data for the tiles if needed
-            for (var i = 0; i < this.tilesToLoad.length && this.freeRequests.length > 0; i++) {
+            for (i = 0; i < this.tilesToLoad.length && this.freeRequests.length > 0; i++) {
                 var tile = this.tilesToLoad[i].tile;
                 var url = this.buildUrl(tile);
                 if (url) {

@@ -45,7 +45,7 @@ define(['../Renderer/GeoBound'],
         var AbstractProjection = function (projectionCenter, geoBound, options) {
             this.geoBound = new GeoBound(geoBound[0], geoBound[1], geoBound[2], geoBound[3]);
             this.projectionCenter = projectionCenter;
-            this.options = options || {};
+            this.options = options || {};
         };
 
         /**

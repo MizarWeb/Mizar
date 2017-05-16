@@ -39,7 +39,7 @@ define(function () {
 
     /**
      * Keyboard navigation handler configuration
-     * @typedef AbstractNavigation.keyboard_configuration
+     * @typedef {Object} AbstractNavigation.keyboard_configuration
      * @property {float} [panFactor = 10.0] - Factor for panning within the scene
      * @property {float} [zoomFactor = 1.0] - Factor for zooming into the scene
      * @property {boolean} [installOnDocument = false] -True to install the event listener on the document and not on the canvas
@@ -107,22 +107,27 @@ define(function () {
                     break;
                 case 187 :
                 // + on Safari
+                // falls through
                 case 61 :
                 // +(=) on Firefox and Opera
+                // falls through
                 case 107 :
                     // + on other
                     _navigation.zoom(-self.zoomFactor);
                     break;
                 case 189 :
                 // - on Safari
+                // falls through
                 case 54 :
                 // -(6) on Firefox and Opera
+                // falls through
                 case 109 :
                     // - on other
                     _navigation.zoom(self.zoomFactor);
                     break;
                 case 81 :
                 // q
+                // falls through
                 case 37 :
                     // Left arrow
                     if (event.shiftKey) {
@@ -134,6 +139,7 @@ define(function () {
                     break;
                 case 90 :
                 // z
+                // falls through
                 case 38 :
                     // Up arrow
                     if (event.shiftKey) {
@@ -146,6 +152,7 @@ define(function () {
                     break;
                 case 68 :
                 // d
+                // falls through
                 case 39 :
                     // Right arrow
                     if (event.shiftKey) {
@@ -157,6 +164,7 @@ define(function () {
                     break;
                 case 83 :
                 // s
+                // falls through
                 case 40 :
                     // Down arrow
                     if (event.shiftKey) {

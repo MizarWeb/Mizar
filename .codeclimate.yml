@@ -22,6 +22,11 @@ exclude_paths:
   - shaders/**/*
   - tests/**/*
   - tutorials/**/*
+  - src/Layer/JsVotable/**/*
+  - src/Layer/JsCSV/**/*
+  - src/Renderer/glMatrix.js
+  - src/Renderer/pnltri.js
+  - src/SceneGraph/**/*
   - Mizar.min.js
   - "**.png"
   - "**.jpg"

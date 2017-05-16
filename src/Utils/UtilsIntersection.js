@@ -37,8 +37,8 @@ define(["./Numeric", "../Tiling/HEALPixBase"], function (Numeric, HEALPixBase) {
         var deltay, t;
         var liesInXDir = false;
 
-        if (deltax == 0) {
-            liesInXDir = (point[0] == segmentStart[0]);
+        if (deltax === 0) {
+            liesInXDir = (point[0] === segmentStart[0]);
         } else {
             t = (point[0] - segmentStart[0]) / deltax;
             liesInXDir = (t >= 0 && t <= 1);
@@ -46,8 +46,8 @@ define(["./Numeric", "../Tiling/HEALPixBase"], function (Numeric, HEALPixBase) {
 
         if (liesInXDir) {
             deltay = segmentEnd[1] - segmentStart[1];
-            if (deltax == 0) {
-                return (point[1] == segmentStart[1]);
+            if (deltax === 0) {
+                return (point[1] === segmentStart[1]);
             } else {
                 t = (point[1] - segmentStart[1]) / deltay;
                 return (t >= 0 && t <= 1);
@@ -110,7 +110,7 @@ define(["./Numeric", "../Tiling/HEALPixBase"], function (Numeric, HEALPixBase) {
         var s4 = vec3.dot(vec3.cross(b1,q,[]),t);
 
         var st =  Numeric.sign(-s1) + Numeric.sign(s2) + Numeric.sign(-s3) + Numeric.sign(s4);
-        return Math.abs(st) == 4;
+        return Math.abs(st) === 4;
     };    
 
     /**
@@ -128,7 +128,7 @@ define(["./Numeric", "../Tiling/HEALPixBase"], function (Numeric, HEALPixBase) {
                 nbinter++;
             }
         }
-        return (nbinter % 2) == 1;
+        return (nbinter % 2) === 1;
     };    
 
     return UtilsIntersection;

@@ -51,9 +51,9 @@ define(["jquery","underscore-min",
          */
         function createConfiguration(options) {
             var mizarOptions = {};
-            if (typeof options == 'undefined') {
+            if (typeof options === 'undefined') {
                 throw new ReferenceError('No options found', 'Mizar.js');
-            } else if (typeof options.canvas == 'undefined') {
+            } else if (typeof options.canvas === 'undefined') {
                 throw new ReferenceError('Canvas not defined', 'Mizar.js');
             } else {
                 mizarOptions = {

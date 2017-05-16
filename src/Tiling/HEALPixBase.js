@@ -135,7 +135,7 @@ define(['./HEALPixTables', '../Utils/Long', '../Utils/CircleFinder'],
         }
         else // polar region, za > 2/3
         {
-            var ntt = parseInt(Math.min(3, parseInt(tt)));
+            var ntt = parseInt(Math.min(3, parseInt(tt, 10)), 10);
             var tp = tt - ntt;
             var tmp = ( (za < (9.0 / 10.0)) || (!loc.have_sth) ) ?
             nside2 * Math.sqrt(3 * (1 - za)) :
@@ -496,7 +496,7 @@ define(['./HEALPixTables', '../Utils/Long', '../Utils/CircleFinder'],
             var ncirc = inclusive ? nv + 1 : nv;
 
             if (nv < 3) {
-                alert("not enough vertices in polygon");
+                console.error("not enough vertices in polygon");
                 return;
             }
 
@@ -738,7 +738,7 @@ define(['./HEALPixTables', '../Utils/Long', '../Utils/CircleFinder'],
             hpix[0] = HEALPixBase.log2(uniq / 4) / 2;
             var nside = HEALPixBase.pow2(hpix[0]);
             hpix[1] = uniq - 4 * nside * nside;
-            hpix[0] = parseInt(hpix[0]);
+            hpix[0] = parseInt(hpix[0], 10);
             return hpix;
         },
 

@@ -258,7 +258,7 @@ define(["jquery", "./AbstractLayer", '../Utils/Constants','../Renderer/FeatureSt
             var i,u,v;
             // For each order, compute rectangles geometry depending on the pixel index
             for (var key in response) {
-                var order = parseInt(key);
+                var order = parseInt(key, 10);
                 for (i = 0; i < response[key].length; i++) {
                     var pixelIndex = response[key][i];
 

@@ -292,7 +292,7 @@ define(["./ContextFactory","../Crs/CoordinateSystemFactory","../Utils/Stats"], f
             // the user is interested to the pole, so we switch to azimuth projection
             // instead of plate carrée projection
             var centerPos = this.activatedContext.navigation.getCenter();
-            if (centerPos != null && 90 - Math.abs(centerPos[1]) <= 30) {
+            if (centerPos !== null && 90 - Math.abs(centerPos[1]) <= 30) {
                 this.setCrs({
                     geoideName: this.getCrs().getGeoideName(),
                     projectionName: this.mizarAPI.PROJECTION.Azimuth,

@@ -80,7 +80,7 @@ define(['../Utils/Utils', './WMSLayer'],
             for (var i = 5; i < lines.length; i++) {
                 var elts = lines[i].trim().split(/\s+/);
                 for (var n = 0; n < elts.length; n++) {
-                    elevations.push(parseInt(elts[n]));
+                    elevations.push(parseInt(elts[n], 10));
                 }
             }
 

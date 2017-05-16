@@ -64,7 +64,7 @@ define(["jquery", "underscore-min", "../Utils/Utils", "./AbstractNameResolver","
                         var features = [];
                         var i=0;
                         var dataLength = data.length;
-                        if (dataLength == 0) {
+                        if (dataLength === 0) {
                             onError();
                         } else {
                             _.each(data, function(data) {
@@ -73,7 +73,7 @@ define(["jquery", "underscore-min", "../Utils/Utils", "./AbstractNameResolver","
                                     if(!_.isEmpty(feature)) {
                                         features.push(feature);
                                     }
-                                    if(i == dataLength) {
+                                    if(i === dataLength) {
                                         callback(features);
                                     }
                                 });

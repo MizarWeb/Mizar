@@ -370,12 +370,12 @@ define(['../Renderer/BoundingBox', '../Renderer/glMatrix'],
                     var u = [
                         this.vertices[vo + up1] - this.vertices[vo + um1],
                         this.vertices[vo + up1 + 1] - this.vertices[vo + um1 + 1],
-                        this.vertices[vo + up1 + 2] - this.vertices[vo + um1 + 2],
+                        this.vertices[vo + up1 + 2] - this.vertices[vo + um1 + 2]
                     ];
                     var v = [
                         this.vertices[vo + vp1] - this.vertices[vo + vm1],
                         this.vertices[vo + vp1 + 1] - this.vertices[vo + vm1 + 1],
-                        this.vertices[vo + vp1 + 2] - this.vertices[vo + vm1 + 2],
+                        this.vertices[vo + vp1 + 2] - this.vertices[vo + vm1 + 2]
                     ];
 
                     var normal = vec3.cross(u, v, []);

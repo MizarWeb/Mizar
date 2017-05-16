@@ -207,9 +207,9 @@ define(["jquery", "../Renderer/FeatureStyle", "../Layer/MocLayer", "../Utils/Num
 
                         var maxOrder;
                         _.each(healpixMoc, function(pixels, order) {
-                           maxOrder = parseInt(order);
+                           maxOrder = parseInt(order, 10);
                         });
-                        var nOrder = maxOrder+1;
+                        var nOrder = maxOrder + 1;
 
                         if (_.isNumber(response)) {
                             layer.coverage = Numeric.roundNumber(getCoverage(nOrder, healpixMoc) * 100, 5) + "%";
