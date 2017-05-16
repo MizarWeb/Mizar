@@ -1,0 +1,69 @@
+<!doctype html>
+<html>
+
+<head>
+    <title>GlobWeb Mars example</title>
+    <meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
+
+    <script type="text/javascript" data-main="../src/rconfig.js" src="../node_modules/requirejs/require.js"></script>
+
+    <script type="text/javascript">
+
+        require(['Mizar'], function (Mizar) {
+            // Create Mizar
+            var mizar = new Mizar({
+                canvas: "MizarCanvas",
+                planetContext: {
+                    coordinateSystem: {geoideName: "EPSG:4326"}
+                }
+            });
+
+            mizar.getContextManager().createStats({
+                element: 'fps',
+                verbose: false
+            });
+
+            var layerManager = mizar.getLayerManager();
+
+            layerManager.addLayer({
+                type: mizar.LAYER.WMS,
+                name: "Blue Marble",
+                baseUrl: "http://demonstrator.telespazio.com/wmspub",
+                layers: "BlueMarble",
+                opacity : 60,
+                visible:true
+            });
+            layerManager.addLayer({
+                type: mizar.LAYER.Bing,
+                name : "bing",
+                imageSet: "AerialWithLabels",
+                key: "Ar7-_U1iwNtChqq64tAQsOfO8G7FwF3DabvgkQ1rziC4Z9zzaKZlRDWJTKTOPBPV",
+                opacity:80,
+                visible:true
+            });
+            layerManager.setBackgroundLayer("bing");
+
+            //layerManager.addLayer({
+            //  type: mizar.LAYER.WMTS,
+            //  name : "Peps",
+            //  layer : "s2l1c_4326",
+            //  matrixSet : "WGS84",
+            //  baseUrl : "http://peps-vizo.cnes.fr:8083/mapcache/wmts",
+            //  visible:true,
+            //  opacity:50
+            //});
+            //layerManager.setBackgroundLayer("Peps");
+
+        });
+
+
+    </script>
+
+</head>
+
+
+<body style="margin: 0; padding: 0;">
+<canvas id="MizarCanvas" style="border: none; margin: 0; padding: 0;"></canvas>
+<div id="fps"></div>
+</body>
+</html>

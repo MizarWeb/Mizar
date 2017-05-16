@@ -1,0 +1,144 @@
+<!doctype html>
+
+<title>Adding elevation</title>
+<meta charset="utf-8"/>
+<link rel=stylesheet href="./resources/docs.css">
+<link rel=stylesheet href=./resources/codemirror.css>
+<script src=./resources/codemirror.js></script>
+<script src=./resources/xml.js></script>
+<script src=./resources/javascript.js></script>
+<script src=./resources/css.js></script>
+<script src=./resources/htmlmixed.js></script>
+<script type="text/javascript" data-main="../src/rconfig.js" src="../node_modules/requirejs/require.js"></script>
+
+<style type=text/css>
+      .CodeMirror {
+        float: left;
+        width: 50%;
+        border: 1px solid black;
+        font-size: xx-small;
+      }
+      iframe {
+        width: 49%;
+        float: left;
+        height: 300px;
+        border: 1px solid black;
+        border-left: 0px;
+      }
+    </style>
+
+
+<article>
+    <h2>Introduction</h2>
+    This tutorial is a short explanation on how to set up the elevation and to show the Fps (Frame per second)
+
+    <h2>Code in Mizar</h2>
+    The first step is to look to the {@tutorial getting-started-with-Earth} to create the Earth.<br/>
+    <br/>
+    For this step, you need to look at the {@link module:Layer.WMSElevationLayer elevation layer} object
+    <br/><br/>
+    Look at the code and change it to test it.
+    <br/>
+    <textarea id=code name=code >
+<!doctype html>
+<html>
+
+<head>
+    <title>Adding elevation</title>
+    <link rel=stylesheet href="./resources/style.min.css">
+    <link rel=stylesheet href="./resources/jquery-ui.min.css">
+    <meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
+
+    <script type="text/javascript" data-main="../src/rconfig.js" src="../node_modules/requirejs/require.js"></script>
+
+    <script type="text/javascript">
+
+        require(['Mizar'], function (Mizar) {
+            // Create Mizar
+            var mizar = new Mizar({
+                canvas: "MizarCanvas",
+                planetContext: {
+                    coordinateSystem: {geoideName: "EPSG:4326"},
+                    lighting: false,
+                    tileErrorTreshold: 3,
+                    continuousRendering: true
+                }
+            });
+
+            // create the widget to display the Fps and insert the contain in <div id="fps" .../>
+            mizar.getContextManager().createStats({
+                element: 'fps',
+                verbose: false
+            });
+
+            // get the layer manager to create a new layer
+            var layerManager = mizar.getLayerManager();
+
+            // add a WMS layer
+            layerManager.addLayer({
+                type: mizar.LAYER.WMS,
+                name: "Blue Marble",
+                baseUrl: "http://demonstrator.telespazio.com/wmspub",
+                layers: "BlueMarble"
+            });
+
+            // add an elevation and increase the height by a 4 factor
+            layerManager.addLayer({
+                type: mizar.LAYER.WCSElevation,
+                name: "earthElevation",
+                baseUrl: "http://demonstrator.telespazio.com/wcspub",
+                coverage: "GTOPO",
+                version: "1.0.0",
+                scale: 4
+            });
+
+            // Set the background and the elevation.
+            layerManager.setBackgroundLayer("Blue Marble");
+            layerManager.setBaseElevation("earthElevation");
+
+            // Get the navigation object
+            var nav = mizar.getNavigation();
+            // move to (longitude, latitude, distance in meter)
+            nav.zoomTo([1.433, 42.900,30000], {
+                duration : 1000,
+                callback : function() {
+                    //zoom
+                    nav.zoom(0, 0.01);
+                    //rotate the camera
+                    nav.rotate(0, 10000)
+                }
+            });
+
+        });
+    </script>
+
+</head>
+
+
+<body style="margin: 0; padding: 0;">
+<div id="fps" class="statBox ui-widget">FPS : 0</div>
+<canvas id="MizarCanvas" style="border: none; margin: 0; padding: 0;"></canvas>
+</body>
+</html></textarea>
+    <iframe id=preview></iframe>
+    <script>
+      var delay;
+      // Initialize CodeMirror editor with a nice html5 canvas demo.
+      var editor = CodeMirror.fromTextArea(document.getElementById('code'), {
+        mode: 'text/html'
+      });
+      editor.on("change", function() {
+        clearTimeout(delay);
+        delay = setTimeout(updatePreview, 300);
+      });
+
+      function updatePreview() {
+        var previewFrame = document.getElementById('preview');
+        var preview =  previewFrame.contentDocument ||  previewFrame.contentWindow.document;
+        preview.open();
+        preview.write(editor.getValue());
+        preview.close();
+      }
+      setTimeout(updatePreview, 300);
+    </script>
+  </article>

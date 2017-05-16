@@ -1,0 +1,53 @@
+<html>
+
+<head>
+<title>Mizar example : opensearch with Sky</title>
+<meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
+
+<script type="text/javascript" data-main="../src/rconfig.js" src="../node_modules/requirejs/require.js"></script>
+<script type="text/javascript" src="../node_modules/jquery/dist/jquery.min.js"></script>
+<script type="text/javascript" src="../node_modules/underscore/underscore-min.js"></script>
+
+<script type="text/javascript">
+
+require(['Mizar'], function (Mizar)
+{
+	// Create Mizar
+	var mizar = new Mizar({
+			canvas :"MizarCanvas",
+			skyContext : {
+				showWireframe: false,
+				continuousRendering: true
+			}
+		});
+
+	mizar.createStats({element: "fps",verbose: true});
+
+	var cdsLayer = mizar.LayerFactory.create(mizar.LAYER.Hips, { baseUrl: "http://healpix.ias.u-psud.fr/DssColor"} );
+	mizar.setSkyBaseImagery( cdsLayer );
+
+	var osLayer = mizar.LayerFactory.create(mizar.LAYER.OpenSearch, { serviceUrl: "/sitoolsDemo/sia", minOrder: 3} );
+	mizar.addSkyLayer( osLayer );
+
+	var os2Layer = mizar.LayerFactory.create(mizar.LAYER.OpenSearch, { serviceUrl: "/sitoolsDemo/ovo", minOrder: 7} );
+	mizar.addSkyLayer( os2Layer );
+
+	window.onkeypress = function(event)
+	{
+		mizar.skyContext.sky.getTileManager().setFreeze(!mizar.skyContext.sky.getTileManager().getFreeze());
+	}
+});
+
+</script>
+
+</head>
+
+
+<body>
+    <canvas id="MizarCanvas" style="border: none;" width="1280" height="500"></canvas>
+  	<br/>
+	<div id="fps" style="font-weight:bold"></div>
+	<a href="index.html">Back</a>
+</body>
+
+</html>

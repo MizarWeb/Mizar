@@ -1,0 +1,80 @@
+{
+  "name": "Mizar",
+  "version": "1.0.0",
+  "description": "API of geographical and astronomical display and navigation",
+  "main": "./Mizar.min.js",
+  "directories": {
+    "api_doc": "API documentation",
+    "build": "build scripts",
+    "doc": "Markdown documentation",
+    "examples": "Some examples",
+    "external": "External libraries",
+    "licenses-3rd": "COTS licences",
+    "shaders": "OpenGL shaders",
+    "tests": "Some tests"
+  },
+  "scripts": {
+    "jsdoc": "jsdoc --readme ./README.md -c jsdoc.conf  && cp -r ./tutorials/resources ./api_doc && cp -r ./tutorials/data ./api_doc",
+    "jshint": "jshint -c ./.jshintrc  src/*",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "license": "license-checker --production --relativeLicensePath | awk 'NR > 5' > licenses-3rd/npm/LICENSES",
+    "build": "r.js -o build/buildMizar.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "http://github.com/RegardsOss/MizarLib"
+  },
+  "keywords": [
+    "astronomy",
+    "Earth",
+    "Mars",
+    "mapping",
+    "3D",
+    "2D"
+  ],
+  "author": "CNES",
+  "contributors": [
+    {
+      "name": "Jean-Christophe Malapert",
+      "email": "jean-christophe.malapert@cnes.fr"
+    },
+    {
+      "name": "Fabien Lavignotte (TPZ & Diginext)"
+    },
+    {
+      "name": "Maxime Shubin (TPZ)",
+      "email": "maxime.shubin@telespazio.com"
+    },
+    {
+      "name": "Frederic Ligeard (C-S)",
+      "email": "frederic.ligeard@c-s.fr"
+    },
+    {
+      "name": "Bastien Fiorito (Akka)",
+      "email": "bastien.fiorito@akka.eu"
+    },
+    {
+      "name": "Mathieu Gond (Akka)",
+      "email": "m.gond@akka.eu"
+    }
+  ],
+  "license": "GPL-3.0",
+  "dependencies": {
+    "gzip-js": "^0.3.2",
+    "jquery": "^3.1.1",
+    "jquery-ui-dist": "^1.12.1",
+    "path": "^0.12.7",
+    "requirejs": "^2.3.2",
+    "string": "^3.3.3",
+    "underscore": "^1.8.3",
+    "unzip": "^0.1.11"
+  },
+  "devDependencies": {
+    "ink-docstrap": "^1.3.0",
+    "jsdoc": "^3.4.3",
+    "jshint": "^2.9.4",
+    "jslint": "^0.10.3",
+    "license-checker": "^8.0.3",
+    "uglify": "^0.1.5"
+  }
+}

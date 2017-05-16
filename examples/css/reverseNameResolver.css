@@ -1,0 +1,39 @@
+#reverseNameResolver
+{
+	padding: 10px;
+}
+
+#reverseSearchField
+{
+	overflow: auto;
+}
+
+#reverseSearchResult
+{
+	padding-bottom: 15px;
+	overflow: auto;
+}
+
+.credit
+{
+	position: absolute;
+	right: 10px;
+	bottom: 7px;
+	font-size: 0.9em;
+}
+
+.title
+{
+	color:white;
+	font-weight:bold;
+	text-align: center
+}
+
+#reverseSearchField input[type="submit"]
+{
+	margin-left: auto;
+	margin-right: auto;
+	display: block;
+	margin-bottom: 10px;
+}
+

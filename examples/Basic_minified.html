@@ -1,0 +1,74 @@
+<html>
+
+<head>
+<title>Mizar example : Basic</title>
+<meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
+
+	<link rel=stylesheet href="./css/style.min.css">
+	<link rel=stylesheet href="./css/jquery-ui.min.css">
+
+<script type="text/javascript" src="../Mizar.min.js"></script>
+
+<script type="text/javascript">
+	function start()
+  {
+		var mizar = new Mizar({
+				canvas :"MizarCanvas",
+				planetContext : {
+					coordinateSystem: {geoideName: "EPSG:4326"}
+				}
+			});
+
+	  var mizar = new Mizar({
+		  canvas: "MizarCanvas",
+		  configuration : {
+			  positionTracker: {
+				  element: "myPosTracker"
+			  },
+			  elevationTracker: {
+				  element: "myElevTracker"
+			  }
+		  },
+		  planetContext: {
+			  coordinateSystem: {geoideName: "EPSG:4326"}
+		  }
+	  });
+
+	  var layerManager = mizar.getLayerManager();
+
+	  layerManager.addLayer({
+		  type: mizar.LAYER.WMS,
+		  name: "Blue Marble",
+		  baseUrl: "http://demonstrator.telespazio.com/wmspub",
+		  layers: "BlueMarble"
+	  });
+
+	  layerManager.addLayer({
+		  type: mizar.LAYER.WCSElevation,
+		  name: "earthElevation",
+		  baseUrl: "http://demonstrator.telespazio.com/wcspub",
+		  coverage: "GTOPO",
+		  version: "1.0.0",
+		  scale: 4
+	  });
+	  layerManager.setBackgroundLayer("Blue Marble");
+	  layerManager.setBaseElevation("earthElevation");
+
+	}
+</script>
+
+</head>
+
+
+<body style="margin: 0; padding: 0;" onLoad="start()">
+<div id="Mizar">
+	<canvas id="MizarCanvas" style="border: none; margin: 0; padding: 0;">
+	</canvas>
+	<div id="tracker">
+		<div id="myPosTracker" class="noSelect"></div>
+		<div id="myElevTracker" class="noSelect"></div>
+	</div>
+</div>
+</body>
+
+</html>

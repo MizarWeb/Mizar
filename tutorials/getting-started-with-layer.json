@@ -1,0 +1,12 @@
+{
+  "title": "Getting Started with layer",
+  "children": [
+    "adding-elevation",
+    "adding-bing",
+    "adding-drawing-selection",
+    "adding-features",
+    "adding-geojson",
+    "adding-ground-overlay",
+    "adding-picking"
+  ]
+}

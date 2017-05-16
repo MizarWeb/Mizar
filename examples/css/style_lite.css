@@ -1,0 +1,265 @@
+/*@import url('jquery-ui.min.css');*/
+/*@import url('jquery-ui.structure.min.css');*/
+/*@import url('jquery-ui.theme.min.css');*/
+/*@import url('featurePopup.css');*/
+/*@import url('sidebar.css');*/
+/*@import url('layerServiceView.css');*/
+/*@import url('mollweideViewer.css');*/
+/*@import url('imageProcessing.css');*/
+/*@import url('share.css');*/
+/*@import url('samp.css');*/
+/*@import url('imageViewer.css');*/
+/*@import url('images/compass.css');*/
+/*@import url('layerManager.css');*/
+@import url('../../mizar_lite/externals/selectizejs/selectize.default.css');
+@import url('../../mizar_lite/externals/loadmask/jquery.loadmask.css');
+
+em {
+    color: #6BCAFF;
+}
+
+body {
+    background: rgb(0, 0, 0);
+    padding: 0px;
+    margin: 0px;
+    overflow: hidden;
+}
+
+/************************/
+/*		Error box		*/
+/************************/
+.errorBox {
+    box-shadow: 0 0 6px red, inset 0 1px 2px rgba(0, 0, 0, 0.08);
+    border: solid 1px red;
+    text-align: center;
+}
+
+#webGLNotAvailable, #webGLContextLost {
+    padding-top: 300px;
+    text-align: center;
+    display: none;
+    color: white;
+}
+
+/****************************/
+/*		Attributions		*/
+/****************************/
+
+#attributions {
+    text-align: right;
+    position: absolute;
+    right: 0px;
+    bottom: 2px;
+    pointer-events: none;
+}
+
+#attributions div {
+    color: white;
+}
+
+#attributions a {
+    pointer-events: auto;
+}
+
+/****************************/
+/*		Statistics box		*/
+/****************************/
+
+.statBox {
+    background-color: rgb(255, 255, 255);
+    box-shadow: 0 0 6px #FF9E52, inset 0 1px 2px rgba(0, 0, 0, 0.08);
+    opacity: 0.8;
+    border-radius: 10px;
+    padding: 5px;
+    border: solid 1px orange;
+    font-weight: bold;
+}
+
+/************************/
+/*		Content box		*/
+/************************/
+.contentBox {
+    box-shadow: 0 0 6px #FF9E52, inset 0 1px 2px rgba(0, 0, 0, 0.08);
+    border: solid 1px orange;
+    border-radius: 10px;
+    background-color: black;
+    z-index: 2;
+}
+
+/****************************/
+/*		Particular boxes	*/
+/****************************/
+
+#fov {
+    text-align: center;
+    color: white;
+}
+
+/*** Iframe containing data from external resource ***/
+#externalIFrame {
+    left: 10%;
+    top: -1000px;
+    position: absolute;
+    padding: 15px;
+    background-color: white;
+    z-index: 9003;
+}
+
+#IFrameToolbar {
+    position: absolute;
+    padding: 5px;
+    display: inline-block;
+    width: auto;
+    top: -15px;
+    left: -20px;
+    height: 20px;
+}
+
+#IFrameToolbar button {
+    height: 20px;
+    width: 20px;
+}
+
+#externalIFrame Iframe {
+    border: none;
+}
+
+.closeBtn {
+    position: absolute;
+    top: -15px;
+    right: -15px;
+    cursor: pointer;
+    display: inline;
+}
+
+#GlobWebCanvas {
+    z-index: -1;
+}
+
+/*** Loading animation gif ***/
+#loading {
+    width: 48px;
+    height: 48px;
+    background: url(images/loading.gif) no-repeat;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+}
+
+/*** Navigation options block(nameResolver, compass) ***/
+#navigationDiv {
+    position: absolute;
+    right: 0px;
+    margin-top: 5px;
+    top: 10px;
+    pointer-events: none;
+    overflow-x: hidden;
+    overflow-y: auto;
+    width: 275px;
+    max-height: 95%;
+}
+
+#compassDiv {
+    pointer-events: auto;
+    overflow: hidden;
+    margin-top: 45px;
+    margin-left: 160px;
+}
+
+/*** Left bottom components(share, mollweide, stats) ***/
+#leftBottomDiv {
+    position: absolute;
+    left: 5px;
+    bottom: 5px;
+    pointer-events: none;
+}
+
+.leftBottomButton {
+    position: relative;
+    height: 40px;
+    left: 5px;
+}
+
+/*** tracker on bottom ***/
+#tracker {
+    position: absolute;
+    left: 45%;
+    color: white;
+    bottom: 0;
+}
+
+/*** Position tracker on bottom ***/
+#posTracker {
+    position: relative;
+}
+
+/*** Elevation tracker on bottom ***/
+#elevTracker {
+    position: relative;
+}
+
+/*** Small modifications on jQuery UI ***/
+.ui-widget {
+    font-size: 0.9em;
+}
+
+.ui-widget .ui-widget {
+    font-size: 0.8em;
+}
+
+.ui-accordion-content {
+    border-radius: 0px;
+}
+
+/*** Stylized scrollbar (only for webkit : chrome and safari) ***/
+::-webkit-scrollbar {
+    width: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: white;
+    -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+    border-radius: 10px;
+    background: #DFDFDF;
+    -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.5);
+}
+
+/* No text selection for buttons */
+.ui-button, .ui-accordion-header, .noSelect {
+    user-select: none;
+    -moz-user-select: none;
+    -khtml-user-select: none;
+    -webkit-user-select: none;
+}
+
+input::-moz-placeholder {
+    color: rgba(127, 127, 127, .5);
+}
+
+/* About link color */
+#about a {
+    color: rgb(255, 173, 0);
+}
+
+/* Override jQuery UI 1.11 default styling for select menu */
+.ui-menu .ui-state-focus, .ui-menu .ui-state-active {
+    margin-top: 0px;
+}
+
+.whiteLink {
+    color: #FFF;
+}
+
+.zoneToExport {
+    text-align: center;
+    margin-top : 25px;
+}
+
+.errorNameResolver {
+    color: #F79A2E;
+    margin-top: 35px;
+}

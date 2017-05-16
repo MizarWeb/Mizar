@@ -1,0 +1,472 @@
+/*******************************************************************************
+ * Copyright 2017 CNES - CENTRE NATIONAL d'ETUDES SPATIALES
+ *
+ * This file is part of MIZAR.
+ *
+ * MIZAR is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * MIZAR is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with SITools2. If not, see <http://www.gnu.org/licenses/>.
+ ******************************************************************************/
+
+define(["jquery","../Utils/Constants"], function($, Constants) {
+
+    /**
+     * @namespace
+     * GENERAL_WAVELENGTH
+     * @property {String} Radio - Radio
+     * @property {String} Millimeter - Millimeter
+     * @property {String} Infrared - Infrared
+     * @property {String} Optical - Optical
+     * @property {String} UV - UV
+     * @property {String} EUV - EUV
+     * @property {String} X-ray - X-ray
+     * @property {String} Gamma-ray - Gamma-ray
+     */
+    var GENERAL_WAVELENGTH = {
+        "Radio": "Radio",
+        "Millimeter": "Millimeter",
+        "Infrared": "Infrared",
+        "Optical": "Optical",
+        "UV": "UV",
+        "EUV": "EUV",
+        "X-ray": "X-ray",
+        "Gamma-ray": "Gamma-ray"
+    };
+
+    /**
+     * @namespace
+     * HIPS_FRAME
+     * @property {String} equatorial - equatorial
+     * @property {String} galactic - galactic
+     * @property {String} ecliptic - ecliptic
+     */
+    var HIPS_FRAME = {
+        "equatorial": Constants.CRS.Equatorial,
+        "galactic": Constants.CRS.Galactic,
+        "ecliptic": "ecliptic"
+    };
+
+    /**
+     * @namespace
+     * HIPS_TILE_FORMAT
+     * @property {String} jpeg - jpeg
+     * @property {String} png - png
+     * @property {String} fits - fits
+     * @property {String} tsv - tsv
+     */
+    var HIPS_TILE_FORMAT = {
+        "jpeg": "jpeg",
+        "png": "png",
+        "fits": "fits",
+        "tsv": "tsv"
+    };
+
+    /**
+     * @namespace
+     * SAMPLING
+     * @property {String} none - none
+     * @property {String} nearest - nearest
+     * @property {String} bilinear - bilinear
+     */
+    var SAMPLING = {
+        "none": "non",
+        "nearest": "nearest",
+        "bilinear": "bilinear"
+    };
+
+    /**
+     * @namespace
+     * PIXEL_OVERLAY
+     * @property {String} add - add
+     * @property {String} mean - mean
+     * @property {String} first - first
+     * @property {String} border_fading - border_fading
+     * @property {String} custom - custom
+     */
+    var PIXEL_OVERLAY = {
+        "add": "add",
+        "mean": "mean",
+        "first": "first",
+        "border_fading": "border_fading",
+        "custom": "custom"
+    };
+
+    /**
+     * @namespace
+     * SKY_VAL
+     * @property {String} none - none
+     * @property {String} hips_estimation - hips_estimation
+     * @property {String} fits_keyword - fits_keyword
+     */
+    var SKY_VAL = {
+        "none": "none",
+        "hips_estimation": "hips_estimation",
+        "fits_keyword": "fits_keyword"
+    };
+
+    /**
+     * @namespace
+     * DATA_PRODUCT_TYPE
+     * @property {String} image - image
+     * @property {String} cube - cube
+     * @property {String} catalog - catalog
+     * @property {String} meta - meta
+     */
+    var DATA_PRODUCT_TYPE = {
+        "image": "image",
+        "cube": "cube",
+        "catalog": "catalog",
+        "meta": "meta"
+    };
+
+    /**
+     * @namespace
+     * SUB_TYPE_DATA
+     * @property {String} color - color
+     * @property {String} live - live
+     */
+    var SUB_TYPE_DATA = {
+        "color": "color",
+        "live": "live"
+    };
+
+    /**
+     * Hips data model
+     * Mandatory, description, isMultiple, default value, distinctvalue, isArray
+     * @namespace
+     * HIPS_METADATA
+     * @property {String} creator_did - Unique ID of the HiPS - Format: IVOID - Ex : ivo://CDS/P/2MASS/J
+     * @property {String} [publisher_id] - Unique ID of the HiPS publisher – Format: IVOID - Ex : ivo://CDS
+     * @property {String} [obs_collection] - Short name of original data set – Format: one word – Ex : 2MASS
+     * @property {String} obs_title - Data set title – Format: free text, one line – Ex : HST F110W observations
+     * @property {String} [obs_description] - Data set description – Format: free text, longer free text description of the dataset
+     * @property {String} [obs_ack] - Acknowledgment mention"
+     * @property {String} [prov_progenitor] - Provenance of the original data – Format: free text
+     * @property {String} [bib_reference] - Bibliographic reference
+     * @property {String} [bib_reference_url] - URL to bibliographic reference
+     * @property {String} [obs_copyright] - Copyright mention – Format: free text
+     * @property {String} [obs_copyright_url] - URL to a copyright mention
+     * @property {GENERAL_WAVELENGTH} [obs_regime] - General wavelength
+     * @property {String} [data_ucd] - UCD describing data contents
+     * @property {String} hips_version="1.4" - Number of HiPS version – Format: number
+     * @property {String} [hips_builder] - Name and version of the tool used for building the HiPS – Format: free text
+     * @property {String} [hips_publisher] - Institute or person who built the HiPS – Format: free text – Ex : CDS (T.Boch)
+     * @property {String} [hips_creation_date] - HiPS first creation date - Format: ISO 8601 => YYYY-mm-ddTHH:MMZ
+     * @property {String} hips_release_date - Last HiPS update date - Format: ISO 8601 => YYYY-mm-ddTHH:MMZ
+     * @property {String} [hips_service_url] - HiPS access url – Format: URL
+     * @property {String} hips_status - HiPS status
+     * @property {String} [hips_estsize] - HiPS size estimation – Format: positive integer – Unit : KB
+     * @property {HIPS_FRAME} hips_frame - Coordinate frame reference
+     * @property {int} hips_order - Deepest HiPS order – Format: positive integer
+     * @property {int} [hips_tile_width=512] - Tiles width in pixels – Format: positive integer
+     * @property {HIPS_TILE_FORMAT} hips_tile_format - List of available tile formats
+     * @property {String} [hips_pixel_cut] - Suggested pixel display cut range (physical values) – Format: min max
+     * @property {String} [hips_data_range] - Pixel data range taken into account during the HiPS generation (physical values) – Format: min max – Ex : -18.5 510.5
+     * @property {SAMPLING} [hips_sampling] - Sampling applied for the HiPS generation
+     * @property {PIXEL_OVERLAY} [hips_overlay] - Pixel composition method applied on the image overlay region during HiPS generation
+     * @property {SKY_VAL} [hips_skyval] - Sky background subtraction method applied during HiPS generation
+     * @property {String} [hips_pixel_bitpix] - Fits tile BITPIX code
+     * @property {String} [data_pixel_bitpix] - Original data BITPIX code
+     * @property {DATA_PRODUCT_TYPE} dataproduct_type - Type of data
+     * @property {SUB_TYPE_DATA} [dataproduct_subtype] - Subtype of data
+     * @property {String} [hips_progenitor_url] - URL to an associated progenitor HiPS
+     * @property {int} [hips_cat_nrows] -  Number of rows of the HiPS catalog
+     * @property {int} [hips_cube_depth] - Number of frames of the HiPS cube
+     * @property {int} [hips_cube_firstframe=0] - Initial first index frame to display for a HiPS cube
+     * @property {float} [data_cube_crpix3] - Coef for computing physical channel value
+     * @property {float} [data_cube_crval3] - Coef for computing physical channel value
+     * @property {float} [data_cube_cdelt3] - Coef for computing physical channel value
+     * @property {String} [data_cube_bunit3] - Third axis unit
+     * @property {float} [hips_initial_ra] - Default RA display position (ICRS frame) – Unit : degrees
+     * @property {float} [hips_initial_dec] - Default DEC display position (ICRS frame) – Unit : degrees
+     * @property {float} [hips_initial_fov] - Default display size – Unit : degrees
+     * @property {float} [hips_pixel_scale] - HiPS pixel angular resolution at the highest order – Unit : degrees
+     * @property {float} [s_pixel_scale] - Best pixel angular resolution of the original images – Unit : degrees
+     * @property {float} [t_min] - Start time of the observations - Representation: MJD
+     * @property {float} [t_max] - Stop time of the observations - Representation: MJD
+     * @property {float} [em_min] - Start in spectral coordinates – Unit: meters
+     * @property {float} [em_max] - Stop in spectral coordinates – Unit: meters
+     * @property {String} [client_category] - / separated keywords suggesting a display hierarchy to the client – Ex : Image/InfraRed
+     * @property {String} [client_sort_key] - Sort key suggesting a display order to the client inside a client_category – Sort : alphanumeric
+     * @property {String} [addendum_did] - In case of “live” HiPS, creator_did of the added HiPS
+     * @property {float} [moc_sky_fraction] - Fraction of the sky covers by the MOC associated to the HiPS – Format: real between 0 and 1
+     */
+    var HipsVersion_1_4 = {
+        creator_did : ["R", "Unique ID of the HiPS - Format: IVOID - Ex : ivo://CDS/P/2MASS/J",false, null, null, false],
+        publisher_id : [null, "Unique ID of the HiPS publisher – Format: IVOID - Ex : ivo://CDS", false, null, null, false],
+        obs_collection : [null, "Short name of original data set – Format: one word – Ex : 2MASS",false, null, null, false],
+        obs_title: ["R","Data set title – Format: free text, one line – Ex : HST F110W observations",false, null, null, false],
+        obs_description : ["S","Data set description – Format: free text, longer free text description of the dataset",false, null, null, false],
+        obs_ack : [null,"Acknowledgment mention",false, null, null, false],
+        prov_progenitor: ["S","Provenance of the original data – Format: free text",true, null, null, false],
+        bib_reference: [null,"Bibliographic reference",true, null, null, false],
+        bib_reference_url: [null,"URL to bibliographic reference",true, null, null, false],
+        obs_copyright : [null,"Copyright mention – Format: free text",false, null, null, false],
+        obs_copyright_url: [null,"URL to a copyright mention",false, null, null, false],
+        obs_regime: ["S", "General wavelength – Format: word",true, null, GENERAL_WAVELENGTH, false],
+        data_ucd : [null,"UCD describing data contents",true, null, null, false],
+        hips_version : ["R", "Number of HiPS version – Format: number", false, "1.4", null, false],
+        hips_builder  : [null, "Name and version of the tool used for building the HiPS – Format: free text",false, null, null, false],
+        hips_publisher : [null, "Institute or person who built the HiPS – Format: free text – Ex : CDS (T.Boch)",false, null, null, false],
+        hips_creation_date : ["S", "HiPS first creation date - Format: ISO 8601 => YYYY-mm-ddTHH:MMZ", false, null, null, false],
+        hips_release_date : ["R", "Last HiPS update date - Format: ISO 8601 => YYYY-mm-ddTHH:MMZ", false, null, null, false],
+        hips_service_url : [null, "HiPS access url – Format: URL", false, null, null, false],
+        hips_status : ["R", "HiPS status", false, "public master clonableOnce", null, true],
+        hips_estsize : [null,"HiPS size estimation – Format: positive integer – Unit : KB",false, null, null, false],
+        hips_frame : ["R","Coordinate frame reference",false, null, HIPS_FRAME, false],
+        hips_order : ["R","Deepest HiPS order – Format: positive integer",false, null, null, false],
+        hips_tile_width : [null, "Tiles width in pixels – Format: positive integer",false, 512, null, false],
+        hips_tile_format : ["R", "List of available tile formats. The first one is the default suggested to the client",false, null, HIPS_TILE_FORMAT, true],
+        hips_pixel_cut : [null,"Suggested pixel display cut range (physical values) – Format: min max",null, null, null, true],
+        hips_data_range : [null,"Pixel data range taken into account during the HiPS generation (physical values) – Format: min max – Ex : -18.5 510.5",false, null, null, true],
+        hips_sampling : [null, "Sampling applied for the HiPS generation",false, null, SAMPLING, false],
+        hips_overlay : [null,"Pixel composition method applied on the image overlay region during HiPS generation",false, null, PIXEL_OVERLAY, false],
+        hips_skyval : [null,"Sky background subtraction method applied during HiPS generation",false, null, SKY_VAL, false],
+        hips_pixel_bitpix : [null, "Fits tile BITPIX code", false, null, null, false],
+        data_pixel_bitpix : [null, "Original data BITPIX code", false, null, null],
+        dataproduct_type: ["R", "Type of data", false, null, DATA_PRODUCT_TYPE, false],
+        dataproduct_subtype: ["RD", "Subtype of data", false, null, SUB_TYPE_DATA, false],
+        hips_progenitor_url: [null, "URL to an associated progenitor HiPS", false, null, null, false],
+        hips_cat_nrows: ["S", "Number of rows of the HiPS catalog", false, null, null, false],
+        hips_cube_depth: ["RD", "Number of frames of the HiPS cube",false, null, null, false],
+        hips_cube_firstframe: [null,"Initial first index frame to display for a HiPS cube",false, 0, null, false],
+        data_cube_crpix3: [null,"Coef for computing physical channel value (see FITS doc)",false, null, null, false],
+        data_cube_crval3: [null,"Coef for computing physical channel value (see FITS doc)",false, null, null, false],
+        data_cube_cdelt3: [null,"Coef for computing physical channel value (see FITS doc)",false, null, null, false],
+        data_cube_bunit3: [null, "Third axis unit (see FITS doc)", false, null, null, false],
+        hips_initial_ra: ["S", "Default RA display position (ICRS frame) – Unit : degrees", false, null, null, false],
+        hips_initial_dec: ["S", "Default DEC display position (ICRS frame) – Unit : degrees", false, null, null, false],
+        hips_initial_fov: ["S", "Default display size – Unit : degrees", false, null, null, false],
+        hips_pixel_scale: [null,"HiPS pixel angular resolution at the highest order – Unit : degrees",false, null, null, false],
+        s_pixel_scale: [null, "Best pixel angular resolution of the original images – Unit : degrees",false, null, null, false],
+        t_min : ["S", "Start time of the observations - Representation: MJD", false, null, null, false],
+        t_max : ["S", "Stop time of the observations - Representation: MJD", false, null, null, false],
+        em_min : ["S", "Start in spectral coordinates – Unit: meters", false, null, null, false],
+        em_max : ["S", "Stop in spectral coordinates – Unit: meters", false, null, null, false],
+        client_category: [null,"/ separated keywords suggesting a display hierarchy to the client – Ex : Image/InfraRed",false, null, null, false],
+        client_sort_key :[null,"Sort key suggesting a display order to the client inside a client_category – Sort : alphanumeric", false, null, null, false],
+        addendum_did: [null,"In case of “live” HiPS, creator_did of the added HiPS",true, null, null, false],
+        moc_sky_fraction : [null, "Fraction of the sky covers by the MOC associated to the HiPS – Format: real between 0 and 1",false, null, null, false]
+    };
+
+    /**
+     * Validates and fixes metadata
+     * @param {HIPS_METADATA} hipsMetadata
+     * @throws "unvalid hips metadata"
+     */
+    function validateAndFixHips(hipsMetadata) {
+        var requiredKeywordNotFound = [];
+        var valueNotRight = [];
+        var values, mandatory, description, isMutiple, defaultValue, distinctValue, valueArray;
+        for(var key in HipsVersion_1_4){
+            values = HipsVersion_1_4[key];
+            mandatory = values[0];
+            description = values[1];
+            defaultValue = values[3];
+            distinctValue = values[4];
+            valueArray = values[5];
+            // checking the required parameter is here
+            if(mandatory==="R" && !hipsMetadata.hasOwnProperty(key)) {
+                //Fix for version=1.2
+                if(key === "creator_did" &&  hipsMetadata['hips_version'] === "1.2") {
+                    hipsMetadata['creator_did'] = hipsMetadata['publisher_did'];
+                } else {
+                    requiredKeywordNotFound.push(key+" ("+description+") is not present. ");
+                }
+            }
+
+            // Transforms a value into an array when it is necessary
+            if(valueArray && hipsMetadata.hasOwnProperty(key)) {
+                hipsMetadata[key] = hipsMetadata[key].split(/\s+/);
+            }
+
+            // checking the value of the parameter among a list of values
+            if(distinctValue!==null && hipsMetadata.hasOwnProperty(key) ) {
+                if(valueArray) {
+                    for (var val in hipsMetadata[key]) {
+                        var format = hipsMetadata[key][val];
+                        if(!distinctValue.hasOwnProperty(format)) {
+                            valueNotRight.push("The value \""+hipsMetadata[key]+"\" of "+key+" ("+description+") is not correct. ");
+                            break;
+                        }
+                    }
+                } else {
+                    if(!distinctValue.hasOwnProperty(hipsMetadata[key])) {
+                        valueNotRight.push("The value \""+hipsMetadata[key]+"\" of "+key+" ("+description+") is not correct. ");
+                    }
+                }
+            }
+
+            // checking the key is here when a default value exists
+            if(defaultValue!==null && !hipsMetadata.hasOwnProperty(key)) {
+                hipsMetadata[key] = defaultValue;
+            }
+
+
+        }
+        if(requiredKeywordNotFound.length > 0 || valueNotRight.length > 0) {
+            throw "unvalid hips metadata : \n"+requiredKeywordNotFound.toString()+"\n"+valueNotRight.toString();
+        }
+
+    }
+
+    /**
+     * Loads Hips properties
+     * @param baseUrl
+     * @return {*}
+     */
+    function loadHipsProperties(baseUrl) {
+        var properties = $.ajax({
+            type: "GET",
+            url: baseUrl + "/properties",
+            async: false
+        }).responseText;
+        if(properties === undefined) {
+            throw "Unable to load the Hips at "+baseUrl;
+        }
+        var hipsProperties =  parseProperties(properties);
+        validateAndFixHips(hipsProperties);
+        return hipsProperties;
+    }
+
+    /**
+     * Parses properties
+     * @param propertiestext
+     * @return {{}}
+     */
+    function parseProperties(propertiestext) {
+        var propertyMap = {};
+        var lines = propertiestext.split(/\r?\n/);
+        var currentLine = '';
+        $.each(lines, function (i, value) {
+            //check if it is a comment line
+            if (!/^\s*(\#|\!|$)/.test(value)) // line is whitespace or first non-whitespace character is '#' or '!'
+            {
+                value = value.replace(/^\s*/, ''); // remove space at start of line
+                currentLine += value;
+                if (/(\\\\)*\\$/.test(currentLine)) // line ends with an odd number of '\' (backslash)
+                {
+                    //line ends with continuation character, remember it and don't process further
+                    currentLine = currentLine.replace(/\\$/, '');
+                }
+                else {
+                    /^\s*((?:[^\s:=\\]|\\.)+)\s*[:=\s]\s*(.*)$/.test(currentLine); // sub-matches pick out key and value
+                    var nkey = RegExp.$1;
+                    var nvalue = RegExp.$2;
+                    if(propertyMap.hasOwnProperty(nkey)) {
+                        propertyMap[nkey] = (propertyMap[nkey].isPrototypeOf(Array)) ? propertyMap[nkey].push(nvalue) : [propertyMap[nkey], nvalue];
+                    } else {
+                        propertyMap[nkey] = nvalue;
+                    }
+
+                    currentLine = '';
+                }
+            }
+        });
+        return propertyMap;
+    }
+
+    /**
+     * @name HipsMetadata
+     * @class
+     * Hips data model
+     * @param baseUrl
+     * @constructor
+     */
+    var HipsMetadata = function(baseUrl) {
+        if(typeof (baseUrl) === "string") {
+            this.baseUrl = baseUrl;
+            this.hipsMetadata = loadHipsProperties(baseUrl);
+        } else {
+            this.hipsMetadata = baseUrl;
+        }
+    };
+
+    /**
+     * Supported {@link GENERAL_WAVELENGTH wavelength}
+     * @name GeneralWavelength
+     * @memberOf HipsMetadata#
+     */
+    HipsMetadata.prototype.GeneralWavelength = GENERAL_WAVELENGTH;
+
+    /**
+     * Supported {@link HIPS_FRAME Hips frame}
+     * @name HipsFrame
+     * @memberOf HipsMetadata#
+     */
+    HipsMetadata.prototype.HipsFrame = HIPS_FRAME;
+
+    /**
+     * Supported {@link HIPS_TILE_FORMAT Hips tile format}
+     * @name HipsTileFormat
+     * @memberOf HipsMetadata#
+     */
+    HipsMetadata.prototype.HipsTileFormat = HIPS_TILE_FORMAT;
+
+    /**
+     * Supported {@link SAMPLING Sampling}
+     * @name Sampling
+     * @memberOf HipsMetadata#
+     */
+    HipsMetadata.prototype.Sampling = SAMPLING;
+
+    /**
+     * Supported {@link PIXEL_OVERLAY pixel overlay}
+     * @name PixelOverlay
+     * @memberOf HipsMetadata#
+     */
+    HipsMetadata.prototype.PixelOverlay = PIXEL_OVERLAY;
+
+    /**
+     * Supported {@link SKY_VAL SkyVal}
+     * @name SkyVal
+     * @memberOf HipsMetadata#
+     */
+    HipsMetadata.prototype.SkyVal = SKY_VAL;
+
+    /**
+     * Supported {@link DATA_PRODUCT_TYPE DataProductType}
+     * @name DataProductType
+     * @memberOf HipsMetadata#
+     */
+    HipsMetadata.prototype.DataProductType = DATA_PRODUCT_TYPE;
+
+    /**
+     * Supported {@link SUB_TYPE_DATA SubTypeData}
+     * @name SubTypeData
+     * @memberOf HipsMetadata#
+     */
+    HipsMetadata.prototype.SubTypeData = SUB_TYPE_DATA;
+
+    /**
+     * Returns the Hips metadata.
+     * @function getHipsMetadata
+     * @returns {HIPS_METADATA}
+     * @memberOf HipsMetadata#
+     */
+    HipsMetadata.prototype.getHipsMetadata = function() {
+        return this.hipsMetadata;
+    };
+
+    /**
+     * Returns base URL
+     * @function getBaseUrl
+     * @returns {string} the URL of the Hips
+     * @memberOf HipsMetadata#
+     */
+    HipsMetadata.prototype.getBaseUrl = function() {
+        return this.baseUrl;
+    };
+
+    return HipsMetadata;
+
+});

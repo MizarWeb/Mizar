@@ -1,0 +1,122 @@
+<!doctype html>
+
+<title>Getting started with Earth</title>
+<meta charset="utf-8"/>
+<link rel=stylesheet href="./resources/docs.css">
+
+<link rel=stylesheet href=./resources/codemirror.css>
+<script src=./resources/codemirror.js></script>
+<script src=./resources/xml.js></script>
+<script src=./resources/javascript.js></script>
+<script src=./resources/css.js></script>
+<script src=./resources/htmlmixed.js></script>
+<script type="text/javascript" data-main="../src/rconfig.js" src="../node_modules/requirejs/require.js"></script>
+
+<style type=text/css>
+      .CodeMirror {
+        float: left;
+        width: 50%;
+        border: 1px solid black;
+        font-size: xx-small;
+      }
+      iframe {
+        width: 49%;
+        float: left;
+        height: 300px;
+        border: 1px solid black;
+        border-left: 0px;
+      }
+    </style>
+
+
+<article>
+    <h2>Introduction</h2>
+    TODO
+
+    <h2>Code in Mizar</h2>
+    TODO
+    <br/><br/>
+    Look at the code and change it to test it.
+    <br/>
+    <textarea id=code name=code >
+<!doctype html>
+<html>
+
+<head>
+    <title>Adding compass</title>
+    <meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
+    <link rel=stylesheet href="./resources/style.min.css">
+    <link rel=stylesheet href="./resources/jquery-ui.min.css">
+
+    <script type="text/javascript" data-main="../src/rconfig.js" src="../node_modules/requirejs/require.js"></script>
+
+
+    <script type="text/javascript">
+        require(["Mizar"],
+                function (Mizar) {
+                    // Create Mizar
+                    var mizar = new Mizar({
+                        canvas: "MizarCanvas",
+                        configuration : {
+                            positionTracker: {
+                                element: "myPosTracker"
+                            }
+                        },
+                        skyContext: {
+                            coordinateSystem: {geoideName: "Equatorial"},
+                            compass: "compassDiv"
+                        }
+                    });
+
+                    mizar.getContextManager().createStats({element: 'fps', verbose: false});
+
+                    var layerManager = mizar.getLayerManager();
+
+                    var dssLayerID = layerManager.addLayer({
+                        type: mizar.LAYER.Hips,
+                        baseUrl: "http://alasky.unistra.fr/DSS/DSSColor"
+                    });
+
+                    var layer = layerManager.getLayerByID(dssLayerID);
+
+                    layerManager.setBackgroundLayer(layer.name);
+
+                });
+    </script>
+</head>
+
+
+<body>
+<div class="noSelect" id="navigationDiv">
+    <div id="compassDiv">
+    </div>
+</div>
+<div id="tracker">
+    <div id="myPosTracker" class="noSelect">Coordinates</div>
+</div>
+<canvas id="MizarCanvas" class="noSelect"></canvas>
+</body>
+
+</html></textarea>
+    <iframe id=preview></iframe>
+    <script>
+      var delay;
+      // Initialize CodeMirror editor with a nice html5 canvas demo.
+      var editor = CodeMirror.fromTextArea(document.getElementById('code'), {
+        mode: 'text/html'
+      });
+      editor.on("change", function() {
+        clearTimeout(delay);
+        delay = setTimeout(updatePreview, 300);
+      });
+
+      function updatePreview() {
+        var previewFrame = document.getElementById('preview');
+        var preview =  previewFrame.contentDocument ||  previewFrame.contentWindow.document;
+        preview.open();
+        preview.write(editor.getValue());
+        preview.close();
+      }
+      setTimeout(updatePreview, 300);
+    </script>
+  </article>

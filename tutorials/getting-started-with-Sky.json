@@ -1,0 +1,7 @@
+{
+  "title": "Getting Started with Sky",
+  "children": [
+    "navigation-sky","adding-compass","adding-geojson-sky","switch-map"
+  ]
+
+}

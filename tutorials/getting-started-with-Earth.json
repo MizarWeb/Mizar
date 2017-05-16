@@ -1,0 +1,8 @@
+{
+  "title": "Getting Started with Earth",
+  "children": [
+    "getting-started-with-navigation",
+    "getting-started-with-layer",
+    "adding-tracker"
+  ]
+}

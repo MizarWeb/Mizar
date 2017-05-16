@@ -1,0 +1,58 @@
+#share
+{
+	width: 32px;
+	height: 32px;
+	border: 0px solid black;
+	overflow: hidden;
+	outline: none;
+	display: inline-block;
+	background: url(../css/images/share_grey.png) no-repeat;
+	position: relative;
+	left: -20px;
+	pointer-events: auto;
+}
+
+#share:hover
+{
+	cursor: pointer;
+	background: url(../css/images/share.png) no-repeat;
+}
+
+#shareResult
+{
+	position: absolute;
+	display: none;
+	background: white;
+	padding-left: 10px;
+	width: 200px;
+	padding: 5px 15px 5px 15px;
+	border: 1px solid orange;
+	border-radius: 20px;
+	box-shadow: 0 0 6px #FF9E52, inset 0 1px 2px rgba(0, 0, 0, 0.08);
+}
+
+#shareClear
+{
+	width: 20px;
+	height: 20px;
+	overflow: hidden;
+	background: url(../css/images/searchClear-icon.png) no-repeat;
+	border: 0;
+	vertical-align: top;
+	cursor: pointer;
+	position: relative;
+	top: 1px;
+	right: -10px;
+}
+
+/*** Object name text input ***/
+#shareInput {
+	border:0;
+	width: 86%;
+	background:transparent;
+	text-shadow:0 1px 1px #fff;
+}
+
+#shareInput:focus {
+	outline:none
+}

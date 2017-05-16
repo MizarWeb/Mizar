@@ -1,0 +1,189 @@
+<!doctype html>
+
+<title>Adding features</title>
+<meta charset="utf-8"/>
+<link rel=stylesheet href="./resources/docs.css">
+
+<link rel=stylesheet href=./resources/codemirror.css>
+<script src=./resources/codemirror.js></script>
+<script src=./resources/xml.js></script>
+<script src=./resources/javascript.js></script>
+<script src=./resources/css.js></script>
+<script src=./resources/htmlmixed.js></script>
+<script type="text/javascript" data-main="../src/rconfig.js" src="../node_modules/requirejs/require.js"></script>
+
+<style type=text/css>
+      .CodeMirror {
+        float: left;
+        width: 50%;
+        border: 1px solid black;
+        font-size: xx-small;
+      }
+      iframe {
+        width: 49%;
+        float: left;
+        height: 300px;
+        border: 1px solid black;
+        border-left: 0px;
+      }
+    </style>
+
+
+<article>
+    <h2>Introduction</h2>
+    TODO
+
+    <h2>Code in Mizar</h2>
+    The first step is to look to the {@tutorial getting-started-with-Earth} to create the Earth.<br/>
+    <br/>
+    TODO
+    <br/>
+    <textarea id=code name=code >
+<!doctype html>
+<html>
+
+<head>
+    <title>Addinf features</title>
+    <meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
+
+    <script type="text/javascript" data-main="../src/rconfig.js" src="../node_modules/requirejs/require.js"></script>
+
+    <script type="text/javascript">
+
+        require(['Mizar'],
+                function (Mizar) {
+                    var mizar = new Mizar({
+                        canvas: "GlobWebCanvas",
+                        planetContext: {
+                            coordinateSystem: {
+                                geoideName : "EPSG:4326"
+                            },
+                            continuousRendering: true
+                        }
+                    });
+
+                    var layerManager = mizar.getLayerManager();
+
+                    var layerID =layerManager.addLayer({
+                        type: mizar.LAYER.Bing,
+                        imageSet: "AerialWithLabels",
+                        key: "Ar7-_U1iwNtChqq64tAQsOfO8G7FwF3DabvgkQ1rziC4Z9zzaKZlRDWJTKTOPBPV"
+                    });
+
+                    layerManager.setBackgroundLayerByID(layerID);
+                    var layerGeoJson1ID = layerManager.addLayer({
+                        type: mizar.LAYER.GeoJSON,
+                        visible: true
+                    });
+                    var layerGeoJson2ID = layerManager.addLayer({
+                        type: mizar.LAYER.GeoJSON,
+                        visible: true
+                    });
+                    var layerGeoJson3ID = layerManager.addLayer({
+                        type: mizar.LAYER.GeoJSON,
+                        visible: true
+                    });
+
+                    var layerGeoJSON1 = layerManager.getLayerByID(layerGeoJson1ID);
+                    var layerGeoJSON2 = layerManager.getLayerByID(layerGeoJson2ID);
+                    var layerGeoJSON3 = layerManager.getLayerByID(layerGeoJson3ID);
+
+
+                    var feature1 = {
+                        type: "Feature",
+                        geometry: {
+                            type: "Polygon",
+                            coordinates: [[[179.34, 70.2],
+                                [-178.72, 70.06],
+                                [179.47, 67.02],
+                                [177.79, 63.52],
+                                [176.52, 60.4],
+                                [175.18, 60.52],
+                                [176.3, 63.64],
+                                [177.78, 67.15],
+                                [179.34, 70.2]]]
+                        }
+                    };
+
+                    var feature2 = {
+                        type: "Feature",
+                        geometry: {
+                            type: "Polygon",
+                            coordinates: [[
+                                [0.0, 70.0],
+                                [20.0,70.0],
+                                [40.0, 70.0],
+                                [60.0,70.0],
+                                [80.0, 70.0],
+                                [100.0,70.0],
+                                [120.0, 70.0],
+                                [140.0,70.0],
+                                [160.0, 70.0],
+                                [180.0,70.0],
+                                [-180.0, 70.0],
+                                [-160.0,70.0],
+                                [-140.0,70.0],
+                                [-120.0, 70.0],
+                                [-100.0,70.0],
+                                [-80.0, 70.0],
+                                [-60.0,70.0],
+                                [-40.0, 70.0],
+                                [-20.0,70.0],
+                                [0.0, 70.0]
+                            ]]
+                        }
+                    };
+
+                    var feature3 = {
+                        type: "Feature",
+                        geometry: {
+                            type: "Polygon",
+                            coordinates: [[
+                                [125.0, 50.0],
+                                [134.0, 60.0],
+                                [-170.0, 60.0],
+                                [-90.0, 60.0],
+                                [4.0, 60.0],
+                                [90.0, 50.0],
+                                [125.0, 50.0]]]
+                        }
+                    };
+
+                    layerGeoJSON1.addFeature(feature1);
+                    layerGeoJSON2.addFeature(feature2);
+                    layerGeoJSON2.addFeature(feature3);
+
+                });
+
+
+    </script>
+
+</head>
+
+
+<body>
+<canvas id="GlobWebCanvas" style="border: none;"></canvas>
+</body>
+</html></textarea>
+    <iframe id=preview></iframe>
+    <script>
+      var delay;
+      // Initialize CodeMirror editor with a nice html5 canvas demo.
+      var editor = CodeMirror.fromTextArea(document.getElementById('code'), {
+        mode: 'text/html'
+      });
+      editor.on("change", function() {
+        clearTimeout(delay);
+        delay = setTimeout(updatePreview, 300);
+      });
+
+      function updatePreview() {
+        var previewFrame = document.getElementById('preview');
+        var preview =  previewFrame.contentDocument ||  previewFrame.contentWindow.document;
+        preview.open();
+        preview.write(editor.getValue());
+        preview.close();
+      }
+      setTimeout(updatePreview, 300);
+    </script>
+  </article>

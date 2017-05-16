@@ -1,0 +1,104 @@
+<html>
+
+<head>
+    <title>Mizar example : Extrude animation</title>
+    <meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
+    <link rel="stylesheet" href="data/GlobWeb.css">
+
+    <script type="text/javascript" data-main="../src/rconfig.js" src="../node_modules/requirejs/require.js"></script>
+
+    <script type="text/javascript">
+
+        require(['Mizar'],
+                function (Mizar) {
+                    var mizar = new Mizar({
+                        canvas: "GlobWebCanvas",
+                        planetContext: {
+                            coordinateSystem: {
+                                geoideName: "EPSG:4326"
+                            },
+                            lighting: false,
+                            tileErrorTreshold: 3,
+                            continuousRendering: true
+                        }
+                    });
+
+                    mizar.getContextManager().createStats({element: 'fps', verbose: false});
+
+                    var afterVectorLoad = function () {
+                        // Generate random country indices
+                        var countriesToExtrude = [];
+                        var nbCountries = 177;
+                        for (var i = 0; i < 15; i++) {
+                            countriesToExtrude.push(Math.floor(Math.random() * nbCountries));
+                        }
+
+
+                        var animation = mizar.AnimationFactory.create(
+                                mizar.ANIMATION.Segmented,
+                                {
+                                    "duration": 1000,
+                                    "valueSetter": function (value) {
+                                        for (var i = 0; i < countriesToExtrude.length; i++) {
+                                            // Extract feature for the given country
+                                            var feature = vectorLayer.features[countriesToExtrude[i]];
+                                            var featureStyle = feature.properties.style;
+                                            if (!featureStyle) {
+                                                featureStyle = mizar.UtilityFactory.create(mizar.UTILITY.CreateStyle,vectorLayer.style);
+                                                vectorLayer.modifyFeatureStyle(feature, featureStyle);
+                                            }
+                                            featureStyle.setExtrusionScale(value);
+                                        }
+                                        // Uncomment to extrude all !
+                                        //vectorLayer.style.extrusionScale = value;
+                                    }
+                                });
+
+                        animation.addSegment(
+                                0.0, extrusionScale,
+                                1.0, 2,
+                                function (t, a, b) {
+                                    return mizar.UtilityFactory.create(mizar.UTILITY.Numeric).lerp(t, a, b);
+                                }
+                        );
+                        mizar.getContextManager().getActivatedContext().globe.addAnimation(animation);
+
+                        // Start animation 2s after
+                        setTimeout(function () {
+                            animation.start();
+                        }, 2000);
+                    };
+
+                    var extrusionScale = 0.21;
+                    var layerID = mizar.getLayerManager().addLayer({
+                        type : mizar.LAYER.GeoJSON,
+                        name : "land",
+                        style : mizar.UtilityFactory.create(mizar.UTILITY.CreateStyle, {
+                            extrude: mizar.getContextManager().getActivatedContext().getCoordinateSystem().geoide.realPlanetRadius / 10, // Extrude max value
+                            extrusionScale: extrusionScale,
+                            strokeColor : [1.0, 0.0, 0.0, 1.0],
+                            fillColor : [1.0, 0.0, 0.0, 1.0],
+                            fill : false
+                        }),
+                        url: "data/land.json",
+                        visible:true,
+                        callback: afterVectorLoad
+                    });
+
+                    var vectorLayer = mizar.getLayerManager().getLayerByID(layerID);
+                });
+
+
+    </script>
+
+</head>
+
+
+<body style="background-color: white;">
+<canvas id="GlobWebCanvas" style="border: none;"></canvas>
+<br/>
+<div id="fps"><span style="font-weight:bold">FPS : 0</span></div>
+<a href="index.html">Back</a>
+</body>
+
+</html>

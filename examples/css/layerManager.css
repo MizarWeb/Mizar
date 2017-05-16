@@ -1,0 +1,150 @@
+/*** Background layers ***/
+
+#backgroundLayersSelect
+{
+	width: 155px;
+	height: 200px;
+}
+
+#backgroundLayersSelect-menu
+{
+	max-height: 200px;
+}
+
+#backgroundLayers fieldset
+{
+	border: none;
+	float: left;
+	padding: 5px;
+}
+
+#backgroundLayers fieldset select {
+	min-width: 120px;
+	margin-right: inherit;
+	margin-top: 10px;
+	margin-bottom: 20px;
+	text-align: center;
+}
+
+#backgroundSpinner
+{
+	background: url(images/loading.gif) no-repeat;
+	background-size: 15px 15px;
+	width: 15px;
+	height: 15px;
+	position: relative;
+	top: 10px;
+	float: right;
+}
+
+#backgroundOptions
+{
+	padding: 5px;
+	margin-top: 20px;
+}
+
+.ui-selectmenu-menu .ui-menu.customicons .ui-menu-item .ui-icon {
+	top: 0.1em;
+	margin: 2px 5px;
+}
+
+/* Avoid "shaking" effect on hover */
+.ui-menu.customicons .ui-state-focus, .ui-menu.customicons .ui-state-active {
+	margin: 0px;
+}
+
+.unknown {
+	background: url(../css/images/unknown.png) 0 0 no-repeat !important;
+}
+
+/*** Additionnal layers ***/
+
+#accordion > div
+{
+	border-radius: 5px;
+}
+
+/* Layer container by category */
+#accordion > div > div
+{
+	max-height: 450px;
+}
+
+.addLayer > label
+{
+	position: relative;
+	cursor: pointer;
+}
+
+.addFitsView+label
+{
+	width: 20px;
+	height: 20px;
+	vertical-align: middle;
+}
+
+.spinner
+{
+	background: url(images/loading.gif) no-repeat;
+	background-size: 16px;
+	position: absolute;
+	right: -20px;
+	top: 0px;
+	width: 16px;
+	height: 16px;
+}
+
+.layerColor
+{
+	width: 15px;
+	height: 10px;
+	border-radius: 3px;
+	display: inline-block;
+	margin-right: 5px;
+	position: relative;
+	top: -3px;
+}
+
+.addLayer
+{
+	position: relative;
+	margin-bottom: 10px;
+}
+
+.percentInput
+{
+	outline: none;
+	border:0;
+	background-color: transparent;
+	width: 40px;
+	color:#f6931f;
+	font-weight:bold;
+	pointer-events: none;
+	-webkit-user-select: none;
+	-moz-user-select: moz-none;
+}
+
+.ui-icon-empty {
+	background-position: 16px 16px;
+}
+
+.tool
+{
+	width: 24px;
+	height: 24px;
+	display: inline-block;
+	cursor: pointer;
+}
+
+/*** Common ***/
+
+.layerIcon
+{
+	display: inline;
+}
+
+#coordinateGrids
+{
+	margin-top: 10px;
+}
+

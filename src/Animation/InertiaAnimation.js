@@ -1,0 +1,164 @@
+/*******************************************************************************
+ * Copyright 2017 CNES - CENTRE NATIONAL d'ETUDES SPATIALES
+ *
+ * This file is part of MIZAR.
+ *
+ * MIZAR is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * MIZAR is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with SITools2. If not, see <http://www.gnu.org/licenses/>.
+ ******************************************************************************/
+/***************************************
+ * Copyright 2011, 2012 GlobWeb contributors.
+ *
+ * This file is part of GlobWeb.
+ *
+ * GlobWeb is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * GlobWeb is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with GlobWeb. If not, see <http://www.gnu.org/licenses/>.
+ ***************************************/
+
+/**
+ * Mizar is able to create different types of animation on a globe :
+ * <ul>
+ *     <li>{@link module:Animation.InertiaAnimation InertiaAnimation}: Animation simulating inertia for camera navigation</li>
+ *     <li>{@link module:Animation.InterpolatedAnimation InterpolatedAnimation} : Generic animation to interpolate arbitrary values</li>
+ *     <li>{@link module:Animation.PathAnimation PathAnimation} : Animation defined with a path</li>
+ *     <li>{@link module:Animation.SegmentedAnimation SegmentedAnimation} : Animation defined with segments</li>
+ * </ul>
+ *
+ * In addition to the classes, a {@link module:Animation.AnimationFactory factory} is available to help for creating
+ * animation. Once the animation is created, the client can handle it by the use of its {@link Animation interface}.
+ *
+ * @module Animation
+ * @implements {Animation}
+ * @todo Describes here and link to the tutos about Animation
+ */
+define(['../Utils/Utils', './AbstractAnimation'], function (Utils, AbstractAnimation) {
+
+    /**************************************************************************************************************/
+
+    var epsilon = 0.1;
+
+    /**
+     * Inertia animation configuration
+     * @typedef {Object} AbstractAnimation.inertia_configuration
+     * @property {Navigation} nav - Navigation object that applies the transformations.
+     * @property {float} [panFactor=0.95] - Pan Factor which is included in [0..1]. - 1 is sensible to the pan
+     * @property {float} [zoomFactor=0.50] - Zoom Factor which is included in [0..1]. - 1 is sensible to the zoom
+     * @property {float} [rotateFactor=0.95] - Rotate Factor which is included in [0..1]. - 1 is sensible to the rotation
+     */
+
+    /**
+     * @name InertiaAnimation
+     * @class
+     * Animation simulating inertia for camera's navigation.
+     * Inertia is its tendency to retain its velocity: in the absence of external influence, the camera's motion
+     * persists in an uniform rectilinear motion.
+     * @augments AbstractAnimation
+     * @param {AbstractAnimation.inertia_configuration} options Configuration of the Inertia animation
+     * @constructor
+     * @memberOf module:Animation
+     */
+    var InertiaAnimation = function (options) {
+        AbstractAnimation.prototype.constructor.call(this);
+        if (options) {
+            this.panFactor = options.hasOwnProperty('panFactor') ? options.panFactor : 0.95;
+            this.rotateFactor = options.hasOwnProperty('rotateFactor') ? options.rotateFactor : 0.95;
+            this.zoomFactor = options.hasOwnProperty('zoomFactor') ? options.zoomFactor : 0.50;
+        }
+
+        this.type = null;
+        this.dx = 0;
+        this.dy = 0;
+        this.navigation = options.nav;
+        this.renderContext = options.nav.getRenderContext();
+    };
+
+    /**************************************************************************************************************/
+
+    Utils.inherits(AbstractAnimation, InertiaAnimation);
+
+    /**************************************************************************************************************/
+
+    /**
+     * Updates the inertia.
+     * @function update
+     * @memberOf InertiaAnimation#
+     */
+    InertiaAnimation.prototype.update = function (now) {
+        var hasToStop = false;
+
+        switch (this.type) {
+            case "pan":
+                this.navigation.pan(this.dx, this.dy);
+                this.dx *= this.panFactor;
+                this.dy *= this.panFactor;
+                hasToStop = (Math.abs(this.dx) < epsilon && Math.abs(this.dy) < epsilon);
+                break;
+            case "rotate":
+                this.navigation.rotate(this.dx, this.dy);
+                this.dx *= this.rotateFactor;
+                this.dy *= this.rotateFactor;
+                hasToStop = (Math.abs(this.dx) < epsilon && Math.abs(this.dy) < epsilon);
+                break;
+            case "zoom":
+                this.navigation.zoom(this.dx);
+                this.dx *= this.zoomFactor;
+                hasToStop = (Math.abs(this.dx) < epsilon);
+                break;
+            default:
+        }
+        this.navigation.getRenderContext().requestFrame();
+
+        if (hasToStop) {
+            this.stop();
+        }
+    };
+
+    /**************************************************************************************************************/
+
+    /**
+     * Launches the animation.
+     * @function launch
+     * @param {String} type Type of inertia
+     * <ul>
+     *   <li>pan</li>
+     *   <li>rotate</li>
+     *   <li>zoom</li>
+     * </ul>
+     * @param {int} dx x of inertiaVector Vector of movement in window coordinates(for pan and rotate inertia)
+     * @param {int} dy x of inertiaVector Vector of movement in window coordinates(for pan and rotate inertia)
+     * @memberOf InertiaAnimation#
+     */
+    InertiaAnimation.prototype.launch = function (type, dx, dy) {
+        // Set first value
+        this.type = type;
+        this.dx = dx;
+        this.dy = dy;
+
+        this.start();
+    };
+
+    /**************************************************************************************************************/
+
+    return InertiaAnimation;
+
+});

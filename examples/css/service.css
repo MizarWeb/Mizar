@@ -1,0 +1,86 @@
+.serviceRecord {
+    display: flex;
+}
+
+.serviceRecord > div {
+    padding: 5px;
+}
+
+.serviceRecord > div > div {
+    padding-top: 5px;
+}
+
+.serviceRecord > div > div > div {
+    padding-top: 3px;
+}
+
+.serviceRecord > div > button {
+    padding: 5px;
+    vertical-align: top;
+}
+
+/* CUSTOMIZING SELECTIZE */
+.selectize-input, .selectize-control.single .selectize-input {
+    border: 1px solid orange;
+    box-shadow: 0 0 6px #FF9E52, inset 0 1px 2px rgba(0, 0, 0, 0.08);
+    background: #E8EDF1;
+}
+
+.selectize-input.dropdown-active {
+    border: 1px solid orange;
+    box-shadow: 0 0 6px #FF9E52, inset 0 1px 2px rgba(0, 0, 0, 0.08);
+    background: #FFF;
+}
+
+.selectize-control.multi .selectize-input [data-value] {
+    background-image: linear-gradient(to bottom, #ffb540, #FF9E52);
+    background-color: #e9e2e5;
+}
+
+.selectize-control.multi .selectize-input [data-value].active {
+    background-image: linear-gradient(to bottom, #e59f3c, #e5874f);
+    background-color: #e9e2e5;
+}
+
+.selectize-control.multi .selectize-input > div {
+    border: #e9e2e5;
+}
+
+.selectize-control.multi .selectize-input > div.active {
+    border: #e9e2e5;
+}
+
+.selectize-control.plugin-remove_button [data-value] .remove {
+    border-left: 1px solid orange;
+}
+
+.selectize-control.plugin-remove_button [data-value].active .remove {
+    border-left: 1px solid orange;
+}
+
+/* */
+
+.numberBetween {
+    padding: 10px 5px 5px 5px;
+}
+
+.noTitlePopup .ui-dialog-titlebar {
+    display: none
+}
+
+/* Flot chart */
+#yaxisLabel {
+    transform: rotate(-90deg);
+}
+#xaxisLabel {
+    padding-top: 15px;
+}
+
+#elevationTrackingBtn {
+    font-size: 12px;
+    border: 1px solid rgba(255, 175, 15, 0.71);
+}
+
+#popupElevation {
+    overflow: hidden;
+}

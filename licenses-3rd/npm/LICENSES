@@ -1,0 +1,263 @@
+├─ balanced-match@0.4.2
+│  ├─ licenses: MIT
+│  ├─ repository: https://github.com/juliangruber/balanced-match
+│  ├─ publisher: Julian Gruber
+│  ├─ email: mail@juliangruber.com
+│  ├─ url: http://juliangruber.com
+│  └─ licenseFile: node_modules/unzip/node_modules/fstream/node_modules/rimraf/node_modules/glob/node_modules/minimatch/node_modules/brace-expansion/node_modules/balanced-match/LICENSE.md
+├─ binary@0.3.0
+│  ├─ licenses: MIT
+│  ├─ repository: https://github.com/substack/node-binary
+│  ├─ publisher: James Halliday
+│  ├─ email: mail@substack.net
+│  └─ url: http://substack.net
+├─ brace-expansion@1.1.6
+│  ├─ licenses: MIT
+│  ├─ repository: https://github.com/juliangruber/brace-expansion
+│  ├─ publisher: Julian Gruber
+│  ├─ email: mail@juliangruber.com
+│  └─ url: http://juliangruber.com
+├─ buffers@0.1.1
+│  ├─ licenses: UNKNOWN
+│  ├─ repository: https://github.com/substack/node-buffers
+│  ├─ publisher: James Halliday
+│  ├─ email: mail@substack.net
+│  └─ url: http://substack.net
+├─ chainsaw@0.1.0
+│  ├─ licenses: MIT/X11
+│  ├─ repository: https://github.com/substack/node-chainsaw
+│  ├─ publisher: James Halliday
+│  ├─ email: mail@substack.net
+│  └─ url: http://substack.net
+├─ concat-map@0.0.1
+│  ├─ licenses: MIT
+│  ├─ repository: https://github.com/substack/node-concat-map
+│  ├─ publisher: James Halliday
+│  ├─ email: mail@substack.net
+│  ├─ url: http://substack.net
+│  └─ licenseFile: node_modules/unzip/node_modules/fstream/node_modules/rimraf/node_modules/glob/node_modules/minimatch/node_modules/brace-expansion/node_modules/concat-map/LICENSE
+├─ core-util-is@1.0.2
+│  ├─ licenses: MIT
+│  ├─ repository: https://github.com/isaacs/core-util-is
+│  ├─ publisher: Isaac Z. Schlueter
+│  ├─ email: i@izs.me
+│  ├─ url: http://blog.izs.me/
+│  └─ licenseFile: node_modules/unzip/node_modules/readable-stream/node_modules/core-util-is/LICENSE
+├─ crc32@0.2.2
+│  ├─ licenses: MIT*
+│  ├─ repository: https://github.com/beatgammit/crc32
+│  ├─ publisher: T. Jameson Little
+│  ├─ email: t.jameson.little@gmail.com
+│  └─ licenseFile: node_modules/crc32/LICENSE.MIT
+├─ deflate-js@0.2.3
+│  ├─ licenses: GPL
+│  ├─ repository: https://github.com/beatgammit/deflate-js
+│  ├─ publisher: Masanao Izumo
+│  ├─ email: iz@onicos.co.jp
+│  └─ licenseFile: node_modules/deflate-js/LICENSE.MIT
+├─ fs.realpath@1.0.0
+│  ├─ licenses: ISC
+│  ├─ repository: https://github.com/isaacs/fs.realpath
+│  ├─ publisher: Isaac Z. Schlueter
+│  ├─ email: i@izs.me
+│  ├─ url: http://blog.izs.me/
+│  └─ licenseFile: node_modules/unzip/node_modules/fstream/node_modules/rimraf/node_modules/glob/node_modules/fs.realpath/LICENSE
+├─ fstream@0.1.31
+│  ├─ licenses: BSD
+│  ├─ repository: https://github.com/isaacs/fstream
+│  ├─ publisher: Isaac Z. Schlueter
+│  ├─ email: i@izs.me
+│  ├─ url: http://blog.izs.me/
+│  └─ licenseFile: node_modules/unzip/node_modules/fstream/LICENSE
+├─ glob@7.1.0
+│  ├─ licenses: ISC
+│  ├─ repository: https://github.com/isaacs/node-glob
+│  ├─ publisher: Isaac Z. Schlueter
+│  ├─ email: i@izs.me
+│  ├─ url: http://blog.izs.me/
+│  └─ licenseFile: node_modules/unzip/node_modules/fstream/node_modules/rimraf/node_modules/glob/LICENSE
+├─ graceful-fs@3.0.11
+│  ├─ licenses: ISC
+│  ├─ repository: https://github.com/isaacs/node-graceful-fs
+│  ├─ publisher: Isaac Z. Schlueter
+│  ├─ email: i@izs.me
+│  ├─ url: http://blog.izs.me
+│  └─ licenseFile: node_modules/unzip/node_modules/fstream/node_modules/graceful-fs/LICENSE
+├─ gzip-js@0.3.2
+│  ├─ licenses: GPL
+│  ├─ repository: https://github.com/beatgammit/gzip-js
+│  ├─ publisher: T. Jameson Little
+│  ├─ email: t.jameson.little@gmail.com
+│  └─ licenseFile: node_modules/gzip-js/LICENSE.MIT
+├─ inflight@1.0.5
+│  ├─ licenses: ISC
+│  ├─ repository: https://github.com/npm/inflight
+│  ├─ publisher: Isaac Z. Schlueter
+│  ├─ email: i@izs.me
+│  ├─ url: http://blog.izs.me/
+│  └─ licenseFile: node_modules/unzip/node_modules/fstream/node_modules/rimraf/node_modules/glob/node_modules/inflight/LICENSE
+├─ inherits@2.0.1
+│  ├─ licenses: ISC
+│  ├─ repository: https://github.com/isaacs/inherits
+│  └─ licenseFile: node_modules/path/node_modules/util/node_modules/inherits/LICENSE
+├─ inherits@2.0.3
+│  ├─ licenses: ISC
+│  ├─ repository: https://github.com/isaacs/inherits
+│  └─ licenseFile: node_modules/unzip/node_modules/fstream/node_modules/inherits/LICENSE
+├─ isarray@0.0.1
+│  ├─ licenses: MIT
+│  ├─ repository: https://github.com/juliangruber/isarray
+│  ├─ publisher: Julian Gruber
+│  ├─ email: mail@juliangruber.com
+│  └─ url: http://juliangruber.com
+├─ jquery-ui-dist@1.12.1
+│  ├─ licenses: MIT
+│  ├─ repository: https://github.com/jquery/jquery-ui
+│  ├─ publisher: jQuery Foundation and other contributors
+│  ├─ url: https://github.com/jquery/jquery-ui/blob/1.12.1/AUTHORS.txt
+│  └─ licenseFile: node_modules/jquery-ui-dist/LICENSE.txt
+├─ jquery@3.1.1
+│  ├─ licenses: MIT
+│  ├─ repository: https://github.com/jquery/jquery
+│  ├─ publisher: jQuery Foundation and other contributors
+│  ├─ url: https://github.com/jquery/jquery/blob/3.1.1/AUTHORS.txt
+│  └─ licenseFile: node_modules/jquery/LICENSE.txt
+├─ match-stream@0.0.2
+│  ├─ licenses: MIT
+│  ├─ repository: https://github.com/EvanOxfeld/match-stream
+│  ├─ publisher: Evan Oxfeld
+│  ├─ email: eoxfeld@gmail.com
+│  └─ licenseFile: node_modules/unzip/node_modules/match-stream/LICENSE
+├─ minimatch@3.0.3
+│  ├─ licenses: ISC
+│  ├─ repository: https://github.com/isaacs/minimatch
+│  ├─ publisher: Isaac Z. Schlueter
+│  ├─ email: i@izs.me
+│  ├─ url: http://blog.izs.me
+│  └─ licenseFile: node_modules/unzip/node_modules/fstream/node_modules/rimraf/node_modules/glob/node_modules/minimatch/LICENSE
+├─ minimist@0.0.8
+│  ├─ licenses: MIT
+│  ├─ repository: https://github.com/substack/minimist
+│  ├─ publisher: James Halliday
+│  ├─ email: mail@substack.net
+│  ├─ url: http://substack.net
+│  └─ licenseFile: node_modules/unzip/node_modules/fstream/node_modules/mkdirp/node_modules/minimist/LICENSE
+├─ mkdirp@0.5.1
+│  ├─ licenses: MIT
+│  ├─ repository: https://github.com/substack/node-mkdirp
+│  ├─ publisher: James Halliday
+│  ├─ email: mail@substack.net
+│  ├─ url: http://substack.net
+│  └─ licenseFile: node_modules/unzip/node_modules/fstream/node_modules/mkdirp/LICENSE
+├─ natives@1.1.0
+│  ├─ licenses: ISC
+│  ├─ repository: https://github.com/isaacs/natives
+│  ├─ publisher: Isaac Z. Schlueter
+│  ├─ email: i@izs.me
+│  └─ url: http://blog.izs.me/
+├─ once@1.4.0
+│  ├─ licenses: ISC
+│  ├─ repository: https://github.com/isaacs/once
+│  ├─ publisher: Isaac Z. Schlueter
+│  ├─ email: i@izs.me
+│  ├─ url: http://blog.izs.me/
+│  └─ licenseFile: node_modules/unzip/node_modules/fstream/node_modules/rimraf/node_modules/glob/node_modules/once/LICENSE
+├─ over@0.0.5
+│  ├─ licenses: MIT
+│  ├─ repository: https://github.com/nearinfinity/node-over
+│  ├─ publisher: Joe Ferner
+│  └─ email: joe@fernsroth.com
+├─ path-is-absolute@1.0.1
+│  ├─ licenses: MIT
+│  ├─ repository: https://github.com/sindresorhus/path-is-absolute
+│  ├─ publisher: Sindre Sorhus
+│  ├─ email: sindresorhus@gmail.com
+│  ├─ url: sindresorhus.com
+│  └─ licenseFile: node_modules/unzip/node_modules/fstream/node_modules/rimraf/node_modules/glob/node_modules/path-is-absolute/license
+├─ path@0.12.7
+│  ├─ licenses: MIT
+│  ├─ repository: https://github.com/jinder/path
+│  ├─ publisher: Joyent
+│  ├─ url: http://www.joyent.com
+│  └─ licenseFile: node_modules/path/LICENSE
+├─ process@0.11.9
+│  ├─ licenses: MIT
+│  ├─ repository: https://github.com/shtylman/node-process
+│  ├─ publisher: Roman Shtylman
+│  ├─ email: shtylman@gmail.com
+│  └─ licenseFile: node_modules/path/node_modules/process/LICENSE
+├─ pullstream@0.4.1
+│  ├─ licenses: MIT
+│  ├─ repository: https://github.com/nearinfinity/node-pullstream
+│  └─ licenseFile: node_modules/unzip/node_modules/pullstream/LICENSE
+├─ readable-stream@1.0.34
+│  ├─ licenses: MIT
+│  ├─ repository: https://github.com/isaacs/readable-stream
+│  ├─ publisher: Isaac Z. Schlueter
+│  ├─ email: i@izs.me
+│  ├─ url: http://blog.izs.me/
+│  └─ licenseFile: node_modules/unzip/node_modules/readable-stream/LICENSE
+├─ requirejs@2.3.2
+│  ├─ licenses: MIT
+│  ├─ repository: https://github.com/jrburke/r.js
+│  ├─ publisher: James Burke
+│  ├─ email: jrburke@gmail.com
+│  └─ url: http://github.com/jrburke
+├─ rimraf@2.5.4
+│  ├─ licenses: ISC
+│  ├─ repository: https://github.com/isaacs/rimraf
+│  ├─ publisher: Isaac Z. Schlueter
+│  ├─ email: i@izs.me
+│  ├─ url: http://blog.izs.me/
+│  └─ licenseFile: node_modules/unzip/node_modules/fstream/node_modules/rimraf/LICENSE
+├─ setimmediate@1.0.5
+│  ├─ licenses: MIT
+│  ├─ repository: https://github.com/yuzujs/setImmediate
+│  ├─ publisher: YuzuJS
+│  └─ licenseFile: node_modules/unzip/node_modules/setimmediate/LICENSE.txt
+├─ slice-stream@1.0.0
+│  ├─ licenses: MIT
+│  ├─ repository: https://github.com/EvanOxfeld/slice-stream
+│  ├─ publisher: Evan Oxfeld
+│  ├─ email: eoxfeld@gmail.com
+│  └─ licenseFile: node_modules/unzip/node_modules/pullstream/node_modules/slice-stream/LICENSE
+├─ string@3.3.3
+│  ├─ licenses: MIT
+│  ├─ repository: https://github.com/jprichardson/string.js
+│  ├─ publisher: JP Richardson
+│  └─ email: jprichardson@gmail.com
+├─ string_decoder@0.10.31
+│  ├─ licenses: MIT
+│  ├─ repository: https://github.com/rvagg/string_decoder
+│  └─ licenseFile: node_modules/unzip/node_modules/readable-stream/node_modules/string_decoder/LICENSE
+├─ traverse@0.3.9
+│  ├─ licenses: MIT/X11
+│  ├─ repository: https://github.com/substack/js-traverse
+│  ├─ publisher: James Halliday
+│  └─ licenseFile: node_modules/unzip/node_modules/binary/node_modules/chainsaw/node_modules/traverse/LICENSE
+├─ underscore@1.8.3
+│  ├─ licenses: MIT
+│  ├─ repository: https://github.com/jashkenas/underscore
+│  ├─ publisher: Jeremy Ashkenas
+│  ├─ email: jeremy@documentcloud.org
+│  └─ licenseFile: node_modules/underscore/LICENSE
+├─ unzip@0.1.11
+│  ├─ licenses: MIT
+│  ├─ repository: https://github.com/EvanOxfeld/node-unzip
+│  ├─ publisher: Evan Oxfeld
+│  ├─ email: eoxfeld@gmail.com
+│  └─ licenseFile: node_modules/unzip/LICENSE
+├─ util@0.10.3
+│  ├─ licenses: MIT
+│  ├─ repository: https://github.com/defunctzombie/node-util
+│  ├─ publisher: Joyent
+│  ├─ url: http://www.joyent.com
+│  └─ licenseFile: node_modules/path/node_modules/util/LICENSE
+└─ wrappy@1.0.2
+   ├─ licenses: ISC
+   ├─ repository: https://github.com/npm/wrappy
+   ├─ publisher: Isaac Z. Schlueter
+   ├─ email: i@izs.me
+   ├─ url: http://blog.izs.me/
+   └─ licenseFile: node_modules/unzip/node_modules/fstream/node_modules/rimraf/node_modules/glob/node_modules/once/node_modules/wrappy/LICENSE
+
