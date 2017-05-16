@@ -61,7 +61,7 @@ define(["./AbstractRasterLayer", "../Utils/Utils", "../Utils/Constants", "../Til
                 throw "Some required parameters are missing";
             }
             var metadata = hipsMetadata;
-            if (metadata === undefined) {
+            if (typeof metadata === 'undefined') {
                 var hipsProperties = new HipsMetadata(options.baseUrl);
                 metadata = hipsProperties.getHipsMetadata();
             }

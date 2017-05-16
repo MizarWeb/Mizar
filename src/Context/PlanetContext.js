@@ -108,7 +108,7 @@ define(["jquery", "underscore-min", "../Utils/Utils", "./AbstractContext", "../U
                 ServiceFactory.create(Constants.SERVICE.PickingManager).init(this);
             }
             catch (err) {
-                AbstractContext.prototype._showUpError.call(this, err);
+                this._showUpError(this, err);
             }
 
         };
@@ -285,7 +285,7 @@ define(["jquery", "underscore-min", "../Utils/Utils", "./AbstractContext", "../U
                 // Create a new navigation related to the new coordinate reference system
                 _updateNavForNewCrs.call(this, newCrs, geoCenter, geoDistance, navOptions);
             } catch (err) {
-                AbstractContext.prototype._showUpError.call(this, err);
+                this._showUpError(this, err);
             }
 
             this.navigation.computeViewMatrix();

@@ -21,12 +21,12 @@
  * @version 1.0 (beta)
  * @author CNES
  */
-define(["jquery","underscore-min",
+define(["jquery", "underscore-min",
         "./Context/ContextFactory", "./Navigation/NavigationFactory", "./Layer/LayerFactory",
         "./Layer/LayerManager", "./Context/ContextManager",
         "./Animation/AnimationFactory", "./Utils/UtilityFactory", "./Services/ServiceFactory", "./Provider/ProviderFactory",
         "./Utils/Utils", "./Utils/Event", "./Utils/Constants"],
-    function ($,_,
+    function ($, _,
               ContextFactory, NavigationFactory, LayerFactory,
               LayerManager, ContextManager,
               AnimationFactory, UtilityFactory, ServiceFactory, ProviderFactory,
@@ -43,31 +43,41 @@ define(["jquery","underscore-min",
         //TODO : NiceScroll pour les résultats du resolveur de nom
         //TODO : Check position in zoomTo => cas erreur : l'afficher dans nameResolver comme "badInputParam"
         //TODO : charger cratere Mars et l'afficher à un certain niveau de zoom
+
         /**
-         * Checks inputs from user and creates the mizar configuration
-         * @param {Object} options inputs from user
-         * @returns {Object} mizar configuration.
+         * Checks inputs
+         * @param {Object} options - Mizar configuration
          * @throw ReferenceError - Unvalid input parameters
+         * @private
          */
-        function createConfiguration(options) {
-            var mizarOptions = {};
+        function _checkConfiguration(options) {
             if (typeof options === 'undefined') {
                 throw new ReferenceError('No options found', 'Mizar.js');
             } else if (typeof options.canvas === 'undefined') {
                 throw new ReferenceError('Canvas not defined', 'Mizar.js');
             } else {
-                mizarOptions = {
-                    canvas: typeof options.canvas === "string" ? document.getElementById(options.canvas) : options.canvas
-                };
-                if(options.hasOwnProperty('configuration')) {
-                    mizarOptions['configuration'] = options.configuration;
-                }
-                if(options.hasOwnProperty('skyContext')) {
-                    mizarOptions['skyContext'] = options.skyContext;
-                }
-                if(options.hasOwnProperty('planetContext')) {
-                    mizarOptions['planetContext'] = options.planetContext;
-                }
+                // do nothing
+            }
+        }
+
+        /**
+         * Checks inputs from user and creates the mizar configuration
+         * @param {Object} options inputs from user
+         * @returns {Object} mizar configuration.
+         * @private
+         */
+        function _createConfiguration(options) {
+            var mizarOptions = {
+                canvas: typeof options.canvas === "string" ? document.getElementById(options.canvas) : options.canvas
+            };
+            if (options.hasOwnProperty('configuration')) {
+                mizarOptions['configuration'] = options.configuration;
+            }
+            if (options.hasOwnProperty('skyContext')) {
+                mizarOptions['skyContext'] = options.skyContext;
+            }
+            if (options.hasOwnProperty('planetContext')) {
+                mizarOptions['planetContext'] = options.planetContext;
             }
             return mizarOptions;
         }
@@ -103,25 +113,26 @@ define(["jquery","underscore-min",
         var Mizar = function (options) {
             Event.prototype.constructor.call(this);
 
-            this.options = createConfiguration(options);
-            
+            _checkConfiguration(options);
+            this.options = _createConfiguration(options);
+
             // Init all factories
             /**
              * Creates a {@link module:Context.ContextFactory Context}
              * @name ContextFactory
              * @memberOf Mizar#
              * @private
-             */            
+             */
             this.ContextFactory = ContextFactory;
-            
+
             /**
              * Creates a {@link module:Layer.LayerFactory Layer}
              * @name LayerFactory
              * @memberOf Mizar#
              * @private
-             */            
+             */
             this.LayerFactory = LayerFactory;
-            
+
             /**
              * Creates an {@link module:Animation.AnimationFactory animation}
              * @name AnimationFactory
@@ -148,7 +159,7 @@ define(["jquery","underscore-min",
              * Creates a provider
              * @name ProviderFactory
              * @memberOf Mizar#
-             */            
+             */
             this.ProviderFactory = ProviderFactory;
 
             this.layerManager = null;
@@ -195,7 +206,7 @@ define(["jquery","underscore-min",
          * Supported {@link NAVIGATION navigation} type
          * @name NAVIGATION
          * @memberOf Mizar#
-         */        
+         */
         Mizar.prototype.NAVIGATION = Constants.NAVIGATION;
 
         /**
@@ -209,7 +220,7 @@ define(["jquery","underscore-min",
          * Supported {@link PROJECTION projection} type
          * @name PROJECTION
          * @memberOf Mizar#
-         */        
+         */
         Mizar.prototype.PROJECTION = Constants.PROJECTION;
 
         /**
@@ -223,14 +234,14 @@ define(["jquery","underscore-min",
          * Supported {@link SERVICE service} type
          * @name SERVICE
          * @memberOf Mizar#
-         */        
+         */
         Mizar.prototype.SERVICE = Constants.SERVICE;
 
         /**
          * Supported {@link UTILITY utility} type
          * @name UTILITY
          * @memberOf Mizar#
-         */        
+         */
         Mizar.prototype.UTILITY = Constants.UTILITY;
 
         /**
@@ -270,7 +281,7 @@ define(["jquery","underscore-min",
          * @memberOf Mizar#
          * @returns {ContextManager} - context manager
          */
-        Mizar.prototype.getContextManager = function() {
+        Mizar.prototype.getContextManager = function () {
             return this.contextManager;
         };
 
@@ -280,7 +291,7 @@ define(["jquery","underscore-min",
          * @memberOf Mizar#
          * @returns {AbstractNavigation} - the navigation
          */
-        Mizar.prototype.getNavigation = function() {
+        Mizar.prototype.getNavigation = function () {
             return this.contextManager.getNavigation();
         };
 
@@ -291,7 +302,7 @@ define(["jquery","underscore-min",
          * @memberOf Mizar#
          * @returns {Object} - Mizar's options
          */
-        Mizar.prototype.getOptions = function() {
+        Mizar.prototype.getOptions = function () {
             return this.options;
         };
 

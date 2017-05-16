@@ -55,14 +55,12 @@ define(['../Utils/Event', '../Utils/Utils',
          * @implements {Globe}
          */
         var AbstractGlobe = function (type, options) {
-            
+
+            _checkOptions(options);
+
             this.type = type;
 
-            if (options.coordinateSystem) {
-                this.coordinateSystem = CoordinateSystemFactory.create(options.coordinateSystem);
-            } else {
-                throw new ReferenceError("coordinateSystem is not defined in " + JSON.stringify(options), "AbstractGLobe.js");
-            }
+            this.coordinateSystem = CoordinateSystemFactory.create(options.coordinateSystem);
 
             if (!options.renderContext) {
                 this.renderContext = new RenderContext(options);
@@ -89,6 +87,57 @@ define(['../Utils/Event', '../Utils/Utils',
             this.renderContext.requestFrame();
         };
 
+        /**
+         * Check required options
+         * @param options
+         * @throws {ReferenceError} Will throw an error when the options.coordinateSystem is not defined.
+         * @private
+         */
+        function _checkOptions(options) {
+            if (!options.coordinateSystem) {
+                throw new ReferenceError("coordinateSystem is not defined in " + JSON.stringify(options), "AbstractGLobe.js");
+            }
+        }
+
+        /**
+         * Compute intersections
+         * @param {Crs} crs - coordinate reference system
+         * @returns {*}
+         * @private
+         */
+        function _computeIntersection(crs) {
+            var intersection;
+            if (crs.isFlat()) {
+                intersection = ray.planeIntersect([0, 0, 0], [0, 0, 1]);
+            } else {
+                intersection = ray.sphereIntersect([0, 0, 0], crs.getGeoide().getRadius());
+            }
+            return intersection
+        }
+
+        /**
+         * Computes the position
+         * @param intersection
+         * @param {Crs} crs
+         * @returns {float[]|null} the position
+         * @private
+         */
+        function _computePosition(intersection, crs) {
+            if (intersection >= 0) {
+                var pos = crs.getWorldFrom3D(ray.computePoint(intersection));
+                var geoBound = crs.getGeoBound();
+                if (!pos || pos[0] < geoBound[0] || pos[0] > geoBound[2] || pos[1] < geoBound[1] || pos[1] > geoBound[3] || isNaN(pos[0]) || isNaN(pos[1])) {
+                    return null;
+                } else {
+                    return pos;
+                }
+            } else {
+                return null;
+            }
+        }
+
+
+        /*************************************************************************************************************/
 
         /**
          * @function getType
@@ -282,24 +331,8 @@ define(['../Utils/Event', '../Utils/Utils',
          */
         AbstractGlobe.prototype.getLonLatFromPixel = function (x, y) {
             var ray = Ray.createFromPixel(this.renderContext, x, y);
-            var intersection;
-            if (this.coordinateSystem.isFlat()) {
-                intersection = ray.planeIntersect([0, 0, 0], [0, 0, 1]);
-            } else {
-                intersection = ray.sphereIntersect([0, 0, 0], this.coordinateSystem.getGeoide().getRadius());
-            }
-
-            if (intersection >= 0) {
-                var pos = this.coordinateSystem.getWorldFrom3D(ray.computePoint(intersection));
-                var geoBound = this.coordinateSystem.getGeoBound();
-                if (!pos || pos[0] < geoBound[0] || pos[0] > geoBound[2] || pos[1] < geoBound[1] || pos[1] > geoBound[3] || isNaN(pos[0]) || isNaN(pos[1])) {
-                    return null;
-                } else {
-                    return pos;
-                }
-            } else {
-                return null;
-            }
+            var intersection = _computeIntersection(this.coordinateSystem);
+            return _computePosition(intersection, this.coordinateSystem);
         };
 
         /**

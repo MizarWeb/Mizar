@@ -85,18 +85,7 @@ define(["./ContextFactory","../Crs/CoordinateSystemFactory","../Utils/Stats"], f
      */
     ContextManager.prototype.createContext = function (contextMode, options) {
         options.renderContext = this.mizarAPI.getOptions().renderContext;
-        switch (contextMode) {
-            case this.mizarAPI.CONTEXT.Sky:
-                this.skyContext = this.mizarAPI.ContextFactory.create(this.mizarAPI.CONTEXT.Sky, this.mizarAPI.getOptions(), options);
-                this.activatedContext = this.skyContext;
-                break;
-            case this.mizarAPI.CONTEXT.Planet:
-                this.planetContext = this.mizarAPI.ContextFactory.create(this.mizarAPI.CONTEXT.Planet, this.mizarAPI.getOptions(), options);
-                this.activatedContext = this.planetContext;
-                break;
-            default:
-                throw RangeError("The contextMode "+contextMode+" is not allowed, A valid contextMode is included in the list Constants.CONTEXT", "ContextManager.js");
-        }
+        this.activatedContext = this.mizarAPI.ContextFactory.create(contextMode, this.mizarAPI.getOptions(), options);
         this.mizarAPI.getOptions().renderContext = this.activatedContext.globe.renderContext;
         this.mizarAPI.publish("mizarMode:toggle", this.activatedContext);
     };
@@ -318,18 +307,10 @@ define(["./ContextFactory","../Crs/CoordinateSystemFactory","../Utils/Stats"], f
     ContextManager.prototype.setActivatedContext = function(contextMode) {
         switch(contextMode) {
             case this.mizarAPI.CONTEXT.Planet:
-                if(this.planetContext) {
-                    this.activatedContext = this.planetContext;
-                } else {
-                    console.log("Error");
-                }
+                this.activatedContext = this.planetContext;
                 break;
             case this.mizarAPI.CONTEXT.Sky:
-                if(this.skyContext) {
-                    this.activatedContext = this.skyContext;
-                } else {
-                    console.log("Error");
-                }
+                this.activatedContext = this.skyContext;
                 break;
             default:
                 throw RangeError("The contextMode "+contextMode+" is not allowed, A valid contextMode is included in the list Constants.CONTEXT", "ContextManager.js");

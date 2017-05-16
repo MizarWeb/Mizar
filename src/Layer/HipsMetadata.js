@@ -263,7 +263,7 @@ define(["jquery","../Utils/Constants"], function($, Constants) {
      * @param {HIPS_METADATA} hipsMetadata
      * @throws "unvalid hips metadata"
      */
-    function validateAndFixHips(hipsMetadata) {
+    function _validateAndFixHips(hipsMetadata) {
         var requiredKeywordNotFound = [];
         var valueNotRight = [];
         var values, mandatory, description, isMutiple, defaultValue, distinctValue, valueArray;
@@ -327,17 +327,17 @@ define(["jquery","../Utils/Constants"], function($, Constants) {
      * @param baseUrl
      * @return {*}
      */
-    function loadHipsProperties(baseUrl) {
+    function _loadHipsProperties(baseUrl) {
         var properties = $.ajax({
             type: "GET",
             url: baseUrl + "/properties",
             async: false
         }).responseText;
-        if(properties === undefined) {
+        if(typeof properties === 'undefined') {
             throw "Unable to load the Hips at "+baseUrl;
         }
-        var hipsProperties =  parseProperties(properties);
-        validateAndFixHips(hipsProperties);
+        var hipsProperties =  _parseProperties.call(this, properties);
+        _validateAndFixHips.call(this, hipsProperties);
         return hipsProperties;
     }
 
@@ -346,7 +346,7 @@ define(["jquery","../Utils/Constants"], function($, Constants) {
      * @param propertiestext
      * @return {{}}
      */
-    function parseProperties(propertiestext) {
+    function _parseProperties(propertiestext) {
         var propertyMap = {};
         var lines = propertiestext.split(/\r?\n/);
         var currentLine = '';
@@ -388,7 +388,7 @@ define(["jquery","../Utils/Constants"], function($, Constants) {
     var HipsMetadata = function(baseUrl) {
         if(typeof (baseUrl) === "string") {
             this.baseUrl = baseUrl;
-            this.hipsMetadata = loadHipsProperties(baseUrl);
+            this.hipsMetadata = _loadHipsProperties.call(this, baseUrl);
         } else {
             this.hipsMetadata = baseUrl;
         }

@@ -74,33 +74,80 @@ define(['../Utils/Utils', '../Utils/Event', '../Navigation/NavigationHandlerFact
             this.options = options || {};
 
             // Create default handlers if none are created in options
-            if (options && options.handlers) {
-                this.handlers = options.handlers;
-            }
-            else {
-                // Use mouse & keyboard as default handlers
-                this.handlers = [
-                    NavigationHandlerFactory.create(Constants.HANDLER.Mouse, options ? options.mouse : null),
-                    NavigationHandlerFactory.create(Constants.HANDLER.Keyboard, options ? options.keyboard : null)
-                ];
-
-                if (options && options.isMobile) {
-                    this.handlers.push(NavigationHandlerFactory.create(Constants.HANDLER.Touch, options ? options.touch : null));
-                }
-            }
+            this.handlers = _createHandlers.call(this, this.options);
 
             // Inertia effect
-            if (options && options.inertia) {
-                var inertiaOptions = options.inertiaAnimation || {};
-                inertiaOptions.nav = this;
-                this.inertia = AnimationFactory.create(Constants.ANIMATION.Inertia, inertiaOptions);
-            }
+            this.inertia = _addInertiaEffect.call(this, this.options);
+
             // ZoomTo animation
             this.zoomToAnimation = null;
 
             // Automatically start
             this.start();
         };
+
+        /**
+         * Adds inertia effect
+         * @param {Object} options
+         * @returns {InertiaAnimation|null} inertia
+         * @private
+         */
+        function _addInertiaEffect(options) {
+            var inertia;
+            if (options.inertia) {
+                var inertiaOptions = options.inertiaAnimation || {};
+                inertiaOptions.nav = this;
+                inertia = AnimationFactory.create(Constants.ANIMATION.Inertia, inertiaOptions);
+            } else {
+                inertia = null;
+            }
+            return inertia;
+        }
+
+        /**
+         * Creates handlers :
+         * <ul>
+         *     <li>Provided in options</li>
+         *     <li>Create default handlers</li>
+         * </ul>
+         * @param {Object} options
+         * @returns {[]} handlers
+         * @private
+         */
+        function _createHandlers(options) {
+            var handlers;
+            // Create default handlers if none are created in options
+            if (options.handlers) {
+                handlers = options.handlers;
+            }
+            else {
+                // Use mouse & keyboard as default handlers
+                handlers = _addDefaultHandlers.call(this, options);
+            }
+            return handlers
+        }
+
+        /**
+         * Add default handlers :
+         * <ul>
+         *     <li>MouseNavigationHandler</li>
+         *     <li>KeyboardNavigationHandler</li>
+         *     <li>TouchNavigationHandler is isMobile is true</li>
+         * </ul>
+         * @param {Object} options - options
+         * @returns {[]} An array of handlers
+         * @private
+         */
+        function _addDefaultHandlers(options) {
+            var defaultHandlers = [
+                NavigationHandlerFactory.create(Constants.HANDLER.Mouse, options ? options.mouse : null),
+                NavigationHandlerFactory.create(Constants.HANDLER.Keyboard, options ? options.keyboard : null)
+            ];
+            if (options.isMobile) {
+                defaultHandlers.push(NavigationHandlerFactory.create(Constants.HANDLER.Touch, options ? options.touch : null));
+            }
+            return defaultHandlers
+        }
 
         /**************************************************************************************************************/
 

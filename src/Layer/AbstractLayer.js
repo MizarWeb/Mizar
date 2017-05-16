@@ -85,72 +85,118 @@ define(["underscore-min", "../Utils/Event", "../Utils/Utils", "../Utils/Constant
             Event.prototype.constructor.call(this, options);
 
             this.globe = null;
+            this.options = options || {};
             this.ID = "URN:Mizar:Layer:"+_.uniqueId(this.constructor.name + ':');
-            this.name = options && options.hasOwnProperty('name') ? options.name : "";
-            this.attribution = options && options.hasOwnProperty('attribution') ? options.attribution : "";
-            this.copyrightUrl = options && options.hasOwnProperty('copyrightUrl') ? options.copyrightUrl : "";
-            this.ack = options && options.hasOwnProperty('ack') ? options.ack : "";
-            this.icon = options && options.hasOwnProperty('icon') ? options.icon : "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAAXNSR0IArs4c6QAAAAZiS0dEAAAAAAAA+UO7fwAAAAlwSFlzAAALEwAACxMBAJqcGAAAAAd0SU1FB9wMBQkVBRMIQtMAAAAZdEVYdENvbW1lbnQAQ3JlYXRlZCB3aXRoIEdJTVBXgQ4XAAAAvklEQVQY012QMWpCURBFz3yfG7CIwSatpLGwsJJsQEHssr2UttapkkK0zRJEFPKLj5UYPGme8vgDt5l7uNwZKEYNdaZO1FR6VQkBT8AbMAGe1e7dTwXUB8bAFPgF9sBWPUXENbWgBTAELkCTw7bqMdR5kTQCehlogB/gE/iqcs9OVhT9I8v7EZU6UJfqh3pWa3WlvqsvakoRcVOPwCYnvQI1sM67Q0T8JYAWvAEOwDewj4jr4z0teJdf84AA/gF1uG92uhcfoAAAAABJRU5ErkJggg==";
-            this.description = options && options.hasOwnProperty('description') ? options.description : "";
-            this.visible = options && options.hasOwnProperty('visible') ? options.visible : false;
-            this.properties = options && options.hasOwnProperty('properties') ? options.properties : {};
+            this.name = this.options.hasOwnProperty('name') ? this.options.name : "";
+            this.attribution = this.options.hasOwnProperty('attribution') ? this.options.attribution : "";
+            this.copyrightUrl = this.options.hasOwnProperty('copyrightUrl') ? this.options.copyrightUrl : "";
+            this.ack = this.options.hasOwnProperty('ack') ? this.options.ack : "";
+            this.icon = this.options.hasOwnProperty('icon') ? this.options.icon : "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAAXNSR0IArs4c6QAAAAZiS0dEAAAAAAAA+UO7fwAAAAlwSFlzAAALEwAACxMBAJqcGAAAAAd0SU1FB9wMBQkVBRMIQtMAAAAZdEVYdENvbW1lbnQAQ3JlYXRlZCB3aXRoIEdJTVBXgQ4XAAAAvklEQVQY012QMWpCURBFz3yfG7CIwSatpLGwsJJsQEHssr2UttapkkK0zRJEFPKLj5UYPGme8vgDt5l7uNwZKEYNdaZO1FR6VQkBT8AbMAGe1e7dTwXUB8bAFPgF9sBWPUXENbWgBTAELkCTw7bqMdR5kTQCehlogB/gE/iqcs9OVhT9I8v7EZU6UJfqh3pWa3WlvqsvakoRcVOPwCYnvQI1sM67Q0T8JYAWvAEOwDewj4jr4z0teJdf84AA/gF1uG92uhcfoAAAAABJRU5ErkJggg==";
+            this.description = this.options.hasOwnProperty('description') ? this.options.description : "";
+            this.visible = this.options.hasOwnProperty('visible') ? this.options.visible : false;
+            this.properties = this.options.hasOwnProperty('properties') ? this.options.properties : {};
             this.type = type;
-            this.pickable = options && options.hasOwnProperty('pickable') ? options.pickable : false;
-            this.services = options && options.hasOwnProperty('services') ? options.services : [];
-            this.dataType = options.dataType || "";
+            this.pickable = this.options.hasOwnProperty('pickable') ? this.options.pickable : false;
+            this.services = this.options.hasOwnProperty('services') ? this.options.services : [];
+            this.dataType = this.options.dataType || "";
             this.background = options.background;
-            this.category = options.background ? "background" : options.category;
+            this.category = this.options.background ? "background" : this.options.category;
             this.coordinateSystem = options.coordinateSystem;
-            this.format = options.format || "";
-            this.baseUrl = options.baseUrl || "";
-            this.deletable = options.deletable || false;
+            this.format = this.options.format || "";
+            this.baseUrl = this.options.baseUrl || "";
+            this.deletable = this.options.deletable || false;
             this.fitsSupported = false;
 
             // Update layer color
-            if (options && options.hasOwnProperty('color')) {
-                this.color = (options.color instanceof Array) ? options.color : UtilityFactory.create(Constants.UTILITY.FeatureStyle).fromStringToColor(options.color);
-            }
-            else {
-                // Generate random color
-                var rgb = Utils.generateColor();
-                this.color = rgb.concat([1]);
-            }
+            this.color = _createColor.call(this, this.options);
 
             // Layer opacity must be in range [0, 1]
-            if (options && options.hasOwnProperty('opacity')) {
-                this.opacity = options.opacity / 100.0;
-            } else {
-                this.opacity = 1.0;
-            }
+            this.opacity = _createOpacity.call(this, this.options);
 
             // Create style if needed
-            if (options && !options.hasOwnProperty('style')) {
-                this.style = UtilityFactory.create(Constants.UTILITY.CreateStyle, {
-                    rendererHint: "Basic",
-                    opacity: this.opacity,
-                    iconUrl: this.icon,
-                    fillColor: this.color,
-                    strokeColor: this.color,
-                    visible: this.visible
-                });
-            } else if (options.style === "FeatureStyle") {
-                this.style = options.style;
-            } else {
-                this.style = UtilityFactory.create(Constants.UTILITY.CreateStyle, options.style);
-            }
+            this.style = _createStyle.call(this, this.options, this.opacity, this.icon, this.color, this.visible);
 
             // Ensure that the attribution link will be opened in new tab
             if (this.attribution && this.attribution.search('<a') >= 0 && this.attribution.search('target=') < 0) {
                 this.attribution = this.attribution.replace(' ', ' target=_blank ');
             }
 
-            if (options.hasOwnProperty('availableServices')) {
-                this.availableServices = options.availableServices
-            } else {
-                this.availableServices = [];
-            }
-
+            this.availableServices = _createAvailableServices(this.options);
         };
+
+        function _createAvailableServices(options) {
+            var availableServices;
+            if (options.hasOwnProperty('availableServices')) {
+                availableServices = options.availableServices
+            } else {
+                availableServices = [];
+            }
+            return availableServices;
+        }
+
+        /**
+         *
+         * @param options
+         * @param opacity
+         * @param icon
+         * @param color
+         * @param visible
+         * @returns {*}
+         * @private
+         */
+        function _createStyle(options, opacity, icon, color, visible) {
+            var style;
+            if (!options.hasOwnProperty('style')) {
+                style = UtilityFactory.create(Constants.UTILITY.CreateStyle, {
+                    rendererHint: "Basic",
+                    opacity: opacity,
+                    iconUrl: icon,
+                    fillColor: color,
+                    strokeColor: color,
+                    visible: visible
+                });
+            } else if (options.style === "FeatureStyle") {
+                style = options.style;
+            } else {
+                style = UtilityFactory.create(Constants.UTILITY.CreateStyle, options.style);
+            }
+            return style;
+        }
+
+        /**
+         *
+         * @param options
+         * @returns {*}
+         * @private
+         */
+        function _createOpacity(options) {
+            var opacity;
+            if (options.hasOwnProperty('opacity')) {
+                opacity = options.opacity / 100.0;
+            } else {
+                opacity = 1.0;
+            }
+            return opacity;
+        }
+
+        /**
+         * Creates color.
+         * @param options
+         * @returns {*}
+         * @private
+         */
+        function _createColor(options) {
+            var color;
+            if (options.hasOwnProperty('color')) {
+                color = (options.color instanceof Array) ? options.color : UtilityFactory.create(Constants.UTILITY.FeatureStyle).fromStringToColor(options.color);
+            }
+            else {
+                // Generate random color
+                var rgb = Utils.generateColor();
+                color = rgb.concat([1]);
+            }
+            return color
+        }
 
         /**************************************************************************************************************/
 

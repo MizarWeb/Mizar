@@ -72,7 +72,7 @@ define(["underscore-min", "../Utils/Utils",
 
             }
             catch (err) {
-                _showUpError.call(this, err);
+                this._showUpError(this, err);
             }
 
         };
