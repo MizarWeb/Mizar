@@ -107,13 +107,14 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Laye
 
         /**
          * Fill data-provider-type layer by features coming from data object
+         * @param {Layer} layer
          * @param mizarDescription
          * @private
          */
-        function _fillDataProvider(mizarDescription) {
+        function _fillDataProvider(layer, mizarDescription) {
             if (mizarDescription.data && this.dataProviders[mizarDescription.data.type]) {
                 var callback = this.dataProviders[mizarDescription.data.type];
-                callback(layer, mizarLayer.data);
+                callback(layer, mizarDescription.data);
             }
         }
 
@@ -267,7 +268,7 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Laye
                 _addToGlobe.call(this, layer);
             }
 
-            _fillDataProvider.call(this, mizarLayer);
+            _fillDataProvider.call(this, layer, mizarLayer);
 
             if (layer.pickable) {
                 ServiceFactory.create(Constants.SERVICE.PickingManager).addPickableLayer(layer);
@@ -449,7 +450,7 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Laye
 
             // Show UI components depending on its state
             for (var componentId in this.components) {
-                if( this.components.hasOwnProperty(componentId)) {
+                if( this.components.hasOwnProperty(componentId) && this.components[componentId]) {
                     $("#" + componentId).fadeIn(1000);
                 }
             }
@@ -462,7 +463,7 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Laye
         AbstractContext.prototype.showComponents = function () {
             // Show UI components depending on its state
             for (var componentId in this.components) {
-                if( this.components.hasOwnProperty(componentId)) {
+                if( this.components.hasOwnProperty(componentId) && this.components[componentId]) {
                     $("#" + componentId).fadeIn(1000);
                 }
             }

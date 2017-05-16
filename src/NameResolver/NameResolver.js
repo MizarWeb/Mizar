@@ -207,7 +207,7 @@ define(["jquery", "underscore-min",
          */
         function zoomTo(lon, lat, crs, callback, args) {
 
-            if (args !== null) {
+            if (args !== null && typeof args !== 'undefined') {
                 // updates the coordinates, which is displayed at the screen in the current CRS
                 var idx = 0;
                 while (idx < args.features.length) {

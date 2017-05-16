@@ -101,11 +101,12 @@ define(['../Utils/Event', '../Utils/Utils',
 
         /**
          * Compute intersections
+         * @param ray
          * @param {Crs} crs - coordinate reference system
          * @returns {*}
          * @private
          */
-        function _computeIntersection(crs) {
+        function _computeIntersection(ray, crs) {
             var intersection;
             if (crs.isFlat()) {
                 intersection = ray.planeIntersect([0, 0, 0], [0, 0, 1]);
@@ -117,12 +118,13 @@ define(['../Utils/Event', '../Utils/Utils',
 
         /**
          * Computes the position
+         * @param ray
          * @param intersection
          * @param {Crs} crs
          * @returns {float[]|null} the position
          * @private
          */
-        function _computePosition(intersection, crs) {
+        function _computePosition(ray, intersection, crs) {
             if (intersection >= 0) {
                 var pos = crs.getWorldFrom3D(ray.computePoint(intersection));
                 var geoBound = crs.getGeoBound();
@@ -331,8 +333,8 @@ define(['../Utils/Event', '../Utils/Utils',
          */
         AbstractGlobe.prototype.getLonLatFromPixel = function (x, y) {
             var ray = Ray.createFromPixel(this.renderContext, x, y);
-            var intersection = _computeIntersection(this.coordinateSystem);
-            return _computePosition(intersection, this.coordinateSystem);
+            var intersection = _computeIntersection.call(this, ray, this.coordinateSystem);
+            return _computePosition.call(this, ray, intersection, this.coordinateSystem);
         };
 
         /**

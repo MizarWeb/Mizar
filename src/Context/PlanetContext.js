@@ -289,7 +289,7 @@ define(["jquery", "underscore-min", "../Utils/Utils", "./AbstractContext", "../U
             }
 
             this.navigation.computeViewMatrix();
-            this.publish("modifiedCrs", cs);
+            this.publish("modifiedCrs", newCrs);
         };
 
         /**

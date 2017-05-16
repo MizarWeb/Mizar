@@ -86,6 +86,13 @@ define(["./ContextFactory","../Crs/CoordinateSystemFactory","../Utils/Stats"], f
     ContextManager.prototype.createContext = function (contextMode, options) {
         options.renderContext = this.mizarAPI.getOptions().renderContext;
         this.activatedContext = this.mizarAPI.ContextFactory.create(contextMode, this.mizarAPI.getOptions(), options);
+        if(contextMode === this.mizarAPI.CONTEXT.Sky) {
+            this.skyContext = this.activatedContext;
+        } else if (contextMode == this.mizarAPI.CONTEXT.Planet) {
+            this.planetContext = this.activatedContext;
+        } else {
+            // should not happen
+        }
         this.mizarAPI.getOptions().renderContext = this.activatedContext.globe.renderContext;
         this.mizarAPI.publish("mizarMode:toggle", this.activatedContext);
     };
