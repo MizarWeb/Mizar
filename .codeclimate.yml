@@ -1,15 +1,15 @@
 JavaScript: true
 
 exclude_paths:
-- build/
-- doc/
-- examples/
-- external/
-- licenses-3rd/
-- shaders/
-- tests/
-- tutorials/
-- Mizar.min.js
-- **.png
-- **.jpg
-- **.jpe
+- build/**
+- doc/**
+- examples/**
+- external/**
+- licenses-3rd/**
+- shaders/**
+- tests/**
+- tutorials/**
+- "Mizar.min.js"
+- "**.png"
+- "**.jpg"
+- "**.jpeg"
