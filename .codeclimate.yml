@@ -1,5 +1,5 @@
 --- 
-engines: 
+engines:
   csslint: 
     enabled: true
   duplication: 
@@ -7,6 +7,9 @@ engines:
       languages: 
         - javascript
     enabled: true
+    checks:
+      Similar code:
+        enabled: false
   eslint: 
     enabled: true
   golint: 
