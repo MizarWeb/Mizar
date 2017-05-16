@@ -19,14 +19,14 @@ ratings:
   paths:
   - src/**
 exclude_paths:
-- build/**
-- doc/**
-- examples/**
-- external/**
-- licenses-3rd/**
-- shaders/**
-- tests/**
-- tutorials/**
+- build/**/*
+- doc/**/*
+- examples/**/*
+- external/**/*
+- licenses-3rd/**/*
+- shaders/**/*
+- tests/**/*
+- tutorials/**/*
 - "Mizar.min.js"
 - "**.png"
 - "**.jpg"
