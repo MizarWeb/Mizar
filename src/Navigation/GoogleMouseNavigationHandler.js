@@ -39,7 +39,7 @@ define(function () {
 
     /**
      * Google mouse navigation handler configuration
-     * @typedef AbstractNavigation.googleMouse_configuration
+     * @typedef {Object} AbstractNavigation.googleMouse_configuration
      */
 
     /**

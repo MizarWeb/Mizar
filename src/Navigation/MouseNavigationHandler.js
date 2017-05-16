@@ -39,7 +39,7 @@ define(function () {
 
     /**
      * Mouse navigation handler configuration
-     * @typedef AbstractNavigation.mouse_configuration
+     * @typedef {Object} AbstractNavigation.mouse_configuration
      * @property {float} [panButton = 0]
      * @property {float} [rotateButton = 1]
      * @property {boolean} [zoomOnDblClick = false] - if true defines animation on double click
@@ -49,7 +49,20 @@ define(function () {
     /**
      * @name MouseNavigationHandler
      * @class
-     * Mouse_navigationHandler constructor
+     * Mouse_navigationHandler constructor.<br/>
+     * The mouse movements are the following :
+     * <ul>
+     *     <li><i>Wheel up</i> : zoom in the camera</li>
+     *     <li><i>Wheel down</i> : zoom out the camera</li>
+     *     <li><i>Click left+Ri + left mouse</i> : pan the camera right</li>
+     *     <li><i>Wheel press + left mouse</i> : rotate the camera counterclockwise</li>
+     *     <li><i>Click left + right mouse</i> : pan the camera left</li>
+     *     <li><i>Wheel press + right arrow</i> : rotate the camera clockwise</li>
+     *     <li><i>Click left + up mouse</i> : pan the camera down</li>
+     *     <li><i>Wheel press + up mouse</i> : rotate the camera down</li>
+     *     <li><i>Click left + down mouse</i> : pan the camera up</li>
+     *     <li><i>Wheel press + down mouse</i> : rotate the camera up</li>
+     * </ul>
      * @param {AbstractNavigation.mouse_configuration} options - Mouse navigation configuration
      * @constructor
      * @memberOf module:Navigation

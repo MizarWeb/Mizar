@@ -51,7 +51,7 @@ define(function () {
 
     /**
      * Touch navigation handler configuration
-     * @typedef AbstractNavigation.touch_configuration
+     * @typedef {Object} AbstractNavigation.touch_configuration
      * @property {boolean} [inversed = false] - if true inverse the sens of touching events
      * @property {boolean} [zoomOnDblClick = false] - if true defines animation on double click
      */

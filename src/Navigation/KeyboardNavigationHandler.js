@@ -48,7 +48,22 @@ define(function () {
     /**
      * @name KeyboardNavigationHandler
      * @class
-     * GoogleMouseNavigationHandler constructor
+     * KeyboardNavigationHandler constructor.<br/>
+     * The keyboard shortcuts are the following :
+     * <ul>
+     *     <li><i>space bar</i> : Stop all animations when an event is received</li>
+     *     <li><i>+</i> : zoom in the camera</li>
+     *     <li><i>-</i> : zoom out the camera</li>
+     *     <li><i>Left arrow</i> : pan the camera left</li>
+     *     <li><i>shift + left arrow</i> : rotate the camera counterclockwise</li>
+     *     <li><i>Right arrow</i> : pan the camera right</li>
+     *     <li><i>shift + right arrow</i> : rotate the camera clockwise</li>
+     *     <li><i>Up arrow</i> : pan the camera up</li>
+     *     <li><i>shift + up arrow</i> : rotate the camera up</li>
+     *     <li><i>Down arrow</i> : pan the camera down</li>
+     *     <li><i>shift + down arrow</i> : rotate the camera down</li>
+     * </ul>
+     *
      * @param {AbstractNavigation.keyboard_configuration} options - Keyboard navigation configuration
      * @constructor
      * @memberOf module:Navigation
