@@ -194,7 +194,7 @@ define(["jquery", "underscore-min", "../Utils/Constants","../Utils/Utils", "./Ab
          * @private
          */
         CDSReverseNameResolver.prototype._parseRa = function (hours, min, sec) {
-            var intHours = parseInt(hours);
+            var intHours = parseInt(hours, 10);
             var val = (sec / 60.0 + min) / 60.0;
 
             if (hours < 0.0 || parseFloat(hours) === -0.0) {
@@ -217,7 +217,7 @@ define(["jquery", "underscore-min", "../Utils/Constants","../Utils/Utils", "./Ab
          * @private
          */
         CDSReverseNameResolver.prototype._parseDec = function (degrees, min, sec) {
-            var intDegrees = parseInt(degrees);
+            var intDegrees = parseInt(degrees, 10);
 
             var val = (sec / 60.0 + min) / 60.0;
 

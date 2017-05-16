@@ -32,7 +32,7 @@ define(["underscore-min", "../Utils/Utils",
          * @property {int} [minFar = 15]
          * @property {AbstractProjection.configuration|AbstractProjection.azimuth_configuration|AbstractProjection.mercator_configuration} coordinateSystem - CRS configuration
          * @property {RenderContext} [renderContext] - Context rendering
-         * @property {AbstractNavigation.astro_configuration|AbstractNavigation.planet_configuration|AbstractNavigation.flat_configuration} navigation - navigation configuration
+         * @property {AbstractNavigation.astro_configuration} navigation - navigation configuration
          * @property {string} [compass="compassDiv"] - div element where compass is displayed
          */
 
