@@ -268,50 +268,53 @@ define(["jquery","../Utils/Constants"], function($, Constants) {
         var valueNotRight = [];
         var values, mandatory, description, isMutiple, defaultValue, distinctValue, valueArray;
         for(var key in HipsVersion_1_4){
-            values = HipsVersion_1_4[key];
-            mandatory = values[0];
-            description = values[1];
-            defaultValue = values[3];
-            distinctValue = values[4];
-            valueArray = values[5];
-            // checking the required parameter is here
-            if(mandatory==="R" && !hipsMetadata.hasOwnProperty(key)) {
-                //Fix for version=1.2
-                if(key === "creator_did" &&  hipsMetadata['hips_version'] === "1.2") {
-                    hipsMetadata['creator_did'] = hipsMetadata['publisher_did'];
-                } else {
-                    requiredKeywordNotFound.push(key+" ("+description+") is not present. ");
+            if(HipsVersion_1_4.hasOwnProperty(key)) {
+                values = HipsVersion_1_4[key];
+                mandatory = values[0];
+                description = values[1];
+                defaultValue = values[3];
+                distinctValue = values[4];
+                valueArray = values[5];
+                // checking the required parameter is here
+                if (mandatory === "R" && !hipsMetadata.hasOwnProperty(key)) {
+                    //Fix for version=1.2
+                    if (key === "creator_did" && hipsMetadata['hips_version'] === "1.2") {
+                        hipsMetadata['creator_did'] = hipsMetadata['publisher_did'];
+                    } else {
+                        requiredKeywordNotFound.push(key + " (" + description + ") is not present. ");
+                    }
                 }
-            }
 
-            // Transforms a value into an array when it is necessary
-            if(valueArray && hipsMetadata.hasOwnProperty(key)) {
-                hipsMetadata[key] = hipsMetadata[key].split(/\s+/);
-            }
+                // Transforms a value into an array when it is necessary
+                if (valueArray && hipsMetadata.hasOwnProperty(key)) {
+                    hipsMetadata[key] = hipsMetadata[key].split(/\s+/);
+                }
 
-            // checking the value of the parameter among a list of values
-            if(distinctValue!==null && hipsMetadata.hasOwnProperty(key) ) {
-                if(valueArray) {
-                    for (var val in hipsMetadata[key]) {
-                        var format = hipsMetadata[key][val];
-                        if(!distinctValue.hasOwnProperty(format)) {
-                            valueNotRight.push("The value \""+hipsMetadata[key]+"\" of "+key+" ("+description+") is not correct. ");
-                            break;
+                // checking the value of the parameter among a list of values
+                if (distinctValue !== null && hipsMetadata.hasOwnProperty(key)) {
+                    if (valueArray) {
+                        for (var val in hipsMetadata[key]) {
+                            if (hipsMetadata[key].hasOwnProperty(val)) {
+                                var format = hipsMetadata[key][val];
+                                if (!distinctValue.hasOwnProperty(format)) {
+                                    valueNotRight.push("The value \"" + hipsMetadata[key] + "\" of " + key + " (" + description + ") is not correct. ");
+                                    break;
+                                }
+                            }
+                        }
+                    } else {
+                        if (!distinctValue.hasOwnProperty(hipsMetadata[key])) {
+                            valueNotRight.push("The value \"" + hipsMetadata[key] + "\" of " + key + " (" + description + ") is not correct. ");
                         }
                     }
-                } else {
-                    if(!distinctValue.hasOwnProperty(hipsMetadata[key])) {
-                        valueNotRight.push("The value \""+hipsMetadata[key]+"\" of "+key+" ("+description+") is not correct. ");
-                    }
                 }
+
+                // checking the key is here when a default value exists
+                if (defaultValue !== null && !hipsMetadata.hasOwnProperty(key)) {
+                    hipsMetadata[key] = defaultValue;
+                }
+
             }
-
-            // checking the key is here when a default value exists
-            if(defaultValue!==null && !hipsMetadata.hasOwnProperty(key)) {
-                hipsMetadata[key] = defaultValue;
-            }
-
-
         }
         if(requiredKeywordNotFound.length > 0 || valueNotRight.length > 0) {
             throw "unvalid hips metadata : \n"+requiredKeywordNotFound.toString()+"\n"+valueNotRight.toString();

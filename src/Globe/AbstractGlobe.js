@@ -45,7 +45,7 @@ define(['../Utils/Event', '../Utils/Utils',
          * Creates a sky or a planet with it own coordinate reference system and renders the globe.
          * According to its coordinate reference system, the globe can be projected on a map.<br/>
          * Client implementations should not normally instantiate this class directly.
-         *
+         * @param {GLOBE} type - Type of the globe.
          * @param {AbstractGlobe.configuration} options - Options for globe creation.
          * @throws {ReferenceError} Will throw an error when the options.coordinateSystem is not defined.
          * @throws {RangeError} Will throw an error when options.coordinateSystem.geoideName  is not part of {@link CRS}
@@ -54,7 +54,9 @@ define(['../Utils/Event', '../Utils/Utils',
          * @constructor
          * @implements {Globe}
          */
-        var AbstractGlobe = function (options) {
+        var AbstractGlobe = function (type, options) {
+            
+            this.type = type;
 
             if (options.coordinateSystem) {
                 this.coordinateSystem = CoordinateSystemFactory.create(options.coordinateSystem);
@@ -85,6 +87,15 @@ define(['../Utils/Event', '../Utils/Utils',
 
             this.renderContext.renderers.push(this);
             this.renderContext.requestFrame();
+        };
+
+
+        /**
+         * @function getType
+         * @memberOf AbstractGlobe#
+         */
+        AbstractGlobe.prototype.getType = function () {
+            return this.type;
         };
 
         /**

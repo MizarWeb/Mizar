@@ -54,9 +54,15 @@ function Globe() {}
 
 /**
  * Checks if the globe is a {@link module:Globe.Sky sky} or a {@link module:Globe.Planet planet}
- * @returns True when the globe is a sky otherwise false
+ * @returns {boolean} True when the globe is a sky otherwise false
  */
 Globe.prototype.isSky = function() {};
+
+/**
+ * Returns the type of globe.
+ * @returns {GLOBE} type of globe
+ */
+Globe.prototype.getType = function() {};
 
 /**
  * Registers the layer as a background raster and attach it to the globe.<br/>

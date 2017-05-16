@@ -55,6 +55,51 @@ define(['../Utils/Utils', './AbstractLayer', '../Utils/Constants'],
 
         };
 
+        /**
+         * Check if the GeoJSon has a valid geometry attribute
+         * @param {Object} feature - GeoJSON feature
+         * @throws "Invalid GeoJson"
+         * @private
+         */
+        function _checkValidGeoJson(feature) {
+            var geometry = feature.geometry;
+            if (!geometry || !geometry.type) {
+                throw "Invalid GeoJson";
+            }
+        }
+
+        /**
+         * Set the global crs when the geometry has not crs.
+         * If no globalCrs, then WGS84 is set
+         * @param {Object} feature - GeoJSON feature
+         * @param {Object} globalCrs - GeoJSON crs element
+         * @returns {Object} the feature
+         * @private
+         */
+        function _setCrs(feature, globalCrs) {
+            if(!feature.geometry.crs) {
+                feature.geometry.crs = (globalCrs) ? globalCrs :  {
+                    type: "name",
+                    properties: {
+                        name: Constants.CRS.WGS84
+                    }
+                };
+            }
+            return feature;
+        }
+
+        /**
+         * Sets an unique ID of the GeoJSON geometry
+         * @param {Object} feature - GeoJSON feature
+         * @returns {Object} GeoJSON feature
+         * @private
+         */
+        function _setID(feature) {
+            feature.geometry.gid = "GeoJSON_" + this.gid;
+            this.gid++;
+            return feature;
+        }
+
         /**************************************************************************************************************/
 
         Utils.inherits(AbstractLayer, GeoJsonLayer);
@@ -213,7 +258,7 @@ define(['../Utils/Utils', './AbstractLayer', '../Utils/Constants'],
          * @param feature
          * @memberOf GeoJsonLayer#
          * @private
-         */        
+         */
         GeoJsonLayer.prototype._setDataType = function(feature) {
             if (!this.datatype) {
                 if (feature.geometry.type.startsWith(Constants.GEOMETRY.Point)) {
@@ -232,31 +277,14 @@ define(['../Utils/Utils', './AbstractLayer', '../Utils/Constants'],
          * @param {GeoJSON} feature Feature
          */
         GeoJsonLayer.prototype.addFeature = function (feature, globalCrs) {
-            // Check feature geometry : only add valid feature
-            var geometry = feature.geometry;
-            if (!geometry || !geometry.type) {
-                throw "Invalid GeoJson";
-            }
-
-
-            if(!feature.geometry.crs) {
-                feature.geometry.crs = (globalCrs)
-                    ? globalCrs
-                    :  { type: "name",
-                    properties: {
-                        name: Constants.CRS.WGS84
-                    }
-                };
-            }
-
-            feature.geometry.gid = "GeoJSON_" + this.gid;
-            this.gid++;
+            _checkValidGeoJson.call(this, feature);
+            feature = _setCrs.call(this, feature, globalCrs);
+            feature = _setID.call(this, feature);
 
             this._setDataType(feature);
-
             this.features.push(feature);
 
-            // Add features to renderer if layert is attached to planet
+            // Add features to renderer if layer is attached to planet
             if (this.globe) {
                 this._addFeatureToRenderers(feature);
                 if (this.isVisible()) {

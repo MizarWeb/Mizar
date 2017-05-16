@@ -82,7 +82,9 @@ define(["jquery", "../Utils/Numeric", "../Renderer/Ray","../Renderer/glMatrix"],
         this.color = options.color | "rgb(255,0,0)";
         this.size = options.size | 2;
         for (var x in options) {
-            this[x] = options[x];
+            if(options.hasOwnProperty(x)) {
+                this[x] = options[x];
+            }
         }
     };
 

@@ -43,42 +43,79 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Laye
         var AbstractContext = function (mizarConfiguration, mode, ctxOptions) {
             Event.prototype.constructor.call(this);
             var self = this;
-
+            this.globe = null;	// Sky or globe
+            this.navigation = null;
             this.components = {};
-
             this.dataProviders = {};
-
             this.canvas = mizarConfiguration.canvas;
-
             this.subscribe("baseLayersReady", function (imagery) {
                 $(self.canvas.parentElement).find('#loading').hide();
             });
-
-            this.globe = null;	// Sky or globe
-            this.navigation = null;
             this.mizarConfiguration = mizarConfiguration.hasOwnProperty('configuration') ? mizarConfiguration.configuration : {};
-            //this.aboutShown = false;
             this.credits = true;
             this.ctxOptions = ctxOptions;
             this.mode = mode;
             this.layers = [];
 
             this.initCanvas(this.canvas);
+            this.positionTracker = _createTrackerPosition.call(this, this.mizarConfiguration);
+            this.elevationTracker = _createTrackerElevation.call(this, this.mizarConfiguration, ctxOptions);
+        };
 
-            this.positionTracker = new PositionTracker({
-                element: (this.mizarConfiguration.positionTracker && this.mizarConfiguration.positionTracker.element) ? this.mizarConfiguration.positionTracker.element : "posTracker",
-                isMobile: this.mizarConfiguration.isMobile ? true : false,
-                position: (this.mizarConfiguration.positionTracker && this.mizarConfiguration.positionTracker.position) ? this.mizarConfiguration.positionTracker.position : "bottom"
+        /**
+         * Creates tracker position
+         * @param mizarConfiguration
+         * @returns {PositionTracker}
+         * @private
+         */
+        function _createTrackerPosition(mizarConfiguration) {
+            return new PositionTracker({
+                element: (mizarConfiguration.positionTracker && mizarConfiguration.positionTracker.element) ? mizarConfiguration.positionTracker.element : "posTracker",
+                isMobile: mizarConfiguration.isMobile ? true : false,
+                position: (mizarConfiguration.positionTracker && mizarConfiguration.positionTracker.position) ? mizarConfiguration.positionTracker.position : "bottom"
             });
-            this.elevationTracker = new ElevationTracker({
-                element: (this.mizarConfiguration.elevationTracker && this.mizarConfiguration.elevationTracker.element) ? this.mizarConfiguration.elevationTracker.element : "elevTracker",
-                isMobile: this.mizarConfiguration.isMobile ? true : false,
-                position: (this.mizarConfiguration.elevationTracker && this.mizarConfiguration.elevationTracker.elevation) ? this.mizarConfiguration.elevationTracker.position : "bottom",
+        }
+
+        /**
+         * Creates elevation tracker
+         * @param mizarConfiguration
+         * @param ctxOptions
+         * @returns {ElevationTracker}
+         * @private
+         */
+        function _createTrackerElevation(mizarConfiguration, ctxOptions) {
+            return new ElevationTracker({
+                element: (mizarConfiguration.elevationTracker && mizarConfiguration.elevationTracker.element) ? mizarConfiguration.elevationTracker.element : "elevTracker",
+                isMobile: mizarConfiguration.isMobile ? true : false,
+                position: (mizarConfiguration.elevationTracker && mizarConfiguration.elevationTracker.elevation) ? mizarConfiguration.elevationTracker.position : "bottom",
                 elevationLayer: (ctxOptions.planetLayer !== undefined) ? ctxOptions.planetLayer.elevationLayer : undefined
             });
+        }
 
-            //TODO : supprimer elevationLayer
-        };
+        /**
+         * Adds to the globe either as background or as additional layer
+         * @param layer
+         * @private
+         */
+        function _addToGlobe(layer) {
+            if (layer.category === "background" && layer.isVisible()) {
+                this.globe.setBaseImagery(layer);
+            } else {
+                this.globe.addLayer(layer);
+            }
+        }
+
+        /**
+         * Fill data-provider-type layer by features coming from data object
+         * @param mizarDescription
+         * @private
+         */
+        function _fillDataProvider(mizarDescription) {
+            if (mizarDescription.data && this.dataProviders[mizarDescription.data.type]) {
+                var callback = this.dataProviders[mizarDescription.data.type];
+                callback(layer, mizarLayer.data);
+            }
+        }
 
         /**
          * Zoom to when the visibility is changed.
@@ -105,6 +142,27 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Laye
         Utils.inherits(Event, AbstractContext);
         /**************************************************************************************************************/
 
+        /**
+         * ShowUp message.<br/>
+         * Do not display the canvas with the ID <i>MizarCanvas</i> and the loading icon and displays
+         * the HTML element with the ID <i>webGLNotAvailable</i>
+         * @param err
+         * @protected
+         * @todo Mettre en paramètre MizarCanvas et webGLNotAvailable
+         */
+        AbstractContext.prototype._showUpError = function(err) {
+            console.error("Globe creation error : ", err);
+            if (document.getElementById('MizarCanvas')) {
+                document.getElementById('MizarCanvas').style.display = "none";
+            }
+            if (document.getElementById('loading')) {
+                document.getElementById('loading').style.display = "none";
+            }
+            if (document.getElementById('webGLNotAvailable')) {
+                document.getElementById('webGLNotAvailable').style.display = "block";
+            }
+        };
+        
         /**
          * Registers no standard data provider and call them in the addLayer method.
          * @function registerNoStandardDataProvider
@@ -206,18 +264,10 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Laye
                 this.layers.push(layer);
             } else {
                 this.layers.push(layer);
-                if (layer.category === "background" && layer.isVisible()) {
-                    this.globe.setBaseImagery(layer);
-                } else {
-                    this.globe.addLayer(layer);
-                }
+                _addToGlobe.call(this, layer);
             }
 
-            // Fill data-provider-type layer by features coming from data object
-            if (mizarLayer.data && this.dataProviders[mizarLayer.data.type]) {
-                var callback = this.dataProviders[mizarLayer.data.type];
-                callback(layer, mizarLayer.data);
-            }
+            _fillDataProvider.call(this, mizarLayer);
 
             if (layer.pickable) {
                 ServiceFactory.create(Constants.SERVICE.PickingManager).addPickableLayer(layer);
@@ -243,7 +293,7 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Laye
                 var removedLayers = this.layers.splice(indexes[0], 1);
                 removedLayer = removedLayers[0];
                 removedLayer.unsubscribe("visibility:changed", onVisibilityChange);
-                ServiceFactory.create(Constants.SERVICE.PickingManager).removePickableLayer(removedLayer)
+                ServiceFactory.create(Constants.SERVICE.PickingManager).removePickableLayer(removedLayer);
                 removedLayer._detach();
 
             }
@@ -399,7 +449,7 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Laye
 
             // Show UI components depending on its state
             for (var componentId in this.components) {
-                if (this.components[componentId]) {
+                if( this.components.hasOwnProperty(componentId)) {
                     $("#" + componentId).fadeIn(1000);
                 }
             }
@@ -412,7 +462,7 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Laye
         AbstractContext.prototype.showComponents = function () {
             // Show UI components depending on its state
             for (var componentId in this.components) {
-                if (this.components[componentId]) {
+                if( this.components.hasOwnProperty(componentId)) {
                     $("#" + componentId).fadeIn(1000);
                 }
             }
@@ -425,7 +475,7 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Laye
         AbstractContext.prototype.hideComponents = function (uiArray) {
             // Hide all the UI components
             for (var componentId in this.components) {
-                if( $.inArray(componentId , uiArray) === -1 ){
+                if( this.components.hasOwnProperty(componentId) && $.inArray(componentId , uiArray) === -1 ){
                     $("#" + componentId).fadeOut();
                 }
             }
@@ -441,7 +491,9 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Laye
 
             // Hide all the UI components
             for (var componentId in this.components) {
-                $("#" + componentId).fadeOut();
+                if (this.components.hasOwnProperty(componentId)) {
+                    $("#" + componentId).fadeOut();
+                }
             }
         };
 
@@ -573,7 +625,12 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Laye
          * @abstract
          */
         AbstractContext.prototype.disable = function () {
-            throw "Disable not implemented";
+            var renderers = this.getRenderContext().renderers;
+            for (var i = 0; i < renderers.length; i++) {
+                if (renderers[i].getType() === this.getMode()) {
+                    renderers[i].disable();
+                }
+            }
         };
 
         /**
@@ -582,7 +639,12 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Laye
          * @abstract
          */
         AbstractContext.prototype.enable = function () {
-            throw "Enable not implemented";
+            var renderers = this.getRenderContext().renderers;
+            for (var i = 0; i < renderers.length; i++) {
+                if (renderers[i].getType() === this.getMode()) {
+                    renderers[i].enable();
+                }
+            }
         };
 
         /**

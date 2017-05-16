@@ -56,6 +56,57 @@ define(["underscore-min", "../Utils/Utils",
                 "elevTracker": false,
                 "compassDiv": true
             };
+            var skyOptions = _createSkyConfiguration.call(this, options);
+
+            // Initialize sky
+            try {
+                // Create the sky
+                this.globe = GlobeFactory.create(Constants.GLOBE.Sky, skyOptions);
+                this.initGlobeEvents(this.globe);
+
+                this.navigation = NavigationFactory.create(Constants.NAVIGATION.AstroNavigation, this, options.navigation ? options.navigation : options);
+
+                ServiceFactory.create(Constants.SERVICE.PickingManager).init(this);
+
+                this.setCompassVisible(options.compass && this.components.compassDiv ? options.compass : "compassDiv", true);
+
+            }
+            catch (err) {
+                _showUpError.call(this, err);
+            }
+
+        };
+
+        /**
+         * Planet configuration data model
+         * @typedef {Object} AbstractGlobe.dm_sky
+         * @property {Object} canvas - canvas object
+         * @property {int} tileErrorTreshold - tile error treshold
+         * @property {boolean} continuousRendering - continuous rendering
+         * @property {renderContext} [renderContext] - Rendering context
+         * @property {AbstractCrs.crsFactory} coordinateSystem - Coordinate reference system of the planet
+         * @property {boolean} lighting = false - Lighting
+         * @property {float[]} backgroundColor = [0.0, 0.0, 0.0, 1.0] - Background color
+         * @property {int} minFar
+         * @property {float} radius
+         * @property {int[]} defaultColor = [200, 200, 200, 255] - Default color
+         * @property {boolean} renderTileWithoutTexture = false
+         * @property {function} publishEvent - Callback
+         */
+
+        /**
+         * Creates planet configuration
+         * @param {Object} options
+         * @param {int} [options.tileErrorTreshold = 1.5] - Tile error treshold
+         * @param {boolean} [options.continuousRendering = true] - continuous rendering
+         * @param {renderContext} [options.renderContext] - Rendering context
+         * @param {AbstractCrs.crsFactory} options.coordinateSystem - Coordinate reference system of the planet
+         * @param {float} [options.radius = 10.0] - Radius object in vector length
+         * @returns {AbstractGlobe.dm_sky} Planet data model.
+         * @private
+         */
+        function _createSkyConfiguration(options) {
+            var self = this;
             var skyOptions = {
                 canvas: this.canvas,
                 tileErrorTreshold: options.tileErrorTreshold || 1.5,
@@ -74,35 +125,9 @@ define(["underscore-min", "../Utils/Utils",
             if (options.renderContext) {
                 skyOptions.renderContext = options.renderContext;
             }
-
-            // Initialize sky
-            try {
-                // Create the sky
-                this.globe = GlobeFactory.create(Constants.GLOBE.Sky, skyOptions);
-                this.initGlobeEvents(this.globe);
-
-                this.navigation = NavigationFactory.create(Constants.NAVIGATION.AstroNavigation, this, options.navigation ? options.navigation : options);
-
-                ServiceFactory.create(Constants.SERVICE.PickingManager).init(this);
-
-                if (this.components.compassDiv) {
-                    this.setCompassVisible(options.compass ? options.compass : "compassDiv", true);
-                }
-            }
-            catch (err) {
-                console.log("Erreur creation Sky : ", err);
-                if (document.getElementById('GlobWebCanvas')) {
-                    document.getElementById('GlobWebCanvas').style.display = "none";
-                }
-                if (document.getElementById('loading')) {
-                    document.getElementById('loading').style.display = "none";
-                }
-                if (document.getElementById('webGLNotAvailable')) {
-                    document.getElementById('webGLNotAvailable').style.display = "block";
-                }
-            }
-
-        };
+            return skyOptions;
+        }
+        
 
         /**************************************************************************************************************/
 
@@ -139,34 +164,6 @@ define(["underscore-min", "../Utils/Utils",
             }
             this.globe.setCoordinateSystem(cs);
             this.publish("modifiedCrs", cs);
-        };
-
-        /**
-         * @function enable
-         * @memberOf SkyContext#
-         */
-        SkyContext.prototype.enable = function () {
-            var renderers = this.getRenderContext().renderers;
-            for(var i=0 ; i< renderers.length ; i++) {
-                if(renderers[i].isSky()) {
-                    this.getRenderContext().renderers[0].enable();
-                    break;
-                }
-            }
-        };
-
-        /**
-         * @function disable
-         * @memberOf SkyContext#
-         */
-        SkyContext.prototype.disable = function () {
-            var renderers = this.getRenderContext().renderers;
-            for(var i=0 ; i< renderers.length ; i++) {
-                if(renderers[i].isSky()) {
-                    this.getRenderContext().renderers[0].disable();
-                    break;
-                }
-            }
         };
 
         /**

@@ -228,7 +228,9 @@ define(function () {
 
         if (style) {
             for (var s in style) {
-                this[s] = style[s];
+                if((style.hasOwnProperty(s))) {
+                    this[s] = style[s];
+                }
             }
         }
     };

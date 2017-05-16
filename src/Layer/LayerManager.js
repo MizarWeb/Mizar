@@ -17,7 +17,7 @@
  * along with SITools2. If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
 define(["jquery", "underscore-min", "../Utils/Constants", "../Provider/ProviderFactory",
-        "./HipsMetadata","../Gui/dialog/ErrorDialog"],
+        "./HipsMetadata", "../Gui/dialog/ErrorDialog"],
     function ($, _, Constants, ProviderFactory, HipsMetadata, ErrorDialog) {
 
         var self;
@@ -33,11 +33,11 @@ define(["jquery", "underscore-min", "../Utils/Constants", "../Provider/ProviderF
             this.mizarAPI = mizarAPI;
             this.dataProviders = {};
             if (options.hasOwnProperty('registry') && options.registry.hasOwnProperty('hips')) {
-                loadHIPSLayers(this, options.registry.hips);
+                _loadHIPSLayers(this, options.registry.hips);
             }
             self = this;
         };
-        
+
 
         /**
          * Get service url from HIPS Layer
@@ -45,7 +45,7 @@ define(["jquery", "underscore-min", "../Utils/Constants", "../Provider/ProviderF
          * @returns {Array}
          * @private
          */
-        function getHipsServiceUrlArray(hipsLayer) {
+        function _getHipsServiceUrlArray(hipsLayer) {
             var hipsServiceUrlArray = [];
 
             if (hipsLayer.hips_service_url) {
@@ -72,7 +72,7 @@ define(["jquery", "underscore-min", "../Utils/Constants", "../Provider/ProviderF
          * @param {serviceRegistryCallback} callback - The callback that handles the response
          * @private
          */
-        function checkHipsServiceIsAvailable(hipsServiceUrlArray, callback) {
+        function _checkHipsServiceIsAvailable(hipsServiceUrlArray, callback) {
             if (hipsServiceUrlArray.length === 0) {
                 return callback(undefined);
             }
@@ -88,7 +88,7 @@ define(["jquery", "underscore-min", "../Utils/Constants", "../Provider/ProviderF
                     return callback(url);
                 }
             }).error(function () {
-                checkHipsServiceIsAvailable(hipsServiceUrlArray, callback);
+                _checkHipsServiceIsAvailable(hipsServiceUrlArray, callback);
             });
         }
 
@@ -100,7 +100,7 @@ define(["jquery", "underscore-min", "../Utils/Constants", "../Provider/ProviderF
          * @param {String} hipsServiceUrl
          * @private
          */
-        function loadHIPSLayers(layerManager, hipsServiceUrl) {
+        function _loadHIPSLayers(layerManager, hipsServiceUrl) {
             $.ajax({
                 type: 'GET',
                 url: hipsServiceUrl,
@@ -109,25 +109,54 @@ define(["jquery", "underscore-min", "../Utils/Constants", "../Provider/ProviderF
 
             }).done(function (hipsLayersJSON) {
                 _.each(hipsLayersJSON, function (hipsLayer) {
-                    var hipsServiceUrlArray = getHipsServiceUrlArray(hipsLayer);
-                    var hipsUrl = checkHipsServiceIsAvailable(hipsServiceUrlArray, function (hipsServiceUrl) {
+                    var hipsServiceUrlArray = _getHipsServiceUrlArray(hipsLayer);
+                    var hipsUrl = _checkHipsServiceIsAvailable(hipsServiceUrlArray, function (hipsServiceUrl) {
                         if (typeof hipsServiceUrl === 'undefined') {
                             console.log("Cannot add layer " + hipsLayer.obs_title + " no mirror available");
                             return;
                         }
-                        $.proxy(createHips, layerManager)(hipsLayer, hipsServiceUrl);
+                        $.proxy(_createHips, layerManager)(hipsLayer, hipsServiceUrl);
                     });
                 }, layerManager);
             });
         }
+
+
+        /**
+         * Returns the context according to the mode.
+         * @function _getContext
+         * @param {CONTEXT|undefined} mode - the selected mode
+         * @memberOf LayerManager#
+         * @throws {RangeError} Will throw an error when the mode is not part of {@link CONTEXT}
+         * @returns {Context} the context
+         * @private
+         */
+        function _getContext(mode) {
+            var context;
+            switch (mode) {
+                case undefined:
+                    context = this.mizarAPI.getContextManager().getActivatedContext();
+                    break;
+                case Constants.CONTEXT.Sky:
+                    context = this.mizarAPI.getContextManager().getSkyContext();
+                    break;
+                case Constants.CONTEXT.Planet:
+                    context = this.mizarAPI.getContextManager().getPlanetContext();
+                    break;
+                default:
+                    throw new RangeError("The mode " + mode + " is not allowed, A valid mode is included in the list CONTEXT", "LayerManager.js");
+            }
+            return context;
+        }
+
 
         /**
          * Creates a HIPS layer from registry
          * @param hipsLayer
          * @param hipsServiceUrl
          * @private
-         */        
-        function createHips(hipsLayer, hipsServiceUrl) {
+         */
+        function _createHips(hipsLayer, hipsServiceUrl) {
             if (hipsLayer.hasOwnProperty("hips_status") && !hipsLayer.hips_status.match('public') === null) {
                 return;
             }
@@ -135,38 +164,28 @@ define(["jquery", "underscore-min", "../Utils/Constants", "../Provider/ProviderF
 
             try {
                 this.addLayer({type: Constants.LAYER.Hips, hipsMetadata: new HipsMetadata(hipsLayer)});
-            } catch(e) {
-                ErrorDialog.open("Hips layer "+ hipsLayer.creator_did + " not valid in Hips registry.");
+            } catch (e) {
+                ErrorDialog.open("Hips layer " + hipsLayer.creator_did + " not valid in Hips registry.");
             }
         }
+
+        /************************************************************************************************************/
 
         /**
          * Registers no standard data provider in a predefined contect..
          * @function registerNoStandardDataProvider
          * @param {string} type - data provider key
          * @param {Function} loadFunc - Function
-         * @mode {CONTEXT|undefined} - mode
+         * @param {CONTEXT|undefined} mode - mode
          * @memberOf LayerManager#
          * @throws {RangeError} Will throw an error when the mode is not part of {@link CONTEXT}
          * @example <caption>Registers planets on the sky</caption>
          *   var planetProvider = ProviderFactory.create(Constants.PROVIDER.Planet);
          *   this.registerNoStandardDataProvider("planets", planetProvider.loadFiles);
-         */        
+         */
         LayerManager.prototype.registerNoStandardDataProvider = function (type, loadFunc, mode) {
             this.dataProviders[type.toString()] = loadFunc;
-            switch (mode) {
-                case undefined:
-                    this.mizarAPI.getContextManager().getActivatedContext().registerNoStandardDataProvider(type, loadFunc);
-                    break;
-                case Constants.CONTEXT.Sky:
-                    this.mizarAPI.getContextManager().getSkyContext().registerNoStandardDataProvider(type, loadFunc);
-                    break;
-                case Constants.CONTEXT.Planet:
-                    this.mizarAPI.getContextManager().getPlanetContext().registerNoStandardDataProvider(type, loadFunc);
-                    break;
-                default:
-                    throw new RangeError("The more "+more+" is not allowed, A valid mode is included in the list CONTEXT", "LayerManager.js");
-            }
+            return _getContext.call(this, mode).registerNoStandardDataProvider(type, loadFunc);
         };
 
         /**
@@ -174,7 +193,7 @@ define(["jquery", "underscore-min", "../Utils/Constants", "../Provider/ProviderF
          * @function getSkyLayers
          * @returns {Layer[]} the layers
          * @memberOf LayerManager#
-         */        
+         */
         LayerManager.prototype.getSkyLayers = function () {
             return this.mizarAPI.getContextManager().getSkyContext().getLayers();
         };
@@ -184,7 +203,7 @@ define(["jquery", "underscore-min", "../Utils/Constants", "../Provider/ProviderF
          * @function getPlanetLayers
          * @returns {Layer[]} the layers
          * @memberOf LayerManager#
-         */        
+         */
         LayerManager.prototype.getPlanetLayers = function () {
             return this.mizarAPI.getContextManager().getPlanetContext().getLayers();
         };
@@ -198,23 +217,9 @@ define(["jquery", "underscore-min", "../Utils/Constants", "../Provider/ProviderF
          * @memberOf LayerManager#
          * @throws {RangeError} Will throw an error when the mode is not part of {@link CONTEXT}
          *
-         */        
+         */
         LayerManager.prototype.getLayers = function (mode) {
-            var layers = [];
-            switch (mode) {
-                case undefined:
-                    layers = this.mizarAPI.getContextManager().getActivatedContext().getLayers();
-                    break;
-                case Constants.CONTEXT.Sky:
-                    layers = this.getSkyLayers();
-                    break;
-                case Constants.CONTEXT.Planet:
-                    layers = this.getPlanetLayers();
-                    break;
-                default:
-                    throw new RangeError("The more "+more+" is not allowed, A valid mode is included in the list CONTEXT", "LayerManager.js");
-            }
-            return layers;
+            return _getContext.call(this, mode).getLayers();
         };
 
         /**
@@ -222,7 +227,7 @@ define(["jquery", "underscore-min", "../Utils/Constants", "../Provider/ProviderF
          * @function getAllLayers
          * @return {Layer[]} the layers
          * @memberOf LayerManager#
-         */        
+         */
         LayerManager.prototype.getAllLayers = function () {
             return _.union(this.getSkyLayers(), this.getPlanetLayers());
         };
@@ -235,23 +240,9 @@ define(["jquery", "underscore-min", "../Utils/Constants", "../Provider/ProviderF
          * @returns {Layer|undefined} The layer or undefined when the layer is not found
          * @memberOf LayerManager#
          *
-         */        
+         */
         LayerManager.prototype.getLayerByID = function (layerID, mode) {
-            var layer;
-            switch (mode) {
-                case undefined:
-                    layer = this.mizarAPI.getContextManager().getActivatedContext().getLayerByID(layerID);
-                    break;
-                case Constants.CONTEXT.Sky:
-                    layer = this.mizarAPI.getContextManager().getSkyContext().getLayerByID(layerID);
-                    break;
-                case Constants.CONTEXT.Planet:
-                    layer = this.mizarAPI.getContextManager().getPlanetContext().getLayerByID(layerID);
-                    break;
-                default:
-                    throw new RangeError("unknown mode " + mode + " in getLayerByID(layerID,mode)","LayerManager.js");
-            }
-            return layer;
+            return _getContext.call(this, mode).getLayerByID(layerID);
         };
 
         /**
@@ -262,31 +253,16 @@ define(["jquery", "underscore-min", "../Utils/Constants", "../Provider/ProviderF
          * @returns {Layer|undefined} the layer or undefined when the layer is not found
          * @memberOf LayerManager#
          * @throws {RangeError} Will throw an error when the mode is not part of {@link CONTEXT}
-         */        
+         */
         LayerManager.prototype.getLayerByName = function (layerName, mode) {
-            var layer;
-            switch (mode) {
-                case undefined:
-                    layer = this.mizarAPI.getContextManager().getActivatedContext().getLayerByName(layerName);
-                    break;
-                case Constants.CONTEXT.Sky:
-                    layer = this.mizarAPI.getContextManager().getSkyContext().getLayerByName(layerName);
-                    break;
-                case Constants.CONTEXT.Planet:
-                    layer = this.mizarAPI.getContextManager().getPlanetContext().getLayerByName(layerName);
-                    break;
-                default:
-                    throw new RangeError("unknown mode " + mode + " in getLayerByName(layerName,mode)","LayerManager.js");
-            }
-            return layer;
+            return _getContext.call(this, mode).getLayerByName(layerName);
         };
-
 
 
         /**
          * Adds a layer
          * @function addLayer
-         * @param {Object} layerDescription - See the base properties {@link AbstractLayer.configuration} and a specific layer for specific properties 
+         * @param {Object} layerDescription - See the base properties {@link AbstractLayer.configuration} and a specific layer for specific properties
          * @param {PlanetLayer} [layerPlanet] - the planet with which the layer must be linked
          * @returns {string} a unique identifier
          * @memberOf LayerManager#
@@ -310,18 +286,15 @@ define(["jquery", "underscore-min", "../Utils/Constants", "../Provider/ProviderF
          * @see {@link module:Layer.WMSLayer WMSLayer} : A layer to draw images coming from the WMS server
          * @see {@link module:Layer.WMTSLayer WMTSLayer} : A layer to draw predefined tiles coming from a WMTS server
          * @todo Bug to fix : PlanetLayer should use this function to create layer when the context changes
-         */        
+         */
         LayerManager.prototype.addLayer = function (layerDescription, layerPlanet) {
-
             var layer;
-
             if (layerPlanet) {
                 layer = this.mizarAPI.LayerFactory.create(layerDescription);
                 layerPlanet.layers.push(layer);
             } else {
                 layer = this.mizarAPI.getContextManager().getActivatedContext().addLayer(layerDescription);
             }
-
             return layer.ID;
         };
 
@@ -333,23 +306,10 @@ define(["jquery", "underscore-min", "../Utils/Constants", "../Provider/ProviderF
          * @returns {boolean} True when the layer is added otherwise False
          * @memberOf LayerManager#
          * @throws {RangeError} Will throw an error when the mode is not part of {@link CONTEXT}
-         */        
+         */
         LayerManager.prototype.removeLayer = function (layerID, mode) {
-            var removedLayer;
-            switch (mode) {
-                case undefined:
-                    removedLayer = this.mizarAPI.getContextManager().getActivatedContext().removeLayer(layerID);
-                    break;
-                case Constants.CONTEXT.Sky:
-                    removedLayer = this.mizarAPI.getContextManager().getSkyContext().removeLayer(layerID);
-                    break;
-                case Constants.CONTEXT.Planet:
-                    removedLayer = this.mizarAPI.getContextManager().getPlanetContext().removeLayer(layerID);
-                    break;
-                default:
-                    throw new RangeError("unknown mode " + mode + " in getLayerByID(layerID,mode)", "LayerManager.js");
-            }
-            return typeof gwLayer !== 'undefined';
+            var removedLayer = _getContext.call(this, mode).removeLayer(layerID);
+            return typeof removedLayer !== 'undefined';
         };
 
         /**
@@ -360,22 +320,9 @@ define(["jquery", "underscore-min", "../Utils/Constants", "../Provider/ProviderF
          * @returns {boolean} True when the layer is set as background otherwise False
          * @memberOf LayerManager#
          * @throws {RangeError} Will throw an error when the mode is not part of {@link CONTEXT}
-         */        
+         */
         LayerManager.prototype.setBackgroundLayer = function (layerName, mode) {
-            var gwLayer;
-            switch (mode) {
-                case undefined:
-                    gwLayer = this.mizarAPI.getContextManager().getActivatedContext().setBackgroundLayer(layerName);
-                    break;
-                case Constants.CONTEXT.Sky:
-                    gwLayer = this.mizarAPI.getContextManager().getSkyContext().setBackgroundLayer(layerName);
-                    break;
-                case Constants.CONTEXT.Planet:
-                    gwLayer = this.mizarAPI.getContextManager().getPlanetContext().setBackgroundLayer(layerName);
-                    break;
-                default:
-                    throw new RangeError("unknown mode " + mode + " in setBackgroundLayer(layerName,mode)","LayerManager.js");
-            }
+            var gwLayer =_getContext.call(this, mode).setBackgroundLayer(layerName);
             return typeof gwLayer !== 'undefined';
         };
 
@@ -389,20 +336,7 @@ define(["jquery", "underscore-min", "../Utils/Constants", "../Provider/ProviderF
          * @throws {RangeError} Will throw an error when the mode is not part of {@link CONTEXT}
          */
         LayerManager.prototype.setBackgroundLayerByID = function (layerID, mode) {
-            var gwLayer;
-            switch (mode) {
-                case undefined:
-                    gwLayer = this.mizarAPI.getContextManager().getActivatedContext().setBackgroundLayerByID(layerID);
-                    break;
-                case Constants.CONTEXT.Sky:
-                    gwLayer = this.mizarAPI.getContextManager().getSkyContext().setBackgroundLayerByID(layerID);
-                    break;
-                case Constants.CONTEXT.Planet:
-                    gwLayer = this.mizarAPI.getContextManager().getPlanetContext().setBackgroundLayerByID(layerID);
-                    break;
-                default:
-                    throw new RangeError("unknown mode " + mode + " in setBackgroundLayer(layerName,mode)","LayerManager.js");
-            }
+            var gwLayer = _getContext.call(this, mode).setBackgroundLayerByID(layerID);
             return typeof gwLayer !== 'undefined';
         };
 
@@ -415,24 +349,10 @@ define(["jquery", "underscore-min", "../Utils/Constants", "../Provider/ProviderF
          * @returns {boolean} True when the base elevation is set otherwise false
          * @memberOf LayerManager#
          * @throws {RangeError} Will throw an error when the mode is not part of {@link CONTEXT}
-         */        
+         */
         LayerManager.prototype.setBaseElevation = function (layerName, mode) {
             var layer = this.getLayerByName(layerName, mode);
-            var isAddedToElevation = false;
-            switch (mode) {
-                case undefined:
-                    isAddedToElevation = this.mizarAPI.getContextManager().getActivatedContext().setBaseElevation(layer);
-                    break;
-                case Constants.CONTEXT.Sky:
-                    isAddedToElevation = this.mizarAPI.getContextManager().getSkyContext().setBaseElevation(layer);
-                    break;
-                case Constants.CONTEXT.Planet:
-                    isAddedToElevation = this.mizarAPI.getContextManager().getPlanetContext().setBaseElevation(layer);
-                    break;
-                default:
-                    throw new RangeError("unknown mode " + mode + " in setBaseElevation(layer)","LayerManager.js");
-            }
-            return isAddedToElevation;
+            return _getContext.call(this, mode).setBaseElevation(layer);
         };
 
         /**
@@ -443,7 +363,7 @@ define(["jquery", "underscore-min", "../Utils/Constants", "../Provider/ProviderF
          * the constraint is run on all contexts.
          * @returns {Layer[]}
          * @memberOf LayerManager#
-         */        
+         */
         LayerManager.prototype.searchOnLayerDescription = function (query, mode) {
             var layers = this.getLayers(mode);
             return _.filter(layers, function (layer) {
@@ -457,7 +377,7 @@ define(["jquery", "underscore-min", "../Utils/Constants", "../Provider/ProviderF
          * @param {string} query - query on the layer'name or description
          * @returns {Layer[]} An array of layers matching the constraint
          * @memberOf LayerManager#
-         */        
+         */
         LayerManager.prototype.searchGlobeLayer = function (query) {
             var layers = this.getSkyLayers();
             return _.filter(layers, function (layer) {
@@ -471,7 +391,7 @@ define(["jquery", "underscore-min", "../Utils/Constants", "../Provider/ProviderF
          * @param {string} query - query on the layer'name or description
          * @returns {Layer[]} An array of layers matching the constraint
          * @memberOf LayerManager#
-         */        
+         */
         LayerManager.prototype.searchPlanetLayer = function (query) {
             var layers = this.getPlanetLayers();
             //Search by name
@@ -483,7 +403,7 @@ define(["jquery", "underscore-min", "../Utils/Constants", "../Provider/ProviderF
         /**
          * Destroys the layer manager.
          */
-        LayerManager.prototype.destroy = function() {
+        LayerManager.prototype.destroy = function () {
             this.dataProviders = null;
             this.mizarAPI = null;
         };

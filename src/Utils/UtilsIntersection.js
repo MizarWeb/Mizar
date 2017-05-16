@@ -111,7 +111,7 @@ define(["./Numeric", "../Tiling/HEALPixBase"], function (Numeric, HEALPixBase) {
 
         var st =  Numeric.sign(-s1) + Numeric.sign(s2) + Numeric.sign(-s3) + Numeric.sign(s4);
         return Math.abs(st) === 4;
-    };    
+    }
 
     /**
      * Point in ring with spherical geometry

@@ -53,7 +53,7 @@ define(['../Tiling/TileManager', '../Tiling/TilePool',
          * @memberOf module:Globe
          */
         var Sky = function (options) {
-            AbstractGlobe.prototype.constructor.call(this, options);
+            AbstractGlobe.prototype.constructor.call(this, Constants.GLOBE.Sky, options);
             this.sky = true;
             this.tilePool = new TilePool(this.renderContext);
 
@@ -76,8 +76,10 @@ define(['../Tiling/TileManager', '../Tiling/TilePool',
          */
         Sky.prototype.dispose = function () {
             for (var x in this.tileManagers) {
-                this.tileManagers[x].tilePool.disposeAll();
-                this.tileManagers[x].reset();
+                if(this.tileManagers.hasOwnProperty(x)) {
+                    this.tileManagers[x].tilePool.disposeAll();
+                    this.tileManagers[x].reset();
+                }
             }
         };
 

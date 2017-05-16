@@ -160,9 +160,11 @@ define(['../Renderer/BoundingBox', '../Renderer/glMatrix'],
 
             // Init extension
             for (var x in parent.extension) {
-                var e = parent.extension[x];
-                if (e.initChild) {
-                    e.initChild(this, i, j);
+                if(parent.extension.hasOwnProperty(x)) {
+                    var e = parent.extension[x];
+                    if (e.initChild) {
+                        e.initChild(this, i, j);
+                    }
                 }
             }
 

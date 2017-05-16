@@ -345,7 +345,9 @@ define(['./AbstractLayer', '../Utils/Utils', '../Renderer/Ray', '../Renderer/Pro
 
             this.texturePool.disposeAll();
             for (var i in this.labels) {
-                delete this.labels[i];
+                if(this.labels.hasOwnProperty(i)) {
+                    delete this.labels[i];
+                }
             }
 
             this.globe.tileManager.removePostRenderer(this);
@@ -431,32 +433,34 @@ define(['./AbstractLayer', '../Utils/Utils', '../Renderer/Ray', '../Renderer/Pro
 
             var pixelSizeVector = renderContext.computePixelSizeVector();
             for (var n in this.labels) {
-                var label = this.labels[n];
-                // Bind point texture
-                gl.activeTexture(gl.TEXTURE0);
-                gl.bindTexture(gl.TEXTURE_2D, label.texture);
+                if(this.labels.hasOwnProperty(n)) {
+                    var label = this.labels[n];
+                    // Bind point texture
+                    gl.activeTexture(gl.TEXTURE0);
+                    gl.bindTexture(gl.TEXTURE_2D, label.texture);
 
-                // 2.0 * because normalized device coordinates goes from -1 to 1
-                var scale = [2.0 * label.textureWidth / renderContext.canvas.width,
-                    2.0 * label.textureHeight / renderContext.canvas.height];
+                    // 2.0 * because normalized device coordinates goes from -1 to 1
+                    var scale = [2.0 * label.textureWidth / renderContext.canvas.width,
+                        2.0 * label.textureHeight / renderContext.canvas.height];
 
-                gl.uniform2fv(this.labelProgram.uniforms.poiScale, scale);
-                // gl.uniform2fv(this.labelProgram.uniforms["tst"], [ 0.5 / (label.textureWidth), 0.5 / (label.textureHeight)  ]);
+                    gl.uniform2fv(this.labelProgram.uniforms.poiScale, scale);
+                    // gl.uniform2fv(this.labelProgram.uniforms["tst"], [ 0.5 / (label.textureWidth), 0.5 / (label.textureHeight)  ]);
 
-                // Poi culling
-                var worldPoi = label.pos3d;
-                var poiVec = label.vertical;
-                scale = label.textureHeight * ( pixelSizeVector[0] * worldPoi[0] + pixelSizeVector[1] * worldPoi[1] + pixelSizeVector[2] * worldPoi[2] + pixelSizeVector[3] );
+                    // Poi culling
+                    var worldPoi = label.pos3d;
+                    var poiVec = label.vertical;
+                    scale = label.textureHeight * ( pixelSizeVector[0] * worldPoi[0] + pixelSizeVector[1] * worldPoi[1] + pixelSizeVector[2] * worldPoi[2] + pixelSizeVector[3] );
 
-                var x = poiVec[0] * scale + worldPoi[0];
-                var y = poiVec[1] * scale + worldPoi[1];
-                var z = poiVec[2] * scale + worldPoi[2];
+                    var x = poiVec[0] * scale + worldPoi[0];
+                    var y = poiVec[1] * scale + worldPoi[1];
+                    var z = poiVec[2] * scale + worldPoi[2];
 
-                gl.uniform3f(this.labelProgram.uniforms.poiPosition, x, y, z);
-                gl.uniform1f(this.labelProgram.uniforms.alpha, 1.0);
+                    gl.uniform3f(this.labelProgram.uniforms.poiPosition, x, y, z);
+                    gl.uniform1f(this.labelProgram.uniforms.alpha, 1.0);
 
-                this.labelMesh.render(this.labelProgram.attributes);
-                label.needed = false;
+                    this.labelMesh.render(this.labelProgram.attributes);
+                    label.needed = false;
+                }
             }
             gl.enable(gl.DEPTH_TEST);
             gl.disable(gl.BLEND);
@@ -685,15 +689,17 @@ define(['./AbstractLayer', '../Utils/Utils', '../Renderer/Ray', '../Renderer/Pro
 
             var geoCenter = this.computeGeoCenter();
             for (var x in this.labels) {
-                // Compute position of label
-                var posGeo;
-                if (this.labels[x].type === "lat") {
-                    posGeo = [this.labels[x].angle, geoCenter[1]];
+                if(this.labels.hasOwnProperty(x)) {
+                    // Compute position of label
+                    var posGeo;
+                    if (this.labels[x].type === "lat") {
+                        posGeo = [this.labels[x].angle, geoCenter[1]];
+                    }
+                    else if (this.labels[x].type === "long") {
+                        posGeo = [geoCenter[0], this.labels[x].angle];
+                    }
+                    this.updateLabel(x, posGeo);
                 }
-                else if (this.labels[x].type === "long") {
-                    posGeo = [geoCenter[0], this.labels[x].angle];
-                }
-                this.updateLabel(x, posGeo);
             }
         };
 

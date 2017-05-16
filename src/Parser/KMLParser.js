@@ -17,15 +17,14 @@
  * along with GlobWeb. If not, see <http://www.gnu.org/licenses/>.
  ***************************************/
 
-define(['../Renderer/FeatureStyle','../Utils/Constants'], function (FeatureStyle, Constants) {
+define(['../Renderer/FeatureStyle', '../Utils/Constants'], function (FeatureStyle, Constants) {
 
     /**************************************************************************************************************/
 
     /** @constructor
      KMLParser constructor
      */
-    var KMLParser = (
-      function () {
+    var KMLParser = (function () {
         var featureCollection = {
             type: "FeatureCollection",
             features: []
@@ -68,11 +67,10 @@ define(['../Renderer/FeatureStyle','../Utils/Constants'], function (FeatureStyle
          * @param node : a candiate node for geoemtry
          */
         var checkAndParseGeometry = function (node, style) {
-          var extrude,outerBoundary,coordNode;
+            var extrude, outerBoundary, coordNode;
 
             switch (node.nodeName) {
                 case Constants.GEOMETRY.MultiPolygon:
-                {
                     var geoms = [];
 
                     var children = node.childNodes;
@@ -84,10 +82,7 @@ define(['../Renderer/FeatureStyle','../Utils/Constants'], function (FeatureStyle
                     }
 
                     return {type: Constants.GEOMETRY.GeometryCollection, geometries: geoms};
-                }
-                    break;
                 case Constants.GEOMETRY.LineString:
-                {
                     coordNode = node.getElementsByTagName("coordinates");
                     if (coordNode.length === 1) {
                         return {
@@ -95,10 +90,8 @@ define(['../Renderer/FeatureStyle','../Utils/Constants'], function (FeatureStyle
                             coordinates: parseCoordinates(coordNode[0].textContent)
                         };
                     }
-                }
                     break;
                 case Constants.GEOMETRY.Polygon:
-                {
                     // Take into accout extresion
                     extrude = node.getElementsByTagName("extrude");
                     if (extrude.length === 1) {
@@ -119,10 +112,8 @@ define(['../Renderer/FeatureStyle','../Utils/Constants'], function (FeatureStyle
                             coordinates: [parseCoordinates(coordNode[0].textContent)]
                         };
                     }
-                }
                     break;
                 case Constants.GEOMETRY.Point:
-                {
                     coordNode = node.getElementsByTagName("coordinates");
                     if (coordNode.length === 1) {
                         var coord = coordNode[0].textContent.split(",");
@@ -131,7 +122,6 @@ define(['../Renderer/FeatureStyle','../Utils/Constants'], function (FeatureStyle
                             coordinates: [parseFloat(coord[0]), parseFloat(coord[1])]
                         };
                     }
-                }
                     break;
             }
 
@@ -262,7 +252,7 @@ define(['../Renderer/FeatureStyle','../Utils/Constants'], function (FeatureStyle
             };
 
             var shareStyle = false;
-            var style,id;
+            var style, id;
             var child = node.firstElementChild;
             while (child) {
                 switch (child.nodeName) {
@@ -318,7 +308,7 @@ define(['../Renderer/FeatureStyle','../Utils/Constants'], function (FeatureStyle
             while (child) {
                 switch (child.nodeName) {
                     case "visibility":
-                        vis = parseInt(child.textContent);
+                        vis = parseInt(child.textContent, 10);
                         if (vis === 0) {
                             return;
                         }

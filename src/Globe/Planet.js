@@ -54,10 +54,10 @@
  */
 define(['../Tiling/Tile',
         '../Utils/Event', '../Utils/Utils',
-        './AbstractGlobe'],
+        './AbstractGlobe', '../Utils/Constants'],
     function (Tile,
               Event, Utils,
-              AbstractGlobe) {
+              AbstractGlobe, Constants) {
 
         /**
          * @name Planet
@@ -69,7 +69,7 @@ define(['../Tiling/Tile',
          * @memberOf module:Globe
          */
         var Planet = function (options) {
-            AbstractGlobe.prototype.constructor.call(this, options);
+            AbstractGlobe.prototype.constructor.call(this, Constants.GLOBE.Planet, options);
             this.sky = false;
         };
 

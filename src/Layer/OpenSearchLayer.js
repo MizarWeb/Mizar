@@ -231,11 +231,13 @@ define(['../Renderer/FeatureStyle', '../Renderer/VectorRendererManager', '../Uti
         OpenSearchLayer.prototype.setRequestProperties = function (properties) {
             // clean renderers
             for (var x in this.featuresSet) {
-                var featureData = this.featuresSet[x];
-                for (var i = 0; i < featureData.tiles.length; i++) {
-                    var tile = featureData.tiles[i];
-                    var feature = this.features[featureData.index];
-                    this.globe.vectorRendererManager.removeGeometryFromTile(this, feature.geometry, tile);
+                if(this.featuresSet.hasOwnProperty(x)) {
+                    var featureData = this.featuresSet[x];
+                    for (var i = 0; i < featureData.tiles.length; i++) {
+                        var tile = featureData.tiles[i];
+                        var feature = this.features[featureData.index];
+                        this.globe.vectorRendererManager.removeGeometryFromTile(this, feature.geometry, tile);
+                    }
                 }
             }
 

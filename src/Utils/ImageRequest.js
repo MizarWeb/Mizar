@@ -62,7 +62,7 @@ define([], function () {
         this.image.onload = function () {
             var isComplete = self.image.naturalWidth !== 0 && self.image.complete;
             if (isComplete) {
-                self.successCallback.call(self);
+                self.successCallback(self);
             }
         };
         this.image.onerror = this.failCallback.bind(this);

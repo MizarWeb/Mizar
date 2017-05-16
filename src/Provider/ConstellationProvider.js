@@ -191,57 +191,59 @@ define(["jquery", "./AbstractProvider", "../Renderer/FeatureStyle", "../Utils/Ut
 
             // Fill constellationShapes & constellationNames
             for (var i in constellations) {
-                var current = constellations[i];
+                if (constellations.hasOwnProperty(i)) {
+                    var current = constellations[i];
 
-                // Close the polygon
-                current.coord.push(current.coord[0]);
+                    // Close the polygon
+                    current.coord.push(current.coord[0]);
 
-                var constellationShape = {
-                    geometry: {
-                        type: Constants.GEOMETRY.Polygon,
-                        gid: "constellationShape_" + current.name,
-                        coordinates: [current.coord],
-                        crs: {
-                            type: "name",
-                            properties: {
-                                name: Constants.CRS.Equatorial
+                    var constellationShape = {
+                        geometry: {
+                            type: Constants.GEOMETRY.Polygon,
+                            gid: "constellationShape_" + current.name,
+                            coordinates: [current.coord],
+                            crs: {
+                                type: "name",
+                                properties: {
+                                    name: Constants.CRS.Equatorial
+                                }
                             }
+                        },
+                        properties: {
+                            name: current.name
                         }
-                    },
-                    properties: {
-                        name: current.name
-                    }
-                };
+                    };
 
-                constellationShapesFeatures.push(constellationShape);
+                    constellationShapesFeatures.push(constellationShape);
 
-                // Compute mean value to show the constellation name in the center of constellation..
-                // .. sometimes out of constellation's perimeter because of the awkward constellation's shape(ex. "Hydra" or "Draco" constellations)
-                var geoPos = [];
-                mizarLayer.globe.getCoordinateSystem().getWorldFrom3D([current.x / current.nbStars, current.y / current.nbStars, current.z / current.nbStars], geoPos);
+                    // Compute mean value to show the constellation name in the center of constellation..
+                    // .. sometimes out of constellation's perimeter because of the awkward constellation's shape(ex. "Hydra" or "Draco" constellations)
+                    var geoPos = [];
+                    mizarLayer.globe.getCoordinateSystem().getWorldFrom3D([current.x / current.nbStars, current.y / current.nbStars, current.z / current.nbStars], geoPos);
 
-                var constellationName = {
-                    geometry: {
-                        type: Constants.GEOMETRY.Point,
-                        gid: "constellationName_" + current.name,
-                        coordinates: [geoPos[0], geoPos[1]],
-                        crs: {
-                            type: "name",
-                            properties: {
-                                name: Constants.CRS.Equatorial
+                    var constellationName = {
+                        geometry: {
+                            type: Constants.GEOMETRY.Point,
+                            gid: "constellationName_" + current.name,
+                            coordinates: [geoPos[0], geoPos[1]],
+                            crs: {
+                                type: "name",
+                                properties: {
+                                    name: Constants.CRS.Equatorial
+                                }
                             }
+                        },
+                        properties: {
+                            name: current.name,
+                            style: new FeatureStyle({
+                                textColor: '#083BA8',
+                                fillColor: [1.0, 1.0, 1.0, 1.0],
+                                label: current.name
+                            })
                         }
-                    },
-                    properties: {
-                        name: current.name,
-                        style: new FeatureStyle({
-                            textColor: '#083BA8',
-                            fillColor: [1.0, 1.0, 1.0, 1.0],
-                            label: current.name
-                        })
-                    }
-                };
-                constellationNamesFeatures.push(constellationName);
+                    };
+                    constellationNamesFeatures.push(constellationName);
+                }
             }
 
             // Create feature collections

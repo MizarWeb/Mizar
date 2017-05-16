@@ -195,9 +195,11 @@ define(["jquery", "./AbstractLayer", '../Utils/Constants','../Renderer/FeatureSt
          */
         MocLayer.prototype._detach = function () {
             for (var tileIndex in this.featuresSet) {
-                var tile = this.globe.tileManager.level0Tiles[tileIndex];
-                for (var i = 0; i < this.featuresSet[tileIndex].length; i++) {
-                    this.globe.vectorRendererManager.removeGeometryFromTile(this.featuresSet[tileIndex][i], tile);
+                if(this.featuresSet.hasOwnProperty(tileIndex)) {
+                    var tile = this.globe.tileManager.level0Tiles[tileIndex];
+                    for (var i = 0; i < this.featuresSet[tileIndex].length; i++) {
+                        this.globe.vectorRendererManager.removeGeometryFromTile(this.featuresSet[tileIndex][i], tile);
+                    }
                 }
             }
             this.featuresSet = null;
@@ -258,90 +260,92 @@ define(["jquery", "./AbstractLayer", '../Utils/Constants','../Renderer/FeatureSt
             var i,u,v;
             // For each order, compute rectangles geometry depending on the pixel index
             for (var key in response) {
-                var order = parseInt(key, 10);
-                for (i = 0; i < response[key].length; i++) {
-                    var pixelIndex = response[key][i];
+                if(response.hasOwnProperty(key)) {
+                    var order = parseInt(key, 10);
+                    for (i = 0; i < response[key].length; i++) {
+                        var pixelIndex = response[key][i];
 
-                    if (order > this.startOrder) {
-                        parentIndex = this.findParentIndex(pixelIndex, order);
-                    }
-                    else if (order === this.startOrder) {
-                        parentIndex = pixelIndex;
-                    }
-                    else {
-                        // Handle low orders(< 3) by creating children polygons of order 3
-                        var indices = this.findChildIndices(pixelIndex, order);
-                        if (response[this.startOrder.toString()] === undefined) {
-                            response[this.startOrder.toString()] = response[0].concat(indices);
-                        } else {
-                            response[this.startOrder.toString()] = response[this.startOrder.toString()].concat(indices);
-
+                        if (order > this.startOrder) {
+                            parentIndex = this.findParentIndex(pixelIndex, order);
                         }
-                        continue;
-                    }
-
-                    var geometry = {
-                        type: Constants.GEOMETRY.Polygon,
-                        gid: "moc" + this.id + "_" + order + "_" + pixelIndex,
-                        coordinates: [[]]
-                    };
-
-                    // Build the vertices
-                    var size = 2; // TODO
-                    var step = 1;
-
-                    // Tesselate only low-order tiles
-                    if (order < 5) {
-                        size = 5;
-                        step = 1.0 / (size - 1);
-                    }
-
-                    var nside = Math.pow(2, order);
-                    var pix = pixelIndex & (nside * nside - 1);
-                    var ix = HEALPixBase.compress_bits(pix);
-                    var iy = HEALPixBase.compress_bits(pix >>> 1);
-                    var face = (pixelIndex >>> (2 * order));
-
-                    var vertice, geo;
-
-                    // Horizontal boudaries
-                    for (u = 0; u < 2; u++) {
-                        for (v = 0; v < size; v++) {
-                            vertice = HEALPixBase.fxyf((ix + u * (size - 1) * step) / nside, (iy + v * step) / nside, face);
-                            geo = this.globe.getCoordinateSystem().getWorldFrom3D(vertice);
-                            if (u === 0) {
-                                // Invert to clockwise sense
-                                geometry.coordinates[0][2 * u * size + (size - 1) - v] = [geo[0], geo[1]];
-                            }
-                            else {
-                                geometry.coordinates[0][2 * u * size + v] = [geo[0], geo[1]];
-                            }
+                        else if (order === this.startOrder) {
+                            parentIndex = pixelIndex;
                         }
-                    }
+                        else {
+                            // Handle low orders(< 3) by creating children polygons of order 3
+                            var indices = this.findChildIndices(pixelIndex, order);
+                            if (response[this.startOrder.toString()] === undefined) {
+                                response[this.startOrder.toString()] = response[0].concat(indices);
+                            } else {
+                                response[this.startOrder.toString()] = response[this.startOrder.toString()].concat(indices);
 
-                    // Vertical boundaries
-                    for (v = 0; v < 2; v++) {
-                        for ( u = 0; u < size; u++) {
-                            vertice = HEALPixBase.fxyf((ix + u * step) / nside, (iy + v * (size - 1) * step) / nside, face);
-                            geo = this.globe.getCoordinateSystem().getWorldFrom3D(vertice);
-                            if (v === 1) {
-                                // Invert to clockwise sense
-                                geometry.coordinates[0][size + 2 * v * size + (size - 1) - u] = [geo[0], geo[1]];
                             }
-                            else {
-                                geometry.coordinates[0][size + 2 * v * size + u] = [geo[0], geo[1]];
+                            continue;
+                        }
+
+                        var geometry = {
+                            type: Constants.GEOMETRY.Polygon,
+                            gid: "moc" + this.id + "_" + order + "_" + pixelIndex,
+                            coordinates: [[]]
+                        };
+
+                        // Build the vertices
+                        var size = 2; // TODO
+                        var step = 1;
+
+                        // Tesselate only low-order tiles
+                        if (order < 5) {
+                            size = 5;
+                            step = 1.0 / (size - 1);
+                        }
+
+                        var nside = Math.pow(2, order);
+                        var pix = pixelIndex & (nside * nside - 1);
+                        var ix = HEALPixBase.compress_bits(pix);
+                        var iy = HEALPixBase.compress_bits(pix >>> 1);
+                        var face = (pixelIndex >>> (2 * order));
+
+                        var vertice, geo;
+
+                        // Horizontal boudaries
+                        for (u = 0; u < 2; u++) {
+                            for (v = 0; v < size; v++) {
+                                vertice = HEALPixBase.fxyf((ix + u * (size - 1) * step) / nside, (iy + v * step) / nside, face);
+                                geo = this.globe.getCoordinateSystem().getWorldFrom3D(vertice);
+                                if (u === 0) {
+                                    // Invert to clockwise sense
+                                    geometry.coordinates[0][2 * u * size + (size - 1) - v] = [geo[0], geo[1]];
+                                }
+                                else {
+                                    geometry.coordinates[0][2 * u * size + v] = [geo[0], geo[1]];
+                                }
                             }
                         }
+
+                        // Vertical boundaries
+                        for (v = 0; v < 2; v++) {
+                            for (u = 0; u < size; u++) {
+                                vertice = HEALPixBase.fxyf((ix + u * step) / nside, (iy + v * (size - 1) * step) / nside, face);
+                                geo = this.globe.getCoordinateSystem().getWorldFrom3D(vertice);
+                                if (v === 1) {
+                                    // Invert to clockwise sense
+                                    geometry.coordinates[0][size + 2 * v * size + (size - 1) - u] = [geo[0], geo[1]];
+                                }
+                                else {
+                                    geometry.coordinates[0][size + 2 * v * size + u] = [geo[0], geo[1]];
+                                }
+                            }
+                        }
+
+                        var parentTile = this.globe.tileManager.level0Tiles[parentIndex];
+
+                        if (!this.featuresSet[parentIndex]) {
+                            this.featuresSet[parentIndex] = [];
+                        }
+
+                        this.featuresSet[parentIndex].push(geometry);
+                        this.globe.vectorRendererManager.addGeometryToTile(this, geometry, this.style, parentTile);
                     }
-
-                    var parentTile = this.globe.tileManager.level0Tiles[parentIndex];
-
-                    if (!this.featuresSet[parentIndex]) {
-                        this.featuresSet[parentIndex] = [];
-                    }
-
-                    this.featuresSet[parentIndex].push(geometry);
-                    this.globe.vectorRendererManager.addGeometryToTile(this, geometry, this.style, parentTile);
                 }
             }
         };

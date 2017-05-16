@@ -416,9 +416,11 @@ define(['./Tile', './GeoTiling', './TilePool', './TileRequest', './TileIndexBuff
 
             // Traverse extension
             for (var x in tile.extension) {
-                var e = tile.extension[x];
-                if (e.traverse) {
-                    e.traverse(tile, isLeaf);
+                if(tile.extension.hasOwnProperty(x)) {
+                    var e = tile.extension[x];
+                    if (e.traverse) {
+                        e.traverse(tile, isLeaf);
+                    }
                 }
             }
         };

@@ -102,49 +102,24 @@ define(["jquery", "underscore-min", "../Utils/Utils", "./AbstractContext", "../U
                     this.layers = this.layers.concat(this.planetLayer.layers);
                     this.layers = this.layers.concat(this.planetLayer.baseImageries);
                 }
-
-                // Don't update view matrix on creation, since we want to use animation on context change
-                //if (options.navigation) {
-                //    options.navigation.updateViewMatrix = false;
-                //}
                 
                 this.navigation = _createNavigation.call(this, this.getCoordinateSystem().isFlat(), options.navigation);
 
                 ServiceFactory.create(Constants.SERVICE.PickingManager).init(this);
             }
             catch (err) {
-                _showUpError.call(this, err);
+                AbstractContext.prototype._showUpError.call(this, err);
             }
 
         };
 
         /**
-         * ShowUp message.<br/>
-         * Do not display the canvas with the ID <i>MizarCanvas</i> and the loading icon and displays
-         * the HTML element with the ID <i>webGLNotAvailable</i>
-         * @param err
-         * @private
-         * @todo Mettre en paramètre MizarCanvas et webGLNotAvailable
-         */
-        function _showUpError (err) {
-            console.log("Creation Planet error : ", err);
-            if (document.getElementById('MizarCanvas')) {
-                document.getElementById('MizarCanvas').style.display = "none";
-            }
-            if (document.getElementById('loading')) {
-                document.getElementById('loading').style.display = "none";
-            }
-            if (document.getElementById('webGLNotAvailable')) {
-                document.getElementById('webGLNotAvailable').style.display = "block";
-            }            
-        }
-
-        /**
          * Planet configuration data model
          * @typedef {Object} AbstractGlobe.dm_planet
-         * @property {int} [tileErrorTreshold = 3] - tile error treshold
-         * @property {boolean} [continuousRendering = false] - continuous rendering
-         * @property {renderContext} [options.renderContext] - Rendering context
+         * @property {Object} canvas - canvas object
+         * @property {int} tileErrorTreshold - tile error treshold
+         * @property {boolean} continuousRendering - continuous rendering
+         * @property {renderContext|null} renderContext - Rendering context
          * @property {AbstractCrs.crsFactory} coordinateSystem - Coordinate reference system of the planet
          * @property {string} shadersPath = "../../shaders/" - Shaders location
          * @property {boolean} lighting = false - Lighting
@@ -256,30 +231,6 @@ define(["jquery", "underscore-min", "../Utils/Utils", "./AbstractContext", "../U
             this.navigation.distance = geoDistance * newCrs.getGeoide().getHeightScale();
         }
 
-        /**
-         * Enable the planet rendering
-         * @param {Object} renderers - Array of renderer.
-         * @param {int} index - Index in the rendering array
-         * @private
-         */
-        function _enablePlanetRendering(renderers, index) {
-            if (!renderers[index].isSky()) {
-                this.getRenderContext().renderers[index].enable();
-            }
-        }
-
-        /**
-         * Disable the planet rendering
-         * @param {Object} renderers - Array of renderer
-         * @param {int} index - Index in the rendering array
-         * @private
-         */
-        function _disablePlanetRendering(renderers, index) {
-            if (!renderers[index].isSky()) {
-                this.getRenderContext().renderers[index].disable();
-            }
-        }
-
         /**************************************************************************************************************/
 
         Utils.inherits(AbstractContext, PlanetContext);
@@ -334,33 +285,11 @@ define(["jquery", "underscore-min", "../Utils/Utils", "./AbstractContext", "../U
                 // Create a new navigation related to the new coordinate reference system
                 _updateNavForNewCrs.call(this, newCrs, geoCenter, geoDistance, navOptions);
             } catch (err) {
-                _showUpError.call(this, err);
+                AbstractContext.prototype._showUpError.call(this, err);
             }
 
             this.navigation.computeViewMatrix();
             this.publish("modifiedCrs", cs);
-        };
-
-        /**
-         * @function enable
-         * @memberOf PlanetContext#
-         */
-        PlanetContext.prototype.enable = function () {
-            var renderers = this.getRenderContext().renderers;
-            for (var i = 0; i < renderers.length; i++) {
-                _enablePlanetRendering.call(this, renderers, i);
-            }
-        };
-
-        /**
-         * @function disable
-         * @memberOf PlanetContext#
-         */
-        PlanetContext.prototype.disable = function () {
-            var renderers = this.getRenderContext().renderers;
-            for (var i = 0; i < renderers.length; i++) {
-                _disablePlanetRendering.call(this, renderers, i);
-            }
         };
 
         /**

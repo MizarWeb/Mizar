@@ -80,7 +80,7 @@ define(['../Utils/ImageRequest'], function (ImageRequest) {
             this.image.onload = function () {
                 var isComplete = self.image.naturalWidth !== 0 && self.image.complete;
                 if (isComplete && !this.aborted) {
-                    self.successCallback.call(self);
+                    self.successCallback(self);
                 }
             };
             this.image.onerror = function () {
