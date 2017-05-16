@@ -1,33 +1,31 @@
-engines:
-  rubocop:
+--- 
+engines: 
+  csslint: 
     enabled: true
-    #checks:
-    #	Rubocop/Metrics/ClassLength:
-    #  	enabled: false
-  golint:
-   	enabled: true
-  eslint:
+  duplication: 
+    config: 
+      languages: 
+        - javascript
     enabled: true
-  csslint:
+  eslint: 
     enabled: true
-  duplication:
+  golint: 
     enabled: true
-    config:
-      languages:
-      - javascript
-ratings:
-  paths:
-  - src/**
-exclude_paths:
-- build/**/*
-- doc/**/*
-- examples/**/*
-- external/**/*
-- licenses-3rd/**/*
-- shaders/**/*
-- tests/**/*
-- tutorials/**/*
-- "Mizar.min.js"
-- "**.png"
-- "**.jpg"
-- "**.jpeg"
+  rubocop: 
+    enabled: true
+exclude_paths: 
+  - build/**/*
+  - doc/**/*
+  - examples/**/*
+  - external/**/*
+  - licenses-3rd/**/*
+  - shaders/**/*
+  - tests/**/*
+  - tutorials/**/*
+  - Mizar.min.js
+  - "**.png"
+  - "**.jpg"
+  - "**.jpeg"
+ratings: 
+  paths: 
+    - src/**
