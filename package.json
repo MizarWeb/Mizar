@@ -13,12 +13,21 @@
     "shaders": "OpenGL shaders",
     "tests": "Some tests"
   },
+  "config" : {"output" : "./website"},
   "scripts": {
     "jsdoc": "jsdoc --readme ./README.md -c jsdoc.conf  && cp -r ./tutorials/resources ./api_doc && cp -r ./tutorials/data ./api_doc",
+    "license": "license-checker --production --relativeLicensePath | awk 'NR > 5' > licenses-3rd/npm/LICENSES",
+    "build": "r.js -o build/buildMizar.js",
     "jshint": "jshint -c ./.jshintrc  src/*",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "license": "license-checker --production --relativeLicensePath | awk 'NR > 5' > licenses-3rd/npm/LICENSES",
-    "build": "r.js -o build/buildMizar.js"
+    "deploy:web" : "npm run build && npm run jsdoc && mkdir -p $npm_package_config_output && cp Mizar.min.js $npm_package_config_output && cp README.md $npm_package_config_output && cp mizar.png $npm_package_config_output && cp -r api_doc $npm_package_config_output",
+    "deploy:web:tmp": "npm run deployWebSite --Mizar:output=/tmp/website"
+    //"version:patch"   : "npm version patch",
+    //"version": "npm run build && git add -A dist",
+    //"postversion": "git push && git push --tags && rm -rf build/temp"
+    //"push"            : "npm run push:git && npm run push:heroku",
+    //"push:git"        : "git push --tags origin HEAD:master",
+    //"push:heroku"     : "git push heroku master",
   },
   "repository": {
     "type": "git",

@@ -10,7 +10,6 @@
 <script src=./resources/javascript.js></script>
 <script src=./resources/css.js></script>
 <script src=./resources/htmlmixed.js></script>
-<script type="text/javascript" data-main="../src/rconfig.js" src="../node_modules/requirejs/require.js"></script>
 
 <style type=text/css>
       .CodeMirror {
@@ -46,12 +45,20 @@
     <title>Projection complex</title>
     <meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
      <link rel="stylesheet" href="resources/Mizar.css">
-    <script type="text/javascript" data-main="../src/rconfig.js" src="../node_modules/requirejs/require.js"></script>
+
+    <!-- mode dev -->
+    <!--<script type="text/javascript" data-main="../src/rconfig.js" src="../node_modules/requirejs/require.js"></script>-->
+
+    <!-- mode prod -->
+    <script type="text/javascript" src="../Mizar.min.js"></script>
 
     <script type="text/javascript">
 
-        require(['Mizar'],
-                function (Mizar) {
+        // mode dev
+        //require(['Mizar'], function (Mizar) {
+
+        //mode prod
+        function start() {
 
                     var mizar = new Mizar({
                         canvas: "MizarCanvas",
@@ -192,14 +199,14 @@
                         var isOn = $(this).is(':checked');
                         vectorLayer.setVisible(isOn);
                     });
-                });
+                }//);
 
     </script>
 
 </head>
 
 
-<body style="margin: 0; padding: 0;">
+<body style="margin: 0; padding: 0;" onload="start()">
 <div style="vertical-align: top; text-align: center; margin: 10px; display: inline-block; width: 20%; font-size: xx-small">
     <h2>Select coordinate system: </h2>
     <select id="selectProjection">

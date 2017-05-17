@@ -55,7 +55,36 @@ define(['../Utils/Utils', './AbstractAnimation'], function (Utils, AbstractAnima
 
     /**************************************************************************************************************/
 
-    var epsilon = 0.1;
+    /**
+     * @constant
+     * @type {float}
+     * @default
+     */
+    const EPSILON = 0.1;
+
+    /**
+     * Default panFactor value
+     * @constant
+     * @type {number}
+     * @default
+     */
+    const PAN_FACTOR = 0.95;
+
+    /**
+     * Default rotateFactor value
+     * @constant
+     * @type {number}
+     * @default
+     */
+    const ROTATE_FACTOR = 0.95;
+
+    /**
+     * Default zoomFactor value
+     * @constant
+     * @type {number}
+     * @default
+     */
+    const ZOOM_FACTOR = 0.50;
 
     /**
      * Inertia animation configuration
@@ -80,9 +109,9 @@ define(['../Utils/Utils', './AbstractAnimation'], function (Utils, AbstractAnima
     var InertiaAnimation = function (options) {
         AbstractAnimation.prototype.constructor.call(this);
         if (options) {
-            this.panFactor = options.hasOwnProperty('panFactor') ? options.panFactor : 0.95;
-            this.rotateFactor = options.hasOwnProperty('rotateFactor') ? options.rotateFactor : 0.95;
-            this.zoomFactor = options.hasOwnProperty('zoomFactor') ? options.zoomFactor : 0.50;
+            this.panFactor = options.hasOwnProperty('panFactor') ? options.panFactor : PAN_FACTOR;
+            this.rotateFactor = options.hasOwnProperty('rotateFactor') ? options.rotateFactor : ROTATE_FACTOR;
+            this.zoomFactor = options.hasOwnProperty('zoomFactor') ? options.zoomFactor : ZOOM_FACTOR;
         }
 
         this.type = null;
@@ -111,18 +140,18 @@ define(['../Utils/Utils', './AbstractAnimation'], function (Utils, AbstractAnima
                 this.navigation.pan(this.dx, this.dy);
                 this.dx *= this.panFactor;
                 this.dy *= this.panFactor;
-                hasToStop = (Math.abs(this.dx) < epsilon && Math.abs(this.dy) < epsilon);
+                hasToStop = (Math.abs(this.dx) < EPSILON && Math.abs(this.dy) < EPSILON);
                 break;
             case "rotate":
                 this.navigation.rotate(this.dx, this.dy);
                 this.dx *= this.rotateFactor;
                 this.dy *= this.rotateFactor;
-                hasToStop = (Math.abs(this.dx) < epsilon && Math.abs(this.dy) < epsilon);
+                hasToStop = (Math.abs(this.dx) < EPSILON && Math.abs(this.dy) < EPSILON);
                 break;
             case "zoom":
                 this.navigation.zoom(this.dx);
                 this.dx *= this.zoomFactor;
-                hasToStop = (Math.abs(this.dx) < epsilon);
+                hasToStop = (Math.abs(this.dx) < EPSILON);
                 break;
             default:
         }

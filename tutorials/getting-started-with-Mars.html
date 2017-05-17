@@ -10,7 +10,6 @@
 <script src=./resources/javascript.js></script>
 <script src=./resources/css.js></script>
 <script src=./resources/htmlmixed.js></script>
-<script type="text/javascript" data-main="../src/rconfig.js" src="../node_modules/requirejs/require.js"></script>
 
 <style type=text/css>
       .CodeMirror {
@@ -46,12 +45,19 @@
     <title>Gettting started with Mars</title>
     <meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
 
-    <script type="text/javascript" data-main="../src/rconfig.js" src="../node_modules/requirejs/require.js"></script>
+    <!-- mode dev -->
+    <!--<script type="text/javascript" data-main="../src/rconfig.js" src="../node_modules/requirejs/require.js"></script>-->
+
+    <!-- mode prod -->
+    <script type="text/javascript" src="../Mizar.min.js"></script>
 
     <script type="text/javascript">
 
-        require(['../src/Mizar'],
-                function (Mizar) {
+        // mode dev
+        //require(['Mizar'], function (Mizar) {
+
+        //mode prod
+        function start() {
                     // Create Mizar
                     var mizar = new Mizar({
                         canvas: "MizarCanvas"
@@ -90,13 +96,13 @@
                         icon: "./resources/images/star.png",
                         visible:true
                     });
-                });
+                }//);
     </script>
 
 </head>
 
 
-<body>
+<body onload="start()">
 <canvas id="MizarCanvas" width="400" height="200"></canvas>
 <br/>
 <div id="fps" style="font-weight:bold">fps !</div>

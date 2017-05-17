@@ -111,7 +111,7 @@ define(['../Utils/Utils', '../Utils/Event', '../Navigation/NavigationHandlerFact
          *     <li>Create default handlers</li>
          * </ul>
          * @param {Object} options
-         * @returns {[]} handlers
+         * @returns {Object[]} handlers
          * @private
          */
         function _createHandlers(options) {
@@ -135,7 +135,7 @@ define(['../Utils/Utils', '../Utils/Event', '../Navigation/NavigationHandlerFact
          *     <li>TouchNavigationHandler is isMobile is true</li>
          * </ul>
          * @param {Object} options - options
-         * @returns {[]} An array of handlers
+         * @returns {Object[]} An array of handlers
          * @private
          */
         function _addDefaultHandlers(options) {

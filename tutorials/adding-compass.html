@@ -10,7 +10,6 @@
 <script src=./resources/javascript.js></script>
 <script src=./resources/css.js></script>
 <script src=./resources/htmlmixed.js></script>
-<script type="text/javascript" data-main="../src/rconfig.js" src="../node_modules/requirejs/require.js"></script>
 
 <style type=text/css>
       .CodeMirror {
@@ -48,12 +47,19 @@
     <link rel=stylesheet href="./resources/style.min.css">
     <link rel=stylesheet href="./resources/jquery-ui.min.css">
 
-    <script type="text/javascript" data-main="../src/rconfig.js" src="../node_modules/requirejs/require.js"></script>
+    <!-- mode dev -->
+    <!--<script type="text/javascript" data-main="../src/rconfig.js" src="../node_modules/requirejs/require.js"></script>-->
+
+    <!-- mode prod -->
+    <script type="text/javascript" src="../Mizar.min.js"></script>
 
 
     <script type="text/javascript">
-        require(["Mizar"],
-                function (Mizar) {
+        // mode dev
+        //require(['Mizar'], function (Mizar) {
+
+        //mode prod
+        function start() {
                     // Create Mizar
                     var mizar = new Mizar({
                         canvas: "MizarCanvas",
@@ -81,12 +87,12 @@
 
                     layerManager.setBackgroundLayer(layer.name);
 
-                });
+                }//);
     </script>
 </head>
 
 
-<body>
+<body onload="start()">
 <div class="noSelect" id="navigationDiv">
     <div id="compassDiv">
     </div>

@@ -47,12 +47,14 @@ define(["jquery", "underscore-min",
         /**
          * Checks inputs
          * @param {Object} options - Mizar configuration
-         * @throw ReferenceError - Unvalid input parameters
+         * @throw ReferenceError - No option found or canvas not defined
+         * @function _checkConfiguration
+         * @memberOf Mizar#         
          * @private
          */
         function _checkConfiguration(options) {
             if (typeof options === 'undefined') {
-                throw new ReferenceError('No options found', 'Mizar.js');
+                throw new ReferenceError('No option found', 'Mizar.js');
             } else if (typeof options.canvas === 'undefined') {
                 throw new ReferenceError('Canvas not defined', 'Mizar.js');
             } else {
@@ -62,8 +64,10 @@ define(["jquery", "underscore-min",
 
         /**
          * Checks inputs from user and creates the mizar configuration
-         * @param {Object} options inputs from user
+         * @param {Mizar.parameters} options inputs from user
          * @returns {Mizar.parameters} mizar configuration.
+         * @function _createConfiguration
+         * @memberOf Mizar#         
          * @private
          */
         function _createConfiguration(options) {

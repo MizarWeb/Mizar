@@ -42,7 +42,7 @@ define(function () {
      * @name AbstractAnimation
      * @class
      * AbstractAnimation is an abstract class for all animation contexts which allow
-     * an application to create an animation of the camera onto the globe.
+     * an application to create an animation of the camera around the globe.
      * @implements {Animation}
      * @todo Describes here and link to the tutos about Animation
      */

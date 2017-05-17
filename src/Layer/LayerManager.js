@@ -41,6 +41,8 @@ define(["jquery", "underscore-min", "../Utils/Constants", "../Provider/ProviderF
 
         /**
          * Get service url from HIPS Layer
+         * @function _getHipsServiceUrlArray
+         * @memberOf LayerManager#         
          * @param hipsLayer
          * @returns {Array}
          * @private
@@ -68,6 +70,8 @@ define(["jquery", "underscore-min", "../Utils/Constants", "../Provider/ProviderF
 
         /**
          * Loads HIPS layers from passed service url
+         * @function _checkHipsServiceIsAvailable
+         * @memberOf LayerManager#
          * @param {Array} hipsServiceUrlArray - HIPS service URL
          * @param {serviceRegistryCallback} callback - The callback that handles the response
          * @private
@@ -96,6 +100,8 @@ define(["jquery", "underscore-min", "../Utils/Constants", "../Provider/ProviderF
 
         /**
          * Loads HIPS layers from passed service url
+         * @function _loadHIPSLayers
+         * @memberOf LayerManager#         
          * @param layerManager
          * @param {String} hipsServiceUrl
          * @private
@@ -152,6 +158,8 @@ define(["jquery", "underscore-min", "../Utils/Constants", "../Provider/ProviderF
 
         /**
          * Creates a HIPS layer from registry
+         * @function _createHips
+         * @memberOf LayerManager#
          * @param hipsLayer
          * @param hipsServiceUrl
          * @private
@@ -402,6 +410,8 @@ define(["jquery", "underscore-min", "../Utils/Constants", "../Provider/ProviderF
 
         /**
          * Destroys the layer manager.
+         * @function destroy
+         * @memberOf LayerManager#         
          */
         LayerManager.prototype.destroy = function () {
             this.dataProviders = null;
