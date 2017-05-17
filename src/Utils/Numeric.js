@@ -244,11 +244,7 @@ define(function () {
     Numeric.roundNumber = function (num, dec) {
         return Math.round(num * Math.pow(10, dec)) / Math.pow(10, dec);
     };
-
     
-    Numeric.roundNumber = function (num, dec) {
-        return Math.round(num * Math.pow(10, dec)) / Math.pow(10, dec);
-    };
 
     /**
      * Return the sign of a value

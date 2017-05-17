@@ -112,36 +112,59 @@ define(['../Utils/Utils', '../Utils/Constants',
             AbstractNavigation.prototype.constructor.call(this, Constants.NAVIGATION.AstroNavigation, ctx, options);
 
             // Default values for fov (in degrees)
-            this.minFov = (options && options.minFov) || 0.001;
-            this.maxFov = (options && options.maxFov) || 100;
+            this.minFov = (this.options.minFov) || 0.001;
+            this.maxFov = (this.options.maxFov) || 100;
 
             // Initialize the navigation
             this.center3d = [1.0, 0.0, 0.0];
             this.up = [0.0, 0.0, 1.0];
-
-            if (options) {
-                if (options.initTarget) {
-                    this.ctx.getCoordinateSystem().get3DFromWorld(options.initTarget, this.center3d);
-                }
-
-                if (options.initFov) {
-                    if(this.minFov > options.initFov) {
-                        this.minFov = options.initFov;
-                    } else if (this.maxFov < options.initFov) {
-                        this.maxFov = options.initFov;
-                    }
-                    this.renderContext.setFov(options.initFov);
-                    this._clampFov();
-                }
-
-                if (options.up) {
-                    this.up = options.up;
-                }
-            }
+            _setInitTarget.call(this, this.options.initTarget);
+            _setInitFov.call(this, this.options.initFov);
+            _setUpVector.call(this, this.options.up);
 
             // Update the view matrix now
             this.computeViewMatrix();
         };
+
+        /**
+         * Defines the Up vector.
+         * @param up
+         * @private
+         */
+        function _setUpVector(up) {
+            if(up) {
+                this.up = up;
+            }
+        }
+
+        /**
+         * Defines the field of view of the camera at initialisation.<br/>
+         * When the initFov outside the range [minFov, maxFov], the range is extented to include the initFov
+         * @param {float|undefined} initFov
+         * @private
+         */
+        function _setInitFov(initFov) {
+            if (initFov) {
+                if (this.minFov > initFov) {
+                    this.minFov = initFov;
+                } else if (this.maxFov < initFov) {
+                    this.maxFov = initFov;
+                }
+                this.renderContext.setFov(initFov);
+                this._clampFov();
+            }
+        }
+
+        /**
+         * Defines the position where the camera looks at.
+         * @param {float[]|undefined} initTarget
+         * @private
+         */
+        function _setInitTarget(initTarget) {
+            if (initTarget) {
+                this.ctx.getCoordinateSystem().get3DFromWorld(initTarget, this.center3d);
+            }
+        }
 
 
         /**************************************************************************************************************/
@@ -400,14 +423,14 @@ define(['../Utils/Utils', '../Utils/Constants',
          * @param {float} scale Scale
          */
         AstroNavigation.prototype.zoom = function (delta, scale) {
-            
+
             // TODO : improve zoom, using scale or delta ? We should use scale always
             if (scale) {
-                this.renderContext.setFov( this.renderContext.getFov() * 1 / scale );
+                this.renderContext.setFov(this.renderContext.getFov() * 1 / scale);
             }
             else {
                 // Arbitrary value for smooth zooming
-                this.renderContext.setFov( this.renderContext.getFov() * (1 + delta * 0.1) );
+                this.renderContext.setFov(this.renderContext.getFov() * (1 + delta * 0.1));
             }
 
             this._clampFov();

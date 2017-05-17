@@ -69,8 +69,8 @@ define(['../Utils/Utils', '../Utils/Constants', './AbstractNavigation', '../Anim
             AbstractNavigation.prototype.constructor.call(this, Constants.NAVIGATION.FlatNavigation, ctx, options);
 
             // Default values for min and max distance (in meter)
-            this.minDistance = (options && options.minDistance) || 60000;
-            this.maxDistance = (options && options.maxDistance) || 5.0 * this.ctx.getCoordinateSystem().getGeoide().getRadius() / this.ctx.getCoordinateSystem().getGeoide().getHeightScale();
+            this.minDistance = (this.options.minDistance) || 60000;
+            this.maxDistance = (this.options.maxDistance) || 5.0 * this.ctx.getCoordinateSystem().getGeoide().getRadius() / this.ctx.getCoordinateSystem().getGeoide().getHeightScale();
 
             // Scale min and max distance from meter to internal ratio
             this.minDistance *= this.ctx.getCoordinateSystem().getGeoide().getHeightScale();
@@ -80,12 +80,22 @@ define(['../Utils/Utils', '../Utils/Constants', './AbstractNavigation', '../Anim
             this.center = [0.0, 0.0, 0.0];
             this.distance = this.maxDistance;
             this.up = [0.0, 1.0, 0.0];
+            _setInitTarget.call(this, this.options.initTarget);
 
-            if (options && options.initTarget) {
-                var pos = this.ctx.getCoordinateSystem().get3DFromWorld(options.initTarget);
+            this.computeViewMatrix();
+
+        };
+        /**
+         * Defines the position where the camera looks at and the distance of the camera regarding to the planet's surface
+         * @param {float[]|undefined} initTarget as [longitude, latitude[, distance in meter]]
+         * @private
+         */
+        function _setInitTarget(initTarget) {
+            if (initTarget) {
+                var pos = this.ctx.getCoordinateSystem().get3DFromWorld(initTarget);
                 this.center[0] = pos[0];
                 this.center[1] = pos[1];
-                this.distance = (options.initTarget.length === 3) ? options.initTarget[2] * this.ctx.getCoordinateSystem().getGeoide().getHeightScale() : this.distance;
+                this.distance = (initTarget.length === 3) ? initTarget[2] * this.ctx.getCoordinateSystem().getGeoide().getHeightScale() : this.distance;
                 if(this.distance < this.minDistance) {
                     this.minDistance = this.distance;
                 }
@@ -93,10 +103,8 @@ define(['../Utils/Utils', '../Utils/Constants', './AbstractNavigation', '../Anim
                     this.maxDistance = this.distance;
                 }
             }
+        }
 
-            this.computeViewMatrix();
-
-        };
 
         /**************************************************************************************************************/
 

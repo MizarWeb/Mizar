@@ -75,8 +75,8 @@ define(['../Utils/Utils', '../Utils/Constants', './AbstractNavigation', '../Anim
             AbstractNavigation.prototype.constructor.call(this, Constants.NAVIGATION.PlanetNavigation, ctx, options);
 
             // Default values for min and max distance (in meter)
-            this.minDistance = (options && options.minDistance) || 0;
-            this.maxDistance = (options && options.maxDistance) || 3.0 * this.ctx.getCoordinateSystem().getGeoide().getRadius() / this.ctx.getCoordinateSystem().getGeoide().getHeightScale();
+            this.minDistance = (this.options.minDistance) || 0;
+            this.maxDistance = (this.options.maxDistance) || 3.0 * this.ctx.getCoordinateSystem().getGeoide().getRadius() / this.ctx.getCoordinateSystem().getGeoide().getHeightScale();
             
             // Scale min and max distance from meter to internal ratio
             this.minDistance *= this.ctx.getCoordinateSystem().getGeoide().getHeightScale();
@@ -90,19 +90,9 @@ define(['../Utils/Utils', '../Utils/Constants', './AbstractNavigation', '../Anim
 
             this.inverseViewMatrix = mat4.create();
 
-            var updateViewMatrix = (options && options.hasOwnProperty('updateViewMatrix') ? options.updateViewMatrix : true);
+            var updateViewMatrix = (this.options.hasOwnProperty('updateViewMatrix') ? this.options.updateViewMatrix : true);
 
-            if (options && options.initTarget) {
-                this.geoCenter[0] = options.initTarget[0];
-                this.geoCenter[1] = options.initTarget[1];
-                this.distance = (options.initTarget.length === 3) ? options.initTarget[2] * this.ctx.getCoordinateSystem().getGeoide().getHeightScale() : this.distance;
-                if(this.distance < this.minDistance) {
-                    this.minDistance = this.distance;
-                }
-                if(this.distance > this.maxDistance) {
-                    this.maxDistance = this.distance;
-                }
-            }
+            _setInitTarget.call(this, this.options.initTarget);
 
             // Update the view matrix if needed(true by default)
             if (updateViewMatrix) {
@@ -110,6 +100,25 @@ define(['../Utils/Utils', '../Utils/Constants', './AbstractNavigation', '../Anim
             }
 
         };
+
+        /**
+         * Defines the position where the camera looks at and the distance of the camera regarding to the planet's surface
+         * @param {float[]|undefined} initTarget as [longitude, latitude[, distance in meter]]
+         * @private
+         */
+        function _setInitTarget(initTarget) {
+            if (initTarget) {
+                this.geoCenter[0] = initTarget[0];
+                this.geoCenter[1] = initTarget[1];
+                this.distance = (initTarget.length === 3) ? initTarget[2] * this.ctx.getCoordinateSystem().getGeoide().getHeightScale() : this.distance;
+                if(this.distance < this.minDistance) {
+                    this.minDistance = this.distance;
+                }
+                if(this.distance > this.maxDistance) {
+                    this.maxDistance = this.distance;
+                }
+            }
+        }
 
         /**************************************************************************************************************/
 

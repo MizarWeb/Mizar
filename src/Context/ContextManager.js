@@ -88,7 +88,7 @@ define(["./ContextFactory","../Crs/CoordinateSystemFactory","../Utils/Stats"], f
         this.activatedContext = this.mizarAPI.ContextFactory.create(contextMode, this.mizarAPI.getOptions(), options);
         if(contextMode === this.mizarAPI.CONTEXT.Sky) {
             this.skyContext = this.activatedContext;
-        } else if (contextMode == this.mizarAPI.CONTEXT.Planet) {
+        } else if (contextMode === this.mizarAPI.CONTEXT.Planet) {
             this.planetContext = this.activatedContext;
         } else {
             // should not happen

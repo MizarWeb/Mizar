@@ -347,6 +347,12 @@ Context.prototype.removeLayer = function (layerID) {
 };
 
 /**
+ * Removes all layers.
+ */
+Context.prototype.removeAllLayers = function () {
+};
+
+/**
  * Returns the rendering context.
  * @return {RenderContext} The rendering context
  */

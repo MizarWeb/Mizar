@@ -70,6 +70,50 @@ define(["jquery", "underscore-min",
             targetLayer.addFeature(targetFeature);
         }
 
+        function zoomToHips(matchHealpix) {
+            var order = parseInt(matchHealpix[1], 10);
+            var pixelIndex = parseInt(matchHealpix[2], 10);
+
+            // Compute vertices
+            var nside = Math.pow(2, order);
+            /*jslint bitwise: true */
+            var pix = pixelIndex & (nside * nside - 1);
+            var ix = HEALPixBase.compress_bits(pix);
+            /*jslint bitwise: true */
+            var iy = HEALPixBase.compress_bits(pix >>> 1);
+            /*jslint bitwise: true */
+            var face = (pixelIndex >>> (2 * order));
+
+            var i = 0.5;
+            var j = 0.5;
+            var vert = HEALPixBase.fxyf((ix + i) / nside, (iy + j) / nside, face);
+            var geoPos = [];
+            mizarAPI.getContextManager().getCrs().getWorldFrom3D(vert, geoPos);
+            zoomTo(geoPos[0], geoPos[1], mizarAPI.getContextManager().getCrs().getGeoideName(), onSuccess);
+        }
+
+        function zoomToSexagesimal(objectName, word) {
+            // Format to equatorial coordinates
+            var word = objectName.split(" "); // [RA, Dec]
+
+            word[0] = word[0].replace(/h|m|:/g, " ");
+            word[0] = word[0].replace("s", "");
+            word[1] = word[1].replace(/°|'|:/g, " ");
+            word[1] = word[1].replace("\"", "");
+
+            // Convert to geo and zoom
+            var geoPos = [];
+            mizarAPI.getContextManager().getCrs().getDecimalDegFromSexagesimal([word[0], word[1]], geoPos);
+            zoomTo(geoPos[0], geoPos[1], mizarAPI.getContextManager().getCrs().getGeoideName(), onSuccess);
+        }
+
+        function zoomToDecimal(matchDegree) {
+            var lon = parseFloat(matchDegree[1]);
+            var lat = parseFloat(matchDegree[3]);
+            var geo = [lon, lat];
+            zoomTo(geo[0], geo[1], mizarAPI.getContextManager().getCrs().getGeoideName(), onSuccess);
+        }
+
         /**************************************************************************************************************/
 
         /**
@@ -93,45 +137,13 @@ define(["jquery", "underscore-min",
             var matchDegree = degRE.exec(objectName);
             var matchLayer = layerRE.exec(objectName);
             if (matchHealpix) {
-                var order = parseInt(matchHealpix[1], 10);
-                var pixelIndex = parseInt(matchHealpix[2], 10);
-
-                // Compute vertices
-                var nside = Math.pow(2, order);
-                /*jslint bitwise: true */
-                var pix = pixelIndex & (nside * nside - 1);
-                var ix = HEALPixBase.compress_bits(pix);
-                /*jslint bitwise: true */
-                var iy = HEALPixBase.compress_bits(pix >>> 1);
-                /*jslint bitwise: true */
-                var face = (pixelIndex >>> (2 * order));
-
-                var i = 0.5;
-                var j = 0.5;
-                var vert = HEALPixBase.fxyf((ix + i) / nside, (iy + j) / nside, face);
-                geoPos = [];
-                mizarAPI.getContextManager().getCrs().getWorldFrom3D(vert, geoPos);
-                zoomTo(geoPos[0], geoPos[1], mizarAPI.getContextManager().getCrs().getGeoideName(), onSuccess);
+                zoomToHips(matchHealpix);
             }
             else if (objectName.match(coordinatesExp)) {
-                // Format to equatorial coordinates
-                var word = objectName.split(" "); // [RA, Dec]
-
-                word[0] = word[0].replace(/h|m|:/g, " ");
-                word[0] = word[0].replace("s", "");
-                word[1] = word[1].replace(/°|'|:/g, " ");
-                word[1] = word[1].replace("\"", "");
-
-                // Convert to geo and zoom
-                geoPos = [];
-                mizarAPI.getContextManager().getCrs().getDecimalDegFromSexagesimal([word[0], word[1]], geoPos);
-                zoomTo(geoPos[0], geoPos[1], mizarAPI.getContextManager().getCrs().getGeoideName(), onSuccess);
+                zoomToSexagesimal(objectName, coordinatesExp);
             }
             else if (matchDegree) {
-                var lon = parseFloat(matchDegree[1]);
-                var lat = parseFloat(matchDegree[3]);
-                var geo = [lon, lat];
-                zoomTo(geo[0], geo[1], mizarAPI.getContextManager().getCrs().getGeoideName(), onSuccess);
+                zoomToDecimal(matchDegree);
             }
             else {
                 var options = {

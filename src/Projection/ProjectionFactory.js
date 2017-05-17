@@ -31,6 +31,41 @@ define(["../Utils/Constants",
               MercatorProjection, MollweideProjection,
               PlateProjection, AzimuthProjection) {
 
+        /**
+         * Creates a projection based on the name of the projection and its options.
+         * @param {PROJECTION} projectionName - Name of the projection
+         * @param {AbstractProjection.configuration|AbstractProjection.azimuth_configuration|AbstractProjection.mercator_configuration} options - Options for the projection
+         * @returns {Projection} projection
+         * @throws {RangeError} Will throw when options.projectionName is not part of {@link PROJECTION}
+         * @private
+         */
+        function _createProjection(projectionName, options) {
+            var cs;
+            switch (projectionName) {
+                case Constants.PROJECTION.Aitoff :
+                    cs = new AitoffProjection(options);
+                    break;
+                case Constants.PROJECTION.August :
+                    cs = new AugustProjection(options);
+                    break;
+                case Constants.PROJECTION.Azimuth :
+                    cs = new AzimuthProjection(options);
+                    break;
+                case Constants.PROJECTION.Mercator :
+                    cs = new MercatorProjection(options);
+                    break;
+                case Constants.PROJECTION.Mollweide :
+                    cs = new MollweideProjection(options);
+                    break;
+                case Constants.PROJECTION.Plate :
+                    cs = new PlateProjection(cs, options);
+                    break;
+                default :
+                    throw new RangeError("Unable to create the projection " + options.projectionName,"ProjectionFactory.js");
+            }
+            return cs;
+        }
+
         return {
             /**
              * Create a projection
@@ -44,28 +79,7 @@ define(["../Utils/Constants",
                 var cs;
 
                 if (options && options.projectionName) {
-                    switch (options.projectionName) {
-                        case Constants.PROJECTION.Aitoff :
-                            cs = new AitoffProjection(options);
-                            break;
-                        case Constants.PROJECTION.August :
-                            cs = new AugustProjection(options);
-                            break;
-                        case Constants.PROJECTION.Azimuth :
-                            cs = new AzimuthProjection(options);
-                            break;
-                        case Constants.PROJECTION.Mercator :
-                            cs = new MercatorProjection(options);
-                            break;
-                        case Constants.PROJECTION.Mollweide :
-                            cs = new MollweideProjection(options);
-                            break;
-                        case Constants.PROJECTION.Plate :
-                            cs = new PlateProjection(cs, options);
-                            break;
-                        default :
-                            throw new RangeError("Unable to create the projection " + options.projectionName,"ProjectionFactory.js");
-                    }
+                    cs =_createProjection(options.projectionName, options);
                 } else {
                     throw new ReferenceError("Unable to get options.projectionName","ProjectionFactory.js");
                 }

@@ -259,6 +259,82 @@ define(["jquery","../Utils/Constants"], function($, Constants) {
     };
 
     /**
+     * Checks if the required attribute is stored in hipsMetadata.<br>
+     * when the attribute is not stored, then store this information in requiredKeywordNotFound.
+     * @param {HIPS_METADATA} hipsMetadata
+     * @param {string} mandatory - "R" is a required parameter
+     * @param {string} key - attribute to check
+     * @param {string} description Key's description
+     * @param requiredKeywordNotFound - Array or required information not found
+     * @private
+     */
+    function _checkRequiredParameters(hipsMetadata, mandatory, key, description, requiredKeywordNotFound) {
+        if (mandatory === "R" && !hipsMetadata.hasOwnProperty(key)) {
+            //Fix for version=1.2
+            if (key === "creator_did" && hipsMetadata['hips_version'] === "1.2") {
+                hipsMetadata['creator_did'] = hipsMetadata['publisher_did'];
+            } else {
+                requiredKeywordNotFound.push(key + " (" + description + ") is not present. ");
+            }
+        }
+    }
+
+    /**
+     *
+     * @param {boolean} valueArray - is an Array
+     * @param {string} key - attribute
+     * @param {HIPS_METADATA} hipsMetadata
+     * @private
+     */
+    function _transformAStringToArray(valueArray, key, hipsMetadata) {
+        if (valueArray && hipsMetadata.hasOwnProperty(key)) {
+            hipsMetadata[key] = hipsMetadata[key].split(/\s+/);
+        }
+    }
+
+    /**
+     * Checks a value is among an enumerated list
+     * @param {string} key - key to test
+     * @param {string} description - key's description
+     * @param distinctValue - enumeration
+     * @param hipsMetadata - hipsMetadata
+     * @param valueNotRight - Wrong value
+     * @private
+     */
+    function _checkValueAmongEnumeratedList(key, valueArray,  description, distinctValue, hipsMetadata, valueNotRight) {
+        if (distinctValue !== null && hipsMetadata.hasOwnProperty(key)) {
+            if (valueArray) {
+                for (var val in hipsMetadata[key]) {
+                    if (hipsMetadata[key].hasOwnProperty(val)) {
+                        var format = hipsMetadata[key][val];
+                        if (!distinctValue.hasOwnProperty(format)) {
+                            valueNotRight.push("The value \"" + hipsMetadata[key] + "\" of " + key + " (" + description + ") is not correct. ");
+                            break;
+                        }
+                    }
+                }
+            } else {
+                if (!distinctValue.hasOwnProperty(hipsMetadata[key])) {
+                    valueNotRight.push("The value \"" + hipsMetadata[key] + "\" of " + key + " (" + description + ") is not correct. ");
+                }
+            }
+        }
+    }
+
+    /**
+     * fills hipsMetadata with the default value when the key is not present
+     * @param {string} key - key
+     * @param {string} defaultValue - default value
+     * @param {HIPS_METADATA} hipsMetadata
+     * @private
+     */
+    function _fillWithDefaultValue(key, defaultValue, hipsMetadata) {
+        if (defaultValue !== null && !hipsMetadata.hasOwnProperty(key)) {
+            hipsMetadata[key] = defaultValue;
+        }
+    }
+
+    /**
      * Validates and fixes metadata
      * @param {HIPS_METADATA} hipsMetadata
      * @throws "unvalid hips metadata"
@@ -275,44 +351,18 @@ define(["jquery","../Utils/Constants"], function($, Constants) {
                 defaultValue = values[3];
                 distinctValue = values[4];
                 valueArray = values[5];
-                // checking the required parameter is here
-                if (mandatory === "R" && !hipsMetadata.hasOwnProperty(key)) {
-                    //Fix for version=1.2
-                    if (key === "creator_did" && hipsMetadata['hips_version'] === "1.2") {
-                        hipsMetadata['creator_did'] = hipsMetadata['publisher_did'];
-                    } else {
-                        requiredKeywordNotFound.push(key + " (" + description + ") is not present. ");
-                    }
-                }
 
-                // Transforms a value into an array when it is necessary
-                if (valueArray && hipsMetadata.hasOwnProperty(key)) {
-                    hipsMetadata[key] = hipsMetadata[key].split(/\s+/);
-                }
+                // checking the required parameter is here
+                _checkRequiredParameters.call(this, hipsMetadata, key, description, requiredKeywordNotFound);
+
+                // Transforms a key's value into an array when it is necessary and store the result in hipsMetadata
+                _transformAStringToArray.call(this, valueArray, key, hipsMetadata);
 
                 // checking the value of the parameter among a list of values
-                if (distinctValue !== null && hipsMetadata.hasOwnProperty(key)) {
-                    if (valueArray) {
-                        for (var val in hipsMetadata[key]) {
-                            if (hipsMetadata[key].hasOwnProperty(val)) {
-                                var format = hipsMetadata[key][val];
-                                if (!distinctValue.hasOwnProperty(format)) {
-                                    valueNotRight.push("The value \"" + hipsMetadata[key] + "\" of " + key + " (" + description + ") is not correct. ");
-                                    break;
-                                }
-                            }
-                        }
-                    } else {
-                        if (!distinctValue.hasOwnProperty(hipsMetadata[key])) {
-                            valueNotRight.push("The value \"" + hipsMetadata[key] + "\" of " + key + " (" + description + ") is not correct. ");
-                        }
-                    }
-                }
+                _checkValueAmongEnumeratedList.call(this, key, valueArray,  description, distinctValue, hipsMetadata, valueNotRight);
 
                 // checking the key is here when a default value exists
-                if (defaultValue !== null && !hipsMetadata.hasOwnProperty(key)) {
-                    hipsMetadata[key] = defaultValue;
-                }
+                _fillWithDefaultValue.call(this, key, defaultValue, hipsMetadata);
 
             }
         }

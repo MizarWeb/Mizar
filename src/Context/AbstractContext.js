@@ -33,9 +33,9 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Laye
          * A context is the main webGL object that contains its own coordinate reference system,
          * its own data, its own navigation and its own GUI.<br/>
          * Client implementations should not normally instantiate this class directly.
-         * @param {Object} mizarConfiguration see options.configuration for {@link Mizar}
+         * @param {Mizar.configuration} mizarConfiguration - Mizar configuration
          * @param {CONTEXT} mode - the type of context
-         * @param {Object} ctxOptions  -See options.planetContext or options.skyContext configuration for {@link Mizar}
+         * @param {AbstractContext.skyContext|AbstractContext.planetContext} ctxOptions - sky or planet options
          * @constructor
          * @implements {Context}
          * @listens Context#baseLayersReady
@@ -64,8 +64,8 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Laye
 
         /**
          * Creates tracker position
-         * @param mizarConfiguration
-         * @returns {PositionTracker}
+         * @param {Mizar.configuration} mizarConfiguration
+         * @returns {PositionTracker} positionTracker object
          * @private
          */
         function _createTrackerPosition(mizarConfiguration) {
@@ -78,8 +78,8 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Laye
 
         /**
          * Creates elevation tracker
-         * @param mizarConfiguration
-         * @param ctxOptions
+         * @param {Mizar.configuration} mizarConfiguration - Mizar configuration
+         * @param {AbstractContext.planetContext} ctxOptions - options
          * @returns {ElevationTracker}
          * @private
          */
@@ -94,7 +94,7 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Laye
 
         /**
          * Adds to the globe either as background or as additional layer
-         * @param layer
+         * @param {Layer} layer - layer to add.
          * @private
          */
         function _addToGlobe(layer) {
@@ -107,8 +107,8 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Laye
 
         /**
          * Fill data-provider-type layer by features coming from data object
-         * @param {Layer} layer
-         * @param mizarDescription
+         * @param {Layer} layer - layer in which data should be added.
+         * @param {Object} mizarDescription - See the base properties {@link AbstractLayer.configuration} and a specific layer for specific properties
          * @private
          */
         function _fillDataProvider(layer, mizarDescription) {
@@ -299,6 +299,17 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Laye
 
             }
             return removedLayer;
+        };
+
+        /**
+         * @function removeAllLayers
+         * @memberOf AbstractContext#
+         */
+        AbstractContext.prototype.removeAllLayers = function() {
+            for(var i=0;i<this.layers.length;i++) {
+                var layerID = this.layers[i];
+                this.removeLayer(layerID);
+            }
         };
 
         /**

@@ -306,10 +306,7 @@ define(["jquery", "underscore-min", "../Utils/Utils", "./AbstractContext", "../U
             }
             this.planetLayer.setVisible(false);
             this.planetLayer._detach();
-            for(var i=0;i<this.layers.length;i++) {
-                var layerID = this.layers[i];
-                this.removeLayer(layerID);
-            }
+            this.removeAllLayers();
             this.globe.destroy();
             this.globe = null;
             this.layers = [];

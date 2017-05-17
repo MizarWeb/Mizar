@@ -63,7 +63,7 @@ define(["jquery", "underscore-min",
         /**
          * Checks inputs from user and creates the mizar configuration
          * @param {Object} options inputs from user
-         * @returns {Object} mizar configuration.
+         * @returns {Mizar.parameters} mizar configuration.
          * @private
          */
         function _createConfiguration(options) {

@@ -57,46 +57,24 @@ define(["./AbstractRasterLayer", "../Utils/Utils", "../Utils/Constants", "../Til
          * @constructor
          */
         var AbstractHipsLayer = function (hipsMetadata, options) {
-            if (!options) {
-                throw "Some required parameters are missing";
-            }
-            var metadata = hipsMetadata;
-            if (typeof metadata === 'undefined') {
-                var hipsProperties = new HipsMetadata(options.baseUrl);
-                metadata = hipsProperties.getHipsMetadata();
-            }
-            this.hipsMetadata = metadata;
+            _checkOptions.call(this, options);
+            this.hipsMetadata = _createMetadata.call(this, hipsMetadata, options.baseUrl);
+            _overloadHipsMetataByConfiguration.call(this, options, this.hipsMetadata);
 
-            options.coordinateSystem = options.hasOwnProperty('coordinateSystem') ? CoordinateSystemFactory.create(options.coordinateSystem) : CoordinateSystemFactory.create({geoideName: Constants.MappingCrsHips2Mizar[this.hipsMetadata.hips_frame]});
-            options.tilePixelSize = options.hasOwnProperty('tilePixelSize') ? options.tilePixelSize : this.hipsMetadata['hips_tile_width'];
-            options.baseLevel = options.hasOwnProperty('baseLevel') ? options.baseLevel : (hipsMetadata.hasOwnProperty('hips_order_min') ? hipsMetadata.hips_order_min : 2);
             options.tiling = new HEALPixTiling(options.baseLevel || 2, {coordinateSystem: options.coordinateSystem});
-            options.numberOfLevels = options.hasOwnProperty('numberOfLevels') ? options.numberOfLevels : this.hipsMetadata['hips_order'];
-            options.name = options.hasOwnProperty('name') ? options.name : this.hipsMetadata['obs_title'];
-            options.attribution = options.hasOwnProperty('attribution') ? options.attribution : "<a href=\"" + this.hipsMetadata['obs_copyright_url'] + "\" target=\"_blank\">" + this.hipsMetadata['obs_copyright'] + "</a>";
-            options.copyrightUrl = options.hasOwnProperty('copyrightUrl') ? options.copyrightUrl : this.hipsMetadata['obs_copyright_url'];
-            options.ack = options.hasOwnProperty('ack') ? options.ack : this.hipsMetadata['obs_ack'];
             options.icon = options.hasOwnProperty('icon') ? options.icon : (options.mizarBaseUrl ? options.mizarBaseUrl + "css/images/star.png" : "");
-            options.description = options.hasOwnProperty('description') ? options.description : this.hipsMetadata['obs_description'];
             options.visible = options.hasOwnProperty('visible') ? options.visible : false;
             options.properties = options.hasOwnProperty('properties') ? options.properties : {};
             options.pickable = options.hasOwnProperty('pickable') ? options.pickable : false;
             options.services = options.hasOwnProperty('services') ? options.services : [];
-            options.format = options.hasOwnProperty('format') ? options.format : this.hipsMetadata['hips_tile_format'];
-            options.baseUrl = options.hasOwnProperty('baseUrl') ? options.baseUrl : this.hipsMetadata['hips_service_url'];
-            options.properties = {
-                initialRa: this.hipsMetadata.hasOwnProperty("obs_initial_ra") ? parseFloat(this.hipsMetadata.obs_initial_ra) : undefined,
-                initialDec: this.hipsMetadata.hasOwnProperty("obs_initial_dec") ? parseFloat(this.hipsMetadata.obs_initial_dec) : undefined,
-                initialFov: this.hipsMetadata.hasOwnProperty("obs_initial_fov") ? parseFloat(this.hipsMetadata.obs_initial_fov) : undefined,
-                mocCoverage: this.hipsMetadata.hasOwnProperty("moc_sky_fraction") ? this.hipsMetadata.moc_sky_fraction : undefined
-            };
+
             options.category = "Image";
 
             options.availableServices = {};
-            if (metadata.hasOwnProperty("moc_access_url")) {
+            if ( this.hipsMetadata.hasOwnProperty("moc_access_url")) {
                 options.availableServices.Moc = {
-                    serviceURL: metadata.moc_access_url,
-                    skyFraction: metadata.moc_sky_fraction
+                    serviceURL:  this.hipsMetadata.moc_access_url,
+                    skyFraction:  this.hipsMetadata.moc_sky_fraction
                 };
             }
 
@@ -119,6 +97,66 @@ define(["./AbstractRasterLayer", "../Utils/Utils", "../Utils/Constants", "../Til
 
             //TODO : le fichier allsky
         };
+
+        /**
+         * Check options.
+         * @param options
+         * @private
+         */
+        function _checkOptions(options) {
+            if (!options) {
+                throw "Some required parameters are missing";
+            }
+        }
+
+        /**
+         * Creates metadata.
+         * @param hipsMetadata
+         * @param baseUrl
+         * @returns {*}
+         * @private
+         */
+        function _createMetadata(hipsMetadata, baseUrl) {
+            var metadata = hipsMetadata;
+            if (typeof metadata === 'undefined') {
+                var hipsProperties = new HipsMetadata(baseUrl);
+                metadata = hipsProperties.getHipsMetadata();
+            }
+            return metadata;
+        }
+
+        /**
+         * 
+         * @param options
+         * @param hipsMetadata
+         * @private
+         */
+        function _overloadHipsMetataByConfiguration(options, hipsMetadata) {
+            options.coordinateSystem = options.hasOwnProperty('coordinateSystem') ? CoordinateSystemFactory.create(options.coordinateSystem) : CoordinateSystemFactory.create({geoideName: Constants.MappingCrsHips2Mizar[hipsMetadata.hips_frame]});
+            options.tilePixelSize = options.hasOwnProperty('tilePixelSize') ? options.tilePixelSize : hipsMetadata['hips_tile_width'];
+            options.baseLevel = options.hasOwnProperty('baseLevel') ? options.baseLevel : (hipsMetadata.hasOwnProperty('hips_order_min') ? hipsMetadata.hips_order_min : 2);
+            options.numberOfLevels = options.hasOwnProperty('numberOfLevels') ? options.numberOfLevels : hipsMetadata['hips_order'];
+            options.name = options.hasOwnProperty('name') ? options.name : hipsMetadata['obs_title'];
+            options.attribution = options.hasOwnProperty('attribution') ? options.attribution : "<a href=\"" + hipsMetadata['obs_copyright_url'] + "\" target=\"_blank\">" + hipsMetadata['obs_copyright'] + "</a>";
+            options.copyrightUrl = options.hasOwnProperty('copyrightUrl') ? options.copyrightUrl : hipsMetadata['obs_copyright_url'];
+            options.ack = options.hasOwnProperty('ack') ? options.ack : hipsMetadata['obs_ack'];
+            options.description = options.hasOwnProperty('description') ? options.description : hipsMetadata['obs_description'];
+            options.format = options.hasOwnProperty('format') ? options.format : hipsMetadata['hips_tile_format'];
+            options.baseUrl = options.hasOwnProperty('baseUrl') ? options.baseUrl : hipsMetadata['hips_service_url'];
+            options.properties = options.hasOwnProperty('properties') ? options.properties : {};
+            if(hipsMetadata.hasOwnProperty("obs_initial_ra")) {
+                options.properties.initialRa = parseFloat(hipsMetadata.obs_initial_ra);
+            }
+            if(hipsMetadata.hasOwnProperty("obs_initial_dec")) {
+                options.properties.obs_initial_dec = parseFloat(hipsMetadata.obs_initial_dec);
+            }
+            if(hipsMetadata.hasOwnProperty("obs_initial_fov")) {
+                options.properties.obs_initial_fov = parseFloat(hipsMetadata.obs_initial_fov);
+            }
+            if(hipsMetadata.hasOwnProperty("moc_sky_fraction")) {
+                options.properties.moc_sky_fraction = parseFloat(hipsMetadata.moc_sky_fraction);
+            }
+        }
 
         /**************************************************************************************************************/
 

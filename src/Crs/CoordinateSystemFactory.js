@@ -27,6 +27,39 @@ define(["../Utils/Constants", "./WGS84Crs", "./Mars2000Crs", "./EquatorialCrs",
     function (Constants, WGS84Crs, Mars2000Crs,
               EquatorialCrs, GalacticCrs, ProjectedCrs) {
 
+        /**
+         * Creates a coordinate reference system based on its geoide name and its options.
+         * @param {CRS} geoideName
+         * @param {AbstractCrs.crsFactory} options - options to create a coordinate reference system
+         * @returns {Crs} the created coordinate reference system
+         * @throws {RangeError} Will throw an error when options.geoideName  is not part of {@link CRS}
+         * @private
+         */
+        function _createCrs(geoideName, options) {
+            var cs;
+            switch (geoideName) {
+                case Constants.CRS.Equatorial :
+                    cs = new EquatorialCrs(options);
+                    break;
+                case Constants.CRS.Galactic :
+                    cs = new GalacticCrs(options);
+                    break;
+                // For Earth
+                case Constants.CRS.WGS84 :
+                    cs = new WGS84Crs(options);
+                    break;
+                // For Mars
+                case Constants.CRS.Mars_2000_old:
+                case Constants.CRS.Mars_2000 :
+                    cs = new Mars2000Crs(options);
+                    break;
+                // Unknown geoide name
+                default :
+                    throw new RangeError("Datum " + options.geoideName + " not implemented","CoordinateSystemFactory.js");
+            }
+            return cs;
+        }
+
 
         return {
             /**
@@ -46,26 +79,7 @@ define(["../Utils/Constants", "./WGS84Crs", "./Mars2000Crs", "./EquatorialCrs",
             create: function (options) {
                 var cs;
                 if (options && options.geoideName) {
-                    switch (options.geoideName) {
-                        case Constants.CRS.Equatorial :
-                            cs = new EquatorialCrs(options);
-                            break;
-                        case Constants.CRS.Galactic :
-                            cs = new GalacticCrs(options);
-                            break;
-                        // For Earth
-                        case Constants.CRS.WGS84 :
-                            cs = new WGS84Crs(options);
-                            break;
-                        // For Mars
-                        case Constants.CRS.Mars_2000_old:
-                        case Constants.CRS.Mars_2000 :
-                            cs = new Mars2000Crs(options);
-                            break;
-                        // Unknown geoide name
-                        default :
-                            throw new RangeError("Datum " + options.geoideName + " not implemented","CoordinateSystemFactory.js");
-                    }
+                    cs =_createCrs(options.geoideName, options);
                 } else {
                     throw new ReferenceError("geoideName not defined in " + JSON.stringify(options), "CoordinateSystemFactory.js");
                 }

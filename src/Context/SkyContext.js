@@ -178,11 +178,8 @@ define(["underscore-min", "../Utils/Utils",
             }
             if (this.positionTracker) {
                 this.positionTracker.detach();
-            }            
-            for(var i=0;i<this.layers.length;i++) {
-                var layerID = this.layers[i];
-                this.removeLayer(layerID);
-            }
+            }          
+            this.removeAllLayers();
             this.globe.destroy();
             this.globe = null;
             this.layers = [];
