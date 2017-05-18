@@ -78,10 +78,10 @@ define(["jquery", "underscore-min", "../Utils/Constants","../Utils/Utils", "./Ab
             var maxOrder = options.maxOrder;
             var pos = options.pos;
             var mizarAPI = options.mizarAPI;
-            pos = mizarAPI.getContextManager().getCrs().convert(pos, mizarAPI.getContextManager().getCrs().getGeoideName(), mizarAPI.CRS.Equatorial);
+            pos = mizarAPI.getCrs().convert(pos, mizarAPI.getCrs().getGeoideName(), Constants.CRS.Equatorial);
 
             var equatorialCoordinates = [];
-            mizarAPI.getContextManager().getCrs().getSexagesimalFromDeg(pos, equatorialCoordinates);
+            mizarAPI.getCrs().getSexagesimalFromDeg(pos, equatorialCoordinates);
 
             // Format to equatorial coordinates
             equatorialCoordinates[0] = equatorialCoordinates[0].replace("h ", ":");
@@ -109,7 +109,7 @@ define(["jquery", "underscore-min", "../Utils/Constants","../Utils/Utils", "./Ab
             var radius = (pixRes > MAX_RADIUS) ? MAX_RADIUS : pixRes / 2;
             radius *= ARCSEC_2_DEG;
 
-            var requestUrl = mizarAPI.getContextManager().getActivatedContext().getContextConfiguration().reverseNameResolver.baseUrl;
+            var requestUrl = mizarAPI.getActivatedContext().getContextConfiguration().reverseNameResolver.baseUrl;
 
             requestUrl = requestUrl.replace("{coordinates}", equatorialCoordinates[0] + " " + equatorialCoordinates[1]);
             requestUrl = requestUrl.replace("{radius}", radius);

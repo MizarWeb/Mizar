@@ -25,7 +25,6 @@ define(["jquery", "../Utils/Numeric", "../Renderer/Ray","../Renderer/glMatrix"],
     function ($, Numeric, Ray) {
 
     var mizarAPI;
-    var mizarWidget;
     var mizarBaseUrl;
     var navigation;
     var halfPaddingX;
@@ -96,7 +95,7 @@ define(["jquery", "../Utils/Numeric", "../Renderer/Ray","../Renderer/glMatrix"],
      *  @return {Array} x,y coordinates
      */
     function computeMollweidePosition(pos) {
-        var coordinateSystem = mizarAPI.getContextManager().getCrs();
+        var coordinateSystem = mizarAPI.getCrs();
         var geoPos = coordinateSystem.getWorldFrom3D(pos);
         if(geoPos[0] > 180)
             geoPos[0]-=360;
@@ -143,7 +142,7 @@ define(["jquery", "../Utils/Numeric", "../Renderer/Ray","../Renderer/glMatrix"],
         var geo = [lambda * 180 / Math.PI, phi * 180 / Math.PI];
 
         // Update navigation
-        mizarAPI.getContextManager().getCrs().get3DFromWorld(geo, navigation.center3d);
+        mizarAPI.getCrs().get3DFromWorld(geo, navigation.center3d);
 
         navigation.computeViewMatrix();
     }
@@ -160,8 +159,8 @@ define(["jquery", "../Utils/Numeric", "../Renderer/Ray","../Renderer/glMatrix"],
 
         // Draw fov
         context.fillStyle = "rgb(255,0,0)";
-        var stepX = mizarAPI.getContextManager().getRenderContext().canvas.clientWidth / (tesselation - 1);
-        var stepY = mizarAPI.getContextManager().getRenderContext().canvas.clientHeight / (tesselation - 1);
+        var stepX = mizarAPI.getRenderContext().canvas.clientWidth / (tesselation - 1);
+        var stepY = mizarAPI.getRenderContext().canvas.clientHeight / (tesselation - 1);
 
         var ray;
         var pos3d;
@@ -170,8 +169,8 @@ define(["jquery", "../Utils/Numeric", "../Renderer/Ray","../Renderer/glMatrix"],
             // Width
             for (var j = 0; j < tesselation; j++) {
                 // Height
-                ray = Ray.createFromPixel(mizarAPI.getContextManager().getRenderContext(), i * stepX, j * stepY);
-                pos3d = ray.computePoint(ray.sphereIntersect([0, 0, 0], mizarAPI.getContextManager().getCrs().getGeoide().getRadius()));
+                ray = Ray.createFromPixel(mizarAPI.getRenderContext(), i * stepX, j * stepY);
+                pos3d = ray.computePoint(ray.sphereIntersect([0, 0, 0], mizarAPI.getCrs().getGeoide().getRadius()));
 
                 mPos = computeMollweidePosition(pos3d);
 
@@ -192,9 +191,9 @@ define(["jquery", "../Utils/Numeric", "../Renderer/Ray","../Renderer/glMatrix"],
         // Update fov degrees
         var fov = navigation.getFov();
         var fovx = Numeric.roundNumber(fov[0], 2);
-        fovx = mizarAPI.getContextManager().getCrs().fromDegreesToDMS(fovx);
+        fovx = mizarAPI.getCrs().fromDegreesToDMS(fovx);
         var fovy = Numeric.roundNumber(fov[1], 2);
-        fovy = mizarAPI.getContextManager().getCrs().fromDegreesToDMS(fovy);
+        fovy = mizarAPI.getCrs().fromDegreesToDMS(fovy);
         $('#fov').html("Fov : " + fovx + " x " + fovy);
     }
 
@@ -206,12 +205,11 @@ define(["jquery", "../Utils/Numeric", "../Renderer/Ray","../Renderer/glMatrix"],
 
     return {
         init: function (options) {
-            mizarWidget = options.mizar;
-            mizarAPI = mizarWidget.getMizarAPI();
+            mizarAPI = options.mizar;
             mizarBaseUrl = options.mizarBaseUrl;
 
             // Init options
-            navigation = mizarAPI.getContextManager().getNavigation();
+            navigation = mizarAPI.getActivatedContext().getNavigation();
             halfPaddingX = 16;
             halfPaddingY = 8;
 

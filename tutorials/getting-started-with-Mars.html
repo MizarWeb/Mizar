@@ -62,24 +62,22 @@
                     var mizar = new Mizar({
                         canvas: "MizarCanvas"
                     });
-                    mizar.getContextManager().createContext(mizar.CONTEXT.Planet,{
+                    mizar.createContext(mizar.CONTEXT.Planet,{
                         coordinateSystem: {
-                            geoideName : mizar.CRS.Mars_2000
+                            geoideName : Mizar.CRS.Mars_2000
                         }
                     });
-                    mizar.getContextManager().createStats({element: 'fps', verbose: false});
-
-                    var layerManager = mizar.getLayerManager();
-
-                    layerManager.addLayer({
-                        type: mizar.LAYER.WMS,
+                    mizar.createStats({element: 'fps', verbose: false});
+            
+                    mizar.addLayer({
+                        type: Mizar.LAYER.WMS,
                         name: "viking",
                         baseUrl: "http://idoc-wmsmars.ias.u-psud.fr/cgi-bin/mapserv?map=/home/cnes/mars/mars.map",
                         layers: "viking"
                     });
 
-                    layerManager.addLayer({
-                        type: mizar.LAYER.WCSElevation,
+                    mizar.addLayer({
+                        type: Mizar.LAYER.WCSElevation,
                         name: "marsElevation",
                         baseUrl: "http://idoc-wcsmars.ias.u-psud.fr/wcsmap",
                         coverage: "MARSTOPO_16",
@@ -87,10 +85,10 @@
                         version: "1.0.0",
                         scale: 2
                     });
-                    layerManager.setBackgroundLayer("viking");
-                    layerManager.setBaseElevation("marsElevation");
-                    layerManager.addLayer({
-                        type: mizar.LAYER.GeoJSON,
+                    mizar.setBackgroundLayer("viking");
+                    mizar.setBaseElevation("marsElevation");
+                    mizar.addLayer({
+                        type: Mizar.LAYER.GeoJSON,
                         name: "LandingSite",
                         url: "./data/landingSite.json",
                         icon: "./resources/images/star.png",

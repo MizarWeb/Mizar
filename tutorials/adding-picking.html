@@ -83,11 +83,9 @@
                             }
                         }
                     });
-
-                    var layerManager = mizar.getLayerManager();
-
-                    var wmsID = layerManager.addLayer({
-                        type: mizar.LAYER.WMS,
+            
+                    var wmsID = mizar.addLayer({
+                        type: Mizar.LAYER.WMS,
                         name: "Blue Marble",
                         baseUrl: "http://demonstrator.telespazio.com/wmspub",
                         layers: "BlueMarble",
@@ -95,19 +93,19 @@
 
                     });
 
-                    layerManager.setBackgroundLayerByID(wmsID);
+                    mizar.setBackgroundLayerByID(wmsID);
 
-                    var style = mizar.UtilityFactory.create(mizar.UTILITY.CreateStyle);
+                    var style = mizar.UtilityFactory.create(Mizar.UTILITY.CreateStyle);
                     style.iconUrl = null;
                     style.label = "POI";
                     style.pointMaxSize = 4000;
 
-                    var layerID = layerManager.addLayer({
-                        type: mizar.LAYER.GeoJSON,
+                    var layerID = mizar.addLayer({
+                        type: Mizar.LAYER.GeoJSON,
                         style: style,
                         visible : true
                     });
-                    var layer = mizar.getLayerManager().getLayerByID(layerID);
+                    var layer = mizar.getLayerByID(layerID);
 
                     var canvas = document.getElementById("MizarCanvas");
                     var poi;
@@ -115,8 +113,8 @@
                         if (poi)
                             layer.removeFeature(poi);
 
-                        var pos = mizar.getContextManager().getRenderContext().getXYRelativeToCanvas(event);
-                        var lonlat = mizar.getContextManager().getActivatedContext().getLonLatFromPixel(pos[0], pos[1]);
+                        var pos = mizar.getRenderContext().getXYRelativeToCanvas(event);
+                        var lonlat = mizar.getActivatedContext().getLonLatFromPixel(pos[0], pos[1]);
 
                         if (lonlat) {
                             poi = {

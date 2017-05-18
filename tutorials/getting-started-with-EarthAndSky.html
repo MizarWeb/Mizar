@@ -82,14 +82,12 @@
                             coordinateSystem: {geoideName: "IAU2000:49901"}
                         }
                     });
-
-                    // retrive the layer manager
-                    var layerManager = mizar.getLayerManager();
+            
 
                     // switch to sky context and a Hips layer
-                    mizar.getContextManager().setActivatedContext("Sky");
-                    var dssLayerID = layerManager.addLayer({
-                        type: mizar.LAYER.Hips,
+                    mizar.setActivatedContext("Sky");
+                    var dssLayerID = mizar.addLayer({
+                        type: Mizar.LAYER.Hips,
                         baseUrl: "http://alasky.unistra.fr/DSS/DSSColor"
                     });
 
@@ -97,23 +95,23 @@
                     mizar.getContextManager().getActivatedContext().hide();
 
                     // add the layer as background on sky
-                    layerManager.setBackgroundLayerByID(dssLayerID);
+                    mizar.setBackgroundLayerByID(dssLayerID);
                     mizar.getContextManager().getActivatedContext().disable();
 
                     // switch to planet context
                     mizar.getContextManager().setActivatedContext("Planet");
 
                     // add a WMS layer
-                    layerManager.addLayer({
-                        type: mizar.LAYER.WMS,
+                    mizar.addLayer({
+                        type: Mizar.LAYER.WMS,
                         name: "Blue Marble",
                         baseUrl: "http://demonstrator.telespazio.com/wmspub",
                         layers: "BlueMarble"
                     });
 
                     // add an elevation layer
-                    layerManager.addLayer({
-                        type: mizar.LAYER.WCSElevation,
+                    mizar.addLayer({
+                        type: Mizar.LAYER.WCSElevation,
                         name: "earthElevation",
                         baseUrl: "http://demonstrator.telespazio.com/wcspub",
                         coverage: "GTOPO",
@@ -122,17 +120,17 @@
                     });
 
                     // set the added WMS layer as background
-                    layerManager.setBackgroundLayer("Blue Marble");
+                    mizar.setBackgroundLayer("Blue Marble");
 
                     //set the added alavation layer as background
-                    layerManager.setBaseElevation("earthElevation");
+                    mizar.setBaseElevation("earthElevation");
 
                     // subscribe to baseLayersReady to show the context andn the animation.
-                    mizar.getContextManager().getActivatedContext().subscribe("baseLayersReady", function() {
+                    mizar.getActivatedContext().subscribe("baseLayersReady", function() {
                         // Planet layers are ready, we can enable the sky background
-                        mizar.getContextManager().getSkyContext().enable();
+                        mizar.getSkyContext().enable();
                         // init the navigation
-                        var nav = mizar.getContextManager().getNavigation();
+                        var nav = mizar.getActivatedContext().getNavigation();
                         nav.zoomTo([0, 0], {fov: nav.getFov()});
                     });
                 }//);

@@ -39,9 +39,11 @@ require.config({
         "jquery.ui": "../node_modules/jquery-ui-dist/jquery-ui.min",
         wcs: "../external/wcs",
         samp: "../external/samp",
-        //jquery		 : "empty:",
         string: "../node_modules/string/dist/string",
-        gzip: "../external/gzip.min"
+        gzip: "../external/gzip.min",
+        saveAs: "../node_modules/filesaver/src/Filesaver",
+        jszip: "../node_modules/jszip/dist/jszip.min"
+        
     },
     shim: {
         "underscore-min": {

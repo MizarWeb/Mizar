@@ -65,17 +65,15 @@
                     coordinateSystem: {geoideName: "IAU2000:49901"}
                 }
             });
-
-            var layerManager = mizar.getLayerManager();
-
-            var dssLayerID = layerManager.addLayer({
-                type: mizar.LAYER.Hips,
+            
+            var dssLayerID = mizar.addLayer({
+                type: Mizar.LAYER.Hips,
                 baseUrl: "http://alasky.unistra.fr/DSS/DSSColor"
             });
 
-            layerManager.setBackgroundLayerByID(dssLayerID);
+            mizar.setBackgroundLayerByID(dssLayerID);
 
-            var nav = mizar.getNavigation();
+            var nav = mizar.getActivatedContext().getNavigation();
             nav.zoomTo([-160, 80], {
                 callback:function() {
                     nav.zoomTo([10, 80]);

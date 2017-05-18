@@ -67,32 +67,30 @@
                             continuousRendering: true
                         }
                     });
-
-                    var layerManager = mizar.getLayerManager();
-
-                    var layerID =layerManager.addLayer({
-                        type: mizar.LAYER.Bing,
+            
+                    var layerID =mizar.addLayer({
+                        type: Mizar.LAYER.Bing,
                         imageSet: "AerialWithLabels",
                         key: "Ar7-_U1iwNtChqq64tAQsOfO8G7FwF3DabvgkQ1rziC4Z9zzaKZlRDWJTKTOPBPV"
                     });
 
-                    layerManager.setBackgroundLayerByID(layerID);
-                    var layerGeoJson1ID = layerManager.addLayer({
-                        type: mizar.LAYER.GeoJSON,
+                    mizar.setBackgroundLayerByID(layerID);
+                    var layerGeoJson1ID = mizar.addLayer({
+                        type: Mizar.LAYER.GeoJSON,
                         visible: true
                     });
-                    var layerGeoJson2ID = layerManager.addLayer({
-                        type: mizar.LAYER.GeoJSON,
+                    var layerGeoJson2ID = mizar.addLayer({
+                        type: Mizar.LAYER.GeoJSON,
                         visible: true
                     });
-                    var layerGeoJson3ID = layerManager.addLayer({
-                        type: mizar.LAYER.GeoJSON,
+                    var layerGeoJson3ID = mizar.addLayer({
+                        type: Mizar.LAYER.GeoJSON,
                         visible: true
                     });
 
-                    var layerGeoJSON1 = layerManager.getLayerByID(layerGeoJson1ID);
-                    var layerGeoJSON2 = layerManager.getLayerByID(layerGeoJson2ID);
-                    var layerGeoJSON3 = layerManager.getLayerByID(layerGeoJson3ID);
+                    var layerGeoJSON1 = mizar.getLayerByID(layerGeoJson1ID);
+                    var layerGeoJSON2 = mizar.getLayerByID(layerGeoJson2ID);
+                    var layerGeoJSON3 = mizar.getLayerByID(layerGeoJson3ID);
 
 
                     var feature1 = {

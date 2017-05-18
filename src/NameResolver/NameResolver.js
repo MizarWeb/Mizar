@@ -22,10 +22,10 @@
  * Name resolver
  * @memberOf module:NameResolver
  */
-define(["jquery", "underscore-min",
+define(["jquery", "underscore-min", "../Utils/Constants",
         "../Renderer/FeatureStyle", "../Layer/VectorLayer", "../Tiling/HEALPixBase",
         "jquery.ui", "./CDSNameResolver", "./DictionaryNameResolver", "./IMCCENameResolver", "./DefaultNameResolver"],
-    function ($, _, FeatureStyle, VectorLayer, HEALPixBase) {
+    function ($, _, Constants, FeatureStyle, VectorLayer, HEALPixBase) {
 
         // Name resolver globals
         var mizarAPI;
@@ -56,7 +56,7 @@ define(["jquery", "underscore-min",
                         lon,
                         lat
                     ],
-                    type: mizarAPI.GEOMETRY.Point,
+                    type: Constants.GEOMETRY.Point,
                     crs: {
                         type: "name",
                         properties: {
@@ -88,8 +88,8 @@ define(["jquery", "underscore-min",
             var j = 0.5;
             var vert = HEALPixBase.fxyf((ix + i) / nside, (iy + j) / nside, face);
             var geoPos = [];
-            mizarAPI.getContextManager().getCrs().getWorldFrom3D(vert, geoPos);
-            zoomTo(geoPos[0], geoPos[1], mizarAPI.getContextManager().getCrs().getGeoideName(), onSuccess);
+            mizarAPI.getCrs().getWorldFrom3D(vert, geoPos);
+            zoomTo(geoPos[0], geoPos[1], mizarAPI.getCrs().getGeoideName(), onSuccess);
         }
 
         function zoomToSexagesimal(objectName, word) {
@@ -103,15 +103,15 @@ define(["jquery", "underscore-min",
 
             // Convert to geo and zoom
             var geoPos = [];
-            mizarAPI.getContextManager().getCrs().getDecimalDegFromSexagesimal([word[0], word[1]], geoPos);
-            zoomTo(geoPos[0], geoPos[1], mizarAPI.getContextManager().getCrs().getGeoideName(), onSuccess);
+            mizarAPI.getCrs().getDecimalDegFromSexagesimal([word[0], word[1]], geoPos);
+            zoomTo(geoPos[0], geoPos[1], mizarAPI.getCrs().getGeoideName(), onSuccess);
         }
 
         function zoomToDecimal(matchDegree) {
             var lon = parseFloat(matchDegree[1]);
             var lat = parseFloat(matchDegree[3]);
             var geo = [lon, lat];
-            zoomTo(geo[0], geo[1], mizarAPI.getContextManager().getCrs().getGeoideName(), onSuccess);
+            zoomTo(geo[0], geo[1], mizarAPI.getCrs().getGeoideName(), onSuccess);
         }
 
         /**************************************************************************************************************/
@@ -165,7 +165,7 @@ define(["jquery", "underscore-min",
 
 
         function searchLayer(objectName, onSuccess, onError, response) {
-            var layers = mizarAPI.getLayerManager().searchOnLayerDescription(objectName, mizarAPI.getContextManager().getMode());
+            var layers = mizarAPI.searchOnLayerDescription(objectName, mizarAPI.getActivatedContext().getMode());
             if (layers.length === 0 && (!response || response.totalResults === 0)) {
                 if (onError) {
                     onError();
@@ -223,7 +223,7 @@ define(["jquery", "underscore-min",
                 // updates the coordinates, which is displayed at the screen in the current CRS
                 var idx = 0;
                 while (idx < args.features.length) {
-                    args.features[idx].geometry.coordinates = mizarAPI.getContextManager().getCrs().convert(args.features[idx].geometry.coordinates, crs, mizarAPI.getContextManager().getCrs().getGeoideName());
+                    args.features[idx].geometry.coordinates = mizarAPI.getCrs().convert(args.features[idx].geometry.coordinates, crs, mizarAPI.getCrs().getGeoideName());
                     args.features[idx].geometry.crs.properties.name = crs;
                     idx++;
                 }
@@ -236,17 +236,17 @@ define(["jquery", "underscore-min",
                     callback.call(this, args);
                 }
             };
-            [lon, lat] = mizarAPI.getContextManager().getCrs().convert([lon, lat], crs, mizarAPI.getContextManager().getCrs().getGeoideName());
-            if (mizarAPI.getContextManager().getMode() === mizarAPI.CONTEXT.Sky) {
-                mizarAPI.getContextManager().getNavigation().zoomTo([lon, lat], {
+            [lon, lat] = mizarAPI.getCrs().convert([lon, lat], crs, mizarAPI.getCrs().getGeoideName());
+            if (mizarAPI.getActivatedContext().getMode() === Constants.CONTEXT.Sky) {
+                mizarAPI.getActivatedContext().getNavigation().zoomTo([lon, lat], {
                     fov: zoomFov,
                     duration: duration,
                     callback: addTargetCallback
                 });
             }
             else {
-                var distance = mizarAPI.getContextManager().getNavigation().getDistance();
-                mizarAPI.getContextManager().getNavigation().zoomTo([lon, lat], {
+                var distance = mizarAPI.getActivatedContext().getNavigation().getDistance();
+                mizarAPI.getActivatedContext().getNavigation().zoomTo([lon, lat], {
                     distance: distance,
                     duration: duration,
                     callback: addTargetCallback
@@ -280,7 +280,7 @@ define(["jquery", "underscore-min",
             init: function (m) {
                 if (!context) {
                     mizarAPI = m;
-                    this.setContext(mizarAPI.getContextManager().getActivatedContext());
+                    this.setContext(mizarAPI.getActivatedContext());
                 } else {
                     console.error("Name resolver is already initialized");
                 }
@@ -292,11 +292,11 @@ define(["jquery", "underscore-min",
              */
             remove: function () {
                 if (context) {
-                    mizarAPI.getContextManager().getActivatedContext().globe.removeLayer(targetLayer);
+                    mizarAPI.getActivatedContext().globe.removeLayer(targetLayer);
                     if (nameResolverImplementation !== undefined) {
                         nameResolverImplementation.remove();
                     }
-                    mizarAPI.getContextManager().getActivatedContext().unsubscribe("modifiedNavigation", removeTarget);
+                    mizarAPI.getActivatedContext().unsubscribe("modifiedNavigation", removeTarget);
                     context = null;
                 }
             },
@@ -356,7 +356,7 @@ define(["jquery", "underscore-min",
                 });
                 targetLayer = new VectorLayer({style: style, visible: true});
 
-                mizarAPI.getContextManager().getActivatedContext().globe.addLayer(targetLayer);
+                mizarAPI.getActivatedContext().globe.addLayer(targetLayer);
 
                 // Update name resolver properties
                 duration = isDefaultNameResolver ? 3000 : context.getContextConfiguration().nameResolver.duration;

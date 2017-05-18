@@ -22,12 +22,12 @@
  * Tool designed to measure the distance between two points in planet mode
  */
 
-define(["jquery", "underscore-min", "../Utils/Numeric", 
+define(["jquery", "underscore-min", "../Utils/Numeric", "../Utils/Constants",
         "../Layer/VectorLayer", "../Renderer/Ray", "../Renderer/FeatureStyle", "../Renderer/glMatrix"],
-    function ($, _, Numeric, 
+    function ($, _, Numeric, Constants,
               VectorLayer, Ray, FeatureStyle) {
 
-        var mizarAPI, mizarWidget, navigation, onselect, measureLayer, self, dragging;
+        var mizarAPI, navigation, onselect, measureLayer, self, dragging;
 
         /**********************************************************************************************/
 
@@ -55,7 +55,7 @@ define(["jquery", "underscore-min", "../Utils/Numeric",
             else {
                 self.pickPoint = [event.layerX, event.layerY];
             }
-            self.geoPickPoint = mizarAPI.getContextManager().getActivatedContext().getLonLatFromPixel(self.pickPoint[0], self.pickPoint[1]);
+            self.geoPickPoint = mizarAPI.getActivatedContext().getLonLatFromPixel(self.pickPoint[0], self.pickPoint[1]);
 
         }
 
@@ -72,14 +72,14 @@ define(["jquery", "underscore-min", "../Utils/Numeric",
             // Compute geo radius
             var stopPickPoint;
             if (event.type.search("touch") >= 0) {
-                stopPickPoint = mizarAPI.getContextManager().getActivatedContext().getLonLatFromPixel(event.changedTouches[0].clientX, event.changedTouches[0].clientY);
+                stopPickPoint = mizarAPI.getActivatedContext().getLonLatFromPixel(event.changedTouches[0].clientX, event.changedTouches[0].clientY);
             }
             else {
-                stopPickPoint = mizarAPI.getContextManager().getActivatedContext().getLonLatFromPixel(event.layerX, event.layerY);
+                stopPickPoint = mizarAPI.getActivatedContext().getLonLatFromPixel(event.layerX, event.layerY);
             }
 
             // Find angle between start and stop vectors which is in fact the radius
-            var dotProduct = vec3.dot(vec3.normalize(mizarAPI.getContextManager().getCrs().get3DFromWorld(stopPickPoint)), vec3.normalize(mizarAPI.getContextManager().getCrs().get3DFromWorld(self.geoPickPoint)));
+            var dotProduct = vec3.dot(vec3.normalize(mizarAPI.getCrs().get3DFromWorld(stopPickPoint)), vec3.normalize(mizarAPI.getCrs().get3DFromWorld(self.geoPickPoint)));
             var theta = Math.acos(dotProduct);
             self.geoDistance = Numeric.toDegree(theta);
 
@@ -108,13 +108,13 @@ define(["jquery", "underscore-min", "../Utils/Numeric",
                 self.secondPickPoint = [event.layerX, event.layerY];
             }
 
-            self.secondGeoPickPoint = mizarAPI.getContextManager().getActivatedContext().getLonLatFromPixel(self.secondPickPoint[0], self.secondPickPoint[1]);
+            self.secondGeoPickPoint = mizarAPI.getActivatedContext().getLonLatFromPixel(self.secondPickPoint[0], self.secondPickPoint[1]);
 
             //self.storeDistanceAndElevation(self.geoPickPoint, self.secondGeoPickPoint);
 
             // Update radius
             self.distance = Math.sqrt(Math.pow(self.secondPickPoint[0] - self.pickPoint[0], 2) + Math.pow(self.secondPickPoint[1] - self.pickPoint[1], 2));
-            var dotProduct = vec3.dot(vec3.normalize(mizarAPI.getContextManager().getCrs().get3DFromWorld(self.secondGeoPickPoint)), vec3.normalize(mizarAPI.getContextManager().getCrs().get3DFromWorld(self.geoPickPoint)));
+            var dotProduct = vec3.dot(vec3.normalize(mizarAPI.getCrs().get3DFromWorld(self.secondGeoPickPoint)), vec3.normalize(mizarAPI.getCrs().get3DFromWorld(self.geoPickPoint)));
 
             var theta = Math.acos(dotProduct);
             self.geoDistance = Numeric.toDegree(theta);
@@ -151,8 +151,8 @@ define(["jquery", "underscore-min", "../Utils/Numeric",
                 vec3.normalize(points[i]);
 
                 var ray = new Ray(eye, points[i]);
-                var pos3d = ray.computePoint(ray.sphereIntersect(worldCenter, mizarAPI.getContextManager().getCrs().getGeoide().getRadius()));
-                points[i] = mizarAPI.getContextManager().getCrs().getWorldFrom3D(pos3d);
+                var pos3d = ray.computePoint(ray.sphereIntersect(worldCenter, mizarAPI.getCrs().getGeoide().getRadius()));
+                points[i] = mizarAPI.getCrs().getWorldFrom3D(pos3d);
             }
 
             return points;
@@ -240,11 +240,11 @@ define(["jquery", "underscore-min", "../Utils/Numeric",
                 geometry: {
                     gid: "measureShape",
                     coordinates: [coordinates],
-                    type: mizarAPI.GEOMETRY.Polygon,
+                    type: Constants.GEOMETRY.Polygon,
                     crs: {
                         type: "name",
                         properties: {
-                            name: mizarAPI.getContextManager().getCrs().getGeoideName()
+                            name: mizarAPI.getCrs().getGeoideName()
                         }
                     }
                 },
@@ -259,22 +259,22 @@ define(["jquery", "underscore-min", "../Utils/Numeric",
 
 
             var center = [(self.secondPickPoint[0] + self.pickPoint[0]) / 2, (self.secondPickPoint[1] + self.pickPoint[1]) / 2];
-            var geoCenter = mizarAPI.getContextManager().getActivatedContext().getLonLatFromPixel(center[0],center[1]);
+            var geoCenter = mizarAPI.getActivatedContext().getLonLatFromPixel(center[0],center[1]);
             self.measureLabel = {
                 geometry: {
-                    type: mizarAPI.GEOMETRY.Point,
+                    type: Constants.GEOMETRY.Point,
                     gid: "measureShape",
                     coordinates: geoCenter,
                     crs: {
                         type: "name",
                         properties: {
-                            name: mizarAPI.getContextManager().getCrs().getGeoideName()
+                            name: mizarAPI.getCrs().getGeoideName()
                         }
                     }
                 },
                 properties: {
                     style: new FeatureStyle({
-                        label: mizarAPI.getContextManager().getCrs().fromDegreesToDMS(self.geoDistance),
+                        label: mizarAPI.getCrs().fromDegreesToDMS(self.geoDistance),
                         fillColor: [1, 1, 1, 1],
                         zIndex: 2
                     })
@@ -300,19 +300,18 @@ define(["jquery", "underscore-min", "../Utils/Numeric",
 
         return {
             init: function (options) {
-                mizarWidget = options.mizar;
-                mizarAPI = mizarWidget.getMizarAPI();
-                navigation = mizarAPI.getContextManager().getNavigation();
+                mizarAPI = options.mizar;
+                navigation = mizarAPI.getActivatedContext().getNavigation();
                 onselect = options.onselect;
                 self = this;
                 dragging = false;
 
                 // Layer containing measure feature
-                measureLayer = mizarAPI.LayerFactory.create({type:mizarAPI.LAYER.Vector, visible:true});
-                mizarAPI.getContextManager().getSkyContext().globe.addLayer(measureLayer);
+                measureLayer = mizarAPI.LayerFactory.create({type:Constants.LAYER.Vector, visible:true});
+                mizarAPI.getSkyContext().globe.addLayer(measureLayer);
 
                 this.activated = false;
-                this.renderContext = mizarAPI.getContextManager().getRenderContext();
+                this.renderContext = mizarAPI.getRenderContext();
                 
                 // Measure attributes
                 /*this.pickPoint; // Window pick point

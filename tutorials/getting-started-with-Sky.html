@@ -70,14 +70,12 @@
                 }
             });
 
-            var layerManager = mizar.getLayerManager();
-
-            var dssLayerID = layerManager.addLayer({
-                type: mizar.LAYER.Hips,
+            var dssLayerID = mizar.addLayer({
+                type: Mizar.LAYER.Hips,
                 baseUrl: "http://alasky.unistra.fr/DSS/DSSColor"
             });
 
-            layerManager.setBackgroundLayerByID(dssLayerID);
+            mizar.setBackgroundLayerByID(dssLayerID);
 
         }//);
     </script>

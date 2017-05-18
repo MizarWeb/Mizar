@@ -326,7 +326,7 @@ define(["jquery", "../Renderer/FeatureStyle", "../Layer/MocLayer", "../Utils/Num
                 }),
                 visible: false
             });
-            mizarAPI.getContextManager().getSkyContext().globe.addLayer(intersectionLayer);
+            mizarAPI.getSkyContext().globe.addLayer(intersectionLayer);
 
             intersectionLayer.describeUrl = url;
 

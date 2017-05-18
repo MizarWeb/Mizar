@@ -148,10 +148,10 @@ define(["./AbstractRasterLayer", "../Utils/Utils", "../Utils/Constants", "../Til
                 options.properties.initialRa = parseFloat(hipsMetadata.obs_initial_ra);
             }
             if(hipsMetadata.hasOwnProperty("obs_initial_dec")) {
-                options.properties.obs_initial_dec = parseFloat(hipsMetadata.obs_initial_dec);
+                options.properties.initialDec = parseFloat(hipsMetadata.obs_initial_dec);
             }
             if(hipsMetadata.hasOwnProperty("obs_initial_fov")) {
-                options.properties.obs_initial_fov = parseFloat(hipsMetadata.obs_initial_fov);
+                options.properties.initialFov = parseFloat(hipsMetadata.obs_initial_fov);
             }
             if(hipsMetadata.hasOwnProperty("moc_sky_fraction")) {
                 options.properties.moc_sky_fraction = parseFloat(hipsMetadata.moc_sky_fraction);

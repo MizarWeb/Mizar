@@ -363,7 +363,7 @@ define(['../Utils/Utils', '../Utils/Constants',
          Return tile of given longitude/latitude from tiles array if exists, null otherwise
          */
         GeoTiling.prototype.findInsideTile = function (lon, lat, tiles) {
-            //var coordinateSystem = mizar.getScene().coordinateSystem;
+            //var coordinateSystem = mizar.getCrs();
             //var geo = coordinateSystem.convert([lon, lat], Constants.CRS.Equatorial, coordinateSystem.getGeoideName);
             //lon = geo[0];
             //lat = geo[1];

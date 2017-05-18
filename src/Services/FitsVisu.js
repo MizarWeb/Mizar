@@ -65,8 +65,8 @@ define(["jquery",
         function handleFits(fitsData, featureData) {
             // Create new image coming from Fits
             var typedArray = new Float32Array(fitsData.view.buffer, fitsData.begin, fitsData.length / 4); // with gl.FLOAT
-            var gl = mizarAPI.getContextManager().getRenderContext().gl;
-            var image = new DynamicImage(mizarAPI.getContextManager().getRenderContext(), typedArray, gl.LUMINANCE, gl.FLOAT, fitsData.width, fitsData.height);
+            var gl = mizarAPI.getRenderContext().gl;
+            var image = new DynamicImage(mizarAPI.getRenderContext(), typedArray, gl.LUMINANCE, gl.FLOAT, fitsData.width, fitsData.height);
 
             var feature = featureData.feature;
             var layer = featureData.layer;
@@ -110,7 +110,7 @@ define(["jquery",
                 delete featureData.xhr;
             }
 
-            var gl = mizarAPI.getContextManager().getRenderContext().gl;
+            var gl = mizarAPI.getRenderContext().gl;
             if (featureData.feature.properties.style.uniformValues) {
                 featureData.feature.properties.style.uniformValues.dispose();
             }
@@ -149,7 +149,7 @@ define(["jquery",
                 mizarAPI = m;
                 sitoolsBaseUrl = configuration.sitoolsBaseUrl;
                 // Enable float texture extension to have higher luminance range
-                var ext = mizarAPI.getContextManager().getRenderContext().gl.getExtension("OES_texture_float");
+                var ext = mizarAPI.getRenderContext().gl.getExtension("OES_texture_float");
             },
 
             /**********************************************************************************************/
@@ -199,7 +199,7 @@ define(["jquery",
                     featureData.layer.modifyFeatureStyle(featureData.feature, style);
                     $('#quicklook').removeClass('selected');
                 }
-                mizarAPI.getContextManager().getActivatedContext().refresh();
+                mizarAPI.getActivatedContext().refresh();
             },
 
             /**********************************************************************************************/
@@ -229,7 +229,7 @@ define(["jquery",
                     $('#quicklook').addClass('selected');
                 }
                 featureData.layer.modifyFeatureStyle(feature, style);
-                mizarAPI.getContextManager().getActivatedContext().refresh();
+                mizarAPI.getActivatedContext().refresh();
             },
 
             computeFits: computeFits,

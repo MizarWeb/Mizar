@@ -480,6 +480,15 @@ define(['../Renderer/FeatureStyle', '../Renderer/VectorRendererManager', '../Uti
             return url;
         };
 
+        /**
+         * Get Tile URL.
+         * @param tile
+         * @returns {*}
+         */
+        HipsCatLayer.prototype.getUrl = function (tile) {
+            return this.buildUrl(tile);
+        };
+
         /**************************************************************************************************************/
 
         /**

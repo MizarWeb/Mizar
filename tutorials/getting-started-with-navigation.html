@@ -80,10 +80,8 @@
                 }
             });
 
-            var layerManager = mizar.getLayerManager();
-
-            var layerID = layerManager.addLayer({
-                type: mizar.LAYER.WMS,
+            var layerID = mizar.addLayer({
+                type: Mizar.LAYER.WMS,
                 name: "Blue Marble",
                 baseUrl: "http://demonstrator.telespazio.com/wmspub",
                 layers: "BlueMarble"

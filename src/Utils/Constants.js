@@ -190,6 +190,7 @@ define(function () {
      * @property {String} SelectionTool - Selection Tool
      * @property {String} NameResolver - NameResolver
      * @property {String} ReverseNameResolver - ReverseNameResolver
+     * @property {String} ExportTool - ExportTool
      */
     Constants.SERVICE = {
         "FitsVisu": "FitsVisu",
@@ -203,7 +204,8 @@ define(function () {
         "Samp" : "Samp",
         "SelectionTool" : "SelectionTool",
         "NameResolver" : "NameResolver",
-        "ReverseNameResolver" : "ReverseNameResolver"
+        "ReverseNameResolver" : "ReverseNameResolver",
+        "ExportTool" : "ExportTool"
     };
 
     /**

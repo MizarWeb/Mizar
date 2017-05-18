@@ -22,9 +22,9 @@
  * Name resolver module : search object name from its coordinates
  * TODO : move _handleMouseDown&Up to View ?
  */
-define(["jquery",
+define(["jquery", "../Utils/Constants",
         "./CDSReverseNameResolver","./DefaultReverseNameResolver"],
-        function ($) {
+        function ($, Constants) {
 
     var mizarAPI;
     var context;
@@ -34,13 +34,13 @@ define(["jquery",
     return {
         init: function (m) {
             mizarAPI = m;
-            this.setContext(mizarAPI.getContextManager().getActivatedContext());
+            this.setContext(mizarAPI.getActivatedContext());
         },
 
         /**************************************************************************************************************/
 
         /**
-         *    Send request to reverse name resolver service for the given point
+         *    Send request to reverse name resolver service for the given gepoint
          *    @param geoPick    Geographic position of point of interest
          *    @param options
          *        <li>success: Function called on success with the response of server as argument</li>
@@ -51,10 +51,10 @@ define(["jquery",
             var self = this;
             // TODO: depending on context, send the request
             // Currently only sky context is handled
-            if (mizarAPI.getContextManager().getMode() === mizarAPI.CONTEXT.Sky) {
+            if (mizarAPI.getActivatedContext().getMode() === Constants.CONTEXT.Sky) {
                 // Find max order
                 var maxOrder = 3;
-                mizarAPI.getContextManager().getScene().tileManager.visitTiles(function (tile) {
+                mizarAPI.getActivatedContext().getTileManager().visitTiles(function (tile) {
                     if (maxOrder < tile.order) {
                       maxOrder = tile.order;
                     }

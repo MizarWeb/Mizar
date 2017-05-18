@@ -76,19 +76,16 @@
                 }
             });
 
-            // Get the layer manager to create a new layer
-            var layerManager = mizar.getLayerManager();
-
             // Add a WMS layer
-            var layerID = layerManager.addLayer({
-                type: mizar.LAYER.WMS,
+            var layerID = mizar.addLayer({
+                type: Mizar.LAYER.WMS,
                 name: "Blue Marble",
                 baseUrl: "http://demonstrator.telespazio.com/wmspub",
                 layers: "BlueMarble"
             });
 
             // Set this layer as background
-            layerManager.setBackgroundLayerByID(layerID);
+            mizar.setBackgroundLayerByID(layerID);
         }
         //);
 

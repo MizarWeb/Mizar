@@ -67,20 +67,18 @@
                     coordinateSystem: {geoideName: "EPSG:4326"}
                 }
             });
-
-            var layerManager = mizar.getLayerManager();
-
-            layerManager.addLayer({
-                type: mizar.LAYER.WMS,
+            
+            mizar.addLayer({
+                type: Mizar.LAYER.WMS,
                 name: "Blue Marble",
                 baseUrl: "http://demonstrator.telespazio.com/wmspub",
                 layers: "BlueMarble"
             });
 
-            layerManager.setBackgroundLayer("Blue Marble");
+            mizar.setBackgroundLayer("Blue Marble");
 
             // get the navigation object
-            var nav = mizar.getNavigation();
+            var nav = mizar.getActivatedContext().getNavigation();
 
             // first zoom
             nav.zoomTo([-160, 80], {

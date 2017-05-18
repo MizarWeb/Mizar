@@ -66,21 +66,18 @@
                 }
             });
 
-            // get the layer manager object
-            var layerManager = mizar.getLayerManager();
-
             // create a Bing server and set it as background
-            var layerBingID =layerManager.addLayer({
-                type: mizar.LAYER.Bing,
+            var layerBingID = mizar.addLayer({
+                type: Mizar.LAYER.Bing,
                 imageSet: "AerialWithLabels",
                 key: "Ar7-_U1iwNtChqq64tAQsOfO8G7FwF3DabvgkQ1rziC4Z9zzaKZlRDWJTKTOPBPV"
             });
-            layerManager.setBackgroundLayerByID(layerBingID);
+            mizar.setBackgroundLayerByID(layerBingID);
 
 
             // create a WMS on the Bing layer, by default visible with an opacity of 70%
-            layerManager.addLayer({
-                type: mizar.LAYER.WMS,
+            mizar.addLayer({
+                type: Mizar.LAYER.WMS,
                 name: "Blue Marble",
                 baseUrl: "http://demonstrator.telespazio.com/wmspub",
                 layers: "BlueMarble",
@@ -89,8 +86,8 @@
             });
 
             // create an empty layer, by default visible
-            var layerID = layerManager.addLayer({
-                type: mizar.LAYER.GeoJSON,
+            var layerID = mizar.addLayer({
+                type: Mizar.LAYER.GeoJSON,
                 visible: true
             });
 

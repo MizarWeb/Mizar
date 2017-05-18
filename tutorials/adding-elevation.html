@@ -73,25 +73,22 @@
             });
 
             // create the widget to display the Fps and insert the contain in <div id="fps" .../>
-            mizar.getContextManager().createStats({
+            mizar.createStats({
                 element: 'fps',
                 verbose: false
             });
 
-            // get the layer manager to create a new layer
-            var layerManager = mizar.getLayerManager();
-
             // add a WMS layer
-            layerManager.addLayer({
-                type: mizar.LAYER.WMS,
+            mizar.addLayer({
+                type: Mizar.LAYER.WMS,
                 name: "Blue Marble",
                 baseUrl: "http://demonstrator.telespazio.com/wmspub",
                 layers: "BlueMarble"
             });
 
             // add an elevation and increase the height by a 4 factor
-            layerManager.addLayer({
-                type: mizar.LAYER.WCSElevation,
+            mizar.addLayer({
+                type: Mizar.LAYER.WCSElevation,
                 name: "earthElevation",
                 baseUrl: "http://demonstrator.telespazio.com/wcspub",
                 coverage: "GTOPO",
@@ -100,11 +97,11 @@
             });
 
             // Set the background and the elevation.
-            layerManager.setBackgroundLayer("Blue Marble");
-            layerManager.setBaseElevation("earthElevation");
+            mizar.setBackgroundLayer("Blue Marble");
+            mizar.setBaseElevation("earthElevation");
 
             // Get the navigation object
-            var nav = mizar.getNavigation();
+            var nav = mizar.getActivatedContext().getNavigation();
             // move to (longitude, latitude, distance in meter)
             nav.zoomTo([1.433, 42.900,30000], {
                 duration : 1000,

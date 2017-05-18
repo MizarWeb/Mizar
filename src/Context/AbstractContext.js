@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with SITools2. If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
-define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Layer/LayerFactory","../Services/ServiceFactory", "../Utils/Constants",
+define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Layer/LayerFactory", "../Services/ServiceFactory", "../Utils/Constants",
         "../Gui/Tracker/PositionTracker", "../Gui/Tracker/ElevationTracker", "../Utils/AttributionHandler",
         "../Renderer/PointRenderer", "../Renderer/LineStringRenderable", "../Renderer/PolygonRenderer", "../Renderer/LineRenderer",
         "../Renderer/PointSpriteRenderer", "../Renderer/ConvexPolygonRenderer"],
@@ -118,26 +118,6 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Laye
             }
         }
 
-        /**
-         * Zoom to when the visibility is changed.
-         * @param layer
-         * @private
-         */
-        function onVisibilityChange(layer) {
-
-            if (layer.isVisible() && layer.properties && !layer.background
-                && layer.properties.hasOwnProperty("initialRa") && layer.properties.hasOwnProperty("initialDec") && layer.properties.hasOwnProperty("initialFov")) {
-
-                if (self.getMode() === Constants.GLOBE.Sky) {
-                    var fov = self.getNavigation().getRenderContext().fov;
-                    self.getNavigation().zoomTo([layer.properties.initialRa, layer.properties.initialDec], {fov:fov, duration:3000});
-                }
-                else {
-                    self.getNavigation().zoomTo([layer.properties.initialRa, layer.properties.initialDec], {distance : layer.properties.initialFov, duration : 3000});
-                }
-            }
-        }
-
 
         /**************************************************************************************************************/
         Utils.inherits(Event, AbstractContext);
@@ -151,7 +131,7 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Laye
          * @protected
          * @todo Mettre en paramètre MizarCanvas et webGLNotAvailable
          */
-        AbstractContext.prototype._showUpError = function(err) {
+        AbstractContext.prototype._showUpError = function (err) {
             console.error("Globe creation error : ", err);
             if (document.getElementById('MizarCanvas')) {
                 document.getElementById('MizarCanvas').style.display = "none";
@@ -163,7 +143,15 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Laye
                 document.getElementById('webGLNotAvailable').style.display = "block";
             }
         };
-        
+
+        /**
+         * @function getTileManager
+         * @memberOf AbstractContext#
+         */
+        AbstractContext.prototype.getTileManager = function () {
+            return this.globe.getTileManager();
+        };
+
         /**
          * Registers no standard data provider and call them in the addLayer method.
          * @function registerNoStandardDataProvider
@@ -200,6 +188,14 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Laye
          */
         AbstractContext.prototype.getLonLatFromPixel = function (x, y) {
             return this.globe.getLonLatFromPixel(x, y);
+        };
+
+        /**
+         * @function getPixelFromLonLat
+         * @memberOf AbstractContext#
+         */
+        AbstractContext.prototype.getPixelFromLonLat = function(longitude, latitude){
+            return this.globe.getPixelFromLonLat(longitude, latitude);
         };
 
         /**
@@ -273,11 +269,57 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Laye
             if (layer.pickable) {
                 ServiceFactory.create(Constants.SERVICE.PickingManager).addPickableLayer(layer);
             }
-            layer.subscribe("visibility:changed", onVisibilityChange);
+            var self = this;
+            layer.subscribe("visibility:changed", function (layer) {
+                if (layer.isVisible() && layer.properties && !layer.background
+                    && layer.properties.hasOwnProperty("initialRa") && layer.properties.hasOwnProperty("initialDec") && layer.properties.hasOwnProperty("initialFov")) {
+
+                    if (layer.globe.getType() === Constants.GLOBE.Sky) {
+                        var fov = (layer.properties.initialFov) ? layer.properties.initialFov : layer.globe.getRenderContext().fov;
+                        self.getNavigation().zoomTo([layer.properties.initialRa, layer.properties.initialDec], {
+                            fov: fov,
+                            duration: 3000
+                        });
+                    }
+                    else {
+                        self.getNavigation().zoomTo([layer.properties.initialRa, layer.properties.initialDec], {
+                            distance: layer.properties.initialFov,
+                            duration: 3000
+                        });
+                    }
+                }
+            });
             var layerEvent = (layer.category === "background") ? "backgroundLayer:add" : "additionalLayer:add";
             this.publish(layerEvent, layer);
             return layer;
         };
+
+        // /**
+        //  * Zoom to when the visibility is changed.
+        //  * @param layer
+        //  * @private
+        //  */
+        // function onVisibilityChange(layer) {
+        //
+        //     if (layer.isVisible() && layer.properties && !layer.background
+        //         && layer.properties.hasOwnProperty("initialRa") && layer.properties.hasOwnProperty("initialDec") && layer.properties.hasOwnProperty("initialFov")) {
+        //
+        //         if (layer.globe.getType() === Constants.GLOBE.Sky) {
+        //             var fov = (layer.properties.initialFov) ? layer.properties.initialFov : layer.globe.getRenderContext().fov;
+        //             self.getNavigation().zoomTo([layer.properties.initialRa, layer.properties.initialDec], {
+        //                 fov: fov,
+        //                 duration: 3000
+        //             });
+        //         }
+        //         else {
+        //             self.getNavigation().zoomTo([layer.properties.initialRa, layer.properties.initialDec], {
+        //                 distance: layer.properties.initialFov,
+        //                 duration: 3000
+        //             });
+        //         }
+        //     }
+        // }
+
 
         /**
          * @function removeLayer
@@ -293,7 +335,26 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Laye
             if (indexes.length > 0) {
                 var removedLayers = this.layers.splice(indexes[0], 1);
                 removedLayer = removedLayers[0];
-                removedLayer.unsubscribe("visibility:changed", onVisibilityChange);
+                var self = this;
+                removedLayer.unsubscribe("visibility:changed", function (layer) {
+                    if (layer.isVisible() && layer.properties && !layer.background
+                        && layer.properties.hasOwnProperty("initialRa") && layer.properties.hasOwnProperty("initialDec") && layer.properties.hasOwnProperty("initialFov")) {
+
+                        if (layer.globe.getType() === Constants.GLOBE.Sky) {
+                            var fov = (layer.properties.initialFov) ? layer.properties.initialFov : layer.globe.getRenderContext().fov;
+                            self.getNavigation().zoomTo([layer.properties.initialRa, layer.properties.initialDec], {
+                                fov: fov,
+                                duration: 3000
+                            });
+                        }
+                        else {
+                            self.getNavigation().zoomTo([layer.properties.initialRa, layer.properties.initialDec], {
+                                distance: layer.properties.initialFov,
+                                duration: 3000
+                            });
+                        }
+                    }
+                });
                 ServiceFactory.create(Constants.SERVICE.PickingManager).removePickableLayer(removedLayer);
                 removedLayer._detach();
 
@@ -301,12 +362,13 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Laye
             return removedLayer;
         };
 
+
         /**
          * @function removeAllLayers
          * @memberOf AbstractContext#
          */
-        AbstractContext.prototype.removeAllLayers = function() {
-            for(var i=0;i<this.layers.length;i++) {
+        AbstractContext.prototype.removeAllLayers = function () {
+            for (var i = 0; i < this.layers.length; i++) {
                 var layerID = this.layers[i];
                 this.removeLayer(layerID);
             }
@@ -324,7 +386,6 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Laye
                 inversed: this.globe.isSky(),
                 zoomOnDblClick: true
             };
-
             var self = this;
             window.addEventListener("orientationchange", function () {
                 self.refresh();
@@ -384,9 +445,8 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Laye
                 });
             }
 
-            var self = this;
-
             // Define on resize function
+            var self = this;
             var onResize = function () {
                 if (parentCanvas && parentCanvas.attr("height") && parentCanvas.attr("width")) {
                     // Embedded
@@ -431,8 +491,8 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Laye
                 new AttributionHandler(
                     this.globe,
                     {
-                        element: (this.mizarConfiguration.attributionHandler &&  this.mizarConfiguration.attributionHandler.element)
-                                ? this.mizarConfiguration.attributionHandler.element : 'globeAttributions'
+                        element: (this.mizarConfiguration.attributionHandler && this.mizarConfiguration.attributionHandler.element)
+                            ? this.mizarConfiguration.attributionHandler.element : 'globeAttributions'
                     }
                 );
                 if (this.mizarConfiguration.isMobile) {
@@ -441,8 +501,8 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Laye
                 this.positionTracker.attachTo(this.globe);
                 this.elevationTracker.attachTo(this.globe);
             }
-            var self = this;
             //When base layer failed to load, open error dialog
+            var self = this;
             this.subscribe("baseLayersError", function (layer) {
                 $(self.canvas.parentElement).find('#loading').hide();
                 console.log("error");
@@ -461,7 +521,7 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Laye
 
             // Show UI components depending on its state
             for (var componentId in this.components) {
-                if( this.components.hasOwnProperty(componentId) && this.components[componentId]) {
+                if (this.components.hasOwnProperty(componentId) && this.components[componentId]) {
                     $("#" + componentId).fadeIn(1000);
                 }
             }
@@ -474,7 +534,7 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Laye
         AbstractContext.prototype.showComponents = function () {
             // Show UI components depending on its state
             for (var componentId in this.components) {
-                if( this.components.hasOwnProperty(componentId) && this.components[componentId]) {
+                if (this.components.hasOwnProperty(componentId) && this.components[componentId]) {
                     $("#" + componentId).fadeIn(1000);
                 }
             }
@@ -487,7 +547,7 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Laye
         AbstractContext.prototype.hideComponents = function (uiArray) {
             // Hide all the UI components
             for (var componentId in this.components) {
-                if( this.components.hasOwnProperty(componentId) && $.inArray(componentId , uiArray) === -1 ){
+                if (this.components.hasOwnProperty(componentId) && $.inArray(componentId, uiArray) === -1) {
                     $("#" + componentId).fadeOut();
                 }
             }
@@ -543,9 +603,9 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Laye
          * @memberOf AbstractContext#
          */
         AbstractContext.prototype.hideAdditionalLayers = function () {
+            var self = this;
             this.visibleLayers = [];
             var gwLayers = this.getAdditionalLayers();
-            var self = this;
             _.each(gwLayers, function (layer) {
                 if (layer.isVisible()) {
                     layer.setVisible(false);

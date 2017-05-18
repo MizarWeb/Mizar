@@ -19,12 +19,12 @@
 define(["../Utils/Constants", "../Services/FitsVisu", "../Services/HistogramCore",
         "../Services/ImageProcessingCore", "../Services/MeasureToolPlanetCore", "../Services/MeasureToolSkyCore",
         "../Services/MocBase", "../Services/MollweideViewerCore", "../Services/PickingManagerCore",
-        "../Services/SampCore", "../Services/SelectionToolCore",
+        "../Services/SampCore", "../Services/SelectionToolCore", "../Services/ExportToolCore",
         "../NameResolver/NameResolver", "../ReverseNameResolver/ReverseNameResolver"],
     function (Constants, FitsVisu, HistogramCore,
               ImageProcessingCore, MeasureToolPlanetCore, MeasureToolSkyCore,
               MocBase, MollweideViewerCore, PickingManagerCore,
-              SampCore, SelectionToolCore,
+              SampCore, SelectionToolCore, ExportToolCore,
               NameResolver, ReverseNameResolver) {
 
         return {
@@ -67,6 +67,9 @@ define(["../Utils/Constants", "../Services/FitsVisu", "../Services/HistogramCore
                         break;
                     case Constants.SERVICE.ReverseNameResolver:
                         obj = ReverseNameResolver;
+                        break;
+                    case Constants.SERVICE.ExportTool:
+                        obj = ExportToolCore;
                         break;
                     default:
                         throw "Cannot retrieve service " + serviceType;

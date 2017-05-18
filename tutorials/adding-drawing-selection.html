@@ -65,32 +65,30 @@
                             }
                         }
                     });
-
-                    var layerManager = mizar.getLayerManager();
-
-                    layerManager.addLayer({
-                        type: mizar.LAYER.WMS,
+            
+                    mizar.addLayer({
+                        type: Mizar.LAYER.WMS,
                         name: "Blue Marble",
                         baseUrl: "http://demonstrator.telespazio.com/wmspub",
                         layers: "BlueMarble"
                     });
 
-                    layerManager.addLayer({
-                        type: mizar.LAYER.WCSElevation,
+                    mizar.addLayer({
+                        type: Mizar.LAYER.WCSElevation,
                         name: "earthElevation",
                         baseUrl: "http://demonstrator.telespazio.com/wcspub",
                         coverage: "GTOPO",
                         version: "1.0.0",
                         scale: 2
                     });
-                    layerManager.setBackgroundLayer("Blue Marble");
-                    layerManager.setBaseElevation("earthElevation");
-                    var vectorLayerID = layerManager.addLayer({
-                        type: mizar.LAYER.GeoJSON,
+                    mizar.setBackgroundLayer("Blue Marble");
+                    mizar.setBaseElevation("earthElevation");
+                    var vectorLayerID = mizar.addLayer({
+                        type: Mizar.LAYER.GeoJSON,
                         visible: true
                     });
 
-                    var vectorLayer = layerManager.getLayerByID(vectorLayerID);
+                    var vectorLayer = mizar.getLayerByID(vectorLayerID);
 
 
                     var startPoint, endPoint;
@@ -127,7 +125,7 @@
 // Called when left mouse button is pressed : start drawing the rectangle
                     function onMouseDown(event) {
                         if (activated && event.button == 0) {
-                            startPoint = mizar.getContextManager().getActivatedContext().getLonLatFromPixel(event.pageX, event.pageY);
+                            startPoint = mizar.getActivatedContext().getLonLatFromPixel(event.pageX, event.pageY);
                             updateFeature(startPoint, startPoint);
                             started = true;
                         }
@@ -136,7 +134,7 @@
 // Called when mouse is moved  : update the rectangle
                     function onMouseMove(event) {
                         if (started && event.button == 0) {
-                            var endPoint = mizar.getContextManager().getActivatedContext().getLonLatFromPixel(event.pageX, event.pageY);
+                            var endPoint = mizar.getActivatedContext().getLonLatFromPixel(event.pageX, event.pageY);
                             updateFeature(startPoint, endPoint);
                         }
                     }
@@ -144,7 +142,7 @@
 // Called when left mouse button is release  : end drawing the rectangle
                     function onMouseUp(event) {
                         if (started && event.button == 0) {
-                            var endPoint = mizar.getContextManager().getActivatedContext().getLonLatFromPixel(event.pageX, event.pageY);
+                            var endPoint = mizar.getActivatedContext().getLonLatFromPixel(event.pageX, event.pageY);
                             updateFeature(startPoint, endPoint);
                             started = false;
                         }
@@ -157,10 +155,10 @@
                     $('#GlobWebCanvas').keypress(function () {
 
                         if (activated) {
-                            mizar.getContextManager().getNavigation().start();
+                            mizar.getActivatedContext().getNavigation().start();
                         }
                         else {
-                            mizar.getContextManager().getNavigation().stop();
+                            mizar.getActivatedContext().getNavigation().stop();
                             feature = {
                                 id: '0',
                                 type: 'Feature',

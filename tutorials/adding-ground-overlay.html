@@ -65,38 +65,36 @@
                         }
                     });
 
-                    mizar.getContextManager().createStats({element: 'fps', verbose: false});
-
-                    var layerManager = mizar.getLayerManager();
-
-                    layerManager.addLayer({
-                        type: mizar.LAYER.WMS,
+                    mizar.createStats({element: 'fps', verbose: false});
+            
+                    mizar.addLayer({
+                        type: Mizar.LAYER.WMS,
                         name: "Blue Marble",
                         baseUrl: "http://demonstrator.telespazio.com/wmspub",
                         layers: "BlueMarble"
                     });
 
-                    layerManager.addLayer({
-                        type: mizar.LAYER.WCSElevation,
+                    mizar.addLayer({
+                        type: Mizar.LAYER.WCSElevation,
                         name: "earthElevation",
                         baseUrl: "http://demonstrator.telespazio.com/wcspub",
                         coverage: "GTOPO",
                         version: "1.0.0",
                         scale: 2
                     });
-                    layerManager.setBackgroundLayer("Blue Marble");
-                    layerManager.setBaseElevation("earthElevation");
+                    mizar.setBackgroundLayer("Blue Marble");
+                    mizar.setBaseElevation("earthElevation");
 
-                    layerManager.addLayer({
-                        type: mizar.LAYER.GroundOverlay,
+                    mizar.addLayer({
+                        type: Mizar.LAYER.GroundOverlay,
                         image: "data/mizar.jpg",
                         quad: [[-1, 45], [-2, 46], [0, 48], [1, 47]],
                         opacity: 50,
                         flipY: false
                     });
 
-                    layerManager.addLayer({
-                        type: mizar.LAYER.GroundOverlay,
+                    mizar.addLayer({
+                        type: Mizar.LAYER.GroundOverlay,
                         image: "data/mizar.jpg",
                         quad: [[10, 40], [18, 40], [15, 48], [10, 45]]
                     });

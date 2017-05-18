@@ -260,6 +260,16 @@ Context.prototype.hideAdditionalLayers = function () {
 Context.prototype.getLonLatFromPixel = function (x, y) {
 };
 
+
+/**
+ * Returns the pixel coordinates from longitude/latitude in decimal degree.
+ * @param {float} longitude - lonitude in decimal degree in the current coordinate reference system
+ * @param {float} latitude - latitude in decimal degree in the current coordinate reference system
+ * @returns {int[]} pixels coordinates in the canvas
+ */
+Context.prototype.getPixelFromLonLat = function(longitude, latitude){
+};
+
 /**
  * Returns the elevation at a geo position.
  * @param {float} lon - the longitude in degree
@@ -401,6 +411,13 @@ Context.prototype.addAnimation = function (anim) {
  * @param {Animation} anim - the animation to remove
  */
 Context.prototype.removeAnimation = function (anim) {
+};
+
+/**
+ * Returns the tile manager.
+ * @returns {TileManager}
+ */
+Context.prototype.getTileManager = function () {
 };
 
 /**

@@ -79,26 +79,24 @@
                     continuousRendering: true
                 }
             });
-
-            var layerManager = mizar.getLayerManager();
-
-            layerManager.addLayer({
-                type: mizar.LAYER.WMS,
+            
+            mizar.addLayer({
+                type: Mizar.LAYER.WMS,
                 name: "Blue Marble",
                 baseUrl: "http://demonstrator.telespazio.com/wmspub",
                 layers: "BlueMarble"
             });
 
-            layerManager.addLayer({
-                type: mizar.LAYER.WCSElevation,
+            mizar.addLayer({
+                type: Mizar.LAYER.WCSElevation,
                 name: "earthElevation",
                 baseUrl: "http://demonstrator.telespazio.com/wcspub",
                 coverage: "GTOPO",
                 version: "1.0.0",
                 scale: 4
             });
-            layerManager.setBackgroundLayer("Blue Marble");
-            layerManager.setBaseElevation("earthElevation");
+            mizar.setBackgroundLayer("Blue Marble");
+            mizar.setBaseElevation("earthElevation");
         }//);
 
 

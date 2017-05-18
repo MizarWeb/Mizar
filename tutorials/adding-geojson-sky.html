@@ -73,20 +73,18 @@
                         }
                     });
 
-                    mizar.getContextManager().createStats({element: 'fps', verbose: false});
-
-                    var layerManager = mizar.getLayerManager();
-
-                    var dssLayerID = layerManager.addLayer({
-                        type: mizar.LAYER.Hips,
+                    mizar.createStats({element: 'fps', verbose: false});
+            
+                    var dssLayerID = mizar.addLayer({
+                        type: Mizar.LAYER.Hips,
                         baseUrl: "http://alasky.unistra.fr/DSS/DSSColor"
                     });
 
-                    var layer = layerManager.getLayerByID(dssLayerID);
+                    var layer = mizar.getLayerByID(dssLayerID);
 
-                    layerManager.setBackgroundLayer(layer.name);
-                    layerManager.addLayer({
-                        type: mizar.LAYER.GeoJSON,
+                    mizar.setBackgroundLayer(layer.name);
+                    mizar.addLayer({
+                        type: Mizar.LAYER.GeoJSON,
                         name: "Euclid",
                         url: "data/Euclid.json",
                         visible: true

@@ -81,19 +81,17 @@
                         }
                     });
 
-                    mizar.getContextManager().createStats({element: 'fps', verbose: false});
-
-                    var layerManager = mizar.getLayerManager();
-
-                    layerManager.addLayer({
-                        type: mizar.LAYER.WMS,
+                    mizar.createStats({element: 'fps', verbose: false});
+            
+                    mizar.addLayer({
+                        type: Mizar.LAYER.WMS,
                         name: "Blue Marble",
                         baseUrl: "http://demonstrator.telespazio.com/wmspub",
                         layers: "BlueMarble"
                     });
 
-                    layerManager.addLayer({
-                        type: mizar.LAYER.WCSElevation,
+                    mizar.addLayer({
+                        type: Mizar.LAYER.WCSElevation,
                         name: "earthElevation",
                         baseUrl: "http://demonstrator.telespazio.com/wcspub",
                         coverage: "GTOPO",
@@ -101,15 +99,15 @@
                         scale: 1
                     });
 
-                    layerManager.setBackgroundLayer("Blue Marble");
-                    layerManager.setBaseElevation("earthElevation");
+                    mizar.setBackgroundLayer("Blue Marble");
+                    mizar.setBaseElevation("earthElevation");
 
-                    var wireFrameID = layerManager.addLayer({
-                        type: mizar.LAYER.TileWireframe,
+                    var wireFrameID = mizar.addLayer({
+                        type: Mizar.LAYER.TileWireframe,
                         outline: true,
                         visible: true
                     });
-                    var wireframeLayer =layerManager.getLayerByID(wireFrameID);
+                    var wireframeLayer =mizar.getLayerByID(wireFrameID);
 
                     var cvs = document.getElementById("MizarCanvas");
 
@@ -124,11 +122,11 @@
                         pointMaxSize: 4000
                     });
 
-                    var layerID = layerManager.addLayer({
-                        type: mizar.LAYER.GeoJSON,
+                    var layerID = mizar.addLayer({
+                        type: Mizar.LAYER.GeoJSON,
                         visible: true
                     });
-                    var layer = mizar.getLayerManager().getLayerByID(layerID);
+                    var layer = mizar.getLayerByID(layerID);
 
                     layer.addFeature({
                         geometry: {
@@ -155,8 +153,8 @@
                     };
 
                     // Add some vector layer
-                    var layerID2 = layerManager.addLayer({
-                        type: mizar.LAYER.GeoJSON,
+                    var layerID2 = mizar.addLayer({
+                        type: Mizar.LAYER.GeoJSON,
                         style : mizar.UtilityFactory.create(mizar.UTILITY.CreateStyle, {
                             fillColor: [1., 1., 1., 1.],
                             strokeColor: [0.3, 0.3, 0.3, 1.],
@@ -167,13 +165,13 @@
                         visible: true
                     });
 
-                    var vectorLayer = layerManager.getLayerByID(layerID2);
+                    var vectorLayer = mizar.getLayerByID(layerID2);
 
                     // Test to check inverse transformation for each coordinate system
                     cvs.onclick = function (event) {
-                        var lonlat = mizar.getContextManager().getActivatedContext().getLonLatFromPixel(event.layerX, event.layerY);
+                        var lonlat = mizar.getActivatedContext().getLonLatFromPixel(event.layerX, event.layerY);
                         if (lonlat) {
-                            var pixel = mizar.getContextManager().getActivatedContext().globe.getPixelFromLonLat(lonlat[0], lonlat[1]);
+                            var pixel = mizar.getActivatedContext().getPixelFromLonLat(lonlat[0], lonlat[1]);
                         }
                     };
 
@@ -182,7 +180,7 @@
                         vectorLayer.removeAllFeatures();
 
                         var coordinateSystem = $(this).val();
-                        mizar.getContextManager().setCrs({
+                        mizar..setCrs({
                             geoideName: "EPSG:4326",
                             projectionName: coordinateSystem
                         });

@@ -71,33 +71,31 @@
                         }
                     });
 
-                    mizar.getContextManager().createStats({element: 'fps', verbose: false});
-
-                    var layerManager = mizar.getLayerManager();
-
-                    var dssLayerID = layerManager.addLayer({
-                        type: mizar.LAYER.Hips,
+                    mizar.createStats({element: 'fps', verbose: false});
+            
+                    var dssLayerID = mizar.addLayer({
+                        type: Mizar.LAYER.Hips,
                         baseUrl: "http://alasky.unistra.fr/DSS/DSSColor",
                         baseLevel:3,
                         numberOfLevels:1
                     });
 
-                    var irisLayerID = layerManager.addLayer({
-                        type: mizar.LAYER.Hips,
+                    var irisLayerID = mizar.addLayer({
+                        type: Mizar.LAYER.Hips,
                         baseUrl: "http://alasky.unistra.fr/IRISColor",
                         numberOfLevels:1
                     });
 
-                    layerManager.setBackgroundLayerByID(dssLayerID);
+                    mizar.setBackgroundLayerByID(dssLayerID);
 
 
 
                     window.onkeypress = function (event) {
                         if(mode==="equatorial") {
-                            layerManager.setBackgroundLayerByID(irisLayerID);
+                            mizar.setBackgroundLayerByID(irisLayerID);
                             mode = "galacic";
                         } else {
-                            layerManager.setBackgroundLayerByID(dssLayerID);
+                            mizar.setBackgroundLayerByID(dssLayerID);
                             mode = "equatorial";
                         }
                         //mizar.getContextManager().getActivatedContext().globe.getTileManager().setFreeze(!mizar.getContextManager().getActivatedContext().globe.getTileManager().getFreeze());
