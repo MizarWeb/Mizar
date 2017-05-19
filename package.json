@@ -18,14 +18,16 @@
   },
   "scripts": {
     "jsdoc": "jsdoc --readme ./README.md -c jsdoc.conf  && cp -r ./tutorials/resources ./api_doc && cp -r ./tutorials/data ./api_doc",
+    "deploy:web": "npm run build && npm run jsdoc && mkdir -p $npm_package_config_output && cp Mizar.min.js $npm_package_config_output && cp README.md $npm_package_config_output && cp mizar.png $npm_package_config_output && cp -r api_doc $npm_package_config_output",
+    "deploy:web:tmp": "npm run deployWebSite --Mizar:output=/tmp/website",
     "open:doc": "firefox ./api_doc/index.html",
     "license": "license-checker --production --relativeLicensePath | awk 'NR > 5' > licenses-3rd/npm/LICENSES",
     "build": "r.js -o build/buildMizar.js",
     "jshin:": "jshint -c ./.jshintrc  src/*",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "deploy:web": "npm run build && npm run jsdoc && mkdir -p $npm_package_config_output && cp Mizar.min.js $npm_package_config_output && cp README.md $npm_package_config_output && cp mizar.png $npm_package_config_output && cp -r api_doc $npm_package_config_output",
-    "deploy:web:tmp": "npm run deployWebSite --Mizar:output=/tmp/website"
+    "push:git": "git push --tags origin HEAD:master"
   },
+  "pre-commit": [ "build" ],
   "repository": {
     "type": "git",
     "url": "http://github.com/RegardsOss/MizarLib"
@@ -66,7 +68,7 @@
   ],
   "license": "GPL-3.0",
   "dependencies": {
-    "filesaver": "0.0.13",
+    "file-saver": "^1.3.3",
     "gzip-js": "^0.3.2",
     "jquery": "^3.1.1",
     "jquery-ui-dist": "^1.12.1",
@@ -83,6 +85,7 @@
     "jshint": "^2.9.4",
     "jslint": "^0.10.3",
     "license-checker": "^8.0.3",
+    "pre-commit": "^1.2.2",
     "uglify": "^0.1.5"
   }
 }

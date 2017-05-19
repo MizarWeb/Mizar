@@ -66,7 +66,7 @@
                     var mizar = new Mizar({
                         canvas: "MizarCanvas",
                         skyContext: {
-                            coordinateSystem: {geoideName: "Equatorial"},
+                            coordinateSystem: {geoideName: Mizar.CRS.Equatorial},
                             continuousRendering: true
                         }
                     });
@@ -98,7 +98,7 @@
                             mizar.setBackgroundLayerByID(dssLayerID);
                             mode = "equatorial";
                         }
-                        //mizar.getContextManager().getActivatedContext().globe.getTileManager().setFreeze(!mizar.getContextManager().getActivatedContext().globe.getTileManager().getFreeze());
+                        //mizar.getActivatedContext().getTileManager().setFreeze(!mizar.getActivatedContext().getTileManager().getFreeze());
                     }
                 }//);
     </script>

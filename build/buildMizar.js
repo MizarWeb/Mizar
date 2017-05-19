@@ -18,7 +18,7 @@
         samp: "../external/samp",
         string: "../node_modules/string/dist/string",
         gzip: "../external/gzip.min",
-        saveAs: "../node_modules/filesaver/src/Filesaver",
+        saveAs: "../node_modules/file-saver/FileSaver.min",
         jszip: "../node_modules/jszip/dist/jszip.min"
     },
     shim: {

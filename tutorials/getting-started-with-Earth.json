@@ -1,6 +1,7 @@
 {
   "title": "Getting Started with Earth",
   "children": [
+    "getting-started-with-Earth-init",
     "getting-started-with-navigation",
     "getting-started-with-layer",
     "adding-tracker"

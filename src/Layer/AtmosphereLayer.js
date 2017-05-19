@@ -61,8 +61,8 @@
  *     <li>{@link module:Layer.WMTSLayer WMTSLayer} : A layer to draw predefined tiles coming from a WMTS server</li>
  * </ul>
  * <br/>
- * In addition to the classes, a {@link module:Layer.LayerFactory factory} and a {@link LayerManager} are availables
- * to help for creating layer. Once the layer is created, the client can handle it by the use of its {@link Layer interface}.
+ * In addition to the classes, a {@link module:Layer.LayerFactory factory} is available to help for creating layer.
+ * Once the layer is created, the client can handle it by the use of its {@link Layer interface}.
  * @implements {Layer}
  * @module Layer
  */

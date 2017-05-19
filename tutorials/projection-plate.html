@@ -62,7 +62,7 @@
             var mizar = new Mizar({
                 canvas: "MizarCanvas",
                 planetContext: {
-                    coordinateSystem: {geoideName: "EPSG:4326", projectionName : "Plate"},
+                    coordinateSystem: {geoideName:  Mizar.CRS.WGS84, projectionName : Mizar.PROJECTION.Plate},
                     navigation: {
                         initTarget:[1.433, 43.600,30000],
                         inertia : true

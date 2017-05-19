@@ -76,10 +76,10 @@
                             }
                         },
                         planetContext: {
-                            coordinateSystem: {geoideName: "EPSG:4326"},
+                            coordinateSystem: {geoideName: Mizar.CRS.WGS84}
                         },
                         skyContext : {
-                            coordinateSystem: {geoideName: "IAU2000:49901"}
+                            coordinateSystem: {geoideName: Mizar.CRS.Mars_2000}
                         }
                     });
             
@@ -92,14 +92,14 @@
                     });
 
                     // hide the context
-                    mizar.getContextManager().getActivatedContext().hide();
+                    mizar.getActivatedContext().hide();
 
                     // add the layer as background on sky
                     mizar.setBackgroundLayerByID(dssLayerID);
-                    mizar.getContextManager().getActivatedContext().disable();
+                    mizar.getActivatedContext().disable();
 
                     // switch to planet context
-                    mizar.getContextManager().setActivatedContext("Planet");
+                    mizar.setActivatedContext("Planet");
 
                     // add a WMS layer
                     mizar.addLayer({

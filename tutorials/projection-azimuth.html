@@ -62,7 +62,7 @@
             var mizar = new Mizar({
                 canvas: "MizarCanvas",
                 planetContext: {
-                    coordinateSystem: {geoideName: "EPSG:4326", projectionName : "Azimuth", pole:"south"},
+                    coordinateSystem: {geoideName: Mizar.CRS.WGS84, projectionName : Mizar.PROJECTION.Azimuth, pole:"south"},
                     navigation: {
                         initTarget:[1.433, -43.600,3000000],
                         inertia : true

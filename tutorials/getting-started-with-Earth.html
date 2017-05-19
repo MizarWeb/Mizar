@@ -70,10 +70,12 @@
         function start() {
             // Create Mizar and initialize the Coordinate reference system for the planet
             var mizar = new Mizar({
-                canvas: "MizarCanvas",
-                planetContext: {
-                    coordinateSystem: {geoideName: "EPSG:4326"}
-                }
+                canvas: "MizarCanvas"
+            });
+
+            // create context
+            mizar.createContext(Mizar.CONTEXT.Planet, {
+                geoideName: Mizar.CRS.WGS84
             });
 
             // Add a WMS layer

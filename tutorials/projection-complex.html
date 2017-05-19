@@ -64,8 +64,8 @@
                         canvas: "MizarCanvas",
                         planetContext: {
                             coordinateSystem: {
-                                geoideName: "EPSG:4326",
-                                projectionName: "Mercator"
+                                geoideName: Mizar.CRS.WGS84,
+                                projectionName: Mizar.PROJECTION.Mercator
                             },
                             navigation: {
                                 inertia: true,
@@ -107,17 +107,17 @@
                         outline: true,
                         visible: true
                     });
-                    var wireframeLayer =mizar.getLayerByID(wireFrameID);
+                    var wireframeLayer = mizar.getLayerByID(wireFrameID);
 
                     var cvs = document.getElementById("MizarCanvas");
 
 
-                    var styleN = mizar.UtilityFactory.create(mizar.UTILITY.CreateStyle, {
+                    var styleN = mizar.UtilityFactory.create(Mizar.UTILITY.CreateStyle, {
                         label: "NORTH",
                         pointMaxSize: 4000
                     });
 
-                    var styleS = mizar.UtilityFactory.create(mizar.UTILITY.CreateStyle, {
+                    var styleS = mizar.UtilityFactory.create(Mizar.UTILITY.CreateStyle, {
                         label: "SOUTH",
                         pointMaxSize: 4000
                     });
@@ -155,7 +155,7 @@
                     // Add some vector layer
                     var layerID2 = mizar.addLayer({
                         type: Mizar.LAYER.GeoJSON,
-                        style : mizar.UtilityFactory.create(mizar.UTILITY.CreateStyle, {
+                        style : mizar.UtilityFactory.create(Mizar.UTILITY.CreateStyle, {
                             fillColor: [1., 1., 1., 1.],
                             strokeColor: [0.3, 0.3, 0.3, 1.],
                             fill: false
@@ -180,8 +180,8 @@
                         vectorLayer.removeAllFeatures();
 
                         var coordinateSystem = $(this).val();
-                        mizar..setCrs({
-                            geoideName: "EPSG:4326",
+                        mizar.setCrs({
+                            geoideName: Mizar.CRS.WGS84,
                             projectionName: coordinateSystem
                         });
 

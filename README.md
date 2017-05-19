@@ -3,14 +3,17 @@ Mizar
 
 Virtual Globe library with WebGL
 
-Mizar is a Javascript library developed by CNES. This library is mainly based on <a href="(https://github.com/TPZF/GlobWeb">GlobWeb library</a> developed by Telespazio France using the WebGL standard. WebGL allows embedding 3D visualisation in a browser without any plugin and it is supported on <a href="http://caniuse.com/#feat=webgl">recent versions of Mozilla Firefox and Google Chrome</a>.
-The main focus of Mizar is to provide a high performance 3D library for visualizing geospatial data for astronomicals and planetaries datum.
+Mizar is a Javascript library developed by CNES. This library is mainly based on <a href="(https://github.com/TPZF/GlobWeb">GlobWeb library</a>  developed by Telespazio France using the WebGL standard. WebGL allows embedding 3D visualisation in a browser without any plugin and it is supported  on <a href="http://caniuse.com/#feat=webgl">recent versions of Mozilla Firefox and Google Chrome</a>.
 
-Mizar supports the following features:
- * Base raster layer using WMS, WMTS, Bing Map REST API, WorldWind Tile Service, HIPS
- * Manipulation of vector data through GeoJSON interface: add/remove/select/style modification
- * Overlay raster layer on top of existing base layers
- * High performance vector rendering  : automatic tiling of vector data
+This library is designed for developers who wants to integrate the core api of Mizar in their web page.
+
+This core API provides functionnalities needed to :
+- display GIS and astronomy data
+- navigate through them
+- connect to main interoperability OGC and IVOA protocols
+
+The core API is a **Javascript** API.
+
 
 ## Getting started ##
 These instructions will get you a copy of the project up and running on your local machine for development and testing purposes.
@@ -19,7 +22,7 @@ These instructions will get you a copy of the project up and running on your loc
 ### Using github ###
 
 ```
-npm install https://github.com/RegardsOss/MizarLib.git
+npm install https://github.com/MizarWeb/Mizar.git
 ```
 
 ### Using npm repository ###
@@ -28,46 +31,107 @@ npm install https://github.com/RegardsOss/MizarLib.git
 npm install mizar --only=production
 ```
 
+## Architecture ##
+The {@link Mizar Mizar API} is able to create and to handle one or two contexts at the same time.
+A context is either a {@link module:Context.PlanetContext planet} or a {@link module:Context.SkyContext sky}. This means that Mizar can display :
++ a planet
++ a sky
++ a planet with the sky behind
+
+A {@link module:Context context} contains :
++ a {@link module:Globe globe}
++ a {@link module:Crs coordinate reference system}
++ a {@link module:Navigation navigation}
++ a few GUI components 
+
 ## How to use it ##
 
-### Quick start ###
-Pre-build stable version can be downloaded here :<br>
-<a href="http://github.com/RegardsOss/Mizar/mizar.min.js">Mizar lite</a>
+### Embedding in a web page ###
 
-See the following example for basic usage.
-<a href="https://raw.github.com/RegardsOss/Mizar/tree/master/examples/index.html">List of examples</a>
+*Integration of Mizar api script in HEADER*
 
-Internally, MIZAR-lite is using Standard Asynchronous Module Definition (AMD) modules.
-You can also use MIZAR-lite using any AMD loader such as RequireJS or Dojo.
+```javascript
+<script type="text/javascript" src="Mizar.min.js"></script>
+```
 
-See the following example for using GlobWeb with Require.js :
-<a href="https://raw.github.com/RegardsOss/Mizar/tree/master/demo/client">Demo with Require.js</a>
+*Declaration of Mizar canvas in BODY*
+
+```javascript
+<canvas
+  id="MizarCanvas"
+  style="border: none; margin: 0; padding: 0;">
+</canvas>
+```
+
+**Note :** 
+By default, the canvas will take the entire window. If you want to limit the canvas size, specify it with the attributes "height" and "width"
+
+### Creating a basic Mizar instance ###
+The only require element in Mizar constructor is the name of the canvas element.
+
+```javascript
+var mizar = new Mizar({
+    canvas :"MizarCanvas"
+  });
+```
+
+See tutorial {@tutorial getting-started-with-Earth|Getting start with Earth by creating a context}
+
+**Important :**
+The context can be created at the Mizar initialisation. Please look the the tutorial :
++ {@tutorial getting-started-with-Earth-init|Getting started with Earth without creating a context}
++ {@tutorial getting-started-with-EarthAndSky|Getting started with Earth & Sky wihtout creating contexts}
+
+### Add a layer
+
+Through the {@link Mizar#addLayer addLayer method}, you can create many kinds of layers :
+
+- **OpenSearch layer**<br/>
+Must be used if you want to display overlays with a number of records > 10000. The openSearch layer allows clients to search data on the server according to Healpix index and order numbers.
+
+- **GeoJson layer (Vector)**<br/>
+Must be used if you want to load the whole file in memory to display overlay. Since it's loaded in memory, there could be some performance issues when the number of loaded features is more than 10000.
+
+- **Sky layer**<br/>Must be used to display only images on sky context :
+  - Hips
+  - HipsFits
+  - Moc
+
+- **Grid coordinates (CoordinateGrid)**<br/>
+Currently there are two coordinate systems supported : Equatorial & Galactic.
+
+- **Planet layers**<br/>
+Layers which used to represent planet raster data, based on ogc  services, or data providers :
+  - WMS
+  - WMTS
+  - WMS elevation
+  - WCS elevation
+  - TileWireframe
+  - Planet
+  - Ground overlay
+  - Atmosphere
+  - Bing
+  - Osm
+  - Hips
+
+See the tutorial : {@tutorial adding-features Adding features}
 
 ## Documentation ##
-<a href="http://raw.github.com/RegardsOss/Mizar/tree/master/doc_api/index.html">API Documentation</a>  
-
-## Build ##
-
-GlobWeb use Require.js optimizer to build a minified version of Mizar:
-
-```
-npm install mizar
-npm run build
-```
+The API documentation can be found {@link Mizar here}
 
 ## Contributing
 
-Please read [CONTRIBUTING.md](https://raw.githubusercontent.com/RegardsOss/Mizar/master/CONTRIBUTING.md) for details on the process for submitting pull requests to me.
+Please read [CONTRIBUTING.md](https://raw.githubusercontent.com/MizarWeb/Mizar/master/CONTRIBUTING.md) for details on the process for submitting pull requests to me.
 
 ## Versioning
 
-We use [SemVer](http://semver.org/) for versioning. For the versions available, see the [tags on this repository](https://github.com/RegardsOss/Mizar/tags).
+We use [SemVer](http://semver.org/) for versioning. For the versions available, see the [tags on this repository](https://github.com/MizarWeb/Mizar/tags).
 
 
 ## License
 
-This project is licensed under the GPLV3 License - see the [LICENSE](https://raw.githubusercontent.com/RegardsOss/Mizar/master/LICENSE) file for details.
+This project is licensed under the GPLV3 License - see the [LICENSE](https://raw.githubusercontent.com/MizarWeb/Mizar/master/LICENSE.md) file for details.
 
 ## License-3rd
 
-See the [LICENSES](http://github.com/RegardsOss/Mizar/tree/master/licenses-3rd/) directory for details.
+See the [LICENSES](http://github.com/MizarWeb/Mizar/tree/master/licenses-3rd/) directory for details.

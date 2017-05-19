@@ -18,7 +18,7 @@
  ******************************************************************************/
 /**
  * A coordinate reference system is a coordinate system that is related to an object
- * by a {@link Geoide geodetic datum}.
+ * by a {@link module:Crs.Geoide geodetic datum}.
  * Mizar currently supports the following coordinates reference systems :
  * <table border="1">
  *     <tr>

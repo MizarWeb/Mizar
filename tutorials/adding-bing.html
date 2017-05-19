@@ -62,7 +62,7 @@
             var mizar = new Mizar({
                 canvas: "MizarCanvas",
                 planetContext: {
-                    coordinateSystem: {geoideName: "EPSG:4326"}
+                    coordinateSystem: {geoideName: Mizar.CRS.WGS84}
                 }
             });
 
@@ -92,7 +92,7 @@
             });
 
             // get the empty layer
-            var layer = mizar.getLayerManager().getLayerByID(layerID);
+            var layer = mizar.getLayerByID(layerID);
 
             // add this polygon the empyt layer
             // no need to define CRS, by defaut EPSG:4326 (Earth)
