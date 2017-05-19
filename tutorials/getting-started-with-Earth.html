@@ -75,7 +75,9 @@
 
             // create context
             mizar.createContext(Mizar.CONTEXT.Planet, {
-                geoideName: Mizar.CRS.WGS84
+                coordinateSystem: {
+                    geoideName: Mizar.CRS.WGS84
+                }
             });
 
             // Add a WMS layer
