@@ -19,7 +19,7 @@
   "scripts": {
     "jsdoc": "jsdoc --readme ./README.md -c jsdoc.conf  && cp -r ./tutorials/resources ./api_doc && cp -r ./tutorials/data ./api_doc",
     "deploy:web": "npm run build && npm run jsdoc && mkdir -p $npm_package_config_output && cp Mizar.min.js $npm_package_config_output && cp README.md $npm_package_config_output && cp mizar.png $npm_package_config_output && cp -r api_doc $npm_package_config_output",
-    "deploy:web:tmp": "npm run deployWebSite --Mizar:output=/tmp/website",
+    "deploy:web:tmp": "npm run deploy:web --Mizar:output=/tmp/website",
     "open:doc": "firefox ./api_doc/index.html",
     "license": "license-checker --production --relativeLicensePath | awk 'NR > 5' > licenses-3rd/npm/LICENSES",
     "build": "r.js -o build/buildMizar.js",
@@ -27,7 +27,9 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "push:git": "git push --tags origin HEAD:master"
   },
-  "pre-commit": [ "build" ],
+  "pre-commit": [
+    "build","license"
+  ],
   "repository": {
     "type": "git",
     "url": "http://github.com/RegardsOss/MizarLib"

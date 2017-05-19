@@ -84,7 +84,7 @@ The context can be created at the Mizar initialisation. Please look the the tuto
 
 ### Add a layer
 
-Through the {@link Mizar#addLayer addLayer method}, you can create many kinds of layers :
+Through the {@link Mizar#addLayer addLayer method}, you can create many kinds of {@link module:Layer layers} :
 
 - **OpenSearch layer**<br/>
 Must be used if you want to display overlays with a number of records > 10000. The openSearch layer allows clients to search data on the server according to Healpix index and order numbers.
@@ -112,9 +112,8 @@ Layers which used to represent planet raster data, based on ogc  services, or da
   - Atmosphere
   - Bing
   - Osm
-  - Hips
 
-See the tutorial : {@tutorial adding-features Adding features}
+See the tutorial : {@tutorial adding-features|Adding features}
 
 ## Documentation ##
 The API documentation can be found {@link Mizar here}

@@ -166,7 +166,7 @@ define(["jquery", "underscore-min", "../Utils/Utils", "./AbstractContext", "../U
                 renderContext: options.renderContext,
                 canvas: this.canvas,
                 coordinateSystem: options.coordinateSystem,
-                shadersPath: "../../shaders/",
+                shadersPath: this.mizarConfiguration['mizarAPIUrl']+'shaders/',
                 lighting: false,
                 backgroundColor: [0.0, 0.0, 0.0, 1.0],
                 minFar: 0,

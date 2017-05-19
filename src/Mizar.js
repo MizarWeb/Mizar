@@ -44,9 +44,36 @@ define(["jquery", "underscore-min",
 
         /**
          * @constant
+         * @type {string}
+         */
+        const API_VERSION = "1.0.0";
+
+        /**
+         * @constant
          * @type {number}
          */
         const ANGLE_CAMERA_POLE = 30.0;
+
+        /**
+         * @constant
+         * @type {string}
+         */
+        const MIZAR_NAME_PROD = "Mizar.min";
+
+        /**
+         * @constant
+         * @type {string}
+         */
+        const MIZAR_NAME_DEV = "Mizar.";
+
+        /**
+         * Input Mizar parameters
+         * @typedef {Object} Mizar.inputParameters
+         * @property {Object|string} canvas - div ID or div element
+         * @property {Mizar.inputConfiguration} [configuration] - Mizar global configuration
+         * @property {AbstractContext.skyContext} [skyContext] - Sky context configuration
+         * @property {AbstractContext.planetContext} [planetContext] - Planet context configuration
+         */
 
         /**
          * Mizar parameters
@@ -59,8 +86,8 @@ define(["jquery", "underscore-min",
 
         /**
          * Mizar configuration
-         * @typedef {Object} Mizar.configuration
-         * @property {string} mizarBaseUrl - Used to access to MizarWidget resources
+         * @typedef {Object} Mizar.inputConfiguration
+         * @property {string} [mizarBaseUrl] - Used to access to MizarWidget resources
          * @property {boolean} [debug = false] - Debug mode
          * @property {boolean} [isMobile = false] - Mobile support
          * @property {AbstractTracker.position_configuration} [positionTracker] - Position tracker configuration
@@ -70,10 +97,16 @@ define(["jquery", "underscore-min",
          */
 
         /**
+         * Mizar configuration
+         * @typedef {Mizar.inputConfiguration} Mizar.configuration
+         * @property {string} mizarAPIUrl - URL of this script, used to reference shaders and CSS of Mizar API
+         */
+
+        /**
          * @name Mizar
          * @class
          * Creates an instance of the Mizar API.
-         * @param {Mizar.parameters} options - Configuration for Mizar
+         * @param {Mizar.inputParameters} options - Configuration for Mizar
          * @constructor
          */
         var Mizar = function (options) {
@@ -149,70 +182,78 @@ define(["jquery", "underscore-min",
          **********************************************************************************************************/
 
         /**
-         * Supported {@link ANIMATION animation} type
+         * Static variable, API version.<br/>
+         * [SemVer]{@link http://semver.org/} concept is used for versioning
+         * @name VERSION
+         * @memberOf Mizar#
+         */
+        Mizar.VERSION = API_VERSION;
+
+        /**
+         * Static variable, supported {@link ANIMATION animation} type
          * @name ANIMATION
          * @memberOf Mizar#
          */
         Mizar.ANIMATION = Constants.ANIMATION;
 
         /**
-         * Supported {@link LAYER layer} type
+         * Static variable, supported {@link LAYER layer} type
          * @name LAYER
          * @memberOf Mizar#
          */
         Mizar.LAYER = Constants.LAYER;
 
         /**
-         * Supported {@link GEOMETRY geometry} type
+         * Static variable, supported {@link GEOMETRY geometry} type
          * @name GEOMETRY
          * @memberOf Mizar#
          */
         Mizar.GEOMETRY = Constants.GEOMETRY;
 
         /**
-         * Supported {@link NAVIGATION navigation} type
+         * Static variable, supported {@link NAVIGATION navigation} type
          * @name NAVIGATION
          * @memberOf Mizar#
          */
         Mizar.NAVIGATION = Constants.NAVIGATION;
 
         /**
-         * Supported {@link CONTEXT context} type
+         * Static variable, supported {@link CONTEXT context} type
          * @name CONTEXT
          * @memberOf Mizar#
          */
         Mizar.CONTEXT = Constants.CONTEXT;
 
         /**
-         * Supported {@link PROJECTION projection} type
+         * Static variable, supported {@link PROJECTION projection} type
          * @name PROJECTION
          * @memberOf Mizar#
          */
         Mizar.PROJECTION = Constants.PROJECTION;
 
         /**
-         * Supported {@link CRS coordinate reference system} type
+         * Static variable, supported {@link CRS coordinate reference system} type
          * @name CRS
          * @memberOf Mizar#
          */
         Mizar.CRS = Constants.CRS;
 
         /**
-         * Supported {@link SERVICE service} type
+         * Static variable, supported {@link SERVICE service} type
          * @name SERVICE
          * @memberOf Mizar#
          */
         Mizar.SERVICE = Constants.SERVICE;
 
         /**
-         * Supported {@link UTILITY utility} type
+         * Static variable, supported {@link UTILITY utility} type
          * @name UTILITY
          * @memberOf Mizar#
          */
         Mizar.UTILITY = Constants.UTILITY;
 
         /**
-         * Supported {@link PROVIDER provider} type
+         * Static variable, supported {@link PROVIDER provider} type
          * @name PROVIDER
          * @memberOf Mizar#
          */
@@ -223,7 +264,33 @@ define(["jquery", "underscore-min",
          *                                      Private methods
          **********************************************************************************************************/
 
+        /**
+         * Returns the script object that contains the URL of this script
+         * @param {Object[]} scripts - All the scripts from the document where Mizar is imported
+         * @param {MIZAR_NAME_PROD|MIZAR_NAME_DEV} scriptName - production or dev script name
+         * @param {int} index - Number of range '/' to remove from the end of the URL
+         * @private
+         */
+        function _extractURLFrom(scripts, scriptName, index) {
+            var mizarSrc =  _.find(scripts, function (script) {
+                return (script.src.indexOf(scriptName) !== -1);
+            });
+            if(mizarSrc) {
+                mizarSrc =  mizarSrc.src.split('/').slice(0, index).join('/') + '/';
+            }
+            return mizarSrc;
+        }
 
+        /**
+         * Return the base URL of this script.
+         * @returns {string} the base URL
+         * @private
+         */
+        function _getMizarAPIBaseURL() {
+            var scripts = document.getElementsByTagName('script');
+            return _extractURLFrom.call(this, scripts, MIZAR_NAME_PROD, -1) || _extractURLFrom.call(this, scripts, MIZAR_NAME_DEV, -2);
+        }
+        
         /**
          * Checks inputs
          * @param {Object} options - Mizar configuration
@@ -245,19 +312,23 @@ define(["jquery", "underscore-min",
 
         /**
          * Checks inputs from user and creates the mizar configuration
-         * @param {Mizar.parameters} options inputs from user
+         * @param {Mizar.Inputparameters} options inputs from user
          * @returns {Mizar.parameters} mizar configuration.
          * @function _createConfiguration
          * @memberOf Mizar#
          * @private
          */
         function _createConfiguration(options) {
+            var mizarAPIUrl = _getMizarAPIBaseURL();
             var mizarOptions = {
                 canvas: typeof options.canvas === "string" ? document.getElementById(options.canvas) : options.canvas
             };
             if (options.hasOwnProperty('configuration')) {
                 mizarOptions['configuration'] = options.configuration;
+            } else {
+                mizarOptions['configuration'] = {};
             }
+            mizarOptions['configuration']['mizarAPIUrl'] = mizarAPIUrl;
             if (options.hasOwnProperty('skyContext')) {
                 mizarOptions['skyContext'] = options.skyContext;
             }
@@ -321,7 +392,7 @@ define(["jquery", "underscore-min",
             planetConfig.planetLayer = gwLayer;
             planetConfig.coordinateSystem = gwLayer.coordinateSystem;
             planetConfig.renderContext = this.getRenderContext();
-            planetConfig.renderContext.shadersPath = "../../Mizar/shaders/";
+            //planetConfig.renderContext.shadersPath = "../../Mizar/shaders/";
 
             // Hide sky
             this.activatedContext.hide();
@@ -634,7 +705,7 @@ define(["jquery", "underscore-min",
         };
 
         /**
-         * Returns the activated context
+         * Returns the selected context
          * @returns {PlanetContext|SkyContext}
          * @function getActivatedContext
          * @memberOf Mizar#
@@ -644,8 +715,9 @@ define(["jquery", "underscore-min",
         };
 
         /**
-         * Sets the activated context according to the context mode
-         * @param {CONTEXT} contextMode
+         * Selects the context as default context according to the {@link CONTEXT context mode}.<br/>
+         * Once a context is selected, methods can be applied to it.
+         * @param {CONTEXT} contextMode - select one context among {@link CONTEXT context}
          * @fires Mizar#mizarMode:toggle
          * @function setActivatedContext
          * @memberOf Mizar#
@@ -679,7 +751,7 @@ define(["jquery", "underscore-min",
          * Returns the options
          * @function getOptions
          * @memberOf Mizar#
-         * @returns {Object} - Mizar's options
+         * @returns {Mizar.parameters} - Mizar's options
          */
         Mizar.prototype.getOptions = function () {
             return this.options;
@@ -689,20 +761,24 @@ define(["jquery", "underscore-min",
         //               ***************************** coordinate reference *****************************
 
         /**
-         * Returns the coordinate reference system.
-         * @returns {Crs} the crs
+         * Returns the coordinate reference system related to the selected {@link CONTEXT context}
+         * @returns {Crs} the coordinate reference system
          * @function getCrs
          * @memberOf Mizar#
+         * @see {@link Mizar#setActivatedContext}
+         * @see {@link Mizar#createContext}
          */
         Mizar.prototype.getCrs = function () {
             return this.activatedContext.getCoordinateSystem();
         };
 
         /**
-         * Sets the coordinate reference system
+         * Sets the coordinate reference system related to the selected {@link CONTEXT context}
          * @param {AbstractProjection.configuration|AbstractProjection.azimuth_configuration|AbstractProjection.mercator_configuration} coordinateSystem - coordinate system description
          * @function setCrs
          * @memberOf Mizar#
+         * @see {@link Mizar#setActivatedContext}
+         * @see {@link Mizar#createContext}*
          */
         Mizar.prototype.setCrs = function (coordinateSystem) {
             var crs = CoordinateSystemFactory.create(coordinateSystem);
@@ -712,8 +788,10 @@ define(["jquery", "underscore-min",
         //               ***************************** context management *****************************
 
         /**
-         * Creates a context according to the context mode.
-         * @param {CONTEXT} contextMode contextMode
+         * Creates a context according to the {@link CONTEXT context mode}.<br/>
+         * The created context is selected automatically as default context. The rendering context for the new
+         * context is retrieved from the previous context.
+         * @param {CONTEXT} contextMode - Select on context among {@link CONTEXT context}
          * @param {AbstractContext.skyContext|AbstractContext.planetContext} options - Options for the context, See options.planetContext or options.skycontext configuration for {@link Mizar}
          * @throws {RangeError} contextMode not valid - a valid contextMode is included in the list {@link CONTEXT}
          * @function createContext
@@ -739,7 +817,8 @@ define(["jquery", "underscore-min",
         };
 
         /**
-         * Switches 2D <--> 3D
+         * Switches 2D <--> 3D, only for planetary context. <br/>
+         * When this method is used in a sky context, and exception is thrown
          * @function toggleDimension
          * @memberOf Mizar#
          * @throws "Not implemented" - Will throw an exception for Sky mode. In this version, the sky cannot be projected in 2D
@@ -764,7 +843,7 @@ define(["jquery", "underscore-min",
          */
 
         /**
-         * Switch from a context to another one.
+         * Switches planetary <---> sky context
          * @param {PlanetLayer} gwLayer - planet layer
          * @param {AbstractContext.planetContext} options - options for the planet
          * @param {toggleContextCallback} callback - Call at the end of the toggle
@@ -790,7 +869,7 @@ define(["jquery", "underscore-min",
         //               ***************************** layer management *****************************
 
         /**
-         * Returns the sky layers.
+         * Returns the sky layers, which have been added by {@link Mizar#addLayer}.
          * @function getSkyLayers
          * @returns {Layer[]} the layers
          * @memberOf Mizar#
@@ -800,7 +879,7 @@ define(["jquery", "underscore-min",
         };
 
         /**
-         * Returns the planet layers.
+         * Returns the planet layers, which have been added by {@link Mizar#addLayer}
          * @function getPlanetLayers
          * @returns {Layer[]} the layers
          * @memberOf Mizar#
@@ -810,14 +889,15 @@ define(["jquery", "underscore-min",
         };
 
         /**
-         * Returns the layers for a specific mode. When no mode is specified,the mode from
-         * activatedcontext is specified.
+         * Returns the layers for a specific context.<br/>
+         * When no context is specified, the layers from the selected context are returned.
          * @function getLayers
-         * @param {CONTEXT|undefined} mode - Mode on which the function is applied
+         * @param {CONTEXT|undefined} mode - Context on which the function is applied
          * @returns {Layer[]} the layers
          * @memberOf Mizar#
          * @throws {RangeError} Will throw an error when the mode is not part of {@link CONTEXT}
-         *
+         * @see {@link Mizar#setActivatedContext}
+         * @see {@link Mizar#createContext}
          */
         Mizar.prototype.getLayers = function (mode) {
             return _getContext.call(this, mode).getLayers();
@@ -834,26 +914,34 @@ define(["jquery", "underscore-min",
         };
 
         /**
-         * Returns the layer by its ID
+         * Returns the layer by its ID according to the {@link CONTEXT context}.<br/>
+         * When no context is specified, the layer from the selected context is returned.<br/>
+         * The ID is a unique layer identifier, which is returned when the layer description is {@link Mizar#addLayer added}
+         * to Mizar
          * @function getLayerByID
          * @param layerID - Layer's ID
-         * @param {CONTEXT|undefined} mode - Mode on which the function is applied
+         * @param {CONTEXT|undefined} mode - Context on which the function is applied
          * @returns {Layer|undefined} The layer or undefined when the layer is not found
          * @memberOf Mizar#
-         *
+         * @see {@link Mizar#setActivatedContext}
+         * @see {@link Mizar#createContext}
          */
         Mizar.prototype.getLayerByID = function (layerID, mode) {
             return _getContext.call(this, mode).getLayerByID(layerID);
         };
 
         /**
-         * Returns the layer by its name.
+         * Returns the layer by its name according to the {@link CONTEXT context}.<br/>
+         * When no context is specified, the layer from the selected context is returned.<br/>
+         * <b>Note:</b> The name may not be unique. In this case, the first layer having this name is returned
          * @function getLayerByName
-         * @param {string} layerName - Layer's name
-         * @param {CONTEXT|undefined} mode - Mode on which the function is applied
+         * @param {string} layerName - Layer's name, provided in the layer description when the layer is {@link Mizar#addLayer added}
+         * @param {CONTEXT|undefined} mode - Context on which the function is applied
          * @returns {Layer|undefined} the layer or undefined when the layer is not found
          * @memberOf Mizar#
          * @throws {RangeError} Will throw an error when the mode is not part of {@link CONTEXT}
+         * @see {@link Mizar#setActivatedContext}
+         * @see {@link Mizar#createContext}
          */
         Mizar.prototype.getLayerByName = function (layerName, mode) {
             return _getContext.call(this, mode).getLayerByName(layerName);
@@ -861,7 +949,10 @@ define(["jquery", "underscore-min",
 
 
         /**
-         * Adds a layer
+         * Adds a layer according to the selected {@link CONTEXT context}.<br/>
+         * When layerPlanet is not provided, then the layer is added to the selected context otherwise the layer
+         * is added to the layerPlanet.
+         *
          * @function addLayer
          * @param {Object} layerDescription - See the base properties {@link AbstractLayer.configuration} and a specific layer for specific properties
          * @param {PlanetLayer} [layerPlanet] - the planet with which the layer must be linked
@@ -886,6 +977,8 @@ define(["jquery", "underscore-min",
          * @see {@link module:Layer.WMSElevationLayer WMSElevationLayer} : A layer to draw the elevation
          * @see {@link module:Layer.WMSLayer WMSLayer} : A layer to draw images coming from the WMS server
          * @see {@link module:Layer.WMTSLayer WMTSLayer} : A layer to draw predefined tiles coming from a WMTS server
+         * @see {@link Mizar#setActivatedContext}
+         * @see {@link Mizar#createContext}
          * @todo Bug to fix : PlanetLayer should use this function to create layer when the context changes
          */
         Mizar.prototype.addLayer = function (layerDescription, layerPlanet) {
@@ -900,13 +993,16 @@ define(["jquery", "underscore-min",
         };
 
         /**
-         * Removes a layer by its ID/
+         * Removes a layer by its ID according to the {@link CONTEXT context}.<br/>
+         * When no context is specified, then the function is applied on the selected context.
          * @function removeLayer
-         * @param layerID - Layer's ID
-         * @param mode - Mode on which the function is applied
+         * @param {string} layerID - Layer's ID
+         * @param {CONTEXT|undefined} mode - Context on which the function is applied
          * @returns {boolean} True when the layer is added otherwise False
          * @memberOf Mizar#
          * @throws {RangeError} Will throw an error when the mode is not part of {@link CONTEXT}
+         * @see {@link Mizar#setActivatedContext}
+         * @see {@link Mizar#createContext}
          */
         Mizar.prototype.removeLayer = function (layerID, mode) {
             var removedLayer = _getContext.call(this, mode).removeLayer(layerID);
@@ -914,13 +1010,18 @@ define(["jquery", "underscore-min",
         };
 
         /**
-         * Sets the background layer
+         * Sets the background layer according to the selected context.<br/>
+         * When no context is specified, then the function is applied on the selected context.<br/>
+         * <b>Note 1:</b> The name is not a unique identifier. The first layer matching at this name is returned<br/>
+         * <b>Note 2:</b> The layer must be {@link Mizar#addLayer added} before
          * @function setBackgroundLayer
-         * @param {string} layerName - Layer's name
-         * @param {CONTEXT|undefined} mode - Mode on which the function is applied
+         * @param {string} layerName - Layer's name, which has been provided in the layer description
+         * @param {CONTEXT|undefined} mode - Context on which the function is applied
          * @returns {boolean} True when the layer is set as background otherwise False
          * @memberOf Mizar#
          * @throws {RangeError} Will throw an error when the mode is not part of {@link CONTEXT}
+         * @see {@link Mizar#setActivatedContext}
+         * @see {@link Mizar#createContext}
          */
         Mizar.prototype.setBackgroundLayer = function (layerName, mode) {
             var gwLayer = _getContext.call(this, mode).setBackgroundLayer(layerName);
@@ -928,13 +1029,17 @@ define(["jquery", "underscore-min",
         };
 
         /**
-         * Sets the background layer by ID.
+         * Sets the background layer by ID according to the {@link CONTEXT context}.<br/>
+         * When no context is specified, then the function is applied on the selected context.
+         * <b>Note:</b> The layer must be {@link Mizar#addLayer added} before
          * @function setBackgroundLayerByID
-         * @param {string} layerID - Layer's ID
-         * @param {CONTEXT|undefined} mode - Mode on which the function is applied.
+         * @param {string} layerID - Unique layer identifier.
+         * @param {CONTEXT|undefined} mode - Context on which the function is applied.
          * @returns {boolean} True when the layer is set as background otherwise False
          * @memberOf Mizar#
          * @throws {RangeError} Will throw an error when the mode is not part of {@link CONTEXT}
+         * @see {@link Mizar#setActivatedContext}
+         * @see {@link Mizar#createContext}
          */
         Mizar.prototype.setBackgroundLayerByID = function (layerID, mode) {
             var gwLayer = _getContext.call(this, mode).setBackgroundLayerByID(layerID);
@@ -942,14 +1047,17 @@ define(["jquery", "underscore-min",
         };
 
         /**
-         * Sets the base elevation by its layer's name.<br/>
-         * The layer must added before.
+         * Sets the base elevation by its layer's name according to the {@link CONTEXT context}.<br/>
+         * When no context is specified, then the function is applied on the selected context.
+         * <b>Note:</b> The layer must be {@link Mizar#addLayer added} before
          * @function setBaseElevation
          * @param {string} layerName - Name of the layer
-         * @param {CONTEXT|undefined} mode - Mode on which the function is applied
+         * @param {CONTEXT|undefined} mode - Context on which the function is applied
          * @returns {boolean} True when the base elevation is set otherwise false
          * @memberOf Mizar#
          * @throws {RangeError} Will throw an error when the mode is not part of {@link CONTEXT}
+         * @see {@link Mizar#setActivatedContext}
+         * @see {@link Mizar#createContext}
          */
         Mizar.prototype.setBaseElevation = function (layerName, mode) {
             var layer = this.getLayerByName(layerName, mode);
@@ -957,13 +1065,16 @@ define(["jquery", "underscore-min",
         };
 
         /**
-         * Looks through each value in the list according to the mode, returning an array of all the values that match the query
+         * Looks through each value in the list according to the context, returning an array of all the values that match the query.<br/>
+         * The query is performed on the name and the description of each layer.<br/>
+         * When no context is specified, the function is applied on the selected context.
          * @function searchOnLayerDescription
          * @param {string} query - query on the layer'name or description
-         * @param {CONTEXT|undefined} mode - the mode on which the query is run. When undefined is selected,
-         * the constraint is run on all contexts.
+         * @param {CONTEXT|undefined} mode - Context on which the query is run.
          * @returns {Layer[]}
          * @memberOf Mizar#
+         * @see {@link Mizar#setActivatedContext}
+         * @see {@link Mizar#createContext}         
          */
         Mizar.prototype.searchOnLayerDescription = function (query, mode) {
             var layers = this.getLayers(mode);
@@ -973,13 +1084,14 @@ define(["jquery", "underscore-min",
         };
 
         /**
-         * Looks through each value in the list of sky, returning an array of all the values that match the query
-         * @function searchGlobeLayer
+         * Looks through each value in the sky layers, returning an array of all the values that match the query.<br/>
+         * The query is performed on the name and the description of each layer
+         * @function searchSkyLayer
          * @param {string} query - query on the layer'name or description
          * @returns {Layer[]} An array of layers matching the constraint
          * @memberOf Mizar#
          */
-        Mizar.prototype.searchGlobeLayer = function (query) {
+        Mizar.prototype.searchSkyLayer = function (query) {
             var layers = this.getSkyLayers();
             return _.filter(layers, function (layer) {
                 return (  (String(layer.name).indexOf(query) >= 0) || (String(layer.description || "").indexOf(query) >= 0) );
@@ -987,7 +1099,8 @@ define(["jquery", "underscore-min",
         };
 
         /**
-         * Looks through each value in the list of planets, returning an array of all the values that match the query.
+         * Looks through each value in the planets layers, returning an array of all the values that match the query.<br/>
+         * The query is performed on the name and the description of each layer
          * @function searchPlanetLayer
          * @param {string} query - query on the layer'name or description
          * @returns {Layer[]} An array of layers matching the constraint
@@ -1004,13 +1117,16 @@ define(["jquery", "underscore-min",
         //               ***************************** Utility management *****************************
 
         /**
-         * Registers no standard data provider in a predefined contect..
+         * Registers no standard data provider in a predefined context.<br/>
+         * When no context is specified, the function is applied to the selected context.
          * @function registerNoStandardDataProvider
          * @param {string} type - data provider key
-         * @param {Function} loadFunc - Function
-         * @param {CONTEXT|undefined} mode - mode
+         * @param {Function} loadFunc - Function to convert the data
+         * @param {CONTEXT|undefined} mode - Context
          * @memberOf Mizar#
          * @throws {RangeError} Will throw an error when the mode is not part of {@link CONTEXT}
+         * @see {@link Mizar#setActivatedContext}
+         * @see {@link Mizar#createContext}
          * @example <caption>Registers planets on the sky</caption>
          *   var planetProvider = ProviderFactory.create(Mizar.PROVIDER.Planet);
          *   this.registerNoStandardDataProvider("planets", planetProvider.loadFiles);
@@ -1036,7 +1152,7 @@ define(["jquery", "underscore-min",
         /**
          * Creates and get Stats Object
          * @function createStats
-         * @param options Configuration properties for stats. See {@link Stats} for options
+         * @param {Object} options - Configuration properties for stats. See {@link Stats} for options
          * @return {Stats}
          * @memberOf Mizar#
          */
@@ -1065,7 +1181,7 @@ define(["jquery", "underscore-min",
         //               ***************************** Memory management *****************************
 
         /**
-         * Disposes Mizar
+         * Disposes the Mizar's contexts (planet and sky)
          * @function dispose
          * @memberOf Mizar#
          */

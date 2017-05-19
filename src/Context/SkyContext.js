@@ -90,6 +90,7 @@ define(["underscore-min", "../Utils/Utils",
          * @property {int} minFar
          * @property {float} radius
          * @property {int[]} defaultColor = [200, 200, 200, 255] - Default color
+         * @property {string} shadersPath = "../../shaders/" - Shaders location
          * @property {boolean} renderTileWithoutTexture = false
          * @property {function} publishEvent - Callback
          */
@@ -118,6 +119,7 @@ define(["underscore-min", "../Utils/Utils",
                 lighting: false,
                 backgroundColor: [0.0, 0.0, 0.0, 1.0],
                 defaultColor: [200, 200, 200, 255],
+                shadersPath: this.mizarConfiguration['mizarAPIUrl']+'shaders/',
                 publishEvent: function (message, object) {
                     self.publish(message, object);
                 }
