@@ -251,7 +251,7 @@ define(['../Utils/Event', '../Utils/Utils',
          * @memberOf AbstractGlobe#
          */
         AbstractGlobe.prototype.removeLayer = function (layer) {
-            layer.setVisible(false);
+            //layer.setVisible(false); <!-- cannot do it because of PlanetLayer  : This changes the original configuration -->
             layer._detach();
             this.renderContext.requestFrame();
             this.publishEvent("layer:remove", layer);

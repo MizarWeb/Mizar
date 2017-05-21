@@ -341,8 +341,8 @@ define(["jquery", "underscore-min",
             // Hide planet
             this.activatedContext.hide();
 
-            // Hide all additional layers
-            this.activatedContext.hideAdditionalLayers();
+            // Hide all additional layers <!-- cannot use it because of PlanetLayer -->
+            //this.activatedContext.hideAdditionalLayers();
 
             // change the context
             this.setActivatedContext(Mizar.CONTEXT.Sky);
