@@ -975,8 +975,8 @@ define(["jquery", "underscore-min",
         Mizar.prototype.addLayer = function (layerDescription, layerPlanet) {
             var layer;
             if (layerPlanet) {
-                //layer = this.LayerFactory.create(layerDescription);
-                layerPlanet.layers.push(layerDescription);
+                layer = this.LayerFactory.create(layerDescription);
+                layerPlanet.layers.push(layer);
             } else {
                 layer = this.getActivatedContext().addLayer(layerDescription);
             }

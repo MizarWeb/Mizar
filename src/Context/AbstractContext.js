@@ -197,7 +197,7 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Laye
         AbstractContext.prototype.getPixelFromLonLat = function(longitude, latitude){
             return this.globe.getPixelFromLonLat(longitude, latitude);
         };
-
+        
         /**
          * @function getElevation
          * @memberOf AbstractContext#
