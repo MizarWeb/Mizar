@@ -309,7 +309,8 @@ define(["jquery", "underscore-min", "../Utils/Utils", "./AbstractContext", "../U
             this.removeAllLayers();
             this.globe.destroy();
             this.globe = null;
-            this.layers = [];
+            this.layers = null;
+            this.visibleLayers = null;
         };
 
         /**************************************************************************************************************/

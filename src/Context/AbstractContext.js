@@ -255,9 +255,10 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Laye
          */
         AbstractContext.prototype.addLayer = function (mizarLayer, layerPlanet) {
             var layer = LayerFactory.create(mizarLayer);
-            if (layerPlanet) {
-                layerPlanet.layers.push(layer);
-            } else if (layer.type === 'Planet') {
+            //if (layerPlanet) {
+            //    layerPlanet.layers.push(layer);
+            //} else 
+            if (layer.type === 'Planet') {
                 this.layers.push(layer);
             } else {
                 this.layers.push(layer);

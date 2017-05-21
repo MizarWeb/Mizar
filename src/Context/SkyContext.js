@@ -184,7 +184,8 @@ define(["underscore-min", "../Utils/Utils",
             this.removeAllLayers();
             this.globe.destroy();
             this.globe = null;
-            this.layers = [];
+            this.layers = null;
+            this.visibleLayers = null;
         };
 
         /**************************************************************************************************************/

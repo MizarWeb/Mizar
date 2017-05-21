@@ -70,7 +70,7 @@ define(["jquery", "underscore-min", "../Utils/Constants",
             targetLayer.addFeature(targetFeature);
         }
 
-        function zoomToHips(matchHealpix) {
+        function zoomToHips(matchHealpix, onSuccess) {
             var order = parseInt(matchHealpix[1], 10);
             var pixelIndex = parseInt(matchHealpix[2], 10);
 
@@ -92,9 +92,9 @@ define(["jquery", "underscore-min", "../Utils/Constants",
             zoomTo(geoPos[0], geoPos[1], mizarAPI.getCrs().getGeoideName(), onSuccess);
         }
 
-        function zoomToSexagesimal(objectName, word) {
+        function zoomToSexagesimal(coordinates, onSuccess) {
             // Format to equatorial coordinates
-            var word = objectName.split(" "); // [RA, Dec]
+            var word = coordinates.split(" "); // [RA, Dec]
 
             word[0] = word[0].replace(/h|m|:/g, " ");
             word[0] = word[0].replace("s", "");
@@ -107,7 +107,7 @@ define(["jquery", "underscore-min", "../Utils/Constants",
             zoomTo(geoPos[0], geoPos[1], mizarAPI.getCrs().getGeoideName(), onSuccess);
         }
 
-        function zoomToDecimal(matchDegree) {
+        function zoomToDecimal(matchDegree, onSuccess) {
             var lon = parseFloat(matchDegree[1]);
             var lat = parseFloat(matchDegree[3]);
             var geo = [lon, lat];
@@ -137,13 +137,13 @@ define(["jquery", "underscore-min", "../Utils/Constants",
             var matchDegree = degRE.exec(objectName);
             var matchLayer = layerRE.exec(objectName);
             if (matchHealpix) {
-                zoomToHips(matchHealpix);
+                zoomToHips(matchHealpix, onSuccess);
             }
             else if (objectName.match(coordinatesExp)) {
-                zoomToSexagesimal(objectName, coordinatesExp);
+                zoomToSexagesimal(objectName, coordinatesExp, onSuccess);
             }
             else if (matchDegree) {
-                zoomToDecimal(matchDegree);
+                zoomToDecimal(matchDegree, onSuccess);
             }
             else {
                 var options = {

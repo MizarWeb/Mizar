@@ -30,17 +30,9 @@ define(["jquery", "underscore-min",
               AnimationFactory, UtilityFactory, ServiceFactory, ProviderFactory,
               Utils, Event, Stats, Constants, ErrorDialog, HipsMetadata) {
 
-        //TODO bug : Elevation in geotiling when azimuth proj is used
-        //TODO bug : pb affichage catalogue en 2D quand elevation activé
-        //TODO bug : numberOfLevels pour Hips n'est pas toujours tenu en compte.
-        //TODO bug : options.baseLevel = 3 dans AbstractHipsLayer => probleme affichage - important pour éviter des requêtes inutiles
-        //TODO bug : probleme minification si usage
-        //TODO bug : bug "name resolver" with negative longitude
-        //TODO bug : bug "nam" resolver" with negative latitude in north azimuthal projection
-        //TODO : En azimutale projection, lorsque le WMS fournit une capacité azimuth, l'utiliser sinon utiliser EPSG4326
-        //TODO : NiceScroll pour les résultats du resolveur de nom
-        //TODO : Check position in zoomTo => cas erreur : l'afficher dans nameResolver comme "badInputParam"
+        //TODO bug : shortest path
         //TODO : charger cratere Mars et l'afficher à un certain niveau de zoom
+        //TODO : addLayer
 
         /**
          * @constant
@@ -392,7 +384,6 @@ define(["jquery", "underscore-min",
             planetConfig.planetLayer = gwLayer;
             planetConfig.coordinateSystem = gwLayer.coordinateSystem;
             planetConfig.renderContext = this.getRenderContext();
-            //planetConfig.renderContext.shadersPath = "../../Mizar/shaders/";
 
             // Hide sky
             this.activatedContext.hide();
