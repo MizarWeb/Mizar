@@ -131,7 +131,7 @@ define(["jquery","../Utils/Constants", "./WMSLayer", "./WMTSLayer", "./WCSElevat
         return {
             /**
              * Factory for Layer.
-             * @param {Object} options - See the base properties {@link AbstractLayer.configuration} and a specific layer for specific properties
+             * @param {Object} options - See the base properties {@link AbstractLayer.configuration} and specific properties for specific layers
              * @param {string} options.type - one of the following value {Constants.Layer}
              * @return {AbstractLayer} - Object to handle Layer
              * @alias module:Layer.LayerFactory.create

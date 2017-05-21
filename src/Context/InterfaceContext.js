@@ -339,13 +339,12 @@ Context.prototype.getAdditionalLayers = function () {
  * layer is added to the globe.
  * According to the attributes of the layer, the layer is either added as background or
  * as additional layer.
- * @param {Layer} mizarLayer - the layer description
- * @param {PlanetLayer}[layerPlanet] - the planet
+ * @param {Object} mizarDescription - See the base properties {@link AbstractLayer.configuration} and specific properties for specific layers
  * @return {Layer} the created layer
  * @fires Context#backgroundLayer:add
  * @fires Context#additionalLayer:add
  */
-Context.prototype.addLayer = function (mizarLayer, layerPlanet) {
+Context.prototype.addLayer = function (mizarDescription) {
 };
 
 /**

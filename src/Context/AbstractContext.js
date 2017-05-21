@@ -253,11 +253,8 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Laye
          * @function addLayer
          * @memberOf AbstractContext#
          */
-        AbstractContext.prototype.addLayer = function (mizarLayer, layerPlanet) {
-            var layer = LayerFactory.create(mizarLayer);
-            //if (layerPlanet) {
-            //    layerPlanet.layers.push(layer);
-            //} else 
+        AbstractContext.prototype.addLayer = function (layerDescription) {
+            var layer = LayerFactory.create(layerDescription);
             if (layer.type === 'Planet') {
                 this.layers.push(layer);
             } else {
@@ -265,7 +262,7 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Laye
                 _addToGlobe.call(this, layer);
             }
 
-            _fillDataProvider.call(this, layer, mizarLayer);
+            _fillDataProvider.call(this, layer, layerDescription);
 
             if (layer.pickable) {
                 ServiceFactory.create(Constants.SERVICE.PickingManager).addPickableLayer(layer);
