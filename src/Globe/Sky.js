@@ -97,7 +97,6 @@ define(['../Tiling/TileManager', '../Tiling/TilePool',
                 this.removeLayer(this.baseImagery);
                 this.tileManagers[this.baseImagery.tiling.coordinateSystem.getGeoideName()].setImageryProvider(null);
                 this.baseImagery = null;
-                layer.background = false;
             }
 
             // Attach the layer to the globe

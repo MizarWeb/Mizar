@@ -97,6 +97,7 @@ define(['../Tiling/Tile',
             // Attach the layer to the globe
             if (layer) {
                 layer._overlay = false;
+                layer.background = true;
                 this.addLayer(layer);
                 this.baseImagery = layer;
                 layer.setVisible(true);

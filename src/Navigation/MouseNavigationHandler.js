@@ -215,7 +215,6 @@ define(function () {
          */
         var _handleMouseDblClick = function (event) {
             if (event.button === 0) {
-                console.log("navigation",_navigation);
                 var pos,geo;
                 pos = _navigation.ctx.getRenderContext().getXYRelativeToCanvas(event);
                 geo = _navigation.ctx.getLonLatFromPixel(pos[0], pos[1]);

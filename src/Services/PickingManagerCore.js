@@ -423,6 +423,11 @@ define(["../Renderer/FeatureStyle", "../Layer/OpenSearchLayer", "../Utils/Utils"
             focusFeatureByIndex(selection - 1, options);
         }
 
+        function updateContext(context) {
+            ctx = context;
+            globe = context.globe;
+        }
+
         /**************************************************************************************************************/
 
         return {
@@ -445,6 +450,7 @@ define(["../Renderer/FeatureStyle", "../Layer/OpenSearchLayer", "../Utils/Utils"
             featureIsPicked: featureIsPicked,
             computePickSelection: computePickSelection,
             setSelection: setSelection,
-            highlightObservation: highlightObservation
+            highlightObservation: highlightObservation,
+            updateContext: updateContext
         };
     });

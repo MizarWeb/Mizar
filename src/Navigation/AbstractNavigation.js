@@ -70,7 +70,7 @@ define(['../Utils/Utils', '../Utils/Event', '../Navigation/NavigationHandlerFact
             Event.prototype.constructor.call(this);
             this.type = type;
             this.ctx = ctx;
-            this.renderContext = this.ctx.globe.getRenderContext();
+            this.renderContext = this.ctx.getRenderContext();
             this.options = options || {};
 
             // Create default handlers if none are created in options
@@ -245,7 +245,7 @@ define(['../Utils/Utils', '../Utils/Event', '../Navigation/NavigationHandlerFact
          * @memberOf AbstractNavigation#
          */
         AbstractNavigation.prototype.getCenter = function () {
-            return this.ctx.globe.getLonLatFromPixel(this.renderContext.getCanvas().width * 0.5, this.renderContext.getCanvas().height * 0.5)
+            return this.ctx.getLonLatFromPixel(this.renderContext.getCanvas().width * 0.5, this.renderContext.getCanvas().height * 0.5)
         };
 
         /**
@@ -388,7 +388,7 @@ define(['../Utils/Utils', '../Utils/Event', '../Navigation/NavigationHandlerFact
                 }
             };
 
-            this.ctx.globe.addAnimation(animation);
+            this.ctx.addAnimation(animation);
             animation.start();
         };
 

@@ -298,6 +298,11 @@ define(["jquery", "underscore-min", "../Utils/Numeric", "../Utils/Constants",
             }
         }
 
+        function remove() {
+            self.clear();
+            mizarAPI.getSkyContext().removeDraw(measureLayer);
+        }
+
         return {
             init: function (options) {
                 mizarAPI = options.mizar;
@@ -308,7 +313,7 @@ define(["jquery", "underscore-min", "../Utils/Numeric", "../Utils/Constants",
 
                 // Layer containing measure feature
                 measureLayer = mizarAPI.LayerFactory.create({type:Constants.LAYER.Vector, visible:true});
-                mizarAPI.getSkyContext().globe.addLayer(measureLayer);
+                mizarAPI.getSkyContext().addDraw(measureLayer);
 
                 this.activated = false;
                 this.renderContext = mizarAPI.getRenderContext();
@@ -328,6 +333,7 @@ define(["jquery", "underscore-min", "../Utils/Numeric", "../Utils/Constants",
             _handleMouseMove: _handleMouseMove,
             updateMeasure : updateMeasure,
             clear: clear,
+            remove: remove,
             computeMeasure: computeMeasure,
             computeIntersection: computeIntersection
         };

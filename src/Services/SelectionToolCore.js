@@ -61,7 +61,7 @@ define(["jquery", "../Utils/UtilsIntersection", "../Utils/Numeric", "../Layer/Ve
                 style: style,
                 visible:true
             });
-            ctx.globe.addLayer(this.selectionLayer);
+            ctx.addDraw(this.selectionLayer);
 
             this.selectionFeature = null;
 

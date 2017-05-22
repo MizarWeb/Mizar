@@ -257,6 +257,11 @@ define(["jquery", "underscore-min", "../Utils/Constants",
 
         /**********************************************************************************************/
 
+        function remove() {
+            self.clear();
+            mizarAPI.getPlanetContext().removeDraw(measureLayer);
+        }
+
         /**
          *    Updates measure coordinates
          */
@@ -428,7 +433,7 @@ define(["jquery", "underscore-min", "../Utils/Constants",
             if (!measureLayer) {
                 measureLayer = new VectorLayer();
             }
-            mizarAPI.getPlanetContext().globe.addLayer(measureLayer, mizarAPI.getActivatedContext().planetLayer);
+            mizarAPI.getPlanetContext().addDraw(measureLayer);
 
             this.activated = false;
             this.renderContext = mizarAPI.getRenderContext();
@@ -449,7 +454,7 @@ define(["jquery", "underscore-min", "../Utils/Constants",
 
                 // Layer containing measure feature
                 measureLayer = mizarAPI.LayerFactory.create({type:Constants.LAYER.Vector, visible:true});
-                mizarAPI.getPlanetContext().globe.addLayer(measureLayer, mizarAPI.getActivatedContext().planetLayer);
+                mizarAPI.getPlanetContext().addDraw(measureLayer);
 
                 this.activated = false;
                 this.renderContext = mizarAPI.getRenderContext();
@@ -461,6 +466,7 @@ define(["jquery", "underscore-min", "../Utils/Constants",
             _handleMouseUp: _handleMouseUp,
             _handleMouseMove: _handleMouseMove,
             clear: clear,
+            remove:remove,
             updateContext: updateContext,
             calculateIntermediateElevationPoint: calculateIntermediateElevationPoint,
             calculateDistanceElevation: calculateDistanceElevation,
