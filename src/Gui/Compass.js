@@ -170,7 +170,8 @@ define(["jquery", "./CompassCore"], function ($, CompassCore) {
             }
 
             // Update fov when moving
-            ctx.subscribe("modifiedNavigation", CompassCore.updateNorth, northText);
+            ctx.subscribe("modifiedNavigation", CompassCore.updateNorth);
+            ctx.subscribe("modifiedCrs", CompassCore.updateNorth);
         };
     };
 
