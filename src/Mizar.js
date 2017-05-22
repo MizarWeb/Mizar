@@ -976,6 +976,7 @@ define(["jquery", "underscore-min",
             var layer;
             if (layerPlanet) {
                 layer = this.LayerFactory.create(layerDescription);
+                this.getActivatedContext()._fillDataProvider(layer, layerDescription);
                 layerPlanet.layers.push(layer);
             } else {
                 layer = this.getActivatedContext().addLayer(layerDescription);
@@ -1123,8 +1124,7 @@ define(["jquery", "underscore-min",
          *   this.registerNoStandardDataProvider("planets", planetProvider.loadFiles);
          */
         Mizar.prototype.registerNoStandardDataProvider = function (type, loadFunc, mode) {
-            this.dataProviders[type.toString()] = loadFunc;
-            return _getContext.call(this, mode).registerNoStandardDataProvider(type, loadFunc);
+            _getContext.call(this, mode).registerNoStandardDataProvider(type, loadFunc);
         };
 
 

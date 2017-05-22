@@ -105,19 +105,6 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Laye
             }
         }
 
-        /**
-         * Fill data-provider-type layer by features coming from data object
-         * @param {Layer} layer - layer in which data should be added.
-         * @param {Object} mizarDescription - See the base properties {@link AbstractLayer.configuration} and a specific layer for specific properties
-         * @private
-         */
-        function _fillDataProvider(layer, mizarDescription) {
-            if (mizarDescription.data && this.dataProviders[mizarDescription.data.type]) {
-                var callback = this.dataProviders[mizarDescription.data.type];
-                callback(layer, mizarDescription.data);
-            }
-        }
-
 
         /**************************************************************************************************************/
         Utils.inherits(Event, AbstractContext);
@@ -141,6 +128,21 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Laye
             }
             if (document.getElementById('webGLNotAvailable')) {
                 document.getElementById('webGLNotAvailable').style.display = "block";
+            }
+        };
+
+        /**
+         * Fill data-provider-type layer by features coming from data object
+         * @function _fillDataProvider
+         * @param {Layer} layer - layer in which data should be added.
+         * @param {Object} mizarDescription - See the base properties {@link AbstractLayer.configuration} and a specific layer for specific properties
+         * @memberOf AbstractContext#
+         * @protected
+         */
+        AbstractContext.prototype._fillDataProvider = function(layer, mizarDescription) {
+            if (mizarDescription.data && this.dataProviders[mizarDescription.data.type]) {
+                var callback = this.dataProviders[mizarDescription.data.type];
+                callback(layer, mizarDescription.data);
             }
         };
 
@@ -262,7 +264,7 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Laye
                 _addToGlobe.call(this, layer);
             }
 
-            _fillDataProvider.call(this, layer, layerDescription);
+            this._fillDataProvider(layer, layerDescription);
 
             if (layer.pickable) {
                 ServiceFactory.create(Constants.SERVICE.PickingManager).addPickableLayer(layer);
