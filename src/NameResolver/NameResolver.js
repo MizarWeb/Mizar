@@ -292,7 +292,7 @@ define(["jquery", "underscore-min", "../Utils/Constants",
              */
             remove: function () {
                 if (context) {
-                    mizarAPI.getActivatedContext().globe.removeLayer(targetLayer);
+                    mizarAPI.getActivatedContext().removeDraw(targetLayer);
                     if (nameResolverImplementation !== undefined) {
                         nameResolverImplementation.remove();
                     }
@@ -356,7 +356,7 @@ define(["jquery", "underscore-min", "../Utils/Constants",
                 });
                 targetLayer = new VectorLayer({style: style, visible: true});
 
-                mizarAPI.getActivatedContext().globe.addLayer(targetLayer);
+                mizarAPI.getActivatedContext().addDraw(targetLayer);
 
                 // Update name resolver properties
                 duration = isDefaultNameResolver ? 3000 : context.getContextConfiguration().nameResolver.duration;

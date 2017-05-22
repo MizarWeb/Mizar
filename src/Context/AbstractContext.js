@@ -159,7 +159,7 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Laye
          * @function registerNoStandardDataProvider
          * @param {string} type - data provider key
          * @param {Function} loadFunc - Function
-         * @memberOf LayerManager#
+         * @memberOf AbstractContext#
          * @example <caption>Registers planets on the sky</caption>
          *   var planetProvider = ProviderFactory.create(Constants.PROVIDER.Planet);
          *   this.registerNoStandardDataProvider("planets", planetProvider.loadFiles);
@@ -372,6 +372,22 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Laye
                 var layerID = this.layers[i];
                 this.removeLayer(layerID);
             }
+        };
+
+        /**
+         * @function addDraw
+         * @memberOf AbstractContext#
+         */
+        AbstractContext.prototype.addDraw = function(layer) {
+            this.globe.addLayer(layer);
+        };
+
+         /**
+         * @function removeDraw
+         * @memberOf AbstractContext#
+         */
+        AbstractContext.prototype.removeDraw = function(layer) {
+            this.globe.removeLayer(layer);
         };
 
         /**

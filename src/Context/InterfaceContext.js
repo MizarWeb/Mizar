@@ -361,6 +361,23 @@ Context.prototype.removeLayer = function (layerID) {
 Context.prototype.removeAllLayers = function () {
 };
 
+
+/**
+ * Adds a temporary draw as a layer on the globe.<br/>
+ * A temporary draw is used to create a subLayer or a simple draw. This added layer is not searchable and does not
+ * subscribe to "visibility:changed" by configuration
+ * @param {Layer} layer
+ */
+Context.prototype.addDraw = function(layer) {
+};
+
+/**
+ * Removes the temporary draw on the globe.
+ * @param {Layer} layer
+ */
+Context.prototype.removeDraw = function(layer) {
+};
+
 /**
  * Returns the rendering context.
  * @return {RenderContext} The rendering context
