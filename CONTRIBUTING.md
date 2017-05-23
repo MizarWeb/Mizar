@@ -28,12 +28,12 @@ you may click "subscribe" to follow any developments.
 Sign into Github and go to the issue tracker. Click on "Create a new issue" and write your bug report following
 the next sections :
 
-#### 2.5 - Title
+### 2.5 - Title
 The title should describe the problem as best as possible. Remember that the title is read more often than any other part of the bug report.
 
-#### 2.6 - Description
+### 2.6 - Description
 
-##### 2.6.1 - Steps to reproduce bug
+#### 2.6.1 - Steps to reproduce bug
 A bug report requires clear instructions, so that others can consistently reproduce it. Many bugs require some 
 experimentation to find the exact steps that cause the problem you are trying to report
 
@@ -52,10 +52,91 @@ Name the browser you are using and its version number
 #### 2.6.5 - File attachments
 If you can supplement your bug report with an image, crash log that helps others reproduce the issue, attach these files.
 
-#### 2.7 - Submit
+### 2.7 - Submit
 Click on "Submit" to submit your bug report to the issue tracker.
 
-#### 2.8 - Following up
+### 2.8 - Following up
 Once a developer marks a bug as fixed, it is a good idea to ensure that it is completely fixed. To test, download the latest nightly build.
+
+### 2.9 Template
+Template to create a new bug report
+
+```
+### Steps to reproduce bug
+The steps to reproduce the bug are the following:
+- step1
+- step2
+
+### Expected behavior
+A sentence to describe the expected behavior
+
+### Actual behavior
+A sentence to describe the current behavior
+
+### Mizar's version
+Mizar 1.0.0
+
+### Browser
+Chrome Version 58.0.3029.110 (64-bit)
+
+Note : If you have file attachments, provide them
+
+```
+
+## 3 - Ask for a new feature
+Here is a short guideline to ask for a new feature
+
+### 3.1 - Check if the feature is already asked by someone else
+Please check whether your asked feature is already documented in the issue tracker. If it is already documented, 
+you may click "subscribe" to follow any developments. 
+
+### 3.2 - Create a new issue
+Sign into Github and go to the issue tracker. Click on "Create a new issue" and write your asked feature following
+the next sections :
+
+### 3.3 - Title
+The title should describe the new feature as best as possible. Remember that the title is read more often than any other part of the asled feature.
+
+### 3.4 - Description
+
+#### 3.4.1 - Provide a scenario
+A scenario requires clear instructions, so that developers can interpret correctly the asked feature. The instructions should answer to the
+following questions :
+- Why are we doing this ? technology gain ?
+- What is it for, who will be user actually using it ?
+- Describe the user story
+
+#### 3.4.2 - Acceptance criteria
+Describe the acceptance criteria or condition of satisfactions.
+
+#### 3.4.3 - Support
+What support can you give ?
+
+#### 3.4.4 - The priority
+Describe your priority
+
+### 3.5 - Submit
+Click on "Submit" to submit your asked feature to the issue tracker.
+
+### 3.6 - Following up
+Once a developer marks a feature as fixed, it is a good idea to ensure that it is completely fixed. To test, download the latest nightly build.
+
+### 3.7 Template
+Template to create a new feature report
+
+```
+### scenario
+As <for who>, I want to <description>, so that <why are we doing that>
+
+### Acceptance criteria
+Several sentences to describe the acceptance criteria
+
+### Support
+Explains what support you can provide (data to test, refine requirements)
+
+### Priority
+Priority
+
+```
 
 
