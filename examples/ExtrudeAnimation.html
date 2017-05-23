@@ -15,7 +15,7 @@
                         canvas: "GlobWebCanvas",
                         planetContext: {
                             coordinateSystem: {
-                                geoideName: "EPSG:4326"
+                                geoideName: Mizar.CRS.WGS84
                             },
                             lighting: false,
                             tileErrorTreshold: 3,
@@ -23,7 +23,7 @@
                         }
                     });
 
-                    mizar.getContextManager().createStats({element: 'fps', verbose: false});
+                    mizar.createStats({element: 'fps', verbose: false});
 
                     var afterVectorLoad = function () {
                         // Generate random country indices
@@ -35,7 +35,7 @@
 
 
                         var animation = mizar.AnimationFactory.create(
-                                mizar.ANIMATION.Segmented,
+                                Mizar.ANIMATION.Segmented,
                                 {
                                     "duration": 1000,
                                     "valueSetter": function (value) {
@@ -44,7 +44,7 @@
                                             var feature = vectorLayer.features[countriesToExtrude[i]];
                                             var featureStyle = feature.properties.style;
                                             if (!featureStyle) {
-                                                featureStyle = mizar.UtilityFactory.create(mizar.UTILITY.CreateStyle,vectorLayer.style);
+                                                featureStyle = mizar.UtilityFactory.create(Mizar.UTILITY.CreateStyle,vectorLayer.style);
                                                 vectorLayer.modifyFeatureStyle(feature, featureStyle);
                                             }
                                             featureStyle.setExtrusionScale(value);
@@ -58,10 +58,10 @@
                                 0.0, extrusionScale,
                                 1.0, 2,
                                 function (t, a, b) {
-                                    return mizar.UtilityFactory.create(mizar.UTILITY.Numeric).lerp(t, a, b);
+                                    return mizar.UtilityFactory.create(Mizar.UTILITY.Numeric).lerp(t, a, b);
                                 }
                         );
-                        mizar.getContextManager().getActivatedContext().globe.addAnimation(animation);
+                        mizar.getActivatedContext().addAnimation(animation);
 
                         // Start animation 2s after
                         setTimeout(function () {
@@ -70,22 +70,22 @@
                     };
 
                     var extrusionScale = 0.21;
-                    var layerID = mizar.getLayerManager().addLayer({
-                        type : mizar.LAYER.GeoJSON,
+                    var layerID = mizar.addLayer({
+                        type : Mizar.LAYER.GeoJSON,
                         name : "land",
-                        style : mizar.UtilityFactory.create(mizar.UTILITY.CreateStyle, {
-                            extrude: mizar.getContextManager().getActivatedContext().getCoordinateSystem().geoide.realPlanetRadius / 10, // Extrude max value
+                        style : mizar.UtilityFactory.create(Mizar.UTILITY.CreateStyle, {
+                            extrude: mizar.getCrs().getGeoide().getRealPlanetRadius() / 10.0, // Extrude max value
                             extrusionScale: extrusionScale,
                             strokeColor : [1.0, 0.0, 0.0, 1.0],
                             fillColor : [1.0, 0.0, 0.0, 1.0],
-                            fill : false
+                            fill : false // If true, it does not work
                         }),
                         url: "data/land.json",
                         visible:true,
                         callback: afterVectorLoad
                     });
 
-                    var vectorLayer = mizar.getLayerManager().getLayerByID(layerID);
+                    var vectorLayer = mizar.getLayerByID(layerID);
                 });
 
 
