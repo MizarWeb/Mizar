@@ -304,7 +304,7 @@ define(["jquery", "underscore-min",
 
         /**
          * Checks inputs from user and creates the mizar configuration
-         * @param {Mizar.Inputparameters} options inputs from user
+         * @param {Mizar.inputParameters} options inputs from user
          * @returns {Mizar.parameters} mizar configuration.
          * @function _createConfiguration
          * @memberOf Mizar#
@@ -548,7 +548,7 @@ define(["jquery", "underscore-min",
 
         /**
          * This callback function.
-         * @callback serviceRegistryCallbacket
+         * @callback serviceRegistryCallback
          * @param {string} url
          */
 
