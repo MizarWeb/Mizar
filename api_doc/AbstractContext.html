@@ -334,6 +334,158 @@ Client implementations should not normally instantiate this class directly.</div
             
 <hr>
 <dt>
+    <h4 class="name" id="_fillDataProvider"><span class="type-signature">&lt;protected> </span>_fillDataProvider(layer, mizarDescription)</h4>
+    
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        Fill data-provider-type layer by features coming from data object
+    </div>
+    
+
+    
+
+    
+
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params table table-striped">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>layer</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="Layer.html">Layer</a></span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">layer in which data should be added.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>mizarDescription</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">See the base properties <a href="AbstractLayer.html#.configuration">AbstractLayer.configuration</a> and a specific layer for specific properties</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dd>
+
+        
+            
+<hr>
+<dt>
     <h4 class="name" id="getTileManager"><span class="type-signature"></span>getTileManager()</h4>
     
     
@@ -407,6 +559,167 @@ Client implementations should not normally instantiate this class directly.</div
     
 
     
+
+    
+</dd>
+
+        
+            
+<hr>
+<dt>
+    <h4 class="name" id="registerNoStandardDataProvider"><span class="type-signature"></span>registerNoStandardDataProvider(type, loadFunc)</h4>
+    
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        Registers no standard data provider and call them in the addLayer method.
+    </div>
+    
+
+    
+
+    
+
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params table table-striped">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>type</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">data provider key</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>loadFunc</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">function</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">Function</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+        <h5>Example</h5>
+        
+        <p class="code-caption">Registers planets on the sky</p>
+    
+    <pre class="sunlight-highlight-javascript">var planetProvider = ProviderFactory.create(Constants.PROVIDER.Planet);
+  this.registerNoStandardDataProvider(&quot;planets&quot;, planetProvider.loadFiles);</pre>
+
 
     
 </dd>
@@ -1421,6 +1734,168 @@ Client implementations should not normally instantiate this class directly.</div
     <dd class="implements"><ul>
         
             <li><a href="Context.html#removeAllLayers">Context#removeAllLayers</a></li>
+        
+    </ul></dd>
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dd>
+
+        
+            
+<hr>
+<dt>
+    <h4 class="name" id="addDraw"><span class="type-signature"></span>addDraw()</h4>
+    
+    
+</dt>
+<dd>
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+    <dt class="implements">Implements:</dt>
+    <dd class="implements"><ul>
+        
+            <li><a href="Context.html#addDraw">Context#addDraw</a></li>
+        
+    </ul></dd>
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dd>
+
+        
+            
+<hr>
+<dt>
+    <h4 class="name" id="removeDraw"><span class="type-signature"></span>removeDraw()</h4>
+    
+    
+</dt>
+<dd>
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+    <dt class="implements">Implements:</dt>
+    <dd class="implements"><ul>
+        
+            <li><a href="Context.html#removeDraw">Context#removeDraw</a></li>
         
     </ul></dd>
     
@@ -4689,7 +5164,7 @@ When no canvas element is provided, sets to full screen.
 <span class="jsdoc-message">
 	Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a>
 	
-		on 2017-05-19T11:16:09+02:00
+		on 2017-05-23T21:37:38+02:00
 	
 	using the <a href="https://github.com/docstrap/docstrap">DocStrap template</a>.
 </span>
