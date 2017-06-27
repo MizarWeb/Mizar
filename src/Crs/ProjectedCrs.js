@@ -14,7 +14,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with SITools2. If not, see <http://www.gnu.org/licenses/>.
+ * along with MIZAR. If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
 define(['./AbstractCrs', '../Utils/Utils', '../Projection/ProjectionFactory','../Renderer/glMatrix'],
     function (AbstractCrs, Utils, ProjectionFactory) {
@@ -25,7 +25,7 @@ define(['./AbstractCrs', '../Utils/Utils', '../Projection/ProjectionFactory','..
          * @property {CRS} geoideName - name of the coordinate reference system
          * @property {CONTEXT} type - Type of the CRS
          * @property {GeoBound} geoBound - Geographical bounding box
-         */        
+         */
 
         /**
          * @name ProjectedCrs
@@ -45,7 +45,7 @@ define(['./AbstractCrs', '../Utils/Utils', '../Projection/ProjectionFactory','..
                 radius: cs.getGeoide().getRadius(),
                 realPlanetRadius: cs.getGeoide().getRealPlanetRadius(),
                 type: cs.getType(),
-                geoBound: cs.getGeoBound()                
+                geoBound: cs.getGeoBound()
             });
             this.cs = cs;
             this.projection = ProjectionFactory.create(options);

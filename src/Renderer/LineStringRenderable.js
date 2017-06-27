@@ -14,7 +14,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with SITools2. If not, see <http://www.gnu.org/licenses/>.
+ * along with MIZAR. If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
 /***************************************
  * Copyright 2011, 2012 GlobWeb contributors.
@@ -84,7 +84,6 @@ LineStringRenderable.prototype._fixDateLine = function( tile, coords )
 		var y1 = coords[n][1];
 		var x2 = coords[n+1][0];
 		var y2 = coords[n+1][1];
-
 		if ( Math.abs(x2 - x1) > 180 )
 		{
 			if ( x1 < 0 ) {

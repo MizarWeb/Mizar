@@ -14,7 +14,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with SITools2. If not, see <http://www.gnu.org/licenses/>.
+ * along with MIZAR. If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
 /***************************************
  * Copyright 2011, 2012 GlobWeb contributors.
@@ -102,7 +102,7 @@ define(['../Utils/Utils', '../Utils/Constants',
             var tile10 = new GeoTile(new GeoBound(lonCenter, latCenter, this.geoBound.getEast(), this.geoBound.getNorth()), level, 2 * this.x + 1, 2 * this.y);
             var tile01 = new GeoTile(new GeoBound(this.geoBound.getWest(), this.geoBound.getSouth(), lonCenter, latCenter), level, 2 * this.x, 2 * this.y + 1);
             var tile11 = new GeoTile(new GeoBound(lonCenter, this.geoBound.getSouth(), this.geoBound.getEast(), latCenter), level, 2 * this.x + 1, 2 * this.y + 1);
-            
+
             tile00.initFromParent(this, 0, 0);
             tile10.initFromParent(this, 1, 0);
             tile01.initFromParent(this, 0, 1);
@@ -177,7 +177,6 @@ define(['../Utils/Utils', '../Utils/Constants',
                     var x = pos3d[0];
                     var y = pos3d[1];
                     var z = pos3d[2];
-
                     var vi = offset * vertexSize;
                     vertices[vi] = invMatrix[0] * x + invMatrix[4] * y + invMatrix[8] * z + invMatrix[12];
                     vertices[vi + 1] = invMatrix[1] * x + invMatrix[5] * y + invMatrix[9] * z + invMatrix[13];

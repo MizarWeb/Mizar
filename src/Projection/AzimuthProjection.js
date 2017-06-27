@@ -14,7 +14,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with SITools2. If not, see <http://www.gnu.org/licenses/>.
+ * along with MIZAR. If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
 
 
@@ -51,11 +51,10 @@ define(['./AbstractProjection', '../Utils/Utils', '../Renderer/glMatrix'],
                 geoBound = [-180, -90, 180, 0];
                 projectionCenter = [0, -90];
             } else {
-                geoBound = [-180, 0, 180, 90];
+                geoBound = [-180, -20, 180, 90];
                 projectionCenter = [0, 90];
                 this.pole = "north";
             }
-
             AbstractProjection.prototype.constructor.call(this, projectionCenter, geoBound, options);
         };
 
@@ -89,7 +88,7 @@ define(['./AbstractProjection', '../Utils/Utils', '../Renderer/glMatrix'],
             dest[2] = position3d[2];
             return dest;
         };
-        
+
         /**
          * @function project
          * @memberOf AzimuthProjection#
@@ -107,6 +106,7 @@ define(['./AbstractProjection', '../Utils/Utils', '../Renderer/glMatrix'],
             dest[0] = p * Math.sin(o);
             dest[1] = -p * Math.cos(o);
             dest[2] = geoPos[2];
+
             return dest;
         };
 

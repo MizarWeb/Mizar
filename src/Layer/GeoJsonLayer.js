@@ -14,7 +14,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with SITools2. If not, see <http://www.gnu.org/licenses/>.
+ * along with MIZAR. If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
 define(['../Utils/Utils', './AbstractLayer', '../Utils/Constants'],
     function (Utils, AbstractLayer, Constants) {
@@ -394,4 +394,3 @@ define(['../Utils/Utils', './AbstractLayer', '../Utils/Constants'],
         return GeoJsonLayer;
 
     });
-

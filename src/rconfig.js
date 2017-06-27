@@ -14,7 +14,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with SITools2. If not, see <http://www.gnu.org/licenses/>.
+ * along with MIZAR. If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
 require.config({
     baseUrl: "../src",
@@ -43,7 +43,7 @@ require.config({
         gzip: "../external/gzip.min",
         saveAs: "../node_modules/file-saver/FileSaver.min",
         jszip: "../node_modules/jszip/dist/jszip.min"
-        
+
     },
     shim: {
         "underscore-min": {

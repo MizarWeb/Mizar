@@ -14,7 +14,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with SITools2. If not, see <http://www.gnu.org/licenses/>.
+ * along with MIZAR. If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
 /***************************************
  * Copyright 2011, 2012 GlobWeb contributors.
@@ -410,7 +410,6 @@ define(['../Renderer/BoundingBox', '../Renderer/glMatrix'],
             if (this.config.normals) {
                 this.generateNormals();
             }
-
             // Compute skirt from vertices
             if (this.config.skirt) {
                 // Compute local earth center, used to generate skirts

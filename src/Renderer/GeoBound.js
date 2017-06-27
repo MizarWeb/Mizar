@@ -14,7 +14,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with SITools2. If not, see <http://www.gnu.org/licenses/>.
+ * along with MIZAR. If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
 /***************************************
  * Copyright 2011, 2012 GlobWeb contributors.
@@ -65,7 +65,7 @@ define(['../Utils/Constants'], function (Constants) {
     GeoBound.prototype.getCenter = function () {
         return [(this.east + this.west) * 0.5, (this.south + this.north) * 0.5, 0.0];
     };
-    
+
 
     /**
      Get North
@@ -85,7 +85,7 @@ define(['../Utils/Constants'], function (Constants) {
      */
     GeoBound.prototype.setNorth = function (val) {
         this.north = val;
-    };    
+    };
 
     /**
      Get South
@@ -105,7 +105,7 @@ define(['../Utils/Constants'], function (Constants) {
      */
     GeoBound.prototype.setSouth = function (val) {
         this.south = val;
-    };    
+    };
 
     /**
      Get West
@@ -125,7 +125,7 @@ define(['../Utils/Constants'], function (Constants) {
      */
     GeoBound.prototype.setWest = function (val) {
         this.west = val;
-    };    
+    };
 
     /**
      Get East
@@ -145,7 +145,7 @@ define(['../Utils/Constants'], function (Constants) {
      */
     GeoBound.prototype.setEast = function (val) {
         this.east = val;
-    };    
+    };
 
     /**
      Compute the geo bound from coordinates

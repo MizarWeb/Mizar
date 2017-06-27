@@ -14,7 +14,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with SITools2. If not, see <http://www.gnu.org/licenses/>.
+ * along with MIZAR. If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
 define(['./AbstractCrs', '../Renderer/GeoBound', '../Utils/Utils', '../Utils/Constants', '../Utils/Numeric'],
     function (AbstractCrs, GeoBound, Utils, Constants, Numeric) {
@@ -42,7 +42,7 @@ define(['./AbstractCrs', '../Renderer/GeoBound', '../Utils/Utils', '../Utils/Con
          *     <li>realPlanetRadius = 1.0</li>
          *     <li>type = Sky</li>
          *     <li>geoBound = new GeoBound(0, -90, 360, 90)</li>
-         * </ul>         
+         * </ul>
          * @augments AbstractCrs
          * @param options - no option to give.
          * @constructor

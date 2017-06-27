@@ -14,7 +14,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with SITools2. If not, see <http://www.gnu.org/licenses/>.
+ * along with MIZAR. If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
 define(["./ConstellationProvider","./OpenSearchProvider","./PlanetProvider","./StarProvider","./CraterProvider","../Utils/Constants"],
     function(ConstellationProvider, OpenSearchProvider, PlanetProvider, StarProvider, CraterProvider, Constants) {
