@@ -14,7 +14,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with SITools2. If not, see <http://www.gnu.org/licenses/>.
+ * along with MIZAR. If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
 /*global define: false */
 
@@ -90,9 +90,7 @@ define(["jquery", "underscore-min", "../Utils/Constants",
                     onselect();
                 }
             }
-
             navigation.start();
-
             dragging = false;
         }
 
@@ -267,9 +265,45 @@ define(["jquery", "underscore-min", "../Utils/Constants",
          */
         function updateMeasure() {
             self.clear();
-
             var coordinates = self.computeMeasure();
 
+            // Get dem scale of elevation layer
+            var mntScale = 1;
+            if (
+               (mizarAPI.getActivatedContext().elevationTracker !== null) &&
+               (mizarAPI.getActivatedContext().elevationTracker.options !== null) &&
+               (mizarAPI.getActivatedContext().elevationTracker.options.elevationLayer !== null) &&
+               (mizarAPI.getActivatedContext().elevationTracker.options.elevationLayer.scale !== null) ) {
+              mntScale = mizarAPI.getActivatedContext().elevationTracker.options.elevationLayer.scale;
+            }
+            var mntScale = mizarAPI.getActivatedContext().elevationTracker.options.elevationLayer.scale;
+
+            var firstPoint = self.geoPickPoint;
+            var secondPoint = self.secondGeoPickPoint;
+            var maxElevation = 0;
+            // Get maximum elevation along the segment
+            if ((firstPoint !== null) && (secondPoint !== null)) {
+              var intermediatesPoints = calculateIntermediateElevationPoint({},firstPoint,secondPoint);
+              // For each point, get elevation
+              for (var i=0;i<intermediatesPoints.length;i++) {
+                  var pt = intermediatesPoints[i];
+                  var elevation = mizarAPI.getActivatedContext().getElevation(pt[0], pt[1]);
+                  elevation = Numeric.roundNumber(elevation / scale, 0)
+                  if (elevation > maxElevation) {
+                    maxElevation = elevation;
+                  }
+              }
+              // Apply dem scale
+              maxElevation = maxElevation * mntScale;
+
+              // Add 10% to avoid collision display
+              maxElevation = maxElevation * 1.1;
+            }
+
+            // Apply elevation to all point of displayed arrow
+            for (var i=0;i<coordinates.length;i++) {
+              coordinates[i][2] = maxElevation;
+            }
 
             self.measureFeature = {
                 geometry: {
@@ -291,9 +325,16 @@ define(["jquery", "underscore-min", "../Utils/Constants",
                 type: "Feature"
             };
 
+
+
             var center = [(self.secondPickPoint[0] + self.pickPoint[0]) / 2, (self.secondPickPoint[1] + self.pickPoint[1]) / 2];
             var geoCenter = mizarAPI.getActivatedContext().getLonLatFromPixel(center[0],center[1]);
+
+            // Apply elevation to label
+            geoCenter[2] = maxElevation;
+
             var distance = self.calculateDistanceElevation(self.geoPickPoint, self.secondGeoPickPoint);
+
             distance = Numeric.roundNumber(distance.toFixed(3), 2);
 
             self.measureLabel = {
