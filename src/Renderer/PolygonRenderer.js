@@ -14,7 +14,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with SITools2. If not, see <http://www.gnu.org/licenses/>.
+ * along with MIZAR. If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
 /***************************************
  * Copyright 2011, 2012 GlobWeb contributors.
@@ -37,6 +37,7 @@
 
 define( ['../Utils/Constants','../Utils/Utils','./VectorRenderer','./VectorRendererManager','./FeatureStyle','./Program','./BatchRenderable','./pnltri','./GeoBound'],
 	function(Constants, Utils,VectorRenderer,VectorRendererManager,FeatureStyle,Program,BatchRenderable,PNLTRI,GeoBound) {
+
 
 /**************************************************************************************************************/
  /**
@@ -262,7 +263,7 @@ PolygonRenderable.prototype.build = function(geometry)
 	if (!this.origin)
 	{
 		this.origin = vec3.create();
-		coordinateSystem.get3DFromWorld(convertedCoord, this.origin);
+		coordinateSystem.get3DFromWorld(convertedCoord[0], this.origin); // Correction : add [0]
 
 		mat4.identity(this.matrix);
 		mat4.translate(this.matrix,this.origin);
@@ -485,7 +486,6 @@ PolygonRenderer.prototype.render = function(renderables, start, end)
 
 		mat4.multiply(viewProjMatrix,renderable.matrix,modelViewProjMatrix);
 		gl.uniformMatrix4fv(program.uniforms.mvp, false, modelViewProjMatrix);
-
 		gl.uniform4f(program.uniforms.u_color, style.fillColor[0], style.fillColor[1], style.fillColor[2],
 				style.fillColor[3] * renderable.bucket.layer.opacity);  // use fillColor
 
