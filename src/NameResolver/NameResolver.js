@@ -107,11 +107,16 @@ define(["jquery", "underscore-min", "../Utils/Constants",
             zoomTo(geoPos[0], geoPos[1], mizarAPI.getCrs().getGeoideName(), onSuccess);
         }
 
-        function zoomToDecimal(matchDegree, onSuccess) {
+        function zoomToDecimal(matchDegree, onSuccess, onErrorOutOfBound) {
+            var currentGeoBound = mizarAPI.getCrs().getGeoBound();
             var lon = parseFloat(matchDegree[1]);
             var lat = parseFloat(matchDegree[3]);
             var geo = [lon, lat];
-            zoomTo(geo[0], geo[1], mizarAPI.getCrs().getGeoideName(), onSuccess);
+            if (currentGeoBound.isPointInside(geo)) {
+              zoomTo(geo[0], geo[1], mizarAPI.getCrs().getGeoideName(), onSuccess);
+            } else {
+              onErrorOutOfBound.call(this);
+            }
         }
 
         /**************************************************************************************************************/
@@ -124,7 +129,7 @@ define(["jquery", "underscore-min", "../Utils/Constants",
          *        * For debug : healpix(order,pixelIndex)
          *    @fires Mizar#plugin:not_found
          */
-        function search(objectName, onSuccess, onError, onComplete) {
+        function search(objectName, onSuccess, onError, onErrorOutOfBound, onComplete) {
             var geoPos;
             // regexp used only to distinct equatorial coordinates and objects
             // TODO more accurate ( "x < 24h", "x < 60mn", etc.. )
@@ -143,7 +148,7 @@ define(["jquery", "underscore-min", "../Utils/Constants",
                 zoomToSexagesimal(objectName, coordinatesExp, onSuccess);
             }
             else if (matchDegree) {
-                zoomToDecimal(matchDegree, onSuccess);
+                zoomToDecimal(matchDegree, onSuccess,onErrorOutOfBound);
             }
             else {
                 var options = {
