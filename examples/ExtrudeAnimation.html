@@ -53,7 +53,6 @@
                                         //vectorLayer.style.extrusionScale = value;
                                     }
                                 });
-
                         animation.addSegment(
                                 0.0, extrusionScale,
                                 1.0, 2,
@@ -69,16 +68,21 @@
                         }, 2000);
                     };
 
+                    var extrude = mizar.getCrs().getGeoide().getRealPlanetRadius() / 10.0;
                     var extrusionScale = 0.21;
+                    console.log("extrude",extrude);
+                    console.log("extrusionScale",extrusionScale);
                     var layerID = mizar.addLayer({
                         type : Mizar.LAYER.GeoJSON,
                         name : "land",
                         style : mizar.UtilityFactory.create(Mizar.UTILITY.CreateStyle, {
-                            extrude: mizar.getCrs().getGeoide().getRealPlanetRadius() / 10.0, // Extrude max value
+                            extrude: extrude, // Extrude max value
                             extrusionScale: extrusionScale,
-                            strokeColor : [1.0, 0.0, 0.0, 1.0],
-                            fillColor : [1.0, 0.0, 0.0, 1.0],
-                            fill : false // If true, it does not work
+//                            strokeColor : [1.0, 0.0, 0.0, 1.0],
+//                            fillColor : [1.0, 0.0, 0.0, 1.0],
+                              fillColor: [1.,1.,1.,1.],
+                              strokeColor: [0,0,0,1],
+                            fill : true // If true, it does not work
                         }),
                         url: "data/land.json",
                         visible:true,
