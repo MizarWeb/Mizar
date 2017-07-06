@@ -215,8 +215,13 @@ define(['../Utils/Utils', '../Utils/Constants',
 
             var level0Tiles = [];
 
+
             var latStep = (config.coordinateSystem.getGeoBound().getNorth() - config.coordinateSystem.getGeoBound().getSouth()) / this.level0NumTilesY;
             var lonStep = (config.coordinateSystem.getGeoBound().getEast() - config.coordinateSystem.getGeoBound().getWest()) / this.level0NumTilesX;
+
+            // Manage (just for latitude) a partial GeoTiling cover (not only 360 * 180)
+            this.latStart = config.coordinateSystem.getGeoBound().getSouth();
+            this.latDelta = config.coordinateSystem.getGeoBound().getNorth()-config.coordinateSystem.getGeoBound().getSouth();
 
             for (var j = 0; j < this.level0NumTilesY; j++) {
                 for (var i = 0; i < this.level0NumTilesX; i++) {
@@ -308,6 +313,7 @@ define(['../Utils/Utils', '../Utils/Constants',
         /**
          Locate a level zero tile
          */
+
         GeoTiling.prototype._lon2LevelZeroIndex = function (lon) {
             return Math.min(this.level0NumTilesX - 1, Math.floor((lon + 180) * this.level0NumTilesX / 360));
         };
@@ -318,7 +324,9 @@ define(['../Utils/Utils', '../Utils/Constants',
          Locate a level zero tile
          */
         GeoTiling.prototype._lat2LevelZeroIndex = function (lat) {
-            return Math.min(this.level0NumTilesY - 1, Math.floor((90 - lat) * this.level0NumTilesY / 180));
+            // Take into account a partial bbox for GeoTiling
+            var topLat = this.latStart + this.latDelta;
+            return Math.min(this.level0NumTilesY - 1, Math.floor((topLat - lat) * this.level0NumTilesY / this.latDelta));
         };
         /**************************************************************************************************************/
 

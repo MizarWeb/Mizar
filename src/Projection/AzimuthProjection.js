@@ -51,7 +51,7 @@ define(['./AbstractProjection', '../Utils/Utils', '../Renderer/glMatrix'],
                 geoBound = [-180, -90, 180, 0];
                 projectionCenter = [0, -90];
             } else {
-                geoBound = [-180, -20, 180, 90];
+                geoBound = [-180, 0, 180, 90];
                 projectionCenter = [0, 90];
                 this.pole = "north";
             }
@@ -102,7 +102,6 @@ define(['./AbstractProjection', '../Utils/Utils', '../Renderer/glMatrix'],
 
             var o = geoPos[0] * Math.PI / 180;
             o *= this.pole === "south" ? -1 : 1;
-
             dest[0] = p * Math.sin(o);
             dest[1] = -p * Math.cos(o);
             dest[2] = geoPos[2];
