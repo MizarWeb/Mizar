@@ -28,6 +28,7 @@ define(["jquery",
 
         var sitoolsBaseUrl;
         var mizarAPI;
+        var proxyUrl = "http://localhost:8080/?url=";
 
         /**********************************************************************************************/
 
@@ -219,12 +220,15 @@ define(["jquery",
                 mizarAPI.publish("image:add", featureData);
 
                 if (featureData.isFits) {
-                    var url = sitoolsBaseUrl + "/proxy?external_url=" + encodeURIComponent(feature.services.download.url);
+                    //var url = proxyUrl + encodeURIComponent(feature.services.download.url);
+                    //var url = encodeURIComponent(feature.services.download.url);*
+                    var url = proxyUrl + feature.services.download.url;
                     this.computeFits(featureData, url);
                     $('#quicklookFits').addClass('selected');
                 }
                 else {
-                    style.fillTextureUrl = sitoolsBaseUrl + "/proxy?external_url=" + feature.properties.quicklook + "&rewrite_redirection=true";
+                    style.fillTextureUrl = proxyUrl +  feature.properties.quicklook;
+                    //style.fillTextureUrl = feature.properties.quicklook;
                     // For DEBUG : 'upload/ADP_WFI_30DOR_RGB_V1.0_degraded.jpg';
                     $('#quicklook').addClass('selected');
                 }
