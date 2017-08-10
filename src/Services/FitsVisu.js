@@ -26,9 +26,7 @@ define(["jquery",
     function ($,
               FeatureStyle, DynamicImage, FitsLoader) {
 
-        var sitoolsBaseUrl;
         var mizarAPI;
-        var proxyUrl = "http://localhost:8080/?url=";
 
         /**********************************************************************************************/
 
@@ -86,7 +84,7 @@ define(["jquery",
 
             // Store image url for zScale processing
             if (feature.services) {
-                image.url = feature.services.download.url;
+                image.url = mizarAPI._getUrl(feature.services.download.url);
             }
 
             return image;
@@ -222,12 +220,12 @@ define(["jquery",
                 if (featureData.isFits) {
                     //var url = proxyUrl + encodeURIComponent(feature.services.download.url);
                     //var url = encodeURIComponent(feature.services.download.url);*
-                    var url = proxyUrl + feature.services.download.url;
+                    var url = mizarAPI._getUrl(feature.services.download.url);
                     this.computeFits(featureData, url);
                     $('#quicklookFits').addClass('selected');
                 }
                 else {
-                    style.fillTextureUrl = proxyUrl +  feature.properties.quicklook;
+                    style.fillTextureUrl =  mizarAPI._getUrl(feature.properties.quicklook);
                     //style.fillTextureUrl = feature.properties.quicklook;
                     // For DEBUG : 'upload/ADP_WFI_30DOR_RGB_V1.0_degraded.jpg';
                     $('#quicklook').addClass('selected');

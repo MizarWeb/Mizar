@@ -211,7 +211,8 @@ define(["underscore-min", "../Utils/Event", "../Utils/Utils", "../Utils/Constant
         AbstractLayer.prototype.getGlobe = function () {
             return this.globe;
         };
-        
+
+
         /**
          * @function getID
          * @memberOf AbstractLayer#
@@ -267,7 +268,7 @@ define(["underscore-min", "../Utils/Event", "../Utils/Utils", "../Utils/Constant
          */
         AbstractLayer.prototype.getDescription = function () {
             return this.description;
-        };        
+        };
 
         /**
          * @function isVisible
@@ -366,7 +367,7 @@ define(["underscore-min", "../Utils/Event", "../Utils/Utils", "../Utils/Constant
          */
         AbstractLayer.prototype.getCoordinateSystem = function () {
             return this.coordinateSystem;
-        };        
+        };
 
         /**
          * @function _attach
@@ -448,6 +449,19 @@ define(["underscore-min", "../Utils/Event", "../Utils/Utils", "../Utils/Constant
 
         AbstractLayer.prototype.isBackground = function() {
             return this.background;
+        };
+
+        /**
+         * @function _proxifyUrl
+         * @memberOf AbstractLayer#
+         * @private
+         */
+        AbstractLayer.prototype._proxifyUrl = function (url) {
+          if (this.options.proxy) {
+            return this.options.proxy.url + url;
+          } else {
+            return url;
+          }
         };
 
         return AbstractLayer;

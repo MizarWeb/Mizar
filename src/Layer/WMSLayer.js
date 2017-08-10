@@ -47,11 +47,11 @@ define(['../Utils/Utils', './AbstractRasterLayer', '../Utils/Constants', '../Til
          * @property {string} [version = "1.1.1"] - WMS version
          * @property {string} [transparent]
          * @property {string} [time] - Time dimension
-         * @property {string} [format = "image/jpeg"] - output image format         
+         * @property {string} [format = "image/jpeg"] - output image format
          * @property {string} layers - names of the layer
          * @property {string} [styles] - Styled Layers Descriptor for each layer
          */
-        
+
         /**
          * @name WMSLayer
          * @class
@@ -78,7 +78,7 @@ define(['../Utils/Utils', './AbstractRasterLayer', '../Utils/Constants', '../Til
             options.tiling = new GeoTiling(4, 2);
             options.numberOfLevels = options.numberOfLevels || 21;
             AbstractRasterLayer.prototype.constructor.call(this, Constants.LAYER.WMS, options);
-            
+
             // Build the base GetMap URL
             var url = this.baseUrl;
             if (url.indexOf('?', 0) === -1) {
@@ -109,7 +109,7 @@ define(['../Utils/Utils', './AbstractRasterLayer', '../Utils/Constants', '../Til
                 url += "&time=" + options.time;
             }
 
-            this.getMapBaseUrl = url;
+            this.getMapBaseUrl = this._proxifyUrl(url);
         };
 
         /**************************************************************************************************************/

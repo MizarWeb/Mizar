@@ -113,7 +113,7 @@ define(['../Utils/Utils', './AbstractRasterLayer', '../Utils/Constants'],
                 url += "&time=" + options.time;
             }
 
-            this.getTileBaseUrl = url;
+            this.getTileBaseUrl = this._proxifyUrl(url);
         };
 
         /**************************************************************************************************************/

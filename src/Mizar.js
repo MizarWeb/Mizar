@@ -124,6 +124,12 @@ define(["jquery", "underscore-min",
              */
             this.LayerFactory = LayerFactory;
 
+            // Set proxy parameters to Layer factory
+            this.LayerFactory.proxy = {
+              url = this.options.configuration.proxyUrl,
+              use = this.options.configuration.proxyUse
+            };
+
             /**
              * Creates an {@link module:Animation.AnimationFactory animation}
              * @name AnimationFactory
@@ -282,7 +288,7 @@ define(["jquery", "underscore-min",
             var scripts = document.getElementsByTagName('script');
             return _extractURLFrom.call(this, scripts, MIZAR_NAME_PROD, -1) || _extractURLFrom.call(this, scripts, MIZAR_NAME_DEV, -2);
         }
-        
+
         /**
          * Checks inputs
          * @param {Object} options - Mizar configuration
@@ -311,6 +317,7 @@ define(["jquery", "underscore-min",
          * @private
          */
         function _createConfiguration(options) {
+
             var mizarAPIUrl = _getMizarAPIBaseURL();
             var mizarOptions = {
                 canvas: typeof options.canvas === "string" ? document.getElementById(options.canvas) : options.canvas
@@ -324,6 +331,7 @@ define(["jquery", "underscore-min",
             if (options.hasOwnProperty('skyContext')) {
                 mizarOptions['skyContext'] = options.skyContext;
             }
+
             if (options.hasOwnProperty('planetContext')) {
                 mizarOptions['planetContext'] = options.planetContext;
             }
@@ -1066,7 +1074,7 @@ define(["jquery", "underscore-min",
          * @returns {Layer[]}
          * @memberOf Mizar#
          * @see {@link Mizar#setActivatedContext}
-         * @see {@link Mizar#createContext}         
+         * @see {@link Mizar#createContext}
          */
         Mizar.prototype.searchOnLayerDescription = function (query, mode) {
             var layers = this.getLayers(mode);
@@ -1126,6 +1134,20 @@ define(["jquery", "underscore-min",
         Mizar.prototype.registerNoStandardDataProvider = function (type, loadFunc, mode) {
             _getContext.call(this, mode).registerNoStandardDataProvider(type, loadFunc);
         };
+
+        /**
+         * Apply proxy to url if needed
+         * @function _getUrl
+         * @memberOf Mizar#
+         * @private
+         */
+        Mizar.prototype._getUrl = function(url) {
+          if (this.options.configuration.proxyUse === true) {
+            return this.options.configuration.proxyUrl + url;
+          } else {
+            return url;
+          }
+        }
 
 
         /**

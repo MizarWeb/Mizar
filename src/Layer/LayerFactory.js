@@ -41,7 +41,13 @@ define(["jquery","../Utils/Constants", "./WMSLayer", "./WMTSLayer", "./WCSElevat
               PlanetLayer,
               WMSElevationLayer, HipsMetadata, HipsCatLayer, GeoJsonLayer) {
 
+        this.proxy = {
+          url = null,
+          use = false
+        };
+
         function createHips(hipsMetadata, options) {
+            options.proxy = this.proxy;
             var hipsProperties = (typeof hipsMetadata === 'undefined') ? new HipsMetadata(options.baseUrl) : hipsMetadata;
 
             var metadata = hipsProperties.getHipsMetadata();
@@ -81,14 +87,17 @@ define(["jquery","../Utils/Constants", "./WMSLayer", "./WMTSLayer", "./WCSElevat
         }
 
         function createHipsFits(hipsMetadata, options) {
+            options.proxy = this.proxy;
             return new HipsFitsLayer(hipsMetadata, options);
         }
 
         function createHipsGraphic(hipsMetadata, options) {
+            options.proxy = this.proxy;
             return new HipsGraphicLayer(hipsMetadata, options);
         }
 
         function createHipsCats(options) {
+            options.proxy = this.proxy;
             return new HipsCatLayer(options);
         }
 
@@ -102,6 +111,7 @@ define(["jquery","../Utils/Constants", "./WMSLayer", "./WMTSLayer", "./WCSElevat
          @return {MocLayer} layer
          */
         function createMoc(options) {
+            options.proxy = this.proxy;
             options.style.fill = true;
             options.style.fillColor[3] = 0.3; // make transparent
             var layer = new MocLayer(options);
@@ -118,6 +128,7 @@ define(["jquery","../Utils/Constants", "./WMSLayer", "./WMTSLayer", "./WCSElevat
          @return {OpenSearchLayer} layer
          */
         function createOpenSearch(options) {
+            options.proxy = this.proxy;
             var layer = new OpenSearchLayer(options);
             if (options.displayProperties) {
                 layer.displayProperties = options.displayProperties;
@@ -156,6 +167,7 @@ define(["jquery","../Utils/Constants", "./WMSLayer", "./WMTSLayer", "./WCSElevat
              * @see {@link module:Layer.WMTSLayer WMTSLayer} : A layer to draw predefined tiles coming from a WMTS server
              */
             create: function (options) {
+                var proxy = this.proxy;
                 var layer;
                 switch (options.type) {
                     case Constants.LAYER.WMS :

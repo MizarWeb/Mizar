@@ -57,7 +57,7 @@ define(['../Utils/Utils', './AbstractRasterLayer', '../Utils/Constants','../Tili
          * @name WCSElevationLayer
          * @class
          *    Create a layer for elevation data using WCS protocol  based on a GeoTiling(4, 2)
-         *    with a pixelSize = 33 by default. The only supported format is right now image/x-aaigrid. It is an ASCII 
+         *    with a pixelSize = 33 by default. The only supported format is right now image/x-aaigrid. It is an ASCII
          *    format that is easily parsed in Javascript.
          * @augments AbstractRasterLayer
          * @param {AbstractLayer.wcsElevation_configuration} options - WCSElevation Configuration
@@ -69,7 +69,7 @@ define(['../Utils/Utils', './AbstractRasterLayer', '../Utils/Constants','../Tili
             options.tiling = new GeoTiling(4, 2);
             options.numberOfLevels = options.numberOfLevels || 21;
             AbstractRasterLayer.prototype.constructor.call(this, Constants.LAYER.WMSElevation, options);
-            
+
             this.version = options.version || '2.0.0';
             this.format = options.format || 'image/x-aaigrid';
             this.minElevation = options.minElevation || 0;
@@ -103,13 +103,13 @@ define(['../Utils/Utils', './AbstractRasterLayer', '../Utils/Constants','../Tili
             }
             url += '&format=' + this.format;
 
-            this.getCoverageBaseUrl = url;
+            this.getCoverageBaseUrl = this._proxifyUrl(url);
         };
 
         /**************************************************************************************************************/
-        
+
         Utils.inherits(AbstractRasterLayer, WCSElevationLayer);
-        
+
         /**************************************************************************************************************/
 
         /**
