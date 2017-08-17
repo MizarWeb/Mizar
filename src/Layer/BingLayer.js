@@ -234,13 +234,13 @@ define(['../Utils/Utils', './AbstractRasterLayer', '../Utils/Constants','../Tili
      * @property {String} imageSet the image set to use, can be Aerial, Road
      * @property {String} key the bing key to use
      */
-    
+
     /**
      * Callback when the layer is ready.
      * @callback onreadyCallback
      * @param {BingLayer} Bing layer
      */
-    
+
     /**
      * @name BingLayer
      * @class
@@ -267,8 +267,8 @@ define(['../Utils/Utils', './AbstractRasterLayer', '../Utils/Constants','../Tili
         // Need to provide a global callback for JSONP
         window._bingTileProviderCallback = function (result) {
 
-            self.baseUrl = result.resourceSets[0].resources[0].imageUrl;
-            self.baseUrlSubDomains = result.resourceSets[0].resources[0].imageUrlSubdomains;
+            self.baseUrl = this.proxify(result.resourceSets[0].resources[0].imageUrl);
+            self.baseUrlSubDomains = this.proxify(result.resourceSets[0].resources[0].imageUrlSubdomains);
             self._ready = true;
 
             // Call callback if set
@@ -285,7 +285,7 @@ define(['../Utils/Utils', './AbstractRasterLayer', '../Utils/Constants','../Tili
         // JSONP Call : needed because of cross-site origin policy
         var script = document.createElement("script");
         script.type = "text/javascript";
-        script.src = "http://dev.virtualearth.net/REST/V1/Imagery/Metadata/" + options.imageSet + "?jsonp=_bingTileProviderCallback&key=" + options.key;
+        script.src = this.proxify("http://dev.virtualearth.net/REST/V1/Imagery/Metadata/" + options.imageSet + "?jsonp=_bingTileProviderCallback&key=" + options.key);
         script.id = "_bingTileProviderCallback";
         document.getElementsByTagName("head")[0].appendChild(script);
     };

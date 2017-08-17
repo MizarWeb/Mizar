@@ -126,9 +126,11 @@ define(["jquery", "underscore-min",
 
             // Set proxy parameters to Layer factory
             this.LayerFactory.proxy = {
-              url = this.options.configuration.proxyUrl,
-              use = this.options.configuration.proxyUse
+              url : this.options.configuration.proxyUrl,
+              use : this.options.configuration.proxyUse
             };
+
+            proxy = this.LayerFactory.proxy;
 
             /**
              * Creates an {@link module:Animation.AnimationFactory animation}
@@ -555,10 +557,19 @@ define(["jquery", "underscore-min",
         }
 
         /**
-         * This callback function.
-         * @callback serviceRegistryCallback
-         * @param {string} url
+         * Proxify an url
+         * @function _proxify
+         * @memberOf Mizar#
+         * @param {String} url - URL
+         * @return {String} Url proxified
+         * @private
          */
+         function _proxify(url) {
+           if (proxy.use === true) {
+             return proxy.url + url;
+           };
+           return url;
+         }
 
         /**
          * Loads HIPS layers from passed service url
@@ -573,9 +584,10 @@ define(["jquery", "underscore-min",
                 return callback(undefined);
             }
             var url = hipsServiceUrlArray.shift();
+
             $.ajax({
                 type: 'GET',
-                url: url + "/properties",
+                url: _proxify(url) + "/properties",
                 dataType: 'text'
                 //context: layerManager,
                 //timeout: 10000
@@ -602,7 +614,7 @@ define(["jquery", "underscore-min",
             if (typeof options !== 'undefined' && options.hasOwnProperty('registry') && options.registry.hasOwnProperty('hips')) {
                 $.ajax({
                     type: 'GET',
-                    url: options.registry.hips,
+                    url: _proxify(options.registry.hips),
                     context: Mizar,
                     dataType: 'json'
 
@@ -611,7 +623,15 @@ define(["jquery", "underscore-min",
                         var hipsServiceUrlArray = _getHipsServiceUrlArray(hipsLayer);
                         var hipsUrl = _checkHipsServiceIsAvailable(hipsServiceUrlArray, function (hipsServiceUrl) {
                             if (typeof hipsServiceUrl === 'undefined') {
-                                console.log("Cannot add layer " + hipsLayer.obs_title + " no mirror available");
+                                text = "";
+                                if (typeof hipsLayer.obs_title === 'undefined') {
+                                  text = "with ID <b>"+hipsLayer.ID+"</b>";
+                                } else {
+                                  text = "with title <b>"+hipsLayer.obs_title+"</b>";
+                                }
+                                console.log(hipsLayer);
+                                ErrorDialog.open("<font style='color:orange'>Warning : Cannot add layer <b>" + text + "</b> no mirror available</font>");
+                                console.log("Cannot add layer " + text + " no mirror available");
                                 return;
                             }
                             $.proxy(_createHips, Mizar)(hipsLayer, hipsServiceUrl);
@@ -667,7 +687,17 @@ define(["jquery", "underscore-min",
             try {
                 this.addLayer({type: Mizar.LAYER.Hips, hipsMetadata: new HipsMetadata(hipsLayer)});
             } catch (e) {
-                ErrorDialog.open("Hips layer " + hipsLayer.creator_did + " not valid in Hips registry.");
+                var prefixe;
+                var text;
+                if (typeof hipsLayer.obs_title === 'undefined') {
+                  prefixe = "ID ";
+                  text = hipsLayer.ID;
+                } else {
+                  prefixe = "";
+                  text = hipsLayer.obs_title;
+                }
+                ErrorDialog.open("Hips layer "+prefixe+"<font style='color:yellow'><b>" + text + "</b></font> not valid in Hips registry <font color='grey'><i>("+hipsLayer.hips_service_url+")</i></font>.");
+                console.log("Hips layer "+prefixe+ text + " not valid in Hips registry ("+hipsLayer.hips_service_url+")");
             }
         }
 

@@ -24,18 +24,21 @@
 define(["jquery", "jquery.ui"], function ($) {
 
 // The main div for error
-    var errorDiv = '<div id="errorDiv" style="text-align: justify" title="Error"></div>';
+    var errorDiv = '<div id="errorDiv" style="text-align: left" title="Error"></div>';
 
 // Create the div, use jQuery UI dialog
-    var $errorDiv = $(errorDiv)
+
+  var $text = "";
+
+  var $errorDiv = $(errorDiv)
         .appendTo('body')
         .dialog({
-            autoOpen: false,
-            resizable: false,
-            draggable: false,
-            width: '300px',
-            minHeight: 'auto',
-            dialogClass: 'errorBox'
+          autoOpen: false,
+          width: 700,
+          minHeight: 300,
+          maxHeight: 500,
+          dialogClass: 'errorBox',
+          beforeClose: function( event, ui ) { $text = ""; }
         });
 
     return {
@@ -45,9 +48,12 @@ define(["jquery", "jquery.ui"], function ($) {
          *    @param html HTML text
          */
         open: function (html) {
+            $text += html + "<br/>";
             $errorDiv
-                .html(html)
+                .html($text)
                 .dialog("open");
+            $errorDiv.scrollTop(5000);
+
         }
     };
 

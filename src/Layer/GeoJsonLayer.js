@@ -38,7 +38,7 @@ define(['../Utils/Utils', './AbstractLayer', '../Utils/Constants'],
         var GeoJsonLayer = function (options) {
             AbstractLayer.prototype.constructor.call(this, Constants.LAYER.GeoJSON, options);
 
-            this.url = options.url;
+            this.url = this.proxify(options.url);
             this.gid = 0;
 
 

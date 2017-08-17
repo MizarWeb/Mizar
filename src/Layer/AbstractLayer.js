@@ -124,6 +124,8 @@ define(["underscore-min", "../Utils/Event", "../Utils/Utils", "../Utils/Constant
             this.availableServices = _createAvailableServices(this.options);
         };
 
+
+
         function _createAvailableServices(options) {
             var availableServices;
             if (options.hasOwnProperty('availableServices')) {
@@ -203,6 +205,28 @@ define(["underscore-min", "../Utils/Event", "../Utils/Utils", "../Utils/Constant
         Utils.inherits(Event, AbstractLayer);
 
         /**************************************************************************************************************/
+
+
+        /**
+         * Proxify an url
+         * @function proxify
+         * @memberOf AbstractLayer#
+         * @param {String} url - URL
+         * @return {String} Url proxified
+         */
+         AbstractLayer.prototype.proxify = function (url) {
+           var proxifiedUrl = url;
+           if ( (this.options) && (this.options.proxy) ) {
+             if (this.options.proxy.use === true) {
+               if (url.startsWith(this.options.proxy.url)) {
+                 proxifiedUrl = url; // No change, proxy always set
+               } else {
+                 proxifiedUrl = this.options.proxy.url + url; // Add proxy redirection
+               }
+            }
+           }
+           return proxifiedUrl;
+         }
 
         /**
          * @function getGlobe

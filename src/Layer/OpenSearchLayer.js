@@ -55,13 +55,13 @@ define(['../Renderer/FeatureStyle', '../Renderer/VectorRendererManager', '../Uti
              options.dataType = Constants.GEOMETRY.Point;
              AbstractLayer.prototype.constructor.call(this, Constants.LAYER.OpenSearch, options);
 
-            this.serviceUrl = options.serviceUrl;
+            this.serviceUrl = this.proxify(options.serviceUrl);
             this.minOrder = options.minOrder || 5;
             this.maxRequests = options.maxRequests || 2;
             this.requestProperties = "";
             this.invertY = options.invertY || false;
             this.coordSystemRequired = options.hasOwnProperty('coordSystemRequired') ? options.coordSystemRequired : true;
-             
+
 
             this.extId = "os";
 

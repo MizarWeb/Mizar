@@ -46,13 +46,13 @@ define(['../Renderer/FeatureStyle', '../Renderer/VectorRendererManager', '../Uti
             var propertiesObj = new Properties(options.serviceUrl + '/properties');
             var properties = propertiesObj.getProperties();
             var hips_order = properties['hips_order'];
-            this.serviceUrl = options.serviceUrl;
+            this.serviceUrl = this.proxify(options.serviceUrl);
             this.minOrder = options.minOrder || 2;
             this.maxOrder = Number.parseInt(hips_order, 10);
             this.maxRequests = options.maxRequests || 4;
             this.invertY = options.invertY || false;
             var xhr = UtilsJsVotable.makeHttpObject();
-            xhr.open('GET', options.serviceUrl + '/metadata.xml', false);
+            xhr.open('GET', this.proxify(options.serviceUrl) + '/metadata.xml', false);
             xhr.send();
             var jsVotable = new JsVotable.Votable(xhr.responseXML);
             var resource = jsVotable.getResources()[0];
@@ -71,7 +71,7 @@ define(['../Renderer/FeatureStyle', '../Renderer/VectorRendererManager', '../Uti
                     this.sourceId = this.fields[i].name();
                 }
             }
-            
+
 
             this.extId = "hipsCat";
 

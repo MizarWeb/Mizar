@@ -58,7 +58,7 @@ define(["jquery", "./AbstractLayer", '../Utils/Constants','../Renderer/FeatureSt
             options.dataType = Constants.GEOMETRY.LineString;
             AbstractLayer.prototype.constructor.call(this, Constants.LAYER.Moc, options);
 
-            this.serviceUrl = options.serviceUrl;
+            this.serviceUrl = this.proxify(options.serviceUrl);
             this.startOrder = options.startOrder || 2;
 
             // Set style

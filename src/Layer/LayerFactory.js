@@ -42,8 +42,8 @@ define(["jquery","../Utils/Constants", "./WMSLayer", "./WMTSLayer", "./WCSElevat
               WMSElevationLayer, HipsMetadata, HipsCatLayer, GeoJsonLayer) {
 
         this.proxy = {
-          url = null,
-          use = false
+          url : null,
+          use : false
         };
 
         function createHips(hipsMetadata, options) {

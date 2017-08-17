@@ -45,7 +45,7 @@ define(['../Utils/Utils', '../Tiling/HEALPixTiling', './AbstractHipsLayer'],
          * @typedef {AbstractHipsLayer.configuration} AbstractHipsLayer.graphic_configuration
          * @property {Function} onready - Callback function
          */
-        
+
         /**
          * @name HipsGraphicLayer
          * @class
@@ -106,7 +106,7 @@ define(['../Utils/Utils', '../Tiling/HEALPixTiling', './AbstractHipsLayer'],
 
             // Load level zero image now, only for background
             if (!this._overlay) {
-                this.levelZeroImage.src = this.baseUrl + "/Norder3/Allsky." + this.format;
+                this.levelZeroImage.src = this.proxify(this.baseUrl) + "/Norder3/Allsky." + this.format;
             }
         };
 
@@ -120,7 +120,7 @@ define(['../Utils/Utils', '../Tiling/HEALPixTiling', './AbstractHipsLayer'],
          * @return {String} Url
          */
         HipsGraphicLayer.prototype.getUrl = function (tile) {
-            var url = this.baseUrl;
+            var url = this.proxify(this.baseUrl);
 
             url += "/Norder";
             url += tile.order;

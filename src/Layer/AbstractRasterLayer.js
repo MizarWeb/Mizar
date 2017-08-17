@@ -72,7 +72,7 @@ define(['../Utils/Utils', './AbstractLayer', '../Renderer/RasterOverlayRenderer'
             this.coordinates = options.coordinates || null;
             this.zIndex = options.zIndex || 0;
             this.crossOrigin = options.crossOrigin || 'anonymous';
-            this.baseUrl = options.baseUrl;
+            this.baseUrl = this.proxify(options.baseUrl);
 
             // Init cache if defined
             if (options.cache) {

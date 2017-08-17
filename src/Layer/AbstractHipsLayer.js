@@ -43,9 +43,9 @@ define(["./AbstractRasterLayer", "../Utils/Utils", "../Utils/Constants", "../Til
          * @property {Array} [format = hipsMetadata['hips_tile_format']] - List of available tile formats
          * @property {string} [baseUrl =  hipsMetadata['hips_service_url']] - Endpoint service
          * @property {string} [category = Image] - Default category
-         * @property {boolean} background - Tell if the layer is set as background         
+         * @property {boolean} background - Tell if the layer is set as background
          */
-        
+
         /**
          * @name AbstractHipsLayer
          * @class
@@ -58,7 +58,7 @@ define(["./AbstractRasterLayer", "../Utils/Utils", "../Utils/Constants", "../Til
          */
         var AbstractHipsLayer = function (hipsMetadata, options) {
             _checkOptions.call(this, options);
-            this.hipsMetadata = _createMetadata.call(this, hipsMetadata, options.baseUrl);
+            this.hipsMetadata = _createMetadata.call(this, hipsMetadata, this.proxify(options.baseUrl));
             _overloadHipsMetataByConfiguration.call(this, options, this.hipsMetadata);
 
             options.tiling = new HEALPixTiling(options.baseLevel || 2, {coordinateSystem: options.coordinateSystem});
@@ -126,7 +126,7 @@ define(["./AbstractRasterLayer", "../Utils/Utils", "../Utils/Constants", "../Til
         }
 
         /**
-         * 
+         *
          * @param options
          * @param hipsMetadata
          * @private

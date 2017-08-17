@@ -199,7 +199,7 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Laye
         AbstractContext.prototype.getPixelFromLonLat = function(longitude, latitude){
             return this.globe.getPixelFromLonLat(longitude, latitude);
         };
-        
+
         /**
          * @function getElevation
          * @memberOf AbstractContext#
@@ -521,7 +521,7 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Laye
             var self = this;
             this.subscribe("baseLayersError", function (layer) {
                 $(self.canvas.parentElement).find('#loading').hide();
-                console.log("error");
+                console.log("Error with layer",layer);
             });
         };
 

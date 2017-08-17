@@ -44,7 +44,7 @@ define(['../Utils/Utils', './AbstractLayer', '../Utils/Constants', '../Renderer/
          * @property {int} [minLevel = 0] - minimum rendering level depending on tile level
          * @property {int} [maxLevel = 15] - maximum rendering level depending on tile level
          * @property {function} [callback] - the callback function called when data are loaded. Data loaded are passed in parameter of the function.
-         */        
+         */
         /**
          * @name VectorLayer
          * @class
@@ -58,7 +58,7 @@ define(['../Utils/Utils', './AbstractLayer', '../Utils/Constants', '../Renderer/
             AbstractLayer.prototype.constructor.call(this, Constants.LAYER.Vector, options);
 
             if (options && options.url) {
-                this.url = options.url;
+                this.url = this.proxify(options.url);
             } else {
                 this.url = null;
             }
