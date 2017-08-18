@@ -80,8 +80,11 @@ define(['../Renderer/GeoBound'],
          */
         AbstractProjection.prototype.project = function (geoPos, dest) {
             throw "Not implemented";
-        };        
+        };
 
+        AbstractProjection.prototype.getDefaultZ = function () {
+            return 100000;
+        };
 
         /**************************************************************************************************************/
 

@@ -55,13 +55,14 @@ define(['./AbstractProjection', '../Utils/Utils', '../Renderer/glMatrix'],
             dest[0] = position3d[0] * 180 / Math.PI;
             dest[1] = position3d[1] * 180 / Math.PI;
             dest[2] = position3d[2];
+
             return dest;
         };
 
         /**
          * @function project
          * @memberOf PlateProjection#
-         */        
+         */
         PlateProjection.prototype.project = function (geoPos, dest) {
 
             if (!dest) {
@@ -69,7 +70,8 @@ define(['./AbstractProjection', '../Utils/Utils', '../Renderer/glMatrix'],
             }
             dest[0] = geoPos[0] * Math.PI / 180;
             dest[1] = geoPos[1] * Math.PI / 180;
-            dest[2] = geoPos[2];
+            dest[2] = this.getDefaultZ();
+            //dest[2] = geoPos[2];
             return dest;
         };
 
