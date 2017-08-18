@@ -629,9 +629,8 @@ define(["jquery", "underscore-min",
                                 } else {
                                   text = "with title <b>"+hipsLayer.obs_title+"</b>";
                                 }
-                                console.log(hipsLayer);
                                 ErrorDialog.open("<font style='color:orange'>Warning : Cannot add layer <b>" + text + "</b> no mirror available</font>");
-                                console.log("Cannot add layer " + text + " no mirror available");
+                                //console.log("Cannot add layer " + text + " no mirror available");
                                 return;
                             }
                             $.proxy(_createHips, Mizar)(hipsLayer, hipsServiceUrl);
@@ -697,7 +696,7 @@ define(["jquery", "underscore-min",
                   text = hipsLayer.obs_title;
                 }
                 ErrorDialog.open("Hips layer "+prefixe+"<font style='color:yellow'><b>" + text + "</b></font> not valid in Hips registry <font color='grey'><i>("+hipsLayer.hips_service_url+")</i></font>.");
-                console.log("Hips layer "+prefixe+ text + " not valid in Hips registry ("+hipsLayer.hips_service_url+")");
+                //console.log("Hips layer "+prefixe+ text + " not valid in Hips registry ("+hipsLayer.hips_service_url+")");
             }
         }
 
