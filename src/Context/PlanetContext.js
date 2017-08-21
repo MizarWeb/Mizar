@@ -62,7 +62,7 @@ define(["jquery", "underscore-min", "../Utils/Utils", "./AbstractContext", "../U
          * @property {PlanetLayer} [planetLayer] - planetLayer
          * @property {AbstractNavigation.planet_configuration|AbstractNavigation.flat_configuration} navigation - navigation configuration
          */
-        
+
         /**
          * @name PlanetContext
          * @class
@@ -76,7 +76,6 @@ define(["jquery", "underscore-min", "../Utils/Utils", "./AbstractContext", "../U
          */
         var PlanetContext = function (mizarConfiguration, options) {
             AbstractContext.prototype.constructor.call(this, mizarConfiguration, Constants.CONTEXT.Planet, options);
-
             var self = this;
 
             this.components = {
@@ -102,7 +101,7 @@ define(["jquery", "underscore-min", "../Utils/Utils", "./AbstractContext", "../U
                     this.layers = this.layers.concat(this.planetLayer.layers);
                     this.layers = this.layers.concat(this.planetLayer.baseImageries);
                 }
-                
+
                 this.navigation = _createNavigation.call(this, this.getCoordinateSystem().isFlat(), options.navigation);
 
                 ServiceFactory.create(Constants.SERVICE.PickingManager).init(this);
@@ -134,7 +133,7 @@ define(["jquery", "underscore-min", "../Utils/Utils", "./AbstractContext", "../U
          * Create the navigation according to the isFlat parameter.
          * @param {boolean} isFlat - The globe is projected or in 3D
          * @param {{AbstractNavigation.planet_configuration|AbstractNavigation.flat_configuration} navigationOpts - Options for navigation
-         * @returns {FlatNavigation|PlanetNavigation} navigation 
+         * @returns {FlatNavigation|PlanetNavigation} navigation
          * @private
          */
         function _createNavigation(isFlat, navigationOpts) {

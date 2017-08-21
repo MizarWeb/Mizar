@@ -73,6 +73,8 @@ define(['../Utils/Utils', './AbstractLayer', '../Renderer/RasterOverlayRenderer'
             this.zIndex = options.zIndex || 0;
             this.crossOrigin = options.crossOrigin || 'anonymous';
             this.baseUrl = this.proxify(options.baseUrl);
+            // Start of get capabilities (without service nor version)
+            this.getCapabilities = options.baseUrl+"&request=GetCapabilities";
 
             // Init cache if defined
             if (options.cache) {

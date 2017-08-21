@@ -45,6 +45,7 @@ define(["jquery", "underscore-min", "./AbstractLayer", "../Crs/CoordinateSystemF
          * Planet layer.
          * @param options - See {AbstractLayer} for base properties
          * @param {Object} options.elevation
+         * @augments AbstractLayer
          * @constructor
          * @memberOf module:Layer
          */
@@ -62,7 +63,15 @@ define(["jquery", "underscore-min", "./AbstractLayer", "../Crs/CoordinateSystemF
             for (var i = 0; i < options.baseImageries.length; i++) {
                 var planetDesc = options.baseImageries[i];
                 planetDesc = $.extend({}, options, planetDesc);
-                var gwLayer = new WMSLayer(planetDesc);
+                var gwLayer;
+                if (options.layerFactory) {
+                  planetDesc.type = Constants.LAYER.WMS;
+                  planetDesc.proxy = options.layerFactory.proxy;
+                  // Creation of WMS
+                  gwLayer = options.layerFactory.create(planetDesc);
+                } else {
+                  gwLayer = new WMSLayer(planetDesc);
+                }
                 gwLayer.background = true;
                 gwLayer.category = "background";
                 gwLayer.type = "WMS";

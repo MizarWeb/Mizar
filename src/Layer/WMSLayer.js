@@ -77,7 +77,15 @@ define(['../Utils/Utils', './AbstractRasterLayer', '../Utils/Constants', '../Til
             options.tilePixelSize = options.tilePixelSize || 256;
             options.tiling = new GeoTiling(4, 2);
             options.numberOfLevels = options.numberOfLevels || 21;
+
             AbstractRasterLayer.prototype.constructor.call(this, Constants.LAYER.WMS, options);
+
+            this.getCapabilities += "&service=WMS&version=";
+            this.getCapabilities += options.hasOwnProperty('version') ? options.version : '1.1.1';
+            this.getCapabilities = this.proxify(this.getCapabilities);
+
+            console.log("getCapabilities",this.getCapabilities);
+
 
             // Build the base GetMap URL
             var url = this.baseUrl;

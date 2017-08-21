@@ -224,6 +224,7 @@ define(["jquery","../Utils/Constants", "./WMSLayer", "./WMTSLayer", "./WCSElevat
                         layer = createOpenSearch(options);
                         break;
                     case Constants.LAYER.Planet :
+                        options.layerFactory = this;
                         layer = new PlanetLayer(options);
                         break;
                     default :

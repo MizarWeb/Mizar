@@ -216,15 +216,18 @@ define(["underscore-min", "../Utils/Event", "../Utils/Utils", "../Utils/Constant
          */
          AbstractLayer.prototype.proxify = function (url) {
            var proxifiedUrl = url;
+           var proxyDone = false;
            if ( (this.options) && (this.options.proxy) ) {
              if (this.options.proxy.use === true) {
+              proxyDone = true;
                if (url.startsWith(this.options.proxy.url)) {
                  proxifiedUrl = url; // No change, proxy always set
                } else {
-                 proxifiedUrl = this.options.proxy.url + url; // Add proxy redirection
+                 proxifiedUrl = this.options.proxy.url + encodeURIComponent(url); // Add proxy redirection
                }
             }
            }
+           //console.log("Proxy done ? "+proxyDone);
            return proxifiedUrl;
          }
 
