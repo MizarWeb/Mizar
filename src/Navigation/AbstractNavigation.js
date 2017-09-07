@@ -310,7 +310,7 @@ define(['../Utils/Utils', '../Utils/Event', '../Navigation/NavigationHandlerFact
         /**
          * Callback at the end of animation (when stop method is called).
          * @callback navigationCallback
-         */        
+         */
 
         /**
          * Basic animation from current view matrix to the given one
@@ -411,8 +411,8 @@ define(['../Utils/Utils', '../Utils/Event', '../Navigation/NavigationHandlerFact
         AbstractNavigation.prototype.setRenderContext = function (renderContext) {
             this.renderContext = renderContext;
         };
-        
-        
+
+
         /**************************************************************************************************************/
 
         return AbstractNavigation;

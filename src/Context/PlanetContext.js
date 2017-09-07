@@ -171,6 +171,7 @@ define(["jquery", "underscore-min", "../Utils/Utils", "./AbstractContext", "../U
                 minFar: 0,
                 defaultColor: [200, 200, 200, 255],
                 renderTileWithoutTexture: true,
+                //todofl : redondance car params identiques
                 publishEvent: function (message, object) {
                     self.publish(message, object);
                 }

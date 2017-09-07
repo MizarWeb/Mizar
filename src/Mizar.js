@@ -363,7 +363,7 @@ define(["jquery", "underscore-min",
                     // Show all additional layers
                     self.activatedContext.showAdditionalLayers();
                     self.activatedContext.getRenderContext().tileErrorTreshold = 1.5;
-                    self.publish("mizarMode:toggle", self.activatedContext);
+                    //self.publish("mizarMode:toggle", self.activatedContext);
 
 
                     // Destroy planet context
@@ -374,7 +374,7 @@ define(["jquery", "underscore-min",
                     self.activatedContext.refresh();
                     self.activatedContext.getPositionTracker().attachTo(self.activatedContext.globe);
 
-                });
+            });
         }
 
         /**
@@ -1011,7 +1011,10 @@ define(["jquery", "underscore-min",
          */
         Mizar.prototype.addLayer = function (layerDescription, layerPlanet) {
             var layer;
-            if (layerPlanet) {
+/*            console.log(this.getLayers().length);
+            console.log("context = ",this.getActivatedContext());
+            console.log("layerPlanet = ",this.layerPlanet);
+  */          if (layerPlanet) {
                 layer = this.LayerFactory.create(layerDescription);
                 this.getActivatedContext()._fillDataProvider(layer, layerDescription);
                 layerPlanet.layers.push(layer);

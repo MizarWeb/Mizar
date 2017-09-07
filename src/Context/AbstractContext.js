@@ -413,7 +413,9 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Laye
          * @memberOf AbstractContext#
          */
         AbstractContext.prototype.refresh = function () {
-            this.globe.refresh();
+            if (this.globe) {
+              this.globe.refresh();
+            }
         };
 
         /**************************************************************************************************************/

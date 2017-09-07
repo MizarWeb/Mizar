@@ -35,8 +35,8 @@
  * along with GlobWeb. If not, see <http://www.gnu.org/licenses/>.
  ***************************************/
 
-define(["underscore-min", "../Utils/Event", "../Utils/Utils", "../Utils/Constants", "../Utils/UtilityFactory"],
-    function (_, Event, Utils, Constants, UtilityFactory) {
+define(["jquery","underscore-min", "../Utils/Event", "../Utils/Utils", "../Utils/Constants", "../Utils/UtilityFactory","xmltojson"],
+    function ($,_, Event, Utils, Constants, UtilityFactory,XmlToJson) {
 
         /**
          * AbstactLayer configuration
@@ -203,6 +203,107 @@ define(["underscore-min", "../Utils/Event", "../Utils/Utils", "../Utils/Constant
         /**************************************************************************************************************/
 
         Utils.inherits(Event, AbstractLayer);
+
+        /**************************************************************************************************************/
+
+        /**
+         * Add parameter to
+         * @function addParameterTo
+         * @memberOf AbstractLayer#
+         * @param {String} url - parameter url
+         * @param {String} name - parameter name
+         * @param {String} value - parameter value
+         * @return {String} url updated
+         */
+        AbstractLayer.prototype.addParameterTo = function (url,name,value) {
+            var separator = "&";
+            if ((typeof url !== "string") || (url.indexOf('?', 0) === -1)) {
+              separator = "?";
+            }
+            return url + separator + name + "=" + value;
+        };
+
+        /**************************************************************************************************************/
+
+        /**
+         * Add parameter to getCapabilities url
+         * @function addGetCapabilitiesParameter
+         * @memberOf AbstractLayer#
+         * @param {String} name - parameter name
+         * @param {String} value - parameter value
+         */
+        AbstractLayer.prototype.addGetCapabilitiesParameter = function (name,value) {
+            this.getCapabilitiesRaw = this.addParameterTo(this.getCapabilitiesRaw,name,value);
+        };
+
+        /**************************************************************************************************************/
+
+        /**
+         * Get getCapabilities url
+         * @function getGetCapabilitiesUrl
+         * @memberOf AbstractLayer#
+         * @return {String} url
+         */
+        AbstractLayer.prototype.getGetCapabilitiesUrl = function () {
+            this.getCapabilities = this.proxify(this.getCapabilitiesRaw);
+            return this.getCapabilities;
+        };
+
+        /**
+         * Add parameter to getMap url
+         * @function addGetMapParameter
+         * @memberOf AbstractLayer#
+         * @param {String} name - parameter name
+         * @param {String} value - parameter value
+         */
+        AbstractLayer.prototype.addGetMapParameter = function (name,value) {
+          this.getMapRaw = this.addParameterTo(this.getMapRaw,name,value);
+        };
+
+        /**************************************************************************************************************/
+
+        /**
+         * Get getMap url
+         * @function getGetMapUrl
+         * @memberOf AbstractLayer#
+         * @return {String} url
+         */
+        AbstractLayer.prototype.getGetMapUrl = function () {
+            this.getMap = this.proxify(this.getMapRaw);
+            return this.getMap;
+        };
+
+        /**************************************************************************************************************/
+
+        /**
+         * Load the getCapabilities into json variable
+         * @function loadGetCapabilities
+         * @memberOf AbstractLayer
+         * @param {function} callback Callback function
+         * @return {JSON} data loaded
+         */
+        AbstractLayer.prototype.loadGetCapabilities = function (callback) {
+          url = this.getGetCapabilitiesUrl();
+          urlRaw = this.getCapabilitiesRaw;
+          $.ajax({
+              type: "GET",
+              url: url,
+              dataType: 'text',
+              success: function (response) {
+                var myOptions = {
+                    mergeCDATA: true,
+                    xmlns: false,
+                    attrsAsObject: false,
+                    childrenAsArray: false
+                }
+                result = xmlToJSON.parseString(response,myOptions);
+                callback(result);
+              },
+              error: function (xhr, ajaxOptions, thrownError) {
+                  console.error("Unknow server "+urlRaw);
+              }
+          });
+        };
 
         /**************************************************************************************************************/
 

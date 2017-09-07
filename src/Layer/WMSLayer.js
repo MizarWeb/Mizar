@@ -80,44 +80,28 @@ define(['../Utils/Utils', './AbstractRasterLayer', '../Utils/Constants', '../Til
 
             AbstractRasterLayer.prototype.constructor.call(this, Constants.LAYER.WMS, options);
 
-            this.getCapabilities += "&service=WMS&version=";
-            this.getCapabilities += options.hasOwnProperty('version') ? options.version : '1.1.1';
-            this.getCapabilities = this.proxify(this.getCapabilities);
-
-            console.log("getCapabilities",this.getCapabilities);
-
+            this.addGetCapabilitiesParameter("service","WMS");
+            this.addGetCapabilitiesParameter("version",options.hasOwnProperty('version') ? options.version : '1.1.1');
 
             // Build the base GetMap URL
-            var url = this.baseUrl;
-            if (url.indexOf('?', 0) === -1) {
-                url += '?service=wms';
-            }
-            else {
-                url += '&service=wms';
-            }
-            url += "&version=";
-            url += options.hasOwnProperty('version') ? options.version : '1.1.1';
-            url += "&request=GetMap";
-            url += "&layers=" + options.layers;
-            url += "&styles=";
-            if (options.hasOwnProperty('styles')) {
-                url += options.styles;
-            }
-            url += "&format=";
-            this.format = options.hasOwnProperty('format') ? options.format : 'image/jpeg';
-            url += this.format;
+            this.addGetMapParameter("service","wms");
+            this.addGetMapParameter("version",options.hasOwnProperty('version') ? options.version : '1.1.1');
+            this.addGetMapParameter("request","getMap");
+            this.addGetMapParameter("layers",options.layers);
+            this.addGetMapParameter("styles",options.hasOwnProperty('styles') ? options.styles : "");
+            this.addGetMapParameter("format",options.hasOwnProperty('format') ? options.format : 'image/jpeg');
             if (options.hasOwnProperty('transparent')) {
-                url += "&transparent=" + options.transparent;
+                this.addGetMapParameter("transparent",options.transparent);
             }
-            url += "&width=";
-            url += this.tilePixelSize;
-            url += "&height=";
-            url += this.tilePixelSize;
+            this.addGetMapParameter("width",this.tilePixelSize);
+            this.addGetMapParameter("&height",this.tilePixelSize);
             if (options.hasOwnProperty('time')) {
-                url += "&time=" + options.time;
+                this.addGetMapParameter("time=",options.time);
             }
 
-            this.getMapBaseUrl = this._proxifyUrl(url);
+            this.getMapBaseUrl = this.getGetMapUrl();
+
+            this.loadGetCapabilities(this.manageCapabilities,this.options);
         };
 
         /**************************************************************************************************************/
@@ -125,6 +109,38 @@ define(['../Utils/Utils', './AbstractRasterLayer', '../Utils/Constants', '../Til
         Utils.inherits(AbstractRasterLayer, WMSLayer);
 
         /**************************************************************************************************************/
+
+        WMSLayer.prototype.manageCapabilities = function (json,options) {
+          // Check if we have a layer list in options
+          /*var listLayerNames = [];
+          if (options) {
+            if (options.layers) {
+              // Just a name
+              if (typeof options.layers === 'string') {
+                listLayerNames [options.layers];
+              } else {
+                listLayerNames = options.layers;
+              }
+            }
+          }
+
+          jsRoot = json.WMT_MS_Capabilities;
+          jsCapability = jsRoot.Capability;
+          jsLayers = jsCapability.Layer.Layer;
+          var needToLoad;
+          for (i=0;i<layers.length;i++) {
+            name = layers[i].Name._text;
+            title = layers[i].Title._text;
+            console.log("Layer "+ name +" : "+ title);
+            // For each layer found, search if we have to load it
+            needToLoad = false;
+            if (listLayerNames.length === 0) {
+              // If no layer list provided, load all !
+              needToLoad = true;
+            } else {
+            }
+          }*/
+        }
 
         /**
          * Returns the url for the given tile
@@ -136,20 +152,13 @@ define(['../Utils/Utils', './AbstractRasterLayer', '../Utils/Constants', '../Til
         WMSLayer.prototype.getUrl = function (tile) {
             // Just add the bounding box to the GetMap URL
             var bound = tile.bound;
-            var url = this.getMapBaseUrl;
+            var bbox = bound.west + "," + bound.south + "," + bound.east + "," + bound.north;
 
-            url += "&srs=" + tile.config.srs;
-            url += "&bbox=";
+            var url = this.getMapRaw;
+            url = this.addParameterTo(url,"srs",tile.config.srs);
+            url = this.addParameterTo(url,"bbox",bbox);
 
-            url += bound.west;
-            url += ",";
-            url += bound.south;
-            url += ",";
-            url += bound.east;
-            url += ",";
-            url += bound.north;
-
-            return url;
+            return this.proxify(url);
         };
 
         /**

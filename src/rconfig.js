@@ -42,8 +42,8 @@ require.config({
         string: "../node_modules/string/dist/string",
         gzip: "../external/gzip.min",
         saveAs: "../node_modules/file-saver/FileSaver.min",
-        jszip: "../node_modules/jszip/dist/jszip.min"
-
+        jszip: "../node_modules/jszip/dist/jszip.min",
+        "xmltojson": "../node_modules/xmltojson/lib/xmltojson"
     },
     shim: {
         "underscore-min": {
