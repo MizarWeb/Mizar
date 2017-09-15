@@ -37,10 +37,11 @@ define(["jquery", "jquery.ui"], function ($) {
           width: 700,
           minHeight: 300,
           maxHeight: 500,
-          dialogClass: 'errorBox',
-          beforeClose: function( event, ui ) { $text = ""; }
+          dialogClass: 'errorBox'
+          //beforeClose: function( event, ui ) { $text = ""; }
         });
-
+    var $active = false;
+    var $displayWarning = false;
     return {
         /**
          *    Open dialog
@@ -48,12 +49,37 @@ define(["jquery", "jquery.ui"], function ($) {
          *    @param html HTML text
          */
         open: function (html) {
+            if ($displayWarning === false) {
+              return;
+            }
             $text += html + "<br/>";
-            $errorDiv
-                .html($text)
-                .dialog("open");
-            $errorDiv.scrollTop(5000);
+            if ($('#warningContainer')) {
+              $('#warningContainer').show();
+            }
+            if ($active === true) {
+              $errorDiv
+                  .html($text)
+                  .dialog("open");
+              $errorDiv.scrollTop(5000);
+            }
+        },
+        view: function() {
+          $errorDiv
+              .html($text)
+              .dialog("open");
 
+          $errorDiv.scrollTop(5000);
+          $active = true;
+        },
+        hide:function() {
+          $errorDiv.dialog("close");
+          $active = false;
+        },
+        isActive:function() {
+          return $active;
+        },
+        setDisplayWarning:function(value) {
+          $displayWarning = value;
         }
     };
 

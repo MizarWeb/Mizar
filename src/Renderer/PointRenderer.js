@@ -230,7 +230,7 @@ define(['../Utils/Utils', '../Utils/Constants', './VectorRenderer', './VectorRen
 
             var csBound = new GeoBound(coordinateSystem.getGeoBound().getWest(), coordinateSystem.getGeoBound().getSouth(), coordinateSystem.getGeoBound().getEast(), coordinateSystem.getGeoBound().getNorth());
 
-            if (csBound.isPointInside(posGeo)) {
+            //if (csBound.isPointInside(posGeo)) {
                 var pos3d = coordinateSystem.get3DFromWorld(posGeo);
                 var vertical = coordinateSystem.getVerticalAt3D(pos3d);
 
@@ -241,9 +241,9 @@ define(['../Utils/Utils', '../Utils/Constants', './VectorRenderer', './VectorRen
                 });
 
                 return true;
-            } else {
-                return false;
-            }
+            //} else {
+            //    return false;
+            //}
         };
 
         /**************************************************************************************************************/

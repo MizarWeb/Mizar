@@ -28,12 +28,12 @@ define(
          * @property {CONTEXT} type - Type of the CRS
          * @property {GeoBound} geoBound - Geographical bounding box
          */
-        
+
         /**
          * @name AbstractCrs
          * @class
          * Creates an coordinate reference system for a globe and data.
-         * 
+         *
          * A coordinate reference system is a coordinate system that is related to an object
          * by a {@link Geoide geodetic datum}.
          *
@@ -135,7 +135,6 @@ define(
             dest[0] = Numeric.toDegree(lon);
             dest[1] = Numeric.toDegree(lat);
             dest[2] = this.geoide.getRealPlanetRadius() * (r - this.geoide.getRadius());
-
             return dest;
         };
 

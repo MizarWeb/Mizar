@@ -257,14 +257,13 @@ define(["jquery", "underscore-min", "../Utils/Numeric", "../Utils/Constants",
                 type: "Feature"
             };
 
-
             var center = [(self.secondPickPoint[0] + self.pickPoint[0]) / 2, (self.secondPickPoint[1] + self.pickPoint[1]) / 2];
             var geoCenter = mizarAPI.getActivatedContext().getLonLatFromPixel(center[0],center[1]);
             self.measureLabel = {
                 geometry: {
                     type: Constants.GEOMETRY.Point,
                     gid: "measureShape",
-                    coordinates: geoCenter,
+                    coordinates:geoCenter,
                     crs: {
                         type: "name",
                         properties: {
@@ -280,6 +279,8 @@ define(["jquery", "underscore-min", "../Utils/Numeric", "../Utils/Constants",
                     })
                 }
             };
+            var msg = "Distance :"+self.geoDistance+" at "+coordinates[0][0]+","+coordinates[0][1]+","+coordinates[0][2];
+            console.log("MSG:"+msg);
             measureLayer.addFeature(self.measureFeature);
             measureLayer.addFeature(self.measureLabel);
         }
@@ -317,7 +318,7 @@ define(["jquery", "underscore-min", "../Utils/Numeric", "../Utils/Constants",
 
                 this.activated = false;
                 this.renderContext = mizarAPI.getRenderContext();
-                
+
                 // Measure attributes
                 /*this.pickPoint; // Window pick point
                 this.secondPickPoint; // Window second pick point
