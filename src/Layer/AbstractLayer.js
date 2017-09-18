@@ -285,6 +285,7 @@ define(["jquery","underscore-min", "../Utils/Event", "../Utils/Utils", "../Utils
         AbstractLayer.prototype.loadGetCapabilities = function (callback) {
           url = this.getGetCapabilitiesUrl();
           urlRaw = this.getCapabilitiesRaw;
+          console.log("URL = "+url);
           $.ajax({
               type: "GET",
               url: url,
