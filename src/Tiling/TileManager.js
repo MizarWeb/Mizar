@@ -332,7 +332,6 @@ define(['./Tile', './GeoTiling', './TilePool', './TileRequest', './TileIndexBuff
                             this.tilesToRequest.push(tile);
                         }
                         else if (tile.state === Tile.State.ERROR && this.imageryProvider) {
-                            console.log("ERROR TILE STATE");
                             this.publishEvent("baseLayersError", this.imageryProvider);
                         }
                     }
