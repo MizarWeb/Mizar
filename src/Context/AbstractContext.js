@@ -523,7 +523,7 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Laye
             var self = this;
             this.subscribe("baseLayersError", function (layer) {
                 $(self.canvas.parentElement).find('#loading').hide();
-                console.log("Error with layer",layer);
+                //TODOFL console.log("Error with layer",layer);
             });
         };
 

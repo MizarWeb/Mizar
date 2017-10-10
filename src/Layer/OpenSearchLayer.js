@@ -34,8 +34,8 @@
  * You should have received a copy of the GNU General Public License
  * along with GlobWeb. If not, see <http://www.gnu.org/licenses/>.
  ***************************************/
-define(['../Renderer/FeatureStyle', '../Renderer/VectorRendererManager', '../Utils/Utils', './AbstractLayer', '../Renderer/RendererTileData', '../Tiling/Tile','../Utils/Constants'],
-    function (FeatureStyle, VectorRendererManager, Utils, AbstractLayer, RendererTileData, Tile, Constants) {
+define(['../Renderer/FeatureStyle', '../Renderer/VectorRendererManager', '../Utils/Utils', './AbstractLayer', '../Renderer/RendererTileData', '../Tiling/Tile','../Utils/Constants','./OpenSearch/OpenSearchForm','./OpenSearch/OpenSearchUtils'],
+    function (FeatureStyle, VectorRendererManager, Utils, AbstractLayer, RendererTileData, Tile, Constants,OpenSearchForm,OpenSearchUtils) {
 
         /**
          * @name OpenSearchLayer
@@ -52,16 +52,28 @@ define(['../Renderer/FeatureStyle', '../Renderer/VectorRendererManager', '../Uti
          * @memberOf module:Layer
          */
           var OpenSearchLayer = function (options) {
-             options.dataType = Constants.GEOMETRY.Point;
-             AbstractLayer.prototype.constructor.call(this, Constants.LAYER.OpenSearch, options);
+            options.dataType = Constants.GEOMETRY.Point;
+            AbstractLayer.prototype.constructor.call(this, Constants.LAYER.OpenSearch, options);
 
-            this.serviceUrl = this.proxify(options.serviceUrl);
+            if (typeof options.serviceUrl !== 'undefined') {
+              this.serviceUrl = this.proxify(options.serviceUrl);
+            }
+
+            if (typeof options.getCapabilities !== 'undefined') {
+              this.describeUrl = this.proxify(options.getCapabilities);
+            }
+
+            this.name = options.name;
+            this.title = options.title;
+
+            this.afterLoad = options.afterLoad;
+
             this.minOrder = options.minOrder || 5;
             this.maxRequests = options.maxRequests || 2;
             this.requestProperties = "";
             this.invertY = options.invertY || false;
             this.coordSystemRequired = options.hasOwnProperty('coordSystemRequired') ? options.coordSystemRequired : true;
-
+            this.formDescription = null;
 
             this.extId = "os";
 
@@ -79,6 +91,14 @@ define(['../Renderer/FeatureStyle', '../Renderer/VectorRendererManager', '../Uti
                 var xhr = new XMLHttpRequest();
                 this.freeRequests.push(xhr);
             }
+
+            if (typeof this.describeUrl !== 'undefined') {
+              this.hasForm = true;
+              this.loadGetCapabilities(this.manageCapabilities,this.describeUrl,this);
+            } else {
+              this.hasForm = false;
+            }
+
         };
 
         /**************************************************************************************************************/
@@ -86,6 +106,35 @@ define(['../Renderer/FeatureStyle', '../Renderer/VectorRendererManager', '../Uti
         Utils.inherits(AbstractLayer, OpenSearchLayer);
 
         /**************************************************************************************************************/
+
+        OpenSearchLayer.prototype.manageCapabilities = function (json,sourceObject) {
+          // check if form description is well provided
+          var dataForm = null;
+          var openSearchRoot = json.OpenSearchDescription;
+          if (typeof openSearchRoot !== 'undefined') {
+            sourceObject.name  = (typeof sourceObject.name  !== 'undefined') ? sourceObject.name  : OpenSearchUtils.getValue(openSearchRoot,"ShortName");
+            sourceObject.title = (typeof sourceObject.title !== 'undefined') ? sourceObject.title : OpenSearchUtils.getValue(openSearchRoot,"LongName");
+            var urls = openSearchRoot.Url;
+            if (typeof urls !== 'undefined') {
+              dataForm = urls;
+            }
+          }
+          if (dataForm != null) {
+            // Load form description
+            sourceObject.formDescription = new OpenSearchForm(dataForm,"application/json");
+          } else {
+            console.log("Form not correct");
+          }
+
+          if (typeof sourceObject.afterLoad === 'function') {
+            // Update GUI !!
+            sourceObject.afterLoad(sourceObject);
+
+          }
+        };
+
+        /**************************************************************************************************************/
+
 
         /**
          * @name OSData

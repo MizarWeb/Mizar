@@ -280,12 +280,18 @@ define(["jquery","underscore-min", "../Utils/Event", "../Utils/Utils", "../Utils
          * @function loadGetCapabilities
          * @memberOf AbstractLayer
          * @param {function} callback Callback function
+         * @param {String} paramUrl url (if ommited, reconstructed with getCapabilitiesUrl)
+         * @param {Object} sourceObject source object
          * @return {JSON} data loaded
          */
-        AbstractLayer.prototype.loadGetCapabilities = function (callback) {
-          url = this.getGetCapabilitiesUrl();
-          urlRaw = this.getCapabilitiesRaw;
-          console.log("URL = "+url);
+        AbstractLayer.prototype.loadGetCapabilities = function (callback,paramUrl,sourceObject) {
+          if (typeof paramUrl === 'undefined') {
+            url = this.getGetCapabilitiesUrl();
+            urlRaw = this.getCapabilitiesRaw;
+          } else  {
+            url = paramUrl;
+            urlRaw = paramUrl;
+          }
           $.ajax({
               type: "GET",
               url: url,
@@ -298,7 +304,7 @@ define(["jquery","underscore-min", "../Utils/Event", "../Utils/Utils", "../Utils
                     childrenAsArray: false
                 }
                 result = xmlToJSON.parseString(response,myOptions);
-                callback(result);
+                callback(result,sourceObject);
               },
               error: function (xhr, ajaxOptions, thrownError) {
                   console.error("Unknow server "+urlRaw);
@@ -317,6 +323,9 @@ define(["jquery","underscore-min", "../Utils/Event", "../Utils/Utils", "../Utils
          * @return {String} Url proxified
          */
          AbstractLayer.prototype.proxify = function (url) {
+           if (typeof url !== 'string') {
+             return url;
+           }
            var proxifiedUrl = url;
            var proxyDone = false;
            if ( (this.options) && (this.options.proxy) ) {
