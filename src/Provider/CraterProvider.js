@@ -52,7 +52,7 @@ define(['jquery', './AbstractProvider', '../Utils/Utils', '../Renderer/FeatureSt
                 type: "GET",
                 url: configuration.url,
                 success: function (response) {
-                    featureCollection = response;
+                    featureCollection = JSON.parse(response);
                     self.handleFeatures(layer);
                 },
                 error: function (xhr, ajaxOptions, thrownError) {
