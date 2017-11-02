@@ -22,9 +22,9 @@
  * Factory to create a coordinate reference system
  * @memberOf module:Crs
  */
-define(["../Utils/Constants", "./WGS84Crs", "./Mars2000Crs", "./EquatorialCrs",
+define(["../Utils/Constants", "./WGS84Crs", "./Mars2000Crs", "./Moon2000Crs","./EquatorialCrs",
         "./GalacticCrs", "./ProjectedCrs"],
-    function (Constants, WGS84Crs, Mars2000Crs,
+    function (Constants, WGS84Crs, Mars2000Crs, Moon2000Crs,
               EquatorialCrs, GalacticCrs, ProjectedCrs) {
 
         /**
@@ -52,6 +52,11 @@ define(["../Utils/Constants", "./WGS84Crs", "./Mars2000Crs", "./EquatorialCrs",
                 case Constants.CRS.Mars_2000_old:
                 case Constants.CRS.Mars_2000 :
                     cs = new Mars2000Crs(options);
+                    break;
+                // For Moon
+                case Constants.CRS.Moon_2000_old:
+                case Constants.CRS.Moon_2000 :
+                    cs = new Moon2000Crs(options);
                     break;
                 // Unknown geoide name
                 default :

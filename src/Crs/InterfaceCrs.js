@@ -41,6 +41,11 @@
  *         <td>Provides a coordinate reference system base on the Mars geoide</td>
  *     </tr>
  *     <tr>
+ *         <td></td>
+ *         <td>{@link module:Crs.Moon2000Crs Moon2000Crs}</td>
+ *         <td>Provides a coordinate reference system base on the spherical Moon</td>
+ *     </tr>
+ *     <tr>
  *         <td><img src="../doc/images/earth.jpg" width="200px"/></td>
  *         <td>{@link module:Crs.WGS84Crs WGS84Crs}</td>
  *         <td>Provides a coordinate reference system base on the Earth geoide</td>

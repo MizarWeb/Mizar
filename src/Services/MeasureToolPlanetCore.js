@@ -268,16 +268,16 @@ define(["jquery", "underscore-min", "../Utils/Constants",
             var coordinates = self.computeMeasure();
 
             // Get dem scale of elevation layer
-            var mntScale = 1;
+            var mntScale;
             if (
                (mizarAPI.getActivatedContext().elevationTracker !== null) &&
                (mizarAPI.getActivatedContext().elevationTracker.options !== null) &&
-               (mizarAPI.getActivatedContext().elevationTracker.options.elevationLayer !== null) &&
+               (mizarAPI.getActivatedContext().elevationTracker.options.elevationLayer !== undefined) &&
                (mizarAPI.getActivatedContext().elevationTracker.options.elevationLayer.scale !== null) ) {
-              mntScale = mizarAPI.getActivatedContext().elevationTracker.options.elevationLayer.scale;
+                mntScale = mizarAPI.getActivatedContext().elevationTracker.options.elevationLayer.scale;
+            } else {
+                mntScale = 1;
             }
-            var mntScale = mizarAPI.getActivatedContext().elevationTracker.options.elevationLayer.scale;
-
             var firstPoint = self.geoPickPoint;
             var secondPoint = self.secondGeoPickPoint;
             var maxElevation = 0;
@@ -489,7 +489,11 @@ define(["jquery", "underscore-min", "../Utils/Constants",
                 mizarAPI = options.mizar;
                 navigation = mizarAPI.getActivatedContext().getNavigation();
                 onselect = options.onselect;
-                scale = mizarAPI.getActivatedContext().planetLayer.elevationLayer.scale;
+                if(mizarAPI.getActivatedContext().planetLayer.elevationLayer !== undefined) {
+                    scale = mizarAPI.getActivatedContext().planetLayer.elevationLayer.scale;
+                } else {
+                    scale = 1;
+                }
                 self = this;
                 dragging = false;
 

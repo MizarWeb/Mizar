@@ -422,6 +422,10 @@ define(
                 case Constants.CRS.Mars_2000_old+"2"+Constants.CRS.Mars_2000 :
                     convertedGeo = geo;
                     break;
+                case Constants.CRS.Moon_2000+"2"+Constants.CRS.Moon_2000_old :
+                case Constants.CRS.Moon_2000_old+"2"+Constants.CRS.Moon_2000 :
+                    convertedGeo = geo;
+                    break;
                 default:
                     throw "Conversion "+from+" to "+to+" is not implemented";
             }

@@ -28,8 +28,8 @@ define(['./AbstractCrs', '../Renderer/GeoBound', '../Utils/Utils', '../Utils/Con
          * Mars2000Crs is initialized with the following parameters :
          * <ul>
          *     <li>geoideName = IAU2000:49901</li>
-         *     <li>radius = 10.0</li>
-         *     <li>realPlanetRadius = 1</li>
+         *     <li>radius = 1.0</li>
+         *     <li>realPlanetRadius = 3396190</li>
          *     <li>type = Planet</li>
          *     <li>geoBound = new GeoBound(-180, -90, 180, 90)</li>
          * </ul>
