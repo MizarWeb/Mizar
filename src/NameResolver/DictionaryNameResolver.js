@@ -83,6 +83,7 @@ define(["jquery", "underscore-min", "../Utils/Utils", "./AbstractNameResolver","
          */
         DictionaryNameResolver.prototype.handle = function (options) {
             var context = this.ctx;
+            var crs = this.ctx.getCoordinateSystem();
             var objectName = options.objectName;
             var onError = options.onError;
             var onComplete = options.onComplete;
@@ -92,7 +93,8 @@ define(["jquery", "underscore-min", "../Utils/Utils", "./AbstractNameResolver","
 
             // Planet resolver(Mars only currently)
             var feature = _.find(dictionary.features, function (f) {
-                return f.properties.Name.toLowerCase() === objectName.toLowerCase();
+                var name = (f.properties.Name == undefined) ? f.properties.name : f.properties.Name;
+                return name.toLowerCase() === objectName.toLowerCase();
             });
 
             if (feature) {
@@ -108,7 +110,7 @@ define(["jquery", "underscore-min", "../Utils/Utils", "./AbstractNameResolver","
                     searchLayer(objectName, onSuccess, onError, {features: [feature]});
                 };                
 
-                zoomTo(lon, lat, Constants.CRS.Mars_2000, zoomToCallback, {features: [feature]});
+                zoomTo(lon, lat, crs.getGeoideName(), zoomToCallback, {features: [feature]});
             }
             else {
                 searchLayer(objectName, onSuccess, onError);
