@@ -431,7 +431,7 @@ define(["jquery", "underscore-min", "../Utils/Constants",
          * @returns {number} distance elevation in meters
          */
         function calculateDistanceElevation(firstPoint, secondPoint) {
-            var R = mizarAPI.getCrs().getGeoide().getRealPlanetRadius(); // metres TODO Utiliser le système de ref de JC
+            var R = mizarAPI.getCrs().getGeoide().getRealPlanetRadius();
             var φ1 = Numeric.toRadian(firstPoint[1]);
             var φ2 = Numeric.toRadian(secondPoint[1]);
             var Δφ = Numeric.toRadian(secondPoint[1] - firstPoint[1]);
@@ -458,7 +458,7 @@ define(["jquery", "underscore-min", "../Utils/Constants",
             distance = Numeric.roundNumber(distance.toFixed(3), 2);
 
             var elevation = mizarAPI.getActivatedContext().getElevation(secondPoint[0], secondPoint[1]);
-            elevation = Numeric.roundNumber(elevation / scale, 0)
+            elevation = Numeric.roundNumber(elevation / scale, 0);
             var pointElevation = [distance, elevation];
 
             self.elevations.push(pointElevation);
@@ -467,7 +467,8 @@ define(["jquery", "underscore-min", "../Utils/Constants",
         function updateContext(mizar) {
             mizarAPI = mizar;
             navigation = mizarAPI.getActivatedContext().getNavigation();
-            scale = mizarAPI.getActivatedContext().planetLayer.elevationLayer.scale;
+            var elevationLayer = _.find(mizarAPI.getActivatedContext().getLayers(),  function(obj) { return obj.type ===  Constants.LAYER.WCSElevation ||  obj.type ===  Constants.LAYER.WMSElevation});
+            scale = elevationLayer.scale;
             dragging = false;
 
             // Layer containing measure feature
@@ -489,8 +490,9 @@ define(["jquery", "underscore-min", "../Utils/Constants",
                 mizarAPI = options.mizar;
                 navigation = mizarAPI.getActivatedContext().getNavigation();
                 onselect = options.onselect;
-                if(mizarAPI.getActivatedContext().planetLayer.elevationLayer !== undefined) {
-                    scale = mizarAPI.getActivatedContext().planetLayer.elevationLayer.scale;
+                var elevationLayer = _.find(mizarAPI.getActivatedContext().getLayers(),  function(obj) { return obj.type ===  Constants.LAYER.WCSElevation ||  obj.type ===  Constants.LAYER.WMSElevation});
+                if(elevationLayer !== undefined) {
+                    scale = elevationLayer.scale;
                 } else {
                     scale = 1;
                 }

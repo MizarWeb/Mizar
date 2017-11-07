@@ -31,8 +31,9 @@ define(["jquery", "underscore-min",
               Utils, Event, Stats, Constants, ErrorDialog, HipsMetadata) {
 
         //TODO bug : shortest path
-        //TODO : charger cratere Mars et l'afficher à un certain niveau de zoom
-        //TODO : addLayer
+        //TODO : charger cratere Mars et l'afficher à un certain niveau de zoom => fonctionne par FeatureStyle
+        //TODO : calculer le getFov pour la navigation de type "Planet" pour en déduire le FOV en fonction du level de Geotiling
+        //TODO : Elevation KO quand projection 2D
 
         /**
          * @constant
@@ -86,6 +87,8 @@ define(["jquery", "underscore-min",
          * @property {AbstractTracker.elevation_configuration} [elevationTracker] - Elevation tracker configuration
          * @property {Object} [registry] - Hips service registry
          * @property {string} registry.hips - Hips Registry
+         * @property {boolean} [proxyUse=False] - Uses a proxy to send request
+         * @property {string} [proxyUrl] - Proxy URL to use when proxyUse is true
          */
 
         /**
@@ -126,8 +129,9 @@ define(["jquery", "underscore-min",
 
             // Set proxy parameters to Layer factory
             this.LayerFactory.proxy = {
-              url : this.options.configuration.proxyUrl,
-              use : this.options.configuration.proxyUse
+                url: this.options.configuration.proxyUrl,
+                // Sets to false when proxyUse is undefined or null
+                use: this.options.configuration.proxyUse == null ? false : this.options.configuration.proxyUse
             };
 
             proxy = this.LayerFactory.proxy;
@@ -272,11 +276,11 @@ define(["jquery", "underscore-min",
          * @private
          */
         function _extractURLFrom(scripts, scriptName, index) {
-            var mizarSrc =  _.find(scripts, function (script) {
+            var mizarSrc = _.find(scripts, function (script) {
                 return (script.src.indexOf(scriptName) !== -1);
             });
-            if(mizarSrc) {
-                mizarSrc =  mizarSrc.src.split('/').slice(0, index).join('/') + '/';
+            if (mizarSrc) {
+                mizarSrc = mizarSrc.src.split('/').slice(0, index).join('/') + '/';
             }
             return mizarSrc;
         }
@@ -363,7 +367,7 @@ define(["jquery", "underscore-min",
                     // Show all additional layers
                     self.activatedContext.showAdditionalLayers();
                     self.activatedContext.getRenderContext().tileErrorTreshold = 1.5;
-                    //self.publish("mizarMode:toggle", self.activatedContext);
+                    self.publish("mizarMode:toggle", self.activatedContext);
 
 
                     // Destroy planet context
@@ -374,26 +378,18 @@ define(["jquery", "underscore-min",
                     self.activatedContext.refresh();
                     self.activatedContext.getPositionTracker().attachTo(self.activatedContext.globe);
 
-            });
+                });
         }
 
-        /**
-         * Switch sky to planet
-         * @param {PlanetLayer} gwLayer - planet layer
-         * @param {AbstractContext.planetContext} options - options for planet context
-         * @function _switchSky2Planet
-         * @memberOf Mizar#
-         * @private
-         */
-        function _switchSky2Planet(gwLayer, options) {
+        function _switchSky2Planet2(options) {
 
             var self = this;
 
             // Create planet context (with existing sky render context)
-            var planetConfig = $.extend({}, options);
-            planetConfig.planetLayer = gwLayer;
-            planetConfig.coordinateSystem = gwLayer.coordinateSystem;
-            planetConfig.renderContext = this.getRenderContext();
+            //var planetConfig = $.extend({}, options);
+            //planetConfig.planetLayer = gwLayer;
+            //planetConfig.coordinateSystem = gwLayer.coordinateSystem;
+            //planetConfig.renderContext = this.getRenderContext();
 
             // Hide sky
             this.activatedContext.hide();
@@ -402,7 +398,7 @@ define(["jquery", "underscore-min",
             this.activatedContext.hideAdditionalLayers();
 
             // Create the planetary context and use it as default
-            this.createContext(Mizar.CONTEXT.Planet, planetConfig);
+            this.createContext(Mizar.CONTEXT.Planet, options);
 
             // Store old view matrix & fov to be able to rollback to sky context
             this._oldVM = this.renderContext.getViewMatrix();
@@ -469,7 +465,9 @@ define(["jquery", "underscore-min",
             _enableAtmosphere.call(this);
 
             // Enable skyContext behind the planet
-            this.skyContext.enable();
+            if(this.skyContext) {
+                this.skyContext.enable();
+            }
 
             this.setCrs({geoideName: this.getCrs().getGeoideName()});
 
@@ -487,7 +485,9 @@ define(["jquery", "underscore-min",
             _disableAtmosphere.call(this);
 
             // Disable skyContext
-            this.skyContext.disable();
+            if(this.skyContext) {
+                this.skyContext.disable();
+            }
 
             // If a pole is closed to the center of the canvas, this should mean that
             // the user is interested to the pole, so we switch to azimuth projection
@@ -564,12 +564,15 @@ define(["jquery", "underscore-min",
          * @return {String} Url proxified
          * @private
          */
-         function _proxify(url) {
-           if (proxy.use === true) {
-             return proxy.url + url;
-           };
-           return url;
-         }
+        function _proxify(url) {
+            var proxifyUrl;
+            if (proxy.use === true) {
+                proxifyUrl = proxy.url + url;
+            } else {
+                proxifyUrl = url;
+            }
+            return proxifyUrl;
+        }
 
         /**
          * Loads HIPS layers from passed service url
@@ -625,9 +628,9 @@ define(["jquery", "underscore-min",
                             if (typeof hipsServiceUrl === 'undefined') {
                                 text = "";
                                 if (typeof hipsLayer.obs_title === 'undefined') {
-                                  text = "with ID <b>"+hipsLayer.ID+"</b>";
+                                    text = "with ID <b>" + hipsLayer.ID + "</b>";
                                 } else {
-                                  text = "with title <b>"+hipsLayer.obs_title+"</b>";
+                                    text = "with title <b>" + hipsLayer.obs_title + "</b>";
                                 }
                                 ErrorDialog.open("<font style='color:orange'>Warning : Cannot add layer <b>" + text + "</b> no mirror available</font>");
                                 //console.log("Cannot add layer " + text + " no mirror available");
@@ -689,13 +692,13 @@ define(["jquery", "underscore-min",
                 var prefixe;
                 var text;
                 if (typeof hipsLayer.obs_title === 'undefined') {
-                  prefixe = "ID ";
-                  text = hipsLayer.ID;
+                    prefixe = "ID ";
+                    text = hipsLayer.ID;
                 } else {
-                  prefixe = "";
-                  text = hipsLayer.obs_title;
+                    prefixe = "";
+                    text = hipsLayer.obs_title;
                 }
-                ErrorDialog.open("Hips layer "+prefixe+"<font style='color:yellow'><b>" + text + "</b></font> not valid in Hips registry <font color='grey'><i>("+hipsLayer.hips_service_url+")</i></font>.");
+                ErrorDialog.open("Hips layer " + prefixe + "<font style='color:yellow'><b>" + text + "</b></font> not valid in Hips registry <font color='grey'><i>(" + hipsLayer.hips_service_url + ")</i></font>.");
                 //console.log("Hips layer "+prefixe+ text + " not valid in Hips registry ("+hipsLayer.hips_service_url+")");
             }
         }
@@ -762,7 +765,8 @@ define(["jquery", "underscore-min",
                 default:
                     throw RangeError("The contextMode " + contextMode + " is not allowed, A valid contextMode is included in the list Constants.CONTEXT", "Mizar.js");
             }
-            this.publish("mizarMode:toggle", this.activatedContext);
+            //this.publish("mizarMode:toggle", this.activatedContext);
+            //TODO : ajouter un évènement
         };
 
         /**
@@ -841,7 +845,9 @@ define(["jquery", "underscore-min",
                     throw new RangeError("Unknown contextMode '" + contextMode + "'", "Mizar.js");
             }
             this.renderContext = this.activatedContext.getRenderContext();
-            this.publish("mizarMode:toggle", this.activatedContext);
+            //this.publish("mizarMode:toggle", this.activatedContext);
+            //TODO : ajouter un évènement (idem to setActivatedContext)
+
         };
 
         /**
@@ -872,28 +878,25 @@ define(["jquery", "underscore-min",
 
         /**
          * Switches planetary <---> sky context
-         * @param {PlanetLayer} gwLayer - planet layer
          * @param {AbstractContext.planetContext} options - options for the planet
          * @param {toggleContextCallback} callback - Call at the end of the toggle
          * @fires Mizar#mizarMode:toggle
          * @function toggleContext
          * @memberOf Mizar#
          */
-        Mizar.prototype.toggleContext = function (gwLayer, options, callback) {
+        Mizar.prototype.toggleContext = function (options, callback) {
             var toggleMode = (this.getActivatedContext().getMode() === Mizar.CONTEXT.Sky) ? Mizar.CONTEXT.Planet : Mizar.CONTEXT.Sky;
             var self = this;
 
             if (toggleMode === Mizar.CONTEXT.Sky) {
                 _switchPlanet2Sky.call(this);
             } else {
-                _switchSky2Planet.call(this, gwLayer, options);
+                _switchSky2Planet2.call(this, options);
             }
             if (callback) {
                 callback.call(self);
             }
         };
-
-
         //               ***************************** layer management *****************************
 
         /**
@@ -983,7 +986,6 @@ define(["jquery", "underscore-min",
          *
          * @function addLayer
          * @param {Object} layerDescription - See the base properties {@link AbstractLayer.configuration} and a specific layer for specific properties
-         * @param {PlanetLayer} [layerPlanet] - the planet with which the layer must be linked
          * @returns {string} a unique identifier
          * @memberOf Mizar#
          * @listens AbstractLayer#visibility:changed
@@ -998,7 +1000,6 @@ define(["jquery", "underscore-min",
          * @see {@link module:Layer.MocLayer MocLayer} : A layer to draw a multi-order-coverage index
          * @see {@link module:Layer.OpenSearchLayer OpenSearchLayer} : A layer to draw the result from an open search service
          * @see {@link module:Layer.OSMLayer OSMLayer} : A layer to display data coming from OpenStreetMap server
-         * @see {@link module:Layer.PlanetLayer PlanetLayer} : A layer to save all layers of a planet
          * @see {@link module:Layer.TileWireframeLayer TileWireframeLayer} : A layer to draw a grid on the planet
          * @see {@link module:Layer.VectorLayer VectorLayer} : A layer to draw a vector
          * @see {@link module:Layer.WCSElevationLayer WCSElevationLayer} : A layer to draw the elevation
@@ -1009,15 +1010,8 @@ define(["jquery", "underscore-min",
          * @see {@link Mizar#createContext}
          * @todo Bug to fix : PlanetLayer should use this function to create layer when the context changes
          */
-        Mizar.prototype.addLayer = function (layerDescription, layerPlanet) {
-            var layer;
-            if (layerPlanet) {
-                layer = this.LayerFactory.create(layerDescription);
-                this.getActivatedContext()._fillDataProvider(layer, layerDescription);
-                layerPlanet.layers.push(layer);
-            } else {
-                layer = this.getActivatedContext().addLayer(layerDescription);
-            }
+        Mizar.prototype.addLayer = function (layerDescription) {
+            var layer = this.getActivatedContext().addLayer(layerDescription);
             return layer.ID;
         };
 
@@ -1170,13 +1164,15 @@ define(["jquery", "underscore-min",
          * @memberOf Mizar#
          * @private
          */
-        Mizar.prototype._getUrl = function(url) {
-          if (this.options.configuration.proxyUse === true) {
-            return this.options.configuration.proxyUrl + url;
-          } else {
-            return url;
-          }
-        }
+        Mizar.prototype._getUrl = function (url) {
+            var result;
+            if (this.options.configuration.proxyUse === true) {
+                result = this.options.configuration.proxyUrl + url;
+            } else {
+                result = url;
+            }
+            return result;
+        };
 
 
         /**

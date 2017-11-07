@@ -29,7 +29,6 @@ define(["jquery","../Utils/Constants", "./WMSLayer", "./WMTSLayer", "./WCSElevat
         "./HipsGraphicLayer",
         "./MocLayer",
         "./OpenSearchLayer",
-        "./PlanetLayer",
         "./WMSElevationLayer","./HipsMetadata","./HipsCatLayer", "./GeoJsonLayer"
     ],
     function ($, Constants, WMSLayer, WMTSLayer, WCSElevationLayer, VectorLayer, AtmosphereLayer,
@@ -38,7 +37,6 @@ define(["jquery","../Utils/Constants", "./WMSLayer", "./WMTSLayer", "./WCSElevat
               HipsGraphicLayer,
               MocLayer,
               OpenSearchLayer,
-              PlanetLayer,
               WMSElevationLayer, HipsMetadata, HipsCatLayer, GeoJsonLayer) {
 
         this.proxy = {
@@ -158,7 +156,6 @@ define(["jquery","../Utils/Constants", "./WMSLayer", "./WMTSLayer", "./WCSElevat
              * @see {@link module:Layer.MocLayer MocLayer} : A layer to draw a multi-order-coverage index
              * @see {@link module:Layer.OpenSearchLayer OpenSearchLayer} : A layer to draw the result from an open search service
              * @see {@link module:Layer.OSMLayer OSMLayer} : A layer to display data coming from OpenStreetMap server
-             * @see {@link module:Layer.PlanetLayer PlanetLayer} : A layer to save all layers of a planet
              * @see {@link module:Layer.TileWireframeLayer TileWireframeLayer} : A layer to draw a grid on the planet
              * @see {@link module:Layer.VectorLayer VectorLayer} : A layer to draw a vector
              * @see {@link module:Layer.WCSElevationLayer WCSElevationLayer} : A layer to draw the elevation
@@ -222,10 +219,6 @@ define(["jquery","../Utils/Constants", "./WMSLayer", "./WMTSLayer", "./WCSElevat
                         break;
                     case Constants.LAYER.OpenSearch :
                         layer = createOpenSearch(options);
-                        break;
-                    case Constants.LAYER.Planet :
-                        options.layerFactory = this;
-                        layer = new PlanetLayer(options);
                         break;
                     default :
                         throw "Unable to create the layer " + options.type;

@@ -59,7 +59,6 @@ define(["jquery", "underscore-min", "../Utils/Utils", "./AbstractContext", "../U
          * @property {float} [continuousRendering=false]
          * @property {RenderContext} [renderContext] - Context rendering
          * @property {AbstractProjection.configuration|AbstractProjection.azimuth_configuration|AbstractProjection.mercator_configuration} coordinateSystem - CRS configuration
-         * @property {PlanetLayer} [planetLayer] - planetLayer
          * @property {AbstractNavigation.planet_configuration|AbstractNavigation.flat_configuration} navigation - navigation configuration
          */
 
@@ -91,16 +90,6 @@ define(["jquery", "underscore-min", "../Utils/Utils", "./AbstractContext", "../U
             try {
                 this.globe = GlobeFactory.create(Constants.GLOBE.Planet, planetOptions);
                 this.initGlobeEvents(this.globe);
-
-                // Initialize planet context
-                this.planetLayer = options.planetLayer;
-
-                //TODO : must be used in context modification.
-                if (this.planetLayer) {
-                    this.globe.addLayer(this.planetLayer);
-                    this.layers = this.layers.concat(this.planetLayer.layers);
-                    this.layers = this.layers.concat(this.planetLayer.baseImageries);
-                }
 
                 this.navigation = _createNavigation.call(this, this.getCoordinateSystem().isFlat(), options.navigation);
 
@@ -304,8 +293,6 @@ define(["jquery", "underscore-min", "../Utils/Utils", "./AbstractContext", "../U
             if (this.positionTracker) {
                 this.positionTracker.detach();
             }
-            this.planetLayer.setVisible(false);
-            this.planetLayer._detach();
             this.removeAllLayers();
             this.globe.destroy();
             this.globe = null;

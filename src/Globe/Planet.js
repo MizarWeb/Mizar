@@ -127,6 +127,7 @@ define(['../Tiling/Tile',
          */
         Planet.prototype.getElevation = function (lon, lat) {
             // Use imagery provider tiling if defined, otherwise use globe default one
+            // Use imagery provider tiling if defined, otherwise use globe default one
             var tiling = this.tileManager.tiling;
             if (this.baseImagery) {
                 tiling = this.baseImagery.tiling;
@@ -136,7 +137,7 @@ define(['../Tiling/Tile',
             if (Tile.State && levelZeroTile && levelZeroTile.state === Tile.State.LOADED) {
                 return levelZeroTile.getElevation(lon, lat);
             } else {
-                return 0.0;
+                this.tileManager.render();
             }
         };
 

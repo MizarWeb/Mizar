@@ -335,8 +335,7 @@ Context.prototype.getAdditionalLayers = function () {
 /**
  * Registers a new layer to globe to be visualized on the globe.
  *
- * When layerPlanet is defined, the layer is added to the layerPlanet otherwise the
- * layer is added to the globe.
+ * Adds a layer to the globe.
  * According to the attributes of the layer, the layer is either added as background or
  * as additional layer.
  * @param {Object} mizarDescription - See the base properties {@link AbstractLayer.configuration} and specific properties for specific layers

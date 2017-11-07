@@ -195,7 +195,6 @@ define(['../Renderer/BoundingBox', '../Renderer/glMatrix'],
             var pixelSizeVector = renderContext.pixelSizeVector;
             var pixelSize = radius / ( px * pixelSizeVector[0] + py * pixelSizeVector[1] +
                 pz * pixelSizeVector[2] + pixelSizeVector[3] );
-
             // Check if pixel radius of a texel is superior to the treshold
             // The pixel size can be negative when the closest point is close to the near plane, so take absolute value
             return Math.abs(pixelSize) > renderContext.tileErrorTreshold;

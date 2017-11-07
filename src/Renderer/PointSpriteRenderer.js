@@ -44,7 +44,7 @@ define(['../Utils/Utils', './VectorRenderer', './Program', './FeatureStyle', './
          @name PointSpriteRenderer
          @class
              PointSpriteRenderer constructor
-         @param {AbstractGlobe} glonbe AbstractGlobe
+         @param {AbstractGlobe} globe AbstractGlobe
          @augments VectorRenderer
          @constructor
          */

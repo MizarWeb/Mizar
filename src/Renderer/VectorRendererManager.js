@@ -235,10 +235,11 @@ VectorRendererManager.prototype.render = function()
 	var i,j;
 	for ( j = 0; j < this.renderers.length; j++ )
 	{
+
 		var buckets = this.renderers[j].buckets;
 		for ( i = 0; i < buckets.length; i++ )
 		{
-			if ( buckets[i].layer.isVisible() && buckets[i].mainRenderable )
+			if ( buckets[i].layer.isVisible() && buckets[i].mainRenderable)
 			{
 				this.renderables.push( buckets[i].mainRenderable );
 			}
@@ -254,13 +255,17 @@ VectorRendererManager.prototype.render = function()
 	while ( i < this.renderables.length )
 	{
 		j = i + 1;
-
 		var currentRenderer = this.renderables[i].bucket.renderer;
 		while ( j < this.renderables.length && this.renderables[j].bucket.renderer === currentRenderer )
 		{
 			j++;
 		}
-		currentRenderer.render( this.renderables, i, j );
+
+		//var minLevel =  (this.renderables[i].bucket.layer.minLevel) ? this.renderables[i].bucket.layer.minLevel : 0;
+		//var processedLevel = this.renderables[i].bucket.renderer.tileManager.processedLevel;
+		//if(minLevel <= processedLevel) {
+			currentRenderer.render(this.renderables, i, j);
+		//}
 		//renderCall++;
 
 		i = j;

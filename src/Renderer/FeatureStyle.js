@@ -202,7 +202,7 @@ define(function () {
      <li>fillColor : the color for solid polygon or point</li>
      <li>fillTextureUrl : the texture for solid polygon</li>
      <li>iconUrl : the icon to be used for point</li>
-     <li>pointMaxSize : maximum size (in meter) for a point</li>
+     <li>pointMaxSize : Distance maximum (in meter) from the ground to the camera for which a point is displayed</li>
      <li>extrusionScale : extrusion scale (in meter)</li>
      </ul>
      @constructor

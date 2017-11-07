@@ -257,12 +257,8 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Laye
          */
         AbstractContext.prototype.addLayer = function (layerDescription) {
             var layer = LayerFactory.create(layerDescription);
-            if (layer.type === 'Planet') {
-                this.layers.push(layer);
-            } else {
-                this.layers.push(layer);
-                _addToGlobe.call(this, layer);
-            }
+            this.layers.push(layer);
+            _addToGlobe.call(this, layer);
 
             this._fillDataProvider(layer, layerDescription);
 

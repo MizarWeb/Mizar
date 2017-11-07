@@ -100,7 +100,7 @@ define(['../Utils/Utils', './AbstractRasterLayer', '../Utils/Constants', '../Til
             }
 
             this.getMapBaseUrl = this.getGetMapUrl();
-            this.loadGetCapabilities(this.manageCapabilities,this.options);
+            //this.loadGetCapabilities(this.manageCapabilities,this.options);
             this.layer = options.layers;
         };
 

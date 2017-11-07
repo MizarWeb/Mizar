@@ -70,6 +70,7 @@ define(['jquery', './AbstractProvider', '../Utils/Utils', '../Renderer/FeatureSt
         CraterProvider.prototype.handleFeatures = function (layer) {
             var crs = featureCollection.crs;
             var features = featureCollection.features;
+            var ptMaxSize = (layer.options.pointMaxSize) ? layer.options.pointMaxSize : 20;
             for (var i = 0; i < features.length; i++) {
                 var currentFeature = features[i];
                 currentFeature.geometry['crs'] = crs;
@@ -78,7 +79,7 @@ define(['jquery', './AbstractProvider', '../Utils/Utils', '../Renderer/FeatureSt
                     {
                         label: craterName,
                         fillColor: [1.0, 1.0, 1.0, 1.0],
-                        pointMaxSize : 20
+                        pointMaxSize : ptMaxSize
                     }
                 );
             }

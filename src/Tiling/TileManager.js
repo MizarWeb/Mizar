@@ -43,6 +43,8 @@ define(['./Tile', './GeoTiling', './TilePool', './TileRequest', './TileIndexBuff
          Take in parameters its parent : can be a globe or a sky
          */
         var TileManager = function (parent, options) {
+            //TOOD f(tile)
+            // this.processedLevel = 0;
             this.parent = parent;
             this.publishEvent = options.publishEvent;
             this.renderContext = this.parent.renderContext;
@@ -284,7 +286,7 @@ define(['./Tile', './GeoTiling', './TilePool', './TileRequest', './TileIndexBuff
             var tilesToProcess = this.level0Tiles.concat([]);
 
             while (tilesToProcess.length > 0) {
-                // Retreive the first tile and remove it from the array
+                // Retrieve the first tile and remove it from the array
                 var tile = tilesToProcess.shift();
 
                 callback(tile);
@@ -431,6 +433,9 @@ define(['./Tile', './GeoTiling', './TilePool', './TileRequest', './TileIndexBuff
          Generate tile
          */
         TileManager.prototype.generateTile = function (tile, tileRequest) {
+            //TODO display geojson=f(tile)
+            //this.processedLevel = tile.level;
+            //console.log("level="+tile.level);
             // Generate the tile using data from tileRequest if defined
             tile.generate(this.tilePool, tileRequest.image, tileRequest.elevations);
 

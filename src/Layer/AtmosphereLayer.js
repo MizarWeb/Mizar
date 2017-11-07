@@ -52,7 +52,6 @@
  *     <li>{@link module:Layer.MocLayer MocLayer} : A layer to draw a multi-order-coverage index</li>
  *     <li>{@link module:Layer.OpenSearchLayer OpenSearchLayer} : A layer to draw the result from an open search service</li>
  *     <li>{@link module:Layer.OSMLayer OSMLayer} : A layer to display data coming from OpenStreetMap server</li>
- *     <li>{@link module:Layer.PlanetLayer PlanetLayer} : A layer to save all layers of a planet</li>
  *     <li>{@link module:Layer.TileWireframeLayer TileWireframeLayer} : A layer to draw a grid on the planet</li>
  *     <li>{@link module:Layer.VectorLayer VectorLayer} : A layer to draw a vector</li>
  *     <li>{@link module:Layer.WCSElevationLayer WCSElevationLayer} : A layer to draw the elevation</li>

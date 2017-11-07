@@ -94,7 +94,7 @@ define(["jquery", "../Utils/Constants",
             }
             else {
                 //Use default reverse name resolver if none defined...
-                reverseNameResolverClass = require(["./DefaultReverseNameResolver"]);
+                reverseNameResolverClass = require("gw/ReverseNameResolver/DefaultReverseNameResolver");
             }
 
             reverseNameResolverImplementation = new reverseNameResolverClass(context);

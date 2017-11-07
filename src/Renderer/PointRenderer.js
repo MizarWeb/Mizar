@@ -217,7 +217,7 @@ define(['../Utils/Utils', '../Utils/Constants', './VectorRenderer', './VectorRen
         /**
          * Add a geometry to the renderable
          * @function add
-         * @memberof PointRenderable.prototype
+         * @memberOf PointRenderable.prototype
          * @param geometry
          * @return {Boolean} If the geometry has been successfully added to the renderable
          */
@@ -230,7 +230,7 @@ define(['../Utils/Utils', '../Utils/Constants', './VectorRenderer', './VectorRen
 
             var csBound = new GeoBound(coordinateSystem.getGeoBound().getWest(), coordinateSystem.getGeoBound().getSouth(), coordinateSystem.getGeoBound().getEast(), coordinateSystem.getGeoBound().getNorth());
 
-            //if (csBound.isPointInside(posGeo)) {
+            if (csBound.isPointInside(posGeo)) {
                 var pos3d = coordinateSystem.get3DFromWorld(posGeo);
                 var vertical = coordinateSystem.getVerticalAt3D(pos3d);
 
@@ -241,9 +241,9 @@ define(['../Utils/Utils', '../Utils/Constants', './VectorRenderer', './VectorRen
                 });
 
                 return true;
-            //} else {
-            //    return false;
-            //}
+            } else {
+                return false;
+            }
         };
 
         /**************************************************************************************************************/
@@ -379,6 +379,12 @@ define(['../Utils/Utils', '../Utils/Constants', './VectorRenderer', './VectorRen
 
             var renderContext = this.renderContext;
             var gl = this.renderContext.gl;
+            // TODO
+            //var level = renderContext.renderers[0].tileManager.visibleTiles[0].level;
+            //if(level < 5) {
+            //    return;
+            //}
+            // end todo
 
             // Setup states
             // gl.disable(gl.DEPTH_TEST);
