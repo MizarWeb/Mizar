@@ -60,6 +60,14 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Laye
             this.initCanvas(this.canvas);
             this.positionTracker = _createTrackerPosition.call(this, this.mizarConfiguration);
             this.elevationTracker = _createTrackerElevation.call(this, this.mizarConfiguration, ctxOptions);
+            this.subscribe("baseLayersReady", function(){
+                // When the background takes time to load, the viewMatrix computed by "computeViewMatrix" is created but
+                // with empty values. Because of that, the globe cannot be displayed without moving the camera.
+                // So we rerun "computeViewMatrix" once "baseLayersReady" is loaded to display the globe
+                if(self.getNavigation().getRenderContext().viewMatrix[0] !== "undefined") {
+                    self.getNavigation().computeViewMatrix();
+                }
+            });
         };
 
         /**
@@ -814,6 +822,7 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Laye
          * @abstract
          */
         AbstractContext.prototype.destroy = function () {
+            //TODO unSubscribe("baseLayersReady", RenderingGlobeFinished);
             throw "destroy Not implemented";
         };
 
