@@ -27,7 +27,7 @@ define(["jquery", "./AbstractTracker", "../../Utils/Utils", "../../Utils/Numeric
         /**
          * Elevation tracker configuration
          * @typedef {AbstractTracker.position_configuration} AbstractTracker.elevation_configuration
-         * @property {Layer} [elevationLayer] - elevationLayer from planetLayer
+         * @property {Layer} [elevationLayer] - elevationLayer
          */
 
         /**
