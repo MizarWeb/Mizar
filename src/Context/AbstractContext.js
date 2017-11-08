@@ -49,7 +49,12 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Laye
             this.dataProviders = {};
             this.canvas = mizarConfiguration.canvas;
             this.subscribe("baseLayersReady", function (imagery) {
-                $(self.canvas.parentElement).find('#loading').hide();
+                // When the background takes time to load, the viewMatrix computed by "computeViewMatrix" is created but
+                // with empty values. Because of that, the globe cannot be displayed without moving the camera.
+                // So we rerun "computeViewMatrix" once "baseLayersReady" is loaded to display the globe
+                if(self.getNavigation().getRenderContext().viewMatrix[0] !== "undefined") {
+                    self.getNavigation().computeViewMatrix();
+                }
             });
             this.mizarConfiguration = mizarConfiguration.hasOwnProperty('configuration') ? mizarConfiguration.configuration : {};
             this.credits = true;
@@ -60,14 +65,6 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Laye
             this.initCanvas(this.canvas);
             this.positionTracker = _createTrackerPosition.call(this, this.mizarConfiguration);
             this.elevationTracker = _createTrackerElevation.call(this, this.mizarConfiguration, ctxOptions);
-            this.subscribe("baseLayersReady", function(){
-                // When the background takes time to load, the viewMatrix computed by "computeViewMatrix" is created but
-                // with empty values. Because of that, the globe cannot be displayed without moving the camera.
-                // So we rerun "computeViewMatrix" once "baseLayersReady" is loaded to display the globe
-                if(self.getNavigation().getRenderContext().viewMatrix[0] !== "undefined") {
-                    self.getNavigation().computeViewMatrix();
-                }
-            });
         };
 
         /**
@@ -79,7 +76,7 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Laye
         function _createTrackerPosition(mizarConfiguration) {
             return new PositionTracker({
                 element: (mizarConfiguration.positionTracker && mizarConfiguration.positionTracker.element) ? mizarConfiguration.positionTracker.element : "posTracker",
-                isMobile: mizarConfiguration.isMobile ? true : false,
+                isMobile: mizarConfiguration.isMobile,
                 position: (mizarConfiguration.positionTracker && mizarConfiguration.positionTracker.position) ? mizarConfiguration.positionTracker.position : "bottom"
             });
         }
@@ -94,7 +91,7 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Laye
         function _createTrackerElevation(mizarConfiguration, ctxOptions) {
             return new ElevationTracker({
                 element: (mizarConfiguration.elevationTracker && mizarConfiguration.elevationTracker.element) ? mizarConfiguration.elevationTracker.element : "elevTracker",
-                isMobile: mizarConfiguration.isMobile ? true : false,
+                isMobile: mizarConfiguration.isMobile,
                 position: (mizarConfiguration.elevationTracker && mizarConfiguration.elevationTracker.elevation) ? mizarConfiguration.elevationTracker.position : "bottom",
                 elevationLayer: (ctxOptions.planetLayer !== undefined) ? ctxOptions.planetLayer.elevationLayer : undefined
             });
