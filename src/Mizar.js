@@ -373,8 +373,11 @@ define(["jquery", "underscore-min",
                     self.activatedContext.show();
                     self.activatedContext.refresh();
                     self.activatedContext.getPositionTracker().attachTo(self.activatedContext.globe);
-
+                    self.activatedContext.getRenderContext().requestFrame();
+                    self.activatedContext.navigation.computeViewMatrix();
             });
+
+
         }
 
         /**
@@ -388,7 +391,7 @@ define(["jquery", "underscore-min",
         function _switchSky2Planet(gwLayer, options) {
 
             var self = this;
-
+            
             // Create planet context (with existing sky render context)
             var planetConfig = $.extend({}, options);
             planetConfig.planetLayer = gwLayer;
@@ -405,7 +408,7 @@ define(["jquery", "underscore-min",
             this.createContext(Mizar.CONTEXT.Planet, planetConfig);
 
             // Store old view matrix & fov to be able to rollback to sky context
-            this._oldVM = this.renderContext.getViewMatrix();
+            this._oldVM = this.renderContext.getViewMatrix().slice();
             this._oldFov = this.renderContext.getFov();
 
             if (!this.activatedContext.getCoordinateSystem().isFlat()) {
@@ -882,7 +885,6 @@ define(["jquery", "underscore-min",
         Mizar.prototype.toggleContext = function (gwLayer, options, callback) {
             var toggleMode = (this.getActivatedContext().getMode() === Mizar.CONTEXT.Sky) ? Mizar.CONTEXT.Planet : Mizar.CONTEXT.Sky;
             var self = this;
-
             if (toggleMode === Mizar.CONTEXT.Sky) {
                 _switchPlanet2Sky.call(this);
             } else {
