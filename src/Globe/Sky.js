@@ -123,6 +123,17 @@ define(['../Tiling/TileManager', '../Tiling/TilePool',
                 this.tileManagers[Constants.CRS.Equatorial].render();
             }
         };
+
+        /**
+         * @function destroy
+         * @memberOf Sky#
+         */
+        Sky.prototype.destroy = function () {
+            AbstractGlobe.prototype.destroy.call(this);
+            this.tileManagers['Galactic'].tilePool.disposeAll();
+            this.tileManagers['Galactic'].reset();
+            this.tileManagers = null;
+        };
         
 
         /**************************************************************************************************************/

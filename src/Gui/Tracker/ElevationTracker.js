@@ -19,9 +19,6 @@
 define(["jquery", "./AbstractTracker", "../../Utils/Utils", "../../Utils/Numeric"],
     function ($, AbstractTracker, Utils, Numeric) {
 
-        var globe;
-        var element;
-        var scale;
         var self;
 
         /**
@@ -40,14 +37,10 @@ define(["jquery", "./AbstractTracker", "../../Utils/Utils", "../../Utils/Numeric
          */
         var ElevationTracker = function (options) {
             AbstractTracker.prototype.constructor.call(this, options);
-
             self = this;
-            element = options.element;
-            if (options.position) {
-                $("#" + element).css(options.position, "2px");
-            }
+            this.scale = null;
             if (options.elevationLayer !== null && options.elevationLayer !== undefined) {
-                scale = options.elevationLayer.hasOwnProperty('scale') ? options.elevationLayer.scale : 1;
+                this.scale = options.elevationLayer.hasOwnProperty('scale') ? options.elevationLayer.scale : 1;
             }
 
         };
@@ -63,27 +56,11 @@ define(["jquery", "./AbstractTracker", "../../Utils/Utils", "../../Utils/Numeric
          * @param elevationLayer
          */
         ElevationTracker.prototype.setScaleLayer = function (elevationLayer) {
-            scale = elevationLayer.hasOwnProperty('scale') ? elevationLayer.scale : 1;
+            this.scale = elevationLayer.hasOwnProperty('scale') ? elevationLayer.scale : 1;
         };
 
-        /**
-         * Att
-         * @param globeContext
-         */
-        ElevationTracker.prototype.attachTo = function (globeContext) {
-            globe = globeContext;
-            globe.renderContext.canvas.addEventListener('mousemove', self.update);
-            if (this.options.isMobile) {
-                globe.renderContext.canvas.addEventListener('touchmove', self.update);
-            }
-
-        };
-
-        ElevationTracker.prototype.detach = function () {
-            globe.renderContext.canvas.removeEventListener('mousemove', self.update);
-            if (this.options.isMobile) {
-                globe.renderContext.canvas.removeEventListener('touchmove', self.update);
-            }
+        ElevationTracker.prototype._updateTracker = function(tracker) {
+            self = tracker;
         };
 
         /**
@@ -97,13 +74,13 @@ define(["jquery", "./AbstractTracker", "../../Utils/Utils", "../../Utils/Numeric
                 event.clientX = event.changedTouches[0].clientX;
                 event.clientY = event.changedTouches[0].clientY;
             }
-            if (document.getElementById(element)) {
-                var geoPos = globe.getLonLatFromPixel(event.clientX, event.clientY);
-                if (geoPos && scale) {
+            if (document.getElementById(self._getElement())) {
+                var geoPos = self._getGlobe().getLonLatFromPixel(event.clientX, event.clientY);
+                if (geoPos && self.scale) {
                     var elevation = self.compute([geoPos[0], geoPos[1]]);
-                    document.getElementById(element).innerHTML = "Elevation : " + Numeric.roundNumber(elevation / scale, 0) + " meters";
+                    document.getElementById(self._getElement()).innerHTML = "Elevation : " + Numeric.roundNumber(elevation / self.scale, 0) + " meters";
                 } else {
-                    document.getElementById(element).innerHTML = "";
+                    document.getElementById(self._getElement()).innerHTML = "";
                 }
             }
 
@@ -114,12 +91,23 @@ define(["jquery", "./AbstractTracker", "../../Utils/Utils", "../../Utils/Numeric
         /**
          * Compute elevation from a specific point
          * @function compute
-         * @memberof AbstractTracker.prototype
+         * @memberOf AbstractTracker.prototype
          * @param geoPosition
          * @returns {number} elevation
          */
         ElevationTracker.prototype.compute = function (geoPosition) {
-            return globe.getElevation(geoPosition[0], geoPosition[1]);
+            return this._getGlobe().getElevation(geoPosition[0], geoPosition[1]);
+        };
+
+        /**
+         * Destroy the elevation tracker.
+         * @function destroy
+         * @memberOf AbstractTracker.prototype
+         */
+        ElevationTracker.prototype.destroy = function() {
+            this.detach.call(this);
+            AbstractTracker.prototype.destroy.call(this);
+            this.scale = null;
         };
 
         /**************************************************************************************************************/

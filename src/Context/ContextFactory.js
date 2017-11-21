@@ -22,8 +22,8 @@
  * Factory to create a context
  * @memberOf module:Context
  */
-define(["../Utils/Constants", "./PlanetContext", "./SkyContext"],
-    function (Constants, PlanetContext, SkyContext) {
+define(["../Utils/Constants", "./PlanetContext", "./SkyContext", "./GroundContext"],
+    function (Constants, PlanetContext, SkyContext, GroundContext) {
 
         return {
             /**
@@ -51,6 +51,9 @@ define(["../Utils/Constants", "./PlanetContext", "./SkyContext"],
                         break;
                     case Constants.CONTEXT.Sky :
                         obj = new SkyContext(configuration, options);
+                        break;
+                    case Constants.CONTEXT.Ground :
+                        obj = new GroundContext(configuration, options);
                         break;
                     default:
                         throw RangeError("The type "+type+" is not allowed, A valid type is included in the list Constants.CONTEXT", "ContextFactory.js");

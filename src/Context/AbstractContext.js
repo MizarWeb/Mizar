@@ -262,36 +262,40 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Laye
          */
         AbstractContext.prototype.addLayer = function (layerDescription) {
             var layer = LayerFactory.create(layerDescription);
-            this.layers.push(layer);
-            _addToGlobe.call(this, layer);
+            if(layer === undefined) {
+                console.log("error:"+layerDescription);
+            } else {
+                this.layers.push(layer);
+                _addToGlobe.call(this, layer);
 
-            this._fillDataProvider(layer, layerDescription);
+                this._fillDataProvider(layer, layerDescription);
 
-            if (layer.pickable) {
-                ServiceFactory.create(Constants.SERVICE.PickingManager).addPickableLayer(layer);
-            }
-            var self = this;
-            layer.subscribe("visibility:changed", function (layer) {
-                if (layer.isVisible() && layer.properties && !layer.background
-                    && layer.properties.hasOwnProperty("initialRa") && layer.properties.hasOwnProperty("initialDec") && layer.properties.hasOwnProperty("initialFov")) {
-
-                    if (layer.globe.getType() === Constants.GLOBE.Sky) {
-                        var fov = (layer.properties.initialFov) ? layer.properties.initialFov : layer.globe.getRenderContext().fov;
-                        self.getNavigation().zoomTo([layer.properties.initialRa, layer.properties.initialDec], {
-                            fov: fov,
-                            duration: 3000
-                        });
-                    }
-                    else {
-                        self.getNavigation().zoomTo([layer.properties.initialRa, layer.properties.initialDec], {
-                            distance: layer.properties.initialFov,
-                            duration: 3000
-                        });
-                    }
+                if (layer.pickable) {
+                    ServiceFactory.create(Constants.SERVICE.PickingManager).addPickableLayer(layer);
                 }
-            });
-            var layerEvent = (layer.category === "background") ? "backgroundLayer:add" : "additionalLayer:add";
-            this.publish(layerEvent, layer);
+                var self = this;
+                layer.subscribe("visibility:changed", function (layer) {
+                    if (layer.isVisible() && layer.properties && !layer.background
+                        && layer.properties.hasOwnProperty("initialRa") && layer.properties.hasOwnProperty("initialDec") && layer.properties.hasOwnProperty("initialFov")) {
+
+                        if (layer.globe.getType() === Constants.GLOBE.Sky) {
+                            var fov = (layer.properties.initialFov) ? layer.properties.initialFov : layer.globe.getRenderContext().fov;
+                            self.getNavigation().zoomTo([layer.properties.initialRa, layer.properties.initialDec], {
+                                fov: fov,
+                                duration: 3000
+                            });
+                        }
+                        else {
+                            self.getNavigation().zoomTo([layer.properties.initialRa, layer.properties.initialDec], {
+                                distance: layer.properties.initialFov,
+                                duration: 3000
+                            });
+                        }
+                    }
+                });
+                var layerEvent = (layer.category === "background") ? "backgroundLayer:add" : "additionalLayer:add";
+                this.publish(layerEvent, layer);
+            }
             return layer;
         };
 
@@ -370,7 +374,7 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Laye
          */
         AbstractContext.prototype.removeAllLayers = function () {
             for (var i = 0; i < this.layers.length; i++) {
-                var layerID = this.layers[i];
+                var layerID = this.layers[i].ID;
                 this.removeLayer(layerID);
             }
         };
@@ -813,14 +817,47 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Laye
             this.globe.dispose();
         };
 
+        AbstractContext.prototype.trackerDestroy = function () {
+            if(this.elevationTracker) {
+                this.elevationTracker.destroy();
+            }
+            if (this.positionTracker) {
+                this.positionTracker.destroy();
+            }
+        };
+
         /**
          * @function destroy
          * @memberOf AbstractContext#
          * @abstract
          */
         AbstractContext.prototype.destroy = function () {
-            //TODO unSubscribe("baseLayersReady", RenderingGlobeFinished);
-            throw "destroy Not implemented";
+            this.hide();
+            this.trackerDestroy();
+            this.removeAllLayers();
+            this.components = null;
+            this.layers = null;
+            this.visibleLayers = null;
+            this.dataProviders = null;
+            this.mizarConfiguration = null;
+            this.credits = null;
+            this.ctxOptions = null;
+            this.mode = null;
+
+            this.unsubscribe("baseLayersReady", function (imagery) {
+                // When the background takes time to load, the viewMatrix computed by "computeViewMatrix" is created but
+                // with empty values. Because of that, the globe cannot be displayed without moving the camera.
+                // So we rerun "computeViewMatrix" once "baseLayersReady" is loaded to display the globe
+                if(self.getNavigation().getRenderContext().viewMatrix[0] !== "undefined") {
+                    self.getNavigation().computeViewMatrix();
+                }
+            });
+
+            this.navigation.destroy();
+            this.globe.destroy();
+            this.navigation = null;
+            this.canvas = null;
+            this.globe = null;
         };
 
         /**************************************************************************************************************/

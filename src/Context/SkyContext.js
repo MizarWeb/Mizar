@@ -173,19 +173,8 @@ define(["underscore-min", "../Utils/Utils",
          * @memberOf SkyContext#
          */
         SkyContext.prototype.destroy = function () {
-            this.hide();
-            this.compass.setCompassVisible(false);
-            if(this.elevationTracker) {
-                this.elevationTracker.detach();
-            }
-            if (this.positionTracker) {
-                this.positionTracker.detach();
-            }          
-            this.removeAllLayers();
-            this.globe.destroy();
-            this.globe = null;
-            this.layers = null;
-            this.visibleLayers = null;
+            this.setCompassVisible(false);
+            AbstractContext.prototype.destroy.call(this);
         };
 
         /**************************************************************************************************************/

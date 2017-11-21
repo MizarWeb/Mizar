@@ -43,10 +43,12 @@ define(function () {
      * CONTEXT
      * @property {String} Planet - Planet context
      * @property {String} Sky - Sky context
+     * @property {String} Ground - Ground context
      */
     Constants.CONTEXT = {
         "Planet": "Planet",
-        "Sky": "Sky"
+        "Sky": "Sky",
+        "Ground": "Ground"
     };
 
     /**
@@ -172,11 +174,13 @@ define(function () {
      * @property {String} AstroNavigation - 3D Navigation for sky
      * @property {String} PlanetNavigation - 3D Navigation for planet
      * @property {String} FlatNavigation - 2D Navigation for planet
+     * @property {String} GroundNavigation - 3D Navigation for ground visualization
      */
     Constants.NAVIGATION = {
         "AstroNavigation": "AstroNavigation",
         "PlanetNavigation": "PlanetNavigation",
-        "FlatNavigation": "FlatNavigation"
+        "FlatNavigation": "FlatNavigation",
+        "GroundNavigation": "GroundNavigation"
     };
 
     /**
@@ -254,7 +258,8 @@ define(function () {
     Constants.MappingCrsHips2Mizar = {
         "equatorial": "Equatorial",
         "galactic": "Galactic",
-        "ecliptic": "Ecliptic"
+        "ecliptic": "Ecliptic",
+        "mars-panstimson": "Equatorial"
     };
 
     /**

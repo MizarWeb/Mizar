@@ -22,9 +22,8 @@
  * Factory to control the camera.
  * @memberOf module:Navigation
  */
-define([ "./PlanetNavigation","./AstroNavigation","./FlatNavigation", "../Utils/Constants"],
-    function (PlanetNavigation,AstroNavigation,FlatNavigation,Constants
-    ) {
+define([ "./PlanetNavigation","./AstroNavigation","./FlatNavigation", "./GroundNavigation", "../Utils/Constants"],
+    function (PlanetNavigation,AstroNavigation,FlatNavigation, GroundNavigation, Constants) {
 
         return {
             /**
@@ -57,6 +56,7 @@ define([ "./PlanetNavigation","./AstroNavigation","./FlatNavigation", "../Utils/
              * at the center of the webGL scene.
              * @see {@link module:Navigation.AstroNavigation AstroNavigation} - Control the camera at the center of the scene. The camera is inside the globe
              * @see {@link module:Navigation.FlatNavigation FlatNavigation} - Control the camera. The camera look at the 2D projection
+             * @see {@link module:Navigation.GroundNavigation GroundNavigation} - Control the camera. The camera look at the 3D projection of the ground
              * @throws {RangeError} Type not valid - a valid type is included in the list {@link NAVIGATION}
              */
             create : function(type, ctx, options) {
@@ -70,6 +70,9 @@ define([ "./PlanetNavigation","./AstroNavigation","./FlatNavigation", "../Utils/
                         break;
                     case Constants.NAVIGATION.FlatNavigation:
                         obj = new FlatNavigation(ctx,options);
+                        break;
+                    case Constants.NAVIGATION.GroundNavigation:
+                        obj = new GroundNavigation(ctx,options);
                         break;
                     default:
                         throw new RangeError("The type "+type+" is not allowed, A valid type is included in the list NAVIGATION", "NavigationFactory.js");

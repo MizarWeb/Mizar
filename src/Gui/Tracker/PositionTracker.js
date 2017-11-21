@@ -19,10 +19,7 @@
 define(["jquery", "./AbstractTracker", "../../Utils/Utils"],
     function ($, AbstractTracker, Utils) {
 
-        var globe;
-        var element;
         var self;
-
         /**
          * Position tracker configuration
          * @typedef {Object} AbstractTracker.position_configuration
@@ -41,12 +38,7 @@ define(["jquery", "./AbstractTracker", "../../Utils/Utils"],
          */
         var PositionTracker = function (options) {
             AbstractTracker.prototype.constructor.call(this, options);
-
             self = this;
-            element = options.element;
-            if (options.position) {
-                $("#" + element).css(options.position, "2px");
-            }
         };
         /**************************************************************************************************************/
 
@@ -54,30 +46,8 @@ define(["jquery", "./AbstractTracker", "../../Utils/Utils"],
 
         /**************************************************************************************************************/
 
-        /**
-         * Attaches the tracker to the globe.
-         * @function attachTo
-         * @memberOf PositionTracker#
-         * @param {Globe} globeContext - globe
-         */
-        PositionTracker.prototype.attachTo = function (globeContext) {
-            globe = globeContext;
-            globe.renderContext.canvas.addEventListener('mousemove', self.update);
-            if (this.options.isMobile) {
-                globe.renderContext.canvas.addEventListener('touchmove', self.update);
-            }
-        };
-
-        /**
-         * Detaches the tracker from the globe
-         * @function detach
-         * @memberOf PositionTracker#
-         */
-        PositionTracker.prototype.detach = function () {
-            globe.renderContext.canvas.removeEventListener('mousemove', self.update);
-            if (this.options.isMobile) {
-                globe.renderContext.canvas.removeEventListener('touchmove', self.update);
-            }
+        PositionTracker.prototype._updateTracker = function(tracker) {
+            self = tracker;
         };
 
         /**
@@ -92,13 +62,13 @@ define(["jquery", "./AbstractTracker", "../../Utils/Utils"],
                 event.clientY = event.changedTouches[0].clientY;
             }
 
-            if (document.getElementById(element)) {
-                var geoPos = globe.getLonLatFromPixel(event.clientX, event.clientY);
+            if (document.getElementById(self._getElement())) {
+                var geoPos = self._getGlobe().getLonLatFromPixel(event.clientX, event.clientY);
                 if (geoPos) {
                     var astro = self.compute([geoPos[0], geoPos[1]]);
-                    document.getElementById(element).innerHTML = astro[0] + " x " + astro[1];
+                    document.getElementById(self._getElement()).innerHTML = astro[0] + " x " + astro[1];
                 } else {
-                    document.getElementById(element).innerHTML = "";
+                    document.getElementById(self._getElement()).innerHTML = "";
 
                 }
             }
@@ -113,7 +83,17 @@ define(["jquery", "./AbstractTracker", "../../Utils/Utils"],
          * @returns {number} coordinates
          */
         PositionTracker.prototype.compute = function (geoPosition) {
-            return globe.getCoordinateSystem().formatCoordinates([geoPosition[0], geoPosition[1]]);
+            return this._getGlobe().getCoordinateSystem().formatCoordinates([geoPosition[0], geoPosition[1]]);
+        };
+
+        /**
+         * Destroy the elevation tracker.
+         * @function destroy
+         * @memberOf AbstractTracker.prototype
+         */
+        PositionTracker.prototype.destroy = function() {
+            this.detach.call(this);
+            AbstractTracker.prototype.destroy.call(this);
         };
 
         /**************************************************************************************************************/

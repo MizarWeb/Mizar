@@ -356,6 +356,21 @@ define(['../Utils/Utils', '../Utils/Constants', './AbstractNavigation', '../Anim
             return this.distance*this.ctx.getCoordinateSystem().getGeoide().getRealPlanetRadius();
         };
 
+        /**
+         * Destroy
+         * @function destroy
+         * @memberOf FlatNavigation#
+         */
+        FlatNavigation.prototype.destroy = function () {
+            AbstractNavigation.prototype.destroy.call(this);
+            this.up = null;
+            this.minDistance = null;
+            this.maxDistance = null;
+            this.center = null;
+            this.distance = null;
+        };
+
+
         /**************************************************************************************************************/
 
         return FlatNavigation;

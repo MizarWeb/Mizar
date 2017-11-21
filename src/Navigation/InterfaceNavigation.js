@@ -147,3 +147,7 @@ Navigation.prototype.getRenderContext = function () {};
 Navigation.prototype.setRenderContext = function (renderContext) {};
 
 
+/**
+ * Destroys the navigation
+ */
+Navigation.prototype.destroy = function () {};

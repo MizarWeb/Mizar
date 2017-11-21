@@ -72,7 +72,7 @@ define(['../Utils/Event', '../Utils/Utils',
             this.publishEvent = options.publishEvent;
 
             this.isEnable = true;
-            this.sky = true;
+            this.sky = null; // the variable is overidden in the concrete constructor
             this.continuousRendering = options.continuousRendering || false;
             this.tileManager = new TileManager(this, options);
             this.vectorRendererManager = new VectorRendererManager(this);
@@ -173,7 +173,19 @@ define(['../Utils/Event', '../Utils/Utils',
         AbstractGlobe.prototype.destroy = function () {
             this.dispose();
             this.tileManager.removePostRenderer(this.vectorRendererManager);
-            this.renderContext.renderers.splice(this.renderContext.renderers.indexOf(this.globe), 1);
+            this.renderContext.renderers.splice(this.renderContext.renderers.indexOf(this), 1);
+            this.coordinateSystem.destroy();
+            this.type = null;
+            this.publishEvent = null;
+            this.isEnable = null;
+            this.sky = null;
+            this.continuousRendering = null;
+            this.tileManager = null;
+            this.vectorRendererManager = null;
+            this.attributionHandler = null;
+            this.baseImagery = null;
+            this.preRenderers = null;
+            this.nbCreatedLayers = null;
         };
 
         /**

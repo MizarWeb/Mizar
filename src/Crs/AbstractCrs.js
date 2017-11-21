@@ -494,6 +494,17 @@ define(
             return this.geoBound;
         };
 
+        /**
+         * @function destroy
+         * @memberOf AbstractCrs#
+         */
+        AbstractCrs.prototype.destroy = function() {
+            this.flat = null;
+            this.geoide = null;
+            this.type = null;
+            this.geoBound = null;
+        };
+
         /**************************************************************************************************************/
         return AbstractCrs;
     });

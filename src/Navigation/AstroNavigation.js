@@ -484,6 +484,19 @@ define(['../Utils/Utils', '../Utils/Constants',
             }
         };
 
+        /**
+         * Destroy
+         * @function destroy
+         * @memberOf AstroNavigation#
+         */
+        AstroNavigation.prototype.destroy = function () {
+            AbstractNavigation.prototype.destroy.call(this);
+            this.minFov = null;
+            this.maxFov = null;
+            this.center3d = null;
+            this.up = null;
+        };
+
         /**************************************************************************************************************/
 
         return AstroNavigation;

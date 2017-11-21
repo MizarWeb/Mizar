@@ -412,6 +412,20 @@ define(['../Utils/Utils', '../Utils/Event', '../Navigation/NavigationHandlerFact
             this.renderContext = renderContext;
         };
 
+        /**
+         * Destroys the navigation.
+         * @function destroy
+         * @memberOf AbstractNavigation#
+         */
+        AbstractNavigation.prototype.destroy = function () {
+            this.type = null;
+            this.options = null;
+            this.zoomToAnimation = null;
+            this.stop();
+            this.ctx = null;
+            this.renderContext = null;
+        };
+
 
         /**************************************************************************************************************/
 

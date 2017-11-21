@@ -451,6 +451,22 @@ define(['../Utils/Utils', '../Utils/Constants', './AbstractNavigation', '../Anim
             return this.distance*this.ctx.getCoordinateSystem().getGeoide().getRealPlanetRadius();
         };
 
+        /**
+         * Destroy
+         * @function destroy
+         * @memberOf PlanetNavigation#
+         */
+        PlanetNavigation.prototype.destroy = function () {
+            AbstractNavigation.prototype.destroy.call(this);
+            this.minDistance = null;
+            this.maxDistance = null;
+            this.geoCenter = null;
+            this.heading = null;
+            this.tilt = null;
+            this.distance = null;
+            this.inverseViewMatrix = null;
+        };
+
         /**************************************************************************************************************/
 
         return PlanetNavigation;

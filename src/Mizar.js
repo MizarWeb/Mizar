@@ -167,16 +167,24 @@ define(["jquery", "underscore-min",
 
             this.skyContext = null;
             this.planetContext = null;
+            this.groundContext = null;
             this.activatedContext = null;
             this.renderContext = null;
             this.dataProviders = {};
 
             if (options.skyContext) {
                 this.createContext(Mizar.CONTEXT.Sky, options.skyContext);
+                this.setActivatedContext(Mizar.CONTEXT.Sky);
             }
 
             if (options.planetContext) {
                 this.createContext(Mizar.CONTEXT.Planet, options.planetContext);
+                this.setActivatedContext(Mizar.CONTEXT.Planet)
+            }
+
+            if (options.groundContext) {
+                this.createContext(Mizar.CONTEXT.Ground, options.planetContext);
+                this.setActivatedContext(Mizar.CONTEXT.Ground);
             }
 
         };
@@ -337,91 +345,71 @@ define(["jquery", "underscore-min",
             if (options.hasOwnProperty('skyContext')) {
                 mizarOptions['skyContext'] = options.skyContext;
             }
-
             if (options.hasOwnProperty('planetContext')) {
                 mizarOptions['planetContext'] = options.planetContext;
+            }
+            if (options.hasOwnProperty('groundContext')) {
+                mizarOptions['groundContext'] = options.groundContext;
             }
             return mizarOptions;
         }
 
         /**
-         * Switch from a planet to sky
-         * @function _switchPlanet2Sky
+         * Switch to a context
+         * @param {InterfaceContext} context - Target context
+         * @param {Object} options - TODO
+         * @function _switchToContext
          * @memberOf Mizar#
          * @private
          */
-        function _switchPlanet2Sky() {
+        function _switchToContext(context, options) {
             var self = this;
-            // Hide planet
-            this.activatedContext.hide();
-
-            // Hide all additional layers <!-- cannot use it because of PlanetLayer -->
-            //this.activatedContext.hideAdditionalLayers();
-
-            // change the context
-            this.setActivatedContext(Mizar.CONTEXT.Sky);
-
-            // Add smooth animation from planet context to sky context
-            this.planetContext.navigation.toViewMatrix(this._oldVM, this._oldFov,
-                2000, function () {
-                    // Show all additional layers
-                    self.activatedContext.showAdditionalLayers();
-                    self.activatedContext.getRenderContext().tileErrorTreshold = 1.5;
-                    self.publish("mizarMode:toggle", self.activatedContext);
-
-
-                    // Destroy planet context
-                    self.planetContext.destroy();
-
-                    // Show sky
-                    self.activatedContext.show();
-                    self.activatedContext.refresh();
-                    self.activatedContext.getPositionTracker().attachTo(self.activatedContext.globe);
-
-                });
-        }
-
-        function _switchSky2Planet2(options) {
-
-            var self = this;
-
-            // Create planet context (with existing sky render context)
-            //var planetConfig = $.extend({}, options);
-            //planetConfig.planetLayer = gwLayer;
-            //planetConfig.coordinateSystem = gwLayer.coordinateSystem;
-            //planetConfig.renderContext = this.getRenderContext();
+            options = options || {};
+            var mustBeDestroyed = options.hasOwnProperty("mustBeDestroyed") ? options.mustBeDestroyed : false;
 
             // Hide sky
-            this.activatedContext.hide();
+            this.getActivatedContext().hide();
 
             // Hide all additional layers
-            this.activatedContext.hideAdditionalLayers();
+            this.getActivatedContext().hideAdditionalLayers();
 
-            // Create the planetary context and use it as default
-            this.createContext(Mizar.CONTEXT.Planet, options);
-
-            // Store old view matrix & fov to be able to rollback to sky context
-            this._oldVM = this.renderContext.getViewMatrix();
-            this._oldFov = this.renderContext.getFov();
-
-            if (!this.activatedContext.getCoordinateSystem().isFlat()) {
-                //Compute planet view matrix
-                var planetVM = mat4.create();
-                this.activatedContext.getNavigation().computeInverseViewMatrix();
-                mat4.inverse(this.activatedContext.getNavigation().inverseViewMatrix, planetVM);
-
-                // Add smooth animation from sky context to planet context
-                this.activatedContext.getNavigation().toViewMatrix(planetVM, 90, 2000, function () {
-                    self.activatedContext.show();
-                    self.activatedContext.refresh();
-                    self.publish("mizarMode:toggle", self.activatedContext);
-                });
+            var viewMatrix;
+            var fov;
+            if (context.hasOwnProperty("_oldVM") && context.hasOwnProperty("_oldFov")) {
+                viewMatrix = context._oldVM;
+                fov = context._oldFov;
+            } else if (context.inverseViewMatrix === undefined) {
+                this.getActivatedContext()._oldVM = this.renderContext.getViewMatrix();
+                this.getActivatedContext()._oldFov = this.renderContext.getFov();
+                viewMatrix = context.getNavigation().getRenderContext().getViewMatrix();
+                fov = 90;
+            } else {
+                this.getActivatedContext()._oldVM = this.renderContext.getViewMatrix();
+                this.getActivatedContext()._oldFov = this.renderContext.getFov();
+                viewMatrix = mat4.create();
+                context.getNavigation().computeInverseViewMatrix();
+                mat4.inverse(context.getNavigation().inverseViewMatrix, viewMatrix);
+                fov =  90;
             }
-            else {
-                this.activatedContext.show();
-                this.activatedContext.refresh();
-                this.publish("mizarMode:toggle", self.activatedContext);
-            }
+            if(mustBeDestroyed) {
+                this.getActivatedContext().destroy();
+            } //else {
+              //  this.getActivatedContext().trackerDestroy();
+            //}
+            this.activatedContext = context;
+            context.getNavigation().toViewMatrix(viewMatrix, fov, 2000, function() {
+                if(context) {
+                    context.enable();
+                }
+                context.getPositionTracker().attachTo(context.globe);
+                context.getElevationTracker().attachTo(context.globe);
+                self.publish("mizarMode:toggle", context);
+                self.activatedContext.show();
+                self.activatedContext.refresh();
+                if(self.getRenderContext().viewMatrix[0] !== "undefined") {
+                    self.getActivatedContext().getNavigation().computeViewMatrix();
+                }
+            });
         }
 
         /**
@@ -431,10 +419,10 @@ define(["jquery", "underscore-min",
          * @private
          */
         function _disableAtmosphere() {
-            if (this.activatedContext._atmosphereLayer !== undefined) {
-                if (this.activatedContext._atmosphereLayer.globe !== null) {
-                    this.activatedContext._saveAtmosphereVisible = this.activatedContext._atmosphereLayer.visible;
-                    this.activatedContext._atmosphereLayer.setVisible(false);
+            if (this.getActivatedContext()._atmosphereLayer !== undefined) {
+                if (this.getActivatedContext()._atmosphereLayer.globe !== null) {
+                    this.getActivatedContext()._saveAtmosphereVisible = this.getActivatedContext()._atmosphereLayer.visible;
+                    this.getActivatedContext()._atmosphereLayer.setVisible(false);
                     this.render();
                 }
             }
@@ -447,9 +435,9 @@ define(["jquery", "underscore-min",
          * @private
          */
         function _enableAtmosphere() {
-            if (this.activatedContext._atmosphereLayer !== undefined) {
-                if (this.activatedContext._atmosphereLayer.globe !== null) {
-                    this.activatedContext._atmosphereLayer.setVisible(this.activatedContext._saveAtmosphereVisible);
+            if (this.getActivatedContext()._atmosphereLayer !== undefined) {
+                if (this.getActivatedContext()._atmosphereLayer.globe !== null) {
+                    this.getActivatedContext()._atmosphereLayer.setVisible(this.getActivatedContext()._saveAtmosphereVisible);
                     this.render();
                 }
             }
@@ -492,7 +480,7 @@ define(["jquery", "underscore-min",
             // If a pole is closed to the center of the canvas, this should mean that
             // the user is interested to the pole, so we switch to azimuth projection
             // instead of plate carrée projection
-            _project2AzimuthOrPlate.call(this, this.activatedContext.navigation.getCenter());
+            _project2AzimuthOrPlate.call(this, this.getActivatedContext().navigation.getCenter());
         }
 
         /**
@@ -528,7 +516,7 @@ define(["jquery", "underscore-min",
          * @private
          */
         function _skipIfSkyMode() {
-            if (this.activatedContext.getMode() === Mizar.CONTEXT.Sky) {
+            if (this.getActivatedContext().getMode() === Mizar.CONTEXT.Sky) {
                 throw "Not implemented";
             }
         }
@@ -736,12 +724,33 @@ define(["jquery", "underscore-min",
         };
 
         /**
-         * Returns the selected context
+         * Returns the ground context.
+         * @returns {GroundContext|null}
+         * @function getGroundContext
+         * @memberOf Mizar#
+         */
+        Mizar.prototype.getGroundContext = function () {
+            return this.groundContext;
+        };
+
+        /**
+         * Returns the selected context or an exception "No selected context" when no context is defined.
          * @returns {PlanetContext|SkyContext}
          * @function getActivatedContext
          * @memberOf Mizar#
          */
         Mizar.prototype.getActivatedContext = function () {
+            if(this.activatedContext == null) {
+                if(this.skyContext != null) {
+                    this.activatedContext = this.skyContext;
+                } else if(this.planetContext != null) {
+                    this.activatedContext = this.planetContext;
+                } else if(this.groundContext != null) {
+                    this.activatedContext = this.groundContext;
+                } else {
+                    throw "No selected context";
+                }
+            }
             return this.activatedContext;
         };
 
@@ -749,7 +758,6 @@ define(["jquery", "underscore-min",
          * Selects the context as default context according to the {@link CONTEXT context mode}.<br/>
          * Once a context is selected, methods can be applied to it.
          * @param {CONTEXT} contextMode - select one context among {@link CONTEXT context}
-         * @fires Mizar#mizarMode:toggle
          * @function setActivatedContext
          * @memberOf Mizar#
          * @throws {RangeError} contextMode not valid - a valid contextMode is included in the list {@link CONTEXT}
@@ -762,11 +770,22 @@ define(["jquery", "underscore-min",
                 case Mizar.CONTEXT.Sky:
                     this.activatedContext = this.skyContext;
                     break;
+                case Mizar.CONTEXT.Ground:
+                    this.activatedContext = this.groundContext;
+                    break;
                 default:
                     throw RangeError("The contextMode " + contextMode + " is not allowed, A valid contextMode is included in the list Constants.CONTEXT", "Mizar.js");
             }
-            //this.publish("mizarMode:toggle", this.activatedContext);
-            //TODO : ajouter un évènement
+        };
+
+        /**
+         * Returns the mode in which the active context is set.
+         * @function getMode
+         * @memberOf Mizar#
+         * @returns {CONTEXT}
+         */
+        Mizar.prototype.getMode = function() {
+            return this.getActivatedContext().getMode();
         };
 
         /**
@@ -776,7 +795,7 @@ define(["jquery", "underscore-min",
          * @memberOf Mizar#
          */
         Mizar.prototype.getRenderContext = function () {
-            return this.activatedContext.getRenderContext();
+            return this.getActivatedContext().getRenderContext();
         };
 
         /**
@@ -801,7 +820,7 @@ define(["jquery", "underscore-min",
          * @see {@link Mizar#createContext}
          */
         Mizar.prototype.getCrs = function () {
-            return this.activatedContext.getCoordinateSystem();
+            return this.getActivatedContext().getCoordinateSystem();
         };
 
         /**
@@ -814,7 +833,7 @@ define(["jquery", "underscore-min",
          */
         Mizar.prototype.setCrs = function (coordinateSystem) {
             var crs = CoordinateSystemFactory.create(coordinateSystem);
-            this.activatedContext.setCoordinateSystem(crs);
+            this.getActivatedContext().setCoordinateSystem(crs);
         };
 
         //               ***************************** context management *****************************
@@ -828,26 +847,25 @@ define(["jquery", "underscore-min",
          * @throws {RangeError} contextMode not valid - a valid contextMode is included in the list {@link CONTEXT}
          * @function createContext
          * @memberOf Mizar#
-         * @fires Mizar#mizarMode:toggle
          */
         Mizar.prototype.createContext = function (contextMode, options) {
             options.renderContext = this.renderContext;
-            this.activatedContext = this.ContextFactory.create(contextMode, this.getOptions(), options);
+            var ctx = this.ContextFactory.create(contextMode, this.getOptions(), options);
             switch (contextMode) {
                 case Mizar.CONTEXT.Sky:
-                    this.skyContext = this.activatedContext;
+                    this.skyContext = ctx;
                     _loadHIPSLayers(this, this.getOptions().configuration);
                     break;
                 case Mizar.CONTEXT.Planet:
-                    this.planetContext = this.activatedContext;
+                    this.planetContext = ctx;
+                    break;
+                case Mizar.CONTEXT.Ground:
+                    this.groundContext = ctx;
                     break;
                 default:
                     throw new RangeError("Unknown contextMode '" + contextMode + "'", "Mizar.js");
             }
-            this.renderContext = this.activatedContext.getRenderContext();
-            //this.publish("mizarMode:toggle", this.activatedContext);
-            //TODO : ajouter un évènement (idem to setActivatedContext)
-
+            this.renderContext = ctx.getRenderContext();
         };
 
         /**
@@ -869,30 +887,20 @@ define(["jquery", "underscore-min",
             this.render();
         };
 
-
         /**
-         * Callback after the context switches.
-         * @callback toggleContextCallback
-         * @param {Mizar} contextManager
-         */
-
-        /**
-         * Switches planetary <---> sky context
-         * @param {AbstractContext.planetContext} options - options for the planet
+         * Switches To a context.
+         * @param context - target context
+         * @param options - options for the context
          * @param {toggleContextCallback} callback - Call at the end of the toggle
          * @fires Mizar#mizarMode:toggle
          * @function toggleContext
          * @memberOf Mizar#
          */
-        Mizar.prototype.toggleContext = function (options, callback) {
+        Mizar.prototype.toggleToContext = function (context, options, callback) {
             var toggleMode = (this.getActivatedContext().getMode() === Mizar.CONTEXT.Sky) ? Mizar.CONTEXT.Planet : Mizar.CONTEXT.Sky;
             var self = this;
+            _switchToContext.call(this, context, options);
 
-            if (toggleMode === Mizar.CONTEXT.Sky) {
-                _switchPlanet2Sky.call(this);
-            } else {
-                _switchSky2Planet2.call(this, options);
-            }
             if (callback) {
                 callback.call(self);
             }
@@ -917,6 +925,16 @@ define(["jquery", "underscore-min",
          */
         Mizar.prototype.getPlanetLayers = function () {
             return this.getPlanetContext().getLayers();
+        };
+
+        /**
+         * Returns the grounds layers, which have been added by {@link Mizar#addLayer}
+         * @function getGroundLayers
+         * @returns {Layer[]} the layers
+         * @memberOf Mizar#
+         */
+        Mizar.prototype.getGroundLayers = function () {
+            return this.getGroundContext().getLayers();
         };
 
         /**
@@ -1008,7 +1026,6 @@ define(["jquery", "underscore-min",
          * @see {@link module:Layer.WMTSLayer WMTSLayer} : A layer to draw predefined tiles coming from a WMTS server
          * @see {@link Mizar#setActivatedContext}
          * @see {@link Mizar#createContext}
-         * @todo Bug to fix : PlanetLayer should use this function to create layer when the context changes
          */
         Mizar.prototype.addLayer = function (layerDescription) {
             var layer = this.getActivatedContext().addLayer(layerDescription);
@@ -1199,6 +1216,8 @@ define(["jquery", "underscore-min",
                 this.Stats = new Stats(this.skyContext, options);
             } else if (this.planetContext) {
                 this.Stats = new Stats(this.planetContext, options);
+            } else if (this.groundContext) {
+                this.Stats = new Stats(this.groundContext, options);
             } else {
                 console.log("No context");
             }
@@ -1230,6 +1249,9 @@ define(["jquery", "underscore-min",
             if (this.skyContext) {
                 this.skyContext.dispose();
             }
+            if(this.groundContext) {
+                this.groundContext.dispose();
+            }
         };
 
 
@@ -1244,6 +1266,9 @@ define(["jquery", "underscore-min",
             }
             if (this.skyContext) {
                 this.skyContext.destroy();
+            }
+            if(this.groundContext) {
+                this.groundContext.destroy();
             }
             this.activatedContext = null;
             this.renderContext = null;

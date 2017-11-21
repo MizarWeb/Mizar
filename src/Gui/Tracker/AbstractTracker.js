@@ -16,8 +16,8 @@
  * You should have received a copy of the GNU General Public License
  * along with SITools2. If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
-define([],
-    function () {
+define(["jquery"],
+    function ($) {
 
         /**
          * @name AbstractTracker
@@ -29,6 +29,33 @@ define([],
          */
         var AbstractTracker = function (options) {
             this.options = options;
+            this.globe = null;
+            this.element = options.element;
+            if (options.position) {
+                $("#" + this.element).css(options.position, "2px");
+            }
+        };
+
+        /**
+         * @function _getGlobe
+         * @memberOf AbstractTracker#
+         * @abstract
+         */
+        AbstractTracker.prototype._getGlobe = function (event) {
+            return this.globe;
+        };
+
+        /**
+         * @function _setGlobe
+         * @memberOf AbstractTracker#
+         * @abstract
+         */
+        AbstractTracker.prototype._setGlobe = function (globe) {
+            this.globe = globe;
+        };
+
+        AbstractTracker.prototype._getElement = function (globe) {
+            return this.element;
         };
 
         /**
@@ -55,7 +82,13 @@ define([],
          * @abstract
          */
         AbstractTracker.prototype.attachTo = function (globeContext) {
-            throw "attachTo from AbstractTracker not implemented";
+            this._setGlobe(globeContext);
+            var self = this;
+            this._updateTracker(this);
+            this._getGlobe().getRenderContext().canvas.addEventListener('mousemove', self.update);
+            if (this.options.isMobile) {
+                this._getGlobe().getRenderContext().canvas.addEventListener('touchmove', self.update);
+            }
         };
 
         /**
@@ -64,7 +97,23 @@ define([],
          * @abstract
          */
         AbstractTracker.prototype.detach = function () {
-            throw "detach from AbstractTracker not implemented";
+            var self = this;
+            this._updateTracker(this);
+            this._getGlobe().getRenderContext().canvas.removeEventListener('mousemove', self.update);
+            if (this.options.isMobile) {
+                this._getGlobe().getRenderContext().canvas.removeEventListener('touchmove', self.update);
+            }
+        };
+
+        /**
+         * @function destroy
+         * @memberOf AbstractTracker#
+         * @abstract
+         */
+        AbstractTracker.prototype.destroy = function () {
+            this.element = null;
+            this.options = null;
+            this.globe = null;
         };
 
 

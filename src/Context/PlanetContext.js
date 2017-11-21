@@ -286,18 +286,7 @@ define(["jquery", "underscore-min", "../Utils/Utils", "./AbstractContext", "../U
          * @memberOf PlanetContext#
          */
         PlanetContext.prototype.destroy = function () {
-            this.hide();
-            if(this.elevationTracker) {
-                this.elevationTracker.detach();
-            }
-            if (this.positionTracker) {
-                this.positionTracker.detach();
-            }
-            this.removeAllLayers();
-            this.globe.destroy();
-            this.globe = null;
-            this.layers = null;
-            this.visibleLayers = null;
+            AbstractContext.prototype.destroy.call(this);
         };
 
         /**************************************************************************************************************/
