@@ -36,6 +36,11 @@
  *         <td>{@link module:Context.PlanetContext PlanetContext}</td>
  *         <td>A context representing a planet</td>
  *     </tr>
+ *     <tr>
+ *         <td></td>
+ *         <td>{@link module:Context.GroundContext GroundContext}</td>
+ *         <td>A context representing a planet's ground</td>
+ *     </tr>
  * </table>
  *
  * The context is automatically instantiated by the method createContext from {@link Mizar}.
@@ -240,6 +245,19 @@ define(["jquery", "underscore-min", "../Utils/Utils", "./AbstractContext", "../U
         PlanetContext.prototype.setBaseElevation = function (layer) {
             this.globe.setBaseElevation(layer);
             this.elevationTracker.setScaleLayer(layer);
+        };
+
+        /**
+         * @function setBaseElevationByID
+         * @memberOf PlanetContext#
+         */
+        PlanetContext.prototype.setBaseElevationByID = function (layerID) {
+            // Find the layer by name among all the layers
+            var layer = this.getLayerByID(layerID);
+            if (layer) {
+                this.setBaseElevation(layer);
+            }
+            return layer;
         };
 
         /**

@@ -471,7 +471,7 @@ define(
         /**
          * @function _setupPosBeforeTrans
          * @memberOf AbstractCrs#
-         * @bastract
+         * @abstract
          */
         AbstractCrs.prototype._setupPosBeforeTrans = function(posWorld) {
             throw "Not implemented";

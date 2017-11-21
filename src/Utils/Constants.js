@@ -83,7 +83,6 @@ define(function () {
      * @property {String} HipsFits - Hierarchical Progressive Survey for FITS
      * @property {String} Moc - Multiple Order Coverage
      * @property {String} OpenSearch - Open Search
-     * @property {String} Planet - Planet
      */
     Constants.LAYER = {
         "WMS": "WMS",
@@ -103,8 +102,7 @@ define(function () {
         "Hips": "Hips",
         "HipsCat": "HipsCat",
         "Moc": "Moc",
-        "OpenSearch": "OpenSearch",
-        "Planet": "Planet"
+        "OpenSearch": "OpenSearch"
     };
 
     /**

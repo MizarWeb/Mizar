@@ -22,6 +22,30 @@ define(["jquery", "underscore-min", "../Utils/Utils", "./AbstractContext", "../U
     function ($, _, Utils, AbstractContext, Constants,
               GlobeFactory, NavigationFactory, ServiceFactory) {
 
+        /**
+         * ground context configuration
+         * @typedef {Object} AbstractContext.groundContext
+         * @property {float} [tileErrorTreshold=1.5]
+         * @property {float} [continuousRendering=true]
+         * @property {float} [radius = 10.0] - Vector distance of the sky
+         * @property {int} [minFar = 15]
+         * @property {AbstractProjection.configuration|AbstractProjection.azimuth_configuration|AbstractProjection.mercator_configuration} coordinateSystem - CRS configuration
+         * @property {RenderContext} [renderContext] - Context rendering
+         * @property {AbstractNavigation.astro_configuration} navigation - navigation configuration
+         * @property {string} [compass="compassDiv"] - div element where compass is displayed
+         */
+
+        /**
+         * @name GroundContext
+         * @class
+         * Virtual globe where the camera is inside the globe and having the horizontal coordinate as .<br/>
+         * When an error happens at the initialisation, a message is displayed
+         * @augments AbstractContext
+         * @param {Mizar.configuration} mizarConfiguration - mizar configuration
+         * @param {AbstractContext.skyContext} options - skyContext configuration
+         * @constructor
+         * @memberOf module:Context
+         */
         var GroundContext = function (mizarConfiguration, options) {
             AbstractContext.prototype.constructor.call(this, mizarConfiguration, Constants.CONTEXT.Ground, options);
             var self = this;
@@ -52,6 +76,36 @@ define(["jquery", "underscore-min", "../Utils/Utils", "./AbstractContext", "../U
             }
         };
 
+
+        /**
+         * Ground configuration data model
+         * @typedef {Object} AbstractGlobe.dm_ground
+         * @property {Object} canvas - canvas object
+         * @property {int} tileErrorTreshold - tile error treshold
+         * @property {boolean} continuousRendering - continuous rendering
+         * @property {renderContext} [renderContext] - Rendering context
+         * @property {AbstractCrs.crsFactory} coordinateSystem - Coordinate reference system of the planet
+         * @property {boolean} lighting = false - Lighting
+         * @property {float[]} backgroundColor = [0.0, 0.0, 0.0, 1.0] - Background color
+         * @property {int} minFar
+         * @property {float} radius
+         * @property {int[]} defaultColor = [200, 200, 200, 255] - Default color
+         * @property {string} shadersPath = "../../shaders/" - Shaders location
+         * @property {boolean} renderTileWithoutTexture = false
+         * @property {function} publishEvent - Callback
+         */
+
+        /**
+         * Creates planet configuration
+         * @param {Object} options
+         * @param {int} [options.tileErrorTreshold = 1.5] - Tile error treshold
+         * @param {boolean} [options.continuousRendering = true] - continuous rendering
+         * @param {renderContext} [options.renderContext] - Rendering context
+         * @param {AbstractCrs.crsFactory} options.coordinateSystem - Coordinate reference system of the planet' ground
+         * @param {float} [options.radius = 10.0] - Radius object in vector length
+         * @returns {AbstractGlobe.dm_ground} Ground data model.
+         * @private
+         */
         function _createGroundConfiguration(options) {
             var self = this;
             return {
@@ -66,7 +120,6 @@ define(["jquery", "underscore-min", "../Utils/Utils", "./AbstractContext", "../U
                 minFar: 0,
                 defaultColor: [200, 200, 200, 255],
                 renderTileWithoutTexture: true,
-                //todofl : redondance car params identiques
                 publishEvent: function (message, object) {
                     self.publish(message, object);
                 }
@@ -79,6 +132,10 @@ define(["jquery", "underscore-min", "../Utils/Utils", "./AbstractContext", "../U
 
         /**************************************************************************************************************/
 
+        /**
+         * @function setCoordinateSystem
+         * @memberOf GroundContext#
+         */
         GroundContext.prototype.setCoordinateSystem = function (cs) {
             if (cs.getType() !== this.getMode()) {
                 throw "incompatible coordinate reference system with Sky context";
@@ -87,6 +144,10 @@ define(["jquery", "underscore-min", "../Utils/Utils", "./AbstractContext", "../U
             this.publish("modifiedCrs", cs);
         };
 
+        /**
+         * @function destroy
+         * @memberOf GroundContext#
+         */
         GroundContext.prototype.destroy = function () {
             //this.setCompassVisible(false);
             AbstractContext.prototype.destroy.call(this);

@@ -29,7 +29,7 @@ define(['../Utils/Utils', '../Utils/Constants',
          * When an <i>initFov</i> is provided out the range [<i>minFov</i>, <i>maxFov</i>], the range
          * [<i>minFov</i>, <i>maxFov</i>] is updated with the value of <i>initFov</i>.
          * @augments AstroNavigation
-         * @param {SkyContext} ctx - Sky context
+         * @param {GroundContext} ctx - ground context
          * @param {AbstractNavigation.astro_configuration} options - navigation configuration
          * @constructor
          * @memberOf module:Navigation
@@ -98,12 +98,14 @@ define(['../Utils/Utils', '../Utils/Constants',
 
         /**************************************************************************************************************/
 
-        /** @export
+        /**
          Zoom to a 3d position
+         @function zoomTo
          @param {float[]} geoPos Array of two floats corresponding to final Longitude and Latitude(in this order) to zoom
          @param {int} fov Final zooming fov in degrees
          @param {int} duration Duration of animation in milliseconds
          @param {Function} callback Callback on the end of animation
+         @memberOf GroundNavigation#
          */
         GroundNavigation.prototype.zoomTo = function (geoPos, fov, duration, callback) {
             var navigation = this;
@@ -267,6 +269,8 @@ define(['../Utils/Utils', '../Utils/Constants',
 
         /**
          *    Move up vector
+         *    @function moveUpTo
+         *    @memberOf GroundNavigation#
          */
         GroundNavigation.prototype.moveUpTo = function (vec, duration) {
             // Create a single animation to animate up
@@ -307,6 +311,8 @@ define(['../Utils/Utils', '../Utils/Constants',
 
         /**
          Compute the view matrix
+         @function computeViewMatrix
+         @memberOf GroundNavigation#
          */
         GroundNavigation.prototype.computeViewMatrix = function () {
             var eye = [];
@@ -322,13 +328,15 @@ define(['../Utils/Utils', '../Utils/Constants',
             this.up = [0, 0, vm[9]];
             this.ctx.publish("modifiedNavigation");
             this.renderContext.requestFrame();
-        }
+        };
 
         /**************************************************************************************************************/
 
         /**
          Event handler for mouse wheel
+         @function zoom
          @param delta Delta zoom
+         @memberOf GroundNavigation#
          */
         GroundNavigation.prototype.zoom = function (delta, scale) {
 
@@ -349,8 +357,10 @@ define(['../Utils/Utils', '../Utils/Constants',
 
         /**
          Pan the navigation by computing the difference between 3D centers
+         @function pan
          @param dx Window delta x
          @param dy Window delta y
+         @memberOf GroundNavigation#
          */
         GroundNavigation.prototype.pan = function (dx, dy) {
             var x = this.renderContext.canvas.width / 2.;
@@ -364,8 +374,10 @@ define(['../Utils/Utils', '../Utils/Constants',
 
         /**
          Rotate the navigation
+         @function rotate
          @param dx Window delta x
          @param dy Window delta y
+         @memberOf GroundNavigation#
          */
         GroundNavigation.prototype.rotate = function (dx, dy) {
             // constant tiny angle
@@ -374,7 +386,7 @@ define(['../Utils/Utils', '../Utils/Constants',
             var rot = quat4.fromAngleAxis(angle, this.center3d);
             quat4.multiplyVec3(rot, this.up);
             this.computeViewMatrix();
-        }
+        };
 
         /**************************************************************************************************************/
 
@@ -388,7 +400,7 @@ define(['../Utils/Utils', '../Utils/Constants',
             if (this.renderContext.getFov() < this.minFov) {
                 this.renderContext.setFov(this.minFov);
             }
-        }
+        };
 
         /**************************************************************************************************************/
 
