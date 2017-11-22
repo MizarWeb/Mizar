@@ -104,6 +104,8 @@ define(["jquery", "underscore-min",
          * @class
          * Creates an instance of the Mizar API.
          * @param {Mizar.inputParameters} options - Configuration for Mizar
+         * @throws {ReferenceError} No option found
+         * @throws {TypeError} Canvas not defined
          * @constructor
          */
         var Mizar = function (options) {
@@ -308,8 +310,8 @@ define(["jquery", "underscore-min",
         /**
          * Checks inputs
          * @param {Object} options - Mizar configuration
-         * @throw ReferenceError - No option found or canvas not defined
-         * @throw ReferenceError - No option found or canvas not defined
+         * @throws {ReferenceError} No option found
+         * @throws {TypeError} Canvas not defined
          * @function _checkConfiguration
          * @memberOf Mizar#
          * @private
@@ -318,7 +320,7 @@ define(["jquery", "underscore-min",
             if (typeof options === 'undefined') {
                 throw new ReferenceError('No option found', 'Mizar.js');
             } else if (typeof options.canvas === 'undefined') {
-                throw new ReferenceError('Canvas not defined', 'Mizar.js');
+                throw new TypeError('Canvas not defined', 'Mizar.js');
             } else {
                 // do nothing
             }
@@ -407,8 +409,8 @@ define(["jquery", "underscore-min",
                 context.getPositionTracker().attachTo(context.globe);
                 context.getElevationTracker().attachTo(context.globe);
                 self.publish("mizarMode:toggle", context);
-                self.activatedContext.show();
-                self.activatedContext.refresh();
+                self.getActivatedContext().show();
+                self.getActivatedContext().refresh();
                 if(self.getRenderContext().viewMatrix[0] !== "undefined") {
                     self.getActivatedContext().getNavigation().computeViewMatrix();
                 }
@@ -515,12 +517,12 @@ define(["jquery", "underscore-min",
          * Skip if sky mode
          * @function _skipIfSkyMode
          * @memberOf Mizar#
-         * @throws "Not implemented"
+         * @throws {RangeError} Toggle Dimension is not implemented for Sky
          * @private
          */
         function _skipIfSkyMode() {
             if (this.getActivatedContext().getMode() === Mizar.CONTEXT.Sky) {
-                throw "Not implemented";
+                throw new RangeError("Toggle Dimension is not implemented for Sky", "Mizar.js");
             }
         }
 
@@ -617,7 +619,7 @@ define(["jquery", "underscore-min",
                         var hipsServiceUrlArray = _getHipsServiceUrlArray(hipsLayer);
                         var hipsUrl = _checkHipsServiceIsAvailable(hipsServiceUrlArray, function (hipsServiceUrl) {
                             if (typeof hipsServiceUrl === 'undefined') {
-                                text = "";
+                                var text = "";
                                 if (typeof hipsLayer.obs_title === 'undefined') {
                                     text = "with ID <b>" + hipsLayer.ID + "</b>";
                                 } else {
@@ -661,8 +663,7 @@ define(["jquery", "underscore-min",
                     prefixe = "";
                     text = hipsLayer.obs_title;
                 }
-                ErrorDialog.open("Hips layer " + prefixe + "<font style='color:yellow'><b>" + text + "</b></font> not valid in Hips registry <font color='grey'><i>(" + hipsLayer.hips_service_url + ")</i></font>.");
-                //console.log("Hips layer "+prefixe+ text + " not valid in Hips registry ("+hipsLayer.hips_service_url+")");
+                ErrorDialog.open("Hips layer " + prefixe + "<font style='color:yellow'><b>" + text + "</b></font> not valid in Hips registry <font color='grey'><i>(" + hipsLayer.hips_service_url + " - reason : "+ e.message +")</i></font>.");
             }
         }
 
@@ -745,7 +746,7 @@ define(["jquery", "underscore-min",
          * an  exception "No created context" is send.
          * @returns {PlanetContext|SkyContext|GroundContext}
          * @function getActivatedContext
-         * @throws "Not created context" - Will throw an exception when no context has been created.
+         * @throws ReferenceError - Will throw an exception when no context has been created.
          * @memberOf Mizar#
          */
         Mizar.prototype.getActivatedContext = function () {
@@ -757,7 +758,7 @@ define(["jquery", "underscore-min",
                 } else if(this.groundContext != null) {
                     this.activatedContext = this.groundContext;
                 } else {
-                    throw "No created context";
+                    throw new ReferenceError("No created context","Mizar.js");
                 }
             }
             return this.activatedContext;
@@ -791,6 +792,7 @@ define(["jquery", "underscore-min",
          * Returns the mode in which the active context is set.
          * @function getMode
          * @memberOf Mizar#
+         * @throws ReferenceError - Will throw an exception when no context has been created.
          * @returns {CONTEXT}
          */
         Mizar.prototype.getMode = function() {
@@ -801,6 +803,7 @@ define(["jquery", "underscore-min",
          * Returns the rendering context.
          * @returns {RenderContext} the rendering context
          * @function getRenderContext
+         * @throws ReferenceError - Will throw an exception when no context has been created.
          * @memberOf Mizar#
          */
         Mizar.prototype.getRenderContext = function () {
@@ -811,6 +814,7 @@ define(["jquery", "underscore-min",
          * Returns the options
          * @function getOptions
          * @memberOf Mizar#
+         * @throws ReferenceError - Will throw an exception when no context has been created.
          * @returns {Mizar.parameters} - Mizar's options
          */
         Mizar.prototype.getOptions = function () {
@@ -825,6 +829,7 @@ define(["jquery", "underscore-min",
          * @returns {Crs} the coordinate reference system
          * @function getCrs
          * @memberOf Mizar#
+         * @throws ReferenceError - Will throw an exception when no context has been created.
          * @see {@link Mizar#setActivatedContext}
          * @see {@link Mizar#createContext}
          */
@@ -837,6 +842,7 @@ define(["jquery", "underscore-min",
          * @param {AbstractProjection.configuration|AbstractProjection.azimuth_configuration|AbstractProjection.mercator_configuration} coordinateSystem - coordinate system description
          * @function setCrs
          * @memberOf Mizar#
+         * @throws ReferenceError - Will throw an exception when no context has been created.
          * @see {@link Mizar#setActivatedContext}
          * @see {@link Mizar#createContext}
          */
@@ -880,7 +886,7 @@ define(["jquery", "underscore-min",
          * When this method is used in a sky context, and exception is thrown
          * @function toggleDimension
          * @memberOf Mizar#
-         * @throws "Not implemented" - Will throw an exception for Sky mode. In this version, the sky cannot be projected in 2D
+         * @throws {RangeError} Toggle Dimension is not implemented for Sky
          */
         Mizar.prototype.toggleDimension = function () {
             _skipIfSkyMode.call(this);
@@ -896,12 +902,13 @@ define(["jquery", "underscore-min",
 
         /**
          * Switches To a context.
-         * @param {AbstractContext} context - target context
+         * @param {AbstractContext} context - target context
          * @param {Object} [options] - options management for the source context
          * @param {boolean} options.mustBeDestroyed=false - options management for the source context
          * @param {Function} callback - Call at the end of the toggle
          * @fires Mizar#mizarMode:toggle
          * @function toggleToContext
+         * @throws ReferenceError - Will throw an exception when no context has been created.
          * @memberOf Mizar#
          */
         Mizar.prototype.toggleToContext = function (context, options, callback) {
@@ -1014,6 +1021,7 @@ define(["jquery", "underscore-min",
          * @param {Object} layerDescription - See the base properties {@link AbstractLayer.configuration} and a specific layer for specific properties
          * @returns {string} a unique identifier
          * @memberOf Mizar#
+         * @throws ReferenceError - Will throw an exception when no context has been created.
          * @listens AbstractLayer#visibility:changed
          * @see {@link module:Layer.AtmosphereLayer AtmosphereLayer} : A layer to create an atmosphere on a planet.
          * @see {@link module:Layer.BingLayer BingLayer}: The Microsoft service proving a WMTS server.
@@ -1237,6 +1245,7 @@ define(["jquery", "underscore-min",
          * @param {Object} options - Configuration properties for stats. See {@link Stats} for options
          * @return {Stats}
          * @memberOf Mizar#
+         * @throws {ReferenceError} No context is defined
          */
         Mizar.prototype.createStats = function (options) {
             if (this.skyContext) {
@@ -1246,7 +1255,7 @@ define(["jquery", "underscore-min",
             } else if (this.groundContext) {
                 this.Stats = new Stats(this.groundContext, options);
             } else {
-                console.log("No context");
+                throw new ReferenceError("No context is defined");
             }
         };
 

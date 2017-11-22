@@ -17,11 +17,11 @@
  * along with MIZAR. If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
 define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Layer/LayerFactory", "../Services/ServiceFactory", "../Utils/Constants",
-        "../Gui/Tracker/PositionTracker", "../Gui/Tracker/ElevationTracker", "../Utils/AttributionHandler",
+        "../Gui/Tracker/PositionTracker", "../Gui/Tracker/ElevationTracker", "../Utils/AttributionHandler", "../Gui/dialog/ErrorDialog",
         "../Renderer/PointRenderer", "../Renderer/LineStringRenderable", "../Renderer/PolygonRenderer", "../Renderer/LineRenderer",
         "../Renderer/PointSpriteRenderer", "../Renderer/ConvexPolygonRenderer"],
     function ($, _, Event, Utils, LayerFactory, ServiceFactory, Constants,
-              PositionTracker, ElevationTracker, AttributionHandler) {
+              PositionTracker, ElevationTracker, AttributionHandler, ErrorDialog) {
 
         //TODO : attention de bien garder les ...Renderer dans le define
 
@@ -152,6 +152,23 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Laye
         };
 
         /**
+         * Returns the data provider layers or an empty array when no data provider layer.
+         * @function getDataProviderLayers
+         * @memberOf AbstractContext#
+         */
+        AbstractContext.prototype.getDataProviderLayers = function() {
+            var dpLayers = [];
+            var layers = this.getLayers();
+            for (var i in layers) {
+                var layer = layers[i];
+                if(layer.hasOwnProperty('options') && layer.options.hasOwnProperty('type') && layer.options.type === Constants.LAYER.GeoJSON) {
+                    dpLayers.push(layer);
+                }
+            }
+            return dpLayers;
+        };
+
+        /**
          * @function getTileManager
          * @memberOf AbstractContext#
          */
@@ -263,7 +280,8 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Laye
         AbstractContext.prototype.addLayer = function (layerDescription) {
             var layer = LayerFactory.create(layerDescription);
             if(layer === undefined) {
-                console.log("error:"+layerDescription);
+                var text = layerDescription.hipsMetadata.hipsMetadata.ID;
+                ErrorDialog.open("<font style='color:orange'>Warning : No implementation is defined for this layer <b>" + text + "</b></font>");
             } else {
                 this.layers.push(layer);
                 _addToGlobe.call(this, layer);
@@ -748,7 +766,7 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Laye
          * @abstract
          */
         AbstractContext.prototype.setCompassVisible = function (divName, visible) {
-            throw "compass visible not implemented";
+            throw new SyntaxError("compass visible not implemented","AbstractContext.js");
         };
 
 
@@ -766,7 +784,7 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Laye
          * @abstract
          */
         AbstractContext.prototype.setCoordinateSystem = function (cs) {
-            throw "CRS not implemented";
+            throw new SyntaxError("CRS not implemented", "AbstractContext.js");
         };
 
         /**

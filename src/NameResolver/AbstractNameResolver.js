@@ -41,7 +41,7 @@ define([],
          * @abstract
          */
         AbstractNameResolver.prototype.handle = function (options) {
-            throw "handle from NameResolver not implemented";
+            throw new SyntaxError("handle from NameResolver not implemented", "AbstractNameResolver.js");
         };
 
         /**
@@ -50,7 +50,7 @@ define([],
          * @abstract
          */
         AbstractNameResolver.prototype.remove = function () {
-            throw "remove from NameResolver not implemented";
+            throw new SyntaxError("remove from NameResolver not implemented", "AbstractNameResolver.js");
         };        
 
         /**************************************************************************************************************/

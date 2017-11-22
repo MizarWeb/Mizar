@@ -46,10 +46,10 @@ define(['./AbstractProjection', '../Utils/Utils', '../Renderer/glMatrix'],
         /**
          * @function unProject
          * @memberOf AugustProjection#
-         * @throw "must be implemented"
+         * @throws "must be implemented"
          */
         AugustProjection.prototype.unProject = function (position3d, dest) {
-            throw "must be implemented"
+            throw new SyntaxError("must be implemented");
         };
 
         /**

@@ -44,6 +44,7 @@ define(["jquery","../Utils/Constants", "./WMSLayer", "./WMTSLayer", "./WCSElevat
           use : false
         };
 
+
         function createHips(hipsMetadata, options) {
             options.proxy = this.proxy;
             var hipsProperties = (typeof hipsMetadata === 'undefined') ? new HipsMetadata(options.baseUrl) : hipsMetadata;
@@ -57,11 +58,13 @@ define(["jquery","../Utils/Constants", "./WMSLayer", "./WMTSLayer", "./WCSElevat
 
             switch(dataProducts) {
                 case hipsProperties.DataProductType.catalog:
-                    //layer =  createHipsCats(metadata.getMetadata());
+                    layer =  createHipsCats(metadata, options);
                     break;
                 case hipsProperties.DataProductType.cube:
+                    throw new RangeError("Hips : cannot handle cube dataproduct", "LayerFactor.js");
                     break;
                 case hipsProperties.DataProductType.image:
+                    options.category = options.hasOwnProperty('category') ? options.category : "Image";
                     var hasPNG = ($.inArray(hipsProperties.HipsTileFormat.png, formats) !== -1);
                     var hasJPEG = ($.inArray(hipsProperties.HipsTileFormat.jpeg, formats) !== -1);
                     var hasFits = ($.inArray(hipsProperties.HipsTileFormat.fits, formats) !== -1);
@@ -73,9 +76,10 @@ define(["jquery","../Utils/Constants", "./WMSLayer", "./WMTSLayer", "./WCSElevat
                     //}
                     break;
                 case hipsProperties.DataProductType.meta:
+                    throw new RangeError("Hips : cannot handle META dataproduct", "LayerFactor.js");
                     break;
                 default:
-                    throw "Hips : Unknown dataproduct type";
+                    throw new RangeError("Hips : Unknown dataproduct type", "LayerFactor.js");
             }
             //if(fileExists(options.baseUrl+"/Moc.fits") === 200) {
             //    options.serviceUrl = options.baseUrl+"/Moc.fits";
@@ -94,9 +98,9 @@ define(["jquery","../Utils/Constants", "./WMSLayer", "./WMTSLayer", "./WCSElevat
             return new HipsGraphicLayer(hipsMetadata, options);
         }
 
-        function createHipsCats(options) {
+        function createHipsCats(hipsMetadata, options) {
             options.proxy = this.proxy;
-            return new HipsCatLayer(options);
+            return new HipsCatLayer(hipsMetadata, options);
         }
 
 
@@ -144,7 +148,7 @@ define(["jquery","../Utils/Constants", "./WMSLayer", "./WMTSLayer", "./WCSElevat
              * @param {string} options.type - one of the following value {Constants.Layer}
              * @return {AbstractLayer} - Object to handle Layer
              * @alias module:Layer.LayerFactory.create
-             * @throw "Unable to create the layer"
+             * @throws RangeError - "Unable to create the layer"
              * @see {@link module:Layer.AtmosphereLayer AtmosphereLayer} : A layer to create an atmosphere on a planet.
              * @see {@link module:Layer.BingLayer BingLayer}: The Microsoft service proving a WMTS server.
              * @see {@link module:Layer.CoordinateGridLayer CoordinateGridLayer} : A layer to create a grid on the sky
@@ -205,8 +209,7 @@ define(["jquery","../Utils/Constants", "./WMSLayer", "./WMTSLayer", "./WCSElevat
                         layer = new TileWireframeLayer(options);
                         break;
                     case Constants.LAYER.HipsCat:
-                        options.background = false;
-                        layer = new HipsCatLayer(options);
+                        layer = new HipsCatLayer(options.hipsMetadata, options);
                         break;
                     case Constants.LAYER.CoordinateGrid :
                         layer = new CoordinateGridLayer(options);
@@ -221,7 +224,7 @@ define(["jquery","../Utils/Constants", "./WMSLayer", "./WMTSLayer", "./WCSElevat
                         layer = createOpenSearch(options);
                         break;
                     default :
-                        throw "Unable to create the layer " + options.type;
+                        throw new RangeError("Unable to create the layer " + options.type, "LayerFactor.js");
                 }
                 return layer;
 

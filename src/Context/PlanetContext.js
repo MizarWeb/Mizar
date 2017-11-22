@@ -266,7 +266,7 @@ define(["jquery", "underscore-min", "../Utils/Utils", "./AbstractContext", "../U
          */
         PlanetContext.prototype.setCoordinateSystem = function (newCrs) {
             if (newCrs.getType() !== this.getMode()) {
-                throw "incompatible coordinate reference system with Planet context";
+                throw new RangeError("incompatible coordinate reference system with Planet context", "PlanetContext.js");
             }
             // Change navigation
             var geoCenter;

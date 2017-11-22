@@ -202,7 +202,7 @@ define(['../Utils/Event', '../Utils/Utils',
          * @abstract
          */
         AbstractGlobe.prototype.setBaseImagery = function (layer) {
-            throw "setBaseImagery Not implemented";
+            throw new SyntaxError("setBaseImagery Not implemented", "AbstractGlobe.js");
         };
 
         /**
@@ -218,7 +218,7 @@ define(['../Utils/Event', '../Utils/Utils',
          * @abstract
          */
         AbstractGlobe.prototype.setBaseElevation = function (layer) {
-            throw "setBaseElevation Not implemented";
+            throw new Syntax("setBaseElevation Not implemented",  "AbstractGlobe.js");
         };
 
         /**
@@ -292,7 +292,7 @@ define(['../Utils/Event', '../Utils/Utils',
          * @abstract
          */
         AbstractGlobe.prototype.getElevation = function (lon, lat) {
-            throw "getElevation Not implemented";
+            throw new SyntaxError("getElevation Not implemented",  "AbstractGlobe.js");
         };
 
         /**
@@ -367,7 +367,7 @@ define(['../Utils/Event', '../Utils/Utils',
          * @abstract
          */
         AbstractGlobe.prototype.render = function () {
-            throw "render Not implemented";
+            throw new SyntaxError("render Not implemented", "AbstractGlobe.js");
         };
 
         /**

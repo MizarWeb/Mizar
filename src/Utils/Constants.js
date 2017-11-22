@@ -155,6 +155,7 @@ define(function () {
      * @property {String} Mars_2000_old - IAU2000:49900 coordinate reference system
      * @property {String} Moon_2000 - IAU2000:30101 coordinate reference system
      * @property {String} Moon_2000_old - IAU2000:30100 coordinate reference system
+     * @property {String} HorizontalLocal - Local reference system based on horizontal coordinates
      */
     Constants.CRS = {
         "Equatorial": "Equatorial",
@@ -163,7 +164,8 @@ define(function () {
         "Mars_2000": "IAU2000:49901",
         "Mars_2000_old": "IAU2000:49900",
         "Moon_2000": "IAU2000:30101",
-        "Moon_2000_old": "IAU2000:30100"
+        "Moon_2000_old": "IAU2000:30100",
+        "HorizontalLocal": "HorizontalLocal"
     };
 
     /**

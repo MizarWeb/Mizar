@@ -55,6 +55,11 @@
  *         <td>{@link module:Crs.ProjectedCrs ProjectedCrs}</td>
  *         <td>Provides a projected coordinate reference system on a map</td>
  *     </tr>
+ *     <tr>
+ *         <td></td>
+ *         <td>{@link module:Crs.HorizontalLocalCrs HorizontalLocalCrs}</td>
+ *         <td>Provides a local coordinate reference system based on horizontal coordinates</td>
+ *     </tr>
  * </table>
  * 
  * In addition to the classes, a {@link module:Crs.CoordinateSystemFactory factory} is available to help for creating

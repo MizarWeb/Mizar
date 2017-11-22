@@ -394,7 +394,7 @@ Context.prototype.getMode = function () {
 /**
  * Sets the coordinate reference system.
  * @param cs - the coordinate reference system
- * @throws "incompatible coordinate reference system with globe context (e.g : sky, planet)"
+ * @throws RangeError - "incompatible coordinate reference system with globe context (e.g : sky, planet)"
  * @fires Context#modifiedCrs
  */
 Context.prototype.setCoordinateSystem = function (cs) {

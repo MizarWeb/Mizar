@@ -17,12 +17,21 @@
  * along with MIZAR. If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
 
-define(['../Renderer/FeatureStyle', '../Renderer/VectorRendererManager', '../Utils/Utils', './AbstractLayer',
+define(['./AbstractHipsLayer', '../Renderer/FeatureStyle', '../Renderer/VectorRendererManager', '../Utils/Utils',
     '../Renderer/RendererTileData', '../Tiling/Tile',
     './JsVotable/JsVotable', './JsVotable/utils','./JsCSV/csv', '../Utils/Constants'],
-    function (FeatureStyle, VectorRendererManager, Utils, AbstractLayer, RendererTileData, Tile, JsVotable, UtilsJsVotable, CSV, Constants) {
+    function (AbstractHipsLayer, FeatureStyle, VectorRendererManager, Utils, RendererTileData, Tile, JsVotable, UtilsJsVotable, CSV, Constants) {
 
         /**************************************************************************************************************/
+
+        function _setDefaultOptions(options) {
+            options.icon = options.icon || "css/images/star16x16.png";
+            options.background = false;
+            options.category = options.category || "Catalog";
+            options.pickable = options.pickable || true;
+            return options;
+        }
+
 
         /**
          * Hips catalogue configuration
@@ -40,20 +49,20 @@ define(['../Renderer/FeatureStyle', '../Renderer/VectorRendererManager', '../Uti
          * @memberOf module:Layer
          * @see {@link http://www.ivoa.net/documents/HiPS/20170406/index.html Hips standard}
          */
-        var HipsCatLayer = function (options) {
-            AbstractLayer.prototype.constructor.call(this, Constants.LAYER.HipsCat, options);
+        var HipsCatLayer = function (hipsMetadata, options) {
+            AbstractHipsLayer.prototype.constructor.call(this, hipsMetadata, _setDefaultOptions(options));
             var i;
-            var propertiesObj = new Properties(options.serviceUrl + '/properties');
+            var propertiesObj = new Properties(this.proxify(options.baseUrl) + '/properties');
             var properties = propertiesObj.getProperties();
             var hips_order = properties['hips_order'];
-            this.serviceUrl = this.proxify(options.serviceUrl);
+            this.serviceUrl = this.proxify(options.baseUrl);
             this.minOrder = options.minOrder || 2;
             this.maxOrder = Number.parseInt(hips_order, 10);
             this.maxRequests = options.maxRequests || 4;
             this.invertY = options.invertY || false;
             var xhr = UtilsJsVotable.makeHttpObject();
-            xhr.open('GET', this.proxify(options.serviceUrl) + '/metadata.xml', false);
-            xhr.send();
+            xhr.open('GET', this.proxify(options.baseUrl) + '/metadata.xml', false);
+            xhr.send(null);
             var jsVotable = new JsVotable.Votable(xhr.responseXML);
             var resource = jsVotable.getResources()[0];
             var table = resource.getResourcesOrTables()[0]["TABLE"];
@@ -63,9 +72,9 @@ define(['../Renderer/FeatureStyle', '../Renderer/VectorRendererManager', '../Uti
             this.sourceId = null;
             for (i = 0; i < this.fields.length; i++) {
                 var ucd = this.fields[i].ucd();
-                if (ucd === 'pos.eq.ra') {
+                if (ucd === 'pos.eq.ra;meta.main') {
                     this.raColNumber = this.fields[i].name();
-                } else if (ucd === 'pos.eq.dec') {
+                } else if (ucd === 'pos.eq.dec;meta.main') {
                     this.decColNumber = this.fields[i].name();
                 } else if (ucd === 'meta.id;meta.main') {
                     this.sourceId = this.fields[i].name();
@@ -93,7 +102,7 @@ define(['../Renderer/FeatureStyle', '../Renderer/VectorRendererManager', '../Uti
 
         /**************************************************************************************************************/
 
-        Utils.inherits(AbstractLayer, HipsCatLayer);
+        Utils.inherits(AbstractHipsLayer, HipsCatLayer);
 
         /**************************************************************************************************************/
 
@@ -137,7 +146,7 @@ define(['../Renderer/FeatureStyle', '../Renderer/VectorRendererManager', '../Uti
          * @private
          */
         HipsCatLayer.prototype._attach = function (g) {
-            AbstractLayer.prototype._attach.call(this, g);
+            AbstractHipsLayer.prototype._attach.call(this, g);
             this.extId += this.id;
             g.tileManager.addPostRenderer(this);
         };
@@ -150,7 +159,7 @@ define(['../Renderer/FeatureStyle', '../Renderer/VectorRendererManager', '../Uti
          */
         HipsCatLayer.prototype._detach = function () {
             this.globe.tileManager.removePostRenderer(this);
-            AbstractLayer.prototype._detach.call(this);
+            AbstractHipsLayer.prototype._detach.call(this);
         };
 
         /**************************************************************************************************************/
@@ -181,6 +190,8 @@ define(['../Renderer/FeatureStyle', '../Renderer/VectorRendererManager', '../Uti
 
             var xhr = this.freeRequests.pop();
             var self = this;
+            xhr.open("GET", url);
+            xhr.send(null);
             xhr.onreadystatechange = function (e) {
                 if (xhr.readyState === 4) {
                     if (xhr.status === 200) {
@@ -225,7 +236,6 @@ define(['../Renderer/FeatureStyle', '../Renderer/VectorRendererManager', '../Uti
                     }
                     else if (xhr.status >= 400) {
                         tileData.complete = true;
-                        console.error(xhr.responseText);
                     }
 
                     tileData.state = HipsCatLayer.TileState.LOADED;
@@ -237,8 +247,6 @@ define(['../Renderer/FeatureStyle', '../Renderer/VectorRendererManager', '../Uti
                     }
                 }
             };
-            xhr.open("GET", url);
-            xhr.send();
         };
 
 

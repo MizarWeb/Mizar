@@ -42,7 +42,7 @@ define(["./ConstellationProvider","./OpenSearchProvider","./PlanetProvider","./S
                     obj = new StarProvider(options);
                     break;
                 default:
-                    throw "unable to create the provider "+type;
+                    throw new RangeError("unable to create the provider "+type, "ProviderFactory.js");
             }
             return obj;
         }

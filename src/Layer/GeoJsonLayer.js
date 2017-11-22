@@ -58,13 +58,13 @@ define(['../Utils/Utils', './AbstractLayer', '../Utils/Constants'],
         /**
          * Check if the GeoJSon has a valid geometry attribute
          * @param {Object} feature - GeoJSON feature
-         * @throws "Invalid GeoJson"
+         * @throws {RangeError} Invalid GeoJson
          * @private
          */
         function _checkValidGeoJson(feature) {
             var geometry = feature.geometry;
             if (!geometry || !geometry.type) {
-                throw "Invalid GeoJson";
+                throw new RangeError("Invalid GeoJson", "GeoJsonLayer.js");
             }
         }
 
@@ -146,11 +146,12 @@ define(['../Utils/Utils', './AbstractLayer', '../Utils/Constants'],
          * @function addFeatureCollection
          * @memberOf GeoJsonLayer#
          * @param {GeoJSON} featureCollection Feature Collection
+         * @throws {ReferenceError} Error, featureCollection is null
          */
         GeoJsonLayer.prototype.addFeatureCollection = function (featureCollection) {
             // Note : use property defined as ['']  to avoid renaming when compiled in advanced mode with the closure compiler
             if ((featureCollection === null) || (featureCollection === undefined)) {
-                throw "Error, featureCollection is null";
+                throw new ReferenceError("Error, featureCollection is null", "GeoJsonLayer.js");
             }
 
             var defaultCrs = {

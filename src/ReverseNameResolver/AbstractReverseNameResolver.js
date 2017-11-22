@@ -40,7 +40,7 @@ define([],
          * @abstract
          */
         AbstractReverseNameResolver.prototype.handle = function () {
-            throw "handle from AbstractReverseNameResolver not implemented";
+            throw new SyntaxError("handle from AbstractReverseNameResolver not implemented", "AbstractReverseNameResolver.js");
         };
 
 
@@ -50,7 +50,7 @@ define([],
          * @abstract
          */
         AbstractReverseNameResolver.prototype.remove = function () {
-            throw "remove from AbstractReverseNameResolver not implemented";
+            throw new SyntaxError("remove from AbstractReverseNameResolver not implemented", "AbstractReverseNameResolver.js");
         };
 
         /**************************************************************************************************************/

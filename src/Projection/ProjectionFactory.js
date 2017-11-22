@@ -71,7 +71,7 @@ define(["../Utils/Constants",
              * Create a projection
              * @param {AbstractProjection.configuration|AbstractProjection.azimuth_configuration|AbstractProjection.mercator_configuration} options - Options.
              * @return {Projection}
-             * @throw {ReferenceError} Will throw when options.projectionName is not defined
+             * @throws {ReferenceError} Will throw when options.projectionName is not defined
              * @throws {RangeError} Will throw when options.projectionName is not part of {@link PROJECTION}
              * @alias module:Projection.ProjectionFactory.create
              */

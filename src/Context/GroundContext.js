@@ -135,10 +135,11 @@ define(["jquery", "underscore-min", "../Utils/Utils", "./AbstractContext", "../U
         /**
          * @function setCoordinateSystem
          * @memberOf GroundContext#
+         * @throws RangeError - "incompatible coordinate reference system with Sky context"
          */
         GroundContext.prototype.setCoordinateSystem = function (cs) {
             if (cs.getType() !== this.getMode()) {
-                throw "incompatible coordinate reference system with Sky context";
+                throw new RangeError("incompatible coordinate reference system with Sky context", "GroundContext.js");
             }
             this.globe.setCoordinateSystem(cs);
             this.publish("modifiedCrs", cs);

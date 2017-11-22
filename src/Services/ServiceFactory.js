@@ -72,7 +72,7 @@ define(["../Utils/Constants", "../Services/FitsVisu", "../Services/HistogramCore
                         obj = ExportToolCore;
                         break;
                     default:
-                        throw "Cannot retrieve service " + serviceType;
+                        throw new RangeError("Cannot retrieve service " + serviceType, "ServiceFactory.js");
 
                 }
                 return obj;

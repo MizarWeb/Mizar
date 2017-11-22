@@ -159,10 +159,11 @@ define(["underscore-min", "../Utils/Utils",
         /**
          * @function setCoordinateSystem
          * @memberOf SkyContext#
+         * @throws ReferenceError - incompatible coordinate reference system with Sky context
          */
         SkyContext.prototype.setCoordinateSystem = function (cs) {
             if (cs.getType() !== this.getMode()) {
-                throw "incompatible coordinate reference system with Sky context";
+                throw ReferenceError("incompatible coordinate reference system with Sky context", "SkyContex.js");
             }
             this.globe.setCoordinateSystem(cs);
             this.publish("modifiedCrs", cs);

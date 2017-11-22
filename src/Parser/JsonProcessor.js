@@ -80,7 +80,7 @@ define(["../Layer/HipsGraphicLayer", "../Utils/Constants", "../Crs/CoordinateSys
             };
 
             if ((featureCollection === null) || (featureCollection === undefined)) {
-                throw "Error, featureCollection is null";
+                throw new ReferenceError("Error, featureCollection is null", "JsonProcessor.js");
             }
             
             //check if crs is global at the featureCollection

@@ -183,7 +183,7 @@ define(["jquery", "./AbstractProvider", "../Renderer/FeatureStyle", "../Utils/Co
          * @param p - result
          * @param i - planet-i
          * @param d - day number
-         * @throws "function mean_elements() failed!"
+         * @throws {RangeError} function mean_elements() failed!
          */
         function mean_elements(p, i, d) {
             var cy = d / 36525;                    // centuries since J2000
@@ -271,7 +271,7 @@ define(["jquery", "./AbstractProvider", "../Renderer/FeatureStyle", "../Utils/Co
                     p.L = mod2pi((238.92881 + 522747.90 * cy / 3600) * RADS);
                     break;
                 default:
-                    throw "function mean_elements() failed!";
+                    throw RangeError("function mean_elements() failed!", "PlanetProvider.js");
             }
         }
 

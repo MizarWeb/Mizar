@@ -235,7 +235,7 @@ define(['../Utils/Utils', '../Utils/Event', '../Navigation/NavigationHandlerFact
          * @abstract
          */
         AbstractNavigation.prototype.moveUpTo = function (vec, duration) {
-            throw "moveUpTo not implemented";
+            throw new SyntaxError("moveUpTo not implemented", "AbstractNavigation.js");
         };
 
         /**
@@ -257,7 +257,7 @@ define(['../Utils/Utils', '../Utils/Event', '../Navigation/NavigationHandlerFact
          * @memberOf AbstractNavigation#
          */
         AbstractNavigation.prototype.rotate = function(dx, dy) {
-            throw "rotate is not implemented";
+            throw new SyntaxError("rotate is not implemented", "AbstractNavigation.js");
         };
 
         /**
@@ -269,7 +269,7 @@ define(['../Utils/Utils', '../Utils/Event', '../Navigation/NavigationHandlerFact
          * @memberOf AbstractNavigation#
          */
         AbstractNavigation.prototype.pan = function(dx, dy) {
-            throw "pan is not implemented";
+            throw new SyntaxError("pan is not implemented", "AbstractNavigation.js");
         };
 
         /**
@@ -281,7 +281,7 @@ define(['../Utils/Utils', '../Utils/Event', '../Navigation/NavigationHandlerFact
          * @memberOf AbstractNavigation#
          */
         AbstractNavigation.prototype.zoom = function(delta, scale) {
-            throw "zoom is not implemented";
+            throw new SyntaxError("zoom is not implemented", "AbstractNavigation.js");
         };
 
         /**
@@ -293,7 +293,7 @@ define(['../Utils/Utils', '../Utils/Event', '../Navigation/NavigationHandlerFact
          * @memberOf AbstractNavigation#
          */
         AbstractNavigation.prototype.zoomTo = function(geoPos, options) {
-            throw "zoomTo is not implemented";
+            throw new SyntaxError("zoomTo is not implemented", "AbstractNavigation.js");
         };
 
 
@@ -304,7 +304,7 @@ define(['../Utils/Utils', '../Utils/Event', '../Navigation/NavigationHandlerFact
          * @abstract
          */
         AbstractNavigation.prototype.computeViewMatrix = function() {
-            throw "computeViewMatrix not implemented";
+            throw new SyntaxError("computeViewMatrix not implemented", "AbstractNavigation.js");
         };
 
         /**

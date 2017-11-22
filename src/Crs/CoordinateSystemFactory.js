@@ -23,9 +23,9 @@
  * @memberOf module:Crs
  */
 define(["../Utils/Constants", "./WGS84Crs", "./Mars2000Crs", "./Moon2000Crs","./EquatorialCrs",
-        "./GalacticCrs", "./ProjectedCrs"],
+        "./GalacticCrs", "./ProjectedCrs", "./HorizontalLocalCrs"],
     function (Constants, WGS84Crs, Mars2000Crs, Moon2000Crs,
-              EquatorialCrs, GalacticCrs, ProjectedCrs) {
+              EquatorialCrs, GalacticCrs, ProjectedCrs, HorizontalLocalCrs) {
 
         /**
          * Creates a coordinate reference system based on its geoide name and its options.
@@ -57,6 +57,10 @@ define(["../Utils/Constants", "./WGS84Crs", "./Mars2000Crs", "./Moon2000Crs","./
                 case Constants.CRS.Moon_2000_old:
                 case Constants.CRS.Moon_2000 :
                     cs = new Moon2000Crs(options);
+                    break;
+                // For Ground
+                case Constants.CRS.HorizontalLocal:
+                    cs = new HorizontalLocalCrs(options);
                     break;
                 // Unknown geoide name
                 default :

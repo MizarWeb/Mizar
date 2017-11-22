@@ -66,7 +66,7 @@ define(['./Frustum', './glMatrix'],
 
             // Check canvas options
             if (!options.canvas) {
-                throw "Mizar : no canvas in options";
+                throw new ReferenceError("Mizar : no canvas in options");
             }
 
             if (typeof options.canvas === "string") {
@@ -78,7 +78,7 @@ define(['./Frustum', './glMatrix'],
             }
             // Check canvas is valid
             if (!(canvas instanceof HTMLCanvasElement)) {
-                throw "Mizar : invalid canvas";
+                throw new TypeError("Mizar : invalid canvas");
             }
 
             // Create the webl context
@@ -94,7 +94,7 @@ define(['./Frustum', './glMatrix'],
             }
 
             if (gl === null) {
-                throw "Mizar : WebGL context cannot be initialized";
+                throw new ReferenceError("Mizar : WebGL context cannot be initialized");
             }
 
 

@@ -64,7 +64,7 @@ define(["jquery"],
          * @abstract
          */
         AbstractTracker.prototype.update = function (event) {
-            throw "update from AbstractTracker not implemented";
+            throw new SyntaxError("update from AbstractTracker not implemented", "AbstractTracker.js");
         };
 
         /**
@@ -73,7 +73,7 @@ define(["jquery"],
          * @abstract
          */
         AbstractTracker.prototype.compute = function (geoPosition) {
-            throw "compute from AbstractTracker not implemented";
+            throw new SyntaxError("compute from AbstractTracker not implemented", "AbstractTracker.js");
         };
 
         /**

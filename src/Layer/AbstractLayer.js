@@ -419,6 +419,7 @@ define(["jquery","underscore-min", "../Utils/Event", "../Utils/Utils", "../Utils
         /**
          * @function setVisible
          * @memberOf AbstractLayer#
+         * @throws {TypeError} - The parameter of setVisible should be a boolean
          */
         AbstractLayer.prototype.setVisible = function (arg) {
             if (typeof arg === "boolean") {
@@ -446,6 +447,7 @@ define(["jquery","underscore-min", "../Utils/Event", "../Utils/Utils", "../Utils
         /**
          * @function setOpacity
          * @memberOf AbstractLayer#
+         * @throws {RangeError} opacity - opacity value should be a value in [0..1]
          */
         AbstractLayer.prototype.setOpacity = function (arg) {
             if (typeof arg === "number" && arg >=0.0 && arg <=1.0) {
@@ -455,7 +457,7 @@ define(["jquery","underscore-min", "../Utils/Event", "../Utils/Utils", "../Utils
                 }
                 this.publish("opacity:changed", this);
             } else {
-               throw new TypeError('opacity value should be a value in [0..1]', "AbstractLayer.js");
+               throw new RangeError('opacity value should be a value in [0..1]', "AbstractLayer.js");
             }
         };
 

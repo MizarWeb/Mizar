@@ -337,7 +337,7 @@ define(["jquery", "../Utils/Constants"], function ($, Constants) {
     /**
      * Validates and fixes metadata
      * @param {HIPS_METADATA} hipsMetadata
-     * @throws "unvalid hips metadata"
+     * @throws RangeError - "unvalid hips metadata"
      */
     function _validateAndFixHips(hipsMetadata) {
         var requiredKeywordNotFound = [];
@@ -359,7 +359,7 @@ define(["jquery", "../Utils/Constants"], function ($, Constants) {
                 _transformAStringToArray.call(this, valueArray, key, hipsMetadata);
 
                 // checking the value of the parameter among a list of values
-               // _checkValueAmongEnumeratedList.call(this, key, valueArray, description, distinctValue, hipsMetadata, valueNotRight);
+                //_checkValueAmongEnumeratedList.call(this, key, valueArray, description, distinctValue, hipsMetadata, valueNotRight);
 
                 // checking the key is here when a default value exists
                 _fillWithDefaultValue.call(this, key, defaultValue, hipsMetadata);
@@ -367,7 +367,7 @@ define(["jquery", "../Utils/Constants"], function ($, Constants) {
             }
         }
         if (requiredKeywordNotFound.length > 0 || valueNotRight.length > 0) {
-            throw "unvalid hips metadata : \n" + requiredKeywordNotFound.toString() + "\n" + valueNotRight.toString();
+            throw new RangeError("unvalid hips metadata : \n" + requiredKeywordNotFound.toString() + "\n" + valueNotRight.toString(),"HipsMetadata.js");
         }
 
     }
@@ -375,6 +375,7 @@ define(["jquery", "../Utils/Constants"], function ($, Constants) {
     /**
      * Loads Hips properties
      * @param baseUrl
+     * @throws ReferenceError - Unable to load the Hips
      * @return {*}
      */
     function _loadHipsProperties(baseUrl) {
@@ -385,7 +386,7 @@ define(["jquery", "../Utils/Constants"], function ($, Constants) {
             async: false
         }).responseText;
         if (typeof properties === 'undefined') {
-            throw "Unable to load the Hips at " + baseUrl;
+            throw new ReferenceError("Unable to load the Hips at " + baseUrl,"HipsMetadata.js");
         }
         var hipsProperties = _parseProperties.call(this, properties);
         _validateAndFixHips.call(this, hipsProperties);

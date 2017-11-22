@@ -54,10 +54,11 @@ define(["./AbstractRasterLayer", "../Utils/Utils", "../Utils/Constants", "../Til
          * @param {HipsMetadata} hipsMetadata
          * @param {AbstractHipsLayer.configuration} options - AbstractHipsLayer configuration
          * @see {@link http://www.ivoa.net/documents/HiPS/20170406/index.html Hips standard}
+         * @throws ReferenceError - Some required parameters are missing
          * @constructor
          */
         var AbstractHipsLayer = function (hipsMetadata, options) {
-            _checkOptions.call(this, options);
+            _checkAndSetDefaultOptions.call(this, options);
             this.hipsMetadata = _createMetadata.call(this, hipsMetadata, this.proxify(options.baseUrl));
             _overloadHipsMetataByConfiguration.call(this, options, this.hipsMetadata);
 
@@ -68,7 +69,7 @@ define(["./AbstractRasterLayer", "../Utils/Utils", "../Utils/Constants", "../Til
             options.pickable = options.hasOwnProperty('pickable') ? options.pickable : false;
             options.services = options.hasOwnProperty('services') ? options.services : [];
 
-            options.category = "Image";
+            options.category = options.hasOwnProperty('category') ? options.category : "Image";//this.hipsMetadata.client_category;
 
             options.availableServices = {};
             if ( this.hipsMetadata.hasOwnProperty("moc_access_url")) {
@@ -101,11 +102,15 @@ define(["./AbstractRasterLayer", "../Utils/Utils", "../Utils/Constants", "../Til
         /**
          * Check options.
          * @param options
+         * @throws ReferenceError - Some required parameters are missing
          * @private
          */
-        function _checkOptions(options) {
+        function _checkAndSetDefaultOptions(options) {
             if (!options) {
-                throw "Some required parameters are missing";
+                throw new ReferenceError("Some required parameters are missing", "AbstractHipsLayer.js");
+            } else {
+                options.category = options.category || "Image";
+                options.pickable = options.pickable || false;
             }
         }
 

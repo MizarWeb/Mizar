@@ -41,7 +41,7 @@ define(["./Constants","./UtilsFits", "./Numeric", "./UtilsIntersection", "../Ren
                     obj = FeatureStyle;
                     break;
                 default:
-                    throw "Cannot create the utility "+type;
+                    throw new RangeError("Cannot create the utility "+type, "UtilityFactory.js");
             }
             return obj;
         }

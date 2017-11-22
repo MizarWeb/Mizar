@@ -262,7 +262,7 @@ define(
          * @abstract
          */
         AbstractCrs.prototype.formatCoordinates = function (geo) {
-            throw "Not implemented";
+            throw new SyntaxError("Not implemented");
         };
 
         /**
@@ -427,7 +427,7 @@ define(
                     convertedGeo = geo;
                     break;
                 default:
-                    throw "Conversion "+from+" to "+to+" is not implemented";
+                    throw new RangeError("Conversion "+from+" to "+to+" is not implemented", "AbstractCrs.js");
             }
 
             return convertedGeo;
@@ -474,7 +474,7 @@ define(
          * @abstract
          */
         AbstractCrs.prototype._setupPosBeforeTrans = function(posWorld) {
-            throw "Not implemented";
+            throw new SyntaxError("Not implemented");
         };
 
         /**
@@ -483,7 +483,7 @@ define(
          * @bastract
          */
         AbstractCrs.prototype._setupPosAfterTrans = function(posWorld) {
-            throw "Not implemented";
+            throw new SyntaxError("Not implemented");
         };
 
         /**

@@ -70,7 +70,7 @@ define(['../Renderer/GeoBound'],
          * @abstract
          */
         AbstractProjection.prototype.unProject = function (position3d, dest) {
-            throw "Not implemented";
+            throw new SyntaxError("unProject not implemented", "AbstractProjection.js");
         };
 
         /**
@@ -79,7 +79,7 @@ define(['../Renderer/GeoBound'],
          * @abstract
          */
         AbstractProjection.prototype.project = function (geoPos, dest) {
-            throw "Not implemented";
+            throw new SyntaxError("project not implemented", "AbstractProjection.js");
         };
 
         AbstractProjection.prototype.getDefaultZ = function () {
