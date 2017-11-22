@@ -170,8 +170,8 @@ define(['./AbstractProjection', '../Utils/Utils', '../Renderer/glMatrix'],
 
             dest[0] = 2 * cosPhi * Math.sin(lambda) * sinciAlpha;
             dest[1] = Math.sin(phi) * sinciAlpha;
-            dest[2] = this.getDefaultZ();
-            //dest[2] = geoPos[2];
+            //dest[2] = this.getDefaultZ();
+            dest[2] = geoPos[2];
 
             // Triple winkel: mode
             // TODO: inverse

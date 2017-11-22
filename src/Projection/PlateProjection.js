@@ -54,6 +54,9 @@ define(['./AbstractProjection', '../Utils/Utils', '../Renderer/glMatrix'],
             }
             dest[0] = position3d[0] * 180 / Math.PI;
             dest[1] = position3d[1] * 180 / Math.PI;
+
+            // No 3D, get altitude
+            
             dest[2] = position3d[2];
 
             return dest;
@@ -70,8 +73,13 @@ define(['./AbstractProjection', '../Utils/Utils', '../Renderer/glMatrix'],
             }
             dest[0] = geoPos[0] * Math.PI / 180;
             dest[1] = geoPos[1] * Math.PI / 180;
-            dest[2] = this.getDefaultZ();
-            //dest[2] = geoPos[2];
+            if (typeof geoPos[2] === 'undefined') {
+                dest[2] = this.getElevation(dest[0],dest[1]);
+            } else {
+                dest[2] = geoPos[2];
+            }
+           
+            
             return dest;
         };
 

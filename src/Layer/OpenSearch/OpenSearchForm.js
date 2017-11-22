@@ -49,7 +49,11 @@
       listParameters = urlJson.Parameter;
       if (typeof listParameters.length !== 'undefined') {
         for (var i=0;i<listParameters.length;i++) {
-          this.parameters.push(new OpenSearchParam(listParameters[i]));
+          var param = new OpenSearchParam(listParameters[i]);
+//          if (param.value.startsWith("{geo:")) {
+//          } else {
+            this.parameters.push(param);
+//          }
         }
 
       } else {

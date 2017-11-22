@@ -276,7 +276,6 @@ define(["jquery", "underscore-min", "../Utils/Constants",
                (mizarAPI.getActivatedContext().elevationTracker.options.elevationLayer.scale !== null) ) {
               mntScale = mizarAPI.getActivatedContext().elevationTracker.options.elevationLayer.scale;
             }
-            var mntScale = mizarAPI.getActivatedContext().elevationTracker.options.elevationLayer.scale;
 
             var firstPoint = self.geoPickPoint;
             var secondPoint = self.secondGeoPickPoint;
@@ -458,7 +457,9 @@ define(["jquery", "underscore-min", "../Utils/Constants",
             distance = Numeric.roundNumber(distance.toFixed(3), 2);
 
             var elevation = mizarAPI.getActivatedContext().getElevation(secondPoint[0], secondPoint[1]);
+            console.log(mizarAPI.getActivatedContext());
             elevation = Numeric.roundNumber(elevation / scale, 0)
+            console.log("Distance "+distance+" : Elevation = "+elevation);
             var pointElevation = [distance, elevation];
 
             self.elevations.push(pointElevation);
