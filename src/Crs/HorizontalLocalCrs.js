@@ -93,6 +93,14 @@ define(['./AbstractCrs', '../Renderer/GeoBound', '../Utils/Utils', '../Utils/Con
             //Do Nothing
         };
 
+        /**
+         * @function getName
+         * @memberOf HorizontalLocalCrs#
+         */
+        HorizontalLocalCrs.prototype.getName = function () {
+            return Constants.CRS.HorizontalLocal;
+        };
+
         return HorizontalLocalCrs;
 
     });

@@ -90,6 +90,14 @@ define(['./AbstractCrs', '../Renderer/GeoBound', '../Utils/Utils', '../Utils/Con
             //Do Nothing
         };
 
+        /**
+         * @function getName
+         * @memberOf Mars2000Crs#
+         */
+        Mars2000Crs.prototype.getName = function () {
+            return Constants.CRS.Mars_2000;
+        };
+
         return Mars2000Crs;
 
     });

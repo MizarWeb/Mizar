@@ -38,8 +38,8 @@ define(['../Utils/Utils', '../Utils/Constants',
             AbstractNavigation.prototype.constructor.call(this, Constants.NAVIGATION.GroundNavigation, ctx, options);
 
             // Default values for fov (in degrees)
-            this.minFov = (this.options.minFov) || 20;
-            this.maxFov = (this.options.maxFov) || 100;
+            this.minFov = (this.options.minFov) || 1;
+            this.maxFov = (this.options.maxFov) || 70;
 
             // Initialize the navigation
             this.center3d = [1.0, 0.0, 0.0];

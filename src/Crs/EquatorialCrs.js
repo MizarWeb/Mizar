@@ -182,6 +182,14 @@ define(['./AbstractCrs', '../Renderer/GeoBound', '../Utils/Utils', '../Utils/Con
             }
         };
 
+        /**
+         * @function getName
+         * @memberOf EquatorialCrs#
+         */
+        EquatorialCrs.prototype.getName = function () {
+            return Constants.CRS.Equatorial;
+        };
+
 
         /**************************************************************************************************************/
 

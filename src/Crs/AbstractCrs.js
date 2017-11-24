@@ -495,6 +495,24 @@ define(
         };
 
         /**
+         * @function getName
+         * @memberOf AbstractCrs#
+         * @abstract
+         */
+        AbstractCrs.prototype.getName = function () {
+            throw new SyntaxError("Not implemented");
+        };
+
+        /**
+         * @function isProjected
+         * @memberOf AbstractCrs#
+         * @return {boolean} True when the Crs is projected in 2D otherwise false.
+         */
+        AbstractCrs.prototype.isProjected = function () {
+            return false;
+        };
+
+        /**
          * @function destroy
          * @memberOf AbstractCrs#
          */
@@ -503,7 +521,9 @@ define(
             this.geoide = null;
             this.type = null;
             this.geoBound = null;
+            this.projected = null;
         };
+
 
         /**************************************************************************************************************/
         return AbstractCrs;

@@ -147,6 +147,34 @@ define(['./AbstractCrs', '../Utils/Utils', '../Projection/ProjectionFactory','..
             return dest;
         };
 
+        /**
+         * Returns the projection.
+         * @function getProjection
+         * @memberOf ProjectedCrs
+         * @returns {AbstractProjection} the used projection
+         */
+        ProjectedCrs.prototype.getProjection = function() {
+             return this.projection;
+        };
+
+        /**
+         * @function getName
+         * @memberOf ProjectedCrs#
+         */
+        ProjectedCrs.prototype.getName = function () {
+            return this.cs.getName();
+        };
+
+        /**
+         * @function isProjected
+         * @memberOf ProjectedCrs#
+         * @return {boolean} True.
+         */
+        ProjectedCrs.prototype.isProjected = function () {
+            return true;
+        };
+
+
         return ProjectedCrs;
 
     });

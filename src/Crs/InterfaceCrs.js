@@ -284,3 +284,17 @@ Crs.prototype._setupPosAfterTrans = function (posWorld) {
  */
 Crs.prototype.getGeoBound = function () {
 };
+
+/**
+ * Returns the CRS name
+ * @return {CRS} the CRS name
+ */
+Crs.prototype.getName = function () {
+};
+
+/**
+ * Returns True when the CRS is projected otherwise False
+ * @return {boolean} the CRS name
+ */
+Crs.prototype.isProjected = function () {
+};

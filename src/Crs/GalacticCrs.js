@@ -102,6 +102,14 @@ define(['./AbstractCrs', '../Renderer/GeoBound', '../Utils/Utils', '../Utils/Con
             }
         };
 
+        /**
+         * @function getName
+         * @memberOf GalacticCrs#
+         */
+        GalacticCrs.prototype.getName = function () {
+            return Constants.CRS.Galactic;
+        };
+
         return GalacticCrs;
 
     });

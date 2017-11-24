@@ -17,8 +17,8 @@
  * along with GlobWeb. If not, see <http://www.gnu.org/licenses/>.
  ***************************************/
 
-define(['./AbstractProjection', '../Utils/Utils', '../Renderer/glMatrix'],
-    function (AbstractProjection, Utils) {
+define(['./AbstractProjection', '../Utils/Utils', '../Utils/Constants', '../Renderer/glMatrix'],
+    function (AbstractProjection, Utils, Constants) {
         /**
          * @name AugustProjection
          * @class
@@ -77,6 +77,14 @@ define(['./AbstractProjection', '../Utils/Utils', '../Renderer/glMatrix'],
             dest[2] = this.getDefaultZ();
             //dest[2] = geoPos[2];
             return dest;
+        };
+
+        /**
+         * @function getName
+         * @memberOf AugustProjection#
+         */
+        AugustProjection.prototype.getName = function() {
+            return Constants.PROJECTION.August;
         };
 
         /**************************************************************************************************************/

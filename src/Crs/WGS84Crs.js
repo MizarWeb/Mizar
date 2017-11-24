@@ -94,6 +94,14 @@ define(['./AbstractCrs', '../Renderer/GeoBound', '../Utils/Utils', '../Utils/Con
             //Do Nothing
         };
 
+        /**
+         * @function getName
+         * @memberOf WGS84Crs#
+         */
+        WGS84Crs.prototype.getName = function () {
+            return Constants.CRS.WGS84;
+        };
+
         return WGS84Crs;
 
     });
