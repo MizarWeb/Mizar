@@ -157,7 +157,11 @@ define(['./AbstractCrs', '../Renderer/GeoBound', '../Utils/Utils', '../Utils/Con
          * @memberOf EquatorialCrs#
          */
         EquatorialCrs.prototype.formatCoordinates = function (geo) {
-            return this.getSexagesimalFromDeg(geo);
+            var sexa =  this.getSexagesimalFromDeg(geo);
+            var dest = [];
+            dest[0] = "&alpha; = "+sexa[0];
+            dest[1] = "&delta; = "+sexa[1];
+            return dest;
         };
 
         /**

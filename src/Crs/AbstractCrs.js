@@ -434,6 +434,17 @@ define(
         };
 
         /**
+         * Adds a zero before the number < 10
+         * @function _pad2Digits
+         * @param number number to format
+         * @returns {String}
+         * @private
+         */
+        AbstractCrs.prototype._pad2Digits = function(number) {
+            return (number < 10) ? ("0" + number) : number;
+        };
+
+        /**
          * @function fromDegreesToHMS
          * @memberOf AbstractCrs#
          */
@@ -446,7 +457,7 @@ define(
             var min = Math.floor(decimal);
             var sec = (decimal - min) * 60;
 
-            return hours + "h " + min + "m " + Numeric.roundNumber(sec, 2) + "s";
+            return this._pad2Digits(hours) + "h " + this._pad2Digits(min) + "m " + this._pad2Digits(Numeric.roundNumber(sec, 2)) + "s";
         };
 
         /**
@@ -464,7 +475,7 @@ define(
             var min = Math.floor(decimal);
             var sec = (decimal - min) * 60;
 
-            return stringSign(degree) + deg + String.fromCharCode(176) + " " + min + "' " + Numeric.roundNumber(sec, 2) + "\"";
+            return stringSign(degree) + this._pad2Digits(deg) + String.fromCharCode(176) + " " + this._pad2Digits(min) + "' " + this._pad2Digits(Numeric.roundNumber(sec, 2)) + "\"";
 
         };
 

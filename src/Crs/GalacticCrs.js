@@ -71,9 +71,9 @@ define(['./AbstractCrs', '../Renderer/GeoBound', '../Utils/Utils', '../Utils/Con
          */
         GalacticCrs.prototype.formatCoordinates = function (geo) {
             var astro = [];
-            astro[0] = Numeric.roundNumber(geo[0], 3);
+            astro[0] = "l = "+Numeric.roundNumber(geo[0], 3);
             astro[0] += "&deg;";
-            astro[1] = Numeric.roundNumber(geo[1], 3);
+            astro[1] = "b = "+Numeric.roundNumber(geo[1], 3);
             astro[1] += "&deg;";
             return astro;
         };

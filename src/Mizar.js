@@ -383,7 +383,7 @@ define(["jquery", "underscore-min",
             if (context.hasOwnProperty("_oldVM") && context.hasOwnProperty("_oldFov")) {
                 viewMatrix = context._oldVM;
                 fov = context._oldFov;
-            } else if (context.inverseViewMatrix === undefined) {
+            } else if (context.getNavigation().inverseViewMatrix === undefined) {
                 this.getActivatedContext()._oldVM = this.renderContext.getViewMatrix();
                 this.getActivatedContext()._oldFov = this.renderContext.getFov();
                 viewMatrix = context.getNavigation().getRenderContext().getViewMatrix();

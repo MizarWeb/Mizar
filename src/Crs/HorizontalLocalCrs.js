@@ -68,8 +68,8 @@ define(['./AbstractCrs', '../Renderer/GeoBound', '../Utils/Utils', '../Utils/Con
             } else {
                 azimuth = -1*azimuth;
             }
-            astro[0] = azimuth+"°";
-            astro[1] = altitude+"°";
+            astro[0] = "Az = "+azimuth+"°";
+            astro[1] = "Alt = "+altitude+"°";
             return astro;
         };
 

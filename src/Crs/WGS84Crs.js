@@ -65,10 +65,10 @@ define(['./AbstractCrs', '../Renderer/GeoBound', '../Utils/Utils', '../Utils/Con
          */
         WGS84Crs.prototype.formatCoordinates = function (geo) {
             var astro = [];
-            astro[0] = Numeric.roundNumber(geo[0], 3);
-            astro[0] += "&deg;";
-            astro[1] = Numeric.roundNumber(geo[1], 3);
-            astro[1] += "&deg;";
+            astro[0] = "Lat = ";
+            astro[0] += (latitude >= 0 ) ? latitude+" N" : -1.0*latitude+" S";
+            astro[1] = "Long = ";
+            astro[1] += (longitude >= 0 ) ? longitude+" E" : -1.0*longitude+" W";
             return astro;
         };
 

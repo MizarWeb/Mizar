@@ -65,8 +65,10 @@ define(['./AbstractCrs', '../Renderer/GeoBound', '../Utils/Utils', '../Utils/Con
             var astro = [];
             var longitude = Numeric.roundNumber(geo[0], 3);
             var latitude = Numeric.roundNumber(geo[1], 3);
-            astro[0] = (latitude >= 0 ) ? latitude+" N" : -1.0*latitude+" S";
-            astro[1] = (longitude >= 0 ) ? longitude+" E" : -1.0*longitude+" W";
+            astro[0] = "Lat = ";
+            astro[0] += (latitude >= 0 ) ? latitude+" N" : -1.0*latitude+" S";
+            astro[1] = "Long = ";
+            astro[1] += (longitude >= 0 ) ? longitude+" E" : -1.0*longitude+" W";
             return astro;
         };
 
