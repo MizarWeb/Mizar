@@ -408,6 +408,7 @@ define(["jquery", "underscore-min",
                 }
                 context.getPositionTracker().attachTo(context.globe);
                 context.getElevationTracker().attachTo(context.globe);
+                context.showAdditionalLayers();
                 self.publish("mizarMode:toggle", context);
                 self.getActivatedContext().show();
                 self.getActivatedContext().refresh();
