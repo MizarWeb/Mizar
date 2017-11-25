@@ -28,17 +28,18 @@ define(["jquery", "jquery.ui"], function ($) {
 
 // Create the div, use jQuery UI dialog
 
-  var $text = "";
+    var $text = "";
+    var $buttonName = "";
 
-  var $errorDiv = $(errorDiv)
+    var $errorDiv = $(errorDiv)
         .appendTo('body')
         .dialog({
-          autoOpen: false,
-          width: 700,
-          minHeight: 300,
-          maxHeight: 500,
-          dialogClass: 'errorBox'
-          //beforeClose: function( event, ui ) { $text = ""; }
+            autoOpen: false,
+            width: 700,
+            minHeight: 300,
+            maxHeight: 500,
+            dialogClass: 'errorBox'
+            //beforeClose: function( event, ui ) { $text = ""; }
         });
     var $active = false;
     var $displayWarning = false;
@@ -50,36 +51,44 @@ define(["jquery", "jquery.ui"], function ($) {
          */
         open: function (html) {
             if ($displayWarning === false) {
-              return;
+                return;
             }
             $text += html + "<br/>";
             if ($('#warningContainer')) {
-              $('#warningContainer').show();
+                $('#warningContainer').show();
+                $errorDiv.on('dialogclose', function (event) {
+                    if($buttonName) {
+                        $buttonName.hide();
+                    }
+                });
             }
             if ($active === true) {
-              $errorDiv
-                  .html($text)
-                  .dialog("open");
-              $errorDiv.scrollTop(5000);
+                $errorDiv
+                    .html($text)
+                    .dialog("open");
+                $errorDiv.scrollTop(5000);
             }
         },
-        view: function() {
-          $errorDiv
-              .html($text)
-              .dialog("open");
+        view: function () {
+            $errorDiv
+                .html($text)
+                .dialog("open");
 
-          $errorDiv.scrollTop(5000);
-          $active = true;
+            $errorDiv.scrollTop(5000);
+            $active = true;
         },
-        hide:function() {
-          $errorDiv.dialog("close");
-          $active = false;
+        hide: function () {
+            $errorDiv.dialog("close");
+            $active = false;
         },
-        isActive:function() {
-          return $active;
+        isActive: function () {
+            return $active;
         },
-        setDisplayWarning:function(value) {
-          $displayWarning = value;
+        setDisplayWarning: function (value) {
+            $displayWarning = value;
+        },
+        setIcon : function(buttonName) {
+            $buttonName = $(buttonName);
         }
     };
 
