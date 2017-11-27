@@ -35,6 +35,7 @@
       this.maxInclusive = null; // (Level 1 Control - Number) Max value inclusive
       this.pattern = null;      // (Level 1 Control - String) Pattern
       this.options = null;       // List of values if list provided
+      this.currentValue = null;  // Value to pass to paramter
 
       this.parseJson(paramJson);
     };

@@ -185,6 +185,7 @@ define(['../Utils/Utils', '../Utils/Constants',
          * @memberOf AstroNavigation#
          */
         AstroNavigation.prototype.zoomTo = function (geoPos, options) {
+            console.log("AstroNavigation.zoomTo : options",options);
             var navigation = this;
 
             // default values

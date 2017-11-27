@@ -369,32 +369,86 @@ define(["jquery", "underscore-min",
          */
         function _switchToContext(context, options) {
             var self = this;
-            options = options || {};
-            var mustBeDestroyed = options.hasOwnProperty("mustBeDestroyed") ? options.mustBeDestroyed : false;
+            // Hide planet
+            this.activatedContext.hide();
+
+            // Hide all additional layers <!-- cannot use it because of PlanetLayer -->
+            //this.activatedContext.hideAdditionalLayers();
+
+            // change the context
+            this.setActivatedContext(Mizar.CONTEXT.Sky);
+
+            // Add smooth animation from planet context to sky context
+            this.planetContext.navigation.toViewMatrix(this._oldVM, this._oldFov,
+                2000, function () {
+                    // Show all additional layers
+                    self.activatedContext.showAdditionalLayers();
+                    self.activatedContext.getRenderContext().tileErrorTreshold = 1.5;
+                    //self.publish("mizarMode:toggle", self.activatedContext);
+
+
+                    // Destroy planet context
+                    self.planetContext.destroy();
+
+                    // Show sky
+                    self.activatedContext.show();
+                    self.activatedContext.refresh();
+                    self.activatedContext.getPositionTracker().attachTo(self.activatedContext.globe);
+                    self.activatedContext.getRenderContext().requestFrame();
+                    self.activatedContext.navigation.computeViewMatrix();
+            });
+
+
+        }
+
+        /**
+         * Switch sky to planet
+         * @param {PlanetLayer} gwLayer - planet layer
+         * @param {AbstractContext.planetContext} options - options for planet context
+         * @function _switchSky2Planet
+         * @memberOf Mizar#
+         * @private
+         */
+        function _switchSky2Planet(gwLayer, options) {
+
+            var self = this;
+            
+            // Create planet context (with existing sky render context)
+            var planetConfig = $.extend({}, options);
+            planetConfig.planetLayer = gwLayer;
+            planetConfig.coordinateSystem = gwLayer.coordinateSystem;
+            planetConfig.renderContext = this.getRenderContext();
 
             // Hide sky
             this.getActivatedContext().hide();
 
             // Hide all additional layers
-            this.getActivatedContext().hideAdditionalLayers();
+            this.activatedContext.hideAdditionalLayers();
 
-            var viewMatrix;
-            var fov;
-            if (context.hasOwnProperty("_oldVM") && context.hasOwnProperty("_oldFov")) {
-                viewMatrix = context._oldVM;
-                fov = context._oldFov;
-            } else if (context.inverseViewMatrix === undefined) {
-                this.getActivatedContext()._oldVM = this.renderContext.getViewMatrix();
-                this.getActivatedContext()._oldFov = this.renderContext.getFov();
-                viewMatrix = context.getNavigation().getRenderContext().getViewMatrix();
-                fov = 90;
-            } else {
-                this.getActivatedContext()._oldVM = this.renderContext.getViewMatrix();
-                this.getActivatedContext()._oldFov = this.renderContext.getFov();
-                viewMatrix = mat4.create();
-                context.getNavigation().computeInverseViewMatrix();
-                mat4.inverse(context.getNavigation().inverseViewMatrix, viewMatrix);
-                fov =  90;
+            // Create the planetary context and use it as default
+            this.createContext(Mizar.CONTEXT.Planet, planetConfig);
+
+            // Store old view matrix & fov to be able to rollback to sky context
+            this._oldVM = this.renderContext.getViewMatrix().slice();
+            this._oldFov = this.renderContext.getFov();
+
+            if (!this.activatedContext.getCoordinateSystem().isFlat()) {
+                //Compute planet view matrix
+                var planetVM = mat4.create();
+                this.activatedContext.getNavigation().computeInverseViewMatrix();
+                mat4.inverse(this.activatedContext.getNavigation().inverseViewMatrix, planetVM);
+
+                // Add smooth animation from sky context to planet context
+                this.activatedContext.getNavigation().toViewMatrix(planetVM, 90, 2000, function () {
+                    self.activatedContext.show();
+                    self.activatedContext.refresh();
+                    self.publish("mizarMode:toggle", self.activatedContext);
+                });
+            }
+            else {
+                this.activatedContext.show();
+                this.activatedContext.refresh();
+                this.publish("mizarMode:toggle", self.activatedContext);
             }
             if(mustBeDestroyed) {
                 this.getActivatedContext().destroy();
@@ -914,7 +968,11 @@ define(["jquery", "underscore-min",
         Mizar.prototype.toggleToContext = function (context, options, callback) {
             var toggleMode = (this.getActivatedContext().getMode() === Mizar.CONTEXT.Sky) ? Mizar.CONTEXT.Planet : Mizar.CONTEXT.Sky;
             var self = this;
-            _switchToContext.call(this, context, options);
+            if (toggleMode === Mizar.CONTEXT.Sky) {
+                _switchPlanet2Sky.call(this);
+            } else {
+                _switchSky2Planet.call(this, gwLayer, options);
+            }
             if (callback) {
                 callback.call(self);
             }

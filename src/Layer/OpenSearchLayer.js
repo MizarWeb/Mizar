@@ -34,8 +34,8 @@
  * You should have received a copy of the GNU General Public License
  * along with GlobWeb. If not, see <http://www.gnu.org/licenses/>.
  ***************************************/
-define(['../Renderer/FeatureStyle', '../Renderer/VectorRendererManager', '../Utils/Utils', './AbstractLayer', '../Renderer/RendererTileData', '../Tiling/Tile','../Utils/Constants','./OpenSearch/OpenSearchForm','./OpenSearch/OpenSearchUtils'],
-    function (FeatureStyle, VectorRendererManager, Utils, AbstractLayer, RendererTileData, Tile, Constants,OpenSearchForm,OpenSearchUtils) {
+define(['../Renderer/FeatureStyle', '../Renderer/VectorRendererManager', '../Utils/Utils', './AbstractLayer', '../Renderer/RendererTileData', '../Tiling/Tile','../Tiling/GeoTiling','../Utils/Constants','./OpenSearch/OpenSearchForm','./OpenSearch/OpenSearchUtils'],
+    function (FeatureStyle, VectorRendererManager, Utils, AbstractLayer, RendererTileData, Tile,GeoTiling,Constants,OpenSearchForm,OpenSearchUtils) {
 
         /**
          * @name OpenSearchLayer
@@ -76,6 +76,8 @@ define(['../Renderer/FeatureStyle', '../Renderer/VectorRendererManager', '../Uti
             this.formDescription = null;
 
             this.extId = "os";
+
+            this.oldBound = null;
 
             // Used for picking management
             this.features = [];
@@ -188,22 +190,18 @@ define(['../Renderer/FeatureStyle', '../Renderer/VectorRendererManager', '../Uti
          * Launches request to the OpenSearch service.
          * @function launchRequest
          * @memberof OpenSearchLayer#
-         * @param {Tile} tile Tile
+         * @param {Object} json object bound
          * @param {String} url Url
          * @fires Context#startLoad
          * @fires Context#endLoad
          * @fires Context#features:added
          */
-        OpenSearchLayer.prototype.launchRequest = function (tile, url) {
-            var tileData = tile.extension[this.extId];
-            var index = null;
+        OpenSearchLayer.prototype.launchRequest = function (bound, url) {
+            console.log("OpenSearchLayer.launchRequest");
 
             if (this.freeRequests.length === 0) {
                 return;
             }
-
-            // Set that the tile is loading its data for OpenSearch
-            tileData.state = OpenSearchLayer.TileState.LOADING;
 
             // Add request properties to length
             if (this.requestProperties !== "") {
@@ -226,7 +224,7 @@ define(['../Renderer/FeatureStyle', '../Renderer/VectorRendererManager', '../Uti
                     if (xhr.status === 200) {
                         response = JSON.parse(xhr.response);
 
-                        tileData.complete = (response.totalResults === response.features.length);
+                        //tileData.complete = (response.totalResults === response.features.length);
                         self.updateFeatures(response.features);
 
                         for (i = response.features.length - 1; i >= 0; i--) {
@@ -241,17 +239,17 @@ define(['../Renderer/FeatureStyle', '../Renderer/VectorRendererManager', '../Uti
                                 response.features.splice(i, 1);
                             }
 
-                            self.addFeature(feature, tile);
+                            self.addFeature(feature);
                         }
+            
                         self.globe.refresh();
                     }
                     else if (xhr.status >= 400) {
-                        tileData.complete = true;
+                        //tileData.complete = true;
                         console.error(xhr.responseText);
                         return;
                     }
 
-                    tileData.state = OpenSearchLayer.TileState.LOADED;
                     self.freeRequests.push(xhr);
 
                     // Publish event that layer have received new features
@@ -321,19 +319,18 @@ define(['../Renderer/FeatureStyle', '../Renderer/VectorRendererManager', '../Uti
          * @function addFeature
          * @memberof OpenSearchLayer#
          * @param {Feature} feature Feature
-         * @param {Tile} tile Tile
          */
-        OpenSearchLayer.prototype.addFeature = function (feature, tile) {
-            var tileData = tile.extension[this.extId];
+        OpenSearchLayer.prototype.addFeature = function (feature) {
+//            var tileData = tile.extension[this.extId];
             var featureData;
 
             // Add feature if it doesn't exist
             //if ( !this.featuresSet.hasOwnProperty(feature.properties.identifier) )
-            if (!this.featuresSet.hasOwnProperty(feature.id)) {
+/*            if (!this.featuresSet.hasOwnProperty(feature.id)) {
                 this.features.push(feature);
                 featureData = {
-                    index: this.features.length - 1,
-                    tiles: [tile]
+                    index: this.features.length - 1//,
+                    //tiles: [tile]
                 };
                 this.featuresSet[feature.properties.identifier] = featureData;
                 this.featuresSet[feature.id] = featureData;
@@ -343,19 +340,21 @@ define(['../Renderer/FeatureStyle', '../Renderer/VectorRendererManager', '../Uti
                 featureData = this.featuresSet[feature.id];
 
                 // Store the tile
-                featureData.tiles.push(tile);
+                //featureData.tiles.push(tile);
 
                 // Always use the base feature to manage geometry indices
                 feature = this.features[featureData.index];
             }
-
+*/
             // Add feature id
             //tileData.featureIds.push( feature.properties.identifier );
-            tileData.featureIds.push(feature.id);
+            //this.featureIds.push(feature.id);
 
             // Set the identifier on the geometry
             //feature.geometry.gid = feature.properties.identifier;
             feature.geometry.gid = feature.id;
+
+            console.log("Feature",feature);
 
             // Add to renderer
             //this.addFeatureToRenderer(feature, tile);
@@ -363,10 +362,41 @@ define(['../Renderer/FeatureStyle', '../Renderer/VectorRendererManager', '../Uti
             // MS: Feature could be added from ClusterOpenSearch which have features with different styles
             var style = feature.properties.style ? feature.properties.style : this.style;
 
-            this.globe.vectorRendererManager.addGeometryToTile(this, feature.geometry, style, tile);
+            this._addFeatureToRenderers(feature);
+            //this.globe.vectorRendererManager.addGeometry(this, feature.geometry, style);
         };
 
 
+
+        /**
+         * Add a feature to renderers
+         * @function _addFeatureToRenderers
+         * @memberOf GeoJsonLayer#
+         * @param {GeoJSON} feature Feature
+         * @private
+         */
+        OpenSearchLayer.prototype._addFeatureToRenderers = function (feature) {
+            var geometry = feature.geometry;
+
+            // Manage style, if undefined try with properties, otherwise use defaultStyle
+            var style = this.style;
+            var props = feature.properties;
+            if (props && props.style) {
+                style = props.style;
+            }
+
+            // Manage geometry collection
+            if (geometry.type === "GeometryCollection") {
+                var geoms = geometry.geometries;
+                for (var i = 0; i < geoms.length; i++) {
+                    this.globe.vectorRendererManager.addGeometry(this, geoms[i], style);
+                }
+            }
+            else {
+                // Add geometry to renderers
+                this.globe.vectorRendererManager.addGeometry(this, geometry, style);
+            }
+        };
         /**************************************************************************************************************/
 
         /**
@@ -464,7 +494,10 @@ define(['../Renderer/FeatureStyle', '../Renderer/VectorRendererManager', '../Uti
             if (!this.layer.isVisible()) {
                 return;
             }
-
+            console.log("OSData.traverse");
+            console.log("tile.state="+tile.state);
+            console.log("this.state="+this.state);
+            
             if (tile.state !== Tile.State.LOADED) {
                 return;
             }
@@ -526,24 +559,74 @@ define(['../Renderer/FeatureStyle', '../Renderer/VectorRendererManager', '../Uti
         /**************************************************************************************************************/
 
         /**
+         * Prepare paramters for a given bound
+         * @function prepareParameters
+         * @memberof OpenSearchLayer#
+         * @param {Object} json object bound
+         * @return 
+         */
+        OpenSearchLayer.prototype.prepareParameters = function (bound) {
+            var param;      // param managed
+            var code;       // param code
+            for (var i=0;i<this.formDescription.parameters.length;i++) {
+                param = this.formDescription.parameters[i];
+                code = param.value;
+                code = code.replace("?}","}");
+                if (code === "{geo:box}") {
+                    // set bbox
+                    param.currentValue = bound.west+","+bound.south+","+bound.east+","+bound.north;
+                }
+            }
+        }
+            
+        /**
          * Build request url
          * @function buildUrl
          * @memberof OpenSearchLayer#
-         * @param {Tile} tile tile
+         * @param {Object} json object bound
          * @return {String} Url
          */
-        OpenSearchLayer.prototype.buildUrl = function (tile) {
-            var url = this.serviceUrl + "/search?order=" + tile.order + "&healpix=" + tile.pixelIndex;
+        OpenSearchLayer.prototype.buildUrl = function (bound) {
+
+            //var url = this.serviceUrl + "/search?order=" + tile.order + "&healpix=" + tile.pixelIndex;
+            var url = this.formDescription.template;
+
+            // Prepare parameters for this tile
+            this.prepareParameters(bound);
+
+
+            // Check each parameter
+            var param;          // param managed
+            var currentValue;   // value set 
+            for (var i=0;i<this.formDescription.parameters.length;i++) {
+                param = this.formDescription.parameters[i];
+                //console.log("check param ",param.value);
+                currentValue = param.currentValue;
+                if (currentValue === null) {
+                    // Remove parameter if not mandatory (with a ?)
+                    url = url.replace( "&"+param.name+"="+param.value.replace("}","?}") , "");
+                    url = url.replace( param.name+"="+param.value.replace("}","?}") , "");
+                    // Set blank if parameter is mandatory
+                    url = url.replace( param.value , "");
+                } else {
+                    // replace value
+                    url = url.replace(param.value,currentValue);
+                    // replace optional value
+                    url = url.replace(param.value.replace("}","?}"),currentValue);
+                }
+            }
+
+            console.log("Final url = "+url);
 
             /*if (this.transformer != undefined && typeof beforeHandle == 'function') {
                 var url = this.transformer.beforeHandle(url);
-            }*/
+            }
 
             if (this.coordSystemRequired) {
                 // OpenSearchLayer always works in equatorial
                 url += "&coordSystem=EQUATORIAL";
             }
-            url += "&media=json";
+            url += "&media=json";*/
             return url;
         };
 
@@ -567,6 +650,57 @@ define(['../Renderer/FeatureStyle', '../Renderer/VectorRendererManager', '../Uti
          * @param tiles The array of tiles to render
          */
         OpenSearchLayer.prototype.render = function (tiles) {
+            if (!this.isVisible()) {
+                return;
+            }
+            var bound = {
+                south : 90,
+                north : -90,
+                west : 180,
+                east : -180};
+
+
+            for (var i=0;i<tiles.length;i++) {
+                if (tiles[i].bound.south < bound.south ) {
+                    bound.south = tiles[i].bound.south;
+                }
+                if (tiles[i].bound.west < bound.west ) {
+                    bound.west = tiles[i].bound.west;
+                }
+                if (tiles[i].bound.north > bound.north ) {
+                    bound.north = tiles[i].bound.north;
+                }
+                if (tiles[i].bound.east > bound.east ) {
+                    bound.east = tiles[i].bound.east;
+                }
+            }
+
+            var needRefresh = false;
+            if (this.oldBound === null) {
+                needRefresh = true;
+            } else {
+                needRefresh = ( (this.oldBound.south !== bound.south) || 
+                                (this.oldBound.north !== bound.north) ||
+                                (this.oldBound.east  !== bound.east) ||
+                                (this.oldBound.west  !== bound.west) );
+            }
+            this.oldBound = bound;
+
+            if (needRefresh === true) {
+                var url = this.buildUrl(bound);
+                if (url) {
+                this.launchRequest(bound, url);
+                }
+            }
+        };
+
+        /**
+         * Render function
+         * @function render
+         * @memberof OpenSearchLayer#
+         * @param tiles The array of tiles to render
+         */
+        OpenSearchLayer.prototype.render2 = function (tiles) {
             if (!this.isVisible()) {
                 return;
             }

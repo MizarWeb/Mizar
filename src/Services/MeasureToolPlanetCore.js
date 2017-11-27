@@ -458,7 +458,9 @@ define(["jquery", "underscore-min", "../Utils/Constants",
             distance = Numeric.roundNumber(distance.toFixed(3), 2);
 
             var elevation = mizarAPI.getActivatedContext().getElevation(secondPoint[0], secondPoint[1]);
-            elevation = Numeric.roundNumber(elevation / scale, 0);
+            console.log(mizarAPI.getActivatedContext());
+            elevation = Numeric.roundNumber(elevation / scale, 0)
+            console.log("Distance "+distance+" : Elevation = "+elevation);
             var pointElevation = [distance, elevation];
 
             self.elevations.push(pointElevation);

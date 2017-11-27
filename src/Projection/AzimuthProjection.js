@@ -58,6 +58,7 @@ define(['./AbstractProjection', '../Utils/Utils', '../Renderer/glMatrix'],
             AbstractProjection.prototype.constructor.call(this, projectionCenter, geoBound, options);
         };
 
+
         /**************************************************************************************************************/
 
         Utils.inherits(AbstractProjection, AzimuthProjection);
@@ -104,8 +105,8 @@ define(['./AbstractProjection', '../Utils/Utils', '../Renderer/glMatrix'],
             o *= this.pole === "south" ? -1 : 1;
             dest[0] = p * Math.sin(o);
             dest[1] = -p * Math.cos(o);
-            dest[2] = this.getDefaultZ();
-            //dest[2] = geoPos[2];
+            //dest[2] = this.getDefaultZ();
+            dest[2] = geoPos[2];
 
             return dest;
         };
