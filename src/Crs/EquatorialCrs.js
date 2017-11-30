@@ -57,10 +57,37 @@
  */
 define(['./AbstractCrs', '../Renderer/GeoBound', '../Utils/Utils', '../Utils/Constants', '../Renderer/glMatrix'],
     function (AbstractCrs, GeoBound, Utils, Constants) {
+
+        /**
+         * @constant
+         * @type {string}
+         */
+        const DESCRIPTION = "System in which a celestial object's position on the celestial " +
+            "sphere is described in terms of its declination and right ascension, measured with respect to the celestial " +
+            "equator. Declination and right ascension correspond directly to geographic latitude and longitude as " +
+            "projected outward onto the celestial sphere. Declination is measured in degrees north or south of the " +
+            "celestial equator but right ascension  is measured in hours, minutes, and seconds eastward along the " +
+            "celestial equator from the point of the vernal equinox. Because the celestial equator moves among the fixed " +
+            "stars with the precession of the Earth's poles, an object's declination and right ascension change " +
+            "gradually over time, and coordinates in the equatorial system must be specified for particular years. By " +
+            "Default J2000 is used";
+
+        /**
+         * @constant
+         * @type {string}
+         */
+        const LONGITUDE_LABEL = "&alpha;";
+
+        /**
+         * @constant
+         * @type {string}
+         */
+        const LATITUDE_LABEL = "&delta;";
+
         /**
          * @name EquatorialCrs
          * @class
-         * A system is a system in which a celestial object's position on the celestial
+         * System in which a celestial object's position on the celestial
          * sphere is described in terms of its declination and right ascension, measured with respect to the celestial equator.
          * Declination and right ascension correspond directly to geographic latitude and longitude as projected outward onto
          * the celestial sphere. Declination is measured in degrees north or south of the celestial equator but right ascension
@@ -159,9 +186,25 @@ define(['./AbstractCrs', '../Renderer/GeoBound', '../Utils/Utils', '../Utils/Con
         EquatorialCrs.prototype.formatCoordinates = function (geo) {
             var sexa =  this.getSexagesimalFromDeg(geo);
             var dest = [];
-            dest[0] = "&alpha; = "+sexa[0];
-            dest[1] = "&delta; = "+sexa[1];
+            dest[0] = this.getLongitudeLabel()+" = "+sexa[0];
+            dest[1] = this.getLatitudeLabel()+" = "+sexa[1];
             return dest;
+        };
+
+        /**
+         * @function getLongitudeLabel
+         * @memberOf EquatorialCrs#
+         */
+        EquatorialCrs.prototype.getLongitudeLabel = function () {
+            return LONGITUDE_LABEL;
+        };
+
+        /**
+         * @function getLatitudeLabel
+         * @memberOf EquatorialCrs#
+         */
+        EquatorialCrs.prototype.getLatitudeLabel = function () {
+            return LATITUDE_LABEL;
         };
 
         /**
@@ -192,6 +235,15 @@ define(['./AbstractCrs', '../Renderer/GeoBound', '../Utils/Utils', '../Utils/Con
          */
         EquatorialCrs.prototype.getName = function () {
             return Constants.CRS.Equatorial;
+        };
+
+        /**
+         * @function getDescription
+         * @memberOf EquatorialCrs#
+         * @abstract
+         */
+        EquatorialCrs.prototype.getDescription = function () {
+            return DESCRIPTION;
         };
 
 

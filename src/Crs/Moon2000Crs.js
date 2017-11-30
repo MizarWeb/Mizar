@@ -18,6 +18,27 @@
  ******************************************************************************/
 define(['./AbstractCrs', '../Renderer/GeoBound', '../Utils/Utils', '../Utils/Constants', '../Utils/Numeric'],
     function (AbstractCrs, GeoBound, Utils, Constants, Numeric) {
+
+        /**
+         * @constant
+         * @type {string}
+         */
+        const DESCRIPTION = "Moon 2000 coordinate Reference System is a coordinate system using the Moon sphere and in " +
+            "which the planetocentric longitude increases to the east. The planetocentric latitude is measured in degrees " +
+            "north or south of the Moon equator.";
+
+        /**
+         * @constant
+         * @type {string}
+         */
+        const LONGITUDE_LABEL = "Long";
+
+        /**
+         * @constant
+         * @type {string}
+         */
+        const LATITUDE_LABEL = "Lat";
+
         /**
          * @name Moon2000Crs
          * @class
@@ -65,11 +86,27 @@ define(['./AbstractCrs', '../Renderer/GeoBound', '../Utils/Utils', '../Utils/Con
             var astro = [];
             var longitude = Numeric.roundNumber(geo[0], 3);
             var latitude = Numeric.roundNumber(geo[1], 3);
-            astro[0] = "Lat = ";
+            astro[0] = this.getLatitudeLabel()+" = ";
             astro[0] += (latitude >= 0 ) ? latitude+" N" : -1.0*latitude+" S";
-            astro[1] = "Long = ";
+            astro[1] = this.getLongitudeLabel()+" = ";
             astro[1] += (longitude >= 0 ) ? longitude+" E" : -1.0*longitude+" W";
             return astro;
+        };
+
+        /**
+         * @function getLongitudeLabel
+         * @memberOf Moon2000Crs#
+         */
+        Moon2000Crs.prototype.getLongitudeLabel = function () {
+            return LONGITUDE_LABEL;
+        };
+
+        /**
+         * @function getLatitudeLabel
+         * @memberOf Moon2000Crs#
+         */
+        Moon2000Crs.prototype.getLatitudeLabel = function () {
+            return LATITUDE_LABEL;
         };
 
         /**
@@ -98,6 +135,14 @@ define(['./AbstractCrs', '../Renderer/GeoBound', '../Utils/Utils', '../Utils/Con
          */
         Moon2000Crs.prototype.getName = function () {
             return Constants.CRS.Moon_2000;
+        };
+
+        /**
+         * @function getDescription
+         * @memberOf Moon2000Crs#
+         */
+        Moon2000Crs.prototype.getDescription = function () {
+            return DESCRIPTION;
         };
 
         return Moon2000Crs;

@@ -73,6 +73,22 @@ define(['./AbstractCrs', '../Utils/Utils', '../Projection/ProjectionFactory','..
         };
 
         /**
+         * @function getLongitudeLabel
+         * @memberOf ProjectedCrs#
+         */
+        ProjectedCrs.prototype.getLongitudeLabel = function () {
+            return this.cs.getLongitudeLabel();
+        };
+
+        /**
+         * @function getLatitudeLabel
+         * @memberOf ProjectedCrs#
+         */
+        ProjectedCrs.prototype.getLatitudeLabel = function () {
+            return this.cs.getLatitudeLabel();
+        };
+
+        /**
          * Returns the physical position in degrees.
          * @function getWorldFrom3D
          * @memberOf ProjectedCrs
@@ -166,6 +182,14 @@ define(['./AbstractCrs', '../Utils/Utils', '../Projection/ProjectionFactory','..
         };
 
         /**
+         * @function getDescription
+         * @memberOf ProjectedCrs#
+         */
+        ProjectedCrs.prototype.getDescription = function () {
+            return this.cs.getDescription();
+        };
+
+        /**
          * @function isProjected
          * @memberOf ProjectedCrs#
          * @return {boolean} True.
@@ -173,7 +197,6 @@ define(['./AbstractCrs', '../Utils/Utils', '../Projection/ProjectionFactory','..
         ProjectedCrs.prototype.isProjected = function () {
             return true;
         };
-
 
         return ProjectedCrs;
 

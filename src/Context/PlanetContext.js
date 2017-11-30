@@ -83,6 +83,7 @@ define(["jquery", "underscore-min", "../Utils/Utils", "./AbstractContext", "../U
             var self = this;
 
             this.components = {
+                "posTrackerInfo": true,
                 "posTracker": true,
                 "elevTracker": true,
                 "compassDiv": false
@@ -295,8 +296,13 @@ define(["jquery", "underscore-min", "../Utils/Utils", "./AbstractContext", "../U
                 this._showUpError(this, err);
             }
 
+            this.positionTracker.detach();
+            this.positionTracker.attachTo(this.globe);
+            this.elevationTracker.detach();
+            this.elevationTracker.attachTo(this.globe);
+
             this.navigation.computeViewMatrix();
-            this.publish("modifiedCrs", newCrs);
+            this.publish("modifiedCrs", this);
         };
 
         /**

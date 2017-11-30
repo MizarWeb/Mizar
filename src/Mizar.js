@@ -401,13 +401,15 @@ define(["jquery", "underscore-min",
             } //else {
               //  this.getActivatedContext().trackerDestroy();
             //}
+            context.positionTracker.detach();
+            context.positionTracker.attachTo(context.globe);
+            context.elevationTracker.detach();
+            context.elevationTracker.attachTo(context.globe);
             this.activatedContext = context;
             context.getNavigation().toViewMatrix(viewMatrix, fov, 2000, function() {
                 if(context) {
                     context.enable();
                 }
-                context.getPositionTracker().attachTo(context.globe);
-                context.getElevationTracker().attachTo(context.globe);
                 context.showAdditionalLayers();
                 self.publish("mizarMode:toggle", context);
                 self.getActivatedContext().show();
@@ -615,6 +617,8 @@ define(["jquery", "underscore-min",
                     context: Mizar,
                     dataType: 'json'
 
+                }).fail(function(XMLHttpRequest, textStatus, errorThrown) {
+                    ErrorDialog.open("<font style='color:orange'>Warning : Cannot connect to <b>" + options.registry.hips + "</b></font>");
                 }).done(function (hipsLayersJSON) {
                     _.each(hipsLayersJSON, function (hipsLayer) {
                         var hipsServiceUrlArray = _getHipsServiceUrlArray(hipsLayer);
@@ -627,7 +631,6 @@ define(["jquery", "underscore-min",
                                     text = "with title <b>" + hipsLayer.obs_title + "</b>";
                                 }
                                 ErrorDialog.open("<font style='color:orange'>Warning : Cannot add layer <b>" + text + "</b> no mirror available</font>");
-                                //console.log("Cannot add layer " + text + " no mirror available");
                                 return;
                             }
                             $.proxy(_createHips, Mizar)(hipsLayer, hipsServiceUrl);
@@ -651,21 +654,7 @@ define(["jquery", "underscore-min",
                 return;
             }
             hipsLayer.hips_service_url = hipsServiceUrl;
-
-            try {
-                this.addLayer({type: Mizar.LAYER.Hips, hipsMetadata: new HipsMetadata(hipsLayer)});
-            } catch (e) {
-                var prefixe;
-                var text;
-                if (typeof hipsLayer.obs_title === 'undefined') {
-                    prefixe = "ID ";
-                    text = hipsLayer.ID;
-                } else {
-                    prefixe = "";
-                    text = hipsLayer.obs_title;
-                }
-                ErrorDialog.open("Hips layer " + prefixe + "<font style='color:yellow'><b>" + text + "</b></font> not valid in Hips registry <font color='grey'><i>(" + hipsLayer.hips_service_url + " - reason : "+ e.message +")</i></font>.");
-            }
+            this.addLayer({type: Mizar.LAYER.Hips, hipsMetadata: new HipsMetadata(hipsLayer)});
         }
 
         /**************************************************************************************************************/
@@ -745,22 +734,25 @@ define(["jquery", "underscore-min",
          * When activatedContext is not set, it is set automatically to the created context
          * (in the following order : sky, planet, ground). When no context is created,
          * an  exception "No created context" is send.
-         * @returns {PlanetContext|SkyContext|GroundContext}
+         * @returns {PlanetContext|SkyContext|GroundContext|null}
          * @function getActivatedContext
-         * @throws ReferenceError - Will throw an exception when no context has been created.
          * @memberOf Mizar#
          */
         Mizar.prototype.getActivatedContext = function () {
-            if(this.activatedContext == null) {
-                if(this.skyContext != null) {
-                    this.activatedContext = this.skyContext;
-                } else if(this.planetContext != null) {
-                    this.activatedContext = this.planetContext;
-                } else if(this.groundContext != null) {
-                    this.activatedContext = this.groundContext;
-                } else {
-                    throw new ReferenceError("No created context","Mizar.js");
+            try {
+                if (this.activatedContext == null) {
+                    if (this.skyContext != null) {
+                        this.activatedContext = this.skyContext;
+                    } else if (this.planetContext != null) {
+                        this.activatedContext = this.planetContext;
+                    } else if (this.groundContext != null) {
+                        this.activatedContext = this.groundContext;
+                    } else {
+                        throw new ReferenceError("No created context", "Mizar.js");
+                    }
                 }
+            } catch(e) {
+                ErrorDialog.open("Cannot get the context : <font style='color:orange'><b>" + e.message + "</b></font>", true);
             }
             return this.activatedContext;
         };
@@ -769,23 +761,29 @@ define(["jquery", "underscore-min",
          * Selects the context as default context according to the {@link CONTEXT context mode}.<br/>
          * Once a context is selected, methods can be applied to it.
          * @param {CONTEXT} contextMode - select one context among {@link CONTEXT context}
+         * @returns {boolean} True when the contextMode is known otherwise False
          * @function setActivatedContext
          * @memberOf Mizar#
          * @throws {RangeError} contextMode not valid - a valid contextMode is included in the list {@link CONTEXT}
          */
         Mizar.prototype.setActivatedContext = function (contextMode) {
+            var result;
             switch (contextMode) {
                 case Mizar.CONTEXT.Planet:
                     this.activatedContext = this.planetContext;
+                    result = true;
                     break;
                 case Mizar.CONTEXT.Sky:
                     this.activatedContext = this.skyContext;
+                    result = true;
                     break;
                 case Mizar.CONTEXT.Ground:
                     this.activatedContext = this.groundContext;
+                    result = true;
                     break;
                 default:
-                    throw new RangeError("The contextMode " + contextMode + " is not allowed, A valid contextMode is included in the list Constants.CONTEXT", "Mizar.js");
+                    result = false;
+                    ErrorDialog.open("Cannot set the context : <font style='color:orange'><b>" + contextMode + " is not supported</b></font>", true);
             }
         };
 
@@ -793,22 +791,34 @@ define(["jquery", "underscore-min",
          * Returns the mode in which the active context is set.
          * @function getMode
          * @memberOf Mizar#
-         * @throws ReferenceError - Will throw an exception when no context has been created.
-         * @returns {CONTEXT}
+         * @returns {CONTEXT|null} Returns the mode otherwise null when no created context
          */
         Mizar.prototype.getMode = function() {
-            return this.getActivatedContext().getMode();
+            var result;
+            var context = this.getActivatedContext();
+            if(context) {
+                result = context.getMode();
+            } else {
+                result = null;
+            }
+            return result;
         };
 
         /**
          * Returns the rendering context.
-         * @returns {RenderContext} the rendering context
+         * @returns {RenderContext|null} the rendering context
          * @function getRenderContext
-         * @throws ReferenceError - Will throw an exception when no context has been created.
          * @memberOf Mizar#
          */
         Mizar.prototype.getRenderContext = function () {
-            return this.getActivatedContext().getRenderContext();
+            var result;
+            var context = this.getActivatedContext();
+            if(context) {
+                result = context.getRenderContext();
+            } else {
+                result = null;
+            }
+            return result;
         };
 
         /**
@@ -827,29 +837,43 @@ define(["jquery", "underscore-min",
 
         /**
          * Returns the coordinate reference system related to the selected {@link CONTEXT context}
-         * @returns {Crs} the coordinate reference system
+         * @returns {Crs|null} the coordinate reference system or null when no created context
          * @function getCrs
          * @memberOf Mizar#
-         * @throws ReferenceError - Will throw an exception when no context has been created.
          * @see {@link Mizar#setActivatedContext}
          * @see {@link Mizar#createContext}
          */
         Mizar.prototype.getCrs = function () {
-            return this.getActivatedContext().getCoordinateSystem();
+            var result;
+            var context = this.getActivatedContext();
+            if(context) {
+                result = context.getCoordinateSystem();
+            } else {
+                result = null;
+            }
+            return result;
         };
 
         /**
          * Sets the coordinate reference system related to the selected {@link CONTEXT context}
          * @param {AbstractProjection.configuration|AbstractProjection.azimuth_configuration|AbstractProjection.mercator_configuration} coordinateSystem - coordinate system description
+         * @returns {boolean} True when the coordinate system is set otherwise False when an error occurs
          * @function setCrs
          * @memberOf Mizar#
-         * @throws ReferenceError - Will throw an exception when no context has been created.
          * @see {@link Mizar#setActivatedContext}
          * @see {@link Mizar#createContext}
          */
         Mizar.prototype.setCrs = function (coordinateSystem) {
-            var crs = CoordinateSystemFactory.create(coordinateSystem);
-            this.getActivatedContext().setCoordinateSystem(crs);
+            var result;
+            var context = this.getActivatedContext();
+            if(context) {
+                var crs = CoordinateSystemFactory.create(coordinateSystem);
+                context.setCoordinateSystem(crs);
+                result = true;
+            } else {
+                result = false;
+            }
+            return result;
         };
 
         //               ***************************** context management *****************************
@@ -858,47 +882,64 @@ define(["jquery", "underscore-min",
          * Creates a context according to the {@link CONTEXT context mode}.<br/>
          * @param {CONTEXT} contextMode - Select on context among {@link CONTEXT context}
          * @param {AbstractContext.skyContext|AbstractContext.planetContext|AbstractContext.groundContext} options - Options for the context, See options.planetContext or options.skycontext configuration for {@link Mizar}
+         * @retuns {boolean} True when the context is created otherwise false when the contextMode is unknown
          * @throws {RangeError} contextMode not valid - a valid contextMode is included in the list {@link CONTEXT}
          * @function createContext
          * @memberOf Mizar#
          */
         Mizar.prototype.createContext = function (contextMode, options) {
-            options.renderContext = this.renderContext;
-            var ctx = this.ContextFactory.create(contextMode, this.getOptions(), options);
-            switch (contextMode) {
-                case Mizar.CONTEXT.Sky:
-                    this.skyContext = ctx;
-                    _loadHIPSLayers(this, this.getOptions().configuration);
-                    break;
-                case Mizar.CONTEXT.Planet:
-                    this.planetContext = ctx;
-                    break;
-                case Mizar.CONTEXT.Ground:
-                    this.groundContext = ctx;
-                    break;
-                default:
-                    throw new RangeError("Unknown contextMode '" + contextMode + "'", "Mizar.js");
+            var result;
+            try {
+                options.renderContext = this.renderContext;
+                var ctx = this.ContextFactory.create(contextMode, this.getOptions(), options);
+                switch (contextMode) {
+                    case Mizar.CONTEXT.Sky:
+                        this.skyContext = ctx;
+                        _loadHIPSLayers(this, this.getOptions().configuration);
+                        break;
+                    case Mizar.CONTEXT.Planet:
+                        this.planetContext = ctx;
+                        break;
+                    case Mizar.CONTEXT.Ground:
+                        this.groundContext = ctx;
+                        break;
+                    default:
+                        throw new RangeError("Unknown contextMode '" + contextMode + "'", "Mizar.js");
+                }
+                this.renderContext = ctx.getRenderContext();
+                result = true;
+            } catch (e) {
+                result = false;
+                ErrorDialog.open("Cannot create the context : <font style='color:orange'><b>" + e.message + "</b></font>", true);
             }
-            this.renderContext = ctx.getRenderContext();
+            return result;
         };
 
         /**
          * Switches 2D <--> 3D, only for planetary context. <br/>
          * When this method is used in a sky context, and exception is thrown
+         * @returns {boolean} True when toggle works otherwise False
          * @function toggleDimension
          * @memberOf Mizar#
-         * @throws {RangeError} Toggle Dimension is not implemented for Sky
          */
         Mizar.prototype.toggleDimension = function () {
-            _skipIfSkyMode.call(this);
-            if (this.getCrs().isFlat()) {
-                // we are in 2D and we are going to 3D
-                _switch2Dto3D.call(this);
-            } else {
-                // we are in 3D and we are goint to 2D
-                _switch3Dto2D.call(this);
+            var result;
+            try {
+                _skipIfSkyMode.call(this);
+                if (this.getCrs().isFlat()) {
+                    // we are in 2D and we are going to 3D
+                    _switch2Dto3D.call(this);
+                } else {
+                    // we are in 3D and we are goint to 2D
+                    _switch3Dto2D.call(this);
+                }
+                this.render();
+                result = true;
+            } catch (e) {
+                result = false;
+                ErrorDialog.open("Cannot toggle the dimension : <font style='color:orange'><b>" + e.message + "</b></font>", true);
             }
-            this.render();
+            return result;
         };
 
         /**
@@ -909,16 +950,23 @@ define(["jquery", "underscore-min",
          * @param {Function} callback - Call at the end of the toggle
          * @fires Mizar#mizarMode:toggle
          * @function toggleToContext
-         * @throws ReferenceError - Will throw an exception when no context has been created.
          * @memberOf Mizar#
          */
         Mizar.prototype.toggleToContext = function (context, options, callback) {
-            var toggleMode = (this.getActivatedContext().getMode() === Mizar.CONTEXT.Sky) ? Mizar.CONTEXT.Planet : Mizar.CONTEXT.Sky;
-            var self = this;
-            _switchToContext.call(this, context, options);
-            if (callback) {
-                callback.call(self);
+            var result;
+            try {
+                var toggleMode = (this.getActivatedContext().getMode() === Mizar.CONTEXT.Sky) ? Mizar.CONTEXT.Planet : Mizar.CONTEXT.Sky;
+                var self = this;
+                _switchToContext.call(this, context, options);
+                if (callback) {
+                    callback.call(self);
+                }
+                result = true;
+            } catch(e) {
+                result = false;
+                ErrorDialog.open("Cannot toggle the context : <font style='color:orange'><b>" + e.message + "</b></font>", true);
             }
+            return result;
         };
 
         //               ***************************** layer management *****************************
@@ -926,38 +974,59 @@ define(["jquery", "underscore-min",
         /**
          * Returns the sky layers, which have been added by {@link Mizar#addLayer}.
          * @function getSkyLayers
-         * @returns {Layer[]} the layers
+         * @returns {Layer[]|null} the layers
          * @memberOf Mizar#
          */
         Mizar.prototype.getSkyLayers = function () {
-            return this.getSkyContext().getLayers();
+            var result;
+            var context = this.getSkyContext();
+            if(context) {
+                result = context.getLayers();
+            } else {
+                result = null;
+            }
+            return result;
         };
 
         /**
          * Returns the planet layers, which have been added by {@link Mizar#addLayer}
          * @function getPlanetLayers
-         * @returns {Layer[]} the layers
+         * @returns {Layer[]|null} the layers
          * @memberOf Mizar#
          */
         Mizar.prototype.getPlanetLayers = function () {
-            return this.getPlanetContext().getLayers();
+            var result;
+            var context = this.getPlanetContext();
+            if(context) {
+                result = context.getLayers();
+            } else {
+                result = null;
+            }
+            return result;
         };
 
         /**
          * Returns the grounds layers, which have been added by {@link Mizar#addLayer}
          * @function getGroundLayers
-         * @returns {Layer[]} the layers
+         * @returns {Layer[]|null} the layers
          * @memberOf Mizar#
          */
         Mizar.prototype.getGroundLayers = function () {
-            return this.getGroundContext().getLayers();
+            var result;
+            var context = this.getGroundContext();
+            if(context) {
+                result = context.getLayers();
+            } else {
+                result = null;
+            }
+            return result;
         };
 
         /**
          * Returns the layers for a specific context.<br/>
          * When no context is specified, the layers from the selected context are returned.
          * @function getLayers
-         * @param {CONTEXT|undefined} mode - Context on which the function is applied
+         * @param {CONTEXT|null} mode - Context on which the function is applied
          * @returns {Layer[]} the layers
          * @memberOf Mizar#
          * @throws {RangeError} Will throw an error when the mode is not part of {@link CONTEXT}
@@ -965,7 +1034,14 @@ define(["jquery", "underscore-min",
          * @see {@link Mizar#createContext}
          */
         Mizar.prototype.getLayers = function (mode) {
-            return _getContext.call(this, mode).getLayers();
+            var result;
+            try {
+                result = _getContext.call(this, mode).getLayers();
+            } catch(e) {
+                result = null;
+                ErrorDialog.open("Cannot get the layers : <font style='color:orange'><b>" + e.message + "</b></font>", true);
+            }
+            return result;
         };
 
         /**
@@ -986,13 +1062,20 @@ define(["jquery", "underscore-min",
          * @function getLayerByID
          * @param {string} layerID - Layer's ID
          * @param {CONTEXT|undefined} mode - Context on which the function is applied
-         * @returns {Layer|undefined} The layer or undefined when the layer is not found
+         * @returns {Layer|undefined|null} The layer or undefined when the layer is not found
          * @memberOf Mizar#
          * @see {@link Mizar#setActivatedContext}
          * @see {@link Mizar#createContext}
          */
         Mizar.prototype.getLayerByID = function (layerID, mode) {
-            return _getContext.call(this, mode).getLayerByID(layerID);
+            var result;
+            try {
+                result = _getContext.call(this, mode).getLayerByID(layerID);
+            } catch(e) {
+                result = null;
+                ErrorDialog.open("Cannot get the layer by ID : <font style='color:orange'><b>" + e.message + "</b></font>", true);
+            }
+            return result;
         };
 
         /**
@@ -1002,14 +1085,21 @@ define(["jquery", "underscore-min",
          * @function getLayerByName
          * @param {string} layerName - Layer's name, provided in the layer description when the layer is {@link Mizar#addLayer added}
          * @param {CONTEXT|undefined} mode - Context on which the function is applied
-         * @returns {Layer|undefined} the layer or undefined when the layer is not found
+         * @returns {Layer|undefined|null} the layer or undefined when the layer is not found
          * @memberOf Mizar#
          * @throws {RangeError} Will throw an error when the mode is not part of {@link CONTEXT}
          * @see {@link Mizar#setActivatedContext}
          * @see {@link Mizar#createContext}
          */
         Mizar.prototype.getLayerByName = function (layerName, mode) {
-            return _getContext.call(this, mode).getLayerByName(layerName);
+            var result;
+            try {
+                result = _getContext.call(this, mode).getLayerByName(layerName);
+            } catch(e) {
+                result = null;
+                ErrorDialog.open("Cannot get the layer by name : <font style='color:orange'><b>" + e.message + "</b></font>", true);
+            }
+            return result;
         };
 
 
@@ -1020,9 +1110,8 @@ define(["jquery", "underscore-min",
          *
          * @function addLayer
          * @param {Object} layerDescription - See the base properties {@link AbstractLayer.configuration} and a specific layer for specific properties
-         * @returns {string} a unique identifier
+         * @returns {string|null} a unique identifier or null when a problem happens
          * @memberOf Mizar#
-         * @throws ReferenceError - Will throw an exception when no context has been created.
          * @listens AbstractLayer#visibility:changed
          * @see {@link module:Layer.AtmosphereLayer AtmosphereLayer} : A layer to create an atmosphere on a planet.
          * @see {@link module:Layer.BingLayer BingLayer}: The Microsoft service proving a WMTS server.
@@ -1045,8 +1134,29 @@ define(["jquery", "underscore-min",
          * @see {@link Mizar#createContext}
          */
         Mizar.prototype.addLayer = function (layerDescription) {
-            var layer = this.getActivatedContext().addLayer(layerDescription);
-            return layer.ID;
+            var result;
+            try {
+                var layer = this.getActivatedContext().addLayer(layerDescription);
+                result = layer.ID;
+            } catch(e) {
+                result = false;
+                var prefixe;
+                var text;
+                var hipsLayer = layerDescription.hipsMetadata;
+                if(hipsLayer != null) {
+                    if (typeof hipsLayer.hipsMetadata.obs_title === 'undefined') {
+                        prefixe = "ID ";
+                        text = hipsLayer.hipsMetadata.ID;
+                    } else {
+                        prefixe = "";
+                        text = hipsLayer.hipsMetadata.obs_title;
+                    }
+                    ErrorDialog.open("Hips layer " + prefixe + "<font style='color:yellow'><b>" + text + "</b></font> not valid in Hips registry <font color='grey'><i>(" + hipsLayer.hipsMetadata.hips_service_url + " - reason : "+ e.message +")</i></font>.");
+                } else {
+                    ErrorDialog.open("Cannot add the layer <font style='color:yellow'><b>" + JSON.stringify(layerDescription) + "</b></font><font color='grey'><i>(reason : "+ e.message +")</i></font>.");
+                }
+            }
+            return result;
         };
 
         /**
@@ -1062,8 +1172,15 @@ define(["jquery", "underscore-min",
          * @see {@link Mizar#createContext}
          */
         Mizar.prototype.removeLayer = function (layerID, mode) {
-            var removedLayer = _getContext.call(this, mode).removeLayer(layerID);
-            return typeof removedLayer !== 'undefined';
+            var result;
+            try {
+                var removedLayer = _getContext.call(this, mode).removeLayer(layerID);
+                result = typeof removedLayer !== 'undefined';
+            } catch(e) {
+                result = false;
+                ErrorDialog.open("Cannot remove the layer : <font style='color:orange'><b>" + e.message + "</b></font>", true);
+            }
+            return result;
         };
 
         /**
@@ -1081,8 +1198,15 @@ define(["jquery", "underscore-min",
          * @see {@link Mizar#createContext}
          */
         Mizar.prototype.setBackgroundLayer = function (layerName, mode) {
-            var gwLayer = _getContext.call(this, mode).setBackgroundLayer(layerName);
-            return typeof gwLayer !== 'undefined';
+            var result;
+            try {
+                var gwLayer = _getContext.call(this, mode).setBackgroundLayer(layerName);
+                result = typeof gwLayer !== 'undefined';
+            } catch(e) {
+                result = false;
+                ErrorDialog.open("Cannot set the background : <font style='color:orange'><b>" + e.message + "</b></font>", true);
+            }
+            return result;
         };
 
         /**
@@ -1094,13 +1218,19 @@ define(["jquery", "underscore-min",
          * @param {CONTEXT|undefined} mode - Context on which the function is applied.
          * @returns {boolean} True when the layer is set as background otherwise False
          * @memberOf Mizar#
-         * @throws {RangeError} Will throw an error when the mode is not part of {@link CONTEXT}
          * @see {@link Mizar#setActivatedContext}
          * @see {@link Mizar#createContext}
          */
         Mizar.prototype.setBackgroundLayerByID = function (layerID, mode) {
-            var gwLayer = _getContext.call(this, mode).setBackgroundLayerByID(layerID);
-            return typeof gwLayer !== 'undefined';
+            var result;
+            try {
+                var gwLayer = _getContext.call(this, mode).setBackgroundLayerByID(layerID);
+                result = typeof gwLayer !== 'undefined';
+            } catch(e) {
+                result = false;
+                ErrorDialog.open("Cannot set the backgorund by ID : <font style='color:orange'><b>" + e.message + "</b></font>", true);
+            }
+            return result;
         };
 
         /**
@@ -1117,9 +1247,16 @@ define(["jquery", "underscore-min",
          * @see {@link Mizar#createContext}
          */
         Mizar.prototype.setBaseElevation = function (layerName, mode) {
-            var layer = this.getLayerByName(layerName, mode);
-            var gwLayer =  _getContext.call(this, mode).setBaseElevation(layer);
-            return typeof gwLayer !== 'undefined';
+            var result;
+            try {
+                var layer = this.getLayerByName(layerName, mode);
+                var gwLayer = _getContext.call(this, mode).setBaseElevation(layer);
+                result = typeof gwLayer !== 'undefined';
+            } catch(e) {
+                result = false;
+                ErrorDialog.open("Cannot set the base elevation : <font style='color:orange'><b>" + e.message + "</b></font>", true);
+            }
+            return result;
         };
 
         /**
@@ -1131,13 +1268,19 @@ define(["jquery", "underscore-min",
          * @param {CONTEXT|undefined} mode - Context on which the function is applied
          * @returns {boolean} True when the base elevation is set otherwise false
          * @memberOf Mizar#
-         * @throws {RangeError} Will throw an error when the mode is not part of {@link CONTEXT}
          * @see {@link Mizar#setActivatedContext}
          * @see {@link Mizar#createContext}
          */
         Mizar.prototype.setBaseElevationByID = function (layerID, mode) {
-            var gwLayer =  _getContext.call(this, mode).setBaseElevationByID(layerID);
-            return typeof gwLayer !== 'undefined';
+            var result;
+            try {
+                var gwLayer = _getContext.call(this, mode).setBaseElevationByID(layerID);
+                result =  typeof gwLayer !== 'undefined';
+            } catch(e) {
+                result = false;
+                ErrorDialog.open("Cannot set the base elevation by ID : <font style='color:orange'><b>" + e.message + "</b></font>", true);
+            }
+            return result;
         };
 
         /**
@@ -1199,8 +1342,8 @@ define(["jquery", "underscore-min",
          * @param {string} type - data provider key
          * @param {Function} loadFunc - Function to convert the data
          * @param {CONTEXT|undefined} mode - Context
+         * @returns {boolean} True when data provider is registered otherwise False
          * @memberOf Mizar#
-         * @throws {RangeError} Will throw an error when the mode is not part of {@link CONTEXT}
          * @see {@link Mizar#setActivatedContext}
          * @see {@link Mizar#createContext}
          * @example <caption>Registers planets on the sky</caption>
@@ -1208,7 +1351,15 @@ define(["jquery", "underscore-min",
          *   this.registerNoStandardDataProvider("planets", planetProvider.loadFiles);
          */
         Mizar.prototype.registerNoStandardDataProvider = function (type, loadFunc, mode) {
-            _getContext.call(this, mode).registerNoStandardDataProvider(type, loadFunc);
+            var result;
+            try {
+                _getContext.call(this, mode).registerNoStandardDataProvider(type, loadFunc);
+                result = true;
+            } catch(e) {
+                result = false;
+                ErrorDialog.open("Cannot register the data provider : <font style='color:orange'><b>" + e.message + "</b></font>", true);
+            }
+            return result;
         };
 
         /**
@@ -1233,10 +1384,17 @@ define(["jquery", "underscore-min",
          * @param {SERVICE} serviceName
          * @param {Object} options - options for the service
          * @memberOf Mizar#
-         * @returns {Object} - the service
+         * @returns {Object|null} - the service
          */
         Mizar.prototype.getServiceByName = function (serviceName, options) {
-            return ServiceFactory.create(serviceName, options);
+            var result;
+            try {
+                result = ServiceFactory.create(serviceName, options);
+            } catch(e) {
+                result = null;
+                ErrorDialog.open("Cannot get the service by name: <font style='color:orange'><b>" + e.message + "</b></font>", true);
+            }
+            return result;
         };
 
 
@@ -1244,20 +1402,27 @@ define(["jquery", "underscore-min",
          * Creates and get Stats Object
          * @function createStats
          * @param {Object} options - Configuration properties for stats. See {@link Stats} for options
+         * @returns {boolean} True when context fors tats exist otherwise False
          * @return {Stats}
          * @memberOf Mizar#
-         * @throws {ReferenceError} No context is defined
+
          */
         Mizar.prototype.createStats = function (options) {
+            var result;
             if (this.skyContext) {
                 this.Stats = new Stats(this.skyContext, options);
+                result = true;
             } else if (this.planetContext) {
                 this.Stats = new Stats(this.planetContext, options);
+                result = true;
             } else if (this.groundContext) {
                 this.Stats = new Stats(this.groundContext, options);
+                result = true;
             } else {
-                throw new ReferenceError("No context is defined");
+                result = false;
+                ErrorDialog.open("Cannot create the stats", true);
             }
+            return result;
         };
 
         //               ***************************** Rendering management *****************************
@@ -1265,11 +1430,20 @@ define(["jquery", "underscore-min",
 
         /**
          * Renders the canvas.
+         * @returns {boolean} True when the canvas is rendered otherwise False
          * @function render
          * @memberOf Mizar#
          */
         Mizar.prototype.render = function () {
-            this.getRenderContext().frame();
+            var result;
+            var renderContext = this.getRenderContext();
+            if(renderContext) {
+                this.getRenderContext().frame();
+                result = true;
+            } else {
+                result = false;
+            }
+            return result;
         };
 
         //               ***************************** Memory management *****************************

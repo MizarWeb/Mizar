@@ -24,44 +24,23 @@
 define(["jquery", "jquery.ui"], function ($) {
 
 // The main div for error
-    var errorDiv = '<div id="errorDiv" style="text-align: left" title="Error"></div>';
+    var crsInfo = '<div id="crsInfo" style="text-align: left" title="Coordinate Reference System information"></div>';
 
 // Create the div, use jQuery UI dialog
 
     var $text = "";
-    var $buttonName = "";
 
-    var $errorDiv = $(errorDiv)
+    var $crsInfo = $(crsInfo)
         .appendTo('body')
         .dialog({
             autoOpen: false,
             width: 700,
             minHeight: 300,
             maxHeight: 500,
-            dialogClass: 'errorBox'
+            dialogClass: 'crsBox'
             //beforeClose: function( event, ui ) { $text = ""; }
         });
     var $active = false;
-    var $displayWarning = false;
-    var $displayDebug = false;
-
-    _recordError = function(html) {
-        $text += html + "<br/>";
-        if ($('#warningContainer')) {
-            $('#warningContainer').show();
-            $errorDiv.on('dialogclose', function (event) {
-                if($buttonName) {
-                    $buttonName.hide();
-                }
-            });
-        }
-        if ($active === true) {
-            $errorDiv
-                .html($text)
-                .dialog("open");
-            $errorDiv.scrollTop(5000);
-        }
-    };
 
     return {
         /**
@@ -69,42 +48,46 @@ define(["jquery", "jquery.ui"], function ($) {
          *
          *    @param html HTML text
          */
-        open: function (html, debug) {
-            if(debug != null) {
-                debug = false;
+        open: function (crs) {
+            if(this.isActive) {
+                this.destroy();
             }
-            if (debug && $displayDebug) {
-                // debug mode for developers
-                _recordError(html);
-            } else if (!debug && $displayWarning === true) {
-                //user mode : user needs to known when a problem happens with data
-                _recordError(html)
-            }
+            var geoBound = crs.getGeoBound();
+            $text += "<p align='center'><u><i><b>" + crs.getName() + " CRS description </b></i></u></p>";
+            $text += "<p align='justify'>" + crs.getDescription() + "</p>";
+            $text += "<table>" +
+                "<caption><i>Sphere parameters</i></caption>" +
+                "<tr><th>Parameter</th><th>Value</th></tr>" +
+                "<tr><td>Projection</td><td>"+(crs.isProjected() ? crs.getProjection().getName() : "3D") + "</td></tr>" +
+                "<tr><td>radius (meters)</td><td>"+crs.getGeoide().getRealPlanetRadius()+"</td></tr>" +
+                "<tr><td>"+crs.getLongitudeLabel()+"</td><td>["+geoBound.getWest()+"&deg; , "+geoBound.getEast() +"&deg;]</td></tr>" +
+                "<tr><td>"+crs.getLatitudeLabel()+"</td><td>["+geoBound.getSouth()+"&deg; , "+geoBound.getNorth() +"&deg;]</td></tr>" +
+                "</table>";
+            $crsInfo.on('dialogclose', function (event) {
+                $active = false;
+            });
         },
         view: function () {
-            $errorDiv
+            $crsInfo
                 .html($text)
                 .dialog("open");
 
-            $errorDiv.scrollTop(5000);
+            $crsInfo.scrollTop(5000);
             $active = true;
         },
         hide: function () {
-            $errorDiv.dialog("close");
+            $crsInfo.dialog("close");
             $active = false;
         },
         isActive: function () {
             return $active;
         },
-        setDisplayWarning: function (value) {
-            $displayWarning = value;
-        },
-        setDisplayDebug: function (value) {
-            $displayDebug = value;
-        },
-        setIcon : function(buttonName) {
-            $buttonName = $(buttonName);
+        destroy : function() {
+            this.hide();
+            $text = "";
+            $active = false;
         }
+
     };
 
 });

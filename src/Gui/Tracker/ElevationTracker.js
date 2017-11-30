@@ -37,7 +37,6 @@ define(["jquery", "./AbstractTracker", "../../Utils/Utils", "../../Utils/Numeric
          */
         var ElevationTracker = function (options) {
             AbstractTracker.prototype.constructor.call(this, options);
-            self = this;
             this.scale = null;
             if (options.elevationLayer !== null && options.elevationLayer !== undefined) {
                 this.scale = options.elevationLayer.hasOwnProperty('scale') ? options.elevationLayer.scale : 1;
@@ -57,10 +56,6 @@ define(["jquery", "./AbstractTracker", "../../Utils/Utils", "../../Utils/Numeric
          */
         ElevationTracker.prototype.setScaleLayer = function (elevationLayer) {
             this.scale = elevationLayer.hasOwnProperty('scale') ? elevationLayer.scale : 1;
-        };
-
-        ElevationTracker.prototype._updateTracker = function(tracker) {
-            self = tracker;
         };
 
         /**
@@ -97,6 +92,23 @@ define(["jquery", "./AbstractTracker", "../../Utils/Utils", "../../Utils/Numeric
          */
         ElevationTracker.prototype.compute = function (geoPosition) {
             return this._getGlobe().getElevation(geoPosition[0], geoPosition[1]);
+        };
+
+        /**
+         * @function attachTo
+         * @memberOf ElevationTracker#
+         */
+        ElevationTracker.prototype.attachTo = function (globeContext) {
+            AbstractTracker.prototype.attachTo.call(this, globeContext);
+            self = this;
+        };
+
+        /**
+         * @function detach
+         * @memberOf ElevationTracker#
+         */
+        ElevationTracker.prototype.detach = function () {
+            AbstractTracker.prototype.detach.call(this);
         };
 
         /**

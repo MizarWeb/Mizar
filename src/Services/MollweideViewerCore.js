@@ -197,8 +197,8 @@ define(["jquery", "../Utils/Numeric", "../Renderer/Ray","../Renderer/glMatrix"],
         $('#fov').html("Fov : " + fovx + " x " + fovy);
     }
 
-    function updateGalaxyProjection(crs) {
-        $(self.getImageObj()).attr("src", mizarBaseUrl + "css/images/MollweideSky_" + crs.getGeoideName() + ".png");
+    function updateGalaxyProjection(ctx) {
+        $(self.getImageObj()).attr("src", mizarBaseUrl + "css/images/MollweideSky_" + ctx.getCoordinateSystem().getGeoideName() + ".png");
     }
 
     /**********************************************************************************************/

@@ -18,10 +18,27 @@
  ******************************************************************************/
 define(['./AbstractCrs', '../Renderer/GeoBound', '../Utils/Utils', '../Utils/Constants', '../Utils/Numeric'],
     function (AbstractCrs, GeoBound, Utils, Constants, Numeric) {
+
+        const DESCRIPTION = "WGS84 coordinate Reference System is a coordinate system using the Earth geoide in which " +
+            "the geographic longitude increases to the east. The geographic latitude is measured in degrees north or south " +
+            "of the Earth equator. In Mizar, the latitudes are projected on a sphere";
+
+        /**
+         * @constant
+         * @type {string}
+         */
+        const LONGITUDE_LABEL = "Long";
+
+        /**
+         * @constant
+         * @type {string}
+         */
+        const LATITUDE_LABEL = "Lat";
+
         /**
          * @name WGS84Crs
          * @class
-         * WGS84 coordinate Reference System is a coordinate system using the Earth geoide and in which the
+         * WGS84 coordinate Reference System is a coordinate system using the Earth geoide in which the
          * geographic longitude increases to the east. The geographic latitude is measured in degrees north or south
          * of the Earth equator.
          * <br/>
@@ -65,11 +82,29 @@ define(['./AbstractCrs', '../Renderer/GeoBound', '../Utils/Utils', '../Utils/Con
          */
         WGS84Crs.prototype.formatCoordinates = function (geo) {
             var astro = [];
-            astro[0] = "Lat = ";
+            var longitude = Numeric.roundNumber(geo[0], 3);
+            var latitude = Numeric.roundNumber(geo[1], 3);
+            astro[0] = this.getLatitudeLabel()+" = ";
             astro[0] += (latitude >= 0 ) ? latitude+" N" : -1.0*latitude+" S";
-            astro[1] = "Long = ";
+            astro[1] = this.getLongitudeLabel()+" = ";
             astro[1] += (longitude >= 0 ) ? longitude+" E" : -1.0*longitude+" W";
             return astro;
+        };
+
+        /**
+         * @function getLongitudeLabel
+         * @memberOf WGS84Crs#
+         */
+        WGS84Crs.prototype.getLongitudeLabel = function () {
+            return LONGITUDE_LABEL;
+        };
+
+        /**
+         * @function getLatitudeLabel
+         * @memberOf WGS84Crs#
+         */
+        WGS84Crs.prototype.getLatitudeLabel = function () {
+            return LATITUDE_LABEL;
         };
 
         /**

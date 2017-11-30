@@ -18,10 +18,34 @@
  ******************************************************************************/
 define(['./AbstractCrs', '../Renderer/GeoBound', '../Utils/Utils', '../Utils/Constants', '../Utils/Numeric'],
     function (AbstractCrs, GeoBound, Utils, Constants, Numeric) {
+
+        /**
+         * @constant
+         * @type {string}
+         */
+        const DESCRIPTION = "System in which an local object's position is described in the observer's local horizon." +
+            "It is expressed in terms of altitude (or elevation) angle and azimuth. The elevation is measured for -90° " +
+            "(nadir) to 90° (zenith) but azimuth is measured in degrees eastward along the horizon from the North";
+
+        /**
+         * @constant
+         * @type {string}
+         */
+        const LONGITUDE_LABEL = "Az";
+
+        /**
+         * @constant
+         * @type {string}
+         */
+        const LATITUDE_LABEL = "Alt";
+
+
         /**
          * @name HorizontalLocalCrs
          * @class
-         * Local horizontal coordinate reference system based on horizontal coordinates.
+         * System in which an local object's position is described in the observer's local horizon. It is expressed in
+         * terms of altitude (or elevation) angle and azimuth. The elevation is measured for -90° (nadir) to 90° (zenith)
+         * but azimuth is measured in degrees eastward along the horizon from the North.
          * <br/>
          * HorizontalLocalCrs is initialized with the following parameters :
          * <ul>
@@ -68,9 +92,27 @@ define(['./AbstractCrs', '../Renderer/GeoBound', '../Utils/Utils', '../Utils/Con
             } else {
                 azimuth = -1*azimuth;
             }
-            astro[0] = "Az = "+azimuth+"°";
-            astro[1] = "Alt = "+altitude+"°";
+            astro[0] = this.getLongitudeLabel()+" = "+azimuth;
+            astro[0] += "&deg;";
+            astro[1] = this.getLatitudeLabel()+" = "+altitude;
+            astro[1] +="&deg;";
             return astro;
+        };
+
+        /**
+         * @function getLongitudeLabel
+         * @memberOf HorizontalLocalCrs#
+         */
+        HorizontalLocalCrs.prototype.getLongitudeLabel = function () {
+            return LONGITUDE_LABEL;
+        };
+
+        /**
+         * @function getLatitudeLabel
+         * @memberOf HorizontalLocalCrs#
+         */
+        HorizontalLocalCrs.prototype.getLatitudeLabel = function () {
+            return LATITUDE_LABEL;
         };
 
         /**
@@ -99,6 +141,14 @@ define(['./AbstractCrs', '../Renderer/GeoBound', '../Utils/Utils', '../Utils/Con
          */
         HorizontalLocalCrs.prototype.getName = function () {
             return Constants.CRS.HorizontalLocal;
+        };
+
+        /**
+         * @function getDescription
+         * @memberOf HorizontalLocalCrs#
+         */
+        HorizontalLocalCrs.prototype.getDescription = function () {
+            return DESCRIPTION;
         };
 
         return HorizontalLocalCrs;

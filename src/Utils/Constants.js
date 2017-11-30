@@ -141,7 +141,7 @@ define(function () {
         "August": "August",
         "Mercator": "Mercator",
         "Mollweide": "Mollweide",
-        "Plate": "Plate",
+        "Plate": "Plate Carrée",
         "Azimuth": "Azimuth"
     };
 

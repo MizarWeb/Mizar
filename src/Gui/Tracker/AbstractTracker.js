@@ -41,7 +41,7 @@ define(["jquery"],
          * @memberOf AbstractTracker#
          * @abstract
          */
-        AbstractTracker.prototype._getGlobe = function (event) {
+        AbstractTracker.prototype._getGlobe = function () {
             return this.globe;
         };
 
@@ -54,7 +54,7 @@ define(["jquery"],
             this.globe = globe;
         };
 
-        AbstractTracker.prototype._getElement = function (globe) {
+        AbstractTracker.prototype._getElement = function () {
             return this.element;
         };
 
@@ -83,25 +83,20 @@ define(["jquery"],
          */
         AbstractTracker.prototype.attachTo = function (globeContext) {
             this._setGlobe(globeContext);
-            var self = this;
-            this._updateTracker(this);
-            this._getGlobe().getRenderContext().canvas.addEventListener('mousemove', self.update);
+            this._getGlobe().getRenderContext().canvas.addEventListener('mousemove', this.update);
             if (this.options.isMobile) {
-                this._getGlobe().getRenderContext().canvas.addEventListener('touchmove', self.update);
+                this._getGlobe().getRenderContext().canvas.addEventListener('touchmove', this.update);
             }
         };
 
         /**
          * @function detach
          * @memberOf AbstractTracker#
-         * @abstract
          */
         AbstractTracker.prototype.detach = function () {
-            var self = this;
-            this._updateTracker(this);
-            this._getGlobe().getRenderContext().canvas.removeEventListener('mousemove', self.update);
+            this._getGlobe().getRenderContext().canvas.removeEventListener('mousemove', this.update);
             if (this.options.isMobile) {
-                this._getGlobe().getRenderContext().canvas.removeEventListener('touchmove', self.update);
+                this._getGlobe().getRenderContext().canvas.removeEventListener('touchmove', this.update);
             }
         };
 

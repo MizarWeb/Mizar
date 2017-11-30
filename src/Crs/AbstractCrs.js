@@ -515,6 +515,33 @@ define(
         };
 
         /**
+         * @function getDescription
+         * @memberOf AbstractCrs#
+         * @abstract
+         */
+        AbstractCrs.prototype.getDescription = function () {
+            throw new SyntaxError("Not implemented");
+        };
+
+        /**
+         * @function getLongitudeLabel
+         * @memberOf AbstractCrs#
+         * @abstract
+         */
+        AbstractCrs.prototype.getLongitudeLabel = function () {
+            throw new SyntaxError("Not implemented");
+        };
+
+        /**
+         * @function getLatitudeLabel
+         * @memberOf AbstractCrs#
+         * @abstract
+         */
+        AbstractCrs.prototype.getLatitudeLabel = function () {
+            throw new SyntaxError("Not implemented");
+        };
+
+        /**
          * @function isProjected
          * @memberOf AbstractCrs#
          * @return {boolean} True when the Crs is projected in 2D otherwise false.

@@ -67,6 +67,7 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Laye
             this.elevationTracker = _createTrackerElevation.call(this, this.mizarConfiguration, ctxOptions);
         };
 
+
         /**
          * Creates tracker position
          * @param {Mizar.configuration} mizarConfiguration
