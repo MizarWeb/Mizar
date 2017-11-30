@@ -104,18 +104,13 @@ define(['./AbstractCrs', '../Utils/Utils', '../Projection/ProjectionFactory','..
             if (!dest) {
                 dest = vec3.create();
             }
-            var pos = posWorld.slice(0);
+            var pos = posWorld.slice();
             this.cs._setupPosBeforeTrans(pos);
             this.projection.project(pos, dest);
 
-            if (typeof pos[2] === 'undefined') {
-                if (globe) {
-                    console.log("getElevation");
-                    dest[2] = this.globe.getElevation(dest[0],dest[1]);
-                } else {
-                    dest[2] = null;
-                }
-            }
+            //if (typeof pos[2] === 'undefined') {
+            //        dest[2] = null;
+            //}
             //dest[2] = dest[2] ? dest[2] * this.geoide.getHeightScale() : 0.0;
             return dest;
         };

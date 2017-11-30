@@ -73,12 +73,7 @@ define(['./AbstractProjection', '../Utils/Utils', '../Renderer/glMatrix'],
             }
             dest[0] = geoPos[0] * Math.PI / 180;
             dest[1] = geoPos[1] * Math.PI / 180;
-            if (typeof geoPos[2] === 'undefined') {
-                dest[2] = this.getElevation(dest[0],dest[1]);
-            } else {
-                dest[2] = geoPos[2];
-            }
-           
+            dest[2] = geoPos[2];
             
             return dest;
         };

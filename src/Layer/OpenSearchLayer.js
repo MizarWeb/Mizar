@@ -52,7 +52,6 @@ define(['../Renderer/FeatureStyle', '../Renderer/VectorRendererManager', '../Uti
          * @memberOf module:Layer
          */
           var OpenSearchLayer = function (options) {
-            options.dataType = Constants.GEOMETRY.Point;
             AbstractLayer.prototype.constructor.call(this, Constants.LAYER.OpenSearch, options);
 
             if (typeof options.serviceUrl !== 'undefined') {
