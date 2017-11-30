@@ -112,8 +112,8 @@ define(['./AbstractProjection', '../Utils/Utils', '../Renderer/glMatrix'],
 
             dest[0] = mollX;
             dest[1] = mollY;
-            //dest[2] = this.getDefaultZ();
-            dest[2] = geoPos[2];
+            dest[2] = this.getDefaultZ();
+            //dest[2] = geoPos[2];
             return dest;
         };
 

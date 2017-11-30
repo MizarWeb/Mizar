@@ -53,7 +53,6 @@ define(['./AbstractCrs', '../Utils/Utils', '../Projection/ProjectionFactory','..
             this.geoBound.setSouth(this.projection.getGeoBound().getSouth());
             this.geoBound.setEast(this.projection.getGeoBound().getEast());
             this.geoBound.setNorth(this.projection.getGeoBound().getNorth());
-            this.globe = null;
             this.flat = true;
         };
         /**************************************************************************************************************/
@@ -85,12 +84,9 @@ define(['./AbstractCrs', '../Utils/Utils', '../Projection/ProjectionFactory','..
             if (!dest) {
                 dest = new Array(3);
             }
-            
             this.projection.unProject(position3d, dest);
             this.cs._setupPosAfterTrans(dest);
-
             dest[2] = dest[2] / this.geoide.getHeightScale();
-            
             return dest;
         };
 
@@ -104,14 +100,10 @@ define(['./AbstractCrs', '../Utils/Utils', '../Projection/ProjectionFactory','..
             if (!dest) {
                 dest = vec3.create();
             }
-            var pos = posWorld.slice();
+            var pos = posWorld.slice(0);
             this.cs._setupPosBeforeTrans(pos);
             this.projection.project(pos, dest);
-
-            //if (typeof pos[2] === 'undefined') {
-            //        dest[2] = null;
-            //}
-            //dest[2] = dest[2] ? dest[2] * this.geoide.getHeightScale() : 0.0;
+            dest[2] = dest[2] ? dest[2] * this.geoide.getHeightScale() : 0.0;
             return dest;
         };
 
