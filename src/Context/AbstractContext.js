@@ -67,6 +67,14 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Laye
             this.elevationTracker = _createTrackerElevation.call(this, this.mizarConfiguration, ctxOptions);
         };
 
+        function _baseLayerReady() {
+            // When the background takes time to load, the viewMatrix computed by "computeViewMatrix" is created but
+            // with empty values. Because of that, the globe cannot be displayed without moving the camera.
+            // So we rerun "computeViewMatrix" once "baseLayersReady" is loaded to display the globe
+            if(self.getNavigation().getRenderContext().viewMatrix[0] !== "undefined") {
+                self.getNavigation().computeViewMatrix();
+            }
+        }
 
         /**
          * Creates tracker position
@@ -839,9 +847,11 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Laye
         AbstractContext.prototype.trackerDestroy = function () {
             if(this.elevationTracker) {
                 this.elevationTracker.destroy();
+                this.elevationTracker = null;
             }
             if (this.positionTracker) {
                 this.positionTracker.destroy();
+                this.positionTracker = null;
             }
         };
 
@@ -871,12 +881,16 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Laye
                     self.getNavigation().computeViewMatrix();
                 }
             });
+            if(this.navigation) {
+                this.navigation.destroy();
+                this.navigation = null;
+            }
 
-            this.navigation.destroy();
-            this.globe.destroy();
-            this.navigation = null;
+            if(this.globe) {
+                this.globe.destroy();
+                this.globe = null;
+            }
             this.canvas = null;
-            this.globe = null;
         };
 
         /**************************************************************************************************************/

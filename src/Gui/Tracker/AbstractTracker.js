@@ -37,28 +37,34 @@ define(["jquery"],
         };
 
         /**
+         * Returns the globe.
          * @function _getGlobe
          * @memberOf AbstractTracker#
-         * @abstract
          */
         AbstractTracker.prototype._getGlobe = function () {
             return this.globe;
         };
 
         /**
+         * Sets the globe
          * @function _setGlobe
          * @memberOf AbstractTracker#
-         * @abstract
          */
         AbstractTracker.prototype._setGlobe = function (globe) {
             this.globe = globe;
         };
 
+        /**
+         * Returns the DIV element in which the result is written.
+         * @function _getElement
+         * @memberOf AbstractTracker#
+         */
         AbstractTracker.prototype._getElement = function () {
             return this.element;
         };
 
         /**
+         * Updates the tracker.
          * @function update
          * @memberOf AbstractTracker#
          * @abstract
@@ -77,9 +83,9 @@ define(["jquery"],
         };
 
         /**
+         * Attachs the tracker to the globe.
          * @function attachTo
          * @memberOf AbstractTracker#
-         * @abstract
          */
         AbstractTracker.prototype.attachTo = function (globeContext) {
             this._setGlobe(globeContext);
@@ -90,6 +96,7 @@ define(["jquery"],
         };
 
         /**
+         * Detachs the tracker from the globe.
          * @function detach
          * @memberOf AbstractTracker#
          */
@@ -101,14 +108,14 @@ define(["jquery"],
         };
 
         /**
+         * Destroys the elements.
          * @function destroy
          * @memberOf AbstractTracker#
-         * @abstract
          */
         AbstractTracker.prototype.destroy = function () {
             this.element = null;
             this.options = null;
-            this.globe = null;
+            // we do do not destroy the globe now. It will be destroyed later on in the context
         };
 
 

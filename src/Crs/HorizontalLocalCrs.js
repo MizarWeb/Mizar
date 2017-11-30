@@ -49,7 +49,7 @@ define(['./AbstractCrs', '../Renderer/GeoBound', '../Utils/Utils', '../Utils/Con
          * <br/>
          * HorizontalLocalCrs is initialized with the following parameters :
          * <ul>
-         *     <li>geoideName = HorizontalLocalCrs</li>
+         *     <li>geoideName = HorizontalLocal</li>
          *     <li>radius = 1.0</li>
          *     <li>realPlanetRadius = 1</li>
          *     <li>type = Planet</li>

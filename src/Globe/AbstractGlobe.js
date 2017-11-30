@@ -171,17 +171,22 @@ define(['../Utils/Event', '../Utils/Utils',
          * @memberOf AbstractGlobe#
          */
         AbstractGlobe.prototype.destroy = function () {
-            this.dispose();
-            this.tileManager.removePostRenderer(this.vectorRendererManager);
+            if(this.tileManager) {
+                this.dispose();
+                this.tileManager.removePostRenderer(this.vectorRendererManager);
+                this.tileManager = null;
+                this.vectorRendererManager = null;
+            }
             this.renderContext.renderers.splice(this.renderContext.renderers.indexOf(this), 1);
-            this.coordinateSystem.destroy();
+            if(this.coordinateSystem) {
+                this.coordinateSystem.destroy();
+                this.coordinateSystem = null;
+            }
             this.type = null;
             this.publishEvent = null;
             this.isEnable = null;
             this.sky = null;
             this.continuousRendering = null;
-            this.tileManager = null;
-            this.vectorRendererManager = null;
             this.attributionHandler = null;
             this.baseImagery = null;
             this.preRenderers = null;

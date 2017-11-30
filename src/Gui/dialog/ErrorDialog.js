@@ -38,8 +38,8 @@ define(["jquery", "jquery.ui"], function ($) {
             width: 700,
             minHeight: 300,
             maxHeight: 500,
-            dialogClass: 'errorBox'
-            //beforeClose: function( event, ui ) { $text = ""; }
+            dialogClass: 'errorBox',
+            beforeClose: function( event, ui ) { $text = ""; }
         });
     var $active = false;
     var $displayWarning = false;

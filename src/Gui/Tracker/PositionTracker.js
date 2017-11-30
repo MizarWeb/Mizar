@@ -45,13 +45,8 @@ define(["jquery", "./AbstractTracker", "../dialog/CrsDialog","../../Utils/Utils"
 
         /**************************************************************************************************************/
 
-        PositionTracker.prototype._updateTracker = function(tracker) {
-            self = tracker;
-            CrsDialog.open(tracker._getGlobe().getCoordinateSystem());
-        };
-
         /**
-         * Update the tracker
+         * Updates the tracker's position.
          * @function update
          * @memberOf PositionTracker#
          * @param {object} event
@@ -81,7 +76,7 @@ define(["jquery", "./AbstractTracker", "../dialog/CrsDialog","../../Utils/Utils"
         };
 
         /**
-         * Compute position from a specific point
+         * Formats the coordinates from the position for displaying the coordinates on the screen.
          * @function compute
          * @memberOf PositionTracker#
          * @param geoPosition
@@ -92,8 +87,17 @@ define(["jquery", "./AbstractTracker", "../dialog/CrsDialog","../../Utils/Utils"
         };
 
         /**
+         * Attachs the tracker to the globe.
+         *
+         * Attachs the tracker to the globe by calling the attachTo method from the AbstractTracker. Then, the CrsDialog
+         * is filled with Crs information. Finally, the onClick event is set to get the Crs information. The onClick event
+         * is enabled on the <i>#posTrackerInfoButton</i> ID
+         *
          * @function attachTo
          * @memberOf PositionTracker#
+         * @param globeContext globe
+         * @see {@link CrsDialog}
+         * @see {@link AbstrackTracker#attachTo}
          */
         PositionTracker.prototype.attachTo = function (globeContext) {
             AbstractTracker.prototype.attachTo.call(this, globeContext);
@@ -109,6 +113,11 @@ define(["jquery", "./AbstractTracker", "../dialog/CrsDialog","../../Utils/Utils"
         };
 
         /**
+         * Detaches the tracker.
+         *
+         * Detaches the tracker from the glob by calling the detach method from the AbstractTracker. Then, the onClick
+         * event is removed and the CrsDialog is destroyed as well.
+         *
          * @function detach
          * @memberOf PositionTracker#
          */
@@ -116,16 +125,17 @@ define(["jquery", "./AbstractTracker", "../dialog/CrsDialog","../../Utils/Utils"
             AbstractTracker.prototype.detach.call(this);
             $("#posTrackerInfoButton").off("click");
             CrsDialog.destroy();
+            self = null;
         };
 
         /**
-         * Destroy the elevation tracker.
+         * Destroys the position tracker.
          * @function destroy
          * @memberOf AbstractTracker.prototype
          */
         PositionTracker.prototype.destroy = function() {
             this.detach(this);
-            //AbstractTracker.prototype.destroy.call(this);
+            AbstractTracker.prototype.destroy.call(this);
         };
 
 
