@@ -70,7 +70,10 @@ define(['../Utils/Utils', '../Utils/Constants',
 
             // Quick fix when lat is on the border of the tile
             var childIndex = (v >= 1 ? 1 : Math.floor(2 * v) ) * 2 + Math.floor(2 * u);
-            if (this.children && this.children[childIndex].state === Tile.State.LOADED) {
+
+
+
+            if (this.children && this.children[childIndex] && this.children[childIndex].state === Tile.State.LOADED) {
                 return this.children[childIndex].getElevation(lon, lat);
             }
 
