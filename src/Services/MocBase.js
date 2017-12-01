@@ -150,24 +150,25 @@ define(["jquery", "../Renderer/FeatureStyle", "../Layer/MocLayer", "../Utils/Num
          */
         function createMocSublayer(layer, successCallback, errorCallback) {
             if (layer.describeUrl !== "Not available") {
-                if (!layer.describeUrl) {
-                    requestMocDesc(layer, function (layer) {
-                        handleMocLayer(layer, layer.describeUrl);
-                        var url = layer.describeUrl;
-                        if (!String(url).endsWith(".fits")) {
-                            url+="?media=txt"
-                        }
-                        requestSkyCoverage(layer, url, successCallback);
-                    }, errorCallback);
-                }
-                else {
-                    handleMocLayer(layer, layer.describeUrl);
-                    var url = layer.describeUrl;
-                    if (!String(url).endsWith(".fits")) {
-                        url+="?media=txt"
-                    }
-                    requestSkyCoverage(layer, url, successCallback);
-                }
+                //if (!layer.describeUrl) {
+                //    requestMocDesc(layer, function (layer) {
+                //        handleMocLayer(layer, layer.describeUrl);
+                //        var url = layer.describeUrl;
+                //        if (!String(url).endsWith(".fits")) {
+                //            url+="?media=txt"
+                //        }
+                //        requestSkyCoverage(layer, url, successCallback);
+                //    }, errorCallback);
+                //}
+                //else {
+                console.log(layer);
+                    handleMocLayer(layer, layer.serviceURL);
+                    //var url = layer.describeUrl;
+                    //if (!String(url).endsWith(".fits")) {
+                    //    url+="?media=txt"
+                    //}
+                    //requestSkyCoverage(layer, url, successCallback);
+                //}
             }
             else {
                 errorCallback(layer);
@@ -256,26 +257,31 @@ define(["jquery", "../Renderer/FeatureStyle", "../Layer/MocLayer", "../Utils/Num
          */
         function handleMocLayer(layer, mocServiceUrl) {
             var style = layer.style;
-            var serviceLayer = new MocLayer({
-                serviceUrl: mocServiceUrl,
-                style: layer.style,
-                visible: false
-            });
 
-            serviceLayer.style.fill = true;
-            serviceLayer.style.fillColor[3] = 0.3;
+            //var serviceLayer = new MocLayer({
+            //    serviceUrl: mocServiceUrl,
+            //    style: layer.style,
+            //    visible: true
+            //});
+
+            //serviceLayer.style.fill = true;
+            //serviceLayer.style.fillColor[3] = 0.3;
             // TODO: think about attachement of moc layer
-            // if ( layer.globe && layer.isVisible() )
-            // {
-            // Add sublayer to engine
-            layer.globe.addLayer(serviceLayer);
-            // }
+             //if ( layer.globe && layer.isVisible() ) {
+                // Add sublayer to engine
+                var ID = mizarAPI.addLayer({
+                    type: "Moc",
+                    serviceUrl: mocServiceUrl,
+                    style: new FeatureStyle(),
+                    visible: true
+                });
+            console.log("ID="+ID);
+                 //if (!layer.subLayers) {
+                 //    layer.subLayers = [];
+                 //}
 
-            if (!layer.subLayers) {
-                layer.subLayers = [];
-            }
-
-            layer.subLayers.push(serviceLayer);
+                // layer.subLayers.push(ID);
+            //}
         }
 
         /**************************************************************************************************************/

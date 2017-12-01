@@ -36,8 +36,8 @@
  ***************************************/
 
 
-define(["jquery", "./AbstractLayer", '../Utils/Constants','../Renderer/FeatureStyle', "../Utils/Utils", "../Tiling/HEALPixBase", "./FitsLoader"],
-    function ($, AbstractLayer, Constants, FeatureStyle, Utils, HEALPixBase, FitsLoader) {
+define(["jquery", "underscore-min", "./AbstractLayer", '../Utils/Constants','../Renderer/FeatureStyle', "../Utils/Utils", "../Tiling/HEALPixBase", "./FitsLoader"],
+    function ($, _, AbstractLayer, Constants, FeatureStyle, Utils, HEALPixBase, FitsLoader) {
         /**
          * MocLayer configuration
          * @typedef {AbstractLayer.configuration} AbstractLayer.moc_configuration
@@ -60,6 +60,20 @@ define(["jquery", "./AbstractLayer", '../Utils/Constants','../Renderer/FeatureSt
 
             this.serviceUrl = this.proxify(options.serviceUrl);
             this.startOrder = options.startOrder || 2;
+
+            if(options.coordinateSystem && options.coordinateSystem.geoideName) {
+                this.crs = {
+                    properties : {
+                        name: options.coordinateSystem.geoideName
+                    }
+                };
+            } else {
+                this.crs = {
+                    properties : {
+                        name:"Equatorial"
+                    }
+                };
+            }
 
             // Set style
             if (options && options.style) {
@@ -286,6 +300,7 @@ define(["jquery", "./AbstractLayer", '../Utils/Constants','../Renderer/FeatureSt
                         var geometry = {
                             type: Constants.GEOMETRY.Polygon,
                             gid: "moc" + this.id + "_" + order + "_" + pixelIndex,
+                            crs: this.crs,
                             coordinates: [[]]
                         };
 
