@@ -31,6 +31,7 @@ define(["jquery"],
             this.options = options;
             this.globe = null;
             this.element = options.element;
+            document.getElementById(this.element).innerHTML = "";
             if (options.position) {
                 $("#" + this.element).css(options.position, "2px");
             }
@@ -101,6 +102,7 @@ define(["jquery"],
          * @memberOf AbstractTracker#
          */
         AbstractTracker.prototype.detach = function () {
+            document.getElementById(this._getElement()).innerHTML = "";
             this._getGlobe().getRenderContext().canvas.removeEventListener('mousemove', this.update);
             if (this.options.isMobile) {
                 this._getGlobe().getRenderContext().canvas.removeEventListener('touchmove', this.update);
@@ -113,6 +115,7 @@ define(["jquery"],
          * @memberOf AbstractTracker#
          */
         AbstractTracker.prototype.destroy = function () {
+            document.getElementById(this._getElement()).innerHTML = "";
             this.element = null;
             this.options = null;
             // we do do not destroy the globe now. It will be destroyed later on in the context

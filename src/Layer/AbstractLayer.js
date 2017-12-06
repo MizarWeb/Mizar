@@ -105,7 +105,6 @@ define(["jquery","underscore-min", "../Utils/Event", "../Utils/Utils", "../Utils
             this.format = this.options.format || "";
             this.baseUrl = this.options.baseUrl || "";
             this.deletable = this.options.deletable || false;
-            this.fitsSupported = false;
 
             // Update layer color
             this.color = _createColor.call(this, this.options);
@@ -123,7 +122,6 @@ define(["jquery","underscore-min", "../Utils/Event", "../Utils/Utils", "../Utils
 
             this.availableServices = _createAvailableServices(this.options);
         };
-
 
 
         function _createAvailableServices(options) {

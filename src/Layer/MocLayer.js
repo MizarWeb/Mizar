@@ -41,7 +41,7 @@ define(["jquery", "underscore-min", "./AbstractLayer", '../Utils/Constants','../
         /**
          * MocLayer configuration
          * @typedef {AbstractLayer.configuration} AbstractLayer.moc_configuration
-         * @property {string} serviceUrl - service URL
+         * @property {string} baseUrl - service URL
          * @property {int} [startOrder = 2] - Starting order of HEALPix tiling
          * @property {Object} [style] - See {@link FeatureStyle} description
          */
@@ -58,7 +58,7 @@ define(["jquery", "underscore-min", "./AbstractLayer", '../Utils/Constants','../
             options.dataType = Constants.GEOMETRY.LineString;
             AbstractLayer.prototype.constructor.call(this, Constants.LAYER.Moc, options);
 
-            this.serviceUrl = this.proxify(options.serviceUrl);
+            this.baseUrl = this.proxify(options.baseUrl);
             this.startOrder = options.startOrder || 2;
 
             if(options.coordinateSystem && options.coordinateSystem.geoideName) {
@@ -105,8 +105,8 @@ define(["jquery", "underscore-min", "./AbstractLayer", '../Utils/Constants','../
             var self = this;
             var i;
 
-            if (String(self.serviceUrl).endsWith(".fits")) {
-                FitsLoader.loadFits(self.serviceUrl, function (fits) {
+            if (String(self.baseUrl).endsWith(".fits")) {
+                FitsLoader.loadFits(self.baseUrl, function (fits) {
                     var healpixMoc = {};
                     var binaryTable = fits.getHDU(1).data;
 
@@ -152,7 +152,7 @@ define(["jquery", "underscore-min", "./AbstractLayer", '../Utils/Constants','../
             } else {
                 $.ajax({
                     type: "GET",
-                    url: self.serviceUrl,
+                    url: self.baseUrl,
                     dataType: 'json',
                     success: function (response) {
                         self.handleDistribution(response);

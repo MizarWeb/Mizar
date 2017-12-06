@@ -137,6 +137,14 @@ define(['./AbstractCrs', '../Renderer/GeoBound', '../Utils/Utils', '../Utils/Con
             return Constants.CRS.WGS84;
         };
 
+        /**
+         * @function getDescription
+         * @memberOf WGS84Crs#
+         */
+        WGS84Crs.prototype.getDescription = function () {
+            return DESCRIPTION;
+        };
+
         return WGS84Crs;
 
     });

@@ -371,6 +371,7 @@ define(["jquery", "underscore-min",
             var self = this;
             options = options || {};
             var mustBeDestroyed = options.hasOwnProperty("mustBeDestroyed") ? options.mustBeDestroyed : false;
+            var mustBeHidden = options.hasOwnProperty("mustBeHidden") ? options.mustBeHidden : false;
 
             // Hide sky
             this.getActivatedContext().hide();
@@ -396,14 +397,18 @@ define(["jquery", "underscore-min",
                 mat4.inverse(context.getNavigation().inverseViewMatrix, viewMatrix);
                 fov =  90;
             }
+
             if(mustBeDestroyed) {
                 this.getActivatedContext().destroy();
-            } //else {
-              //  this.getActivatedContext().trackerDestroy();
-            //}
-            context.positionTracker.detach();
+            } else if(mustBeHidden) {
+                this.getActivatedContext().positionTracker.detach();
+                this.getActivatedContext().elevationTracker.detach();
+                this.getActivatedContext().setComponentVisibility("posTrackerInfo", false);
+                this.getActivatedContext().disable();
+            } else {
+                // display the two context in the same time
+            }
             context.positionTracker.attachTo(context.globe);
-            context.elevationTracker.detach();
             context.elevationTracker.attachTo(context.globe);
             this.activatedContext = context;
             context.getNavigation().toViewMatrix(viewMatrix, fov, 2000, function() {
