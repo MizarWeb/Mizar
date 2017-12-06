@@ -753,6 +753,9 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Laye
          * @abstract
          */
         AbstractContext.prototype.disable = function () {
+            this.positionTracker.detach();
+            this.elevationTracker.detach();
+            this.setComponentVisibility("posTrackerInfo", false);
             var i = 0;
             var layer = this.layers[i];
             while(layer) {
@@ -773,6 +776,8 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Laye
          * @abstract
          */
         AbstractContext.prototype.enable = function () {
+            this.positionTracker.attachTo(this.globe);
+            this.elevationTracker.attachTo(this.globe);
             var i = 0;
             var layer = this.layers[i];
             while(layer) {

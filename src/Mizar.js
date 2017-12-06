@@ -401,15 +401,10 @@ define(["jquery", "underscore-min",
             if(mustBeDestroyed) {
                 this.getActivatedContext().destroy();
             } else if(mustBeHidden) {
-                this.getActivatedContext().positionTracker.detach();
-                this.getActivatedContext().elevationTracker.detach();
-                this.getActivatedContext().setComponentVisibility("posTrackerInfo", false);
                 this.getActivatedContext().disable();
             } else {
                 // display the two context in the same time
             }
-            context.positionTracker.attachTo(context.globe);
-            context.elevationTracker.attachTo(context.globe);
             this.activatedContext = context;
             context.getNavigation().toViewMatrix(viewMatrix, fov, 2000, function() {
                 if(context) {
