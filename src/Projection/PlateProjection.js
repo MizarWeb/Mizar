@@ -70,8 +70,8 @@ define(['./AbstractProjection', '../Utils/Utils', '../Renderer/glMatrix'],
             }
             dest[0] = geoPos[0] * Math.PI / 180;
             dest[1] = geoPos[1] * Math.PI / 180;
-            dest[2] = this.getDefaultZ();
-            //dest[2] = geoPos[2];
+            //dest[2] = this.getDefaultZ();
+            dest[2] = geoPos[2];
             return dest;
         };
 

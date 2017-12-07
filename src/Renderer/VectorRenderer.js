@@ -163,7 +163,7 @@ VectorRenderer.prototype.addGeometry = function(layer, geometry, style)
 		for ( var i=0; i < tileIndices.length; i++ )
 		{
 			var tile = this.tileManager.level0Tiles[ tileIndices[i] ];
-			if ( tile && (tile.state === Tile.State.LOADED) )
+			if ( tile && (typeof tile !== "undefined") && (tile.state === Tile.State.LOADED) )
 			{
 				this._recursiveAddGeometryToTile(bucket, geometry, tile);
 			}

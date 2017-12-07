@@ -97,6 +97,7 @@ define(['../Utils/Utils', './VectorRenderer', './Program', './FeatureStyle', './
             this.bucket = bucket;
             this.geometry2vb = {};
             this.vertices = [];
+            this.geometries = [];
             this.vertexBuffer = null;
             this.vertexBufferDirty = false;
         };
@@ -110,7 +111,7 @@ define(['../Utils/Utils', './VectorRenderer', './Program', './FeatureStyle', './
          * @param geometry
          * @return {Boolean} If the geometry has been successfully added to the renderable
          */
-        Renderable.prototype.add = function (geometry) {
+        Renderable.prototype.add = function (geometry,stockGeometry) {
             this.geometry2vb[geometry.gid] = this.vertices.length;
             // TODO: Find a better way to access to coordinate system
             var globe = this.bucket.renderer.globe;
@@ -123,10 +124,26 @@ define(['../Utils/Utils', './VectorRenderer', './Program', './FeatureStyle', './
             //TODO after order > 5. With order<=5, the image need more control points. Without these
             //TODO control point, the image does not fit perfectly the sphere and the point is behind the image
             this.vertices.push(scale * pt[0], scale * pt[1], scale * pt[2]);
+            if (stockGeometry !== false) {
+                this.geometries.push(geometry);
+            }
             this.vertexBufferDirty = true;
-
             return true;
         };
+
+        /**************************************************************************************************************/
+
+        /**
+         * Update all elevations for each render
+         * @function updateElevations
+         * @memberof Renderable.prototype
+         */
+        Renderable.prototype.updateElevations = function() {
+            this.vertices = [];
+            for (var i=0;i<this.geometries.length;i++) {
+                this.add(this.geometries[i],false);
+            }
+        }
 
         /**************************************************************************************************************/
 
@@ -347,6 +364,7 @@ define(['../Utils/Utils', './VectorRenderer', './Program', './FeatureStyle', './
             var currentBucket = null;
             for (var n = start; n < end; n++) {
                 var renderable = renderables[n];
+                renderable.updateElevations();
                 var bucket = renderable.bucket;
 
                 if (currentBucket !== bucket) {

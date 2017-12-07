@@ -210,6 +210,7 @@ define(['../Utils/Utils', '../Utils/Constants', './VectorRenderer', './VectorRen
         var PointRenderable = function (bucket) {
             this.bucket = bucket;
             this.points = [];
+            this.geometries = [];
         };
 
         /**************************************************************************************************************/
@@ -379,6 +380,7 @@ define(['../Utils/Utils', '../Utils/Constants', './VectorRenderer', './VectorRen
 
             var renderContext = this.renderContext;
             var gl = this.renderContext.gl;
+
             // TODO
             //var level = renderContext.renderers[0].tileManager.visibleTiles[0].level;
             //if(level < 5) {
@@ -421,7 +423,7 @@ define(['../Utils/Utils', '../Utils/Constants', './VectorRenderer', './VectorRen
                 if (renderable.points.length === 0) {
                     continue;
                 }
-
+                
                 if (bucket !== currentBucket) {
                     // Bind point texture
                     gl.activeTexture(gl.TEXTURE0);
