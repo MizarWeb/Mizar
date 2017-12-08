@@ -52,6 +52,7 @@ define(["underscore-min", "../Utils/Utils",
 
             var self = this;
             this.components = {
+                "posTrackerInfo": true,
                 "posTracker": true,
                 "elevTracker": false,
                 "compassDiv": true
@@ -166,7 +167,7 @@ define(["underscore-min", "../Utils/Utils",
                 throw ReferenceError("incompatible coordinate reference system with Sky context", "SkyContex.js");
             }
             this.globe.setCoordinateSystem(cs);
-            this.publish("modifiedCrs", cs);
+            this.publish("modifiedCrs", this);
         };
 
         /**

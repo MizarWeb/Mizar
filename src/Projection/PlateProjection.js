@@ -17,8 +17,8 @@
  * along with GlobWeb. If not, see <http://www.gnu.org/licenses/>.
  ***************************************/
 
-define(['./AbstractProjection', '../Utils/Utils', '../Renderer/glMatrix'],
-    function (AbstractProjection, Utils) {
+define(['./AbstractProjection', '../Utils/Utils', '../Utils/Constants', '../Renderer/glMatrix'],
+    function (AbstractProjection, Utils, Constants) {
         /**
          * @name PlateProjection
          * @class
@@ -73,14 +73,16 @@ define(['./AbstractProjection', '../Utils/Utils', '../Renderer/glMatrix'],
             }
             dest[0] = geoPos[0] * Math.PI / 180;
             dest[1] = geoPos[1] * Math.PI / 180;
-            if (typeof geoPos[2] === 'undefined') {
-                dest[2] = this.getElevation(dest[0],dest[1]);
-            } else {
-                dest[2] = geoPos[2];
-            }
-           
-            
+            dest[2] = geoPos[2];
             return dest;
+        };
+
+        /**
+         * @function getName
+         * @memberOf PlateProjection#
+         */
+        PlateProjection.prototype.getName = function() {
+            return Constants.PROJECTION.Plate;
         };
 
         /**************************************************************************************************************/

@@ -46,7 +46,6 @@ define(['../Utils/Utils', '../Utils/Constants',
         var GeoTile = function (geoBound, level, x, y) {
             // Call ancestor constructor
             Tile.prototype.constructor.call(this);
-
             this.bound = this.geoBound = geoBound;
             this.level = level;
             this.x = x;
@@ -122,14 +121,12 @@ define(['../Utils/Utils', '../Utils/Constants',
             var ul = this.geoBound.getEast() - this.geoBound.getWest();
             var vl = this.geoBound.getSouth() - this.geoBound.getNorth();
             var factor = this.config.tesselation - 1;
-
             var tileCoords = [];
             for (var i = 0; i < coordinates.length; i++) {
                 var u = factor * (coordinates[i][0] - this.geoBound.getWest()) / ul;
                 var v = factor * (coordinates[i][1] - this.geoBound.getNorth()) / vl;
                 tileCoords.push([u, v]);
             }
-
             return tileCoords;
         };
 

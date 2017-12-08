@@ -141,7 +141,7 @@ define(function () {
         "August": "August",
         "Mercator": "Mercator",
         "Mollweide": "Mollweide",
-        "Plate": "Plate",
+        "Plate": "Plate Carrée",
         "Azimuth": "Azimuth"
     };
 
@@ -254,12 +254,14 @@ define(function () {
      * @property {String} equatorial - Equatorial
      * @property {String} galactic - Galactic
      * @property {String} ecliptic - Ecliptic
+     * @property {String} horizontalLocal - Equatorial
      */
     Constants.MappingCrsHips2Mizar = {
         "equatorial": "Equatorial",
         "galactic": "Galactic",
         "ecliptic": "Ecliptic",
-        "mars-panstimson": "Equatorial"
+        "mars-panstimson": "Equatorial",
+        "horizontalLocal": "Equatorial"
     };
 
     /**

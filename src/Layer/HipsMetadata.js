@@ -48,11 +48,13 @@ define(["jquery", "../Utils/Constants"], function ($, Constants) {
      * @property {String} equatorial - equatorial
      * @property {String} galactic - galactic
      * @property {String} ecliptic - ecliptic
+     * @property {String} horizontalLocal - horizontalLocal
      */
     var HIPS_FRAME = {
         "equatorial": Constants.CRS.Equatorial,
         "galactic": Constants.CRS.Galactic,
-        "ecliptic": "ecliptic"
+        "ecliptic": "ecliptic",
+        "horizontalLocal" : Constants.CRS.HorizontalLocal
     };
 
     /**

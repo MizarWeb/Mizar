@@ -236,7 +236,7 @@ define(['../Utils/Constants', '../Utils/Utils', './FeatureStyle', './VectorRende
          @name PolygonRenderer
          @class
              PolygonRenderer constructor
-         @param {Planet} planet Planet
+         @param {AbstractGlobe} globe Globe
          @augments TiledVectorRenderer
          @constructor
          */

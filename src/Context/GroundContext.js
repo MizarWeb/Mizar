@@ -51,6 +51,7 @@ define(["jquery", "underscore-min", "../Utils/Utils", "./AbstractContext", "../U
             var self = this;
 
             this.components = {
+                "posTrackerInfo": true,
                 "posTracker": true,
                 "elevTracker": false,
                 "compassDiv": false
@@ -142,7 +143,7 @@ define(["jquery", "underscore-min", "../Utils/Utils", "./AbstractContext", "../U
                 throw new RangeError("incompatible coordinate reference system with Sky context", "GroundContext.js");
             }
             this.globe.setCoordinateSystem(cs);
-            this.publish("modifiedCrs", cs);
+            this.publish("modifiedCrs", this);
         };
 
         /**

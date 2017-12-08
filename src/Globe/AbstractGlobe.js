@@ -18,10 +18,10 @@
  ******************************************************************************/
 define(['../Utils/Event', '../Utils/Utils',
         '../Tiling/TileManager', '../Renderer/VectorRendererManager', '../Renderer/Ray', '../Renderer/GeoBound',
-        '../Crs/CoordinateSystemFactory', '../Renderer/RenderContext','../Renderer/glMatrix'],
+        '../Crs/CoordinateSystemFactory', '../Renderer/RenderContext', '../Utils/Constants', '../Renderer/glMatrix'],
     function (Event, Utils,
               TileManager, VectorRendererManager, Ray, GeoBound,
-              CoordinateSystemFactory, RenderContext) {
+              CoordinateSystemFactory, RenderContext, Constants) {
 
 
         /**
@@ -171,17 +171,22 @@ define(['../Utils/Event', '../Utils/Utils',
          * @memberOf AbstractGlobe#
          */
         AbstractGlobe.prototype.destroy = function () {
-            this.dispose();
-            this.tileManager.removePostRenderer(this.vectorRendererManager);
+            if(this.tileManager) {
+                this.dispose();
+                this.tileManager.removePostRenderer(this.vectorRendererManager);
+                this.tileManager = null;
+                this.vectorRendererManager = null;
+            }
             this.renderContext.renderers.splice(this.renderContext.renderers.indexOf(this), 1);
-            this.coordinateSystem.destroy();
+            if(this.coordinateSystem) {
+                this.coordinateSystem.destroy();
+                this.coordinateSystem = null;
+            }
             this.type = null;
             this.publishEvent = null;
             this.isEnable = null;
             this.sky = null;
             this.continuousRendering = null;
-            this.tileManager = null;
-            this.vectorRendererManager = null;
             this.attributionHandler = null;
             this.baseImagery = null;
             this.preRenderers = null;
@@ -375,10 +380,87 @@ define(['../Utils/Event', '../Utils/Utils',
          * @memberOf AbstractGlobe#
          */
         AbstractGlobe.prototype.setCoordinateSystem = function (coordinateSystem) {
+            var oldCrs = this.coordinateSystem;
             this.coordinateSystem = coordinateSystem;
-            this.tileManager.tileConfig.coordinateSystem = coordinateSystem;
             this.dispose();
-            this.tileManager.level0Tiles = this.tileManager.tiling.generateLevelZeroTiles(this.tileManager.tileConfig, this.tileManager.tilePool);
+            this.tileManager.tileConfig.coordinateSystem = coordinateSystem;
+            this._updateGeoTiling(oldCrs, coordinateSystem);
+        };
+
+        /**
+         * Updates the GeoTiling when the CRS changes.
+         * The GeoTiling for Azimuthal projection is quite different of the others. We need to check when a GeoTiling
+         * must be updated. Once a new GeoTiling is done then we need to update the geometry related to the old GeoTiling
+         * @function _updateGeoTiling
+         * @memberOf AbstractGlobe#
+         * @private
+         */
+        AbstractGlobe.prototype._updateGeoTiling = function(oldCrs, crs) {
+            var mustBeUpdated;
+            if (crs.isProjected() && crs.getProjection().getName() === Constants.PROJECTION.Azimuth) {
+                if(oldCrs.isProjected() && oldCrs.getProjection().getName() === Constants.PROJECTION.Azimuth) {
+                    // nothing to update, same projection;
+                    mustBeUpdated = false;
+                } else {
+                    // must be updated, the GeoTiling is quite different between azimuth and another one
+                    mustBeUpdated = true;
+                }
+            } else if (oldCrs.isProjected() && oldCrs.getProjection().getName() === Constants.PROJECTION.Azimuth) {
+                if(crs.isProjected() && crs.getProjection().getName() === crs.PROJECTION.Azimuth) {
+                    // nothing to update, same projection;
+                    mustBeUpdated = false;
+                } else {
+                    // must be updated, the GeoTiling is quite different between azimuth and another one
+                    mustBeUpdated = true;
+                }
+            } else {
+                // nothing to update, the geoTiling is the same.
+                mustBeUpdated = false;
+            }
+
+            if(mustBeUpdated) {
+                this.tileManager.level0Tiles = this.tileManager.tiling.generateLevelZeroTiles(this.tileManager.tileConfig, this.tileManager.tilePool);
+                this._updateTileIndexInGeometry();
+            }
+        };
+
+        /**
+         * Updates the geometry related to the old GeoTiling to the new GeoTiling.
+         * @function _updateTileIndexInGeometry
+         * @memberOf AbstractGlobe#
+         * @private
+         */
+        AbstractGlobe.prototype._updateTileIndexInGeometry = function() {
+            var postRenderers = this.tileManager.postRenderers;
+            var postRendererIdx = postRenderers.length;
+            // we use while, this is the fastest loop in Javascript https://jsperf.com/fastest-array-loops-in-javascript/32
+            while(postRendererIdx--) {
+                // we iterate on renderers
+                var postRenderer = postRenderers[postRendererIdx];
+                if (postRenderer instanceof VectorRendererManager) {
+                    // we look for VectorRendererManager because this one contains geometry
+                    var vectorRendererManager = postRenderers[postRendererIdx];
+                    var vectors = vectorRendererManager.renderers;
+                    var vectorIdx = vectors.length;
+                    while(vectorIdx--) {
+                        // we iterate on vector
+                        var vector = vectors[vectorIdx];
+                        if (vector.levelZeroTiledGeometries && vector.levelZeroTiledGeometries.length > 0) {
+                            // we retrieve the geometries
+                            var geometries = vector.levelZeroTiledGeometries;
+                            var geometryIdx = geometries.length;
+                            while(geometryIdx--) {
+                                // we iterate on each geometry to update the indexed tile related to the geometry
+                                // the (0,0) is 0, the (1,0) is 1, ....
+                                var geometry = geometries[geometryIdx];
+                                var tileIndices = vector.maxTilePerGeometry > 0 ? this.tileManager.tiling.getOverlappedLevelZeroTiles(geometry) : null;
+                                // update
+                                geometry._tileIndices = tileIndices;
+                            }
+                        }
+                    }
+                }
+            }
         };
 
         /**

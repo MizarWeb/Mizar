@@ -55,8 +55,8 @@
  * @module Projection
  * @implements {Projection}
  */
-define(['./AbstractProjection', '../Utils/Utils', '../Renderer/glMatrix'],
-    function (AbstractProjection, Utils) {
+define(['./AbstractProjection', '../Utils/Utils', '../Utils/Constants', '../Renderer/glMatrix'],
+    function (AbstractProjection, Utils, Constants) {
         /**
          * @name AitoffProjection
          * @class
@@ -179,6 +179,14 @@ define(['./AbstractProjection', '../Utils/Utils', '../Renderer/glMatrix'],
             // dest[1] = (dest[1] + phi) / 2;
 
             return dest;
+        };
+
+        /**
+         * @function getName
+         * @memberOf AitoffProjection#
+         */
+        AitoffProjection.prototype.getName = function() {
+            return Constants.PROJECTION.Aitoff;
         };
 
         /**************************************************************************************************************/

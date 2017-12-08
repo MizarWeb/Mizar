@@ -18,14 +18,38 @@
  ******************************************************************************/
 define(['./AbstractCrs', '../Renderer/GeoBound', '../Utils/Utils', '../Utils/Constants', '../Utils/Numeric'],
     function (AbstractCrs, GeoBound, Utils, Constants, Numeric) {
+
+        /**
+         * @constant
+         * @type {string}
+         */
+        const DESCRIPTION = "System in which an local object's position is described in the observer's local horizon." +
+            "It is expressed in terms of altitude (or elevation) angle and azimuth. The elevation is measured for -90° " +
+            "(nadir) to 90° (zenith) but azimuth is measured in degrees eastward along the horizon from the North";
+
+        /**
+         * @constant
+         * @type {string}
+         */
+        const LONGITUDE_LABEL = "Az";
+
+        /**
+         * @constant
+         * @type {string}
+         */
+        const LATITUDE_LABEL = "Alt";
+
+
         /**
          * @name HorizontalLocalCrs
          * @class
-         * Local horizontal coordinate reference system based on horizontal coordinates.
+         * System in which an local object's position is described in the observer's local horizon. It is expressed in
+         * terms of altitude (or elevation) angle and azimuth. The elevation is measured for -90° (nadir) to 90° (zenith)
+         * but azimuth is measured in degrees eastward along the horizon from the North.
          * <br/>
          * HorizontalLocalCrs is initialized with the following parameters :
          * <ul>
-         *     <li>geoideName = HorizontalLocalCrs</li>
+         *     <li>geoideName = HorizontalLocal</li>
          *     <li>radius = 1.0</li>
          *     <li>realPlanetRadius = 1</li>
          *     <li>type = Planet</li>
@@ -63,14 +87,33 @@ define(['./AbstractCrs', '../Renderer/GeoBound', '../Utils/Utils', '../Utils/Con
             var astro = [];
             var azimuth = Numeric.roundNumber(geo[0], 3);
             var altitude = Numeric.roundNumber(geo[1], 3);
-            if(azimuth > 0 && azimuth <= 180) {
-                azimuth = 360 - azimuth;
-            } else {
+            if(azimuth < 0) {
                 azimuth = -1*azimuth;
+            } else {
+                azimuth = 360 - azimuth;
             }
-            astro[0] = azimuth+"°";
-            astro[1] = altitude+"°";
+
+            astro[0] = this.getLongitudeLabel()+" = "+azimuth;
+            astro[0] += "&deg;";
+            astro[1] = this.getLatitudeLabel()+" = "+altitude;
+            astro[1] +="&deg;";
             return astro;
+        };
+
+        /**
+         * @function getLongitudeLabel
+         * @memberOf HorizontalLocalCrs#
+         */
+        HorizontalLocalCrs.prototype.getLongitudeLabel = function () {
+            return LONGITUDE_LABEL;
+        };
+
+        /**
+         * @function getLatitudeLabel
+         * @memberOf HorizontalLocalCrs#
+         */
+        HorizontalLocalCrs.prototype.getLatitudeLabel = function () {
+            return LATITUDE_LABEL;
         };
 
         /**
@@ -80,7 +123,9 @@ define(['./AbstractCrs', '../Renderer/GeoBound', '../Utils/Utils', '../Utils/Con
          * @private
          */
         HorizontalLocalCrs.prototype._setupPosAfterTrans = function(posWorld) {
-            //Do Nothing
+            //if (posWorld[0] < 0) {
+            //    posWorld[0] += 360.0;
+            //}
         };
 
         /**
@@ -90,7 +135,25 @@ define(['./AbstractCrs', '../Renderer/GeoBound', '../Utils/Utils', '../Utils/Con
          * @private
          */
         HorizontalLocalCrs.prototype._setupPosBeforeTrans = function(posWorld) {
-            //Do Nothing
+            //if (posWorld[0] > 180) {
+            //    posWorld[0] -= 360.0;
+            //}
+        };
+
+        /**
+         * @function getName
+         * @memberOf HorizontalLocalCrs#
+         */
+        HorizontalLocalCrs.prototype.getName = function () {
+            return Constants.CRS.HorizontalLocal;
+        };
+
+        /**
+         * @function getDescription
+         * @memberOf HorizontalLocalCrs#
+         */
+        HorizontalLocalCrs.prototype.getDescription = function () {
+            return DESCRIPTION;
         };
 
         return HorizontalLocalCrs;

@@ -130,7 +130,7 @@
  * modifiedCrs.<br/>
  * Called when a CRS changes
  * @event Context#modifiedCrs
- * @type {Crs}
+ * @type {ContextInterface}
  */
 
 /**

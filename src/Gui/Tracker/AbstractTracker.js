@@ -31,34 +31,41 @@ define(["jquery"],
             this.options = options;
             this.globe = null;
             this.element = options.element;
+            document.getElementById(this.element).innerHTML = "";
             if (options.position) {
                 $("#" + this.element).css(options.position, "2px");
             }
         };
 
         /**
+         * Returns the globe.
          * @function _getGlobe
          * @memberOf AbstractTracker#
-         * @abstract
          */
-        AbstractTracker.prototype._getGlobe = function (event) {
+        AbstractTracker.prototype._getGlobe = function () {
             return this.globe;
         };
 
         /**
+         * Sets the globe
          * @function _setGlobe
          * @memberOf AbstractTracker#
-         * @abstract
          */
         AbstractTracker.prototype._setGlobe = function (globe) {
             this.globe = globe;
         };
 
-        AbstractTracker.prototype._getElement = function (globe) {
+        /**
+         * Returns the DIV element in which the result is written.
+         * @function _getElement
+         * @memberOf AbstractTracker#
+         */
+        AbstractTracker.prototype._getElement = function () {
             return this.element;
         };
 
         /**
+         * Updates the tracker.
          * @function update
          * @memberOf AbstractTracker#
          * @abstract
@@ -77,43 +84,41 @@ define(["jquery"],
         };
 
         /**
+         * Attachs the tracker to the globe.
          * @function attachTo
          * @memberOf AbstractTracker#
-         * @abstract
          */
         AbstractTracker.prototype.attachTo = function (globeContext) {
             this._setGlobe(globeContext);
-            var self = this;
-            this._updateTracker(this);
-            this._getGlobe().getRenderContext().canvas.addEventListener('mousemove', self.update);
+            this._getGlobe().getRenderContext().canvas.addEventListener('mousemove', this.update);
             if (this.options.isMobile) {
-                this._getGlobe().getRenderContext().canvas.addEventListener('touchmove', self.update);
+                this._getGlobe().getRenderContext().canvas.addEventListener('touchmove', this.update);
             }
         };
 
         /**
+         * Detachs the tracker from the globe.
          * @function detach
          * @memberOf AbstractTracker#
-         * @abstract
          */
         AbstractTracker.prototype.detach = function () {
-            var self = this;
-            this._updateTracker(this);
-            this._getGlobe().getRenderContext().canvas.removeEventListener('mousemove', self.update);
+            document.getElementById(this._getElement()).innerHTML = "";
+            this._getGlobe().getRenderContext().canvas.removeEventListener('mousemove', this.update);
             if (this.options.isMobile) {
-                this._getGlobe().getRenderContext().canvas.removeEventListener('touchmove', self.update);
+                this._getGlobe().getRenderContext().canvas.removeEventListener('touchmove', this.update);
             }
         };
 
         /**
+         * Destroys the elements.
          * @function destroy
          * @memberOf AbstractTracker#
-         * @abstract
          */
         AbstractTracker.prototype.destroy = function () {
+            document.getElementById(this._getElement()).innerHTML = "";
             this.element = null;
             this.options = null;
-            this.globe = null;
+            // we do do not destroy the globe now. It will be destroyed later on in the context
         };
 
 

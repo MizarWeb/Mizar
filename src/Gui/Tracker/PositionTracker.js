@@ -16,8 +16,8 @@
  * You should have received a copy of the GNU General Public License
  * along with SITools2. If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
-define(["jquery", "./AbstractTracker", "../../Utils/Utils"],
-    function ($, AbstractTracker, Utils) {
+define(["jquery", "./AbstractTracker", "../dialog/CrsDialog","../../Utils/Utils"],
+    function ($, AbstractTracker, CrsDialog, Utils) {
 
         var self;
         /**
@@ -38,7 +38,6 @@ define(["jquery", "./AbstractTracker", "../../Utils/Utils"],
          */
         var PositionTracker = function (options) {
             AbstractTracker.prototype.constructor.call(this, options);
-            self = this;
         };
         /**************************************************************************************************************/
 
@@ -46,12 +45,8 @@ define(["jquery", "./AbstractTracker", "../../Utils/Utils"],
 
         /**************************************************************************************************************/
 
-        PositionTracker.prototype._updateTracker = function(tracker) {
-            self = tracker;
-        };
-
         /**
-         * Update the tracker
+         * Updates the tracker's position.
          * @function update
          * @memberOf PositionTracker#
          * @param {object} event
@@ -63,20 +58,25 @@ define(["jquery", "./AbstractTracker", "../../Utils/Utils"],
             }
 
             if (document.getElementById(self._getElement())) {
+                var $crsInfo = $("#" + self._getElement()+"Info");
                 var geoPos = self._getGlobe().getLonLatFromPixel(event.clientX, event.clientY);
                 if (geoPos) {
                     var astro = self.compute([geoPos[0], geoPos[1]]);
                     document.getElementById(self._getElement()).innerHTML = astro[0] + " x " + astro[1];
+                    if( $crsInfo.css('display') == 'none' ){
+                        $crsInfo.show();
+                    }
                 } else {
                     document.getElementById(self._getElement()).innerHTML = "";
-
+                    if( $crsInfo.css('display') != 'none' ){
+                        $crsInfo.hide();
+                    }
                 }
             }
         };
 
-
         /**
-         * Compute position from a specific point
+         * Formats the coordinates from the position for displaying the coordinates on the screen.
          * @function compute
          * @memberOf PositionTracker#
          * @param geoPosition
@@ -87,14 +87,57 @@ define(["jquery", "./AbstractTracker", "../../Utils/Utils"],
         };
 
         /**
-         * Destroy the elevation tracker.
+         * Attachs the tracker to the globe.
+         *
+         * Attachs the tracker to the globe by calling the attachTo method from the AbstractTracker. Then, the CrsDialog
+         * is filled with Crs information. Finally, the onClick event is set to get the Crs information. The onClick event
+         * is enabled on the <i>#posTrackerInfoButton</i> ID
+         *
+         * @function attachTo
+         * @memberOf PositionTracker#
+         * @param globeContext globe
+         * @see {@link CrsDialog}
+         * @see {@link AbstrackTracker#attachTo}
+         */
+        PositionTracker.prototype.attachTo = function (globeContext) {
+            AbstractTracker.prototype.attachTo.call(this, globeContext);
+            CrsDialog.open(globeContext.getCoordinateSystem());
+            $('#posTrackerInfoButton').on('click', function () {
+                if (CrsDialog.isActive() === true) {
+                    CrsDialog.hide();
+                } else {
+                    CrsDialog.view();
+                }
+            });
+            self = this;
+        };
+
+        /**
+         * Detaches the tracker.
+         *
+         * Detaches the tracker from the glob by calling the detach method from the AbstractTracker. Then, the onClick
+         * event is removed and the CrsDialog is destroyed as well.
+         *
+         * @function detach
+         * @memberOf PositionTracker#
+         */
+        PositionTracker.prototype.detach = function () {
+            AbstractTracker.prototype.detach.call(this);
+            $("#posTrackerInfoButton").off("click");
+            CrsDialog.destroy();
+            self = null;
+        };
+
+        /**
+         * Destroys the position tracker.
          * @function destroy
          * @memberOf AbstractTracker.prototype
          */
         PositionTracker.prototype.destroy = function() {
-            this.detach.call(this);
+            this.detach(this);
             AbstractTracker.prototype.destroy.call(this);
         };
+
 
         /**************************************************************************************************************/
 

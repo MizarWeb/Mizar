@@ -45,6 +45,7 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Laye
             var self = this;
             this.globe = null;	// Sky or globe
             this.navigation = null;
+            this.attributionHandler = null;
             this.components = {};
             this.dataProviders = {};
             this.canvas = mizarConfiguration.canvas;
@@ -57,7 +58,6 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Laye
                 }
             });
             this.mizarConfiguration = mizarConfiguration.hasOwnProperty('configuration') ? mizarConfiguration.configuration : {};
-            this.credits = true;
             this.ctxOptions = ctxOptions;
             this.mode = mode;
             this.layers = [];
@@ -66,6 +66,15 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Laye
             this.positionTracker = _createTrackerPosition.call(this, this.mizarConfiguration);
             this.elevationTracker = _createTrackerElevation.call(this, this.mizarConfiguration, ctxOptions);
         };
+
+        function _baseLayerReady() {
+            // When the background takes time to load, the viewMatrix computed by "computeViewMatrix" is created but
+            // with empty values. Because of that, the globe cannot be displayed without moving the camera.
+            // So we rerun "computeViewMatrix" once "baseLayersReady" is loaded to display the globe
+            if(self.getNavigation().getRenderContext().viewMatrix[0] !== "undefined") {
+                self.getNavigation().computeViewMatrix();
+            }
+        }
 
         /**
          * Creates tracker position
@@ -159,11 +168,13 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Laye
         AbstractContext.prototype.getDataProviderLayers = function() {
             var dpLayers = [];
             var layers = this.getLayers();
-            for (var i in layers) {
-                var layer = layers[i];
+            var i = layers.length;
+            var layer = layers[i];
+            while(layer) {
                 if(layer.hasOwnProperty('options') && layer.options.hasOwnProperty('type') && layer.options.type === Constants.LAYER.GeoJSON) {
                     dpLayers.push(layer);
                 }
+                layer = layers[++i];
             }
             return dpLayers;
         };
@@ -288,7 +299,7 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Laye
 
                 this._fillDataProvider(layer, layerDescription);
 
-                if (layer.pickable) {
+                if (layer.isPickable()) {
                     ServiceFactory.create(Constants.SERVICE.PickingManager).addPickableLayer(layer);
                 }
                 var self = this;
@@ -391,9 +402,13 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Laye
          * @memberOf AbstractContext#
          */
         AbstractContext.prototype.removeAllLayers = function () {
-            for (var i = 0; i < this.layers.length; i++) {
-                var layerID = this.layers[i].ID;
+            var nbLayers = this.layers.length;
+            while(nbLayers!=0) {
+                var layerIndex = nbLayers-1;
+                var layerID = this.layers[layerIndex].ID;
+                this.attributionHandler.removeAttribution(this.layers[layerIndex]);
                 this.removeLayer(layerID);
+                nbLayers--;
             }
         };
 
@@ -529,7 +544,7 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Laye
         AbstractContext.prototype.initGlobeEvents = function (globe) {
             if (globe) {
                 this.globe = globe;
-                new AttributionHandler(
+                this.attributionHandler = new AttributionHandler(
                     this.globe,
                     {
                         element: (this.mizarConfiguration.attributionHandler && this.mizarConfiguration.attributionHandler.element)
@@ -541,6 +556,9 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Laye
                 }
                 this.positionTracker.attachTo(this.globe);
                 this.elevationTracker.attachTo(this.globe);
+
+                // it will be updated by the position tracker
+                this.setComponentVisibility("posTrackerInfo", false);
             }
             //When base layer failed to load, open error dialog
             var self = this;
@@ -559,13 +577,7 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Laye
          */
         AbstractContext.prototype.show = function () {
             this.navigation.start();
-
-            // Show UI components depending on its state
-            for (var componentId in this.components) {
-                if (this.components.hasOwnProperty(componentId) && this.components[componentId]) {
-                    $("#" + componentId).fadeIn(1000);
-                }
-            }
+            this.showComponents();
         };
 
         /**
@@ -635,6 +647,9 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Laye
         AbstractContext.prototype.showAdditionalLayers = function () {
             _.each(this.visibleLayers, function (layer) {
                 layer.setVisible(true);
+                if (layer.isPickable()) {
+                    ServiceFactory.create(Constants.SERVICE.PickingManager).addPickableLayer(layer);
+                }
             });
         };
 
@@ -738,6 +753,15 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Laye
          * @abstract
          */
         AbstractContext.prototype.disable = function () {
+            this.positionTracker.detach();
+            this.elevationTracker.detach();
+            this.setComponentVisibility("posTrackerInfo", false);
+            var i = 0;
+            var layer = this.layers[i];
+            while(layer) {
+                this.attributionHandler.disable(layer);
+                layer = this.layers[++i];
+            }
             var renderers = this.getRenderContext().renderers;
             for (var i = 0; i < renderers.length; i++) {
                 if (renderers[i].getType() === this.getMode()) {
@@ -752,6 +776,14 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Laye
          * @abstract
          */
         AbstractContext.prototype.enable = function () {
+            this.positionTracker.attachTo(this.globe);
+            this.elevationTracker.attachTo(this.globe);
+            var i = 0;
+            var layer = this.layers[i];
+            while(layer) {
+                this.attributionHandler.enable(layer);
+                layer = this.layers[++i];
+            }
             var renderers = this.getRenderContext().renderers;
             for (var i = 0; i < renderers.length; i++) {
                 if (renderers[i].getType() === this.getMode()) {
@@ -838,9 +870,11 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Laye
         AbstractContext.prototype.trackerDestroy = function () {
             if(this.elevationTracker) {
                 this.elevationTracker.destroy();
+                this.elevationTracker = null;
             }
             if (this.positionTracker) {
                 this.positionTracker.destroy();
+                this.positionTracker = null;
             }
         };
 
@@ -854,11 +888,11 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Laye
             this.trackerDestroy();
             this.removeAllLayers();
             this.components = null;
+            this.attributionHandler = null;
             this.layers = null;
             this.visibleLayers = null;
             this.dataProviders = null;
             this.mizarConfiguration = null;
-            this.credits = null;
             this.ctxOptions = null;
             this.mode = null;
 
@@ -870,12 +904,16 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Laye
                     self.getNavigation().computeViewMatrix();
                 }
             });
+            if(this.navigation) {
+                this.navigation.destroy();
+                this.navigation = null;
+            }
 
-            this.navigation.destroy();
-            this.globe.destroy();
-            this.navigation = null;
+            if(this.globe) {
+                this.globe.destroy();
+                this.globe = null;
+            }
             this.canvas = null;
-            this.globe = null;
         };
 
         /**************************************************************************************************************/

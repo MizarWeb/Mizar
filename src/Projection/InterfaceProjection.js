@@ -90,3 +90,9 @@ Projection.prototype.unProject = function (position3d, dest) {};
  * @returns {float[]} position on the map (x in pixel, y in pixel, altitude in meter)
  */
 Projection.prototype.project = function (geoPos, dest) {};
+
+/**
+ * Name of the projection
+ * @returns {PROJECTION} projection's name
+ */
+Projection.prototype.getName = function(){};

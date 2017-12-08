@@ -18,10 +18,36 @@
  ******************************************************************************/
 define(['./AbstractCrs', '../Renderer/GeoBound', '../Utils/Utils', '../Utils/Constants', '../Utils/Numeric'],
     function (AbstractCrs, GeoBound, Utils, Constants, Numeric) {
+
+        /**
+         * @constant
+         * @type {string}
+         */
+        const DESCRIPTION = "System in which a celestial object's position on the celestial sphere is described in " +
+            "relation to the structure of the Milky Way galaxy. An object's galactic longitude is measured along the " +
+            "galactic equator, a great circle on the celestial sphere that follows the band of the Milky Way. The " +
+            "galactic equator, also called the galactic circle, is inclined at an angle of approximately 62° to the " +
+            "celestial equator; distances are measured along it beginning at a point in the constellation Sagittarius lying in " +
+            "the direction of the Milky Way's nucleus. The galactic poles are the two points where a perpendicular line " +
+            "through the middle of the plane of the galactic equator intersect the celestial sphere. An object's galactic " +
+            "latitude is measured in degrees north or south of the galactic equator toward the galactic poles.";
+
+        /**
+         * @constant
+         * @type {string}
+         */
+        const LONGITUDE_LABEL = "l";
+
+        /**
+         * @constant
+         * @type {string}
+         */
+        const LATITUDE_LABEL = "b";
+
         /**
          * @name GalacticCrs
          * @class
-         * A system in which a celestial object's position on the celestial
+         * System in which a celestial object's position on the celestial
          * sphere is described in relation to the structure of the Milky Way galaxy. An object's galactic longitude is measured
          * along the galactic equator, a great circle on the celestial sphere that follows the band of the Milky Way.
          * The galactic equator, also called the galactic circle, is inclined at an angle of approximately 62° to the
@@ -71,11 +97,27 @@ define(['./AbstractCrs', '../Renderer/GeoBound', '../Utils/Utils', '../Utils/Con
          */
         GalacticCrs.prototype.formatCoordinates = function (geo) {
             var astro = [];
-            astro[0] = Numeric.roundNumber(geo[0], 3);
+            astro[0] = this.getLongitudeLabel()+" = "+Numeric.roundNumber(geo[0], 3);
             astro[0] += "&deg;";
-            astro[1] = Numeric.roundNumber(geo[1], 3);
+            astro[1] = this.getLatitudeLabel()+" = "+Numeric.roundNumber(geo[1], 3);
             astro[1] += "&deg;";
             return astro;
+        };
+
+        /**
+         * @function getLongitudeLabel
+         * @memberOf GalacticCrs#
+         */
+        GalacticCrs.prototype.getLongitudeLabel = function () {
+            return LONGITUDE_LABEL;
+        };
+
+        /**
+         * @function getLatitudeLabel
+         * @memberOf GalacticCrs#
+         */
+        GalacticCrs.prototype.getLatitudeLabel = function () {
+            return LATITUDE_LABEL;
         };
 
         /**
@@ -100,6 +142,22 @@ define(['./AbstractCrs', '../Renderer/GeoBound', '../Utils/Utils', '../Utils/Con
             if (posWorld[0] > 180) {
                 posWorld[0] -= 360.0;
             }
+        };
+
+        /**
+         * @function getName
+         * @memberOf GalacticCrs#
+         */
+        GalacticCrs.prototype.getName = function () {
+            return Constants.CRS.Galactic;
+        };
+
+        /**
+         * @function getName
+         * @memberOf GalacticCrs#
+         */
+        GalacticCrs.prototype.getDescription = function () {
+            return DESCRIPTION;
         };
 
         return GalacticCrs;

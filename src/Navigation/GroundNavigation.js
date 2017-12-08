@@ -18,9 +18,9 @@
  ***************************************/
 
 define(['../Utils/Utils', '../Utils/Constants',
-        './AbstractNavigation', '../Animation/AnimationFactory',
+        './AbstractNavigation', '../Animation/SegmentedAnimation','../Animation/AnimationFactory',
         '../Utils/Numeric', '../Renderer/Ray', '../Renderer/glMatrix'],
-    function (Utils, Constants, AbstractNavigation, AnimationFactory, Numeric, Ray) {
+    function (Utils, Constants, AbstractNavigation, SegmentedAnimation, AnimationFactory, Numeric, Ray) {
         /**************************************************************************************************************/
 
         /**
@@ -38,8 +38,8 @@ define(['../Utils/Utils', '../Utils/Constants',
             AbstractNavigation.prototype.constructor.call(this, Constants.NAVIGATION.GroundNavigation, ctx, options);
 
             // Default values for fov (in degrees)
-            this.minFov = (this.options.minFov) || 20;
-            this.maxFov = (this.options.maxFov) || 100;
+            this.minFov = (this.options.minFov) || 1;
+            this.maxFov = (this.options.maxFov) || 70;
 
             // Initialize the navigation
             this.center3d = [1.0, 0.0, 0.0];
@@ -107,12 +107,12 @@ define(['../Utils/Utils', '../Utils/Constants',
          @param {Function} callback Callback on the end of animation
          @memberOf GroundNavigation#
          */
-        GroundNavigation.prototype.zoomTo = function (geoPos, fov, duration, callback) {
+        GroundNavigation.prototype.zoomTo = function (geoPos, options) {
             var navigation = this;
 
             // default values
-            var destFov = fov || 2.0;
-            duration = duration || 2000;
+            var destFov = (options && options.fov) ? options.fov : 2.0;
+            var duration = (options && options.duration) ? options.duration : 2000;
 
             // Create a single animation to animate center3d and fov
             var geoStart = [];
@@ -123,22 +123,26 @@ define(['../Utils/Utils', '../Utils/Constants',
             var endValue = [geoPos[0], geoPos[1], destFov];
 
             // Compute the shortest path if needed
-            if (Math.abs(geoPos[0] - geoStart[0]) > 180.) {
-                if (geoStart[0] < geoPos[0])
+            //TODO : not sure it is work for all cases, better to use scalar product
+            if (Math.abs(geoPos[0] - geoStart[0]) > 180.0) {
+                if (geoStart[0] < geoPos[0]) {
                     startValue[0] += 360;
-                else
+                } else {
                     endValue[0] += 360;
+                }
             }
-            var animation = new SegmentedAnimation(
-                duration,
-                // Value setter
-                function (value) {
-                    var position3d = navigation.ctx.getCoordinateSystem().get3DFromWorld([value[0], value[1]]);
-                    navigation.center3d[0] = position3d[0];
-                    navigation.center3d[1] = position3d[1];
-                    navigation.center3d[2] = position3d[2];
-                    navigation.ctx.getRenderContext().setFov(value[2]);
-                    navigation.computeViewMatrix();
+            var animation = AnimationFactory.create(
+                Constants.ANIMATION.Segmented,
+                {
+                    "duration": duration,
+                    "valueSetter": function (value) {
+                        var position3d = navigation.ctx.getCoordinateSystem().get3DFromWorld([value[0], value[1]]);
+                        navigation.center3d[0] = position3d[0];
+                        navigation.center3d[1] = position3d[1];
+                        navigation.center3d[2] = position3d[2];
+                        navigation.ctx.getRenderContext().setFov(value[2]);
+                        navigation.computeViewMatrix();
+                    }
                 });
 
             // TODO : maybe improve it ?
@@ -148,9 +152,11 @@ define(['../Utils/Utils', '../Utils/Constants',
                 // Two steps animation, 'rising' & 'falling'
 
                 // Compute the middle value
-                var midValue = [startValue[0] * 0.5 + endValue[0] * 0.5,
+                var midValue = [
+                    startValue[0] * 0.5 + endValue[0] * 0.5,
                     startValue[1] * 0.5 + endValue[1] * 0.5,
-                    middleFov];
+                    middleFov
+                ];
 
                 // Add two segments
                 animation.addSegment(
@@ -192,13 +198,13 @@ define(['../Utils/Utils', '../Utils/Constants',
             }
 
             animation.onstop = function () {
-                if (callback) {
-                    callback();
+                if (options && options.callback) {
+                    options.callback();
                 }
                 navigation.zoomToAnimation = null;
             };
 
-            this.globe.addAnimation(animation);
+            this.ctx.addAnimation(animation);
             animation.start();
             this.zoomToAnimation = animation;
         };
@@ -216,7 +222,7 @@ define(['../Utils/Utils', '../Utils/Constants',
         GroundNavigation.prototype.moveTo = function (geoPos, duration, callback) {
             var navigation = this;
 
-            duration = duration || 5000;
+            var durationTime = duration || 5000;
 
             // Create a single animation to animate center3d
             var geoStart = [];
@@ -226,32 +232,36 @@ define(['../Utils/Utils', '../Utils/Constants',
             var endValue = [geoPos[0], geoPos[1]];
 
             // Compute the shortest path if needed
-            if (Math.abs(geoPos[0] - geoStart[0]) > 180.) {
-                if (geoStart[0] < geoPos[0])
+            if (Math.abs(geoPos[0] - geoStart[0]) > 180.0) {
+                if (geoStart[0] < geoPos[0]) {
                     startValue[0] += 360;
-                else
+                } else {
                     endValue[0] += 360;
+                }
             }
 
-            var animation = new SegmentedAnimation(
-                duration,
-                // Value setter
-                function (value) {
-                    var position3d = navigation.ctx.getCoordinateSystem().get3DFromWorld([value[0], value[1]]);
-                    navigation.center3d[0] = position3d[0];
-                    navigation.center3d[1] = position3d[1];
-                    navigation.center3d[2] = position3d[2];
-                    navigation.computeViewMatrix();
-                }
-            );
+            var animation = AnimationFactory.create(
+                Constants.ANIMATION.Segmented,
+                {
+                    "duration": durationTime,
+                    "valueSetter": function (value) {
+                        var position3d = navigation.ctx.getCoordinateSystem().get3DFromWorld([value[0], value[1]]);
+                        navigation.center3d[0] = position3d[0];
+                        navigation.center3d[1] = position3d[1];
+                        navigation.center3d[2] = position3d[2];
+                        navigation.computeViewMatrix();
+                    }
+                });
 
             animation.addSegment(
                 0.0, startValue,
                 1.0, endValue,
                 function (t, a, b) {
                     var pt = Numeric.easeOutQuad(t);
-                    return [Numeric.lerp(pt, a[0], b[0]),  // geoPos.long
-                        Numeric.lerp(pt, a[1], b[1])];  // geoPos.lat
+                    return [
+                        Numeric.lerp(pt, a[0], b[0]),  // geoPos.long
+                        Numeric.lerp(pt, a[1], b[1])   // geoPos.lat
+                    ];
                 }
             );
 
@@ -281,25 +291,28 @@ define(['../Utils/Utils', '../Utils/Constants',
             var durationTime = duration || 1000;
 
             var navigation = this;
-            var animation = new SegmentedAnimation(
-                durationTime,
-                // Value setter
-                function (value) {
-                    var position3d = navigation.ctx.getCoordinateSystem().get3DFromWorld([value[0], value[1]]);
-                    navigation.up[0] = position3d[0];
-                    navigation.up[1] = position3d[1];
-                    navigation.up[2] = position3d[2];
-                    navigation.computeViewMatrix();
-                }
-            );
+            var animation = AnimationFactory.create(
+                Constants.ANIMATION.Segmented,
+                {
+                    "duration": durationTime,
+                    "valueSetter": function (value) {
+                        var position3d = navigation.ctx.getCoordinateSystem().get3DFromWorld([value[0], value[1]]);
+                        navigation.up[0] = position3d[0];
+                        navigation.up[1] = position3d[1];
+                        navigation.up[2] = position3d[2];
+                        navigation.computeViewMatrix();
+                    }
+                });
 
             animation.addSegment(
                 0.0, startValue,
                 1.0, endValue,
                 function (t, a, b) {
                     var pt = Numeric.easeOutQuad(t);
-                    return [Numeric.lerp(pt, a[0], b[0]),  // geoPos.long
-                        Numeric.lerp(pt, a[1], b[1])];  // geoPos.lat
+                    return [
+                        Numeric.lerp(pt, a[0], b[0]),  // geoPos.long
+                        Numeric.lerp(pt, a[1], b[1])   // geoPos.lat
+                    ];
                 }
             );
 
