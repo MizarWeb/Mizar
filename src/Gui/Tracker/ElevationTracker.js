@@ -98,8 +98,8 @@ define(["jquery", "./AbstractTracker", "../../Utils/Utils", "../../Utils/Numeric
          * @function attachTo
          * @memberOf ElevationTracker#
          */
-        ElevationTracker.prototype.attachTo = function (globeContext) {
-            AbstractTracker.prototype.attachTo.call(this, globeContext);
+        ElevationTracker.prototype.attachTo = function (context) {
+            AbstractTracker.prototype.attachTo.call(this, context);
             self = this;
         };
 
@@ -109,6 +109,7 @@ define(["jquery", "./AbstractTracker", "../../Utils/Utils", "../../Utils/Numeric
          */
         ElevationTracker.prototype.detach = function () {
             AbstractTracker.prototype.detach.call(this);
+            self = null;
         };
 
         /**
@@ -120,6 +121,7 @@ define(["jquery", "./AbstractTracker", "../../Utils/Utils", "../../Utils/Numeric
             this.detach.call(this);
             AbstractTracker.prototype.destroy.call(this);
             this.scale = null;
+            self = null;
         };
 
         /**************************************************************************************************************/
