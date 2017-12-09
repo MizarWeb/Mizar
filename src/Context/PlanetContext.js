@@ -95,10 +95,8 @@ define(["jquery", "underscore-min", "../Utils/Utils", "./AbstractContext", "../U
             // Initialize planet
             try {
                 this.globe = GlobeFactory.create(Constants.GLOBE.Planet, planetOptions);
-                this.initGlobeEvents(this.globe);
-
                 this.navigation = _createNavigation.call(this, this.getCoordinateSystem().isFlat(), options.navigation);
-
+                this.initGlobeEvents(this.globe);
                 ServiceFactory.create(Constants.SERVICE.PickingManager).init(this);
             }
             catch (err) {

@@ -218,6 +218,15 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Laye
         };
 
         /**
+         * @function _getGlobe
+         * @memberOf AbstractContext#
+         * @private
+         */
+        AbstractContext.prototype._getGlobe = function () {
+            return this.globe;
+        };
+
+        /**
          * @function getLonLatFromPixel
          * @memberOf AbstractContext#
          */
@@ -554,8 +563,8 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Laye
                 if (this.mizarConfiguration.isMobile) {
                     this.initTouchNavigation(options);
                 }
-                this.positionTracker.attachTo(this.globe);
-                this.elevationTracker.attachTo(this.globe);
+                this.positionTracker.attachTo(this);
+                this.elevationTracker.attachTo(this);
 
                 // it will be updated by the position tracker
                 this.setComponentVisibility("posTrackerInfo", false);
@@ -755,7 +764,6 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Laye
         AbstractContext.prototype.disable = function () {
             this.positionTracker.detach();
             this.elevationTracker.detach();
-            this.setComponentVisibility("posTrackerInfo", false);
             var i = 0;
             var layer = this.layers[i];
             while(layer) {
@@ -776,8 +784,8 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Laye
          * @abstract
          */
         AbstractContext.prototype.enable = function () {
-            this.positionTracker.attachTo(this.globe);
-            this.elevationTracker.attachTo(this.globe);
+            this.positionTracker.attachTo(this);
+            this.elevationTracker.attachTo(this);
             var i = 0;
             var layer = this.layers[i];
             while(layer) {
