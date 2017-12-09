@@ -171,6 +171,7 @@ define(['../Utils/Utils', '../Utils/Constants', './AbstractNavigation', '../Anim
          * @param {navigationCallback} [options.callback] - Callback at the end of animation
          */
         PlanetNavigation.prototype.zoomTo = function (geoPos, options) {
+            this.ctx.publish("navigation:changedDistance");
             var navigation = this;
 
             var destDistance = (options && options.distance) ? options.distance : this.distance / this.ctx.getCoordinateSystem().getGeoide().getHeightScale();
@@ -254,6 +255,7 @@ define(['../Utils/Utils', '../Utils/Constants', './AbstractNavigation', '../Anim
                     options.callback();
                 }
                 self.zoomToAnimation = null;
+                self.ctx.publish("navigation:changedDistance", destDistance);
             };
 
             this.ctx.addAnimation(this.zoomToAnimation);
@@ -325,7 +327,8 @@ define(['../Utils/Utils', '../Utils/Constants', './AbstractNavigation', '../Anim
                 this.distance = previousDistance;
                 this.computeViewMatrix();
             }
-            
+
+            this.ctx.publish("navigation:changedDistance", this.getDistance());
 
         };
 

@@ -288,7 +288,7 @@ define(["jquery", "underscore-min", "../Utils/Constants",
               for (var i=0;i<intermediatesPoints.length;i++) {
                   var pt = intermediatesPoints[i];
                   var elevation = mizarAPI.getActivatedContext().getElevation(pt[0], pt[1]);
-                  elevation = Numeric.roundNumber(elevation / scale, 0)
+                  elevation = Numeric.roundNumber(elevation / scale, 0);
                   if (elevation > maxElevation) {
                     maxElevation = elevation;
                   }
