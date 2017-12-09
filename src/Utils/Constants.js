@@ -165,7 +165,8 @@ define(function () {
         "Mars_2000_old": "IAU2000:49900",
         "Moon_2000": "IAU2000:30101",
         "Moon_2000_old": "IAU2000:30100",
-        "HorizontalLocal": "HorizontalLocal"
+        "HorizontalLocal": "HorizontalLocal",
+        "Sun": "IAU:Sun"
     };
 
     /**
