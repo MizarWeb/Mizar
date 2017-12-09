@@ -1,4 +1,5 @@
 /*******************************************************************************
+/*******************************************************************************
  * Copyright 2017 CNES - CENTRE NATIONAL d'ETUDES SPATIALES
  *
  * This file is part of MIZAR.
@@ -369,7 +370,6 @@ define(["jquery", "underscore-min",
          */
         function _switchToContext(context, options) {
             var self = this;
-            options = options || {};
             var mustBeDestroyed = options.hasOwnProperty("mustBeDestroyed") ? options.mustBeDestroyed : false;
             var mustBeHidden = options.hasOwnProperty("mustBeHidden") ? options.mustBeHidden : false;
 
@@ -409,6 +409,9 @@ define(["jquery", "underscore-min",
             context.getNavigation().toViewMatrix(viewMatrix, fov, 2000, function() {
                 if(context) {
                     context.enable();
+                }
+                if (options && options.callback) {
+                    options.callback.call(self);
                 }
                 context.showAdditionalLayers();
                 self.publish("mizarMode:toggle", context);
@@ -952,15 +955,12 @@ define(["jquery", "underscore-min",
          * @function toggleToContext
          * @memberOf Mizar#
          */
-        Mizar.prototype.toggleToContext = function (context, options, callback) {
+        Mizar.prototype.toggleToContext = function (context, options) {
             var result;
             try {
                 var toggleMode = (this.getActivatedContext().getMode() === Mizar.CONTEXT.Sky) ? Mizar.CONTEXT.Planet : Mizar.CONTEXT.Sky;
-                var self = this;
-                _switchToContext.call(this, context, options);
-                if (callback) {
-                    callback.call(self);
-                }
+                var opts = options || {};
+                _switchToContext.call(this, context, opts);
                 result = true;
             } catch(e) {
                 result = false;
