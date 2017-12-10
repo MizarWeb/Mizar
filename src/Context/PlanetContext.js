@@ -295,9 +295,9 @@ define(["jquery", "underscore-min", "../Utils/Utils", "./AbstractContext", "../U
             }
 
             this.positionTracker.detach();
-            this.positionTracker.attachTo(this.globe);
+            this.positionTracker.attachTo(this);
             this.elevationTracker.detach();
-            this.elevationTracker.attachTo(this.globe);
+            this.elevationTracker.attachTo(this);
 
             this.navigation.computeViewMatrix();
             this.publish("modifiedCrs", this);
