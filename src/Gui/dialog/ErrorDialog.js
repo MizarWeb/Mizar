@@ -35,7 +35,7 @@ define(["jquery", "jquery.ui"], function ($) {
         .appendTo('body')
         .dialog({
             autoOpen: false,
-            width: 700,
+            width: 500,
             minHeight: 300,
             maxHeight: 500,
             dialogClass: 'errorBox',
