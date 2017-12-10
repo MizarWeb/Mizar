@@ -55,7 +55,7 @@ define(["jquery", "underscore-min", "../Utils/Constants",
             }
             var geo = mizarAPI.getActivatedContext().getLonLatFromPixel(self.pickPoint[0], self.pickPoint[1]);
             if (geo !== null) {
-                self.geoPickPoint = mizarAPI.getActivatedContext().getLonLatFromPixel(self.pickPoint[0], self.pickPoint[1]);
+                self.geoPickPoint = geo;
             } else {
                 return null;
             }
@@ -73,9 +73,7 @@ define(["jquery", "underscore-min", "../Utils/Constants",
             var stopPickPoint;
             if (event.type.search("touch") >= 0) {
                 stopPickPoint = mizarAPI.getActivatedContext().getLonLatFromPixel(event.changedTouches[0].clientX, event.changedTouches[0].clientY);
-            }
-            else {
-
+            } else {
                 stopPickPoint = mizarAPI.getActivatedContext().getLonLatFromPixel(event.layerX, event.layerY);
             }
 

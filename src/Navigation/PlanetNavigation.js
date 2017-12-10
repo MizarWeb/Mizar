@@ -451,7 +451,7 @@ define(['../Utils/Utils', '../Utils/Constants', './AbstractNavigation', '../Anim
          * @return {float} the distance in meters from the surface of the globe
          */
         PlanetNavigation.prototype.getDistance = function() {
-            return this.distance*this.ctx.getCoordinateSystem().getGeoide().getRealPlanetRadius();
+            return this.distance / this.ctx.getCoordinateSystem().getGeoide().getHeightScale();
         };
 
         /**
