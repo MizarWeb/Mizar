@@ -155,7 +155,7 @@ define(['../Utils/Utils', '../Utils/Constants', './AbstractNavigation', '../Anim
 
             mat4.lookAt(eye, this.center, this.up, vm);
             this.up = [vm[1], vm[5], vm[9]];
-            this.ctx.publish("modifiedNavigation");
+            this.ctx.publish(Constants.EVENT_MSG.NAVIGATION_MODIFIED);
             this.renderContext.requestFrame();
         };
         
@@ -170,6 +170,7 @@ define(['../Utils/Utils', '../Utils/Constants', './AbstractNavigation', '../Anim
          * @param {navigationCallback} options.callback - Callback at the end of animation
          */
         FlatNavigation.prototype.zoomTo = function (geoPos, options) {
+            this.ctx.publish(Constants.EVENT_MSG.NAVIGATION_CHANGED_DISTANCE);
             var navigation = this;
 
             var destDistance = (options && options.distance) ? options.distance : this.distance / this.ctx.getCoordinateSystem().getGeoide().getHeightScale();
@@ -249,6 +250,7 @@ define(['../Utils/Utils', '../Utils/Constants', './AbstractNavigation', '../Anim
                     options.callback();
                 }
                 self.zoomToAnimation = null;
+                self.ctx.publish(Constants.EVENT_MSG.NAVIGATION_CHANGED_DISTANCE, destDistance);
             };
 
             this.ctx.addAnimation(this.zoomToAnimation);
@@ -282,6 +284,8 @@ define(['../Utils/Utils', '../Utils/Constants', './AbstractNavigation', '../Anim
             //TODO : add the collision algorithm because of the elevation
 
             this.computeViewMatrix();
+            this.ctx.publish(Constants.EVENT_MSG.NAVIGATION_CHANGED_DISTANCE, this.getDistance());
+
         };
 
         /**

@@ -49,7 +49,7 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Laye
             this.components = {};
             this.dataProviders = {};
             this.canvas = mizarConfiguration.canvas;
-            this.subscribe("baseLayersReady", function (imagery) {
+            this.subscribe(Constants.EVENT_MSG.BASE_LAYERS_READY, function (imagery) {
                 // When the background takes time to load, the viewMatrix computed by "computeViewMatrix" is created but
                 // with empty values. Because of that, the globe cannot be displayed without moving the camera.
                 // So we rerun "computeViewMatrix" once "baseLayersReady" is loaded to display the globe
@@ -66,15 +66,6 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Laye
             this.positionTracker = _createTrackerPosition.call(this, this.mizarConfiguration);
             this.elevationTracker = _createTrackerElevation.call(this, this.mizarConfiguration, ctxOptions);
         };
-
-        function _baseLayerReady() {
-            // When the background takes time to load, the viewMatrix computed by "computeViewMatrix" is created but
-            // with empty values. Because of that, the globe cannot be displayed without moving the camera.
-            // So we rerun "computeViewMatrix" once "baseLayersReady" is loaded to display the globe
-            if(self.getNavigation().getRenderContext().viewMatrix[0] !== "undefined") {
-                self.getNavigation().computeViewMatrix();
-            }
-        }
 
         /**
          * Creates tracker position
@@ -312,7 +303,7 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Laye
                     ServiceFactory.create(Constants.SERVICE.PickingManager).addPickableLayer(layer);
                 }
                 var self = this;
-                layer.subscribe("visibility:changed", function (layer) {
+                layer.subscribe(Constants.EVENT_MSG.LAYER_VISIBILITY_CHANGED, function (layer) {
                     if (layer.isVisible() && layer.properties && !layer.background
                         && layer.properties.hasOwnProperty("initialRa") && layer.properties.hasOwnProperty("initialDec") && layer.properties.hasOwnProperty("initialFov")) {
 
@@ -331,7 +322,7 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Laye
                         }
                     }
                 });
-                var layerEvent = (layer.category === "background") ? "backgroundLayer:add" : "additionalLayer:add";
+                var layerEvent = (layer.category === "background") ? Constants.EVENT_MSG.LAYER_BACKGROUND_ADDED : Constants.EVENT_MSG.LAYER_ADDITIONAL_ADDED;
                 this.publish(layerEvent, layer);
             }
             return layer;
@@ -379,7 +370,7 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Laye
                 var removedLayers = this.layers.splice(indexes[0], 1);
                 removedLayer = removedLayers[0];
                 var self = this;
-                removedLayer.unsubscribe("visibility:changed", function (layer) {
+                removedLayer.unsubscribe(Constants.EVENT_MSG.LAYER_VISIBILITY_CHANGED, function (layer) {
                     if (layer.isVisible() && layer.properties && !layer.background
                         && layer.properties.hasOwnProperty("initialRa") && layer.properties.hasOwnProperty("initialDec") && layer.properties.hasOwnProperty("initialFov")) {
 
@@ -571,9 +562,15 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Laye
             }
             //When base layer failed to load, open error dialog
             var self = this;
-            this.subscribe("baseLayersError", function (layer) {
+            this.subscribe(Constants.EVENT_MSG.BASE_LAYERS_ERROR, function (layer) {
                 $(self.canvas.parentElement).find('#loading').hide();
-                //TODOFL console.log("Error with layer",layer);
+                if(layer.obs_title != null) {
+                    var prefixe = "";
+                    var text = layer.obs_title;
+                    ErrorDialog.open("Hips layer " + prefixe + "<font style='color:yellow'><b>" + text + "</b></font> not valid in Hips registry <font color='grey'><i>(" + layer.hips_service_url + " - reason : "+ layer.message +")</i></font>.");
+                } else {
+                    ErrorDialog.open("Cannot add the layer <font style='color:yellow'><b>" + JSON.stringify(layer) + "</b></font><font color='grey'><i>(reason : "+ layer.message +")</i></font>.");
+                }
             });
         };
 
@@ -697,7 +694,7 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Laye
                 //    globe.baseImagery.setVisible(false);
                 //}
                 this.globe.setBaseImagery(gwLayer);
-                this.publish("backgroundLayer:change", gwLayer);
+                this.publish(Constants.EVENT_MSG.LAYER_BACKGROUND_CHANGED, gwLayer);
                 //gwLayer.setVisible(true);
 
                 // // Clear selection
@@ -720,7 +717,7 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Laye
 
                 //}
             } else {
-                this.publish("backgroundSurveyError", "Survey " + layerName + " hasn't been found");
+                this.publish(Constants.EVENT_MSG.LAYER_BACKGROUND_ERROR, "Survey " + layerName + " hasn't been found");
             }
             return gwLayer;
         };
@@ -904,7 +901,7 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Laye
             this.ctxOptions = null;
             this.mode = null;
 
-            this.unsubscribe("baseLayersReady", function (imagery) {
+            this.unsubscribe(Constants.EVENT_MSG.BASE_LAYERS_READY, function (imagery) {
                 // When the background takes time to load, the viewMatrix computed by "computeViewMatrix" is created but
                 // with empty values. Because of that, the globe cannot be displayed without moving the camera.
                 // So we rerun "computeViewMatrix" once "baseLayersReady" is loaded to display the globe

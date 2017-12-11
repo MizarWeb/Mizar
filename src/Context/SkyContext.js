@@ -166,7 +166,7 @@ define(["underscore-min", "../Utils/Utils",
                 throw ReferenceError("incompatible coordinate reference system with Sky context", "SkyContex.js");
             }
             this.globe.setCoordinateSystem(cs);
-            this.publish("modifiedCrs", this);
+            this.publish(Constants.EVENT_MSG.CRS_MODIFIED, this);
         };
 
         /**

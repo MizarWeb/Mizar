@@ -35,7 +35,7 @@
  * along with GlobWeb. If not, see <http://www.gnu.org/licenses/>.
  ***************************************/
 
-define(function () {
+define(["../Utils/Constants"],function (Constants) {
 
     /**
      * Google mouse navigation handler configuration
@@ -87,7 +87,7 @@ define(function () {
          * @fires Context#endNavigation
          */
         var _handleMouseWheel = function (event) {
-            _navigation.ctx.publish("startNavigation");
+            _navigation.ctx.publish(Constants.EVENT_MSG.NAVIGATION_STARTED);
 
             var factor;
             var geo,pos;
@@ -136,7 +136,7 @@ define(function () {
             }
             event.returnValue = false;
 
-            _navigation.ctx.publish("endNavigation");
+            _navigation.ctx.publish(Constants.EVENT_MSG.NAVIGATION_ENDED);
             _navigation.ctx.getRenderContext().requestFrame();
 
             // Return false to stop mouse wheel to be propagated when using onmousewheel
@@ -230,7 +230,7 @@ define(function () {
             _slower = 0;
 
             if (_needsEndEvent) {
-                _navigation.ctx.publish("endNavigation");
+                _navigation.ctx.publish(Constants.EVENT_MSG.NAVIGATION_ENDED);
             }
 
             _needsStartEvent = false;
@@ -270,7 +270,7 @@ define(function () {
             // Pan on Left click
             if (_pressedButton === 0) {
                 if (_needsStartEvent) {
-                    _navigation.ctx.publish("startNavigation");
+                    _navigation.ctx.publish(Constants.EVENT_MSG.NAVIGATION_STARTED);
                     _needsStartEvent = false;
                     _needsEndEvent = true;
                 }
@@ -318,7 +318,7 @@ define(function () {
                 _slower++;
                 if ((_slower % 3 === 0) && ( _slower > 1 )) {
 
-                    _navigation.ctx.publish("startNavigation");
+                    _navigation.ctx.publish(Constants.EVENT_MSG.NAVIGATION_STARTED);
 
                     _navigation.zoom(-_dy / 10);
 
@@ -344,7 +344,7 @@ define(function () {
                     // Stop all animations when an event is received
                     _navigation.stopAnimations();
 
-                    _navigation.ctx.publish("endNavigation");
+                    _navigation.ctx.publish(Constants.EVENT_MSG.NAVIGATION_ENDED);
                     _navigation.ctx.getRenderContext().requestFrame();
                 }
 

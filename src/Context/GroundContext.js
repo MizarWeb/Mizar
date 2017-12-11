@@ -141,7 +141,7 @@ define(["jquery", "underscore-min", "../Utils/Utils", "./AbstractContext", "../U
                 throw new RangeError("incompatible coordinate reference system with Sky context", "GroundContext.js");
             }
             this.globe.setCoordinateSystem(cs);
-            this.publish("modifiedCrs", this);
+            this.publish(Constants.EVENT_MSG.CRS_MODIFIED, this);
         };
 
         /**

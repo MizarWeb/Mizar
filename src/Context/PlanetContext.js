@@ -300,7 +300,7 @@ define(["jquery", "underscore-min", "../Utils/Utils", "./AbstractContext", "../U
             this.elevationTracker.attachTo(this);
 
             this.navigation.computeViewMatrix();
-            this.publish("modifiedCrs", this);
+            this.publish(Constants.EVENT_MSG.CRS_MODIFIED, this);
         };
 
         /**

@@ -67,7 +67,7 @@ define(["jquery", "../Utils/Constants",
                 if (reverseNameResolverImplementation) {
                     reverseNameResolverImplementation.handle(options);
                 } else {
-                    mizarAPI.publish("plugin:not_found", "No reserve name resolver found");
+                    mizarAPI.publish(Constants.EVENT_MSG.PLUGIN_NOT_FOUND, "No reserve name resolver found");
                 }
                 
             }

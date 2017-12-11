@@ -411,7 +411,7 @@ define(['../Utils/Utils', '../Utils/Constants',
             // mat4.inverse( vm );
 
             this.up = [vm[1], vm[5], vm[9]];
-            this.ctx.publish("modifiedNavigation");
+            this.ctx.publish(Constants.EVENT_MSG.NAVIGATION_MODIFIED);
             this.renderContext.requestFrame();
         };
 

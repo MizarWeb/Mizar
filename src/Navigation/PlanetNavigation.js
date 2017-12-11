@@ -171,7 +171,7 @@ define(['../Utils/Utils', '../Utils/Constants', './AbstractNavigation', '../Anim
          * @param {navigationCallback} [options.callback] - Callback at the end of animation
          */
         PlanetNavigation.prototype.zoomTo = function (geoPos, options) {
-            this.ctx.publish("navigation:changedDistance");
+            this.ctx.publish(Constants.EVENT_MSG.NAVIGATION_CHANGED_DISTANCE);
             var navigation = this;
 
             var destDistance = (options && options.distance) ? options.distance : this.distance / this.ctx.getCoordinateSystem().getGeoide().getHeightScale();
@@ -255,7 +255,7 @@ define(['../Utils/Utils', '../Utils/Constants', './AbstractNavigation', '../Anim
                     options.callback();
                 }
                 self.zoomToAnimation = null;
-                self.ctx.publish("navigation:changedDistance", destDistance);
+                self.ctx.publish(Constants.EVENT_MSG.NAVIGATION_CHANGED_DISTANCE, destDistance);
             };
 
             this.ctx.addAnimation(this.zoomToAnimation);
@@ -279,8 +279,8 @@ define(['../Utils/Utils', '../Utils/Constants', './AbstractNavigation', '../Anim
          */
         PlanetNavigation.prototype.computeViewMatrix = function () {
             this.computeInverseViewMatrix();
-            mat4.inverse(this.inverseViewMatrix, this.renderContext.viewMatrix);
-            this.ctx.publish("modifiedNavigation");
+            mat4.inverse(this.inverseViewMatrix, this.renderContext.getViewMatrix());
+            this.ctx.publish(Constants.EVENT_MSG.NAVIGATION_MODIFIED);
             this.renderContext.requestFrame();
         };
 
@@ -328,7 +328,7 @@ define(['../Utils/Utils', '../Utils/Constants', './AbstractNavigation', '../Anim
                 this.computeViewMatrix();
             }
 
-            this.ctx.publish("navigation:changedDistance", this.getDistance());
+            this.ctx.publish(Constants.EVENT_MSG.NAVIGATION_CHANGED_DISTANCE, this.getDistance());
 
         };
 

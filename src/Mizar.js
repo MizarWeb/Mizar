@@ -276,6 +276,13 @@ define(["jquery", "underscore-min",
          */
         Mizar.PROVIDER = Constants.PROVIDER;
 
+        /**
+         * Static variable, supported {@link EVENT_MSG event} type
+         * @name EVENT_MSG
+         * @memberOf Mizar#
+         */
+        Mizar.EVENT_MSG = Constants.EVENT_MSG;
+
 
         /**********************************************************************************************************
          *                                      Private methods
@@ -414,7 +421,7 @@ define(["jquery", "underscore-min",
                     options.callback.call(self);
                 }
                 context.showAdditionalLayers();
-                self.publish("mizarMode:toggle", context);
+                self.publish(Constants.EVENT_MSG.MIZAR_MODE_TOGGLE, context);
                 self.getActivatedContext().show();
                 self.getActivatedContext().refresh();
                 if(self.getRenderContext().viewMatrix[0] !== "undefined") {
