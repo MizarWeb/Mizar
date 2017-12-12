@@ -660,11 +660,16 @@ define(["jquery", "underscore-min",
          * @private
          */
         function _createHips(hipsLayer, hipsServiceUrl) {
-            if (hipsLayer.hasOwnProperty("hips_status") && !hipsLayer.hips_status.match('public') === null) {
-                return;
+            try {
+                if (hipsLayer.hasOwnProperty("hips_status") && !hipsLayer.hips_status.match('public') === null) {
+                    return;
+                }
+                hipsLayer.hips_service_url = hipsServiceUrl;
+                this.addLayer({type: Mizar.LAYER.Hips, hipsMetadata: new HipsMetadata(hipsLayer)});
+            } catch (e) {
+                var name = hipsLayer.obs_title ?  hipsLayer.obs_title : hipsLayer.obs_collection;
+                ErrorDialog.open("Hips layer <font style='color:yellow'><b>" + name + "</b></font>  not valid <font color='grey'><i>(" + hipsLayer.hips_service_url + " - reason : "+ e.message +")</i></font>", true);
             }
-            hipsLayer.hips_service_url = hipsServiceUrl;
-            this.addLayer({type: Mizar.LAYER.Hips, hipsMetadata: new HipsMetadata(hipsLayer)});
         }
 
         /**************************************************************************************************************/
