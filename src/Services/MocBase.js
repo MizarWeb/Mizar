@@ -21,8 +21,8 @@
 /**
  *    Moc base module
  */
-define(["jquery", "../Renderer/FeatureStyle", "../Layer/MocLayer", "../Utils/Constants"],
-    function ($, FeatureStyle, MocLayer, Constants) {
+define(["jquery", "../Renderer/FeatureStyle", "../Layer/MocLayer", "../Utils/Constants", "../Utils/Numeric"],
+    function ($, FeatureStyle, MocLayer, Constants, Numeric) {
         var mizarAPI;
         var coverageServiceUrl;
 
@@ -38,6 +38,13 @@ define(["jquery", "../Renderer/FeatureStyle", "../Layer/MocLayer", "../Utils/Con
             var ID;
             if (layer.baseUrl) {
                 ID = handleMocLayer(layer, layer.baseUrl);
+                var mocLayer = mizarAPI.getLayerByID(ID);
+                if(layer.skyFraction) {
+                    mocLayer.coverage = Numeric.roundNumber(parseFloat(layer.skyFraction)*100, 2)+"%";
+                } else {
+                    mocLayer.coverage = "Not available";
+                }
+                successCallback(mocLayer);
             } else {
                 errorCallback(layer);
             }
