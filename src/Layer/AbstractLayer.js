@@ -300,7 +300,7 @@ define(["jquery","underscore-min", "../Utils/Event", "../Utils/Utils", "../Utils
                     xmlns: false,
                     attrsAsObject: false,
                     childrenAsArray: false
-                }
+                };
                 result = xmlToJSON.parseString(response,myOptions);
                 callback(result,sourceObject);
               },

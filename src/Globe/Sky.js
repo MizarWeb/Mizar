@@ -103,6 +103,7 @@ define(['../Tiling/TileManager', '../Tiling/TilePool',
             if (layer) {
                 layer._overlay = false;
                 layer.background = true;
+                layer.visible = true;
                 this.addLayer(layer);
                 // Modify the tile manager after the layer has been attached
                 this.tileManagers[layer.tiling.coordinateSystem.getGeoideName()].setImageryProvider(layer);
