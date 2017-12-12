@@ -223,7 +223,7 @@ define(['../Utils/Event', '../Utils/Utils',
          * @abstract
          */
         AbstractGlobe.prototype.setBaseElevation = function (layer) {
-            throw new Syntax("setBaseElevation Not implemented",  "AbstractGlobe.js");
+            throw new SyntaxError("setBaseElevation Not implemented",  "AbstractGlobe.js");
         };
 
         /**

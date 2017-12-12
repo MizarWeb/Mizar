@@ -673,7 +673,7 @@ define(['./Tile', './GeoTiling', './TilePool', './TileRequest', './TileIndexBuff
 
                 this.level0TilesLoaded = true;
 
-                this.publishEvent(Constants.EVENT_MSG.BASE_LAYERS_READY, this.parent.isSky());
+                this.publishEvent(Constants.EVENT_MSG.BASE_LAYERS_READY, this.imageryProvider);
             }
 
             var stats = this.renderContext.stats;
