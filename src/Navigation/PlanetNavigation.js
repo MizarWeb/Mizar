@@ -75,7 +75,7 @@ define(['../Utils/Utils', '../Utils/Constants', './AbstractNavigation', '../Anim
             AbstractNavigation.prototype.constructor.call(this, Constants.NAVIGATION.PlanetNavigation, ctx, options);
 
             // Default values for min and max distance (in meter)
-            this.minDistance = (this.options.minDistance) || 0;
+            this.minDistance = (this.options.minDistance) || 1;
             this.maxDistance = (this.options.maxDistance) || 3.0 * this.ctx.getCoordinateSystem().getGeoide().getRadius() / this.ctx.getCoordinateSystem().getGeoide().getHeightScale();
             
             // Scale min and max distance from meter to internal ratio

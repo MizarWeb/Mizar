@@ -50,8 +50,11 @@ define(["jquery","../Utils/Constants", "./WMSLayer", "./WMTSLayer", "./WCSElevat
             var hipsProperties;
             if(typeof hipsMetadata === 'undefined') {
                 hipsProperties = new HipsMetadata(options.baseUrl);
-            } else  {
+            } else if( hipsMetadata instanceof HipsMetadata)  {
                 hipsProperties = hipsMetadata;
+            } else {
+                hipsProperties = new HipsMetadata();
+                hipsProperties.setMetadata(hipsMetadata);
             }
 
             var metadata = hipsProperties.getHipsMetadata();

@@ -55,7 +55,7 @@ define(["./Triangle"], function (Triangle) {
     }
 
     function _handleMouseDown (evt) {
-        var mousePos = this._getMousePos(canvas, evt);
+        var mousePos = _getMousePos(canvas, evt);
 
         if (self.minThreshold.contains([mousePos.x, mousePos.y, 0])) {
             self.minThreshold.dragging = true;
@@ -88,7 +88,7 @@ define(["./Triangle"], function (Triangle) {
     /**************************************************************************************************************/
 
     function _handleMouseMove (evt) {
-        var mousePos = this._getMousePos(canvas, evt);
+        var mousePos = _getMousePos(canvas, evt);
 
         self.ctx.clearRect(0.0, originY, canvas.width, paddingBottom);
 
@@ -172,6 +172,9 @@ define(["./Triangle"], function (Triangle) {
      *
      */
     function drawHistogram(options) {
+        if(options == null) {
+            options = {};
+        }
         this.ctx.fillStyle = options.color || "blue";
         for (var i = 0; i < hist.length; i++) {
             // Scale to y-axis height
@@ -217,6 +220,9 @@ define(["./Triangle"], function (Triangle) {
     function drawTransferFunction(options) {
         // Draw transfer functions
         // "Grey" colormap for now(luminance curve only)
+        if(options == null) {
+            options = {};
+        }
         this.ctx.fillStyle = options.color || "red";
         for (var i = 0; i < nbBins; i++) {
             var value = i;
@@ -321,6 +327,10 @@ define(["./Triangle"], function (Triangle) {
         this.image = image;
     }
 
+    function getCanvas() {
+        return canvas;
+    }
+
     /**************************************************************************************************************/
 
     return {
@@ -351,10 +361,26 @@ define(["./Triangle"], function (Triangle) {
 
             // Init canvas
             canvas = document.getElementById(options.canvas);
+            canvas.addEventListener('mousemove', _handleMouseMove);
+
+            // Handle threshold controller selection
+            canvas.addEventListener('mousedown', _handleMouseDown);
+
+            // Update histogram on mouseup
+            canvas.addEventListener('mouseup', _handleMouseUp);
             this.ctx = canvas.getContext('2d');
 
             this.initThresholds();
         },
-        initThresholds : initThresholds
+        initThresholds : initThresholds,
+        getHistValue : getHistValue,
+        drawThresholdControls : drawThresholdControls,
+        drawHistogram : drawHistogram,
+        drawAxes : drawAxes,
+        drawTransferFunction : drawTransferFunction,
+        draw : draw,
+        compute : compute,
+        setImage : setImage,
+        getCanvas : getCanvas
     };
 });

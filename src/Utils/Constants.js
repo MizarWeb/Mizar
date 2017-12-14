@@ -202,6 +202,7 @@ define(function () {
      * @property {String} ExportTool - ExportTool
      */
     Constants.SERVICE = {
+        "FitsHips": "FitsHips",
         "FitsVisu": "FitsVisu",
         "Histogram": "Histogram",
         "ImageProcessing" : "ImageProcessing",
