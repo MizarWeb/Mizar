@@ -276,7 +276,6 @@ LineStringRenderer.prototype.canApply = function(type,style)
 	if ( this.globe.isSky() ) {
 		return false;
 	}
-
 	return (type === Constants.GEOMETRY.LineString || type === Constants.GEOMETRY.MultiLineString ||
          (!style.fill && (type === Constants.GEOMETRY.Polygon || type === Constants.GEOMETRY.MultiPolygon))) &&
 					!style.gradientLength;

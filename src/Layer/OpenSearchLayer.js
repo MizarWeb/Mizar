@@ -320,49 +320,34 @@ define(['../Renderer/FeatureStyle', '../Renderer/VectorRendererManager', '../Uti
          * @param {Feature} feature Feature
          */
         OpenSearchLayer.prototype.addFeature = function (feature) {
-//            var tileData = tile.extension[this.extId];
             var featureData;
 
-            // Add feature if it doesn't exist
-            //if ( !this.featuresSet.hasOwnProperty(feature.properties.identifier) )
-/*            if (!this.featuresSet.hasOwnProperty(feature.id)) {
-                this.features.push(feature);
-                featureData = {
-                    index: this.features.length - 1//,
-                    //tiles: [tile]
-                };
-                this.featuresSet[feature.properties.identifier] = featureData;
-                this.featuresSet[feature.id] = featureData;
-            }
-            else {
-                //featureData = this.featuresSet[feature.properties.identifier];
-                featureData = this.featuresSet[feature.id];
+            var defaultCrs = {
+                type: "name",
+                properties: {
+                    name: Constants.CRS.WGS84
+                }
+            };
 
-                // Store the tile
-                //featureData.tiles.push(tile);
-
-                // Always use the base feature to manage geometry indices
-                feature = this.features[featureData.index];
-            }
-*/
-            // Add feature id
-            //tileData.featureIds.push( feature.properties.identifier );
-            //this.featureIds.push(feature.id);
-
-            // Set the identifier on the geometry
-            //feature.geometry.gid = feature.properties.identifier;
             feature.geometry.gid = feature.id;
 
-            console.log("Feature",feature);
-
-            // Add to renderer
-            //this.addFeatureToRenderer(feature, tile);
-
+            
             // MS: Feature could be added from ClusterOpenSearch which have features with different styles
+            console.log("this.style",this.style);
             var style = feature.properties.style ? feature.properties.style : this.style;
+            console.log("style",style);
 
-            this._addFeatureToRenderers(feature);
-            //this.globe.vectorRendererManager.addGeometry(this, feature.geometry, style);
+
+            //this._addFeatureToRenderers(feature);
+
+
+             // Add features to renderer if layer is attached to planet
+             if (this.globe) {
+                this._addFeatureToRenderers(feature);
+                if (this.isVisible()) {
+                    this.globe.renderContext.requestFrame();
+                }
+            }
         };
 
 
