@@ -105,7 +105,7 @@ define(["jquery", "underscore-min", "./AbstractLayer", '../Utils/Constants','../
             var self = this;
             var i;
 
-            if (String(self.baseUrl).endsWith(".fits")) {
+            try {
                 FitsLoader.loadFits(self.baseUrl, function (fits) {
                     var healpixMoc = {};
                     var binaryTable = fits.getHDU(1).data;
@@ -145,11 +145,10 @@ define(["jquery", "underscore-min", "./AbstractLayer", '../Utils/Constants','../
                     }
                     self.moc = healpixMoc;
                     self.handleDistribution(healpixMoc);
-                    // TODO : comprendre la ligne suivante
-                    // delete fits;
+                    delete fits;
                 });
 
-            } else {
+            } catch(e) {
                 $.ajax({
                     type: "GET",
                     url: self.baseUrl,

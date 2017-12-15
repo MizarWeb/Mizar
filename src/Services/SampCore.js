@@ -25,7 +25,6 @@ define(["jquery", "underscore-min", "../Parser/JsonProcessor", "../Gui/dialog/Er
     function ($, _, JsonProcessor, ErrorDialog) {
 
         var mizar;
-        var sky;
         var navigation;
         var imageManager;
 
@@ -138,13 +137,8 @@ define(["jquery", "underscore-min", "../Parser/JsonProcessor", "../Gui/dialog/Er
                 var params = message["samp.params"];
                 var ra = parseFloat(params.ra);
                 var dec = parseFloat(params.dec);
-                // var proxyUrl = clientTracker.connection.translateUrl(origUrl);
-                var geoPick = [ra, dec];
-                var center3d = [];
-                sky.getCoordinateSystem().get3DFromWorld(geoPick, center3d);
-                navigation.center3d = center3d;
-                navigation.computeViewMatrix();
-                sky.getRenderContext().requestFrame();
+                var navigation = mizar.getActivatedContext().getNavigation();
+                navigation.zoomTo([ra,dec]);
             };
 
             callHandler["samp.hub.event.unregister"] = function (senderId, message, isCall) {
@@ -162,7 +156,8 @@ define(["jquery", "underscore-min", "../Parser/JsonProcessor", "../Gui/dialog/Er
         /**
          *    Init SAMP connector
          */
-        function initSamp() {
+        function initSamp(mizarAPI) {
+            mizar = mizarAPI;
             var clientTracker = createClientTracker();
 
             // Samp event callbacks
@@ -191,9 +186,9 @@ define(["jquery", "underscore-min", "../Parser/JsonProcessor", "../Gui/dialog/Er
             var meta = {
                 "samp.name": "Mizar",
                 "samp.description.text": "Module for Interactive visualiZation from Astronomical Repositories",
-                "mizar.version": "v0.1",
+                "mizar.version": "v1.0",
                 "author.affiliation": "CNES/TPZ",
-                "home.page": "http://github.com/TPZF/RTWeb3D"
+                "home.page": "http://github.com/MizarWeb"
             };
 
             // Generate subscriptions map

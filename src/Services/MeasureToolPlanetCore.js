@@ -55,7 +55,7 @@ define(["jquery", "underscore-min", "../Utils/Constants",
             }
             var geo = mizarAPI.getActivatedContext().getLonLatFromPixel(self.pickPoint[0], self.pickPoint[1]);
             if (geo !== null) {
-                self.geoPickPoint = mizarAPI.getActivatedContext().getLonLatFromPixel(self.pickPoint[0], self.pickPoint[1]);
+                self.geoPickPoint = geo;
             } else {
                 return null;
             }
@@ -73,9 +73,7 @@ define(["jquery", "underscore-min", "../Utils/Constants",
             var stopPickPoint;
             if (event.type.search("touch") >= 0) {
                 stopPickPoint = mizarAPI.getActivatedContext().getLonLatFromPixel(event.changedTouches[0].clientX, event.changedTouches[0].clientY);
-            }
-            else {
-
+            } else {
                 stopPickPoint = mizarAPI.getActivatedContext().getLonLatFromPixel(event.layerX, event.layerY);
             }
 
@@ -288,7 +286,7 @@ define(["jquery", "underscore-min", "../Utils/Constants",
               for (var i=0;i<intermediatesPoints.length;i++) {
                   var pt = intermediatesPoints[i];
                   var elevation = mizarAPI.getActivatedContext().getElevation(pt[0], pt[1]);
-                  elevation = Numeric.roundNumber(elevation / scale, 0)
+                  elevation = Numeric.roundNumber(elevation / scale, 0);
                   if (elevation > maxElevation) {
                     maxElevation = elevation;
                   }

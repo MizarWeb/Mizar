@@ -300,7 +300,7 @@ define(["jquery","underscore-min", "../Utils/Event", "../Utils/Utils", "../Utils
                     xmlns: false,
                     attrsAsObject: false,
                     childrenAsArray: false
-                }
+                };
                 result = xmlToJSON.parseString(response,myOptions);
                 callback(result,sourceObject);
               },
@@ -428,7 +428,7 @@ define(["jquery","underscore-min", "../Utils/Event", "../Utils/Utils", "../Utils
                 if (this.globe) {
                     this.globe.renderContext.requestFrame();
                 }
-                this.publish("visibility:changed", this);
+                this.publish(Constants.EVENT_MSG.LAYER_VISIBILITY_CHANGED, this);
             } else {
                 throw new TypeError("the parameter of setVisible should be a boolean", "AbstractLayer.js");
             }
@@ -453,7 +453,7 @@ define(["jquery","underscore-min", "../Utils/Event", "../Utils/Utils", "../Utils
                 if (this.globe) {
                     this.globe.renderContext.requestFrame();
                 }
-                this.publish("opacity:changed", this);
+                this.publish(Constants.EVENT_MSG.LAYER_OPACITY_CHANGED, this);
             } else {
                throw new RangeError('opacity value should be a value in [0..1]', "AbstractLayer.js");
             }

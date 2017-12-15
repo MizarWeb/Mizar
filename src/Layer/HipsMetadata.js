@@ -17,7 +17,7 @@
  * along with MIZAR. If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
 
-define(["jquery", "../Utils/Constants"], function ($, Constants) {
+define(["jquery", "../Utils/Constants", "../Gui/dialog/ErrorDialog"], function ($, Constants, ErrorDialog) {
 
     /**
      * @namespace
@@ -275,7 +275,34 @@ define(["jquery", "../Utils/Constants"], function ($, Constants) {
             //Fix for version=1.2
             if (key === "creator_did" && hipsMetadata['hips_version'] === "1.2") {
                 hipsMetadata['creator_did'] = hipsMetadata['publisher_did'];
-            } else {
+                ErrorDialog.open("<font style='color:orange'>Warning :</font> Deprecated Hips version <b>1.2</b> for <font style='color:orange'><b>"+hipsMetadata.obs_title+"</b></font>, please update it - <font style='color:orange'>use creator_did=publisher_did</font>");
+            }
+            //Fix for version=1.3
+            else if(key === "creator_did" && hipsMetadata['hips_version'] === "1.3") {
+                hipsMetadata['creator_did'] = hipsMetadata['publisher_did'];
+                ErrorDialog.open("<font style='color:orange'>Warning :</font> Deprecated Hips version <b>1.3</b> for <font style='color:orange'><b>"+hipsMetadata.obs_title+"</b></font>, please update it - <font style='color:orange'>use creator_did=publisher_did</font>");
+            } else if(key === "obs_title" && hipsMetadata['hips_version'] === "1.3") {
+                hipsMetadata['obs_title'] = hipsMetadata['obs_collection'];
+                ErrorDialog.open("<font style='color:orange'>Warning :</font> Deprecated Hips version <b>1.3</b> for <font style='color:orange'><b>"+hipsMetadata.obs_title+"</b></font>, please update it - <font style='color:orange'>use obs_title=obs_collection</font>");
+            }
+            //Fox for version 1.4
+            else if(key === "obs_title" && hipsMetadata['hips_version'] === "1.4") {
+                hipsMetadata['obs_title'] = hipsMetadata['obs_collection'];
+                ErrorDialog.open("<font style='color:yellow'>Warning :</font> obs_title not found in v1.4 for <font style='color:yellow'><b>"+hipsMetadata.obs_title+"</b></font>, use obs_title, please fix it");
+            } else if(key === "creator_did" && hipsMetadata['hips_version'] === "1.4") {
+                hipsMetadata['creator_did'] = hipsMetadata['publisher_did'];
+                ErrorDialog.open("<font style='color:yellow'>Warning :</font> creator_did not found in v1.4 for <font style='color:yellow'><b>"+hipsMetadata.obs_title+"</b></font>, use creator_did, please fix it");
+            }
+            /// very old version
+            else if(key === "hips_version" && !hipsMetadata.hasOwnProperty('hips_version')) {
+                hipsMetadata['hips_version'] = "very old one";
+                ErrorDialog.open("<font style='color:orange'>Warning :</font> Deprecated Hips version <b>unknown</b> for <font style='color:orange'><b>"+hipsMetadata.obs_title+"</b></font>, please update it - <font style='color:orange'>use a version in your metadata</font>");
+            } else if(key === "creator_did" && !hipsMetadata.hasOwnProperty('hips_version')) {
+                hipsMetadata['creator_did'] = hipsMetadata['publisher_did'];
+                ErrorDialog.open("<font style='color:orange'>Warning : </font> Deprecated Hips version <b>unknown</b> for <font style='color:orange'><b>"+hipsMetadata.obs_title+"</b></font>, please update it - <font style='color:orange'>use creator_did = pulisher_did</font>");
+            }
+            //Error
+            else {
                 requiredKeywordNotFound.push(key + " (" + description + ") is not present. ");
             }
         }
@@ -355,7 +382,7 @@ define(["jquery", "../Utils/Constants"], function ($, Constants) {
                 valueArray = values[5];
 
                 // checking the required parameter is here
-                _checkRequiredParameters.call(this, hipsMetadata, key, description, requiredKeywordNotFound);
+                _checkRequiredParameters.call(this, hipsMetadata, mandatory, key, description, requiredKeywordNotFound);
 
                 // Transforms a key's value into an array when it is necessary and store the result in hipsMetadata
                 _transformAStringToArray.call(this, valueArray, key, hipsMetadata);
@@ -369,7 +396,9 @@ define(["jquery", "../Utils/Constants"], function ($, Constants) {
             }
         }
         if (requiredKeywordNotFound.length > 0 || valueNotRight.length > 0) {
-            throw new RangeError("unvalid hips metadata : \n" + requiredKeywordNotFound.toString() + "\n" + valueNotRight.toString(),"HipsMetadata.js");
+            var name = hipsMetadata.obs_title ? hipsMetadata.obs_title : hipsMetadata.obs_collection;
+            var url = hipsMetadata.hips_service_url ? hipsMetadata.hips_service_url : this.baseUrl;
+            throw new RangeError("unvalid hips metadata for "+ name + " (" + url +"): \n" + requiredKeywordNotFound.toString() + "\n" + valueNotRight.toString(),"HipsMetadata.js");
         }
 
     }
@@ -435,17 +464,38 @@ define(["jquery", "../Utils/Constants"], function ($, Constants) {
     /**
      * @name HipsMetadata
      * @class
-     * Hips data model
+     * Creates the Hips data model. When baseUrl is an URL, then the Hips properties is loaded by requesting
+     * the properties file.
+     * When the baseURl is the Hips description coming from registry, then the description is validated and fixed if needed.
      * @param baseUrl
      * @constructor
      */
     var HipsMetadata = function (baseUrl) {
-        if (typeof (baseUrl) === "string") {
+        if(baseUrl == null) {
+
+        } else if (typeof (baseUrl) === "string") {
             this.baseUrl = baseUrl;
             this.hipsMetadata = _loadHipsProperties.call(this, baseUrl);
         } else {
             this.hipsMetadata = baseUrl;
+            // In hips registry, each record must provide at least creator_did, hips_release_date, hips_service_url, hips_status
+            try {
+                _validateAndFixHips.call(this, this.hipsMetadata);
+            } catch(e) {
+                this.baseUrl = this.hipsMetadata.hips_service_url;
+                this.hipsMetadata =  _loadHipsProperties.call(this, this.baseUrl);
+            }
         }
+    };
+
+    /**
+     * @name setMetadata
+     * @param metadata
+     * @memberOf HipsMetadata#
+     */
+    HipsMetadata.prototype.setMetadata = function(metadata) {
+        this.hipsMetadata = metadata;
+        this.baseUrl = metadata.hips_service_url;
     };
 
     /**

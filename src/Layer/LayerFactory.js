@@ -47,7 +47,15 @@ define(["jquery","../Utils/Constants", "./WMSLayer", "./WMTSLayer", "./WCSElevat
 
         function createHips(hipsMetadata, options) {
             options.proxy = this.proxy;
-            var hipsProperties = (typeof hipsMetadata === 'undefined') ? new HipsMetadata(options.baseUrl) : hipsMetadata;
+            var hipsProperties;
+            if(typeof hipsMetadata === 'undefined') {
+                hipsProperties = new HipsMetadata(options.baseUrl);
+            } else if( hipsMetadata instanceof HipsMetadata)  {
+                hipsProperties = hipsMetadata;
+            } else {
+                hipsProperties = new HipsMetadata();
+                hipsProperties.setMetadata(hipsMetadata);
+            }
 
             var metadata = hipsProperties.getHipsMetadata();
 
@@ -68,12 +76,37 @@ define(["jquery","../Utils/Constants", "./WMSLayer", "./WMTSLayer", "./WCSElevat
                     var hasPNG = ($.inArray(hipsProperties.HipsTileFormat.png, formats) !== -1);
                     var hasJPEG = ($.inArray(hipsProperties.HipsTileFormat.jpeg, formats) !== -1);
                     var hasFits = ($.inArray(hipsProperties.HipsTileFormat.fits, formats) !== -1);
-                    options.format = hasPNG ? hipsProperties.HipsTileFormat.png : "jpg";
-                    //if(hasFits) {
-                    //    layer = createHipsFits(metadata, options);
-                    //} else {
-                        layer = createHipsGraphic(metadata, options);
-                    //}
+                    if(options.format) {
+                        switch(options.format){
+                            case hipsProperties.HipsTileFormat.png:
+                                layer = createHipsGraphic(metadata, options);
+                                break;
+                            case "jpg":
+                                layer = createHipsGraphic(metadata, options);
+                                break;
+                            case hipsProperties.HipsTileFormat.fits:
+                                layer = createHipsFits(metadata, options);
+                                break;
+                            default :
+                            // try to get one by default => try jpeg ... maybe I am lucky
+                                layer = createHipsGraphic(metadata, options);
+                        }
+                    } else {
+                        if (hasPNG) {
+                            options.format = hipsProperties.HipsTileFormat.png;
+                            layer = createHipsGraphic(metadata, options);
+                        } else if (hasJPEG) {
+                            options.format = "jpg"; // the right extension should be "jpeg" but jpg is used
+                            layer = createHipsGraphic(metadata, options);
+                        } else if (hasFits) {
+                            options.format = hipsProperties.HipsTileFormat.fits;
+                            layer = createHipsFits(metadata, options);
+                        } else {
+                            // try to get one by default => it happens for old Hips version ... maybe I am lucky
+                            options.format = "jpg";
+                            layer = createHipsGraphic(metadata, options);
+                        }
+                    }
                     break;
                 case hipsProperties.DataProductType.meta:
                     throw new RangeError("Hips : cannot handle META dataproduct", "LayerFactor.js");

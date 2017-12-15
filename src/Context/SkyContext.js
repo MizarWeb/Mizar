@@ -63,9 +63,8 @@ define(["underscore-min", "../Utils/Utils",
             try {
                 // Create the sky
                 this.globe = GlobeFactory.create(Constants.GLOBE.Sky, skyOptions);
-                this.initGlobeEvents(this.globe);
-
                 this.navigation = NavigationFactory.create(Constants.NAVIGATION.AstroNavigation, this, options.navigation ? options.navigation : options);
+                this.initGlobeEvents(this.globe);
 
                 ServiceFactory.create(Constants.SERVICE.PickingManager).init(this);
 
@@ -167,7 +166,7 @@ define(["underscore-min", "../Utils/Utils",
                 throw ReferenceError("incompatible coordinate reference system with Sky context", "SkyContex.js");
             }
             this.globe.setCoordinateSystem(cs);
-            this.publish("modifiedCrs", this);
+            this.publish(Constants.EVENT_MSG.CRS_MODIFIED, this);
         };
 
         /**

@@ -222,8 +222,7 @@ define(['../Utils/Utils', '../Utils/Event', '../Navigation/NavigationHandlerFact
          * @memberOf AbstractNavigation#
          */
         AbstractNavigation.prototype.getFov = function () {
-            var aspect = this.renderContext.getCanvas().width / this.renderContext.getCanvas().height;
-            return [aspect * this.renderContext.getFov(), this.renderContext.getFov()];
+            return [this.renderContext.getFov(), this.renderContext.getFov()];
         };
 
         /**

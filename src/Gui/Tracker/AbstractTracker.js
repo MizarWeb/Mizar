@@ -29,12 +29,31 @@ define(["jquery"],
          */
         var AbstractTracker = function (options) {
             this.options = options;
-            this.globe = null;
+            this.context = null;
+            this.navigation = null;
             this.element = options.element;
             document.getElementById(this.element).innerHTML = "";
             if (options.position) {
                 $("#" + this.element).css(options.position, "2px");
             }
+        };
+
+        /**
+         * Returns the navigation.
+         * @function _getNavigation
+         * @memberOf AbstractTracker#
+         */
+        AbstractTracker.prototype._getNavigation = function () {
+            return this.navigation;
+        };
+
+        /**
+         * Sets the navigation
+         * @function _setNavigation
+         * @memberOf AbstractTracker#
+         */
+        AbstractTracker.prototype._setNavigation = function (navigation) {
+            this.navigation = navigation;
         };
 
         /**
@@ -88,8 +107,9 @@ define(["jquery"],
          * @function attachTo
          * @memberOf AbstractTracker#
          */
-        AbstractTracker.prototype.attachTo = function (globeContext) {
-            this._setGlobe(globeContext);
+        AbstractTracker.prototype.attachTo = function (context) {
+            this._setGlobe(context._getGlobe());
+            this._setNavigation(context.getNavigation());
             this._getGlobe().getRenderContext().canvas.addEventListener('mousemove', this.update);
             if (this.options.isMobile) {
                 this._getGlobe().getRenderContext().canvas.addEventListener('touchmove', this.update);

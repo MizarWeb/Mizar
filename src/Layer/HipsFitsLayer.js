@@ -183,7 +183,7 @@ define(['../Utils/Constants', '../Utils/Utils', '../Utils/Constants', '../Tiling
                  */
                 failCallback: function () {
                     if (self.globe) {
-                        self.globe.publishEvent("baseLayersError", self);
+                        self.globe.publishEvent(Constants.EVENT_MSG.BASE_LAYERS_ERROR, self);
                         self._ready = false;
                         console.log("Error while loading background");
                     }

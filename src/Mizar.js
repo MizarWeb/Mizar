@@ -1,4 +1,5 @@
 /*******************************************************************************
+/*******************************************************************************
  * Copyright 2017 CNES - CENTRE NATIONAL d'ETUDES SPATIALES
  *
  * This file is part of MIZAR.
@@ -275,6 +276,13 @@ define(["jquery", "underscore-min",
          */
         Mizar.PROVIDER = Constants.PROVIDER;
 
+        /**
+         * Static variable, supported {@link EVENT_MSG event} type
+         * @name EVENT_MSG
+         * @memberOf Mizar#
+         */
+        Mizar.EVENT_MSG = Constants.EVENT_MSG;
+
 
         /**********************************************************************************************************
          *                                      Private methods
@@ -369,7 +377,6 @@ define(["jquery", "underscore-min",
          */
         function _switchToContext(context, options) {
             var self = this;
-            options = options || {};
             var mustBeDestroyed = options.hasOwnProperty("mustBeDestroyed") ? options.mustBeDestroyed : false;
             var mustBeHidden = options.hasOwnProperty("mustBeHidden") ? options.mustBeHidden : false;
 
@@ -410,8 +417,11 @@ define(["jquery", "underscore-min",
                 if(context) {
                     context.enable();
                 }
+                if (options && options.callback) {
+                    options.callback.call(self);
+                }
                 context.showAdditionalLayers();
-                self.publish("mizarMode:toggle", context);
+                self.publish(Constants.EVENT_MSG.MIZAR_MODE_TOGGLE, context);
                 self.getActivatedContext().show();
                 self.getActivatedContext().refresh();
                 if(self.getRenderContext().viewMatrix[0] !== "undefined") {
@@ -650,11 +660,16 @@ define(["jquery", "underscore-min",
          * @private
          */
         function _createHips(hipsLayer, hipsServiceUrl) {
-            if (hipsLayer.hasOwnProperty("hips_status") && !hipsLayer.hips_status.match('public') === null) {
-                return;
+            try {
+                if (hipsLayer.hasOwnProperty("hips_status") && !hipsLayer.hips_status.match('public') === null) {
+                    return;
+                }
+                hipsLayer.hips_service_url = hipsServiceUrl;
+                this.addLayer({type: Mizar.LAYER.Hips, hipsMetadata: new HipsMetadata(hipsLayer)});
+            } catch (e) {
+                var name = hipsLayer.obs_title ?  hipsLayer.obs_title : hipsLayer.obs_collection;
+                ErrorDialog.open("Hips layer <font style='color:yellow'><b>" + name + "</b></font>  not valid <font color='grey'><i>(" + hipsLayer.hips_service_url + " - reason : "+ e.message +")</i></font>", true);
             }
-            hipsLayer.hips_service_url = hipsServiceUrl;
-            this.addLayer({type: Mizar.LAYER.Hips, hipsMetadata: new HipsMetadata(hipsLayer)});
         }
 
         /**************************************************************************************************************/
@@ -952,15 +967,12 @@ define(["jquery", "underscore-min",
          * @function toggleToContext
          * @memberOf Mizar#
          */
-        Mizar.prototype.toggleToContext = function (context, options, callback) {
+        Mizar.prototype.toggleToContext = function (context, options) {
             var result;
             try {
                 var toggleMode = (this.getActivatedContext().getMode() === Mizar.CONTEXT.Sky) ? Mizar.CONTEXT.Planet : Mizar.CONTEXT.Sky;
-                var self = this;
-                _switchToContext.call(this, context, options);
-                if (callback) {
-                    callback.call(self);
-                }
+                var opts = options || {};
+                _switchToContext.call(this, context, opts);
                 result = true;
             } catch(e) {
                 result = false;

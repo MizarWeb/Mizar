@@ -35,8 +35,8 @@
  * along with GlobWeb. If not, see <http://www.gnu.org/licenses/>.
  ***************************************/
 
-define(['./Tile', './GeoTiling', './TilePool', './TileRequest', './TileIndexBuffer', '../Renderer/Program'],
-    function (Tile, GeoTiling, TilePool, TileRequest, TileIndexBuffer, Program) {
+define(['./Tile', './GeoTiling', './TilePool', './TileRequest', './TileIndexBuffer', '../Renderer/Program', '../Utils/Constants'],
+    function (Tile, GeoTiling, TilePool, TileRequest, TileIndexBuffer, Program, Constants) {
         /** @constructor
          TileManager constructor
 
@@ -334,12 +334,12 @@ define(['./Tile', './GeoTiling', './TilePool', './TileRequest', './TileIndexBuff
                             this.tilesToRequest.push(tile);
                         }
                         else if (tile.state === Tile.State.ERROR && this.imageryProvider) {
-                            this.publishEvent("baseLayersError", this.imageryProvider);
+                            this.publishEvent(Constants.EVENT_MSG.BASE_LAYERS_ERROR, this.imageryProvider);
                         }
                     }
                 }
                 if (this.level0TilesLoaded && this.imageryProvider) {
-                    this.publishEvent("baseLayersReady", this.imageryProvider);
+                    this.publishEvent(Constants.EVENT_MSG.BASE_LAYERS_READY, this.imageryProvider);
                 }
             }
 
@@ -471,7 +471,7 @@ define(['./Tile', './GeoTiling', './TilePool', './TileRequest', './TileIndexBuff
 
             // All requests have been processed, send endBackgroundLoad event
             if (this.availableRequests.length === this.maxRequests && this.imageryProvider) {
-                this.publishEvent("endBackgroundLoad");
+                this.publishEvent(Constants.EVENT_MSG.LAYER_END_BACKGROUND_LOAD);
             }
 
         };
@@ -631,7 +631,7 @@ define(['./Tile', './GeoTiling', './TilePool', './TileRequest', './TileIndexBuff
                 {
                     // First launch request, send an event
                     if (this.availableRequests.length === this.maxRequests && this.imageryProvider) {
-                        this.publishEvent("startBackgroundLoad");
+                        this.publishEvent(Constants.EVENT_MSG.LAYER_START_BACKGROUND_LOAD);
                     }
 
                     var tileRequest = this.availableRequests.pop();
@@ -673,7 +673,7 @@ define(['./Tile', './GeoTiling', './TilePool', './TileRequest', './TileIndexBuff
 
                 this.level0TilesLoaded = true;
 
-                this.publishEvent("baseLayersReady", this.parent.isSky());
+                this.publishEvent(Constants.EVENT_MSG.BASE_LAYERS_READY, this.imageryProvider);
             }
 
             var stats = this.renderContext.stats;

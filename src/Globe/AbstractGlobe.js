@@ -223,7 +223,7 @@ define(['../Utils/Event', '../Utils/Utils',
          * @abstract
          */
         AbstractGlobe.prototype.setBaseElevation = function (layer) {
-            throw new Syntax("setBaseElevation Not implemented",  "AbstractGlobe.js");
+            throw new SyntaxError("setBaseElevation Not implemented",  "AbstractGlobe.js");
         };
 
         /**
@@ -260,7 +260,7 @@ define(['../Utils/Event', '../Utils/Utils',
                     this.renderContext.requestFrame();
                     this.nbCreatedLayers++;
             }
-            this.publishEvent("layer:add", layer);
+            this.publishEvent(Constants.EVENT_MSG.LAYER_ADDED, layer);
         };
 
         /**
@@ -272,7 +272,7 @@ define(['../Utils/Event', '../Utils/Utils',
             //layer.setVisible(false); <!-- cannot do it because of PlanetLayer -->
             layer._detach();
             this.renderContext.requestFrame();
-            this.publishEvent("layer:remove", layer);
+            this.publishEvent(Constants.EVENT_MSG.LAYER_REMOVED, layer);
         };
 
         /**

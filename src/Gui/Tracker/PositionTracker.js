@@ -20,6 +20,7 @@ define(["jquery", "./AbstractTracker", "../dialog/CrsDialog","../../Utils/Utils"
     function ($, AbstractTracker, CrsDialog, Utils) {
 
         var self;
+        var posTrackerInfoHTML = "<input type=\"button\" id=\"posTrackerInfoButton\"/>";
         /**
          * Position tracker configuration
          * @typedef {Object} AbstractTracker.position_configuration
@@ -87,21 +88,22 @@ define(["jquery", "./AbstractTracker", "../dialog/CrsDialog","../../Utils/Utils"
         };
 
         /**
-         * Attachs the tracker to the globe.
+         * Attachs the tracker to the context.
          *
-         * Attachs the tracker to the globe by calling the attachTo method from the AbstractTracker. Then, the CrsDialog
+         * Attachs the tracker to the context by calling the attachTo method from the AbstractTracker. Then, the CrsDialog
          * is filled with Crs information. Finally, the onClick event is set to get the Crs information. The onClick event
          * is enabled on the <i>#posTrackerInfoButton</i> ID
          *
          * @function attachTo
          * @memberOf PositionTracker#
-         * @param globeContext globe
+         * @param {AbstractContext} context
          * @see {@link CrsDialog}
          * @see {@link AbstrackTracker#attachTo}
          */
-        PositionTracker.prototype.attachTo = function (globeContext) {
-            AbstractTracker.prototype.attachTo.call(this, globeContext);
-            CrsDialog.open(globeContext.getCoordinateSystem());
+        PositionTracker.prototype.attachTo = function (context) {
+            AbstractTracker.prototype.attachTo.call(this, context);
+            $posTrackerInfo = $(posTrackerInfoHTML).appendTo("#" + this._getElement()+"Info");
+            CrsDialog.open(context._getGlobe().getCoordinateSystem());
             $('#posTrackerInfoButton').on('click', function () {
                 if (CrsDialog.isActive() === true) {
                     CrsDialog.hide();
@@ -122,9 +124,10 @@ define(["jquery", "./AbstractTracker", "../dialog/CrsDialog","../../Utils/Utils"
          * @memberOf PositionTracker#
          */
         PositionTracker.prototype.detach = function () {
-            AbstractTracker.prototype.detach.call(this);
             $("#posTrackerInfoButton").off("click");
+            $("#" + this._getElement()+"Info").empty();
             CrsDialog.destroy();
+            AbstractTracker.prototype.detach.call(this);
             self = null;
         };
 
@@ -136,6 +139,7 @@ define(["jquery", "./AbstractTracker", "../dialog/CrsDialog","../../Utils/Utils"
         PositionTracker.prototype.destroy = function() {
             this.detach(this);
             AbstractTracker.prototype.destroy.call(this);
+            self = null;
         };
 
 
