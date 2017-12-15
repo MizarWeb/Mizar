@@ -156,7 +156,14 @@ define(['../Utils/Utils', '../Renderer/BatchRenderable','../Utils/Constants'],
         TiledVectorRenderable.prototype.build = function (geometry, tile) {
             this.tile = tile;
             var i,j;
-            var tileInRange = this.bucket.layer.minLevel <= tile.level && this.bucket.layer.maxLevel > tile.level;
+            var tileInRange;
+            if ((typeof this.bucket.layer.minLevel === 'undefined') || (typeof this.bucket.layer.maxLevel === 'undefined')) {
+                tileInRange = true;
+            } else {
+                tileInRange = this.bucket.layer.minLevel <= tile.level && this.bucket.layer.maxLevel > tile.level;
+            }
+
+            tileInRange = true;
             if (tileInRange) {
                 var coords = geometry.coordinates;
                 switch (geometry.type) {

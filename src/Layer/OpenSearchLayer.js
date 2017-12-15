@@ -196,8 +196,8 @@ define(['../Renderer/FeatureStyle', '../Renderer/VectorRendererManager', '../Uti
          * @fires Context#features:added
          */
         OpenSearchLayer.prototype.launchRequest = function (bound, url) {
-            console.log("OpenSearchLayer.launchRequest");
-
+            console.log("LAUNCH REQUEST");
+            console.log("=============================================");
             if (this.freeRequests.length === 0) {
                 return;
             }
@@ -225,9 +225,11 @@ define(['../Renderer/FeatureStyle', '../Renderer/VectorRendererManager', '../Uti
 
                         //tileData.complete = (response.totalResults === response.features.length);
                         self.updateFeatures(response.features);
-
+                        
                         for (i = response.features.length - 1; i >= 0; i--) {
+
                             feature = response.features[i];
+                            console.log("feature",feature);
                             // Eliminate already added features from response
                             //Old version compatibily
                             if (!feature.hasOwnProperty("id")) {
@@ -235,10 +237,13 @@ define(['../Renderer/FeatureStyle', '../Renderer/VectorRendererManager', '../Uti
                             }
                             alreadyAdded = self.featuresSet.hasOwnProperty(feature.id);
                             if (alreadyAdded) {
+                                console.log("Already added "+feature.id);
                                 response.features.splice(i, 1);
+                            } else {
+                                console.log("Adding "+feature.id);
+                                self.addFeature(feature);
                             }
 
-                            self.addFeature(feature);
                         }
             
                         self.globe.refresh();
@@ -333,9 +338,15 @@ define(['../Renderer/FeatureStyle', '../Renderer/VectorRendererManager', '../Uti
 
             
             // MS: Feature could be added from ClusterOpenSearch which have features with different styles
-            console.log("this.style",this.style);
             var style = feature.properties.style ? feature.properties.style : this.style;
-            console.log("style",style);
+            style.visible = true;
+            
+            /*for (i=0;i<feature.geometry.coordinates[0].length;i++) {
+                feature.geometry.coordinates[0][i].push(1000);
+            }
+            console.log("Geometry",feature.geometry);
+            */
+
 
 
             //this._addFeatureToRenderers(feature);
@@ -599,8 +610,6 @@ define(['../Renderer/FeatureStyle', '../Renderer/VectorRendererManager', '../Uti
                     url = url.replace(param.value.replace("}","?}"),currentValue);
                 }
             }
-
-            console.log("Final url = "+url);
 
             /*if (this.transformer != undefined && typeof beforeHandle == 'function') {
                 var url = this.transformer.beforeHandle(url);

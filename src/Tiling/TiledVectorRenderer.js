@@ -96,6 +96,7 @@ define(['../Utils/Utils', '../Renderer/VectorRenderer', '../Renderer/Program'], 
 
         for (var n = start; n < end; n++) {
             var renderable = renderables[n];
+
             var tile = renderable.tile;
 
             mat4.multiply(renderContext.viewMatrix, tile.matrix, modelViewMatrix);

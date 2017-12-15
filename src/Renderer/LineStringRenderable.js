@@ -141,7 +141,7 @@ LineStringRenderable.prototype.buildVerticesAndIndices = function( tile, coords 
  * @private
  */
 LineStringRenderable.prototype._buildVerticesAndIndices = function( tile, coords )
-{
+{	
 	var size = tile.config.tesselation;
 	var vs = tile.config.vertexSize;
 
@@ -276,9 +276,10 @@ LineStringRenderer.prototype.canApply = function(type,style)
 	if ( this.globe.isSky() ) {
 		return false;
 	}
-	return (type === Constants.GEOMETRY.LineString || type === Constants.GEOMETRY.MultiLineString ||
+	result = (type === Constants.GEOMETRY.LineString || type === Constants.GEOMETRY.MultiLineString ||
          (!style.fill && (type === Constants.GEOMETRY.Polygon || type === Constants.GEOMETRY.MultiPolygon))) &&
 					!style.gradientLength;
+	return result;
 };
 /**************************************************************************************************************/
  /**
@@ -320,11 +321,13 @@ LineStringBucket.prototype.createRenderable = function()
  */
 LineStringBucket.prototype.isCompatible = function(style)
 {
-	return this.style.strokeColor[0] === style.strokeColor[0] &&
+	result = this.style.strokeColor[0] === style.strokeColor[0] &&
 		this.style.strokeColor[1] === style.strokeColor[1] &&
 		this.style.strokeColor[2] === style.strokeColor[2] &&
 		this.style.strokeColor[3] === style.strokeColor[3] &&
 		this.style.strokeWidth === style.strokeWidth;
+
+	return result;
 };
 
 /**************************************************************************************************************/
