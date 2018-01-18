@@ -345,9 +345,15 @@ define(['../Utils/Event', '../Utils/Utils',
          * @memberOf AbstractGlobe#
          */
         AbstractGlobe.prototype.getLonLatFromPixel = function (x, y) {
+            //console.log("AbstractGlobe.getLonLatFromPixel");
             var ray = Ray.createFromPixel(this.renderContext, x, y);
+            //console.log("Ray",ray);
             var intersection = _computeIntersection.call(this, ray, this.coordinateSystem);
-            return _computePosition.call(this, ray, intersection, this.coordinateSystem);
+            //console.log("intersection",intersection);
+            var result = _computePosition.call(this, ray, intersection, this.coordinateSystem);
+            //console.log("result",result);
+            //console.log("=================================");
+            return result;
         };
 
         /**

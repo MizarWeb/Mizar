@@ -42,6 +42,41 @@ define(function () {
       return null;
     };
 
+    OpenSearchUtils.setCurrentValueToParam = function (form,name,value) {
+      var param;          // param managed
+      for (var i=0;i<form.parameters.length;i++) {
+          param = form.parameters[i];
+          if (param.name === name) {
+            param.currentValue = value;
+            $("#p_"+name).val(value);
+            break;
+          }
+      }
+    }
+
+    OpenSearchUtils.getCurrentValue = function (form,name) {
+      var param;          // param managed
+      for (var i=0;i<form.parameters.length;i++) {
+          param = form.parameters[i];
+          if (param.name === name) {
+            return param.currentValue;
+            break;
+          }
+      }
+    }
+
+    OpenSearchUtils.initNavigationValues = function (form) {
+      var param;          // param managed
+      for (var i=0;i<form.parameters.length;i++) {
+          param = form.parameters[i];
+          if (param.name === "maxRecords") {
+            param.currentValue = Math.ceil(param.maxInclusive * 0.2);
+          } else if (param.name === "page") {
+            param.currentValue = 1;
+          }
+      }
+    }
+
     return OpenSearchUtils;
 
 });

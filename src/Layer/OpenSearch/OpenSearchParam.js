@@ -28,14 +28,15 @@
     */
     var OpenSearchParam = function (paramJson) {
       // init all values
-      this.name = null;         // Name of parameters
-      this.value = null;        // Value identifying the parameters
-      this.title = null;        // Title of parameter (for display)
-      this.minInclusive = null; // (Level 1 Control - Number) Min value inclusive
-      this.maxInclusive = null; // (Level 1 Control - Number) Max value inclusive
-      this.pattern = null;      // (Level 1 Control - String) Pattern
+      this.name = null;          // Name of parameters
+      this.value = null;         // Value identifying the parameters
+      this.title = null;         // Title of parameter (for display)
+      this.minInclusive = null;  // (Level 1 Control - Number) Min value inclusive
+      this.maxInclusive = null;  // (Level 1 Control - Number) Max value inclusive
+      this.pattern = null;       // (Level 1 Control - String) Pattern
       this.options = null;       // List of values if list provided
-      this.currentValue = null;  // Value to pass to paramter
+      this.currentValue = null;  // Value to pass to parameter
+      this.defaultValue = null;  // Default value
 
       this.parseJson(paramJson);
     };

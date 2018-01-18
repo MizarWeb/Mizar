@@ -83,6 +83,23 @@
       }
     };
 
+
+
+    OpenSearchForm.prototype.updateFromGUI = function() {
+      for (var i=0;i<this.parameters.length;i++) {
+          param = this.parameters[i];
+          val = $("#p_"+param.name).val();
+          if (val !== "") {
+            param.currentValue = val;
+            console.log(param.name+"=",val);
+          } else {
+            param.currentValue = null;
+          }
+      }
+      console.log(this.parameters);
+      
+    }
+
     /*************************************************************************************************************/
 
     return OpenSearchForm;

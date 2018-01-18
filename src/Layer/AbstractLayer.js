@@ -304,6 +304,7 @@ define(["jquery","underscore-min", "../Utils/Event", "../Utils/Utils", "../Utils
                     childrenAsArray: false
                 }
                 result = xmlToJSON.parseString(response,myOptions);
+                console.log("result",result);
                 callback(result,sourceObject);
               },
               error: function (xhr, ajaxOptions, thrownError) {

@@ -53,9 +53,9 @@
  * @implements {Context}
  */
 define(["jquery", "underscore-min", "../Utils/Utils", "./AbstractContext", "../Utils/Constants",
-        "../Globe/GlobeFactory", "../Navigation/NavigationFactory", "../Services/ServiceFactory"],
+        "../Globe/GlobeFactory", "../Navigation/NavigationFactory", "../Services/ServiceFactory","../Gui/Compass"],
     function ($, _, Utils, AbstractContext, Constants,
-              GlobeFactory, NavigationFactory, ServiceFactory) {
+              GlobeFactory, NavigationFactory, ServiceFactory,Compass) {
 
         /**
          * Planet context configuration
@@ -84,8 +84,8 @@ define(["jquery", "underscore-min", "../Utils/Utils", "./AbstractContext", "../U
 
             this.components = {
                 "posTracker": true,
-                "elevTracker": true,
-                "compassDiv": false
+                "elevTracker": true//,
+                //"compassDiv": true
             };
 
             var planetOptions = _createPlanetConfiguration.call(this, options);
@@ -98,6 +98,8 @@ define(["jquery", "underscore-min", "../Utils/Utils", "./AbstractContext", "../U
 
                 this.navigation = _createNavigation.call(this, this.getCoordinateSystem().isFlat(), options.navigation);
 
+                //this.setCompassVisible(options.compass && this.components.compassDiv ? options.compass : "compassDiv", true);
+                
                 ServiceFactory.create(Constants.SERVICE.PickingManager).init(this);
             }
             catch (err) {
@@ -236,6 +238,17 @@ define(["jquery", "underscore-min", "../Utils/Utils", "./AbstractContext", "../U
          * @memberOf PlanetContext#
          */
         PlanetContext.prototype.setCompassVisible = function (divName, visible) {
+            if (visible) {
+                this.compass = new Compass({
+                    element: divName,
+                    ctx: this
+                });
+            } else {
+                if (this.compass) {
+                    this.compass.remove();
+                }
+            }
+            this.setComponentVisibility(divName, visible);
         };
 
         /**
@@ -304,6 +317,7 @@ define(["jquery", "underscore-min", "../Utils/Utils", "./AbstractContext", "../U
          * @memberOf PlanetContext#
          */
         PlanetContext.prototype.destroy = function () {
+            this.setCompassVisible(false);
             AbstractContext.prototype.destroy.call(this);
         };
 

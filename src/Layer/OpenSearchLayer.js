@@ -34,8 +34,8 @@
  * You should have received a copy of the GNU General Public License
  * along with GlobWeb. If not, see <http://www.gnu.org/licenses/>.
  ***************************************/
-define(['../Renderer/FeatureStyle', '../Renderer/VectorRendererManager', '../Utils/Utils', './AbstractLayer', '../Renderer/RendererTileData', '../Tiling/Tile','../Tiling/GeoTiling','../Utils/Constants','./OpenSearch/OpenSearchForm','./OpenSearch/OpenSearchUtils'],
-    function (FeatureStyle, VectorRendererManager, Utils, AbstractLayer, RendererTileData, Tile,GeoTiling,Constants,OpenSearchForm,OpenSearchUtils) {
+define(['../Renderer/FeatureStyle', '../Renderer/VectorRendererManager', '../Utils/Utils', './AbstractLayer', '../Renderer/RendererTileData', '../Tiling/Tile','../Tiling/GeoTiling','../Utils/Constants','./OpenSearch/OpenSearchForm','./OpenSearch/OpenSearchUtils','./OpenSearch/OpenSearchResult','./OpenSearch/OpenSearchRequestPool','./OpenSearch/OpenSearchCache'],
+    function (FeatureStyle, VectorRendererManager, Utils, AbstractLayer, RendererTileData, Tile,GeoTiling,Constants,OpenSearchForm,OpenSearchUtils,OpenSearchResult,OpenSearchRequestPool,OpenSearchCache) {
 
         /**
          * @name OpenSearchLayer
@@ -69,7 +69,6 @@ define(['../Renderer/FeatureStyle', '../Renderer/VectorRendererManager', '../Uti
 
             this.minOrder = options.minOrder || 5;
             this.maxRequests = options.maxRequests || 2;
-            this.requestProperties = "";
             this.invertY = options.invertY || false;
             this.coordSystemRequired = options.hasOwnProperty('coordSystemRequired') ? options.coordSystemRequired : true;
             this.formDescription = null;
@@ -77,22 +76,29 @@ define(['../Renderer/FeatureStyle', '../Renderer/VectorRendererManager', '../Uti
             this.extId = "os";
 
             this.oldBound = null;
+            
+            this.previousViewKey = null;
 
             // Used for picking management
             this.features = [];
+
             // Counter set, indicates how many times the feature has been requested
             this.featuresSet = {};
 
-            // Maximum two requests for now
-            this.freeRequests = [];
             this.tilesToLoad = [];
 
-            // Build the request objects
-            for (var i = 0; i < this.maxRequests; i++) {
-                var xhr = new XMLHttpRequest();
-                this.freeRequests.push(xhr);
-            }
+            this.result = new OpenSearchResult();
 
+            this.pool = new OpenSearchRequestPool(this);
+            this.cache = new OpenSearchCache();
+
+            // Features already loaded
+            this.featuresAdded = [];
+
+            // Force Refresh
+            this.forceRefresh = false;
+
+            console.log("Describe url",this.describeUrl);
             if (typeof this.describeUrl !== 'undefined') {
               this.hasForm = true;
               this.loadGetCapabilities(this.manageCapabilities,this.describeUrl,this);
@@ -100,6 +106,7 @@ define(['../Renderer/FeatureStyle', '../Renderer/VectorRendererManager', '../Uti
               this.hasForm = false;
             }
 
+            document.currentOpenSearchLayer = this;
         };
 
         /**************************************************************************************************************/
@@ -107,6 +114,18 @@ define(['../Renderer/FeatureStyle', '../Renderer/VectorRendererManager', '../Uti
         Utils.inherits(AbstractLayer, OpenSearchLayer);
 
         /**************************************************************************************************************/
+
+        OpenSearchLayer.prototype.nextPage = function () {
+            var num = OpenSearchUtils.getCurrentValue(this.formDescription,"page");
+            // If not specified, set default to 1
+            if ((num === null) || (typeof num === "undefined")) {
+                num = 1;
+            }
+            OpenSearchUtils.setCurrentValueToParam(this.formDescription,"page",num*1+1);
+
+            this.forceRefresh = true;
+            this.globe.renderContext.requestFrame();
+        }
 
         OpenSearchLayer.prototype.manageCapabilities = function (json,sourceObject) {
           // check if form description is well provided
@@ -123,14 +142,13 @@ define(['../Renderer/FeatureStyle', '../Renderer/VectorRendererManager', '../Uti
           if (dataForm != null) {
             // Load form description
             sourceObject.formDescription = new OpenSearchForm(dataForm,"application/json");
+            OpenSearchUtils.initNavigationValues(sourceObject.formDescription);
           } else {
             console.log("Form not correct");
           }
-
           if (typeof sourceObject.afterLoad === 'function') {
             // Update GUI !!
             sourceObject.afterLoad(sourceObject);
-
           }
         };
 
@@ -195,99 +213,30 @@ define(['../Renderer/FeatureStyle', '../Renderer/VectorRendererManager', '../Uti
          * @fires Context#endLoad
          * @fires Context#features:added
          */
-        OpenSearchLayer.prototype.launchRequest = function (bound, url) {
-            console.log("LAUNCH REQUEST");
-            console.log("=============================================");
-            if (this.freeRequests.length === 0) {
-                return;
-            }
-
-            // Add request properties to length
-            if (this.requestProperties !== "") {
-                url += '&' + this.requestProperties;
-            }
-
-            // Pusblish the start load event, only if there is no pending requests
-            if (this.maxRequests === this.freeRequests.length) {
-                this.globe.publishEvent("startLoad", this);
-            }
-
-            var xhr = this.freeRequests.pop();
-            var self = this;
-
-            xhr.onreadystatechange = function (e) {
-                var i,feature;
-                var response;
-                var alreadyAdded;
-                if (xhr.readyState === 4) {
-                    if (xhr.status === 200) {
-                        response = JSON.parse(xhr.response);
-
-                        //tileData.complete = (response.totalResults === response.features.length);
-                        self.updateFeatures(response.features);
-                        
-                        for (i = response.features.length - 1; i >= 0; i--) {
-
-                            feature = response.features[i];
-                            console.log("feature",feature);
-                            // Eliminate already added features from response
-                            //Old version compatibily
-                            if (!feature.hasOwnProperty("id")) {
-                                feature.id = feature.properties.identifier;
-                            }
-                            alreadyAdded = self.featuresSet.hasOwnProperty(feature.id);
-                            if (alreadyAdded) {
-                                console.log("Already added "+feature.id);
-                                response.features.splice(i, 1);
-                            } else {
-                                console.log("Adding "+feature.id);
-                                self.addFeature(feature);
-                            }
-
-                        }
-            
-                        self.globe.refresh();
-                    }
-                    else if (xhr.status >= 400) {
-                        //tileData.complete = true;
-                        console.error(xhr.responseText);
-                        return;
-                    }
-
-                    self.freeRequests.push(xhr);
-
-                    // Publish event that layer have received new features
-                    if (response !== undefined && response.features !== null && response.features.length > 0) {
-                        self.globe.publishEvent("features:added", {layer: self, features: response.features});
-                    }
-
-                    // Publish the end load event, only if there is no pending requests
-                    if (self.maxRequests === self.freeRequests.length) {
-                        self.globe.publishEvent("endLoad", self);
-                    }
-                }
-            };
-            xhr.open("GET", url);
-            xhr.send();
+        OpenSearchLayer.prototype.launchRequest = function (tile, url) {
+            this.pool.addQuery(url,tile,this.cache.getKey(tile.bound));
         };
 
         /**************************************************************************************************************/
 
         /**
-         * Sets the new request properties
-         * @function setRequestProperties
+         * Remove all previous features
+         * @function removeFeatures
          * @memberof OpenSearchLayer#
          * @param properties
          */
-        OpenSearchLayer.prototype.setRequestProperties = function (properties) {
+        OpenSearchLayer.prototype.removeFeatures = function () {
             // clean renderers
             for (var x in this.featuresSet) {
                 if(this.featuresSet.hasOwnProperty(x)) {
                     var featureData = this.featuresSet[x];
-                    for (var i = 0; i < featureData.tiles.length; i++) {
-                        var tile = featureData.tiles[i];
+                    //for (var i = 0; i < featureData.tiles.length; i++) {
+                    for (var i=0;i < this.tiles.length ; i++) {
+                        //var tile = featureData.tiles[i];
+                        var tile = this.tiles[i];
                         var feature = this.features[featureData.index];
-                        this.globe.vectorRendererManager.removeGeometryFromTile(this, feature.geometry, tile);
+                        this.globe.vectorRendererManager.removeGeometryFromTile(feature.geometry,tile);
+                        //this.removeFeature(feature.id,tile);
                     }
                 }
             }
@@ -302,18 +251,14 @@ define(['../Renderer/FeatureStyle', '../Renderer/VectorRendererManager', '../Uti
                     tile.extension[self.extId].complete = false;
                 }
             });
-            this.featuresSet = {};
+
+            this.featuresSet = [];
             this.features = [];
+            this.featuresAdded = [];
 
-            // Set request properties
-            this.requestProperties = "";
-            for (var key in properties) {
-                if (this.requestProperties !== "") {
-                    this.requestProperties += '&';
-                }
-                this.requestProperties += key + '=' + properties[key];
-            }
-
+            //this.globe.refresh();
+            this.globe.renderContext.requestFrame();
+            
         };
 
         /**************************************************************************************************************/
@@ -324,8 +269,16 @@ define(['../Renderer/FeatureStyle', '../Renderer/VectorRendererManager', '../Uti
          * @memberof OpenSearchLayer#
          * @param {Feature} feature Feature
          */
-        OpenSearchLayer.prototype.addFeature = function (feature) {
+        OpenSearchLayer.prototype.addFeature = function (feature,tile) {
             var featureData;
+            
+            // update list added
+            var key = this.cache.getKey(tile.bound);
+
+            var ind = ""+feature.id;//+"_"+key;
+            this.featuresAdded.push(ind);
+
+            this.featuresSet[feature.id] = featureData;
 
             var defaultCrs = {
                 type: "name",
@@ -336,21 +289,28 @@ define(['../Renderer/FeatureStyle', '../Renderer/VectorRendererManager', '../Uti
 
             feature.geometry.gid = feature.id;
 
-            
+
             // MS: Feature could be added from ClusterOpenSearch which have features with different styles
             var style = feature.properties.style ? feature.properties.style : this.style;
             style.visible = true;
-            
-            /*for (i=0;i<feature.geometry.coordinates[0].length;i++) {
-                feature.geometry.coordinates[0][i].push(1000);
+
+            var old = this.featuresSet[feature.id];
+            if ( (old === null) || (typeof old === "undefined") ) {
+                this.features.push(feature);
+                var featureData = {
+                    index: this.features.length - 1,
+                    tiles: [tile]
+                };
+                this.featuresSet[feature.id] = featureData;
             }
-            console.log("Geometry",feature.geometry);
-            */
+            else {
+                featureData = this.featuresSet[feature.id];
+                // Store the tile
+                featureData.tiles.push(tile);
 
-
-
-            //this._addFeatureToRenderers(feature);
-
+                // Always use the base feature to manage geometry indices
+                feature = this.features[featureData.index];
+            }
 
              // Add features to renderer if layer is attached to planet
              if (this.globe) {
@@ -359,6 +319,7 @@ define(['../Renderer/FeatureStyle', '../Renderer/VectorRendererManager', '../Uti
                     this.globe.renderContext.requestFrame();
                 }
             }
+           
         };
 
 
@@ -418,6 +379,8 @@ define(['../Renderer/FeatureStyle', '../Renderer/VectorRendererManager', '../Uti
             }
 
             if (featureIt.tiles.length === 0) {
+                var feature = this.features[featureIt.index];
+                this.globe.vectorRendererManager.removeGeometryFromTile(feature.geometry,tile);
                 // Remove it from the set
                 delete this.featuresSet[identifier];
 
@@ -430,6 +393,7 @@ define(['../Renderer/FeatureStyle', '../Renderer/VectorRendererManager', '../Uti
                     //this.featuresSet[ lastFeature.properties.identifier ].index = featureIt.index;
                     this.featuresSet[lastFeature.id].index = featureIt.index;
                 }
+
             }
         };
 
@@ -584,11 +548,13 @@ define(['../Renderer/FeatureStyle', '../Renderer/VectorRendererManager', '../Uti
         OpenSearchLayer.prototype.buildUrl = function (bound) {
 
             //var url = this.serviceUrl + "/search?order=" + tile.order + "&healpix=" + tile.pixelIndex;
+            if (this.formDescription === null) {
+                return null;
+            }
             var url = this.formDescription.template;
 
             // Prepare parameters for this tile
             this.prepareParameters(bound);
-
 
             // Check each parameter
             var param;          // param managed
@@ -646,74 +612,119 @@ define(['../Renderer/FeatureStyle', '../Renderer/VectorRendererManager', '../Uti
             if (!this.isVisible()) {
                 return;
             }
-            var bound = {
-                south : 90,
-                north : -90,
-                west : 180,
-                east : -180};
 
-
-            for (var i=0;i<tiles.length;i++) {
-                if (tiles[i].bound.south < bound.south ) {
-                    bound.south = tiles[i].bound.south;
-                }
-                if (tiles[i].bound.west < bound.west ) {
-                    bound.west = tiles[i].bound.west;
-                }
-                if (tiles[i].bound.north > bound.north ) {
-                    bound.north = tiles[i].bound.north;
-                }
-                if (tiles[i].bound.east > bound.east ) {
-                    bound.east = tiles[i].bound.east;
-                }
-            }
+            this.tiles = tiles;
 
             var needRefresh = false;
-            if (this.oldBound === null) {
+            var globalKey = this.cache.getArrayBoundKey(tiles);
+
+            if (this.forceRefresh === true) {
+                // Remove cache, in order to reload new features
+                this.cleanCache();
+                this.forceRefresh = false;
+            }
+
+            if (this.previousViewKey === null) {
                 needRefresh = true;
             } else {
-                needRefresh = ( (this.oldBound.south !== bound.south) || 
-                                (this.oldBound.north !== bound.north) ||
-                                (this.oldBound.east  !== bound.east) ||
-                                (this.oldBound.west  !== bound.west) );
+                needRefresh = ( this.previousViewKey !== globalKey);
             }
-            this.oldBound = bound;
 
-            if (needRefresh === true) {
-                var url = this.buildUrl(bound);
-                if (url) {
-                this.launchRequest(bound, url);
+            if (needRefresh) {
+                this.previousViewKey = globalKey;
+                for (var i=0;i<tiles.length;i++) {
+                    var features = this.cache.getTile(tiles[i].bound);
+                    this.updateGUI();
+                    if (features === null) {
+                        var url = this.buildUrl(tiles[i].bound);
+                        if (url !== null) {
+                            this.launchRequest(tiles[i], url);
+                        }
+                    } else {
+                        this.manageFeaturesResponse(features,tiles[i]);
+                        this.updateGUI();
+                    }
                 }
             }
         };
-
-        /**
-         * Render function
-         * @function render
-         * @memberof OpenSearchLayer#
-         * @param tiles The array of tiles to render
-         */
-        OpenSearchLayer.prototype.render2 = function (tiles) {
-            if (!this.isVisible()) {
-                return;
-            }
-
-            // Sort tiles
-            this.tilesToLoad.sort(_sortTilesByDistance);
-
-            // Load data for the tiles if needed
-            for (var i = 0; i < this.tilesToLoad.length && this.freeRequests.length > 0; i++) {
-                var tile = this.tilesToLoad[i].tile;
-                var url = this.buildUrl(tile);
-                if (url) {
-                    this.launchRequest(tile, url);
-                }
-            }
-
-            this.tilesToLoad.length = 0;
-        };
+        
+        /**************************************************************************************************************/
+        
+        OpenSearchLayer.prototype.submit = function() {
+            console.log("SUBMIT");
+            this.formDescription.updateFromGUI();
+            this.resetAll();
+        }
+            
+        /**************************************************************************************************************/
+        
+        OpenSearchLayer.prototype.resetAll = function(features) {
+            // Reset pool
+            this.pool.resetPool();
+            // Reset cache
+            this.cleanCache();
+            // Remove all features
+            this.removeFeatures();
+        }
 
         /**************************************************************************************************************/
+        
+        OpenSearchLayer.prototype.cleanCache = function(features) {
+            this.cache.reset();
+            this.previousViewKey = null;
+        }
+
+        /**************************************************************************************************************/
+
+        OpenSearchLayer.prototype.updateGUI = function () {
+            var message = "";
+            message += "<a href='javascript:document.currentOpenSearchLayer.resetAll();'>Reset</a><br>";
+            message += "<a href='javascript:document.currentOpenSearchLayer.nextPage();'>Next</a><br>";
+            message += this.pool.getPoolsStatus()+"<br>";
+            message += this.cache.getCacheStatus();
+            $("#resultNavigation").html(message);
+        }
+
+        /**************************************************************************************************************/
+
+        OpenSearchLayer.prototype.featureStillAddedToTile = function (feature,tile) {
+            // search feature + tile key
+            
+            var key = this.cache.getKey(tile.bound);
+            var ind = "";
+            ind += feature.id;
+            //ind += "_";
+            //ind += key;
+
+            var num = this.featuresAdded.indexOf(ind);
+
+            return (num >= 0);
+        }
+            
+        /**************************************************************************************************************/
+
+        OpenSearchLayer.prototype.manageFeaturesResponse = function(features,tile) {
+            this.updateFeatures(features);
+
+            for (i = features.length - 1; i >= 0; i--) {
+                feature = features[i];
+
+                if (!feature.hasOwnProperty("id")) {
+                    feature.id = feature.properties.identifier;
+                }
+
+                // Check if feature still added ?
+                alreadyAdded = this.featureStillAddedToTile(feature,tile);
+                if (alreadyAdded) {
+                    // Remote it from list
+                } else {
+                    // Add it
+                    this.addFeature(feature,tile);
+                }
+                features.splice(i, 1);
+            }
+            this.globe.refresh();
+        }
 
         /**
          * Update features
@@ -760,6 +771,7 @@ define(['../Renderer/FeatureStyle', '../Renderer/VectorRendererManager', '../Uti
             }
         };
 
+        
         /*************************************************************************************************************/
 
         return OpenSearchLayer;
