@@ -651,7 +651,6 @@ define(['../Renderer/FeatureStyle', '../Renderer/VectorRendererManager', '../Uti
         /**************************************************************************************************************/
         
         OpenSearchLayer.prototype.submit = function() {
-            console.log("SUBMIT");
             this.formDescription.updateFromGUI();
             this.resetAll();
         }
@@ -680,6 +679,7 @@ define(['../Renderer/FeatureStyle', '../Renderer/VectorRendererManager', '../Uti
             var message = "";
             message += "<a href='javascript:document.currentOpenSearchLayer.resetAll();'>Reset</a><br>";
             message += "<a href='javascript:document.currentOpenSearchLayer.nextPage();'>Next</a><br>";
+            message += "# Features : "+this.features.length+"<br>";
             message += this.pool.getPoolsStatus()+"<br>";
             message += this.cache.getCacheStatus();
             $("#resultNavigation").html(message);

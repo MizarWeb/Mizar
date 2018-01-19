@@ -377,11 +377,21 @@ define(['../Utils/Utils', '../Utils/Constants',
             //var geo = coordinateSystem.convert([lon, lat], Constants.CRS.Equatorial, coordinateSystem.getGeoideName);
             //lon = geo[0];
             //lat = geo[1];
-
             for (var i = 0; i < tiles.length; i++) {
                 var tile = tiles[i];
+                //console.log("check tile "+i+" : ",tile);
                 var index = HEALPixBase.lonLat2pix(tile.order, lon, lat);
+                //console.log("index=",index);
                 if (index === tile.pixelIndex) {
+                    return tile;
+                }
+            }
+            // TODOFL : make a specific function for OpenSearchLayer 
+            // index not found, check with lon lat
+            for (var i= 0; i < tiles.length; i++) {
+                var tile = tiles[i];
+                var found = ((lat<=tile.bound.north) && (lat>=tile.bound.south) && (lon<=tile.bound.east) && (lon>=tile.bound.west));
+                if (found === true) {
                     return tile;
                 }
             }
