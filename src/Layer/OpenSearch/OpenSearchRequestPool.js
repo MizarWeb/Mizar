@@ -16,34 +16,16 @@
  * You should have received a copy of the GNU General Public License
  * along with MIZAR. If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
-/***************************************
- * Copyright 2011, 2012 GlobWeb contributors.
- *
- * This file is part of GlobWeb.
- *
- * GlobWeb is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, version 3 of the License, or
- * (at your option) any later version.
- *
- * GlobWeb is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with GlobWeb. If not, see <http://www.gnu.org/licenses/>.
- ***************************************/
 define([],
 function () {
 
     /**
      * @name OpenSearchRequestPool
      * @class
-     * This layer manage the request pool of OpenSearch
-     * @memberOf module:Layer
+     * This class manage the request pool of OpenSearch
+     * @memberof module:Layer
      */
-      var OpenSearchRequestPool = function (layer) {
+    var OpenSearchRequestPool = function (layer) {
         this.maxRunningRequests = 6;
         this.maxPoolingRequests = 50;
 
@@ -73,11 +55,12 @@ function () {
 
     /**************************************************************************************************************/
 
-    OpenSearchRequestPool.prototype.init = function () {
-    }
-
-    /**************************************************************************************************************/
-
+    /**
+     * Debug information
+     * @function debug
+     * @memberof OpenSearchRequestPool#
+     * @param {String} message Message to display
+     */ 
     OpenSearchRequestPool.prototype.debug = function (message) {
         if (this.debugMode === true) {
             console.log("Pool:"+message);
@@ -86,6 +69,12 @@ function () {
 
     /**************************************************************************************************************/
 
+    /**
+     * Return the pool status
+     * @function getPoolStatus
+     * @memberof OpenSearchRequestPool#
+     * @return {String} Pool status
+     */ 
     OpenSearchRequestPool.prototype.getPoolsStatus = function () {
         var message = "";
         message += "Run : "+this.runningRequests.length+"/"+this.maxRunningRequests+ " , ";
@@ -93,8 +82,14 @@ function () {
         return message;
     }
     
-    /*************************************************************************************************************/
+    /**************************************************************************************************************/
 
+    /**
+     * Get a free request
+     * @function getFreeRequest
+     * @memberof OpenSearchRequestPool#
+     * @return {Object} Free request
+     */ 
     OpenSearchRequestPool.prototype.getFreeRequest = function () {
         this.debug("[getFreeRequest]");
         if (this.freeRequests.length === 0) {
@@ -108,15 +103,17 @@ function () {
         }
     }
 
-    /*************************************************************************************************************/
+    /**************************************************************************************************************/
 
     /**
-     * Add a query to the pool,
-     *  TODO : what to do if pool if full ? => remove old elements ?
+     * Add a query to the pool
      *  Note : Query is ALWAYS ADDED at the end of the pool, the it's a FILO queue
+     * @function addQuery
+     * @memberof OpenSearchRequestPool#
+     * @param {String} url Url query to get
+     * @param {Tile} tile Tile associated with the query
+     * @param {String} key Key of the tile
      */
-        
-    
     OpenSearchRequestPool.prototype.addQuery = function (url,tile,key) {
         this.debug("[addQuery]");
         if (this.resetMode === true) {
@@ -174,8 +171,13 @@ function () {
         this.checkPool();
     }
 
-    /*************************************************************************************************************/
+    /**************************************************************************************************************/
 
+    /**
+     * Check if there is any remaining query in the pool 
+     * @function checkPool
+     * @memberof OpenSearchRequestPool#
+     */
     OpenSearchRequestPool.prototype.checkPool = function () {
         this.debug("[checkPool]"+this.getPoolsStatus());
         
@@ -225,8 +227,14 @@ function () {
     }
     
 
-    /*************************************************************************************************************/
+    /**************************************************************************************************************/
 
+    /**
+     * Manage data returned by a query
+     * @function manageFinishedRequest
+     * @memberof OpenSearchRequestPool#
+     * @param {Object} xhr Query
+     */
     OpenSearchRequestPool.prototype.manageFinishedRequest = function (xhr) {
         this.debug("[manageFinishedRequest]");
         
@@ -258,12 +266,15 @@ function () {
         this.checkPool();
     }
 
-    /*************************************************************************************************************/
+    /**************************************************************************************************************/
 
     /**
      * Check if query (based on bound) is still wanted (in pool or running)
+     * @function isQueryStillWanted
+     * @memberof OpenSearchRequestPool#
+     * @param {String} key Key of the query
+     * @return {Boolean} True if query is still in pool
      */
-
     OpenSearchRequestPool.prototype.isQueryStillWanted = function (key) {
         this.debug("[isQueryStillWanted]");
         for (var i=0;i<this.runningRequests.length;i++) {
@@ -287,12 +298,13 @@ function () {
         return false;
     }
 
-    /*************************************************************************************************************/
+    /**************************************************************************************************************/
 
     /**
-     * Reset the pool 
+     * Reset the pool
+     * @function reset
+     * @memberof OpenSearchRequestPool#
      */
-
     OpenSearchRequestPool.prototype.resetPool = function () {
         this.resetMode = true;
         this.debug("[resetPool]");
@@ -301,12 +313,13 @@ function () {
         this.resetMode = false;
     }
 
-    /*************************************************************************************************************/
+    /**************************************************************************************************************/
 
     /**
-     * Remove runnings queries
+     * Remove running queries
+     * @function removeRunningQueries
+     * @memberof OpenSearchRequestPool#
      */
-    
     OpenSearchRequestPool.prototype.removeRunningQueries = function () {
         this.debug("[removeRunningQueries]");
         
@@ -318,10 +331,13 @@ function () {
         }
     }
 
+    /**************************************************************************************************************/
+
     /**
      * Remove pool queries
+     * @function removePoolQueries
+     * @memberof OpenSearchRequestPool#
      */
-    
     OpenSearchRequestPool.prototype.removePoolQueries = function () {
         this.debug("[removePoolQueries]");
         

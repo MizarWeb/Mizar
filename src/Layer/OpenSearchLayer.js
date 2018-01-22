@@ -49,7 +49,7 @@ define(['../Renderer/FeatureStyle', '../Renderer/VectorRendererManager', '../Uti
          * @param {Boolean} [options.invertY=false] a boolean, if set all the image data of current layer is flipped along the vertical axis
          * @param {Boolean} [options.coordSystemRequired=true]
          * @param {FeatureStyle} [options.style=new FeatureStyle()]
-         * @memberOf module:Layer
+         * @memberof module:Layer
          */
           var OpenSearchLayer = function (options) {
             AbstractLayer.prototype.constructor.call(this, Constants.LAYER.OpenSearch, options);
@@ -87,9 +87,16 @@ define(['../Renderer/FeatureStyle', '../Renderer/VectorRendererManager', '../Uti
 
             this.tilesToLoad = [];
 
+            // Keep save of all tiles where a feature is set, in order to remove all when reset
+            this.allTiles = {};
+
+            // OpenSearch result
             this.result = new OpenSearchResult();
 
+            // Pool for request management
             this.pool = new OpenSearchRequestPool(this);
+            
+            // Cache for data management
             this.cache = new OpenSearchCache();
 
             // Features already loaded
@@ -98,7 +105,6 @@ define(['../Renderer/FeatureStyle', '../Renderer/VectorRendererManager', '../Uti
             // Force Refresh
             this.forceRefresh = false;
 
-            console.log("Describe url",this.describeUrl);
             if (typeof this.describeUrl !== 'undefined') {
               this.hasForm = true;
               this.loadGetCapabilities(this.manageCapabilities,this.describeUrl,this);
@@ -115,6 +121,11 @@ define(['../Renderer/FeatureStyle', '../Renderer/VectorRendererManager', '../Uti
 
         /**************************************************************************************************************/
 
+        /**
+         * Go to next page
+         * @function nextPage
+         * @memberof OpenSearchLayer#
+         */
         OpenSearchLayer.prototype.nextPage = function () {
             var num = OpenSearchUtils.getCurrentValue(this.formDescription,"page");
             // If not specified, set default to 1
@@ -127,6 +138,16 @@ define(['../Renderer/FeatureStyle', '../Renderer/VectorRendererManager', '../Uti
             this.globe.renderContext.requestFrame();
         }
 
+        /**************************************************************************************************************/
+
+        /**
+         * When getCapabilities is loading, manage it
+         * @function manageCapabilities
+         * @memberof OpenSearchLayer#
+         * @param json Json object
+         * @param sourceObject Object where data is stored
+         * @private
+         */
         OpenSearchLayer.prototype.manageCapabilities = function (json,sourceObject) {
           // check if form description is well provided
           var dataForm = null;
@@ -153,7 +174,8 @@ define(['../Renderer/FeatureStyle', '../Renderer/VectorRendererManager', '../Uti
         };
 
         /**************************************************************************************************************/
-
+        /**************************************************************************************************************/
+        /**************************************************************************************************************/
 
         /**
          * @name OSData
@@ -162,6 +184,7 @@ define(['../Renderer/FeatureStyle', '../Renderer/VectorRendererManager', '../Uti
          * @param {AbstractLayer} layer layer
          * @param {Tile} tile Tile
          * @param p Parent object
+         * @private
          */
         var OSData = function (layer, tile, p) {
             this.layer = layer;
@@ -173,6 +196,81 @@ define(['../Renderer/FeatureStyle', '../Renderer/VectorRendererManager', '../Uti
             this.childrenCreated = false;
         };
 
+         /**************************************************************************************************************/
+
+        /**
+         * Traverse
+         * @function traverse
+         * @memberof OSData.prototype
+         * @param {Tile} tile Tile
+         * @private
+         */
+        OSData.prototype.traverse = function (tile) {
+            if (!this.layer.isVisible()) {
+                return;
+            }
+           
+            if (tile.state !== Tile.State.LOADED) {
+                return;
+            }
+
+            // Check if the tile need to be loaded
+            if (this.state === OpenSearchLayer.TileState.NOT_LOADED) {
+                this.layer.tilesToLoad.push(this);
+            }
+
+            // Create children if needed
+            if (this.state === OpenSearchLayer.TileState.LOADED && !this.complete && tile.state === Tile.State.LOADED && tile.children && !this.childrenCreated) {
+                var i;
+                for (i = 0; i < 4; i++) {
+                    if (!tile.children[i].extension[this.layer.extId]) {
+                        tile.children[i].extension[this.layer.extId] = new OSData(this.layer, tile.children[i], this);
+                    }
+                }
+                this.childrenCreated = true;
+
+
+                // HACK : set renderable to have children
+                var renderables = tile.extension.renderer ? tile.extension.renderer.renderables : [];
+                for (i = 0; i < renderables.length; i++) {
+                    if (renderables[i].bucket.layer === this.layer) {
+                        renderables[i].hasChildren = true;
+                    }
+                }
+            }
+        };
+
+        /**************************************************************************************************************/
+
+        /**
+         * Dispose renderable data from tile
+         * @function dispose
+         * @memberof OSData.prototype
+         * @param renderContext
+         * @param tilePool
+         * @private
+         */
+        OSData.prototype.dispose = function (renderContext, tilePool) {
+            var i;
+            if (this.parent && this.parent.childrenCreated) {
+                this.parent.childrenCreated = false;
+                // HACK : set renderable to not have children!
+                var renderables = this.parent.tile.extension.renderer ? this.parent.tile.extension.renderer.renderables : [];
+                for (i = 0; i < renderables.length; i++) {
+                    if (renderables[i].bucket.layer === this.layer) {
+                        renderables[i].hasChildren = false;
+                    }
+                }
+            }
+            for (i = 0; i < this.featureIds.length; i++) {
+                this.layer.removeFeature(this.featureIds[i], this.tile);
+            }
+            this.tile = null;
+            this.parent = null;
+        };
+
+        /**************************************************************************************************************/
+        /**************************************************************************************************************/
         /**************************************************************************************************************/
 
         /**
@@ -207,14 +305,19 @@ define(['../Renderer/FeatureStyle', '../Renderer/VectorRendererManager', '../Uti
          * Launches request to the OpenSearch service.
          * @function launchRequest
          * @memberof OpenSearchLayer#
-         * @param {Object} json object bound
+         * @param {Tile} tile Tile
          * @param {String} url Url
          * @fires Context#startLoad
          * @fires Context#endLoad
          * @fires Context#features:added
          */
         OpenSearchLayer.prototype.launchRequest = function (tile, url) {
-            this.pool.addQuery(url,tile,this.cache.getKey(tile.bound));
+            var key = this.cache.getKey(tile.bound);
+            // add tile in all tiles
+            if (( this.allTiles[key] === null) || (typeof this.allTiles[key] === "undefined")) {
+                this.allTiles[key] = tile;
+            }
+            this.pool.addQuery(url,tile,key);
         };
 
         /**************************************************************************************************************/
@@ -223,26 +326,23 @@ define(['../Renderer/FeatureStyle', '../Renderer/VectorRendererManager', '../Uti
          * Remove all previous features
          * @function removeFeatures
          * @memberof OpenSearchLayer#
-         * @param properties
          */
         OpenSearchLayer.prototype.removeFeatures = function () {
             // clean renderers
             for (var x in this.featuresSet) {
                 if(this.featuresSet.hasOwnProperty(x)) {
                     var featureData = this.featuresSet[x];
-                    //for (var i = 0; i < featureData.tiles.length; i++) {
-                    for (var i=0;i < this.tiles.length ; i++) {
-                        //var tile = featureData.tiles[i];
-                        var tile = this.tiles[i];
+                    for (var key in this.allTiles) {
+                        var tile = this.allTiles[key];
                         var feature = this.features[featureData.index];
                         this.globe.vectorRendererManager.removeGeometryFromTile(feature.geometry,tile);
-                        //this.removeFeature(feature.id,tile);
                     }
                 }
             }
 
             // Clean old results
             var self = this;
+            this.allTiles = {};
             this.globe.tileManager.visitTiles(function (tile) {
                 if (tile.extension[self.extId]) {
                     tile.extension[self.extId].dispose();
@@ -268,6 +368,7 @@ define(['../Renderer/FeatureStyle', '../Renderer/VectorRendererManager', '../Uti
          * @function addFeature
          * @memberof OpenSearchLayer#
          * @param {Feature} feature Feature
+         * @param {Tile} tile Tile
          */
         OpenSearchLayer.prototype.addFeature = function (feature,tile) {
             var featureData;
@@ -322,12 +423,12 @@ define(['../Renderer/FeatureStyle', '../Renderer/VectorRendererManager', '../Uti
            
         };
 
-
+        /**************************************************************************************************************/
 
         /**
          * Add a feature to renderers
          * @function _addFeatureToRenderers
-         * @memberOf GeoJsonLayer#
+         * @memberof GeoJsonLayer#
          * @param {GeoJSON} feature Feature
          * @private
          */
@@ -411,6 +512,7 @@ define(['../Renderer/FeatureStyle', '../Renderer/VectorRendererManager', '../Uti
             //var featureData = this.featuresSet[feature.properties.identifier];
             var featureData = this.featuresSet[feature.id];
             if (featureData) {
+                // TODO: change for all tiles, not only of current level
                 for (var i = 0; i < featureData.tiles.length; i++) {
                     var tile = featureData.tiles[i];
                     this.globe.vectorRendererManager.removeGeometryFromTile(feature.geometry, tile);
@@ -418,6 +520,12 @@ define(['../Renderer/FeatureStyle', '../Renderer/VectorRendererManager', '../Uti
                 }
             }
         };
+
+        /**************************************************************************************************************/
+
+        /**
+         * Tile Ccnstants
+         */
 
         OpenSearchLayer.TileState = {
             LOADING: 0,
@@ -434,94 +542,21 @@ define(['../Renderer/FeatureStyle', '../Renderer/VectorRendererManager', '../Uti
          * @function generate
          * @memberof OpenSearchLayer#
          * @param {Tile} tile Tile
+         * @private
          */
         OpenSearchLayer.prototype.generate = function (tile) {
             if (tile.order === this.minOrder) {
                 tile.extension[this.extId] = new OSData(this, tile, null);
             }
         };
-
-        /**************************************************************************************************************/
-
-        /**
-         * Traverse
-         * @function traverse
-         * @memberof OSData.prototype
-         * @param {Tile} tile Tile
-         */
-        OSData.prototype.traverse = function (tile) {
-            if (!this.layer.isVisible()) {
-                return;
-            }
-            console.log("OSData.traverse");
-            console.log("tile.state="+tile.state);
-            console.log("this.state="+this.state);
-            
-            if (tile.state !== Tile.State.LOADED) {
-                return;
-            }
-
-            // Check if the tile need to be loaded
-            if (this.state === OpenSearchLayer.TileState.NOT_LOADED) {
-                this.layer.tilesToLoad.push(this);
-            }
-
-            // Create children if needed
-            if (this.state === OpenSearchLayer.TileState.LOADED && !this.complete && tile.state === Tile.State.LOADED && tile.children && !this.childrenCreated) {
-                var i;
-                for (i = 0; i < 4; i++) {
-                    if (!tile.children[i].extension[this.layer.extId]) {
-                        tile.children[i].extension[this.layer.extId] = new OSData(this.layer, tile.children[i], this);
-                    }
-                }
-                this.childrenCreated = true;
-
-
-                // HACK : set renderable to have children
-                var renderables = tile.extension.renderer ? tile.extension.renderer.renderables : [];
-                for (i = 0; i < renderables.length; i++) {
-                    if (renderables[i].bucket.layer === this.layer) {
-                        renderables[i].hasChildren = true;
-                    }
-                }
-            }
-        };
-
-        /**************************************************************************************************************/
-
-        /**
-         * Dispose renderable data from tile
-         * @function dispose
-         * @memberof OSData.prototype
-         * @param renderContext
-         * @param tilePool
-         */
-        OSData.prototype.dispose = function (renderContext, tilePool) {
-            var i;
-            if (this.parent && this.parent.childrenCreated) {
-                this.parent.childrenCreated = false;
-                // HACK : set renderable to not have children!
-                var renderables = this.parent.tile.extension.renderer ? this.parent.tile.extension.renderer.renderables : [];
-                for (i = 0; i < renderables.length; i++) {
-                    if (renderables[i].bucket.layer === this.layer) {
-                        renderables[i].hasChildren = false;
-                    }
-                }
-            }
-            for (i = 0; i < this.featureIds.length; i++) {
-                this.layer.removeFeature(this.featureIds[i], this.tile);
-            }
-            this.tile = null;
-            this.parent = null;
-        };
-
+       
         /**************************************************************************************************************/
 
         /**
          * Prepare paramters for a given bound
          * @function prepareParameters
          * @memberof OpenSearchLayer#
-         * @param {Object} json object bound
+         * @param {Bound} bound Bound
          * @return 
          */
         OpenSearchLayer.prototype.prepareParameters = function (bound) {
@@ -538,11 +573,13 @@ define(['../Renderer/FeatureStyle', '../Renderer/VectorRendererManager', '../Uti
             }
         }
             
+        /**************************************************************************************************************/
+
         /**
          * Build request url
          * @function buildUrl
          * @memberof OpenSearchLayer#
-         * @param {Object} json object bound
+         * @param {Bound} bound Bound
          * @return {String} Url
          */
         OpenSearchLayer.prototype.buildUrl = function (bound) {
@@ -562,7 +599,7 @@ define(['../Renderer/FeatureStyle', '../Renderer/VectorRendererManager', '../Uti
             for (var i=0;i<this.formDescription.parameters.length;i++) {
                 param = this.formDescription.parameters[i];
                 //console.log("check param ",param.value);
-                currentValue = param.currentValue;
+                currentValue = param.currentValueTransformed();
                 if (currentValue === null) {
                     // Remove parameter if not mandatory (with a ?)
                     url = url.replace( "&"+param.name+"="+param.value.replace("}","?}") , "");
@@ -577,15 +614,6 @@ define(['../Renderer/FeatureStyle', '../Renderer/VectorRendererManager', '../Uti
                 }
             }
 
-            /*if (this.transformer != undefined && typeof beforeHandle == 'function') {
-                var url = this.transformer.beforeHandle(url);
-            }
-
-            if (this.coordSystemRequired) {
-                // OpenSearchLayer always works in equatorial
-                url += "&coordSystem=EQUATORIAL";
-            }
-            url += "&media=json";*/
             return url;
         };
 
@@ -601,6 +629,8 @@ define(['../Renderer/FeatureStyle', '../Renderer/VectorRendererManager', '../Uti
         function _sortTilesByDistance(t1, t2) {
             return t1.tile.distance - t2.tile.distance;
         }
+
+        /**************************************************************************************************************/
 
         /**
          * Render function
@@ -649,15 +679,25 @@ define(['../Renderer/FeatureStyle', '../Renderer/VectorRendererManager', '../Uti
         };
         
         /**************************************************************************************************************/
-        
+
+        /**
+         * Submit OpenSearch form
+         * @function submit
+         * @memberof OpenSearchLayer#
+         */
         OpenSearchLayer.prototype.submit = function() {
             this.formDescription.updateFromGUI();
             this.resetAll();
         }
             
         /**************************************************************************************************************/
-        
-        OpenSearchLayer.prototype.resetAll = function(features) {
+
+        /**
+         * Reset pool, cache and all OpenSearch data loaded
+         * @function resetAll
+         * @memberof OpenSearchLayer#
+         */
+        OpenSearchLayer.prototype.resetAll = function() {
             // Reset pool
             this.pool.resetPool();
             // Reset cache
@@ -667,14 +707,24 @@ define(['../Renderer/FeatureStyle', '../Renderer/VectorRendererManager', '../Uti
         }
 
         /**************************************************************************************************************/
-        
-        OpenSearchLayer.prototype.cleanCache = function(features) {
+
+        /**
+         * Clean the cache
+         * @function cleanCache
+         * @memberof OpenSearchLayer#
+         */
+        OpenSearchLayer.prototype.cleanCache = function() {
             this.cache.reset();
             this.previousViewKey = null;
         }
 
         /**************************************************************************************************************/
 
+        /**
+         * Update the GUI (mainly debug purpose)
+         * @function updateGUI
+         * @memberof OpenSearchLayer#
+         */
         OpenSearchLayer.prototype.updateGUI = function () {
             var message = "";
             message += "<a href='javascript:document.currentOpenSearchLayer.resetAll();'>Reset</a><br>";
@@ -687,9 +737,16 @@ define(['../Renderer/FeatureStyle', '../Renderer/VectorRendererManager', '../Uti
 
         /**************************************************************************************************************/
 
+        /**
+         * Check is feature still added to tile
+         * @function featureStillAddedToTile
+         * @memberof OpenSearchLayer#
+         * @param {Feature} feature Feature
+         * @param {Tile} tile Tile
+         * @private
+         */
         OpenSearchLayer.prototype.featureStillAddedToTile = function (feature,tile) {
             // search feature + tile key
-            
             var key = this.cache.getKey(tile.bound);
             var ind = "";
             ind += feature.id;
@@ -703,6 +760,14 @@ define(['../Renderer/FeatureStyle', '../Renderer/VectorRendererManager', '../Uti
             
         /**************************************************************************************************************/
 
+        /**
+         * Manage a response to OpenSearch query
+         * @function manageFeaturesResponse
+         * @memberof OpenSearchLayer#
+         * @param {Array} features Array of features loaded
+         * @param {Tile} tile Tile
+         * @private
+         */
         OpenSearchLayer.prototype.manageFeaturesResponse = function(features,tile) {
             this.updateFeatures(features);
 
@@ -726,11 +791,14 @@ define(['../Renderer/FeatureStyle', '../Renderer/VectorRendererManager', '../Uti
             this.globe.refresh();
         }
 
+        /**************************************************************************************************************/
+
         /**
          * Update features
          * @function updateFeatures
          * @memberof OpenSearchLayer#
          * @param {Array} features Array of features
+         * @private
          */
         OpenSearchLayer.prototype.updateFeatures = function (features) {
             for (var i = 0; i < features.length; i++) {
@@ -738,13 +806,6 @@ define(['../Renderer/FeatureStyle', '../Renderer/VectorRendererManager', '../Uti
 
                 switch (currentFeature.geometry.type) {
                     case Constants.GEOMETRY.Point:
-
-                        // Convert to default coordinate system if needed
-                        /*if ( "EQ" != this.globe.tileManager.imageryProvider.tiling.coordSystem )
-                         {
-                         currentFeature.geometry.coordinates = CoordinateSystem.convert(currentFeature.geometry.coordinates, this.globe.tileManager.imageryProvider.tiling.coordSystem, "EQ");
-                         }*/
-
                         // Convert to geographic to simplify picking
                         if (currentFeature.geometry.coordinates[0] > 180) {
                             currentFeature.geometry.coordinates[0] -= 360;
@@ -753,12 +814,6 @@ define(['../Renderer/FeatureStyle', '../Renderer/VectorRendererManager', '../Uti
                     case Constants.GEOMETRY.Polygon:
                         var ring = currentFeature.geometry.coordinates[0];
                         for (var j = 0; j < ring.length; j++) {
-                            // Convert to default coordinate system if needed
-                            /*if ( "EQ" != this.globe.tileManager.imageryProvider.tiling.coordSystem )
-                             {
-                             ring[j] = CoordinateSystem.convert(ring[j], this.globe.tileManager.imageryProvider.tiling.coordSystem, "EQ");
-                             }*/
-
                             // Convert to geographic to simplify picking
                             if (ring[j][0] > 180) {
                                 ring[j][0] -= 360;
@@ -771,7 +826,6 @@ define(['../Renderer/FeatureStyle', '../Renderer/VectorRendererManager', '../Uti
             }
         };
 
-        
         /*************************************************************************************************************/
 
         return OpenSearchLayer;

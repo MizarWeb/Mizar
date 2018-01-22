@@ -16,34 +16,16 @@
  * You should have received a copy of the GNU General Public License
  * along with MIZAR. If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
-/***************************************
- * Copyright 2011, 2012 GlobWeb contributors.
- *
- * This file is part of GlobWeb.
- *
- * GlobWeb is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, version 3 of the License, or
- * (at your option) any later version.
- *
- * GlobWeb is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with GlobWeb. If not, see <http://www.gnu.org/licenses/>.
- ***************************************/
 define([],
 function () {
+     /**
+      * @name OpenSearchCache
+      * @class
+      * Manage the OpenSearch cache
+      * @memberof module:Layer
+      */
 
-    /**
-     * @name OpenSearchRequestPool
-     * @class
-     * This layer manage the request pool of OpenSearch
-     * @memberOf module:Layer
-     */
-      var OpenSearchCache = function () {
+     var OpenSearchCache = function () {
         this.maxTiles = 120;
         this.tileArray = [];
 
@@ -52,13 +34,15 @@ function () {
         this.debug("[New] "+this.getCacheStatus());
     };
 
-    /**************************************************************************************************************/
-
-    OpenSearchCache.prototype.init = function () {
-    }
 
     /**************************************************************************************************************/
 
+    /**
+     * Debug information
+     * @function debug
+     * @memberof OpenSearchCache#
+     * @param {String} message Message to display
+     */ 
     OpenSearchCache.prototype.debug = function (message) {
         if (this.debugMode === true) {
             console.log("Cache:"+message);
@@ -67,6 +51,12 @@ function () {
 
     /**************************************************************************************************************/
 
+    /**
+     * Get cache status
+     * @function getCacheStatus
+     * @memberof OpenSearchCache#
+     * @return {String} Status
+     */ 
     OpenSearchCache.prototype.getCacheStatus = function () {
         var message = "";
         message += "Cache : "+this.tileArray.length+"/"+this.maxTiles+ " (size:"+this.getSize()+")";
@@ -75,8 +65,12 @@ function () {
     /*************************************************************************************************************/
 
     /**
-     * Get bound key
-     */
+     * Calcul an unic key for bound
+     * @function getKey
+     * @memberof OpenSearchCache#
+     * @param {Bound} bound Bound
+     * @return {String} Key generated
+     */ 
     OpenSearchCache.prototype.getKey = function (bound) {
         var key = bound.north+":"+bound.east+":"+bound.south+":"+bound.west;
         return key;
@@ -85,8 +79,12 @@ function () {
     /*************************************************************************************************************/
 
     /**
-     * Get array bound key
-     */
+     * Calcul an unic key for an array of bound
+     * @function getArrayBoundKey
+     * @memberof OpenSearchCache#
+     * @param {Array} tiles Array of tiles
+     * @return {String} Key generated
+     */ 
     OpenSearchCache.prototype.getArrayBoundKey = function (tiles) {
         var key = "";
         if ((tiles === null) || (typeof tiles === "undefined")) {
@@ -102,8 +100,12 @@ function () {
 
     /**
      * Get tile cache size (in term of number of features)
-     */
-    OpenSearchCache.prototype.getTileSize = function (tile) {
+     * @function getTileSize
+     * @memberof OpenSearchCache#
+     * @param {Tile} tile Tile
+     * @return {Integer} Number of features associated to the tile
+     */ 
+     OpenSearchCache.prototype.getTileSize = function (tile) {
        return tile.features.length; 
     }    
 
@@ -111,7 +113,10 @@ function () {
 
     /**
      * Get cache size (in term of number of features)
-     */
+     * @function getSize
+     * @memberof OpenSearchCache#
+     * @return {Integer} Number of features associated to the cache
+     */ 
     OpenSearchCache.prototype.getSize = function () {
         var nb = 0;
         for (var i=0;i<this.tileArray.length;i++) {
@@ -123,15 +128,19 @@ function () {
     /*************************************************************************************************************/
 
     /**
-     * Add a tile to the cache
-     */
+     * Add a tile and its features to the cache
+     * @function addTile
+     * @memberof OpenSearchCache#
+     * @param {Bound} bound Bound
+     * @param {Array} features Array of features to add
+     */ 
     OpenSearchCache.prototype.addTile = function (bound,features) {
         this.debug("[addTile]"+this.getCacheStatus());
 
         var key = this.getKey(bound);
         var tile = {
             "key": key,
-            "features" : features
+            "features" : features.slice()
         };
         // If cache is full, remove first element
         if (this.tileArray.length === this.maxTiles) {
@@ -144,20 +153,27 @@ function () {
     /*************************************************************************************************************/
 
     /**
-     * Update a tile to the cache
-     */
+     * Add features to an existing tile in cache
+     * @function updateTile
+     * @memberof OpenSearchCache#
+     * @param {Tile} tile Tile
+     * @param {Array} features Array of features to add
+     */ 
     OpenSearchCache.prototype.updateTile = function (tile,features) {
         this.debug("[update]"+this.getCacheStatus());
 
         tile.features = tile.features.concat(features);
     }
 
-
     /*************************************************************************************************************/
 
     /**
      * Get a tile from the cache
-     */
+     * @function getTile
+     * @memberof OpenSearchCache#
+     * @param {Bound} bound Bound
+     * @return {Array} Array of features of the tile found
+     */ 
     OpenSearchCache.prototype.getTile = function (bound) {
         this.debug("[getTile]"+this.getCacheStatus());
 
@@ -166,7 +182,7 @@ function () {
         
         for (var i=0;i<this.tileArray.length;i++) { // TODO : try in reverse order, best performance ?
             if (this.tileArray[i].key === key) {
-                return this.tileArray[i].features;
+                return this.tileArray[i].features.slice();
             }
         }
         return null;
@@ -174,6 +190,11 @@ function () {
 
     /*************************************************************************************************************/
     
+    /**
+     * Reset the cache
+     * @function reset
+     * @memberof OpenSearchCache#
+     */ 
     OpenSearchCache.prototype.reset = function () {
         this.debug("[reset]");
         this.tileArray.length = 0;

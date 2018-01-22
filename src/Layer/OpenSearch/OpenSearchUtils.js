@@ -20,8 +20,15 @@ define(function () {
 
     var OpenSearchUtils = {};
 
+    /*************************************************************************************************************/
+        
     /**
-     *    Get attribute values from json
+     * Get the attribute value
+     * @function getAttributeValue
+     * @memberof OpenSearchUtils#
+     * @param {Object} object Object describing the parameter
+     * @param {String} name Name of the parameter
+     * @return {String} Value
      */
     OpenSearchUtils.getAttributeValue = function (object,name) {
       var reconstructedName = "_attr"+name;
@@ -33,6 +40,16 @@ define(function () {
       return null;
     };
 
+    /*************************************************************************************************************/
+        
+    /**
+     * Get the value
+     * @function getValue
+     * @memberof OpenSearchUtils#
+     * @param {Object} object Object describing the parameter
+     * @param {String} name Name of the parameter
+     * @return {String} Value
+     */
     OpenSearchUtils.getValue = function (object,name) {
       if (typeof object[name] !== 'undefined') {
         if (typeof object[name]._text !== 'undefined') {
@@ -42,6 +59,16 @@ define(function () {
       return null;
     };
 
+    /*************************************************************************************************************/
+        
+    /**
+     * Set the current value of a parameter
+     * @function setCurrentValueToParam
+     * @memberof OpenSearchUtils#
+     * @param {OpenSearchFrom} form Form
+     * @param {String} name Name of the parameter
+     * @param {String} value Value to set
+     */
     OpenSearchUtils.setCurrentValueToParam = function (form,name,value) {
       var param;          // param managed
       for (var i=0;i<form.parameters.length;i++) {
@@ -54,6 +81,16 @@ define(function () {
       }
     }
 
+    /*************************************************************************************************************/
+        
+    /**
+     * Get the current value of a parameter
+     * @function getCurrentValue
+     * @memberof OpenSearchUtils#
+     * @param {OpenSearchFrom} form Form
+     * @param {String} name Name of the parameter
+     * @return {String} Current value
+     */
     OpenSearchUtils.getCurrentValue = function (form,name) {
       var param;          // param managed
       for (var i=0;i<form.parameters.length;i++) {
@@ -65,6 +102,14 @@ define(function () {
       }
     }
 
+    /*************************************************************************************************************/
+        
+    /**
+     * Init navigation values
+     * @function initNavigationValues
+     * @memberof OpenSearchUtils#
+     * @param {OpenSearchFrom} form Form
+     */
     OpenSearchUtils.initNavigationValues = function (form) {
       var param;          // param managed
       for (var i=0;i<form.parameters.length;i++) {
@@ -77,6 +122,7 @@ define(function () {
       }
     }
 
+    /*************************************************************************************************************/
+        
     return OpenSearchUtils;
-
 });

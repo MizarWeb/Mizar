@@ -25,7 +25,7 @@
     * All informations describing an OpenSearch form
     * @param {Object} paramsJson a json object describing the form
     * @param {String} type form to load (application/json or application/atom+xml)
-    * @memberOf module:Layer
+    * @memberof module:Layer
     */
     var OpenSearchForm = function (paramsJson,type) {
       // init all values
@@ -38,7 +38,14 @@
 
     /**************************************************************************************************************/
 
-    OpenSearchForm.prototype.parseUrl = function (urlJson,type) {
+    /**
+     * Parse url for request
+     * @function parseUrl
+     * @memberof OpenSearchForm#
+     * @param {Objet} urlJson Json urls founded
+     * @param {type} type Url type searched
+     */
+      OpenSearchForm.prototype.parseUrl = function (urlJson,type) {
       var typeValue = OpenSearchUtils.getAttributeValue(urlJson,"type");
       if (typeValue !== type) {
         // Not the good type, do not take it into account
@@ -55,12 +62,19 @@
             this.parameters.push(param);
 //          }
         }
-
       } else {
         this.parameters.push(new OpenSearchParam(listParameters));
       }
     }
 
+    /**************************************************************************************************************/
+
+    /**
+     * Get a string representation of the form
+     * @function toString
+     * @memberof OpenSearchForm#
+     * @return {String} String representation of the form
+     */
     OpenSearchForm.prototype.toString = function () {
       var res = "";
       res+= "  type : "+this.type+"\n";
@@ -72,6 +86,15 @@
       return res;
     }
 
+    /**************************************************************************************************************/
+
+    /**
+     * Parse the json
+     * @function parseJson
+     * @memberof OpenSearchForm#
+     * @param {Object} paramsJson Parameteres
+     * @param {String} type Type
+     */
     OpenSearchForm.prototype.parseJson = function (paramsJson,type) {
       if (typeof paramsJson.length !== 'undefined') {
         // Management of an array
@@ -84,7 +107,13 @@
     };
 
 
+    /**************************************************************************************************************/
 
+    /**
+     * Update form parameters from GUI form
+     * @function updateFromGUI
+     * @memberof OpenSearchForm#
+     */
     OpenSearchForm.prototype.updateFromGUI = function() {
       for (var i=0;i<this.parameters.length;i++) {
           param = this.parameters[i];
