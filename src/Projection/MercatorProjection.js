@@ -108,8 +108,8 @@ define(['./AbstractProjection', '../Utils/Utils', '../Utils/Constants', '../Rend
 
             dest[0] = x;
             dest[1] = y;
-            //dest[2] = this.getDefaultZ();
-            dest[2] = geoPos[2];
+            dest[2] = this.getDefaultZ();
+            //dest[2] = geoPos[2];
             return dest;
         };
 

@@ -357,18 +357,28 @@ define(["../Renderer/FeatureStyle", "../Layer/OpenSearchLayer", "../Utils/Utils"
                         // Extension using layer
                         // Search for features in each tile
                         var tile = selectedTile;
-                        var tileData = tile.extension[pickableLayer.extId];
-
-                        if (!tileData || tileData.state !== OpenSearchLayer.TileState.LOADED) {
+                        
+                        if ((tile === null) || (typeof tile === "undefined")) {
+                            console.log("no tile found");
+                            continue;
+                        }
+                        console.log("tile",tile);
+                        var tileData = tile.extension.renderer;
+                        //[pickableLayer.extId];
+                        console.log("tileData",tileData);
+                        /*if (!tileData || tileData.state !== OpenSearchLayer.TileState.LOADED) {
                             while (tile.parent && (!tileData || tileData.state !== OpenSearchLayer.TileState.LOADED)) {
                                 tile = tile.parent;
                                 tileData = tile.extension[pickableLayer.extId];
                             }
-                        }
-
+                        }*/
+                        
                         if (tileData) {
-                            for (j = 0; j < tileData.featureIds.length; j++) {
-                                feature = pickableLayer.features[pickableLayer.featuresSet[tileData.featureIds[j]].index];
+                            console.log("tileData ok, search feature");
+                            //for (j = 0; j < tileData.featureIds.length; j++) {
+                            for (j = 0; j < pickableLayer.features.length; j++) {
+                                //feature = pickableLayer.features[pickableLayer.featuresSet[tileData.featureIds[j]].index];
+                                feature = pickableLayer.features[j];
                                 if (this.featureIsPicked(feature, pickPoint)) {
                                     newSelection.push({feature: feature, layer: pickableLayer});
                                 }

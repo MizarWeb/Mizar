@@ -46,7 +46,6 @@ define(['../Renderer/GeoBound'],
             this.geoBound = new GeoBound(geoBound[0], geoBound[1], geoBound[2], geoBound[3]);
             this.projectionCenter = projectionCenter;
             this.options = options || {};
-            this.globe = options.globe;
         };
 
         /**
@@ -91,10 +90,6 @@ define(['../Renderer/GeoBound'],
         AbstractProjection.prototype.getName = function () {
             throw new SyntaxError("getName not implemented", "AbstractProjection.js");
         };
-
-        AbstractProjection.prototype.getElevation = function (x,y) {
-            return this.globe.getElevation(x,y);
-        }
 
         /**************************************************************************************************************/
 

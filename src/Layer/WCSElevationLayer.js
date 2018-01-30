@@ -78,7 +78,7 @@ define(['../Utils/Utils', './AbstractRasterLayer', '../Utils/Constants','../Tili
             this.scaleData = options.scaleData || 1;
 
             // Build the base GetMap URL
-            var url = this.baseUrl;
+            var url = options.baseUrl;
             if (url.indexOf('?', 0) === -1) {
                 url += '?service=wcs';
             }
@@ -104,8 +104,7 @@ define(['../Utils/Utils', './AbstractRasterLayer', '../Utils/Constants','../Tili
                     break;
             }
             url += '&format=' + this.format;
-
-            this.getCoverageBaseUrl = this._proxifyUrl(url);
+            this.getCoverageBaseUrl = url;
         };
 
         /**************************************************************************************************************/
@@ -215,8 +214,7 @@ define(['../Utils/Utils', './AbstractRasterLayer', '../Utils/Constants','../Tili
                 url += ",";
                 url += geoBound.north;
             }
-
-            return url;
+            return this.proxify(url);
         };
 
         /**************************************************************************************************************/

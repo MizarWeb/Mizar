@@ -28,20 +28,27 @@
     */
     var OpenSearchParam = function (paramJson) {
       // init all values
-      this.name = null;         // Name of parameters
-      this.value = null;        // Value identifying the parameters
-      this.title = null;        // Title of parameter (for display)
-      this.minInclusive = null; // (Level 1 Control - Number) Min value inclusive
-      this.maxInclusive = null; // (Level 1 Control - Number) Max value inclusive
-      this.pattern = null;      // (Level 1 Control - String) Pattern
+      this.name = null;          // Name of parameters
+      this.value = null;         // Value identifying the parameters
+      this.title = null;         // Title of parameter (for display)
+      this.minInclusive = null;  // (Level 1 Control - Number) Min value inclusive
+      this.maxInclusive = null;  // (Level 1 Control - Number) Max value inclusive
+      this.pattern = null;       // (Level 1 Control - String) Pattern
       this.options = null;       // List of values if list provided
-      this.currentValue = null;  // Value to pass to paramter
+      this.currentValue = null;  // Value to pass to parameter
+      this.defaultValue = null;  // Default value
 
       this.parseJson(paramJson);
     };
 
     /**************************************************************************************************************/
 
+    /**
+     * Parse Json
+     * @function parseJson
+     * @memberof OpenSearchParam#
+     * @param {Object} paramJson Json object
+     */ 
     OpenSearchParam.prototype.parseJson = function (paramJson) {
       this.name = OpenSearchUtils.getAttributeValue(paramJson,"name");
       this.value = OpenSearchUtils.getAttributeValue(paramJson,"value");
@@ -94,6 +101,14 @@
       }
     };
 
+    /**************************************************************************************************************/
+
+    /**
+     * Return string representation
+     * @function toString
+     * @memberof OpenSearchParam#
+     * @return {String} String representation
+     */ 
     OpenSearchParam.prototype.toString = function () {
       var res = "";
 
@@ -131,8 +146,33 @@
       return res;
     }
 
-    /*************************************************************************************************************/
+    /**************************************************************************************************************/
 
+    /**
+     * Get current value transformed (from IHM to Request)
+     * @function currentValueTransformed
+     * @memberof OpenSearchParam#
+     * @return {String} Current value transformed
+     */ 
+     OpenSearchParam.prototype.currentValueTransformed = function () {
+      // Only for date time, all other : no change
+      if (this.type !== "datetime") {
+        return this.currentValue;
+      }
+
+      if ((this.currentValue === null) || (typeof this.currentValue === "undefined")) {
+        return this.currentValue;
+      }
+
+      var deb = this.currentValue.substr(0,10);
+      var fin = this.currentValue.substr(-5);
+      var res = deb+"T"+fin+":00.00"
+      return res;
+
+    }
+    
+    /*************************************************************************************************************/
+    
     return OpenSearchParam;
 
 });

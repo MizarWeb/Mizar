@@ -58,7 +58,6 @@ define(['./AbstractProjection', '../Utils/Utils', '../Utils/Constants', '../Rend
             AbstractProjection.prototype.constructor.call(this, projectionCenter, geoBound, options);
         };
 
-
         /**************************************************************************************************************/
 
         Utils.inherits(AbstractProjection, AzimuthProjection);
@@ -106,7 +105,6 @@ define(['./AbstractProjection', '../Utils/Utils', '../Utils/Constants', '../Rend
             dest[0] = p * Math.sin(o);
             dest[1] = -p * Math.cos(o);
             dest[2] = geoPos[2];
-
             return dest;
         };
 

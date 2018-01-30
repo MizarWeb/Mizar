@@ -280,11 +280,12 @@ define(['../Utils/Utils', './AbstractLayer', '../Utils/Constants'],
         GeoJsonLayer.prototype.addFeature = function (feature, globalCrs) {
             _checkValidGeoJson.call(this, feature);
             feature = _setCrs.call(this, feature, globalCrs);
+            
             feature = _setID.call(this, feature);
-
+            
             this._setDataType(feature);
             this.features.push(feature);
-
+            
             // Add features to renderer if layer is attached to planet
             if (this.globe) {
                 this._addFeatureToRenderers(feature);
@@ -292,6 +293,7 @@ define(['../Utils/Utils', './AbstractLayer', '../Utils/Constants'],
                     this.globe.renderContext.requestFrame();
                 }
             }
+            
         };
 
         /**************************************************************************************************************/

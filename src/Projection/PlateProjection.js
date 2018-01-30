@@ -54,9 +54,6 @@ define(['./AbstractProjection', '../Utils/Utils', '../Utils/Constants', '../Rend
             }
             dest[0] = position3d[0] * 180 / Math.PI;
             dest[1] = position3d[1] * 180 / Math.PI;
-
-            // No 3D, get altitude
-            
             dest[2] = position3d[2];
 
             return dest;

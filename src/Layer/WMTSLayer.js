@@ -90,35 +90,62 @@ define(['../Utils/Utils', './AbstractRasterLayer', '../Utils/Constants'],
 
             this.startLevel = options.startLevel || 1;
 
-            // Build the base GetTile URL
-            var url = this.baseUrl;
-            if (url.indexOf('?', 0) === -1) {
-                url += '?service=wmts';
-            }
-            else {
-                url += '&service=wmts';
-            }
-            url += "&version=";
-            url += options.version || '1.0.0';
-            url += "&request=GetTile";
-            url += "&layer=" + options.layer;
-            url += "&tilematrixset=" + options.matrixSet;
-            if (options.style) {
-                url += "&style=" + options.style;
-            }
-            url += "&format=";
-            this.format = options.hasOwnProperty('format') ? options.format : 'image/png';
-            url += this.format;
-            if (options.time) {
-                url += "&time=" + options.time;
-            }
+            // Check getCapabilities
+            if ((typeof options.getCapabilities !== 'undefined') && (options.getCapabilities !== null)) {
+                this.afterLoad = options.afterLoad;
+                // manage get capabilities
+                this.loadGetCapabilities(this.manageCapabilities,options.getCapabilities,this);
+                
 
-            this.getTileBaseUrl = this._proxifyUrl(url);
+            } else if ((typeof options.baseUrl !== 'undefined') && (options.baseUrl !== null)) {
+                // manage base url
+                // Build the base GetTile URL
+                var url = this.baseUrl;
+                if (url.indexOf('?', 0) === -1) {
+                    url += '?service=wmts';
+                }
+                else {
+                    url += '&service=wmts';
+                }
+                url += "&version=";
+                url += options.version || '1.0.0';
+                url += "&request=GetTile";
+                url += "&layer=" + options.layer;
+                url += "&tilematrixset=" + options.matrixSet;
+                if (options.style) {
+                    url += "&style=" + options.style;
+                }
+                url += "&format=";
+                this.format = options.hasOwnProperty('format') ? options.format : 'image/png';
+                url += this.format;
+                if (options.time) {
+                    url += "&time=" + options.time;
+                }
+
+                this.getTileBaseUrl = this._proxifyUrl(url);
+            } else {
+                // manage nothing, not enough data
+            }
         };
 
         /**************************************************************************************************************/
 
         Utils.inherits(AbstractRasterLayer, WMTSLayer);
+
+        /**************************************************************************************************************/
+
+        /**
+         * When getCapabilities is loading, manage it
+         * @function manageCapabilities
+         * @memberof WMTSLayer#
+         * @param json Json object
+         * @param sourceObject Object where data is stored
+         * @private
+         */
+        WMTSLayer.prototype.manageCapabilities = function (json,sourceObject) {
+            console.log("json",json);
+            sourceObject.afterLoad(sourceObject);
+        };
 
         /**************************************************************************************************************/
 

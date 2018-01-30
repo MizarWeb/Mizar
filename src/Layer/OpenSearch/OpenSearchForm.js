@@ -25,7 +25,7 @@
     * All informations describing an OpenSearch form
     * @param {Object} paramsJson a json object describing the form
     * @param {String} type form to load (application/json or application/atom+xml)
-    * @memberOf module:Layer
+    * @memberof module:Layer
     */
     var OpenSearchForm = function (paramsJson,type) {
       // init all values
@@ -33,12 +33,28 @@
       this.template = null;     // url template with params
       this.parameters = [];     // list of params
 
+      this.ignoredParameters = [];
+      this.ignoredParameters.push("searchTerms");
+      this.ignoredParameters.push("count");
+      this.ignoredParameters.push("startIndex");
+      this.ignoredParameters.push("startPage");
+      this.ignoredParameters.push("language");
+      this.ignoredParameters.push("inputEncoding");
+      this.ignoredParameters.push("outputEncoding");
+
       this.parseJson(paramsJson,type);
     };
 
     /**************************************************************************************************************/
 
-    OpenSearchForm.prototype.parseUrl = function (urlJson,type) {
+    /**
+     * Parse url for request
+     * @function parseUrl
+     * @memberof OpenSearchForm#
+     * @param {Objet} urlJson Json urls founded
+     * @param {type} type Url type searched
+     */
+      OpenSearchForm.prototype.parseUrl = function (urlJson,type) {
       var typeValue = OpenSearchUtils.getAttributeValue(urlJson,"type");
       if (typeValue !== type) {
         // Not the good type, do not take it into account
@@ -50,17 +66,30 @@
       if (typeof listParameters.length !== 'undefined') {
         for (var i=0;i<listParameters.length;i++) {
           var param = new OpenSearchParam(listParameters[i]);
-//          if (param.value.startsWith("{geo:")) {
-//          } else {
-            this.parameters.push(param);
-//          }
+          param.isDisplayed = true;
+          for (var j=0;j<this.ignoredParameters.length;j++) {
+            if (param.value === ("{"+this.ignoredParameters[j]+"}") ) {
+              param.isDisplayed = false;
+            }
+          }
+          if (param.value.startsWith("{geo:")) {
+            param.isDisplayed = false;
+          }
+          this.parameters.push(param);
         }
-
       } else {
         this.parameters.push(new OpenSearchParam(listParameters));
       }
     }
 
+    /**************************************************************************************************************/
+
+    /**
+     * Get a string representation of the form
+     * @function toString
+     * @memberof OpenSearchForm#
+     * @return {String} String representation of the form
+     */
     OpenSearchForm.prototype.toString = function () {
       var res = "";
       res+= "  type : "+this.type+"\n";
@@ -72,6 +101,15 @@
       return res;
     }
 
+    /**************************************************************************************************************/
+
+    /**
+     * Parse the json
+     * @function parseJson
+     * @memberof OpenSearchForm#
+     * @param {Object} paramsJson Parameteres
+     * @param {String} type Type
+     */
     OpenSearchForm.prototype.parseJson = function (paramsJson,type) {
       if (typeof paramsJson.length !== 'undefined') {
         // Management of an array
@@ -82,6 +120,26 @@
         this.parseUrl(paramsJson,type);
       }
     };
+
+
+    /**************************************************************************************************************/
+
+    /**
+     * Update form parameters from GUI form
+     * @function updateFromGUI
+     * @memberof OpenSearchForm#
+     */
+    OpenSearchForm.prototype.updateFromGUI = function() {
+      for (var i=0;i<this.parameters.length;i++) {
+          param = this.parameters[i];
+          val = $("#p_"+param.name).val();
+          if (val !== "") {
+            param.currentValue = val;
+          } else {
+            param.currentValue = null;
+          }
+      }
+    }
 
     /*************************************************************************************************************/
 

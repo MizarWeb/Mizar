@@ -203,8 +203,8 @@ define(["jquery", "underscore-min", "../Utils/Constants",
             var points;
             if (mizarAPI.getActivatedContext().getNavigation().getType() === Constants.NAVIGATION.FlatNavigation) {
                 points = [
-                    [self.geoPickPoint[0], self.geoPickPoint[1], 1],
-                    [self.secondGeoPickPoint[0], self.secondGeoPickPoint[1], 1]
+                    [self.geoPickPoint[0], self.geoPickPoint[1], null],
+                    [self.secondGeoPickPoint[0], self.secondGeoPickPoint[1], null]
                 ];
                 return points;
             }
@@ -230,6 +230,10 @@ define(["jquery", "underscore-min", "../Utils/Constants",
                 [arrow2[0] * widthScale - 1, (rc.canvas.height - arrow2[1]) * heightScale - 1, 1, 1],
                 [self.pickPoint[0] * widthScale - 1, (rc.canvas.height - self.pickPoint[1]) * heightScale - 1, 1, 1]
             ];
+            points = [
+                [self.geoPickPoint[0] ,self.geoPickPoint[1],null],
+                [self.secondGeoPickPoint[0] ,self.secondGeoPickPoint[1],null]
+            ];
 
             ////calcul des points intermédiaires
             //var distance = 1;
@@ -241,13 +245,13 @@ define(["jquery", "underscore-min", "../Utils/Constants",
             //}
 
             //ajout du dernier point
-            points.push(
+/*            points.push(
                 [self.secondPickPoint[0] * widthScale - 1, (rc.canvas.height - self.secondPickPoint[1]) * heightScale - 1, 1, 1],
                 [arrow3[0] * widthScale - 1, (rc.canvas.height - arrow3[1]) * heightScale - 1, 1, 1],
                 [self.secondPickPoint[0] * widthScale - 1, (rc.canvas.height - self.secondPickPoint[1]) * heightScale - 1, 1, 1],
                 [arrow4[0] * widthScale - 1, (rc.canvas.height - arrow4[1]) * heightScale - 1, 1, 1]
-            );
-            self.computeIntersection(points);
+            );*/
+            //self.computeIntersection(points);
             return points;
         }
 
@@ -456,9 +460,7 @@ define(["jquery", "underscore-min", "../Utils/Constants",
             distance = Numeric.roundNumber(distance.toFixed(3), 2);
 
             var elevation = mizarAPI.getActivatedContext().getElevation(secondPoint[0], secondPoint[1]);
-            console.log(mizarAPI.getActivatedContext());
             elevation = Numeric.roundNumber(elevation / scale, 0)
-            console.log("Distance "+distance+" : Elevation = "+elevation);
             var pointElevation = [distance, elevation];
 
             self.elevations.push(pointElevation);

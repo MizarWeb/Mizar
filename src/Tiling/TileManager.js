@@ -723,6 +723,7 @@ define(['./Tile', './GeoTiling', './TilePool', './TileRequest', './TileIndexBuff
          Returns visible tile for given longitude/latitude, null otherwise
          */
         TileManager.prototype.getVisibleTile = function (lon, lat) {
+            console.log(this.visibleTiles);
             return this.tiling.findInsideTile(lon, lat, this.visibleTiles);
         };
 

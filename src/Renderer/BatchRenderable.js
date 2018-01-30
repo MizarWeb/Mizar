@@ -143,7 +143,6 @@ BatchRenderable.prototype.add = function( geometry, tile )
 			triIndexCount: this.triIndices.length - numTriIndices
 		});
 		this.bufferDirty = true;
-
 		return true;
 	}
 	else
