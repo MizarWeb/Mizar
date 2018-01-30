@@ -169,6 +169,7 @@ define(["jquery","../Utils/Constants", "./WMSLayer", "./WMTSLayer", "./WCSElevat
              */
             create: function (options) {
                 var proxy = this.proxy;
+                options.proxy = this.proxy;
                 var layer;
                 switch (options.type) {
                     case Constants.LAYER.WMS :

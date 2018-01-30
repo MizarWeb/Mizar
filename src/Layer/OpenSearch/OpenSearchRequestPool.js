@@ -117,7 +117,7 @@ function () {
     OpenSearchRequestPool.prototype.addQuery = function (url,tile,key) {
         this.debug("[addQuery]");
         if (this.resetMode === true) {
-            console.log("addQuery halt, reset mode");
+            this.debug("addQuery halt, reset mode");
             return;
         }
         
@@ -150,7 +150,7 @@ function () {
                 }
                 else if (xhr.status >= 400) {
                     //tileData.complete = true;
-                    console.error(xhr.responseText);
+                    this.debug(xhr.responseText);
                     return;
                 }
 
@@ -182,7 +182,7 @@ function () {
         this.debug("[checkPool]"+this.getPoolsStatus());
         
         if (this.resetMode === true) {
-            console.log("checkPool halt, reset mode");
+            this.debug("checkPool halt, reset mode");
             return;
         }
 
@@ -239,7 +239,7 @@ function () {
         this.debug("[manageFinishedRequest]");
         
         if (this.resetMode === true) {
-            console.log("manageFinishedRequest halt, reset mode");
+            this.debug("manageFinishedRequest halt, reset mode");
             return;
         }
 

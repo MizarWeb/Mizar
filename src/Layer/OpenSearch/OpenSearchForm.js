@@ -33,6 +33,15 @@
       this.template = null;     // url template with params
       this.parameters = [];     // list of params
 
+      this.ignoredParameters = [];
+      this.ignoredParameters.push("searchTerms");
+      this.ignoredParameters.push("count");
+      this.ignoredParameters.push("startIndex");
+      this.ignoredParameters.push("startPage");
+      this.ignoredParameters.push("language");
+      this.ignoredParameters.push("inputEncoding");
+      this.ignoredParameters.push("outputEncoding");
+
       this.parseJson(paramsJson,type);
     };
 
@@ -57,10 +66,16 @@
       if (typeof listParameters.length !== 'undefined') {
         for (var i=0;i<listParameters.length;i++) {
           var param = new OpenSearchParam(listParameters[i]);
-//          if (param.value.startsWith("{geo:")) {
-//          } else {
-            this.parameters.push(param);
-//          }
+          param.isDisplayed = true;
+          for (var j=0;j<this.ignoredParameters.length;j++) {
+            if (param.value === ("{"+this.ignoredParameters[j]+"}") ) {
+              param.isDisplayed = false;
+            }
+          }
+          if (param.value.startsWith("{geo:")) {
+            param.isDisplayed = false;
+          }
+          this.parameters.push(param);
         }
       } else {
         this.parameters.push(new OpenSearchParam(listParameters));
