@@ -36,12 +36,12 @@
  ***************************************/
 
 
-define(["jquery", "./AbstractLayer", '../Utils/Constants','../Renderer/FeatureStyle', "../Utils/Utils", "../Tiling/HEALPixBase", "./FitsLoader"],
-    function ($, AbstractLayer, Constants, FeatureStyle, Utils, HEALPixBase, FitsLoader) {
+define(["jquery", "underscore-min", "./AbstractLayer", '../Utils/Constants','../Renderer/FeatureStyle', "../Utils/Utils", "../Tiling/HEALPixBase", "./FitsLoader"],
+    function ($, _, AbstractLayer, Constants, FeatureStyle, Utils, HEALPixBase, FitsLoader) {
         /**
          * MocLayer configuration
          * @typedef {AbstractLayer.configuration} AbstractLayer.moc_configuration
-         * @property {string} serviceUrl - service URL
+         * @property {string} baseUrl - service URL
          * @property {int} [startOrder = 2] - Starting order of HEALPix tiling
          * @property {Object} [style] - See {@link FeatureStyle} description
          */
@@ -58,8 +58,22 @@ define(["jquery", "./AbstractLayer", '../Utils/Constants','../Renderer/FeatureSt
             options.dataType = Constants.GEOMETRY.LineString;
             AbstractLayer.prototype.constructor.call(this, Constants.LAYER.Moc, options);
 
-            this.serviceUrl = this.proxify(options.serviceUrl);
+            this.baseUrl = this.proxify(options.baseUrl);
             this.startOrder = options.startOrder || 2;
+
+            if(options.coordinateSystem && options.coordinateSystem.geoideName) {
+                this.crs = {
+                    properties : {
+                        name: options.coordinateSystem.geoideName
+                    }
+                };
+            } else {
+                this.crs = {
+                    properties : {
+                        name:"Equatorial"
+                    }
+                };
+            }
 
             // Set style
             if (options && options.style) {
@@ -91,8 +105,8 @@ define(["jquery", "./AbstractLayer", '../Utils/Constants','../Renderer/FeatureSt
             var self = this;
             var i;
 
-            if (String(self.serviceUrl).endsWith(".fits")) {
-                FitsLoader.loadFits(self.serviceUrl, function (fits) {
+            try {
+                FitsLoader.loadFits(self.baseUrl, function (fits) {
                     var healpixMoc = {};
                     var binaryTable = fits.getHDU(1).data;
 
@@ -131,14 +145,13 @@ define(["jquery", "./AbstractLayer", '../Utils/Constants','../Renderer/FeatureSt
                     }
                     self.moc = healpixMoc;
                     self.handleDistribution(healpixMoc);
-                    // TODO : comprendre la ligne suivante
-                    // delete fits;
+                    delete fits;
                 });
 
-            } else {
+            } catch(e) {
                 $.ajax({
                     type: "GET",
-                    url: self.serviceUrl,
+                    url: self.baseUrl,
                     dataType: 'json',
                     success: function (response) {
                         self.handleDistribution(response);
@@ -286,6 +299,7 @@ define(["jquery", "./AbstractLayer", '../Utils/Constants','../Renderer/FeatureSt
                         var geometry = {
                             type: Constants.GEOMETRY.Polygon,
                             gid: "moc" + this.id + "_" + order + "_" + pixelIndex,
+                            crs: this.crs,
                             coordinates: [[]]
                         };
 

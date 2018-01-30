@@ -732,7 +732,7 @@ define(['./HEALPixTables', '../Utils/Long', '../Utils/CircleFinder'],
         },
 
         uniq2hpix: function (uniq, hpix) {
-            if (hpix === null) {
+            if (hpix == null) {
                 hpix = [];
             }
             hpix[0] = HEALPixBase.log2(uniq / 4) / 2;

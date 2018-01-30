@@ -75,7 +75,7 @@ define(['../Utils/Utils', '../Utils/Constants', './AbstractNavigation', '../Anim
             AbstractNavigation.prototype.constructor.call(this, Constants.NAVIGATION.PlanetNavigation, ctx, options);
 
             // Default values for min and max distance (in meter)
-            this.minDistance = (this.options.minDistance) || 0;
+            this.minDistance = (this.options.minDistance) || 1;
             this.maxDistance = (this.options.maxDistance) || 3.0 * this.ctx.getCoordinateSystem().getGeoide().getRadius() / this.ctx.getCoordinateSystem().getGeoide().getHeightScale();
             
             // Scale min and max distance from meter to internal ratio
@@ -171,6 +171,7 @@ define(['../Utils/Utils', '../Utils/Constants', './AbstractNavigation', '../Anim
          * @param {navigationCallback} [options.callback] - Callback at the end of animation
          */
         PlanetNavigation.prototype.zoomTo = function (geoPos, options) {
+            this.ctx.publish(Constants.EVENT_MSG.NAVIGATION_CHANGED_DISTANCE);
             var navigation = this;
 
             var destDistance = (options && options.distance) ? options.distance : this.distance / this.ctx.getCoordinateSystem().getGeoide().getHeightScale();
@@ -254,6 +255,7 @@ define(['../Utils/Utils', '../Utils/Constants', './AbstractNavigation', '../Anim
                     options.callback();
                 }
                 self.zoomToAnimation = null;
+                self.ctx.publish(Constants.EVENT_MSG.NAVIGATION_CHANGED_DISTANCE, destDistance);
             };
 
             this.ctx.addAnimation(this.zoomToAnimation);
@@ -277,8 +279,8 @@ define(['../Utils/Utils', '../Utils/Constants', './AbstractNavigation', '../Anim
          */
         PlanetNavigation.prototype.computeViewMatrix = function () {
             this.computeInverseViewMatrix();
-            mat4.inverse(this.inverseViewMatrix, this.renderContext.viewMatrix);
-            this.ctx.publish("modifiedNavigation");
+            mat4.inverse(this.inverseViewMatrix, this.renderContext.getViewMatrix());
+            this.ctx.publish(Constants.EVENT_MSG.NAVIGATION_MODIFIED);
             this.renderContext.requestFrame();
         };
 
@@ -325,7 +327,8 @@ define(['../Utils/Utils', '../Utils/Constants', './AbstractNavigation', '../Anim
                 this.distance = previousDistance;
                 this.computeViewMatrix();
             }
-            
+
+            this.ctx.publish(Constants.EVENT_MSG.NAVIGATION_CHANGED_DISTANCE, this.getDistance());
 
         };
 
@@ -448,7 +451,7 @@ define(['../Utils/Utils', '../Utils/Constants', './AbstractNavigation', '../Anim
          * @return {float} the distance in meters from the surface of the globe
          */
         PlanetNavigation.prototype.getDistance = function() {
-            return this.distance*this.ctx.getCoordinateSystem().getGeoide().getRealPlanetRadius();
+            return this.distance / this.ctx.getCoordinateSystem().getGeoide().getHeightScale();
         };
 
         /**

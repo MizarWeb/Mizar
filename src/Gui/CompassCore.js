@@ -98,7 +98,7 @@ define(["jquery","../Utils/Constants"], function ($, Constants) {
      *    
      */
     function remove() {
-        ctx.unsubscribe("modifiedNavigation", updateNorth);
+        ctx.unsubscribe(Constants.EVENT_MSG.NAVIGATION_MODIFIED, updateNorth);
         document.getElementById(parentElement).innerHTML = '';
     }
 

@@ -105,6 +105,9 @@ define([], function () {
      *          <li>noDraggingColor : color used when triangle do not move</li>
      */
     Triangle.prototype.draw = function (ctx, options) {
+        if(!options) {
+            options = {};
+        }
         if (this.dragging) {
             ctx.fillStyle = options.draggingColor | "#FF0";
         }

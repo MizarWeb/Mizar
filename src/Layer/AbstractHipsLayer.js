@@ -16,8 +16,8 @@
  * You should have received a copy of the GNU General Public License
  * along with MIZAR. If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
-define(["./AbstractRasterLayer", "../Utils/Utils", "../Utils/Constants", "../Tiling/HEALPixTiling", "../Crs/CoordinateSystemFactory", "./HipsMetadata"],
-    function (AbstractRasterLayer, Utils, Constants, HEALPixTiling, CoordinateSystemFactory, HipsMetadata) {
+define(["underscore-min", "./AbstractRasterLayer", "../Utils/Utils", "../Utils/Constants", "../Tiling/HEALPixTiling", "../Crs/CoordinateSystemFactory", "./HipsMetadata"],
+    function (_, AbstractRasterLayer, Utils, Constants, HEALPixTiling, CoordinateSystemFactory, HipsMetadata) {
 
         /**
          * AbstractHipsLayer configuration
@@ -67,14 +67,13 @@ define(["./AbstractRasterLayer", "../Utils/Utils", "../Utils/Constants", "../Til
             options.visible = options.hasOwnProperty('visible') ? options.visible : false;
             options.properties = options.hasOwnProperty('properties') ? options.properties : {};
             options.pickable = options.hasOwnProperty('pickable') ? options.pickable : false;
-            options.services = options.hasOwnProperty('services') ? options.services : [];
+            options.services = options.hasOwnProperty('services') ? options.services : {};
 
             options.category = options.hasOwnProperty('category') ? options.category : "Image";//this.hipsMetadata.client_category;
 
-            options.availableServices = {};
             if ( this.hipsMetadata.hasOwnProperty("moc_access_url")) {
-                options.availableServices.Moc = {
-                    serviceURL:  this.hipsMetadata.moc_access_url,
+                options.services.Moc = {
+                    baseUrl:  this.hipsMetadata.moc_access_url,
                     skyFraction:  this.hipsMetadata.moc_sky_fraction
                 };
             }
@@ -97,6 +96,9 @@ define(["./AbstractRasterLayer", "../Utils/Utils", "../Utils/Constants", "../Til
             // La couche IRIS (en mode galactique) ne fonctionne plus. Elle est affichée 1 seconde puis plus aucune image
 
             //TODO : le fichier allsky
+
+            this.fitsSupported = _.contains(this.hipsMetadata.hips_tile_format, 'fits');
+
         };
 
         /**

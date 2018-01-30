@@ -21,9 +21,9 @@
 /**
  * Image manager
  */
-define(["jquery",
+define(["jquery", "../Utils/Constants",
         "../Renderer/FeatureStyle", "../Renderer/DynamicImage", "../Layer/FitsLoader", "fits"],
-    function ($,
+    function ($, Constants,
               FeatureStyle, DynamicImage, FitsLoader) {
 
         var mizarAPI;
@@ -50,7 +50,7 @@ define(["jquery",
 
                 handleFits(fitsData, featureData);
             });
-            mizarAPI.publish("image:download", featureData);
+            mizarAPI.publish(Constants.EVENT_MSG.IMAGE_DOWNLOADED, featureData);
         }
 
         /**********************************************************************************************/
@@ -186,7 +186,7 @@ define(["jquery",
             removeImage: function (featureData) {
 
                 // Publish event that the image of the given feature will be removed
-                mizarAPI.publish("image:remove", featureData);
+                mizarAPI.publish(Constants.EVENT_MSG.IMAGE_REMOVED, featureData);
                 if (featureData.isFits) {
                     removeFitsFromRenderer(featureData);
                     $('#quicklookFits').removeClass('selected');
@@ -215,7 +215,7 @@ define(["jquery",
                 style.fill = true;
 
                 // Publish event that the image for the given feature will be loaded
-                mizarAPI.publish("image:add", featureData);
+                mizarAPI.publish(Constants.EVENT_MSG.IMAGE_ADDED, featureData);
 
                 if (featureData.isFits) {
                     //var url = proxyUrl + encodeURIComponent(feature.services.download.url);

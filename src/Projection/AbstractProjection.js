@@ -82,8 +82,13 @@ define(['../Renderer/GeoBound'],
             throw new SyntaxError("project not implemented", "AbstractProjection.js");
         };
 
-        AbstractProjection.prototype.getDefaultZ = function () {
-            return 100000;
+        /**
+         * @function getName
+         * @memberOf AbstractProjection#
+         * @abstract
+         */
+        AbstractProjection.prototype.getName = function () {
+            throw new SyntaxError("getName not implemented", "AbstractProjection.js");
         };
 
         /**************************************************************************************************************/

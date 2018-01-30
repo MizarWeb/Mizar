@@ -35,8 +35,8 @@
  * along with GlobWeb. If not, see <http://www.gnu.org/licenses/>.
  ***************************************/
 
-define(['../Utils/Utils', '../Tiling/HEALPixTiling', './AbstractHipsLayer'],
-    function (Utils, HEALPixTiling, AbstractHipsLayer) {
+define(['../Utils/Utils', '../Tiling/HEALPixTiling', './AbstractHipsLayer', '../Utils/Constants'],
+    function (Utils, HEALPixTiling, AbstractHipsLayer, Constants) {
 
         /**************************************************************************************************************/
 
@@ -79,7 +79,9 @@ define(['../Utils/Utils', '../Tiling/HEALPixTiling', './AbstractHipsLayer'],
                 }
             };
             this.levelZeroImage.onerror = function (event) {
-                self.globe.publishEvent("baseLayersError", self);
+                var error = self.getHipsMetadata();
+                error.message = "Cannot load " + self.levelZeroImage.src;
+                self.globe.publishEvent(Constants.EVENT_MSG.BASE_LAYERS_ERROR, error);
                 self._ready = false;
 
                 console.log("Cannot load " + self.levelZeroImage.src);
@@ -105,7 +107,7 @@ define(['../Utils/Utils', '../Tiling/HEALPixTiling', './AbstractHipsLayer'],
             AbstractHipsLayer.prototype._attach.call(this, g);
 
             // Load level zero image now, only for background
-            if (!this._overlay) {
+            if (!this._overlay && this.isVisible()) {
                 this.levelZeroImage.src = this.proxify(this.baseUrl) + "/Norder3/Allsky." + this.format;
             }
         };

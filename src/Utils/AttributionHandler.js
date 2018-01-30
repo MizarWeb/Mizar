@@ -107,6 +107,37 @@ define(function () {
         }
     };
 
+    /**
+     * Enables all HTML attribution.
+     * @function enable
+     * @memberOf AttributionHandler.prototype
+     * @param {Layer} layer Layer
+     */
+    AttributionHandler.prototype.enable = function(layer) {
+        if (layer && layer.isVisible()) {
+            var div = document.getElementById(this.element.id + "_" + layer.id);
+            if(div) {
+                div.style.display = "block";
+            }
+        }
+    };
+
+
+    /**
+     * Disables all HTML attribution.
+     * @function disable
+     * @memberOf AttributionHandler.prototype
+     * @param {Layer} layer Layer
+     */
+    AttributionHandler.prototype.disable = function(layer) {
+        if (layer && layer.isVisible()) {
+            var div = document.getElementById(this.element.id + "_" + layer.id);
+            if(div) {
+                div.style.display = "none";
+            }
+        }
+    };
+
      /**
       * Toggle attribution
       * @function toggleAttribution

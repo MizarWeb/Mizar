@@ -16,12 +16,12 @@
  * You should have received a copy of the GNU General Public License
  * along with MIZAR. If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
-define(["../Utils/Constants", "../Services/FitsVisu", "../Services/HistogramCore",
+define(["../Utils/Constants", "../Services/FitsVisu", "../Services/FitsHips", "../Services/HistogramCore",
         "../Services/ImageProcessingCore", "../Services/MeasureToolPlanetCore", "../Services/MeasureToolSkyCore",
         "../Services/MocBase", "../Services/MollweideViewerCore", "../Services/PickingManagerCore",
         "../Services/SampCore", "../Services/SelectionToolCore", "../Services/ExportToolCore",
         "../NameResolver/NameResolver", "../ReverseNameResolver/ReverseNameResolver"],
-    function (Constants, FitsVisu, HistogramCore,
+    function (Constants, FitsVisu, FitsHips, HistogramCore,
               ImageProcessingCore, MeasureToolPlanetCore, MeasureToolSkyCore,
               MocBase, MollweideViewerCore, PickingManagerCore,
               SampCore, SelectionToolCore, ExportToolCore,
@@ -70,6 +70,9 @@ define(["../Utils/Constants", "../Services/FitsVisu", "../Services/HistogramCore
                         break;
                     case Constants.SERVICE.ExportTool:
                         obj = ExportToolCore;
+                        break;
+                    case Constants.SERVICE.FitsHips:
+                        obj = FitsHips;
                         break;
                     default:
                         throw new RangeError("Cannot retrieve service " + serviceType, "ServiceFactory.js");
