@@ -168,8 +168,7 @@ define(["jquery","../Utils/Constants", "./WMSLayer", "./WMTSLayer", "./WCSElevat
             if (options.displayProperties) {
                 layer.displayProperties = options.displayProperties;
             }
-            layer.pickable = options.hasOwnProperty('pickable') ? options.pickable : true;
-            layer.availableServices = options.availableServices;
+            layer.pickable = options.hasOwnProperty('pickable') ? options.pickable : true;            
             return layer;
         }
 
