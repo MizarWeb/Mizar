@@ -179,11 +179,6 @@ Layer.prototype.getColor = function() {};
  */
 Layer.prototype.getStyle = function() {};
 
-/**
- * Returns the available services related to the layer.
- * @returns {Object[]} the available services 
- */
-Layer.prototype.getAvailableServices = function() {};
 
 /**
  * Returns true when the layer is set as background otherwise false.

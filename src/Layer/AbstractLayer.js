@@ -61,7 +61,7 @@ define(["jquery","underscore-min", "../Utils/Event", "../Utils/Utils", "../Utils
          * @param {Array} [color= a random color]
          * @param {float} [opacity=1.0] - An opacity value
          * @param {FeatureStyle} [style]
-         * @param {Array} [availableServices=[]}
+         * @param {Array} [services=[]}
          * @param {layerCallback} callback - A callback that transfoms data.
          */
 
@@ -120,7 +120,7 @@ define(["jquery","underscore-min", "../Utils/Event", "../Utils/Utils", "../Utils
                 this.attribution = this.attribution.replace(' ', ' target=_blank ');
             }
 
-            this.availableServices = _createAvailableServices(this.options);
+            this.services = _createAvailableServices(this.options);
         };
 
 
@@ -577,13 +577,6 @@ define(["jquery","underscore-min", "../Utils/Event", "../Utils/Utils", "../Utils
             return this.style;
         };
 
-        /**
-         * @function getAvailableServices
-         * @memberOf AbstractLayer#
-         */
-        AbstractLayer.prototype.getAvailableServices = function() {
-            return this.availableServices;
-        };
 
         AbstractLayer.prototype.isBackground = function() {
             return this.background;
