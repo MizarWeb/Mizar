@@ -35,8 +35,8 @@
  * along with GlobWeb. If not, see <http://www.gnu.org/licenses/>.
  ***************************************/
 
-define(['../Utils/Utils', './AbstractRasterLayer', '../Utils/Constants'],
-    function (Utils, AbstractRasterLayer, Constants) {
+define(['../Utils/Utils', './AbstractRasterLayer', '../Utils/Constants','../Tiling/WMTSTiling'],
+    function (Utils, AbstractRasterLayer, Constants,WMTSTiling) {
         /**
          * Configuration parameters to query a Web Map Tile Service (WMTS)
          * @typedef {AbstractRasterLayer} AbstractRasterLayer.wmts_configuration
@@ -79,7 +79,8 @@ define(['../Utils/Utils', './AbstractRasterLayer', '../Utils/Constants'],
          * @property {string} [version = "1.0.0"] - WMS version
          * @property {string} [transparent]
          * @property {string} [time] - Time dimension
-         * @property {string} [format = "image/png"] - output image format
+         * @property {stri
+Avez-vous une évaluation de la fonction à réaliser par Diginiext concernant la DM Mizar ? J'ai besoin de cette somme afin de la communiquer au projet concerné pour réaliser la ng} [format = "image/png"] - output image format
          * @constructor
          * @memberOf module:Layer
          * @see {@link http://www.opengeospatial.org/standards/wmts WMTS} standard
@@ -87,20 +88,22 @@ define(['../Utils/Utils', './AbstractRasterLayer', '../Utils/Constants'],
          */
         var WMTSLayer = function (options) {
             AbstractRasterLayer.prototype.constructor.call(this, Constants.LAYER.WMTS, options);
-
-            this.startLevel = options.startLevel || 1;
-
+            this.options = options;
+            this.tiling = new WMTSTiling();
             // Check getCapabilities
             if ((typeof options.getCapabilities !== 'undefined') && (options.getCapabilities !== null)) {
+                this.getCapabilitiesEnabled = true;
                 this.afterLoad = options.afterLoad;
+                this.urlRaw = options.getCapabilities;
+                this.addGetCapabilitiesParameter("service","WMTS");
+                this.addGetCapabilitiesParameter("version",options.hasOwnProperty('version') ? options.version : '1.0.0.0');
+                this.addGetCapabilitiesParameter("request","getCapabilities");
                 // manage get capabilities
-                this.loadGetCapabilities(this.manageCapabilities,options.getCapabilities,this);
-                
-
+                this.loadGetCapabilities(this.manageCapabilities,this.getCapabilitiesRaw,this);
             } else if ((typeof options.baseUrl !== 'undefined') && (options.baseUrl !== null)) {
                 // manage base url
                 // Build the base GetTile URL
-                var url = this.baseUrl;
+                var url = options.baseUrl;
                 if (url.indexOf('?', 0) === -1) {
                     url += '?service=wmts';
                 }
@@ -122,9 +125,10 @@ define(['../Utils/Utils', './AbstractRasterLayer', '../Utils/Constants'],
                     url += "&time=" + options.time;
                 }
 
-                this.getTileBaseUrl = this._proxifyUrl(url);
+                this.getTileBaseUrl = url;
             } else {
                 // manage nothing, not enough data
+                console.log("ERROR !");
             }
         };
 
@@ -143,8 +147,40 @@ define(['../Utils/Utils', './AbstractRasterLayer', '../Utils/Constants'],
          * @private
          */
         WMTSLayer.prototype.manageCapabilities = function (json,sourceObject) {
-            console.log("json",json);
-            sourceObject.afterLoad(sourceObject);
+            if ( (sourceObject.afterLoad !== null) && (typeof sourceObject.afterLoad !== "undefined")) {
+                sourceObject.afterLoad(sourceObject);
+            }
+            var url = sourceObject.urlRaw;
+            if (url.indexOf('?', 0) === -1) {
+                url += '?service=wmts';
+            }
+            else {
+                url += '&service=wmts';
+            }
+            url += "&version=";
+            url += sourceObject.options.version || "1.0.0.0";
+            url += "&request=GetTile";
+            url += "&layer=" + sourceObject.options.layer;
+            url += "&tilematrixset=" + sourceObject.options.matrixSet;
+            if (sourceObject.options.style) {
+                url += "&style=" + sourceObject.options.style;
+            }
+            url += "&format=";
+            this.format = sourceObject.options.hasOwnProperty('format') ? options.format : 'image/png';
+            url += this.format;
+            if (sourceObject.options.time) {
+                url += "&time=" + sourceObject.options.time;
+            }
+
+            sourceObject.getTileBaseUrl = url;
+    
+            sourceObject.numberOfLevels = json.Capabilities.Contents.TileMatrixSet.TileMatrix.length;
+            sourceObject.tiling.update(json.Capabilities.Contents.TileMatrixSet);
+
+            if (sourceObject.getCapabilitiesTileManager !== null) {
+                sourceObject.getCapabilitiesTileManager.setImageryProvider(sourceObject);
+            }
+            this.getCapabilitiesEnabled = false;
         };
 
         /**************************************************************************************************************/
@@ -159,11 +195,11 @@ define(['../Utils/Utils', './AbstractRasterLayer', '../Utils/Constants'],
         WMTSLayer.prototype.getUrl = function (tile) {
             var url = this.getTileBaseUrl;
             url += "&tilematrix=";
-            url += tile.level + this.startLevel;
+            url += tile.level;
             url += "&tilecol=" + tile.x;
             url += "&tilerow=" + tile.y;
 
-            return url;
+            return this.proxify(url);
         };
 
         /**

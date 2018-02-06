@@ -102,8 +102,15 @@ define(['../Tiling/Tile',
                 this.baseImagery = layer;
                 layer.setVisible(true);
             }
+            
             // Modify the tile manager after the layer has been attached
-            this.tileManager.setImageryProvider(layer);
+            if (layer.getCapabilitiesEnabled === true) {
+                // if get capabilities still not loaded, wait...
+                layer.getCapabilitiesTileManager = this.tileManager;
+            } else {
+                // ...else action !
+                this.tileManager.setImageryProvider(layer);
+            }
         };
 
         /**
