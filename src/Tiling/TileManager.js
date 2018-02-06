@@ -190,11 +190,10 @@ define(['./Tile', './GeoTiling', './TilePool', './TileRequest', './TileIndexBuff
         TileManager.prototype.setImageryProvider = function (ip) {
             this.reset();
             this.imageryProvider = ip;
-
+            
             if (ip) {
                 // Clean tile pool
                 this.tilePool.disposeAll();
-
                 this.tiling = ip.tiling;
 
                 // Rebuild level zero tiles
@@ -389,23 +388,20 @@ define(['./Tile', './GeoTiling', './TilePool', './TileRequest', './TileIndexBuff
                 else {
                     isLeaf = false;
                 }
-
                 isLeaf |= !tile.needsToBeRefined(this.renderContext);
             }
-
+            
             if (isLeaf) {
                 // Push the tiles to render only if the texture is valid or there is no imagery provider defined
                 if (tile.texture || this.renderTileWithoutTexture) {
                     this.tilesToRender.push(tile);
                 }
                 this.visibleTiles.push(tile);
-            }
-            else {
+            } else {
                 // Create the children if needed
                 if (tile.children === null) {
                     tile.createChildren();
                 }
-
                 for (var i = 0; i < 4; i++) {
                     if (!tile.children[i].isCulled(this.renderContext)) {
                         this.processTile(tile.children[i], level + 1);
@@ -433,10 +429,6 @@ define(['./Tile', './GeoTiling', './TilePool', './TileRequest', './TileIndexBuff
          Generate tile
          */
         TileManager.prototype.generateTile = function (tile, tileRequest) {
-            //TODO display geojson=f(tile)
-            //this.processedLevel = tile.level;
-            //console.log("level="+tile.level);
-            // Generate the tile using data from tileRequest if defined
             tile.generate(this.tilePool, tileRequest.image, tileRequest.elevations);
 
             // Now post renderers can generate their data on the new tile
@@ -723,7 +715,6 @@ define(['./Tile', './GeoTiling', './TilePool', './TileRequest', './TileIndexBuff
          Returns visible tile for given longitude/latitude, null otherwise
          */
         TileManager.prototype.getVisibleTile = function (lon, lat) {
-            console.log(this.visibleTiles);
             return this.tiling.findInsideTile(lon, lat, this.visibleTiles);
         };
 

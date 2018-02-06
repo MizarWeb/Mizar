@@ -105,7 +105,8 @@ define(["jquery","underscore-min", "../Utils/Event", "../Utils/Utils", "../Utils
             this.format = this.options.format || "";
             this.baseUrl = this.options.baseUrl || "";
             this.deletable = this.options.deletable || false;
-
+            this.getCapabilitiesEnabled = false;
+            this.getCapabilitiesTileManager = null;
             // Update layer color
             this.color = _createColor.call(this, this.options);
 
@@ -287,9 +288,10 @@ define(["jquery","underscore-min", "../Utils/Event", "../Utils/Utils", "../Utils
             url = this.getGetCapabilitiesUrl();
             urlRaw = this.getCapabilitiesRaw;
           } else  {
-            url = paramUrl;
+            url = this.proxify(paramUrl);
             urlRaw = paramUrl;
           }
+          this.getCapabilitiesEnabled = true;
           $.ajax({
               type: "GET",
               url: url,
