@@ -141,7 +141,7 @@ define(function () {
         "August": "August",
         "Mercator": "Mercator",
         "Mollweide": "Mollweide",
-        "Plate": "Plate",
+        "Plate": "Plate Carrée",
         "Azimuth": "Azimuth"
     };
 
@@ -165,7 +165,8 @@ define(function () {
         "Mars_2000_old": "IAU2000:49900",
         "Moon_2000": "IAU2000:30101",
         "Moon_2000_old": "IAU2000:30100",
-        "HorizontalLocal": "HorizontalLocal"
+        "HorizontalLocal": "HorizontalLocal",
+        "Sun": "IAU:Sun"
     };
 
     /**
@@ -201,6 +202,7 @@ define(function () {
      * @property {String} ExportTool - ExportTool
      */
     Constants.SERVICE = {
+        "FitsHips": "FitsHips",
         "FitsVisu": "FitsVisu",
         "Histogram": "Histogram",
         "ImageProcessing" : "ImageProcessing",
@@ -254,12 +256,14 @@ define(function () {
      * @property {String} equatorial - Equatorial
      * @property {String} galactic - Galactic
      * @property {String} ecliptic - Ecliptic
+     * @property {String} horizontalLocal - Equatorial
      */
     Constants.MappingCrsHips2Mizar = {
         "equatorial": "Equatorial",
         "galactic": "Galactic",
         "ecliptic": "Ecliptic",
-        "mars-panstimson": "Equatorial"
+        "mars-panstimson": "Equatorial",
+        "horizontalLocal": "Equatorial"
     };
 
     /**
@@ -289,6 +293,61 @@ define(function () {
         "STOPPED" : "STOPPED",
         "RUNNING" : "RUNNING",
         "PAUSED" : "PAUSED"
+    };
+
+    /**
+     * @namespace
+     * EVENT_MSG
+     * @property {String} PLUGIN_NOT_FOUND - Plugin not found
+     * @property {String} MIZAR_MODE_TOGGLE - Mizar mode, one value among {Constants.CONTEXT}
+     * @property {String} LAYER_BACKGROUND_ADDED - Background Layer added
+     * @property {String} LAYER_BACKGROUND_CHANGED - Background Layer changed
+     * @property {String} LAYER_ADDITIONAL_ADDED - Additional Layer added
+     * @property {String} LAYER_ADDED - Layer added
+     * @property {String} LAYER_REMOVED - Layer removed
+     * @property {String} LAYER_VISIBILITY_CHANGED - Visibility Layer changed
+     * @property {String} LAYER_OPACITY_CHANGED - Opacity Layer changed
+     * @property {String} LAYER_START_LOAD - Overlay rasters or vectors start to load
+     * @property {String} LAYER_END_LOAD - Overlay rasters  or vectors finish to load
+     * @property {String} LAYER_START_BACKGROUND_LOAD - Background rasters start to load
+     * @property {String} LAYER_END_BACKGROUND_LOAD - Background rasters finish to load
+     * @property {String} BASE_LAYERS_ERROR - Error at the initialisation of layer to render
+     * @property {String} BASE_LAYERS_READY - Initialisation of the rendering is fine
+     * @property {String} CRS_MODIFIED - Coordinate reference system modified
+     * @property {String} NAVIGATION_STARTED - Navigation started
+     * @property {String} NAVIGATION_ENDED - Navigation ended
+     * @property {String} NAVIGATION_MODIFIED - Navigation modified
+     * @property {String} NAVIGATION_CHANGED_DISTANCE - Distance of the camera from the planet has changed
+     * @property {String} IMAGE_DOWNLOADED - Image downloaded
+     * @property {String} IMAGE_REMOVED - Image removed
+     * @property {String} IMAGE_ADDED - Image added
+     * @property {String} FEATURED_ADDED - Feature added
+     */
+    Constants.EVENT_MSG = {
+        "PLUGIN_NOT_FOUND" : "plugin:not_found",
+        "MIZAR_MODE_TOGGLE" : "mizarMode:toggle",
+        "LAYER_BACKGROUND_ADDED" : "backgroundLayer:add",
+        "LAYER_BACKGROUND_CHANGED" : "backgroundLayer:change",
+        "LAYER_ADDITIONAL_ADDED" : "additionalLayer:add",
+        "LAYER_ADDED" : "layer:add",
+        "LAYER_REMOVED" : "layer:remove",
+        "LAYER_VISIBILITY_CHANGED" : "visibility:changed",
+        "LAYER_OPACITY_CHANGED" : "opacity:changed",
+        "LAYER_START_LOAD" : "startLoad",
+        "LAYER_END_LOAD" : "endLoad",
+        "LAYER_START_BACKGROUND_LOAD" : "startBackgroundLoad",
+        "LAYER_END_BACKGROUND_LOAD" : "endBackgroundLoad",
+        "BASE_LAYERS_ERROR" : "baseLayersError",
+        "BASE_LAYERS_READY" : "baseLayersReady",
+        "CRS_MODIFIED" : "modifiedCrs",
+        "NAVIGATION_STARTED" : "startNavigation",
+        "NAVIGATION_ENDED" : "endNavigation",
+        "NAVIGATION_MODIFIED" : "modifiedNavigation",
+        "NAVIGATION_CHANGED_DISTANCE" : "navigation:changedDistance",
+        "IMAGE_DOWNLOADED" : "image:download",
+        "IMAGE_REMOVED" : "image:remove",
+        "IMAGE_ADDED" : "image:add",
+        "FEATURED_ADDED" : "features:added"
     };
 
     /**************************************************************************************************************/

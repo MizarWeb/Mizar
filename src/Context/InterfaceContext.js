@@ -57,13 +57,6 @@
  */
 
 /**
- * backgroundSurveyError.<br/>
- * Called when a layer could not be loaded as background
- * @event Context#backgroundSurveyError
- * @type {string} 
- */
-
-/**
  * baseLayersError.<br/>
  *
  * @event Context#baseLayersError
@@ -130,7 +123,7 @@
  * modifiedCrs.<br/>
  * Called when a CRS changes
  * @event Context#modifiedCrs
- * @type {Crs}
+ * @type {ContextInterface}
  */
 
 /**
@@ -312,7 +305,6 @@ Context.prototype.getLayerByName = function (layerName) {
  * @param {string} survey The name of the layer
  * @return {Layer|undefined} the layer which has been added to the background
  * @fires Context#backgroundLayer:change
- * @fires Context#backgroundSurveyError
  */
 Context.prototype.setBackgroundLayer = function (survey) {
 };

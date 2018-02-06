@@ -284,3 +284,38 @@ Crs.prototype._setupPosAfterTrans = function (posWorld) {
  */
 Crs.prototype.getGeoBound = function () {
 };
+
+/**
+ * Returns the CRS name
+ * @return {CRS} the CRS name
+ */
+Crs.prototype.getName = function () {
+};
+
+/**
+ * Returns the CRS description
+ * @return {string} the CRS description
+ */
+Crs.prototype.getDescription = function () {
+};
+
+/**
+ * Returns True when the CRS is bases on a projection otherwise False
+ * @return {boolean} the CRS name
+ */
+Crs.prototype.isProjected = function () {
+};
+
+/**
+ * Returns the longitude label.
+ * @return {string} the longitude label
+ */
+Crs.prototype.getLongitudeLabel = function () {
+};
+
+/**
+ * Returns the latitude label.
+ * @return {string} the latitude label
+ */
+Crs.prototype.getLatitudeLabel = function () {
+};

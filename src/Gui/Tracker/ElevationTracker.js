@@ -37,7 +37,6 @@ define(["jquery", "./AbstractTracker", "../../Utils/Utils", "../../Utils/Numeric
          */
         var ElevationTracker = function (options) {
             AbstractTracker.prototype.constructor.call(this, options);
-            self = this;
             this.scale = null;
             if (options.elevationLayer !== null && options.elevationLayer !== undefined) {
                 this.scale = options.elevationLayer.hasOwnProperty('scale') ? options.elevationLayer.scale : 1;
@@ -57,10 +56,6 @@ define(["jquery", "./AbstractTracker", "../../Utils/Utils", "../../Utils/Numeric
          */
         ElevationTracker.prototype.setScaleLayer = function (elevationLayer) {
             this.scale = elevationLayer.hasOwnProperty('scale') ? elevationLayer.scale : 1;
-        };
-
-        ElevationTracker.prototype._updateTracker = function(tracker) {
-            self = tracker;
         };
 
         /**
@@ -100,6 +95,24 @@ define(["jquery", "./AbstractTracker", "../../Utils/Utils", "../../Utils/Numeric
         };
 
         /**
+         * @function attachTo
+         * @memberOf ElevationTracker#
+         */
+        ElevationTracker.prototype.attachTo = function (context) {
+            AbstractTracker.prototype.attachTo.call(this, context);
+            self = this;
+        };
+
+        /**
+         * @function detach
+         * @memberOf ElevationTracker#
+         */
+        ElevationTracker.prototype.detach = function () {
+            AbstractTracker.prototype.detach.call(this);
+            self = null;
+        };
+
+        /**
          * Destroy the elevation tracker.
          * @function destroy
          * @memberOf AbstractTracker.prototype
@@ -108,6 +121,7 @@ define(["jquery", "./AbstractTracker", "../../Utils/Utils", "../../Utils/Numeric
             this.detach.call(this);
             AbstractTracker.prototype.destroy.call(this);
             this.scale = null;
+            self = null;
         };
 
         /**************************************************************************************************************/

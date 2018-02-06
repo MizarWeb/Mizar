@@ -105,11 +105,8 @@ define(["jquery","underscore-min", "../Utils/Event", "../Utils/Utils", "../Utils
             this.format = this.options.format || "";
             this.baseUrl = this.options.baseUrl || "";
             this.deletable = this.options.deletable || false;
-            this.fitsSupported = false;
             this.getCapabilitiesEnabled = false;
             this.getCapabilitiesTileManager = null;
-
-
             // Update layer color
             this.color = _createColor.call(this, this.options);
 
@@ -126,7 +123,6 @@ define(["jquery","underscore-min", "../Utils/Event", "../Utils/Utils", "../Utils
 
             this.availableServices = _createAvailableServices(this.options);
         };
-
 
 
         function _createAvailableServices(options) {
@@ -434,7 +430,7 @@ define(["jquery","underscore-min", "../Utils/Event", "../Utils/Utils", "../Utils
                 if (this.globe) {
                     this.globe.renderContext.requestFrame();
                 }
-                this.publish("visibility:changed", this);
+                this.publish(Constants.EVENT_MSG.LAYER_VISIBILITY_CHANGED, this);
             } else {
                 throw new TypeError("the parameter of setVisible should be a boolean", "AbstractLayer.js");
             }
@@ -459,7 +455,7 @@ define(["jquery","underscore-min", "../Utils/Event", "../Utils/Utils", "../Utils
                 if (this.globe) {
                     this.globe.renderContext.requestFrame();
                 }
-                this.publish("opacity:changed", this);
+                this.publish(Constants.EVENT_MSG.LAYER_OPACITY_CHANGED, this);
             } else {
                throw new RangeError('opacity value should be a value in [0..1]', "AbstractLayer.js");
             }

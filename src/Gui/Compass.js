@@ -21,7 +21,8 @@
 /**
  * Compass module : map control with "north" composant
  */
-define(["jquery", "./CompassCore"], function ($, CompassCore) {
+define(["jquery", "../Utils/Constants","./CompassCore"],
+    function ($, Constants, CompassCore) {
 
     /**
      *    Private variables
@@ -66,7 +67,7 @@ define(["jquery", "./CompassCore"], function ($, CompassCore) {
 
                 initialize();
                 // Publish modified event to update compass north
-                ctx.publish('modifiedNavigation');
+                ctx.publish(Constants.EVENT_MSG.NAVIGATION_MODIFIED);
                 $('#' + parentElement).css("display", "block");
             },
             "xml");
@@ -170,8 +171,8 @@ define(["jquery", "./CompassCore"], function ($, CompassCore) {
             }
 
             // Update fov when moving
-            ctx.subscribe("modifiedNavigation", CompassCore.updateNorth);
-            ctx.subscribe("modifiedCrs", CompassCore.updateNorth);
+            ctx.subscribe(Constants.EVENT_MSG.NAVIGATION_MODIFIED, CompassCore.updateNorth);
+            ctx.subscribe(Constants.EVENT_MSG.CRS_MODIFIED, CompassCore.updateNorth);
         };
     };
 

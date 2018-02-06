@@ -35,26 +35,25 @@
  * along with GlobWeb. If not, see <http://www.gnu.org/licenses/>.
  ***************************************/
 
-define(['../Utils/Constants','../Utils/Utils','./FeatureStyle','./VectorRendererManager','../Tiling/TiledVectorRenderable','../Tiling/TiledVectorRenderer','../Utils/Numeric'],
-	function(Constants, Utils,FeatureStyle,VectorRendererManager,TiledVectorRenderable,TiledVectorRenderer,Numeric) {
+define(['../Utils/Constants', '../Utils/Utils', './FeatureStyle', './VectorRendererManager', '../Tiling/TiledVectorRenderable', '../Tiling/TiledVectorRenderer', '../Utils/Numeric'],
+    function (Constants, Utils, FeatureStyle, VectorRendererManager, TiledVectorRenderable, TiledVectorRenderer, Numeric) {
 
-/**************************************************************************************************************/
+        /**************************************************************************************************************/
 
- /**
- 	@name LineRenderer
- 	@class
- 	 LineStringRenderable manages lineString data to be rendered on a tile.
-	@augments TiledVectorRenderable
- 	@param {Bucket} bucket Bucket
- 	@constructor
- 	*/
+        /**
+         @name LineRenderer
+         @class
+             LineStringRenderable manages lineString data to be rendered on a tile.
+         @augments TiledVectorRenderable
+         @param {Bucket} bucket Bucket
+         @constructor
+         */
 
-var LineStringRenderable = function( bucket )
-{
-	TiledVectorRenderable.prototype.constructor.call(this,bucket);
-};
+        var LineStringRenderable = function (bucket) {
+            TiledVectorRenderable.prototype.constructor.call(this, bucket);
+        };
 
-/**************************************************************************************************************/
+        /**************************************************************************************************************/
 
 // Inheritance
 Utils.inherits(TiledVectorRenderable,LineStringRenderable);
@@ -348,8 +347,11 @@ LineStringRenderer.prototype.createBucket = function( layer, style )
 
 /**************************************************************************************************************/
 
+
 // Register the renderer
-VectorRendererManager.factory.push( function(globe) { return new LineStringRenderer(globe); } );
+VectorRendererManager.factory.push(function (globe) {
+    return new LineStringRenderer(globe);
+});
 
 return LineStringRenderable;
 

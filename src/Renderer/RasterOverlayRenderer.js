@@ -35,7 +35,8 @@
  * along with GlobWeb. If not, see <http://www.gnu.org/licenses/>.
  ***************************************/
 
-define( ['./Program','../Tiling/Tile','../Utils/ImageRequest','./RendererTileData'], function(Program, Tile, ImageRequest, RendererTileData) {
+define( ['./Program','../Tiling/Tile','../Utils/ImageRequest','./RendererTileData', "../Utils/Constants"],
+	function(Program, Tile, ImageRequest, RendererTileData, Constants) {
 
 /**************************************************************************************************************/
 
@@ -168,7 +169,7 @@ RasterOverlayRenderable.prototype.onRequestStarted = function(request)
 	var layer = this.bucket.layer;
 	if ( layer._numRequests === 0 )
 	{
-		layer.globe.publishEvent('startLoad',layer);
+		layer.globe.publishEvent(Constants.EVENT_MSG.LAYER_START_LOAD,layer);
 	}
 	layer._numRequests++;
 };
@@ -190,7 +191,7 @@ RasterOverlayRenderable.prototype.onRequestFinished = function(completed)
 	layer._numRequests--;
 	if ( layer.globe && layer._numRequests === 0 )
 	{
-		layer.globe.publishEvent('endLoad',layer);
+		layer.globe.publishEvent(Constants.EVENT_MSG.END_LOAD,layer);
 	}
 };
 

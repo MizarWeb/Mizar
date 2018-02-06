@@ -23,139 +23,128 @@ define(['./AbstractCrs', '../Renderer/GeoBound', '../Utils/Utils', '../Utils/Con
          * @constant
          * @type {string}
          */
-        const DESCRIPTION = "System in which an local object's position is described in the observer's local horizon." +
-            "It is expressed in terms of altitude (or elevation) angle and azimuth. The elevation is measured for -90° " +
-            "(nadir) to 90° (zenith) but azimuth is measured in degrees eastward along the horizon from the North";
+        const DESCRIPTION = "Sun coordinate Reference System is a coordinate system using the Sun sphere and in " +
+            "which the heliocentric longitude increases to the east. The heliocentric latitude is measured in degrees " +
+            "north or south of the Sun equator.";
 
         /**
          * @constant
          * @type {string}
          */
-        const LONGITUDE_LABEL = "Az";
+        const LONGITUDE_LABEL = "Long";
 
         /**
          * @constant
          * @type {string}
          */
-        const LATITUDE_LABEL = "Alt";
-
+        const LATITUDE_LABEL = "Lat";
 
         /**
-         * @name HorizontalLocalCrs
+         * @name SunCrs
          * @class
-         * System in which an local object's position is described in the observer's local horizon. It is expressed in
-         * terms of altitude (or elevation) angle and azimuth. The elevation is measured for -90° (nadir) to 90° (zenith)
-         * but azimuth is measured in degrees eastward along the horizon from the North.
+         * Sun  coordinate Reference System is a coordinate system using the Sun sphere and in which the
+         * heliocentric longitude increases to the east. The heliocentric latitude is measured in degrees north or south
+         * of the Sun equator.
          * <br/>
-         * HorizontalLocalCrs is initialized with the following parameters :
+         * SunCrs is initialized with the following parameters :
          * <ul>
-         *     <li>geoideName = HorizontalLocal</li>
+         *     <li>geoideName = IAU:Sun</li>
          *     <li>radius = 1.0</li>
-         *     <li>realPlanetRadius = 1</li>
+         *     <li>realPlanetRadius = 696342000</li>
          *     <li>type = Planet</li>
-         *     <li>geoBound = new GeoBound(0, -90, 360, 90)</li>
+         *     <li>geoBound = new GeoBound(-180, -90, 180, 90)</li>
          * </ul>
          * @augments AbstractCrs
          * @param options - No option to give.
          * @constructor
          * @memberOf module:Crs
          */
-        var HorizontalLocalCrs = function (options) {
+        var SunCrs = function (options) {
             AbstractCrs.prototype.constructor.call(this, {
-                geoideName: Constants.CRS.HorizontalLocal,
+                geoideName: Constants.CRS.Sun,
                 radius: 1.0,
-                realPlanetRadius: 1,
-                type: Constants.CONTEXT.Ground,
-                geoBound: new GeoBound(0, -90, 360, 90)
+                realPlanetRadius: 696342000,
+                type: Constants.CONTEXT.Planet,
+                geoBound: new GeoBound(-180, -90, 180, 90)
             });
         };
 
         /**************************************************************************************************************/
 
-        Utils.inherits(AbstractCrs, HorizontalLocalCrs);
+        Utils.inherits(AbstractCrs, SunCrs);
 
         /**************************************************************************************************************/
 
         /**
          * Formats coordinates as (x.xxx N, y.yyy E).
          * @function formatCoordinates
-         * @memberOf HorizontalLocalCrs
+         * @memberOf SunCrs
          * @param {float[]} geo the spatial position in degree
          * @return {string[]} the coordinates as xx.xxx S/N xx.xxx E/W
          */
-        HorizontalLocalCrs.prototype.formatCoordinates = function (geo) {
+        SunCrs.prototype.formatCoordinates = function (geo) {
             var astro = [];
-            var azimuth = Numeric.roundNumber(geo[0], 3);
-            var altitude = Numeric.roundNumber(geo[1], 3);
-            if(azimuth < 0) {
-                azimuth = -1*azimuth;
-            } else {
-                azimuth = 360 - azimuth;
-            }
-
-            astro[0] = this.getLongitudeLabel()+" = "+azimuth;
-            astro[0] += "&deg;";
-            astro[1] = this.getLatitudeLabel()+" = "+altitude;
-            astro[1] +="&deg;";
+            var longitude = Numeric.roundNumber(geo[0], 3);
+            var latitude = Numeric.roundNumber(geo[1], 3);
+            astro[0] = this.getLatitudeLabel()+" = ";
+            astro[0] += (latitude >= 0 ) ? latitude+" N" : -1.0*latitude+" S";
+            astro[1] = this.getLongitudeLabel()+" = ";
+            astro[1] += (longitude >= 0 ) ? longitude+" E" : -1.0*longitude+" W";
             return astro;
         };
 
         /**
          * @function getLongitudeLabel
-         * @memberOf HorizontalLocalCrs#
+         * @memberOf SunCrs#
          */
-        HorizontalLocalCrs.prototype.getLongitudeLabel = function () {
+        SunCrs.prototype.getLongitudeLabel = function () {
             return LONGITUDE_LABEL;
         };
 
         /**
          * @function getLatitudeLabel
-         * @memberOf HorizontalLocalCrs#
+         * @memberOf SunCrs#
          */
-        HorizontalLocalCrs.prototype.getLatitudeLabel = function () {
+        SunCrs.prototype.getLatitudeLabel = function () {
             return LATITUDE_LABEL;
         };
 
         /**
          * Do nothing
          * @function _setupPosAfterTrans
-         * @memberOf HorizontalLocalCrs
+         * @memberOf SunCrs#
          * @private
          */
-        HorizontalLocalCrs.prototype._setupPosAfterTrans = function(posWorld) {
-            //if (posWorld[0] < 0) {
-            //    posWorld[0] += 360.0;
-            //}
+        SunCrs.prototype._setupPosAfterTrans = function(posWorld) {
+            //Do Nothing
         };
 
         /**
          * Do nothing
          * @function _setupPosBeforeTrans
-         * @memberOf HorizontalLocalCrs
+         * @memberOf SunCrs#
          * @private
          */
-        HorizontalLocalCrs.prototype._setupPosBeforeTrans = function(posWorld) {
-            //if (posWorld[0] > 180) {
-            //    posWorld[0] -= 360.0;
-            //}
+        SunCrs.prototype._setupPosBeforeTrans = function(posWorld) {
+            //Do Nothing
         };
 
         /**
          * @function getName
-         * @memberOf HorizontalLocalCrs#
+         * @memberOf SunCrs#
          */
-        HorizontalLocalCrs.prototype.getName = function () {
-            return Constants.CRS.HorizontalLocal;
+        SunCrs.prototype.getName = function () {
+            return Constants.CRS.Sun;
         };
 
         /**
          * @function getDescription
-         * @memberOf HorizontalLocalCrs#
+         * @memberOf SunCrs#
          */
-        HorizontalLocalCrs.prototype.getDescription = function () {
+        SunCrs.prototype.getDescription = function () {
             return DESCRIPTION;
         };
 
-        return HorizontalLocalCrs;
+        return SunCrs;
 
     });

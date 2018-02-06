@@ -117,7 +117,6 @@ define(['../Renderer/BoundingBox', '../Renderer/glMatrix'],
                     vFrac * uFrac * this.vertices[vertexOffset + vertexSize * size + vertexSize + i] +
                     (1.0 - vFrac) * uFrac * this.vertices[vertexOffset + vertexSize + i];
             }
-
             return vec;
         };
 

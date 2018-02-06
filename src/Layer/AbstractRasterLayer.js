@@ -176,6 +176,7 @@ define(['../Utils/Utils', './AbstractLayer', '../Renderer/RasterOverlayRenderer'
         AbstractRasterLayer.prototype._attach = function (g) {
             if (!this._overlay) {
                 // Override id of background layer because of unicity of background not overlayed layer
+                //TODO : check if it is still needed
                 this.id = 0;
             }
 

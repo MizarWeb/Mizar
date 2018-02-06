@@ -73,6 +73,22 @@ define(['./AbstractCrs', '../Utils/Utils', '../Projection/ProjectionFactory','..
         };
 
         /**
+         * @function getLongitudeLabel
+         * @memberOf ProjectedCrs#
+         */
+        ProjectedCrs.prototype.getLongitudeLabel = function () {
+            return this.cs.getLongitudeLabel();
+        };
+
+        /**
+         * @function getLatitudeLabel
+         * @memberOf ProjectedCrs#
+         */
+        ProjectedCrs.prototype.getLatitudeLabel = function () {
+            return this.cs.getLatitudeLabel();
+        };
+
+        /**
          * Returns the physical position in degrees.
          * @function getWorldFrom3D
          * @memberOf ProjectedCrs
@@ -145,6 +161,41 @@ define(['./AbstractCrs', '../Utils/Utils', '../Projection/ProjectionFactory','..
             dest[14] = pt[2] ? pt[2] * this.geoide.getHeightScale() : 0.0;
             dest[15] = 1.0;
             return dest;
+        };
+
+        /**
+         * Returns the projection.
+         * @function getProjection
+         * @memberOf ProjectedCrs
+         * @returns {AbstractProjection} the used projection
+         */
+        ProjectedCrs.prototype.getProjection = function() {
+             return this.projection;
+        };
+
+        /**
+         * @function getName
+         * @memberOf ProjectedCrs#
+         */
+        ProjectedCrs.prototype.getName = function () {
+            return this.cs.getName();
+        };
+
+        /**
+         * @function getDescription
+         * @memberOf ProjectedCrs#
+         */
+        ProjectedCrs.prototype.getDescription = function () {
+            return this.cs.getDescription();
+        };
+
+        /**
+         * @function isProjected
+         * @memberOf ProjectedCrs#
+         * @return {boolean} True.
+         */
+        ProjectedCrs.prototype.isProjected = function () {
+            return true;
         };
 
         return ProjectedCrs;

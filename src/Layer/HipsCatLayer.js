@@ -185,7 +185,7 @@ define(['./AbstractHipsLayer', '../Renderer/FeatureStyle', '../Renderer/VectorRe
 
             // Pusblish the start load event, only if there is no pending requests
             if (this.maxRequests === this.freeRequests.length) {
-                this.globe.publishEvent("startLoad", this);
+                this.globe.publishEvent(Constants.EVENT_MSG.LAYER_START_LOAD, this);
             }
 
             var xhr = this.freeRequests.pop();
@@ -231,7 +231,7 @@ define(['./AbstractHipsLayer', '../Renderer/FeatureStyle', '../Renderer/VectorRe
 
                         // Publish event that layer have received new features
                         if (response.hasOwnProperty(features) && response.features.length > 0) {
-                            self.globe.publishEvent("features:added", {layer: self, features: response.features});
+                            self.globe.publishEvent(Constants.EVENT_MSG.FEATURED_ADDED, {layer: self, features: response.features});
                         }
                     }
                     else if (xhr.status >= 400) {
@@ -243,7 +243,7 @@ define(['./AbstractHipsLayer', '../Renderer/FeatureStyle', '../Renderer/VectorRe
 
                     // Publish the end load event, only if there is no pending requests
                     if (self.maxRequests === self.freeRequests.length) {
-                        self.globe.publishEvent("endLoad", self);
+                        self.globe.publishEvent(Constants.EVENT_MSG.LAYER_END_LOAD, self);
                     }
                 }
             };

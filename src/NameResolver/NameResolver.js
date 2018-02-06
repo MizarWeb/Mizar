@@ -163,7 +163,7 @@ define(["jquery", "underscore-min", "../Utils/Constants",
                 if (nameResolverImplementation) {
                     nameResolverImplementation.handle(options);
                 } else {
-                    mizarAPI.publish("plugin:not_found", "No name resolver found");
+                    mizarAPI.publish(Constants.EVENT_MSG.PLUGIN_NOT_FOUND, "No name resolver found");
                 }
             }
         }
@@ -301,7 +301,7 @@ define(["jquery", "underscore-min", "../Utils/Constants",
                     if (nameResolverImplementation !== undefined) {
                         nameResolverImplementation.remove();
                     }
-                    mizarAPI.getActivatedContext().unsubscribe("modifiedNavigation", removeTarget);
+                    mizarAPI.getActivatedContext().unsubscribe(Constants.EVENT_MSG.NAVIGATION_MODIFIED, removeTarget);
                     context = null;
                 }
             },
@@ -367,7 +367,7 @@ define(["jquery", "underscore-min", "../Utils/Constants",
                 duration = isDefaultNameResolver ? 3000 : context.getContextConfiguration().nameResolver.duration;
                 zoomFov = isDefaultNameResolver ? 15 : context.getContextConfiguration().nameResolver.zoomFov;
 
-                ctx.subscribe("modifiedNavigation", removeTarget);
+                ctx.subscribe(Constants.EVENT_MSG.NAVIGATION_MODIFIED, removeTarget);
             }
         };
 

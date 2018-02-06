@@ -51,6 +51,7 @@ define(["jquery", "underscore-min", "../Utils/Utils", "./AbstractContext", "../U
             var self = this;
 
             this.components = {
+                "posTrackerInfo": true,
                 "posTracker": true,
                 "elevTracker": false,
                 "compassDiv": false
@@ -62,10 +63,8 @@ define(["jquery", "underscore-min", "../Utils/Utils", "./AbstractContext", "../U
             try {
                 // Create the sky
                 this.globe = GlobeFactory.create(Constants.GLOBE.Sky, groundOptions);
-                this.initGlobeEvents(this.globe);
-
                 this.navigation = NavigationFactory.create(Constants.NAVIGATION.GroundNavigation, this, options.navigation ? options.navigation : options);
-
+                this.initGlobeEvents(this.globe);
                 ServiceFactory.create(Constants.SERVICE.PickingManager).init(this);
 
                 //this.setCompassVisible(options.compass && this.components.compassDiv ? options.compass : "compassDiv", true);
@@ -142,7 +141,7 @@ define(["jquery", "underscore-min", "../Utils/Utils", "./AbstractContext", "../U
                 throw new RangeError("incompatible coordinate reference system with Sky context", "GroundContext.js");
             }
             this.globe.setCoordinateSystem(cs);
-            this.publish("modifiedCrs", cs);
+            this.publish(Constants.EVENT_MSG.CRS_MODIFIED, this);
         };
 
         /**

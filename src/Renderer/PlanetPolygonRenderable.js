@@ -143,7 +143,6 @@ PlanetPolygonRenderable.prototype._buildVerticesAndIndices = function( tile, coo
 {
 	var size = tile.config.tesselation;
 	var vs = tile.config.vertexSize;
-
     coords.push(coords[coords.length -1 ]);
 	// Convert lon/lat coordinates to tile coordinates (between [0,size-1] inside the tile)
 	var tileCoords = tile.lonlat2tile(coords);

@@ -42,7 +42,7 @@ define([], function () {
         if (this.radius === null || this.realPlanetRadius === null) {
             throw new ReferenceError("Radius and realPlanetRadius must be set to define a geoide", "Geoide.js");
         }
-        this.heightScale = 1.0 / this.realPlanetRadius;
+        this.heightScale = this.radius / this.realPlanetRadius;
     };
 
 
