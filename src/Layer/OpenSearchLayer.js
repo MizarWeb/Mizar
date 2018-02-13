@@ -62,6 +62,7 @@ define(['../Renderer/FeatureStyle', '../Renderer/VectorRendererManager', '../Uti
               this.describeUrl = this.proxify(options.getCapabilities);
             }
 
+
             this.name = options.name;
             this.title = options.title;
 

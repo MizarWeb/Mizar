@@ -283,13 +283,27 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Laye
             return _.findWhere(this.getLayers(), {name: layerName});
         };
 
-
         /**
-         * @function addLayer
+         * @function addLayers
          * @memberOf AbstractContext#
          */
-        AbstractContext.prototype.addLayer = function (layerDescription) {
-            var layer = LayerFactory.create(layerDescription);
+        AbstractContext.prototype.addLayers = function (layersDescription) {
+            for (var i=0;i<layersDescription.length;i++) {
+                this.addLayer(layersDescription[i]);
+            }
+        };
+
+        /**
+         * @function addLayerFromObject
+         * @memberOf AbstractContext#
+         * @private
+         */
+        AbstractContext.prototype.addLayerFromObject = function (layer,layerDescription) {
+            if (layer.multiLayers.length>1) {
+                this.addLayers(layer.multiLayers);
+                //layer = null;
+                return;
+            }
             if(layer === undefined) {
                 var text = layerDescription.hipsMetadata.hipsMetadata.ID;
                 ErrorDialog.open("<font style='color:orange'>Warning : No implementation is defined for this layer <b>" + text + "</b></font>");
@@ -326,6 +340,22 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Laye
                 this.publish(layerEvent, layer);
             }
             return layer;
+        };
+        
+        /**
+         * @function addLayer
+         * @memberOf AbstractContext#
+         */
+        AbstractContext.prototype.addLayer = function (layerDescription) {
+            layerDescription.getCapabilitiesTileManager = this.globe.tileManager;
+            var layer = LayerFactory.create(layerDescription);
+            layer.getCapabilitiesTileManager = this.globe.tileManager;
+            if (layer.getCapabilitiesEnabled === true) {
+                // Wait for getCapabilities loading
+                layer.callbackContext = this;
+                return layer;
+            }
+            return this.addLayerFromObject(layer,layerDescription);
         };
 
         // /**

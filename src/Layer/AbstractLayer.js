@@ -107,6 +107,7 @@ define(["jquery","underscore-min", "../Utils/Event", "../Utils/Utils", "../Utils
             this.deletable = this.options.deletable || false;
             this.getCapabilitiesEnabled = false;
             this.getCapabilitiesTileManager = null;
+            this.callbackContext = null;
             // Update layer color
             this.color = _createColor.call(this, this.options);
 
@@ -122,6 +123,12 @@ define(["jquery","underscore-min", "../Utils/Event", "../Utils/Utils", "../Utils
             }
 
             this.services = _createAvailableServices(this.options);
+
+            // If the layer is eligible to GetCapabilities and no layers are provided,
+            // this array is filled with a config by layer to load
+            // After loading, each config is loaded in a layer object, bypassing GetCapabilities
+            this.multiLayers = [];
+
         };
 
 

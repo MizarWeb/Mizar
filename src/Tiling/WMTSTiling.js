@@ -227,6 +227,7 @@ define(['../Utils/Utils', '../Utils/Constants',
             var widthPixel = tileWidth * matrixWidth;
             var heightPixel = tileHeight * matrixHeight;
 
+            scaleDenominator = 2511.16071428571467549773;
             var boundWidth = (scaleDenominator * widthPixel * standardizedRenderingPixelSize)/matrixWidth;
             var boundHeight = (scaleDenominator * heightPixel * standardizedRenderingPixelSize)/matrixHeight;
 
@@ -265,7 +266,6 @@ define(['../Utils/Utils', '../Utils/Constants',
             this.config = config;
             config.skirt = !config.coordinateSystem.isFlat();
             config.cullSign = 1;
-            config.srs = 'EPSG:4326';
             config.imageSize = 256;
           
 
@@ -291,7 +291,6 @@ define(['../Utils/Utils', '../Utils/Constants',
                     }
                 }
             }
-
             return levelsTiles[0];
         };
 

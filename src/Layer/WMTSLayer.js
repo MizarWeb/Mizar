@@ -90,8 +90,42 @@ Avez-vous une évaluation de la fonction à réaliser par Diginiext concernant l
             AbstractRasterLayer.prototype.constructor.call(this, Constants.LAYER.WMTS, options);
             this.options = options;
             this.tiling = new WMTSTiling();
-            // Check getCapabilities
-            if ((typeof options.getCapabilities !== 'undefined') && (options.getCapabilities !== null)) {
+
+
+            if (options.byPass === true) {
+                // Special, options still filled from getCapabilities !
+                this.urlRaw = this.options.getCapabilities;
+                this.name = this.options.name;
+                var url = this.urlRaw;
+                if (url.indexOf('?', 0) === -1) {
+                    url += '?service=wmts';
+                }
+                else {
+                    url += '&service=wmts';
+                }
+                url += "&version=";
+                url += this.options.version || "1.0.0.0";
+                url += "&request=GetTile";
+                url += "&layer=" + this.options.layer;
+                url += "&tilematrixset=" + this.options.matrixSet;
+                if (this.options.style) {
+                    url += "&style=" + this.options.style;
+                }
+                url += "&format=";
+                this.format = this.options.hasOwnProperty('format') ? this.options.format : 'image/png';
+                url += this.format;
+                if (this.options.time) {
+                    url += "&time=" + this.options.time;
+                }
+                this.getTileBaseUrl = url;
+                this.numberOfLevels = this.options.tileMatrix.length;
+                this.tiling.update(this.options.tileMatrix);
+                if ((this.options.getCapabilitiesTileManager !== null) && (typeof this.options.getCapabilitiesTileManager !== "undefined")) {
+                    this.options.getCapabilitiesTileManager.setImageryProvider(this);
+                }
+
+            } else if ((typeof options.getCapabilities !== 'undefined') && (options.getCapabilities !== null)) {
+                // Check getCapabilities
                 this.getCapabilitiesEnabled = true;
                 this.afterLoad = options.afterLoad;
                 this.urlRaw = options.getCapabilities;
@@ -126,6 +160,8 @@ Avez-vous une évaluation de la fonction à réaliser par Diginiext concernant l
                 }
 
                 this.getTileBaseUrl = url;
+                this.numberOfLevels = this.options.tileMatrix.TileMatrix.length;
+                this.tiling.update(this.options.tileMatrix);
             } else {
                 // manage nothing, not enough data
                 console.log("ERROR !");
@@ -138,6 +174,22 @@ Avez-vous une évaluation de la fonction à réaliser par Diginiext concernant l
 
         /**************************************************************************************************************/
 
+        WMTSLayer.prototype.getMatrixSet = function(json,name) {
+            matrix = json.Capabilities.Contents.TileMatrixSet;
+            if ( (matrix.length === null) || (typeof matrix.length === "undefined")) {
+                // only one !
+                if (matrix.Indentifier["_text"] === name) {
+                    return matrix;
+                }
+            } else {
+                for (var i=0;i<matrix.length;i++) {
+                    if (matrix[i].Identifier["_text"] === name) {
+                        return matrix[i];
+                    }
+                }
+            }
+            return null;
+        }
         /**
          * When getCapabilities is loading, manage it
          * @function manageCapabilities
@@ -147,6 +199,44 @@ Avez-vous une évaluation de la fonction à réaliser par Diginiext concernant l
          * @private
          */
         WMTSLayer.prototype.manageCapabilities = function (json,sourceObject) {
+            if ( (sourceObject.options.layer === null) || (typeof sourceObject.options.layer === "undefined")) {
+                // duplicate for each layer
+                var layers = json.Capabilities.Contents.Layer;
+                if ( (layers.length === null) || (typeof layers.length === "undefined")) {
+                    // Only one layer ! Load it !
+                    layerName = layers.Identifier["_text"];
+                    sourceObject.options.layer = layerName;
+                    if ((sourceObject.options.matrixSet === null) || (typeof sourceObject.options.matrixSet === "undefined")) {
+                        sourceObject.options.matrixSet = json.Capabilities.Contents.TileMatrixSet.Identifier["_text"];
+                    }
+                } else {
+                    // More than one layer, duplicate config
+                    for (var i=0;i<layers.length;i++) {
+                        layerName = layers[i].Identifier["_text"];
+                        matrixSet = null;
+                        if ( (layers[i].TileMatrixSetLink)
+                           && (layers[i].TileMatrixSetLink.TileMatrixSet) ) {
+                            matrixSet = layers[i].TileMatrixSetLink.TileMatrixSet["_text"];
+                        }
+                        var newConfig = Object.assign({}, sourceObject.options);
+                        newConfig.layer = layerName;
+                        newConfig.name += " "+layerName;
+                        if (matrixSet !== null) {
+                            newConfig.matrixSet = matrixSet;
+                            // Get appropriate matrix Set
+                            newConfig.tileMatrix = sourceObject.getMatrixSet(json,matrixSet);
+                        }
+                        newConfig.byPass = true;
+                        sourceObject.multiLayers.push(newConfig);
+                    }
+                    // stop all !
+                    if ((sourceObject.callbackContext !== null) && (typeof sourceObject.callbackContext !== "undefined")) {
+                        sourceObject.callbackContext.addLayerFromObject(sourceObject,sourceObject.options);
+                    }
+                    return;
+                }
+            }
+
             if ( (sourceObject.afterLoad !== null) && (typeof sourceObject.afterLoad !== "undefined")) {
                 sourceObject.afterLoad(sourceObject);
             }
@@ -174,13 +264,40 @@ Avez-vous une évaluation de la fonction à réaliser par Diginiext concernant l
 
             sourceObject.getTileBaseUrl = url;
     
-            sourceObject.numberOfLevels = json.Capabilities.Contents.TileMatrixSet.TileMatrix.length;
-            sourceObject.tiling.update(json.Capabilities.Contents.TileMatrixSet);
+            // more than one matrixset ?
+            var matrixSet = null;
+            var matrixSets = json.Capabilities.Contents.TileMatrixSet;
+            if ((matrixSets.length !== null) && (typeof matrixSets.length !== "undefined")) {
+                for (var i=0;i<matrixSets.length;i++) {
+                    if (matrixSets[i].Identifier["_text"] === sourceObject.options.matrixSet) {
+                        // Search specified matrixset
+                        matrixSet = matrixSets[i];
+                    }
+                }
+            } else if (matrixSets.Identifier["_text"] === sourceObject.options.matrixSet) {
+                // Only one matrixset
+                    matrixSet = matrixSets;
+            }
+
+            if (matrixSet === null) {
+                throw new Error("Unable to find "+sourceObject.options.matrixSet+" in getCapabilities of WMTS service");
+            }
+            sourceObject.numberOfLevels = matrixSet.TileMatrix.length;
+            sourceObject.tiling.update(matrixSet);
 
             if (sourceObject.getCapabilitiesTileManager !== null) {
                 sourceObject.getCapabilitiesTileManager.setImageryProvider(sourceObject);
             }
             this.getCapabilitiesEnabled = false;
+
+/*            if ((sourceObject.callbackAfterCreation !== null) && (typeof sourceObject.callbackAfterCreation !== "undefined")) {
+                
+                sourceObject.callbackAfterCreation(sourceObject,sourceObject.options);
+            }*/
+            if ((sourceObject.callbackContext !== null) && (typeof sourceObject.callbackContext !== "undefined")) {
+                sourceObject.callbackContext.addLayerFromObject(sourceObject,sourceObject.options);
+            }
+        
         };
 
         /**************************************************************************************************************/
