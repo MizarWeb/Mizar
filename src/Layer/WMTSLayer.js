@@ -79,8 +79,7 @@ define(['../Utils/Utils', './AbstractRasterLayer', '../Utils/Constants','../Tili
          * @property {string} [version = "1.0.0"] - WMS version
          * @property {string} [transparent]
          * @property {string} [time] - Time dimension
-         * @property {stri
-Avez-vous une évaluation de la fonction à réaliser par Diginiext concernant la DM Mizar ? J'ai besoin de cette somme afin de la communiquer au projet concerné pour réaliser la ng} [format = "image/png"] - output image format
+         * @property {string} [format = "image/png"] - output image format
          * @constructor
          * @memberOf module:Layer
          * @see {@link http://www.opengeospatial.org/standards/wmts WMTS} standard

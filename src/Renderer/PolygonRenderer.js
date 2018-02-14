@@ -250,7 +250,11 @@ PolygonRenderable.prototype.build = function(geometry)
 
 	var geometryBound = new GeoBound();
 	var csBound = new GeoBound(coordinateSystem.getGeoBound().getWest(),coordinateSystem.getGeoBound().getSouth(),coordinateSystem.getGeoBound().getEast(),coordinateSystem.getGeoBound().getNorth());
-	var convertedCoord = geometryBound.computeFromCoordinatesInCrsTo(polygons[0][0], geometry.crs.properties.name, coordinateSystem);
+	var crsName = "EPSG:4326";
+	if (typeof geometry.crs !== "undefined" ) {
+		crsName = geometry.crs.properties.name;
+	}
+	var convertedCoord = geometryBound.computeFromCoordinatesInCrsTo(polygons[0][0], crsName, coordinateSystem);
 	if
 		(!geometryBound.intersects(csBound))
 	{
@@ -291,7 +295,7 @@ PolygonRenderable.prototype.build = function(geometry)
 		for ( i=0; i < coords.length; i++)
 		{
 			// Always use coordinates at zero height on vertex construction, height will be taken into account on extrude
-			coordinateSystem.get3DFromWorldInCrs([ coords[i][0], coords[i][1], 0.0 ], geometry.crs.properties.name, pos3d);
+			coordinateSystem.get3DFromWorldInCrs([ coords[i][0], coords[i][1], 0.0 ], crsName, pos3d);
 			this.vertices[offset] = pos3d[0] - this.origin[0];
 			this.vertices[offset+1] = pos3d[1] - this.origin[1];
 			this.vertices[offset+2] = pos3d[2] - this.origin[2];
