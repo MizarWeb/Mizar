@@ -197,6 +197,7 @@ define(["jquery", "../Utils/Constants",
                     style.fillTextureUrl = null;
                     featureData.layer.modifyFeatureStyle(featureData.feature, style);
                     $('#quicklook').removeClass('selected');
+                    $('#quicklookWms').removeClass('selected');
                 }
                 mizarAPI.getActivatedContext().refresh();
             },
@@ -218,17 +219,18 @@ define(["jquery", "../Utils/Constants",
                 mizarAPI.publish(Constants.EVENT_MSG.IMAGE_ADDED, featureData);
 
                 if (featureData.isFits) {
-                    //var url = proxyUrl + encodeURIComponent(feature.services.download.url);
-                    //var url = encodeURIComponent(feature.services.download.url);*
                     var url = mizarAPI._getUrl(feature.services.download.url);
                     this.computeFits(featureData, url);
                     $('#quicklookFits').addClass('selected');
                 }
                 else {
-                    style.fillTextureUrl =  mizarAPI._getUrl(feature.properties.quicklook);
-                    //style.fillTextureUrl = feature.properties.quicklook;
+                    style.fillTextureUrl =  mizarAPI._getUrl("http://www.icone-png.com/png/13/12651.png");////feature.properties.quicklook);
                     // For DEBUG : 'upload/ADP_WFI_30DOR_RGB_V1.0_degraded.jpg';
-                    $('#quicklook').addClass('selected');
+                    if (featureData.isWms) {
+                        $('#quicklookWms').addClass('selected');
+                    } else {
+                        $('#quicklook').addClass('selected');
+                    }
                 }
                 featureData.layer.modifyFeatureStyle(feature, style);
                 mizarAPI.getActivatedContext().refresh();

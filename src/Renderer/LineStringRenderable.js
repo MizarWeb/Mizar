@@ -325,7 +325,6 @@ LineStringBucket.prototype.isCompatible = function(style)
 		this.style.strokeColor[2] === style.strokeColor[2] &&
 		this.style.strokeColor[3] === style.strokeColor[3] &&
 		this.style.strokeWidth === style.strokeWidth;
-
 	return result;
 };
 

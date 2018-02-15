@@ -362,10 +362,8 @@ define(["../Renderer/FeatureStyle", "../Layer/OpenSearchLayer", "../Utils/Utils"
                             console.log("no tile found");
                             continue;
                         }
-                        console.log("tile",tile);
                         var tileData = tile.extension.renderer;
                         //[pickableLayer.extId];
-                        console.log("tileData",tileData);
                         /*if (!tileData || tileData.state !== OpenSearchLayer.TileState.LOADED) {
                             while (tile.parent && (!tileData || tileData.state !== OpenSearchLayer.TileState.LOADED)) {
                                 tile = tile.parent;
@@ -374,7 +372,6 @@ define(["../Renderer/FeatureStyle", "../Layer/OpenSearchLayer", "../Utils/Utils"
                         }*/
                         
                         if (tileData) {
-                            console.log("tileData ok, search feature");
                             //for (j = 0; j < tileData.featureIds.length; j++) {
                             for (j = 0; j < pickableLayer.features.length; j++) {
                                 //feature = pickableLayer.features[pickableLayer.featuresSet[tileData.featureIds[j]].index];

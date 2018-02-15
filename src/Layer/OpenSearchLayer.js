@@ -514,17 +514,19 @@ define(['jquery','../Renderer/FeatureStyle', '../Renderer/VectorRendererManager'
          * @param {FeatureStyle} style Style
          */
         OpenSearchLayer.prototype.modifyFeatureStyle = function (feature, style) {
-            feature.properties.style = style;
-            //var featureData = this.featuresSet[feature.properties.identifier];
-            var featureData = this.featuresSet[feature.id];
-            if (featureData) {
+           feature.properties.style = style;
+           var featureData = this.featuresSet[feature.id];
+/*            if (featureData) {
                 // TODO: change for all tiles, not only of current level
                 for (var i = 0; i < featureData.tiles.length; i++) {
+                    console.log("check",i);
                     var tile = featureData.tiles[i];
                     this.globe.vectorRendererManager.removeGeometryFromTile(feature.geometry, tile);
                     this.globe.vectorRendererManager.addGeometryToTile(this, feature.geometry, style, tile);
                 }
             }
+*/
+
         };
 
         /**************************************************************************************************************/

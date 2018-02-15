@@ -115,7 +115,9 @@ define(function () {
       for (var i=0;i<form.parameters.length;i++) {
           param = form.parameters[i];
           if (param.name === "maxRecords") {
-            param.currentValue = Math.ceil(param.maxInclusive * 0.2);
+            //param.currentValue = Math.ceil(param.maxInclusive * 0.2);
+            param.currentValue = 1;
+
           } else if (param.name === "page") {
             param.currentValue = 1;
           }

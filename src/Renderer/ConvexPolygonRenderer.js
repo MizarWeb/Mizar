@@ -72,7 +72,6 @@ define(['../Utils/Utils', '../Utils/Constants','./VectorRenderer', './Program', 
               this.style.fillShader === style.fillShader) {
               return true;
           }
-
           return false;
       };
 
@@ -492,6 +491,7 @@ define(['../Utils/Utils', '../Utils/Constants','./VectorRenderer', './Program', 
             var gl = this.renderContext.gl;
             var vb = gl.createBuffer();
 
+            console.log("ConvexPolygonrenderer.createBucket");
             // Create a bucket
             var bucket = new Bucket(layer, style);
 

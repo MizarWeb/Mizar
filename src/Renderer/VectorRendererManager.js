@@ -248,7 +248,6 @@ VectorRendererManager.prototype.render = function()
 
 	// Renderable sort
 	this.renderables.sort( renderableSort );
-
 	//var renderCall = 0;
 
 	i = 0;
