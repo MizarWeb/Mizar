@@ -48,6 +48,8 @@ define(['./Program','../Tiling/Tile'], function(Program,Tile) {
 	*/
 var GroundOverlayRenderer = function(tileManager)
 {
+	this.enabled = true;
+
 	this.renderContext = tileManager.renderContext;
 	this.tileManager = tileManager;
 
@@ -94,6 +96,11 @@ var GroundOverlayRenderer = function(tileManager)
  */
 GroundOverlayRenderer.prototype.render = function( tiles )
 {
+	if (this.enabled === false) {
+		// Disabled, so no rendering
+		return;
+	}
+
  	var gl = this.renderContext.gl;
 
 	// Setup program

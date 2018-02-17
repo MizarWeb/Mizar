@@ -56,6 +56,20 @@ define(["jquery", "../Utils/Constants",
         /**********************************************************************************************/
 
         /**
+         *    Send XHR request for quicklook file
+         *    @param featureData Feature data(layer,feature)
+         *    @param {String} url Url of quicklook file
+         *    @fires Mizar#image:download
+         */
+        function computeQuicklook(featureData, url) {
+           handleQuicklook(featureData,url);
+           mizarAPI.publish(Constants.EVENT_MSG.IMAGE_DOWNLOADED, featureData);
+           
+        }
+
+        /**********************************************************************************************/
+
+        /**
          * Handle fits data on the given feature
          * @param fitsData
          * @param featureData
@@ -88,6 +102,20 @@ define(["jquery", "../Utils/Constants",
             }
 
             return image;
+        }
+
+        /**
+         * Handle quicklook data on the given feature
+         * @param featureData
+         * @returns {Image} image
+         */
+        function handleQuicklook(featureData,url) {
+            var feature = featureData.feature;
+            var layer = featureData.layer;
+            
+            if (layer.type === "OpenSearch") {
+                layer.loadQuicklook(feature,url);
+            }
         }
 
         /**********************************************************************************************/
@@ -184,7 +212,6 @@ define(["jquery", "../Utils/Constants",
              * @fires Mizar#image:remove
              */
             removeImage: function (featureData) {
-
                 // Publish event that the image of the given feature will be removed
                 mizarAPI.publish(Constants.EVENT_MSG.IMAGE_REMOVED, featureData);
                 if (featureData.isFits) {
@@ -192,10 +219,14 @@ define(["jquery", "../Utils/Constants",
                     $('#quicklookFits').removeClass('selected');
                 }
                 else {
-                    var style = featureData.feature.properties.style;
-                    style.fill = false;
-                    style.fillTextureUrl = null;
-                    featureData.layer.modifyFeatureStyle(featureData.feature, style);
+                    if (featureData.layer.type === "OpenSearch") {
+                        featureData.layer.removeQuicklook();
+                    } else {
+                        var style = featureData.feature.properties.style;
+                        style.fill = false;
+                        style.fillTextureUrl = null;
+                        featureData.layer.modifyFeatureStyle(featureData.feature, style);    
+                    }
                     $('#quicklook').removeClass('selected');
                     $('#quicklookWms').removeClass('selected');
                 }
@@ -224,7 +255,14 @@ define(["jquery", "../Utils/Constants",
                     $('#quicklookFits').addClass('selected');
                 }
                 else {
-                    style.fillTextureUrl =  mizarAPI._getUrl("http://www.icone-png.com/png/13/12651.png");////feature.properties.quicklook);
+                    style.fill = true;
+                    var url;
+                    if (featureData.isWms) {
+                        url = mizarAPI._getUrl(feature.properties.services.browse.layer.url);
+                    } else {
+                        url = mizarAPI._getUrl(feature.properties.quicklook);
+                    }
+                    this.computeQuicklook(featureData,url);
                     // For DEBUG : 'upload/ADP_WFI_30DOR_RGB_V1.0_degraded.jpg';
                     if (featureData.isWms) {
                         $('#quicklookWms').addClass('selected');
@@ -237,7 +275,9 @@ define(["jquery", "../Utils/Constants",
             },
 
             computeFits: computeFits,
+            computeQuicklook: computeQuicklook,
             handleFits: handleFits,
+            handleQuicklook: handleQuicklook,
             parseFits: parseFits
         };
 

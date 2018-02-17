@@ -34,8 +34,8 @@
  * You should have received a copy of the GNU General Public License
  * along with GlobWeb. If not, see <http://www.gnu.org/licenses/>.
  ***************************************/
-define(['jquery','../Renderer/FeatureStyle', '../Renderer/VectorRendererManager', '../Utils/Utils', './AbstractLayer', '../Renderer/RendererTileData', '../Tiling/Tile','../Tiling/GeoTiling','../Utils/Constants','./OpenSearch/OpenSearchForm','./OpenSearch/OpenSearchUtils','./OpenSearch/OpenSearchResult','./OpenSearch/OpenSearchRequestPool','./OpenSearch/OpenSearchCache'],
-    function ($,FeatureStyle, VectorRendererManager, Utils, AbstractLayer, RendererTileData, Tile,GeoTiling,Constants,OpenSearchForm,OpenSearchUtils,OpenSearchResult,OpenSearchRequestPool,OpenSearchCache) {
+define(['jquery','../Renderer/FeatureStyle', '../Renderer/VectorRendererManager', '../Utils/Utils', './AbstractLayer', './GroundOverlayLayer','../Renderer/RendererTileData', '../Tiling/Tile','../Tiling/GeoTiling','../Utils/Constants','./OpenSearch/OpenSearchForm','./OpenSearch/OpenSearchUtils','./OpenSearch/OpenSearchResult','./OpenSearch/OpenSearchRequestPool','./OpenSearch/OpenSearchCache'],
+    function ($,FeatureStyle, VectorRendererManager, Utils, AbstractLayer, GroundOverlayLayer,RendererTileData, Tile,GeoTiling,Constants,OpenSearchForm,OpenSearchUtils,OpenSearchResult,OpenSearchRequestPool,OpenSearchCache) {
 
         /**
          * @name OpenSearchLayer
@@ -112,6 +112,13 @@ define(['jquery','../Renderer/FeatureStyle', '../Renderer/VectorRendererManager'
             } else {
               this.hasForm = false;
             }
+
+            // Layer created on-the-fly to display quickook over openSearch layer
+            // TODO: optimisation : created only once and reused ?
+            this.currentQuicklookLayer = null;
+            // Id of current feature displayed
+            this.currentIdDisplayed = null;
+
 
             document.currentOpenSearchLayer = this;
         };
@@ -367,6 +374,67 @@ define(['jquery','../Renderer/FeatureStyle', '../Renderer/VectorRendererManager'
             
         };
 
+
+        /**************************************************************************************************************/
+
+        /**
+         * Check if feature is outside extent
+         * @function launchRequest
+         * @memberof OpenSearchLayer#
+         * @param {Tile} tile Tile
+         * @param {String} url Url
+         * @fires Context#startLoad
+         * @fires Context#endLoad
+         * @fires Context#features:added
+         */
+        OpenSearchLayer.prototype.isFeatureOutside = function (feature,extent) {
+            // Get extent of feature
+            var coordinates = feature.geometry.coordinates[0];
+            var east = -180;
+            var west = +180;
+            var north = -90;
+            var south = +90;
+            var lon,lat;
+            for (var i=0;i<coordinates.length;i++) {
+                lon=coordinates[i][0];
+                lat=coordinates[i][1];
+                east = lon>east ? lon : east;
+                west = lon<west ? lon : west;
+                north = lat>north ? lat : north;
+                south = lat<south ? lat : south;
+            }
+            return ( (south>extent.north) ||
+                     (north<extent.south) ||
+                     (west>extent.east) ||
+                     (east<extent.west) );
+        }
+
+        /**************************************************************************************************************/
+
+        /**
+         * Remove all previous features
+         * @function removeFeaturesOutside
+         * @param {JSon} extent Extent
+         * @memberof OpenSearchLayer#
+         */
+        OpenSearchLayer.prototype.removeFeaturesOutside = function (extent) {
+            // clean renderers
+            for (var x in this.featuresSet) {
+                if(this.featuresSet.hasOwnProperty(x)) {
+                    var featureData = this.featuresSet[x];
+                    for (var key in this.allTiles) {
+                        var tile = this.allTiles[key];
+                        var feature = this.features[featureData.index];
+                        if (this.isFeatureOutside(feature,extent)) {
+                            this.featuresSet[x] = null;
+                            this.features[featureData.index] = null;
+                            this.globe.vectorRendererManager.removeGeometryFromTile(feature.geometry,tile);
+                        }
+                    }
+                }
+            }
+        };
+
         /**************************************************************************************************************/
 
         /**
@@ -505,8 +573,70 @@ define(['jquery','../Renderer/FeatureStyle', '../Renderer/VectorRendererManager'
         };
 
         /**************************************************************************************************************/
+    
+        /**
+         * Load quicklook
+         * @function loadQuicklook
+         * @memberof OpenSearchLayer#
+         * @param {Feature} feature Feature
+         * @param {String} url Url of image
+         */
+        OpenSearchLayer.prototype.loadQuicklook = function (feature, url) {
+            // Save coordinates
+            this.currentIdDisplayed = feature.id;
+            
+            // Get quad coordinates
+            var coordinates = feature.geometry.coordinates[0];
+            var quad = [];
+            for (var i=0;i<4;i++) {
+                quad[i] = coordinates[i];
+            }
+
+            if (this.currentQuicklookLayer === null) {
+                // Creation first time
+                this.currentQuicklookLayer = new GroundOverlayLayer({
+                        "quad":quad,
+                        "image":url
+                });
+                this.currentQuicklookLayer._attach(this.globe);
+            } else {
+                this.currentQuicklookLayer.update(quad,url);
+            }
+            this.globe.refresh();
+         };
+    
+        /**************************************************************************************************************/
 
         /**
+         * Indicate if quicklook is currently displayed
+         * @function isQuicklookDisplayed
+         * @memberof OpenSearchLayer#
+         * @return {Boolean} Is quicklook currently displayed ?
+         */
+        OpenSearchLayer.prototype.isQuicklookDisplayed = function () {
+            // Trivial case
+            return (this.currentQuicklookLayer !== null);
+         };
+
+         /**************************************************************************************************************/
+
+       /**
+         * Remove quicklook
+         * @function removeQuicklook
+         * @memberof OpenSearchLayer#
+         */
+        OpenSearchLayer.prototype.removeQuicklook = function () {
+            if (this.currentQuicklookLayer === null) {
+                return;
+            }
+
+            this.currentQuicklookLayer._detach();
+            this.currentQuicklookLayer = null;
+        };
+
+       /**************************************************************************************************************/
+
+       /**
          * Modifies feature style.
          * @function modifyFeatureStyle
          * @memberof OpenSearchLayer#
@@ -682,11 +812,41 @@ define(['jquery','../Renderer/FeatureStyle', '../Renderer/VectorRendererManager'
                         this.manageFeaturesResponse(features,tiles[i]);
                         this.updateGUI();
                     }
+                    // Remove all feature outside view of tiles
+                    var viewExtent = this.getExtent(tiles);
+                    //this.removeFeaturesOutside(viewExtent);
                 }
             }
         };
         
         /**************************************************************************************************************/
+
+        /**
+         * Get extent from array of tiles
+         * @function getExtent
+         * @param {Array} tiless Array of tiles
+         * @return {Json} Extent (north, south, east, west)
+         * @memberof OpenSearchLayer#
+         */
+
+        OpenSearchLayer.prototype.getExtent = function(tiles) {
+            var result = {
+                "east":-180,
+                "west":+180,
+                "north":-90,
+                "south":+90
+            }
+            var bound;
+            for (var i=0;i<tiles.length;i++) {
+                bound = tiles[i].bound;
+                result.south = bound.south<result.south ? bound.south  : result.south;
+                result.north = bound.north>result.north ? bound.north  : result.north;
+                result.east  = bound.east >result.east  ? bound.east   : result.east;
+                result.west  = bound.west <result.west  ? bound.west   : result.west;
+            }
+            return result;
+        }
+            /**************************************************************************************************************/
 
         /**
          * Submit OpenSearch form
@@ -711,7 +871,8 @@ define(['jquery','../Renderer/FeatureStyle', '../Renderer/VectorRendererManager'
             // Reset cache
             this.cleanCache();
             // Remove all features
-            this.removeFeatures();
+            this.removeFeaturesOutside(null);
+            
         }
 
         /**************************************************************************************************************/

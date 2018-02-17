@@ -58,6 +58,11 @@ define(['../Utils/Utils', './AbstractLayer', '../Utils/Constants', '../Renderer/
         var GroundOverlayLayer = function (options) {
             AbstractLayer.prototype.constructor.call(this, Constants.LAYER.GroundOverlay, options);
 
+            this.geoBound   = null;
+            this.image      = null;
+            this.globe      = null;
+            this.flipY      = null;
+
             this.quad = options.quad;
             if (typeof options.flipY === 'undefined') {
                 this.flipY = true;
@@ -66,9 +71,11 @@ define(['../Utils/Utils', './AbstractLayer', '../Utils/Constants', '../Renderer/
                 this.flipY = options.flipY;
             }
 
-            // Compute the geo bound of the ground overlay
-            this.geoBound = new GeoBound();
-            this.geoBound.computeFromCoordinates(this.quad);
+            if ( (this.quad !== null) && (typeof this.quad !== "undefined") ) {
+                // Compute the geo bound of the ground overlay
+                this.geoBound = new GeoBound();
+                this.geoBound.computeFromCoordinates(this.quad);
+            }
 
             if (typeof options.image === "string") {
                 this.image = new Image();
@@ -78,7 +85,11 @@ define(['../Utils/Utils', './AbstractLayer', '../Utils/Constants', '../Renderer/
             else if (options.image instanceof HTMLImageElement) {
                 this.image = options.image;
             }
-            this.globe = null;
+            this.image.layer = this;
+
+            this.image.onload = function() {
+                this.layer.globe.refresh();
+            }
         };
 
         /**************************************************************************************************************/
@@ -108,6 +119,39 @@ define(['../Utils/Utils', './AbstractLayer', '../Utils/Constants', '../Renderer/
 
             this.computeTransform();
         };
+
+        //*************************************************************************
+
+        /**
+         * Update
+         * @function update
+         * @memberof GroundOverlayLayer#
+         * @param {JSon} quad Quad coordinates
+         * @param {String} url Url of image
+         */
+        GroundOverlayLayer.prototype.update = function (quad,url) {
+            console.log("GroundOverlayLayer.update",quad);
+            this.globe.groundOverlayRenderer.enabled = true;
+
+            this.geoBound = null;
+            this.geoBound = new GeoBound();
+            
+            this.geoBound.computeFromCoordinates(this.quad);
+        
+            this.image = null;
+            this.image = new Image();
+ 
+            this.image.crossOrigin = '';
+            this.image.src = url;
+            this.image.layer = this;
+
+            this.computeTransform();
+
+            this.image.onload = function() {
+                this.layer.globe.refresh();
+            }
+        }
+    
 
         //*************************************************************************
 
@@ -175,6 +219,12 @@ define(['../Utils/Utils', './AbstractLayer', '../Utils/Constants', '../Renderer/
          * @memberOf GroundOverlayLayer#
          */
         GroundOverlayLayer.prototype.computeTransform = function () {
+            if (this.quad === null) {
+                // Sleeping mode, no compute
+                console.log("return");
+                return;
+            }
+            
             var q1 = this.quad[0];
             var q2 = this.quad[1];
             var q3 = this.quad[2];
