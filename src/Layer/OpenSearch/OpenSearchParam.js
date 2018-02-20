@@ -37,6 +37,7 @@
       this.options = null;       // List of values if list provided
       this.currentValue = null;  // Value to pass to parameter
       this.defaultValue = null;  // Default value
+      this.displayValue = "";    // Display value
 
       this.parseJson(paramJson);
     };

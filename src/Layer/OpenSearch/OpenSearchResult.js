@@ -29,6 +29,10 @@ define(["jquery"],
             this.nbFound = 0;
             this.startIndex = 0;
             this.nbReturned = 0;
+            // For ihm display on layer manager view
+            this.featuresLoaded = 0;
+            this.featuresTotal = 0;
+
             document.myOpenSearchResult = this;
     };
 
@@ -39,18 +43,24 @@ define(["jquery"],
      * @function parseResponse
      * @memberof OpenSearchResult#
      * @param {Object} response Response returned by distant server
+     * @return {Int} Nb features founds (total)
      */
     OpenSearchResult.prototype.parseResponse = function (response) {
             this.nbFound = response.properties.totalResults;
             this.nbReturned = response.features.length;
             this.startIndex = response.properties.startIndex;
             this.nbItemsPerPage = response.properties.itemsPerPage;
+
+            this.featuresLoaded += this.nbReturned;
+            this.featuresTotal += this.nbFound;
+            
             
             // Number of pages
             this.nbPages = Math.ceil(this.nbFound / this.nbItemsPerPage);
             // Current page
             this.currentPage = Math.floor((this.startIndex-1) / this.nbItemsPerPage)+1;
 
+            return this.nbFound;
         }
         
         /*************************************************************************************************************/

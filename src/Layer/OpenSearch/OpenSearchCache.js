@@ -133,14 +133,16 @@ function () {
      * @memberof OpenSearchCache#
      * @param {Bound} bound Bound
      * @param {Array} features Array of features to add
+     * @param {Int} nbFound Total number of features found
      */ 
-    OpenSearchCache.prototype.addTile = function (bound,features) {
+    OpenSearchCache.prototype.addTile = function (bound,features,nbFound) {
         this.debug("[addTile]"+this.getCacheStatus());
 
         var key = this.getKey(bound);
         var tile = {
             "key": key,
-            "features" : features.slice()
+            "features" : features.slice(),
+            "remains" : nbFound
         };
         // If cache is full, remove first element
         if (this.tileArray.length === this.maxTiles) {
@@ -172,7 +174,7 @@ function () {
      * @function getTile
      * @memberof OpenSearchCache#
      * @param {Bound} bound Bound
-     * @return {Array} Array of features of the tile found
+     * @return {Json} Cache element 
      */ 
     OpenSearchCache.prototype.getTile = function (bound) {
         this.debug("[getTile]"+this.getCacheStatus());
@@ -182,7 +184,7 @@ function () {
         
         for (var i=0;i<this.tileArray.length;i++) { // TODO : try in reverse order, best performance ?
             if (this.tileArray[i].key === key) {
-                return this.tileArray[i].features.slice();
+                return this.tileArray[i];
             }
         }
         return null;

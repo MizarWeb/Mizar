@@ -79,6 +79,8 @@ define(['jquery','../Renderer/FeatureStyle', '../Renderer/VectorRendererManager'
             this.oldBound = null;
             
             this.previousViewKey = null;
+            this.previousTileWidth = null;
+            this.previousDistance = null;
 
             // Used for picking management
             this.features = [];
@@ -119,7 +121,6 @@ define(['jquery','../Renderer/FeatureStyle', '../Renderer/VectorRendererManager'
             // Id of current feature displayed
             this.currentIdDisplayed = null;
 
-
             document.currentOpenSearchLayer = this;
         };
 
@@ -141,6 +142,9 @@ define(['jquery','../Renderer/FeatureStyle', '../Renderer/VectorRendererManager'
                 num = 1;
             }
             OpenSearchUtils.setCurrentValueToParam(this.formDescription,"page",num*1+1);
+
+            // update labels
+            $(".labelPage")[0].innerText = "Page "+(num+1);
 
             this.forceRefresh = true;
             this.globe.renderContext.requestFrame();
@@ -388,6 +392,9 @@ define(['jquery','../Renderer/FeatureStyle', '../Renderer/VectorRendererManager'
          * @fires Context#features:added
          */
         OpenSearchLayer.prototype.isFeatureOutside = function (feature,extent) {
+            if (extent === null) {
+                return false;
+            }
             // Get extent of feature
             var coordinates = feature.geometry.coordinates[0];
             var east = -180;
@@ -426,9 +433,7 @@ define(['jquery','../Renderer/FeatureStyle', '../Renderer/VectorRendererManager'
                         var tile = this.allTiles[key];
                         var feature = this.features[featureData.index];
                         if (this.isFeatureOutside(feature,extent)) {
-                            this.featuresSet[x] = null;
-                            this.features[featureData.index] = null;
-                            this.globe.vectorRendererManager.removeGeometryFromTile(feature.geometry,tile);
+                            this.removeFeature(x,tile);
                         }
                     }
                 }
@@ -471,14 +476,25 @@ define(['jquery','../Renderer/FeatureStyle', '../Renderer/VectorRendererManager'
 
             var old = this.featuresSet[feature.id];
             if ( (old === null) || (typeof old === "undefined") ) {
+                //console.log("First time add :"+ind);
                 this.features.push(feature);
                 var featureData = {
                     index: this.features.length - 1,
                     tiles: [tile]
                 };
                 this.featuresSet[feature.id] = featureData;
+
+                // Add features to renderer if layer is attached to planet
+                if (this.globe) {
+                    this._addFeatureToRenderers(feature);
+                    if (this.isVisible()) {
+                        this.globe.renderContext.requestFrame();
+                    }
+                }
+
             }
             else {
+                //console.log("Still added :"+ind);
                 featureData = this.featuresSet[feature.id];
                 // Store the tile
                 featureData.tiles.push(tile);
@@ -487,13 +503,6 @@ define(['jquery','../Renderer/FeatureStyle', '../Renderer/VectorRendererManager'
                 feature = this.features[featureData.index];
             }
 
-             // Add features to renderer if layer is attached to planet
-             if (this.globe) {
-                this._addFeatureToRenderers(feature);
-                if (this.isVisible()) {
-                    this.globe.renderContext.requestFrame();
-                }
-            }
            
         };
 
@@ -538,6 +547,9 @@ define(['jquery','../Renderer/FeatureStyle', '../Renderer/VectorRendererManager'
          * @param {Tile} tile Tile
          */
         OpenSearchLayer.prototype.removeFeature = function (identifier, tile) {
+            if (identifier==="918f9919-06d9-5b84-a755-bbcbd85278d4") {
+                console.log("removeFeature id="+identifier);
+             }
             var featureIt = this.featuresSet[identifier];
 
             if (!featureIt) {
@@ -545,6 +557,10 @@ define(['jquery','../Renderer/FeatureStyle', '../Renderer/VectorRendererManager'
             }
 
             // Remove tile from array
+            if (identifier==="918f9919-06d9-5b84-a755-bbcbd85278d4") {
+                console.log("Tile",tile);
+                console.log("featureIt.tiles",featureIt.tiles);
+            }
             var tileIndex = featureIt.tiles.indexOf(tile);
             if (tileIndex >= 0) {
                 featureIt.tiles.splice(tileIndex, 1);
@@ -799,17 +815,46 @@ define(['jquery','../Renderer/FeatureStyle', '../Renderer/VectorRendererManager'
             }
 
             if (needRefresh) {
+
+                var newTileWidth = this.tiles[0].bound.east-this.tiles[0].bound.west;
+                var ctx = this.callbackContext;
+                var distance = null;
+                if (ctx) {
+                    var initNav = ctx.getNavigation();
+                    distance = initNav.getDistance();
+    
+                }
+                var isZoomLevelChanged = false;
+                isZoomLevelChanged = (newTileWidth !== this.previousTileWidth);
+                if (ctx) {
+                    isZoomLevelChanged = isZoomLevelChanged && (distance !== this.previousDistance);
+                    this.previousDistance = distance;
+                }
+                if (isZoomLevelChanged) {
+                    console.log("Changement of zoom level, go to page 1");
+                    // Go to page 1
+                    OpenSearchUtils.setCurrentValueToParam(this.formDescription,"page",1);
+
+                    this.result.featuresLoaded = 0;
+                    $(".labelLoaded")[0].innerText = "loaded : "+this.result.featuresLoaded;
+                    $(".labelPage")[0].innerText = "Page 1";
+                }
+
+                this.previousTileWidth = newTileWidth;
                 this.previousViewKey = globalKey;
+                this.result.featuresTotal = 0;
+                var tileCache;
                 for (var i=0;i<tiles.length;i++) {
-                    var features = this.cache.getTile(tiles[i].bound);
+                    tileCache = this.cache.getTile(tiles[i].bound);
                     this.updateGUI();
-                    if (features === null) {
+                    if (tileCache === null) {
                         var url = this.buildUrl(tiles[i].bound);
                         if (url !== null) {
                             this.launchRequest(tiles[i], url);
                         }
                     } else {
-                        this.manageFeaturesResponse(features,tiles[i]);
+                        this.result.featuresTotal += tileCache.remains;
+                        this.manageFeaturesResponse(tileCache.features.slice(),tiles[i]);
                         this.updateGUI();
                     }
                     // Remove all feature outside view of tiles
@@ -901,7 +946,7 @@ define(['jquery','../Renderer/FeatureStyle', '../Renderer/VectorRendererManager'
             message += "# Features : "+this.features.length+"<br>";
             message += this.pool.getPoolsStatus()+"<br>";
             message += this.cache.getCacheStatus();
-            $("#resultNavigation").html(message);
+            //$("#resultNavigation").html(message);
         }
 
         /**************************************************************************************************************/
@@ -940,6 +985,7 @@ define(['jquery','../Renderer/FeatureStyle', '../Renderer/VectorRendererManager'
         OpenSearchLayer.prototype.manageFeaturesResponse = function(features,tile) {
             this.updateFeatures(features);
 
+            this.result.featuresLoaded += features.length;
             for (i = features.length - 1; i >= 0; i--) {
                 feature = features[i];
 
@@ -957,6 +1003,10 @@ define(['jquery','../Renderer/FeatureStyle', '../Renderer/VectorRendererManager'
                 }
                 features.splice(i, 1);
             }
+
+            $(".labelLoaded")[0].innerText = "loaded : "+this.result.featuresLoaded;
+            $(".labelTotal")[0].innerText = "total : ~ "+this.result.featuresTotal;
+            
             this.globe.refresh();
         }
 
