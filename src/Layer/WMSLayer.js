@@ -125,9 +125,10 @@ define(['../Utils/Utils', './AbstractRasterLayer', '../Utils/Constants', '../Til
          * @param {Array/String} searchLayers
          * @return {Array} Array of layers name
          */
-        WMSLayer.prototype.getListLayersToLoad = function (foundLayers,searchLayers) {
+        WMSLayer.prototype.getListLayersToLoad = function (foundLayers,searchLayers,onlyFirst) {
           // Trivial case : no layers specified, so need to load all
           var isLoadAll = ( (searchLayers === "") || (searchLayers === null) || (typeof searchLayers === "undefined"));
+          var isOnlyFirst = ( (onlyFirst !== null) && (typeof onlyFirst !== "undefined") && (onlyFirst === true));
 
           if (isLoadAll === false) {
             // Get array of layers search
@@ -153,6 +154,9 @@ define(['../Utils/Utils', './AbstractRasterLayer', '../Utils/Constants', '../Til
             }
           }
 
+          if ( (onlyFirst) && (toLoadLayers.length>1) ) {
+            toLoadLayers = [toLoadLayers[0]];
+          }
           return toLoadLayers;
         }
 
@@ -171,7 +175,7 @@ define(['../Utils/Utils', './AbstractRasterLayer', '../Utils/Constants', '../Til
           jsRoot = json.WMT_MS_Capabilities;
           jsCapability = jsRoot.Capability;
           jsLayers = jsCapability.Layer.Layer;
-          var toLoadLayers = sourceObject.getListLayersToLoad(jsLayers,sourceObject.options.layers);
+          var toLoadLayers = sourceObject.getListLayersToLoad(jsLayers,sourceObject.options.layers,sourceObject.options.onlyFirst);
           if (toLoadLayers.length === 1) {
             // only one layer to load !
             sourceObject.options.layers = toLoadLayers[0];

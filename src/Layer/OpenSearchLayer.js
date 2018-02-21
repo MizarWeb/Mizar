@@ -975,6 +975,32 @@ define(['jquery','../Renderer/FeatureStyle', '../Renderer/VectorRendererManager'
         /**************************************************************************************************************/
 
         /**
+         * Load WMS layer
+         * @function loadWMS
+         * @memberof OpenSearchLayer#
+         * @param {Json} selectedData Selected data
+         * @private
+         */
+        OpenSearchLayer.prototype.loadWMS = function(selectedData) {
+            
+            var endpoint = selectedData.feature.properties.services.browse.layer.url;
+            var layerDescription = {
+                "type": "WMS",
+                "name": selectedData.layer.name + " (Quicklook)",
+                "baseUrl":endpoint,
+                "getCapabilities":endpoint,
+                "onlyFirst":true,
+                "format":"image/png",
+                "visible": true,
+                "background": false,
+                "category": selectedData.layer.name + " (Quicklook)"
+            };
+            selectedData.layer.callbackContext.addLayer(layerDescription);
+        }
+
+            /**************************************************************************************************************/
+
+        /**
          * Manage a response to OpenSearch query
          * @function manageFeaturesResponse
          * @memberof OpenSearchLayer#
