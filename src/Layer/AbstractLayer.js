@@ -291,7 +291,7 @@ define(["jquery","underscore-min", "../Utils/Event", "../Utils/Utils", "../Utils
          * @return {JSON} data loaded
          */
         AbstractLayer.prototype.loadGetCapabilities = function (callback,paramUrl,sourceObject) {
-          if (typeof paramUrl === 'undefined') {
+            if (typeof paramUrl === 'undefined') {
             url = this.getGetCapabilitiesUrl();
             urlRaw = this.getCapabilitiesRaw;
           } else  {

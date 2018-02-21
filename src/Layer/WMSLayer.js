@@ -81,27 +81,34 @@ define(['../Utils/Utils', './AbstractRasterLayer', '../Utils/Constants', '../Til
             AbstractRasterLayer.prototype.constructor.call(this, Constants.LAYER.WMS, options);
 
             this.addGetCapabilitiesParameter("service","WMS");
+            this.addGetCapabilitiesParameter("request","getCapabilities");
             this.addGetCapabilitiesParameter("version",options.hasOwnProperty('version') ? options.version : '1.1.1');
 
-            // Build the base GetMap URL
-            this.addGetMapParameter("service","wms");
-            this.addGetMapParameter("version",options.hasOwnProperty('version') ? options.version : '1.1.1');
-            this.addGetMapParameter("request","getMap");
-            this.addGetMapParameter("layers",options.layers);
-            this.addGetMapParameter("styles",options.hasOwnProperty('styles') ? options.styles : "");
-            this.addGetMapParameter("format",options.hasOwnProperty('format') ? options.format : 'image/jpeg');
-            if (options.hasOwnProperty('transparent')) {
+            this.getMapBaseUrl = this.getGetMapUrl();
+
+            if (options.byPass === true) {
+              // Build the base GetMap URL
+              this.addGetMapParameter("service","wms");
+              this.addGetMapParameter("version",options.hasOwnProperty('version') ? options.version : '1.1.1');
+              this.addGetMapParameter("request","getMap");
+              this.addGetMapParameter("layers",options.layers);
+              this.addGetMapParameter("styles",options.hasOwnProperty('styles') ? options.styles : "");
+              this.addGetMapParameter("format",options.hasOwnProperty('format') ? options.format : 'image/jpeg');
+              if (options.hasOwnProperty('transparent')) {
                 this.addGetMapParameter("transparent",options.transparent);
-            }
-            this.addGetMapParameter("width",this.tilePixelSize);
-            this.addGetMapParameter("&height",this.tilePixelSize);
-            if (options.hasOwnProperty('time')) {
+              }
+              this.addGetMapParameter("width",this.tilePixelSize);
+              this.addGetMapParameter("height",this.tilePixelSize);
+              if (options.hasOwnProperty('time')) {
                 this.addGetMapParameter("time=",options.time);
+              }
+              this.layers = options.layers;
+            } else {
+              this.loadGetCapabilities(this.manageCapabilities,this.getCapabilitiesRaw,this);
+              this.layers = options.layers;
             }
 
-            this.getMapBaseUrl = this.getGetMapUrl();
-            //this.loadGetCapabilities(this.manageCapabilities,this.options);
-            this.layer = options.layers;
+
         };
 
         /**************************************************************************************************************/
@@ -110,36 +117,104 @@ define(['../Utils/Utils', './AbstractRasterLayer', '../Utils/Constants', '../Til
 
         /**************************************************************************************************************/
 
-        WMSLayer.prototype.manageCapabilities = function (json,options) {
-          // Check if we have a layer list in options
-          /*var listLayerNames = [];
-          if (options) {
-            if (options.layers) {
-              // Just a name
-              if (typeof options.layers === 'string') {
-                listLayerNames [options.layers];
-              } else {
-                listLayerNames = options.layers;
+        /**
+         * Returns the list of layers to load
+         * @function getLisLayersToLoad
+         * @memberOf WMSLayer#
+         * @param {Json} foundLayers
+         * @param {Array/String} searchLayers
+         * @return {Array} Array of layers name
+         */
+        WMSLayer.prototype.getListLayersToLoad = function (foundLayers,searchLayers) {
+          // Trivial case : no layers specified, so need to load all
+          var isLoadAll = ( (searchLayers === "") || (searchLayers === null) || (typeof searchLayers === "undefined"));
+
+          if (isLoadAll === false) {
+            // Get array of layers search
+            var arrSearchLayers = searchLayers.split(",");
+          }
+
+          if (typeof foundLayers.length === "undefined") {
+            // If we found only one element, set it into array
+            foundLayers = [foundLayers];
+          }
+
+          var toLoadLayers = [];
+          for (var i=0;i<foundLayers.length;i++) {
+            foundName = foundLayers[i].Name["_text"];
+            if (isLoadAll === true) {
+              toLoadLayers.push(foundName);
+            } else {
+              for (var j=0;j<arrSearchLayers.length;j++) {
+                if (foundName === arrSearchLayers[j]) {
+                  toLoadLayers.push(foundName);
+                }
               }
             }
           }
 
+          return toLoadLayers;
+        }
+
+        /**************************************************************************************************************/
+
+        /**
+         * When getCapabilities is loading, manage it
+         * @function manageCapabilities
+         * @memberof WMSLayer#
+         * @param json Json object
+         * @param sourceObject Object where data is stored
+         * @private
+         */
+        
+         WMSLayer.prototype.manageCapabilities = function (json,sourceObject) {
           jsRoot = json.WMT_MS_Capabilities;
           jsCapability = jsRoot.Capability;
           jsLayers = jsCapability.Layer.Layer;
-          var needToLoad;
-          for (i=0;i<layers.length;i++) {
-            name = layers[i].Name._text;
-            title = layers[i].Title._text;
-            console.log("Layer "+ name +" : "+ title);
-            // For each layer found, search if we have to load it
-            needToLoad = false;
-            if (listLayerNames.length === 0) {
-              // If no layer list provided, load all !
-              needToLoad = true;
-            } else {
+          var toLoadLayers = sourceObject.getListLayersToLoad(jsLayers,sourceObject.options.layers);
+          if (toLoadLayers.length === 1) {
+            // only one layer to load !
+            sourceObject.options.layers = toLoadLayers[0];
+          } else {
+            // More than one layer, duplicate config
+            for (var i=0;i<toLoadLayers.length;i++) {
+              layerName = toLoadLayers[i];
+              var newConfig = Object.assign({}, sourceObject.options);
+              newConfig.layers = layerName;
+              newConfig.name += " : "+layerName;
+              newConfig.byPass = true;
+              sourceObject.multiLayers.push(newConfig);
             }
-          }*/
+            if ((sourceObject.callbackContext !== null) && (typeof sourceObject.callbackContext !== "undefined")) {
+              sourceObject.callbackContext.addLayerFromObject(sourceObject,sourceObject.options);
+            }
+            // stop all !
+            return;
+          }
+
+          var options = sourceObject.options;
+
+          // Build the base GetMap URL
+          sourceObject.addGetMapParameter("service","wms");
+          sourceObject.addGetMapParameter("version",options.hasOwnProperty('version') ? options.version : '1.1.1');
+          sourceObject.addGetMapParameter("request","getMap");
+          sourceObject.addGetMapParameter("layers",options.layers);
+          sourceObject.addGetMapParameter("styles",options.hasOwnProperty('styles') ? options.styles : "");
+          sourceObject.addGetMapParameter("format",options.hasOwnProperty('format') ? options.format : 'image/jpeg');
+          if (options.hasOwnProperty('transparent')) {
+            sourceObject.addGetMapParameter("transparent",options.transparent);
+          }
+          sourceObject.addGetMapParameter("width",sourceObject.tilePixelSize);
+          sourceObject.addGetMapParameter("height",sourceObject.tilePixelSize);
+          if (options.hasOwnProperty('time')) {
+            sourceObject.addGetMapParameter("time=",options.time);
+          }
+
+          sourceObject.getCapabilitiesEnabled = false;
+
+          if ((sourceObject.callbackContext !== null) && (typeof sourceObject.callbackContext !== "undefined")) {
+            sourceObject.callbackContext.addLayerFromObject(sourceObject,sourceObject.options);
+          }
         }
 
         /**
