@@ -707,11 +707,10 @@ define(['jquery','../Renderer/FeatureStyle', '../Renderer/VectorRendererManager'
         /**************************************************************************************************************/
 
         /**
-         * Prepare paramters for a given bound
+         * Prepare parameters for a given bound
          * @function prepareParameters
          * @memberof OpenSearchLayer#
          * @param {Bound} bound Bound
-         * @return 
          */
         OpenSearchLayer.prototype.prepareParameters = function (bound) {
             var param;      // param managed
