@@ -883,7 +883,33 @@ define(['jquery','../Renderer/FeatureStyle', '../Renderer/VectorRendererManager'
             }
             return result;
         }
-            
+
+        /**************************************************************************************************************/
+
+        /**
+         * Get geometry extent 
+         * @function getGeometryExtent
+         * @param {Json} geometry Geometry
+         * @memberof OpenSearchLayer#
+         */
+        OpenSearchLayer.prototype.getGeometryExtent = function(geometry) {
+            var result = {
+                "east":-180,
+                "west":+180,
+                "north":-90,
+                "south":+90
+            }
+            for (var i=0;i<geometry.coordinates[0].length;i++) {
+                coord = geometry.coordinates[0][i];
+                result.south = coord[1] < result.south ? coord[1]  : result.south;
+                result.north = coord[1] > result.north ? coord[1]  : result.north;
+                result.east  = coord[0] > result.east  ? coord[0]  : result.east;
+                result.west  = coord[0] < result.west  ? coord[0]  : result.west;
+                
+            }
+            return result;
+        }
+
         /**************************************************************************************************************/
 
         /**
@@ -1033,7 +1059,7 @@ define(['jquery','../Renderer/FeatureStyle', '../Renderer/VectorRendererManager'
          * @private
          */
         OpenSearchLayer.prototype.loadWMS = function(selectedData) {
-            
+            var extent = this.getGeometryExtent(selectedData.feature.geometry);
             var endpoint = selectedData.feature.properties.services.browse.layer.url;
             var name = selectedData.layer.name + " (WMS)";
             var layerDescription = {
@@ -1044,6 +1070,7 @@ define(['jquery','../Renderer/FeatureStyle', '../Renderer/VectorRendererManager'
                 "onlyFirst":true,
                 "format":"image/png",
                 "visible": true,
+                "restrictTo": extent,
                 "background": false,
                 "linkedTo": selectedData.layer.ID
             };

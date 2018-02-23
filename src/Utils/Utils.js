@@ -126,6 +126,27 @@ define(function () {
         }
     };
 
+    /**
+     *    Return if v is [min;max]
+     */
+    Utils.isValueBetween = function (v,min,max) {
+        return ((v>=min) && (v<=max));
+    }
+
+    /**
+     *     Return if 2 bounds (north,south,east,west) intersects
+     */
+    Utils.boundsIntersects = function (a,b) {
+        xOk = Utils.isValueBetween(a.west,b.west,b.east) ||
+              Utils.isValueBetween(a.east,b.west,b.east) ||
+              ((a.west <= b.west) && (a.east >= b.east));
+
+        yOk = Utils.isValueBetween(a.north,b.south,b.north) ||
+              Utils.isValueBetween(a.south,b.south,b.north) ||
+              ((a.south <= b.south) && (a.north >= b.north));
+
+        return xOk && yOk;
+    }
     return Utils;
 
 });

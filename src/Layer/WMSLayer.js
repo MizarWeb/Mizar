@@ -74,9 +74,12 @@ define(['../Utils/Utils', './AbstractRasterLayer', '../Utils/Constants', '../Til
          * @see {@link http://www.opengeospatial.org/standards/wms WMS} standard
          */
         var WMSLayer = function (options) {
+
             options.tilePixelSize = options.tilePixelSize || 256;
             options.tiling = new GeoTiling(4, 2);
             options.numberOfLevels = options.numberOfLevels || 21;
+
+            this.restrictTo = options.restrictTo;
 
             AbstractRasterLayer.prototype.constructor.call(this, Constants.LAYER.WMS, options);
 
@@ -229,9 +232,18 @@ define(['../Utils/Utils', './AbstractRasterLayer', '../Utils/Constants', '../Til
          * @return {String} Url
          */
         WMSLayer.prototype.getUrl = function (tile) {
-            // Just add the bounding box to the GetMap URL
+          // Just add the bounding box to the GetMap URL
             var bound = tile.bound;
             var bbox = bound.west + "," + bound.south + "," + bound.east + "," + bound.north;
+
+          if ((this.restrictTo !== null) && (typeof this.restrictTo !== "undefined" )) {
+            // check if tile is inside restrict zone
+            inside = Utils.boundsIntersects(bound,this.restrictTo);
+            if ( inside === false) {
+              // bypass !
+              return null;
+            }
+          }
 
             var url = this.getMapRaw;
             url = this.addParameterTo(url,"srs",tile.config.srs);

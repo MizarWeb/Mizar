@@ -618,10 +618,13 @@ RasterOverlayRenderer.prototype.requestOverlayTextureForTile = function( rendera
 
 		if ( imageRequest )
 		{
-			renderable.onRequestStarted(imageRequest);
-			imageRequest.renderable = renderable;
-			imageRequest.frameNumber = this.frameNumber;
-			imageRequest.send(renderable.bucket.layer.getUrl(renderable.tile), renderable.bucket.layer.crossOrigin);
+			url = renderable.bucket.layer.getUrl(renderable.tile);
+			if (url !== null) {
+				renderable.onRequestStarted(imageRequest);
+				imageRequest.renderable = renderable;
+				imageRequest.frameNumber = this.frameNumber;
+				imageRequest.send(renderable.bucket.layer.getUrl(renderable.tile), renderable.bucket.layer.crossOrigin);
+			}
 		}
 	}
 	else
