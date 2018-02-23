@@ -547,9 +547,6 @@ define(['jquery','../Renderer/FeatureStyle', '../Renderer/VectorRendererManager'
          * @param {Tile} tile Tile
          */
         OpenSearchLayer.prototype.removeFeature = function (identifier, tile) {
-            if (identifier==="918f9919-06d9-5b84-a755-bbcbd85278d4") {
-                console.log("removeFeature id="+identifier);
-             }
             var featureIt = this.featuresSet[identifier];
 
             if (!featureIt) {
@@ -557,10 +554,6 @@ define(['jquery','../Renderer/FeatureStyle', '../Renderer/VectorRendererManager'
             }
 
             // Remove tile from array
-            if (identifier==="918f9919-06d9-5b84-a755-bbcbd85278d4") {
-                console.log("Tile",tile);
-                console.log("featureIt.tiles",featureIt.tiles);
-            }
             var tileIndex = featureIt.tiles.indexOf(tile);
             if (tileIndex >= 0) {
                 featureIt.tiles.splice(tileIndex, 1);
@@ -661,11 +654,10 @@ define(['jquery','../Renderer/FeatureStyle', '../Renderer/VectorRendererManager'
          */
         OpenSearchLayer.prototype.modifyFeatureStyle = function (feature, style) {
            feature.properties.style = style;
-           var featureData = this.featuresSet[feature.id];
-/*            if (featureData) {
+/*           var featureData = this.featuresSet[feature.id];
+            if (featureData) {
                 // TODO: change for all tiles, not only of current level
                 for (var i = 0; i < featureData.tiles.length; i++) {
-                    console.log("check",i);
                     var tile = featureData.tiles[i];
                     this.globe.vectorRendererManager.removeGeometryFromTile(feature.geometry, tile);
                     this.globe.vectorRendererManager.addGeometryToTile(this, feature.geometry, style, tile);
@@ -891,7 +883,8 @@ define(['jquery','../Renderer/FeatureStyle', '../Renderer/VectorRendererManager'
             }
             return result;
         }
-            /**************************************************************************************************************/
+            
+        /**************************************************************************************************************/
 
         /**
          * Submit OpenSearch form
@@ -902,7 +895,65 @@ define(['jquery','../Renderer/FeatureStyle', '../Renderer/VectorRendererManager'
             this.formDescription.updateFromGUI();
             this.resetAll();
         }
-            
+
+        /**************************************************************************************************************/
+        
+        /**
+         * @function setVisible
+         * @memberOf OpenSearchLayer#
+         * @throws {TypeError} - The parameter of setVisible should be a boolean
+         */
+        OpenSearchLayer.prototype.setVisible = function (arg) {
+            if (typeof arg === "boolean") {
+                // Change for current layer
+                if (this.visible !== arg && this.globe.attributionHandler) {
+                    this.globe.attributionHandler.toggleAttribution(this);
+                }
+                this.visible = arg;
+
+                var linkedLayers = this.callbackContext.getLinkedLayers(this.ID);
+                // Change for wms linked layers
+                for (var i=0;i<linkedLayers.length;i++) {
+                    linkedLayers[i].setVisible(arg);
+                }
+
+                if (this.globe) {
+                    this.globe.renderContext.requestFrame();
+                }
+                this.publish(Constants.EVENT_MSG.LAYER_VISIBILITY_CHANGED, this);
+            } else {
+                throw new TypeError("the parameter of setVisible should be a boolean", "AbstractLayer.js");
+            }
+
+        }
+        
+        /**************************************************************************************************************/
+
+        /**
+        /**
+         * @function setOpacity
+         * @memberOf OpenSearchLayer#
+         * @throws {RangeError} opacity - opacity value should be a value in [0..1]
+         */
+        OpenSearchLayer.prototype.setOpacity = function (arg) {
+            if (typeof arg === "number" && arg >=0.0 && arg <=1.0) {
+                this.opacity = arg;
+
+                var linkedLayers = this.callbackContext.getLinkedLayers(this.ID);
+                // Change for wms linked layers
+                for (var i=0;i<linkedLayers.length;i++) {
+                    linkedLayers[i].opacity = arg;
+                }
+                
+                if (this.globe) {
+                    this.globe.renderContext.requestFrame();
+                }
+                this.publish(Constants.EVENT_MSG.LAYER_OPACITY_CHANGED, this);
+            } else {
+               throw new RangeError('opacity value should be a value in [0..1]', "AbstractLayer.js");
+            }
+        };
+
         /**************************************************************************************************************/
 
         /**
@@ -984,22 +1035,109 @@ define(['jquery','../Renderer/FeatureStyle', '../Renderer/VectorRendererManager'
         OpenSearchLayer.prototype.loadWMS = function(selectedData) {
             
             var endpoint = selectedData.feature.properties.services.browse.layer.url;
+            var name = selectedData.layer.name + " (WMS)";
             var layerDescription = {
                 "type": "WMS",
-                "name": selectedData.layer.name + " (Quicklook)",
+                "name": name,
                 "baseUrl":endpoint,
                 "getCapabilities":endpoint,
                 "onlyFirst":true,
                 "format":"image/png",
                 "visible": true,
                 "background": false,
-                "category": selectedData.layer.name + " (Quicklook)"
+                "linkedTo": selectedData.layer.ID
             };
-            selectedData.layer.callbackContext.addLayer(layerDescription);
+            var idLayerAdded = selectedData.layer.callbackContext.addLayer(layerDescription).ID;
+            
+            // Add feature id of wms into list a current WMS displayed
+            this.currentWMS.push({
+                "featureId" : selectedData.feature.id,
+                "layerId" : idLayerAdded
+            });
+
+            $(".QLWMS_"+selectedData.layer.getShortName())[0].style = "display:inline";
+        }
+        
+        /**************************************************************************************************************/
+
+        /**
+         * Unload all WMS layer
+         * @function unloadAllWMS
+         * @memberof OpenSearchLayer#
+         * @private
+         */
+        OpenSearchLayer.prototype.unloadAllWMS = function() {
+            // Remove feature id
+            var layerId = null;
+            for (var i=0;i<this.currentWMS.length;i++) {
+                layerId = this.currentWMS[i].layerId;
+                this.callbackContext.removeLayer(layerId);
+            }
+
+            this.callbackContext.refresh();
+            
+            this.currentWMS = [];
+
+            $(".QLWMS_"+this.getShortName())[0].style = "display:none";
         }
 
-            /**************************************************************************************************************/
+        /**************************************************************************************************************/
 
+        /**
+         * Unload WMS layer
+         * @function unloadWMS
+         * @memberof OpenSearchLayer#
+         * @param {Json} selectedData Selected data
+         * @private
+         */
+        OpenSearchLayer.prototype.unloadWMS = function(selectedData) {
+            // Remove feature id
+            var newCurrentWMS = [];
+            var layerId = null;
+            for (var i=0;i<this.currentWMS.length;i++) {
+                if (this.currentWMS[i].featureId !== selectedData.feature.id) {
+                    newCurrentWMS.push(this.currentWMS[i]);
+                } else {
+                    layerId = this.currentWMS[i].layerId;
+                }
+            }
+
+            if (layerId === null) {
+                console.log("OpenSearchLayer.unloadWMS : layer not found");
+                return;
+            }
+
+            this.currentWMS = newCurrentWMS;
+
+            // remove layer
+            selectedData.layer.callbackContext.removeLayer(layerId);
+            selectedData.layer.callbackContext.refresh();
+
+            if (this.currentWMS.length === 0) {
+                $(".QLWMS_"+selectedData.layer.getShortName())[0].style = "display:none";
+
+            }
+        }
+        /**************************************************************************************************************/
+
+        /**
+         * is displayed WMS ?
+         * @function isDisplayedWMS
+         * @memberof OpenSearchLayer#
+         * @param {Integer} featureId feature id to search
+         * @return {Boolean} is wms of this feature id displayed ?
+         * @private
+         */
+        OpenSearchLayer.prototype.isDisplayedWMS = function(featureId) {
+            for (var i=0;i<this.currentWMS.length;i++) {
+                if (this.currentWMS[i].featureId === featureId) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        /**************************************************************************************************************/
         /**
          * Manage a response to OpenSearch query
          * @function manageFeaturesResponse
@@ -1035,7 +1173,7 @@ define(['jquery','../Renderer/FeatureStyle', '../Renderer/VectorRendererManager'
             
             this.globe.refresh();
         }
-
+        
         /**************************************************************************************************************/
 
         /**

@@ -384,6 +384,26 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Laye
         //     }
         // }
 
+        /**
+         * @function getLinkedLayers
+         * @memberOf AbstractContext#
+         * @return {Array} Array of linked layers
+         * @private
+         */
+
+        AbstractContext.prototype.getLinkedLayers = function (layerID) {
+            // Search linked layers
+            var indexes = $.map(this.layers, function (obj, index) {
+                if (obj.linkedTo === layerID) {
+                    return index;
+                }
+            });
+            var linkedLayers = [];
+            for (var i=0;i<indexes.length;i++) {
+                linkedLayers.push(this.layers[indexes[i]]);
+            }
+            return linkedLayers;
+        }
 
         /**
          * @function removeLayer

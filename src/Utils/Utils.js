@@ -115,6 +115,17 @@ define(function () {
         return hsv_to_rgb(h, 0.5, 0.95);
     };
 
+    /**
+     *    Format the given feature identifier to remove special caracters(as ?, [, ], ., etc..) which cannot be used as HTML id's
+     */
+    Utils.formatId = function (id) {
+        if (typeof id === 'string') {
+            return id.replace(/\s{1,}|\.{1,}|\[{1,}|\]{1,}|\({1,}|\){1,}|\~{1,}|\+{1,}|\°{1,}|\-{1,}|\'{1,}|\"{1,}/g, "");
+        } else {
+            return id;
+        }
+    };
+
     return Utils;
 
 });

@@ -36,7 +36,7 @@
  ***************************************/
 
 define(["jquery","underscore-min", "../Utils/Event", "../Utils/Utils", "../Utils/Constants", "../Utils/UtilityFactory","xmltojson"],
-    function ($,_, Event, Utils, Constants, UtilityFactory,XmlToJson) {
+    function ($,_, Event, Utils,Constants, UtilityFactory,XmlToJson) {
 
         /**
          * AbstactLayer configuration
@@ -108,6 +108,9 @@ define(["jquery","underscore-min", "../Utils/Event", "../Utils/Utils", "../Utils
             this.getCapabilitiesEnabled = false;
             this.getCapabilitiesTileManager = null;
             this.callbackContext = null;
+            this.linkedTo = this.options.hasOwnProperty('linkedTo') ? this.options.linkedTo : "";
+            this.currentWMS = [];
+
             // Update layer color
             this.color = _createColor.call(this, this.options);
 
@@ -209,6 +212,23 @@ define(["jquery","underscore-min", "../Utils/Event", "../Utils/Utils", "../Utils
         /**************************************************************************************************************/
 
         Utils.inherits(Event, AbstractLayer);
+
+        /**************************************************************************************************************/
+
+        /**
+         * return short name
+         * @function getShortName
+         * @memberOf AbstractLayer#
+         * @return {String} Short name
+         */
+        AbstractLayer.prototype.getShortName = function () {
+            var shortName = Utils.formatId(this.name);
+            if (typeof shortName === 'string') {
+              shortName = shortName.replace(/[^a-z0-9\s]/gi, '').replace(/[_\s]/g, '-');
+            }
+
+            return shortName;
+        }
 
         /**************************************************************************************************************/
 
