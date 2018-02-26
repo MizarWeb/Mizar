@@ -280,7 +280,7 @@ define(['jquery','../Renderer/FeatureStyle', '../Renderer/VectorRendererManager'
                 }
             }
             for (i = 0; i < this.featureIds.length; i++) {
-                this.layer.removeFeature(this.featureIds[i], this.tile);
+                this.layer.removeFeature(this.featureIds[i]);
             }
             this.tile = null;
             this.parent = null;
@@ -349,18 +349,14 @@ define(['jquery','../Renderer/FeatureStyle', '../Renderer/VectorRendererManager'
             for (var x in this.featuresSet) {
                 if(this.featuresSet.hasOwnProperty(x)) {
                     var featureData = this.featuresSet[x];
-                    for (var key in this.allTiles) {
-                        var tile = this.allTiles[key];
-                        var feature = this.features[featureData.index];
-                        this.globe.vectorRendererManager.removeGeometryFromTile(feature.geometry,tile);
-                    }
+                    this.globe.vectorRendererManager.removeGeometryFromTile(featureData.feature.geometry,tile);
                 }
             }
 
             // Clean old results
             var self = this;
             this.allTiles = {};
-            this.globe.tileManager.visitTiles(function (tile) {
+/*            this.globe.tileManager.visitTiles(function (tile) {
                 if (tile.extension[self.extId]) {
                     tile.extension[self.extId].dispose();
                     tile.extension[self.extId].featureIds = []; // exclusive parameter to remove from layer
@@ -368,7 +364,7 @@ define(['jquery','../Renderer/FeatureStyle', '../Renderer/VectorRendererManager'
                     tile.extension[self.extId].complete = false;
                 }
             });
-
+*/
             this.featuresSet = [];
             this.features = [];
             this.featuresAdded = [];
@@ -433,7 +429,7 @@ define(['jquery','../Renderer/FeatureStyle', '../Renderer/VectorRendererManager'
                         var tile = this.allTiles[key];
                         var feature = this.features[featureData.index];
                         if (this.isFeatureOutside(feature,extent)) {
-                            this.removeFeature(x,tile);
+                            this.removeFeature(x);
                         }
                     }
                 }
@@ -544,15 +540,14 @@ define(['jquery','../Renderer/FeatureStyle', '../Renderer/VectorRendererManager'
          * @function removeFeature
          * @memberof OpenSearchLayer#
          * @param {String} identifier identifier
-         * @param {Tile} tile Tile
          */
-        OpenSearchLayer.prototype.removeFeature = function (identifier, tile) {
+        OpenSearchLayer.prototype.removeFeature = function (identifier) {
             var featureIt = this.featuresSet[identifier];
 
             if (!featureIt) {
                 return;
             }
-
+/*
             // Remove tile from array
             var tileIndex = featureIt.tiles.indexOf(tile);
             if (tileIndex >= 0) {
@@ -563,21 +558,20 @@ define(['jquery','../Renderer/FeatureStyle', '../Renderer/VectorRendererManager'
             }
 
             if (featureIt.tiles.length === 0) {
-                var feature = this.features[featureIt.index];
-                this.globe.vectorRendererManager.removeGeometryFromTile(feature.geometry,tile);
-                // Remove it from the set
-                delete this.featuresSet[identifier];
+            */
+            var feature = this.features[featureIt.index];
+            this.globe.vectorRendererManager.removeGeometry(feature.geometry,this);
+            // Remove it from the set
+            delete this.featuresSet[identifier];
 
-                // Remove it from the array by swapping it with the last feature to optimize removal.
-                var lastFeature = this.features.pop();
-                if (featureIt.index < this.features.length) {
-                    // Set the last feature at the position of the removed feature
-                    this.features[featureIt.index] = lastFeature;
-                    // Update its index in the Set.
-                    //this.featuresSet[ lastFeature.properties.identifier ].index = featureIt.index;
-                    this.featuresSet[lastFeature.id].index = featureIt.index;
-                }
-
+             // Remove it from the array by swapping it with the last feature to optimize removal.
+            var lastFeature = this.features.pop();
+            if (featureIt.index < this.features.length) {
+              // Set the last feature at the position of the removed feature
+              this.features[featureIt.index] = lastFeature;
+              // Update its index in the Set.
+              //this.featuresSet[ lastFeature.properties.identifier ].index = featureIt.index;
+              this.featuresSet[lastFeature.id].index = featureIt.index;
             }
         };
 
@@ -653,18 +647,13 @@ define(['jquery','../Renderer/FeatureStyle', '../Renderer/VectorRendererManager'
          * @param {FeatureStyle} style Style
          */
         OpenSearchLayer.prototype.modifyFeatureStyle = function (feature, style) {
-           feature.properties.style = style;
-/*           var featureData = this.featuresSet[feature.id];
-            if (featureData) {
-                // TODO: change for all tiles, not only of current level
-                for (var i = 0; i < featureData.tiles.length; i++) {
-                    var tile = featureData.tiles[i];
-                    this.globe.vectorRendererManager.removeGeometryFromTile(feature.geometry, tile);
-                    this.globe.vectorRendererManager.addGeometryToTile(this, feature.geometry, style, tile);
-                }
+           console.log("modifiyFeatureStyle",style);
+           if (this.globe) {
+                feature.properties.style = style;
+                this.globe.vectorRendererManager.removeGeometry(feature.geometry,this);
+                this.globe.vectorRendererManager.addGeometry(this, feature.geometry, style);
+                this.globe.renderContext.requestFrame();
             }
-*/
-
         };
 
         /**************************************************************************************************************/
@@ -816,6 +805,7 @@ define(['jquery','../Renderer/FeatureStyle', '../Renderer/VectorRendererManager'
                     distance = initNav.getDistance();
     
                 }
+                // TODO : warning, float comparison not ok
                 var isZoomLevelChanged = false;
                 isZoomLevelChanged = (newTileWidth !== this.previousTileWidth);
                 if (ctx) {
@@ -1148,14 +1138,15 @@ define(['jquery','../Renderer/FeatureStyle', '../Renderer/VectorRendererManager'
         /**************************************************************************************************************/
 
         /**
-         * is displayed WMS ?
-         * @function isDisplayedWMS
-         * @memberof OpenSearchLayer#
+         * is associated layer ?
+         * @function isAssociatedLayer
+         * @memberof AbstractLayer#
          * @param {Integer} featureId feature id to search
-         * @return {Boolean} is wms of this feature id displayed ?
+         * @return {Boolean} is associated layer of this feature displayed ?
          * @private
          */
-        OpenSearchLayer.prototype.isDisplayedWMS = function(featureId) {
+        OpenSearchLayer.prototype.isAssociatedLayer = function(featureId) {
+            // Check if any WMS layer is loaded
             for (var i=0;i<this.currentWMS.length;i++) {
                 if (this.currentWMS[i].featureId === featureId) {
                     return true;

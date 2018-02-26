@@ -233,6 +233,18 @@ define(["jquery","underscore-min", "../Utils/Event", "../Utils/Utils", "../Utils
         /**************************************************************************************************************/
 
         /**
+         * is relative layer ?
+         * @function isAssociatedLayer
+         * @memberof AbstractLayer#
+         * @param {Integer} featureId feature id to search
+         * @return {Boolean} is associated layer of this feature displayed ?
+         * @private
+         */
+        AbstractLayer.prototype.isAssociatedLayer = function(featureId) {
+            return false;
+        }
+
+        /**
          * Add parameter to
          * @function addParameterTo
          * @memberOf AbstractLayer#
