@@ -27,7 +27,7 @@ define(["../Renderer/FeatureStyle", "../Layer/OpenSearchLayer", "../Utils/Utils"
         var stackSelectionIndex = -1;
 
         var selectedStyle = new FeatureStyle({
-            strokeColor: [1.0, 1.0, 0.0, 1.0],
+            strokeColor: [1.0, 0.0, 0.0, 1.0],
             fillColor: [1.0, 1.0, 0.0, 1.0],
             zIndex: 1
         });
@@ -167,6 +167,7 @@ define(["../Renderer/FeatureStyle", "../Layer/OpenSearchLayer", "../Utils/Utils"
                     case Constants.GEOMETRY.Polygon:
                     case Constants.GEOMETRY.MultiPolygon:
                         style.strokeColor = selectedData.layer.style.strokeColor;
+                        style.strokeWidth = 1;
                         break;
                     case Constants.GEOMETRY.Point:
                         // Use stroke color while reverting
@@ -192,23 +193,21 @@ define(["../Renderer/FeatureStyle", "../Layer/OpenSearchLayer", "../Utils/Utils"
          */
         function focusSelection(newSelection) {
             var style;
-            console.log("focusSelection",newSelection);
             for (var i = 0; i < newSelection.length; i++) {
                 var selectedData = newSelection[i];
-                console.log("selectedData",selectedData);
                 if (selectedData.feature.properties.style) {
                     style = new FeatureStyle(selectedData.feature.properties.style);
                 }
                 else {
                     style = new FeatureStyle(selectedData.layer.style);
                 }
-                console.log("type"+selectedData.feature.geometry.type+"/"+Constants.GEOMETRY.Polygon);
                 switch (selectedData.feature.geometry.type) {
                     case Constants.GEOMETRY.LineString:
                     case Constants.GEOMETRY.MultiLineString:
                     case Constants.GEOMETRY.Polygon:
                     case Constants.GEOMETRY.MultiPolygon:
                         style.strokeColor = this.selectedStyle.strokeColor;
+                        style.strokeWidth = 3;
                         break;
                     case Constants.GEOMETRY.Point:
                         style.fillColor = this.selectedStyle.fillColor;

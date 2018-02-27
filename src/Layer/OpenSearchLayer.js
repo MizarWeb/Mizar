@@ -646,7 +646,6 @@ define(['jquery','../Renderer/FeatureStyle', '../Renderer/VectorRendererManager'
          * @param {FeatureStyle} style Style
          */
         OpenSearchLayer.prototype.modifyFeatureStyle = function (feature, style) {
-           console.log("modifiyFeatureStyle",style);
            if (this.globe.vectorRendererManager.removeGeometry(feature.geometry,this)) {
             feature.properties.style = style;
             this.globe.vectorRendererManager.addGeometry(this, feature.geometry, style);
