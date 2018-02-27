@@ -83,6 +83,7 @@ define(['../Utils/Utils', './AbstractRasterLayer', '../Utils/Constants', '../Til
 
             AbstractRasterLayer.prototype.constructor.call(this, Constants.LAYER.WMS, options);
 
+
             this.addGetCapabilitiesParameter("service","WMS");
             this.addGetCapabilitiesParameter("request","getCapabilities");
             this.addGetCapabilitiesParameter("version",options.hasOwnProperty('version') ? options.version : '1.1.1');
@@ -106,7 +107,6 @@ define(['../Utils/Utils', './AbstractRasterLayer', '../Utils/Constants', '../Til
                 this.addGetMapParameter("time=",options.time);
               }
               this.layers = options.layers;
-              console.log("this",this.getMapBaseUrl);
             } else {
               this.loadGetCapabilities(this.manageCapabilities,this.getCapabilitiesRaw,this);
               this.layers = options.layers;
@@ -183,6 +183,7 @@ define(['../Utils/Utils', './AbstractRasterLayer', '../Utils/Constants', '../Til
           if (toLoadLayers.length === 1) {
             // only one layer to load !
             sourceObject.options.layers = toLoadLayers[0];
+
           } else {
             // More than one layer, duplicate config
             for (var i=0;i<toLoadLayers.length;i++) {
@@ -193,7 +194,6 @@ define(['../Utils/Utils', './AbstractRasterLayer', '../Utils/Constants', '../Til
               newConfig.byPass = true;
               sourceObject.multiLayers.push(newConfig);
             }
-            console.log("multi",sourceObject.multiLayers);
             if ((sourceObject.callbackContext !== null) && (typeof sourceObject.callbackContext !== "undefined")) {
               sourceObject.callbackContext.addLayerFromObject(sourceObject,sourceObject.options);
             }

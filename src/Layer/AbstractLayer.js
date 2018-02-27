@@ -370,8 +370,7 @@ define(["jquery","underscore-min", "../Utils/Event", "../Utils/Utils", "../Utils
            if ( (this.options) && (this.options.proxy) ) {
              if (this.options.proxy.use === true) {
                 proxyDone = true;
-                if (url.startsWith("http") === false) {
-                    console.log("url : "+url);
+                if (url.toLowerCase().startsWith("http") === false) {
                     proxifiedUrl = url;
                 } else if (url.startsWith(this.options.proxy.url)) {
                  proxifiedUrl = url; // No change, proxy always set
@@ -624,24 +623,6 @@ define(["jquery","underscore-min", "../Utils/Event", "../Utils/Utils", "../Utils
 
         AbstractLayer.prototype.isBackground = function() {
             return this.background;
-        };
-
-        /**
-         * @function _proxifyUrl
-         * @memberOf AbstractLayer#
-         * @private
-         */
-        AbstractLayer.prototype._proxifyUrl = function (url) {
-          console.log("_proxify",url);
-            if (url.startsWith("http")) {
-            if (this.options.proxy) {
-                return this.options.proxy.url + url;
-            } else {
-                return url;
-            }
-          } else {
-              return url;
-          }
         };
 
         return AbstractLayer;

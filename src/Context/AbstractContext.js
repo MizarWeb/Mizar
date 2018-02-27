@@ -290,7 +290,6 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Laye
          * @memberOf AbstractContext#
          */
         AbstractContext.prototype.addLayers = function (layersDescription) {
-            console.log("addLayers",layersDescription);
             for (var i=0;i<layersDescription.length;i++) {
                 this.addLayer(layersDescription[i]);
             }

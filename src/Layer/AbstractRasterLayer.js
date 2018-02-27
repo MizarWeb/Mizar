@@ -75,7 +75,7 @@ define(['../Utils/Utils', './AbstractLayer', '../Renderer/RasterOverlayRenderer'
             this.baseUrlRaw = options.baseUrl;
 
             // Get capabilities url (without proxy)
-            this.getCapabilitiesRaw = options.getCapabilities;
+            this.getCapabilitiesRaw = options.baseUrl;
             // Get map url (without proxy)
             this.getMapRaw = this.baseUrlRaw;
 
