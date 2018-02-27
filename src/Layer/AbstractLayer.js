@@ -369,8 +369,11 @@ define(["jquery","underscore-min", "../Utils/Event", "../Utils/Utils", "../Utils
            var proxyDone = false;
            if ( (this.options) && (this.options.proxy) ) {
              if (this.options.proxy.use === true) {
-              proxyDone = true;
-               if (url.startsWith(this.options.proxy.url)) {
+                proxyDone = true;
+                if (url.startsWith("http") === false) {
+                    console.log("url : "+url);
+                    proxifiedUrl = url;
+                } else if (url.startsWith(this.options.proxy.url)) {
                  proxifiedUrl = url; // No change, proxy always set
                } else {
                  proxifiedUrl = this.options.proxy.url + encodeURIComponent(url); // Add proxy redirection
@@ -629,10 +632,15 @@ define(["jquery","underscore-min", "../Utils/Event", "../Utils/Utils", "../Utils
          * @private
          */
         AbstractLayer.prototype._proxifyUrl = function (url) {
-          if (this.options.proxy) {
-            return this.options.proxy.url + url;
+          console.log("_proxify",url);
+            if (url.startsWith("http")) {
+            if (this.options.proxy) {
+                return this.options.proxy.url + url;
+            } else {
+                return url;
+            }
           } else {
-            return url;
+              return url;
           }
         };
 

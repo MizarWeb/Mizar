@@ -192,16 +192,17 @@ define(["../Renderer/FeatureStyle", "../Layer/OpenSearchLayer", "../Utils/Utils"
          */
         function focusSelection(newSelection) {
             var style;
+            console.log("focusSelection",newSelection);
             for (var i = 0; i < newSelection.length; i++) {
                 var selectedData = newSelection[i];
-
+                console.log("selectedData",selectedData);
                 if (selectedData.feature.properties.style) {
                     style = new FeatureStyle(selectedData.feature.properties.style);
                 }
                 else {
                     style = new FeatureStyle(selectedData.layer.style);
                 }
-
+                console.log("type"+selectedData.feature.geometry.type+"/"+Constants.GEOMETRY.Polygon);
                 switch (selectedData.feature.geometry.type) {
                     case Constants.GEOMETRY.LineString:
                     case Constants.GEOMETRY.MultiLineString:

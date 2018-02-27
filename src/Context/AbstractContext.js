@@ -61,6 +61,8 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Laye
             this.ctxOptions = ctxOptions;
             this.mode = mode;
             this.layers = [];
+            this.pendingAtmosphereDescription = null;
+            this.visibleBackgroundLoaded = false;
 
             this.initCanvas(this.canvas);
             this.positionTracker = _createTrackerPosition.call(this, this.mizarConfiguration);
@@ -288,6 +290,7 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Laye
          * @memberOf AbstractContext#
          */
         AbstractContext.prototype.addLayers = function (layersDescription) {
+            console.log("addLayers",layersDescription);
             for (var i=0;i<layersDescription.length;i++) {
                 this.addLayer(layersDescription[i]);
             }
@@ -339,6 +342,18 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Laye
                 var layerEvent = (layer.category === "background") ? Constants.EVENT_MSG.LAYER_BACKGROUND_ADDED : Constants.EVENT_MSG.LAYER_ADDITIONAL_ADDED;
                 this.publish(layerEvent, layer);
             }
+
+            // Check if the visible background layer is still loaded
+            if ((layer.visible === true) && (layer.category === "background")) {
+                this.visibleBackgroundLoaded = true;
+            }
+
+            // If an atmosphere layer is needed, load it now !
+            if ((this.visibleBackgroundLoaded === true) && (this.pendingAtmosphereDescription !== null)) {
+                layerDescription = this.pendingAtmosphereDescription;
+                this.pendingAtmosphereDescription = null;
+                this.addLayer(layerDescription);
+            }
             return layer;
         };
         
@@ -348,6 +363,10 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Laye
          */
         AbstractContext.prototype.addLayer = function (layerDescription) {
             layerDescription.getCapabilitiesTileManager = this.globe.tileManager;
+            if ((layerDescription.type === Constants.LAYER.Atmosphere) && (this.visibleBackgroundLoaded === false)) {
+                this.pendingAtmosphereDescription = layerDescription;
+                return null;
+            }
             var layer = LayerFactory.create(layerDescription);
             layer.getCapabilitiesTileManager = this.globe.tileManager;
             if (layer.getCapabilitiesEnabled === true) {

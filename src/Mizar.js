@@ -1149,7 +1149,11 @@ define(["jquery", "underscore-min",
             var result;
             try {
                 var layer = this.getActivatedContext().addLayer(layerDescription);
-                result = layer.ID;
+                if (layer !== null) {
+                    result = layer.ID;
+                } else {
+                    result = null;
+                }
             } catch(e) {
                 result = false;
                 var prefixe;

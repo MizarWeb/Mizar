@@ -106,6 +106,7 @@ define(['../Utils/Utils', './AbstractRasterLayer', '../Utils/Constants', '../Til
                 this.addGetMapParameter("time=",options.time);
               }
               this.layers = options.layers;
+              console.log("this",this.getMapBaseUrl);
             } else {
               this.loadGetCapabilities(this.manageCapabilities,this.getCapabilitiesRaw,this);
               this.layers = options.layers;
@@ -192,6 +193,7 @@ define(['../Utils/Utils', './AbstractRasterLayer', '../Utils/Constants', '../Til
               newConfig.byPass = true;
               sourceObject.multiLayers.push(newConfig);
             }
+            console.log("multi",sourceObject.multiLayers);
             if ((sourceObject.callbackContext !== null) && (typeof sourceObject.callbackContext !== "undefined")) {
               sourceObject.callbackContext.addLayerFromObject(sourceObject,sourceObject.options);
             }

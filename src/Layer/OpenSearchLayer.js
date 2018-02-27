@@ -439,17 +439,16 @@ define(['jquery','../Renderer/FeatureStyle', '../Renderer/VectorRendererManager'
         /**************************************************************************************************************/
 
         /**
-         * Adds feature to the layer and to the tile extension.
+         * Adds feature to the layer 
          * @function addFeature
          * @memberof OpenSearchLayer#
          * @param {Feature} feature Feature
-         * @param {Tile} tile Tile
          */
-        OpenSearchLayer.prototype.addFeature = function (feature,tile) {
+        OpenSearchLayer.prototype.addFeature = function (feature) {
             var featureData;
             
             // update list added
-            var key = this.cache.getKey(tile.bound);
+            //var key = this.cache.getKey(tile.bound);
 
             var ind = ""+feature.id;//+"_"+key;
             this.featuresAdded.push(ind);
@@ -475,8 +474,8 @@ define(['jquery','../Renderer/FeatureStyle', '../Renderer/VectorRendererManager'
                 //console.log("First time add :"+ind);
                 this.features.push(feature);
                 var featureData = {
-                    index: this.features.length - 1,
-                    tiles: [tile]
+                    index: this.features.length - 1//,
+                    //tiles: [tile]
                 };
                 this.featuresSet[feature.id] = featureData;
 
@@ -493,7 +492,7 @@ define(['jquery','../Renderer/FeatureStyle', '../Renderer/VectorRendererManager'
                 //console.log("Still added :"+ind);
                 featureData = this.featuresSet[feature.id];
                 // Store the tile
-                featureData.tiles.push(tile);
+                //featureData.tiles.push(tile);
 
                 // Always use the base feature to manage geometry indices
                 feature = this.features[featureData.index];
@@ -648,11 +647,9 @@ define(['jquery','../Renderer/FeatureStyle', '../Renderer/VectorRendererManager'
          */
         OpenSearchLayer.prototype.modifyFeatureStyle = function (feature, style) {
            console.log("modifiyFeatureStyle",style);
-           if (this.globe) {
-                feature.properties.style = style;
-                this.globe.vectorRendererManager.removeGeometry(feature.geometry,this);
-                this.globe.vectorRendererManager.addGeometry(this, feature.geometry, style);
-                this.globe.renderContext.requestFrame();
+           if (this.globe.vectorRendererManager.removeGeometry(feature.geometry,this)) {
+            feature.properties.style = style;
+            this.globe.vectorRendererManager.addGeometry(this, feature.geometry, style);
             }
         };
 
@@ -1019,21 +1016,14 @@ define(['jquery','../Renderer/FeatureStyle', '../Renderer/VectorRendererManager'
 
         /**
          * Check is feature still added to tile
-         * @function featureStillAddedToTile
+         * @function featureStillAdded
          * @memberof OpenSearchLayer#
          * @param {Feature} feature Feature
-         * @param {Tile} tile Tile
          * @private
          */
-        OpenSearchLayer.prototype.featureStillAddedToTile = function (feature,tile) {
-            // search feature + tile key
-            var key = this.cache.getKey(tile.bound);
-            var ind = "";
-            ind += feature.id;
-            //ind += "_";
-            //ind += key;
+        OpenSearchLayer.prototype.featureStillAdded = function (feature) {
 
-            var num = this.featuresAdded.indexOf(ind);
+            var num = this.featuresAdded.indexOf(feature.id);
 
             return (num >= 0);
         }
@@ -1175,12 +1165,12 @@ define(['jquery','../Renderer/FeatureStyle', '../Renderer/VectorRendererManager'
                 }
 
                 // Check if feature still added ?
-                alreadyAdded = this.featureStillAddedToTile(feature,tile);
+                alreadyAdded = this.featureStillAdded(feature);
                 if (alreadyAdded) {
                     // Remote it from list
                 } else {
                     // Add it
-                    this.addFeature(feature,tile);
+                    this.addFeature(feature);
                 }
                 features.splice(i, 1);
             }
