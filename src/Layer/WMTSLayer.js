@@ -93,7 +93,7 @@ define(['../Utils/Utils', './AbstractRasterLayer', '../Utils/Constants','../Tili
 
             if (options.byPass === true) {
                 // Special, options still filled from getCapabilities !
-                this.urlRaw = this.options.getCapabilities;
+                this.urlRaw = this.options.baseUrl;
                 this.name = this.options.name;
                 var url = this.urlRaw;
                 if (url.indexOf('?', 0) === -1) {
@@ -123,17 +123,18 @@ define(['../Utils/Utils', './AbstractRasterLayer', '../Utils/Constants','../Tili
                     this.options.getCapabilitiesTileManager.setImageryProvider(this);
                 }
 
-            } else if ((typeof options.getCapabilities !== 'undefined') && (options.getCapabilities !== null)) {
+            } else if ((typeof options.baseUrl !== 'undefined') && (options.baseUrl !== null)) {
                 // Check getCapabilities
                 this.getCapabilitiesEnabled = true;
                 this.afterLoad = options.afterLoad;
-                this.urlRaw = options.getCapabilities;
+                this.urlRaw = options.baseUrl;
                 this.addGetCapabilitiesParameter("service","WMTS");
                 this.addGetCapabilitiesParameter("version",options.hasOwnProperty('version') ? options.version : '1.0.0.0');
                 this.addGetCapabilitiesParameter("request","getCapabilities");
                 // manage get capabilities
                 this.loadGetCapabilities(this.manageCapabilities,this.getCapabilitiesRaw,this);
-            } else if ((typeof options.baseUrl !== 'undefined') && (options.baseUrl !== null)) {
+            }
+            /* else if ((typeof options.baseUrl !== 'undefined') && (options.baseUrl !== null)) {
                 // manage base url
                 // Build the base GetTile URL
                 var url = options.baseUrl;
@@ -161,7 +162,7 @@ define(['../Utils/Utils', './AbstractRasterLayer', '../Utils/Constants','../Tili
                 this.getTileBaseUrl = url;
                 this.numberOfLevels = this.options.tileMatrix.TileMatrix.length;
                 this.tiling.update(this.options.tileMatrix);
-            } else {
+            }*/ else {
                 // manage nothing, not enough data
                 console.log("ERROR !");
             }

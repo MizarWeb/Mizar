@@ -83,15 +83,24 @@ define(['jquery','../Renderer/FeatureStyle', '../Renderer/VectorRendererManager'
             this.previousDistance = null;
 
             // Used for picking management
-            this.features = [];
-
+            //this.features = [];
             // Counter set, indicates how many times the feature has been requested
-            this.featuresSet = {};
-
-            this.tilesToLoad = [];
+            //this.featuresSet = {};
+            //this.tilesToLoad = [];
 
             // Keep save of all tiles where a feature is set, in order to remove all when reset
-            this.allTiles = {};
+            //this.allTiles = {};
+
+            // Keep trace of all features loaded (TODO: make object more light, just keep geometry and style ?)
+            this.features = [];
+            // Keep trace of all features id loaded
+            this.featuresIdLoaded = [];
+            // Keep trace of all tiles loaded (bound, key and features id associated)
+            this.tilesLoaded = [];
+
+            // last datetime for removing outside
+            this.lastRemovingDateTime = null;
+            this.removingDeltaSeconds = options.hasOwnProperty('removingDeltaSeconds') ? options.removingDeltaSeconds : 5;
 
             // OpenSearch result
             this.result = new OpenSearchResult();
@@ -101,9 +110,6 @@ define(['jquery','../Renderer/FeatureStyle', '../Renderer/VectorRendererManager'
             
             // Cache for data management
             this.cache = new OpenSearchCache();
-
-            // Features already loaded
-            this.featuresAdded = [];
 
             // Force Refresh
             this.forceRefresh = false;
@@ -130,6 +136,14 @@ define(['jquery','../Renderer/FeatureStyle', '../Renderer/VectorRendererManager'
 
         /**************************************************************************************************************/
 
+        OpenSearchLayer.TileState = {
+            LOADING: 0,
+            LOADED: 1,
+            NOT_LOADED: 2
+        };
+
+        /**************************************************************************************************************/
+
         /**
          * Go to next page
          * @function nextPage
@@ -146,7 +160,10 @@ define(['jquery','../Renderer/FeatureStyle', '../Renderer/VectorRendererManager'
             // update labels
             $(".labelPage")[0].innerText = "Page "+(num+1);
 
-            this.forceRefresh = true;
+            //this.forceRefresh = true;
+            for (var i=0;i<this.tilesLoaded.length;i++) {
+                this.tilesLoaded[i].tile.osState = OpenSearchLayer.TileState.NOT_LOADED;
+            }
             this.globe.renderContext.requestFrame();
         }
 
@@ -192,103 +209,6 @@ define(['jquery','../Renderer/FeatureStyle', '../Renderer/VectorRendererManager'
 
         /**************************************************************************************************************/
         /**************************************************************************************************************/
-        /**************************************************************************************************************/
-
-        /**
-         * @name OSData
-         * @class
-         * OpenSearch renderable
-         * @param {AbstractLayer} layer layer
-         * @param {Tile} tile Tile
-         * @param p Parent object
-         * @private
-         */
-        var OSData = function (layer, tile, p) {
-            this.layer = layer;
-            this.parent = p;
-            this.tile = tile;
-            this.featureIds = []; // exclusive parameter to remove from layer
-            this.state = OpenSearchLayer.TileState.NOT_LOADED;
-            this.complete = false;
-            this.childrenCreated = false;
-        };
-
-         /**************************************************************************************************************/
-
-        /**
-         * Traverse
-         * @function traverse
-         * @memberof OSData.prototype
-         * @param {Tile} tile Tile
-         * @private
-         */
-        OSData.prototype.traverse = function (tile) {
-            if (!this.layer.isVisible()) {
-                return;
-            }
-           
-            if (tile.state !== Tile.State.LOADED) {
-                return;
-            }
-
-            // Check if the tile need to be loaded
-            if (this.state === OpenSearchLayer.TileState.NOT_LOADED) {
-                this.layer.tilesToLoad.push(this);
-            }
-
-            // Create children if needed
-            if (this.state === OpenSearchLayer.TileState.LOADED && !this.complete && tile.state === Tile.State.LOADED && tile.children && !this.childrenCreated) {
-                var i;
-                for (i = 0; i < 4; i++) {
-                    if (!tile.children[i].extension[this.layer.extId]) {
-                        tile.children[i].extension[this.layer.extId] = new OSData(this.layer, tile.children[i], this);
-                    }
-                }
-                this.childrenCreated = true;
-
-
-                // HACK : set renderable to have children
-                var renderables = tile.extension.renderer ? tile.extension.renderer.renderables : [];
-                for (i = 0; i < renderables.length; i++) {
-                    if (renderables[i].bucket.layer === this.layer) {
-                        renderables[i].hasChildren = true;
-                    }
-                }
-            }
-        };
-
-        /**************************************************************************************************************/
-
-        /**
-         * Dispose renderable data from tile
-         * @function dispose
-         * @memberof OSData.prototype
-         * @param renderContext
-         * @param tilePool
-         * @private
-         */
-        OSData.prototype.dispose = function (renderContext, tilePool) {
-            var i;
-            if (this.parent && this.parent.childrenCreated) {
-                this.parent.childrenCreated = false;
-                // HACK : set renderable to not have children!
-                var renderables = this.parent.tile.extension.renderer ? this.parent.tile.extension.renderer.renderables : [];
-                for (i = 0; i < renderables.length; i++) {
-                    if (renderables[i].bucket.layer === this.layer) {
-                        renderables[i].hasChildren = false;
-                    }
-                }
-            }
-            for (i = 0; i < this.featureIds.length; i++) {
-                this.layer.removeFeature(this.featureIds[i]);
-            }
-            this.tile = null;
-            this.parent = null;
-        };
-
-        /**************************************************************************************************************/
-        /**************************************************************************************************************/
-        /**************************************************************************************************************/
 
         /**
          * Attaches the layer to the globe
@@ -301,6 +221,7 @@ define(['jquery','../Renderer/FeatureStyle', '../Renderer/VectorRendererManager'
             AbstractLayer.prototype._attach.call(this, g);
             this.extId += this.id;
             g.tileManager.addPostRenderer(this);
+            //g.addManualRendererLayer(this);
         };
 
         /**************************************************************************************************************/
@@ -313,11 +234,21 @@ define(['jquery','../Renderer/FeatureStyle', '../Renderer/VectorRendererManager'
          */
         OpenSearchLayer.prototype._detach = function () {
             this.globe.tileManager.removePostRenderer(this);
+            //this.globe.vectorRendererManager.removePostRenderer(this);
+            //g.removeManualRendererLayer(this);
             AbstractLayer.prototype._detach.call(this);
         };
 
         /**************************************************************************************************************/
 
+        OpenSearchLayer.prototype.getTileByKey = function(key) {
+            for (var i=0;i<this.tilesLoaded.length;i++) {
+                if (this.tilesLoaded[i].key === key) {
+                    return this.tilesLoaded[i];
+                }
+            }
+            return null;
+        }
         /**
          * Launches request to the OpenSearch service.
          * @function launchRequest
@@ -330,10 +261,14 @@ define(['jquery','../Renderer/FeatureStyle', '../Renderer/VectorRendererManager'
          */
         OpenSearchLayer.prototype.launchRequest = function (tile, url) {
             var key = this.cache.getKey(tile.bound);
-            // add tile in all tiles
-            if (( this.allTiles[key] === null) || (typeof this.allTiles[key] === "undefined")) {
-                this.allTiles[key] = tile;
+            if (this.getTileByKey(key) === null) {
+                this.tilesLoaded.push(
+                    { "key" : key,
+                      "tile" : tile 
+                    }
+                );
             }
+
             this.pool.addQuery(url,tile,key);
         };
 
@@ -346,28 +281,19 @@ define(['jquery','../Renderer/FeatureStyle', '../Renderer/VectorRendererManager'
          */
         OpenSearchLayer.prototype.removeFeatures = function () {
             // clean renderers
-            for (var x in this.featuresSet) {
-                if(this.featuresSet.hasOwnProperty(x)) {
-                    var featureData = this.featuresSet[x];
-                    this.globe.vectorRendererManager.removeGeometryFromTile(featureData.feature.geometry,tile);
-                }
+            for (var i=0;i<this.features.length;i++) {
+                    this.globe.vectorRendererManager.removeGeometry(features[i].geometry);
             }
+            this.features = [];
+            this.featuresId = [];
+            // clean tiles
+            for (var i=0;i<this.tilesLoaded.length;i++) {
+                this.tilesLoaded[i].tile.osState = OpenSearchLayer.TileState.NOT_LOADED;
+            }
+            this.tilesLoaded = [];
 
             // Clean old results
             var self = this;
-            this.allTiles = {};
-/*            this.globe.tileManager.visitTiles(function (tile) {
-                if (tile.extension[self.extId]) {
-                    tile.extension[self.extId].dispose();
-                    tile.extension[self.extId].featureIds = []; // exclusive parameter to remove from layer
-                    tile.extension[self.extId].state = OpenSearchLayer.TileState.NOT_LOADED;
-                    tile.extension[self.extId].complete = false;
-                }
-            });
-*/
-            this.featuresSet = [];
-            this.features = [];
-            this.featuresAdded = [];
 
             //this.globe.refresh();
             this.globe.renderContext.requestFrame();
@@ -378,39 +304,53 @@ define(['jquery','../Renderer/FeatureStyle', '../Renderer/VectorRendererManager'
         /**************************************************************************************************************/
 
         /**
-         * Check if feature is outside extent
-         * @function launchRequest
-         * @memberof OpenSearchLayer#
+         * Remove all feature still used by a tile
+         * @function removeTile
          * @param {Tile} tile Tile
-         * @param {String} url Url
-         * @fires Context#startLoad
-         * @fires Context#endLoad
-         * @fires Context#features:added
+         * @memberof OpenSearchLayer#
          */
-        OpenSearchLayer.prototype.isFeatureOutside = function (feature,extent) {
-            if (extent === null) {
-                return false;
+        OpenSearchLayer.prototype.removeTile = function (tile) {
+            if (typeof tile.associatedFeaturesId === "undefined") {
+                tile.associatedFeaturesId = [];
             }
-            // Get extent of feature
-            var coordinates = feature.geometry.coordinates[0];
-            var east = -180;
-            var west = +180;
-            var north = -90;
-            var south = +90;
-            var lon,lat;
-            for (var i=0;i<coordinates.length;i++) {
-                lon=coordinates[i][0];
-                lat=coordinates[i][1];
-                east = lon>east ? lon : east;
-                west = lon<west ? lon : west;
-                north = lat>north ? lat : north;
-                south = lat<south ? lat : south;
+            // For each feature of the tile
+            for (var i=0;i<tile.associatedFeaturesId.length;i++) {
+                featureId = tile.associatedFeaturesId[i];
+                // Is this feature is used in other tile ?
+                isUsed = false;
+                for (var j=0;j<this.tilesLoaded.length;j++) {
+                    aTile = this.tilesLoaded[j].tile;
+                    if (tile.key !== aTile.key) {
+                        if (typeof aTile.associatedFeaturesId !== "undefined") {
+                            index = aTile.associatedFeaturesId.indexOf(featureId);
+                        } else {
+                            index = -1;
+                        }
+                        if (index >= 0) {
+                            isUsed = true;
+                            break;
+                        }
+                    }
+                }
+
+                if (isUsed === false) {
+                    this.removeFeature(featureId);
+                }
             }
-            return ( (south>extent.north) ||
-                     (north<extent.south) ||
-                     (west>extent.east) ||
-                     (east<extent.west) );
-        }
+            tile.associatedFeaturesId = [];
+            // Remove the tile
+            index = -1;
+            for (var i=0;i<this.tilesLoaded.length;i++) {
+                if (this.tilesLoaded[i].tile.key === tile.key) {
+                    index = i;
+                    break;
+                }
+            }
+            if (index >= 0) {
+                this.tilesLoaded.splice(index,1);
+            }
+
+        };
 
         /**************************************************************************************************************/
 
@@ -422,18 +362,16 @@ define(['jquery','../Renderer/FeatureStyle', '../Renderer/VectorRendererManager'
          */
         OpenSearchLayer.prototype.removeFeaturesOutside = function (extent) {
             // clean renderers
-            for (var x in this.featuresSet) {
-                if(this.featuresSet.hasOwnProperty(x)) {
-                    var featureData = this.featuresSet[x];
-                    for (var key in this.allTiles) {
-                        var tile = this.allTiles[key];
-                        var feature = this.features[featureData.index];
-                        if (this.isFeatureOutside(feature,extent)) {
-                            this.removeFeature(x);
-                        }
-                    }
+            nbRemoved = 0;
+            for (var i=0;i<this.tilesLoaded.length;i++) {
+                tile = this.tilesLoaded[i].tile;
+                intersects = Utils.boundsIntersects(tile.bound,extent);
+                if (intersects === false) {
+                    this.removeTile(tile);
+                    nbRemoved++;
                 }
             }
+            console.log(nbRemoved+" tiles removed");
         };
 
         /**************************************************************************************************************/
@@ -445,15 +383,8 @@ define(['jquery','../Renderer/FeatureStyle', '../Renderer/VectorRendererManager'
          * @param {Feature} feature Feature
          */
         OpenSearchLayer.prototype.addFeature = function (feature) {
-            var featureData;
-            
-            // update list added
-            //var key = this.cache.getKey(tile.bound);
-
-            var ind = ""+feature.id;//+"_"+key;
-            this.featuresAdded.push(ind);
-
-            this.featuresSet[feature.id] = featureData;
+            // update list id added
+            this.featuresIdLoaded.push(feature.id);
 
             var defaultCrs = {
                 type: "name",
@@ -464,41 +395,19 @@ define(['jquery','../Renderer/FeatureStyle', '../Renderer/VectorRendererManager'
 
             feature.geometry.gid = feature.id;
 
-
             // MS: Feature could be added from ClusterOpenSearch which have features with different styles
             var style = feature.properties.style ? feature.properties.style : this.style;
             style.visible = true;
 
-            var old = this.featuresSet[feature.id];
-            if ( (old === null) || (typeof old === "undefined") ) {
-                //console.log("First time add :"+ind);
-                this.features.push(feature);
-                var featureData = {
-                    index: this.features.length - 1//,
-                    //tiles: [tile]
-                };
-                this.featuresSet[feature.id] = featureData;
+            this.features.push(feature);
 
-                // Add features to renderer if layer is attached to planet
-                if (this.globe) {
-                    this._addFeatureToRenderers(feature);
-                    if (this.isVisible()) {
-                        this.globe.renderContext.requestFrame();
-                    }
+            // Add features to renderer if layer is attached to planet
+            if (this.globe) {
+                this._addFeatureToRenderers(feature);
+                if (this.isVisible()) {
+                    this.globe.renderContext.requestFrame();
                 }
-
             }
-            else {
-                //console.log("Still added :"+ind);
-                featureData = this.featuresSet[feature.id];
-                // Store the tile
-                //featureData.tiles.push(tile);
-
-                // Always use the base feature to manage geometry indices
-                feature = this.features[featureData.index];
-            }
-
-           
         };
 
         /**************************************************************************************************************/
@@ -536,42 +445,23 @@ define(['jquery','../Renderer/FeatureStyle', '../Renderer/VectorRendererManager'
 
         /**
          * Removes feature from Dynamic OpenSearch layer.
+         *  (called when it's sure to have to remove feature)
          * @function removeFeature
          * @memberof OpenSearchLayer#
-         * @param {String} identifier identifier
+         * @param {String} featureId Feature id
          */
-        OpenSearchLayer.prototype.removeFeature = function (identifier) {
-            var featureIt = this.featuresSet[identifier];
+        OpenSearchLayer.prototype.removeFeature = function (featureId) {
+            var featureIndex = this.getFeatureIndexById(featureId);
+            var feature = this.features[featureIndex];
 
-            if (!featureIt) {
-                return;
-            }
-/*
-            // Remove tile from array
-            var tileIndex = featureIt.tiles.indexOf(tile);
-            if (tileIndex >= 0) {
-                featureIt.tiles.splice(tileIndex, 1);
-            }
-            else {
-                console.log('OpenSearchLayer internal error : tile not found when removing feature');
-            }
+            // remove id from featuresId
+            var index = this.featuresIdLoaded.indexOf(featureId);
+            if (index !== -1) this.featuresIdLoaded.splice(index, 1);
 
-            if (featureIt.tiles.length === 0) {
-            */
-            var feature = this.features[featureIt.index];
             this.globe.vectorRendererManager.removeGeometry(feature.geometry,this);
-            // Remove it from the set
-            delete this.featuresSet[identifier];
 
-             // Remove it from the array by swapping it with the last feature to optimize removal.
-            var lastFeature = this.features.pop();
-            if (featureIt.index < this.features.length) {
-              // Set the last feature at the position of the removed feature
-              this.features[featureIt.index] = lastFeature;
-              // Update its index in the Set.
-              //this.featuresSet[ lastFeature.properties.identifier ].index = featureIt.index;
-              this.featuresSet[lastFeature.id].index = featureIt.index;
-            }
+            // Remove from list of features
+            this.features.splice(featureIndex,1);
         };
 
         /**************************************************************************************************************/
@@ -652,35 +542,6 @@ define(['jquery','../Renderer/FeatureStyle', '../Renderer/VectorRendererManager'
             }
         };
 
-        /**************************************************************************************************************/
-
-        /**
-         * Tile Ccnstants
-         */
-
-        OpenSearchLayer.TileState = {
-            LOADING: 0,
-            LOADED: 1,
-            NOT_LOADED: 2,
-            INHERIT_PARENT: 3
-        };
-
-
-        /**************************************************************************************************************/
-
-        /**
-         * Generate the tile data
-         * @function generate
-         * @memberof OpenSearchLayer#
-         * @param {Tile} tile Tile
-         * @private
-         */
-        OpenSearchLayer.prototype.generate = function (tile) {
-            if (tile.order === this.minOrder) {
-                tile.extension[this.extId] = new OSData(this, tile, null);
-            }
-        };
-       
         /**************************************************************************************************************/
 
         /**
@@ -791,6 +652,11 @@ define(['jquery','../Renderer/FeatureStyle', '../Renderer/VectorRendererManager'
             }
 
             if (needRefresh) {
+                // todo sort tiles
+
+                // =========================================================================
+                // Determination of zoom level change
+                // =========================================================================
 
                 var newTileWidth = this.tiles[0].bound.east-this.tiles[0].bound.west;
                 var ctx = this.callbackContext;
@@ -798,7 +664,6 @@ define(['jquery','../Renderer/FeatureStyle', '../Renderer/VectorRendererManager'
                 if (ctx) {
                     var initNav = ctx.getNavigation();
                     distance = initNav.getDistance();
-    
                 }
                 // TODO : warning, float comparison not ok
                 var isZoomLevelChanged = false;
@@ -806,23 +671,50 @@ define(['jquery','../Renderer/FeatureStyle', '../Renderer/VectorRendererManager'
                 if (ctx) {
                     isZoomLevelChanged = isZoomLevelChanged && (distance !== this.previousDistance);
                     this.previousDistance = distance;
-                }
+                } }
                 if (isZoomLevelChanged) {
                     console.log("Changement of zoom level, go to page 1");
                     // Go to page 1
                     OpenSearchUtils.setCurrentValueToParam(this.formDescription,"page",1);
 
                     this.result.featuresLoaded = 0;
-                    $(".labelLoaded")[0].innerText = "loaded : "+this.result.featuresLoaded;
+                    $(".labelLoaded")[0].innerText = "loaded : "+this.features.length;
                     $(".labelPage")[0].innerText = "Page 1";
                 }
+
+                // =========================================================================
+                // Check each tile
+                // =========================================================================
 
                 this.previousTileWidth = newTileWidth;
                 this.previousViewKey = globalKey;
                 this.result.featuresTotal = 0;
-                var tileCache;
                 for (var i=0;i<tiles.length;i++) {
-                    tileCache = this.cache.getTile(tiles[i].bound);
+                    var currentTile = tiles[i];
+                    if (typeof currentTile.key === "undefined") {
+                        currentTile.key = this.cache.getKey(currentTile.bound);
+                    }
+                    // If no state defined...
+                    if ( (currentTile.osState === null) || (typeof currentTile.osState === 'undefined')) {
+                        //...set it to NOT_LOADED
+                        currentTile.osState = OpenSearchLayer.TileState.NOT_LOADED;
+                    }
+
+                    if (currentTile.osState === OpenSearchLayer.TileState.NOT_LOADED) {
+                        var url = this.buildUrl(currentTile.bound);
+                        if (url !== null) {
+                            currentTile.osState = OpenSearchLayer.TileState.LOADING;
+                            this.launchRequest(currentTile, url);
+                        }
+                    } else if (currentTile.osState === OpenSearchLayer.TileState.LOADED) {
+                        //console.log("tile still loaded !!!");
+                    } else if (currentTile.osState === OpenSearchLayer.TileState.LOADING) {
+                        //console.log("tile loading...");
+                    }
+
+
+
+                    /**tileCache = this.cache.getTile(tiles[i].bound);
                     this.updateGUI();
                     if (tileCache === null) {
                         var url = this.buildUrl(tiles[i].bound);
@@ -833,13 +725,22 @@ define(['jquery','../Renderer/FeatureStyle', '../Renderer/VectorRendererManager'
                         this.result.featuresTotal += tileCache.remains;
                         this.manageFeaturesResponse(tileCache.features.slice(),tiles[i]);
                         this.updateGUI();
-                    }
+                    }*/
+
                     // Remove all feature outside view of tiles
-                    var viewExtent = this.getExtent(tiles);
-                    //this.removeFeaturesOutside(viewExtent);
+                    doRemove = false;
+                    if (this.lastRemovingDateTime === null) {
+                        doRemove = true;
+                    } else {
+                        doRemove = (Date.now() - this.lastRemovingDateTime) >= (this.removingDeltaSeconds * 1000);
+                    }
+                    if (doRemove) {
+                        var viewExtent = this.getExtent(tiles);
+                        this.lastRemovingDateTime = Date.now();
+                        this.removeFeaturesOutside(viewExtent);
+                    }
                 }
-            }
-        };
+        }
         
         /**************************************************************************************************************/
 
@@ -1014,19 +915,37 @@ define(['jquery','../Renderer/FeatureStyle', '../Renderer/VectorRendererManager'
         /**************************************************************************************************************/
 
         /**
-         * Check is feature still added to tile
+         * Check is feature still added to global render
          * @function featureStillAdded
          * @memberof OpenSearchLayer#
-         * @param {Feature} feature Feature
+         * @param {String} featureId Feature id
          * @private
          */
-        OpenSearchLayer.prototype.featureStillAdded = function (feature) {
+        OpenSearchLayer.prototype.featureStillAdded = function (featureId) {
 
-            var num = this.featuresAdded.indexOf(feature.id);
+            var num = this.featuresIdLoaded.indexOf(featureId);
 
             return (num >= 0);
         }
-            
+
+        /**
+         * Check is feature still added to tile
+         * @function featureStillAddedToTile
+         * @memberof OpenSearchLayer#
+         * @param {String} featureId Feature id
+         * @param {Tile} tile Tile
+         * @private
+         */
+        OpenSearchLayer.prototype.featureStillAddedToTile = function (featureId,tile) {
+            if (typeof tile.associatedFeaturesId.length === "undefined") {
+                return false;
+            }
+
+            var num = tile.associatedFeaturesId.indexOf(featureId);
+
+            return (num >= 0);
+        }
+
         /**************************************************************************************************************/
 
         /**
@@ -1143,6 +1062,46 @@ define(['jquery','../Renderer/FeatureStyle', '../Renderer/VectorRendererManager'
             return false;
         }
 
+        OpenSearchLayer.prototype.getFeatureById = function(featureId) {
+            for (var i=0;i<this.features.length;i++) {
+                if (this.features[i].id === featureId) {
+                    return this.features[i];
+                }
+            }
+            return null;
+        }
+
+        OpenSearchLayer.prototype.getFeatureIndexById = function(featureId) {
+            for (var i=0;i<this.features.length;i++) {
+                if (this.features[i].id === featureId) {
+                    return i;
+                }
+            }
+            return -1;
+        }
+
+        OpenSearchLayer.prototype.updateFeatureListWithTile = function(featureId,tile) {
+            var feature = this.getFeatureById(featureId);
+            if (feature === null) {
+                // Feature not found...no action
+                return;
+            }
+            
+            // Creation of list of associated tiles to keep trace of feature by tile
+            if (typeof feature.associatedTiles === "undefined") {
+                feature.associatedTiles = [];
+            }
+            
+            // Make key value for tile
+            var key = this.cache.getKey(tile.bound);
+
+            if (feature.associatedTiles.indexOf(key) >=0 ) {
+                // still aded !
+            } else {
+                // add it
+                feature.associatedTiles.push(key);
+            }
+        }
         /**************************************************************************************************************/
         /**
          * Manage a response to OpenSearch query
@@ -1156,6 +1115,13 @@ define(['jquery','../Renderer/FeatureStyle', '../Renderer/VectorRendererManager'
             this.updateFeatures(features);
 
             this.result.featuresLoaded += features.length;
+            
+            // Init array of feature id associated to tile
+            if ((tile.associatedFeaturesId === null) || (typeof tile.associatedFeaturesId === "undefined")) {
+                tile.associatedFeaturesId = [];
+            }
+
+            // For each feature...
             for (i = features.length - 1; i >= 0; i--) {
                 feature = features[i];
 
@@ -1163,22 +1129,37 @@ define(['jquery','../Renderer/FeatureStyle', '../Renderer/VectorRendererManager'
                     feature.id = feature.properties.identifier;
                 }
 
-                // Check if feature still added ?
-                alreadyAdded = this.featureStillAdded(feature);
+                // Check if feature still globaly added ? (even on another tile)
+                alreadyAdded = this.featureStillAdded(feature.id);
+                alreadyAddedToTile = false;
                 if (alreadyAdded) {
-                    // Remote it from list
+                    // Check if still added into this tile
+                    alreadyAddedToTile = this.featureStillAddedToTile(feature.id,tile);
+                    if (alreadyAddedToTile === true) {
+                        // Nothing to do !
+                    } else {
+                        tile.associatedFeaturesId.push(feature.id);
+                        this.updateFeatureListWithTile(feature.id,tile);
+                    }
                 } else {
-                    // Add it
                     this.addFeature(feature);
-                }
+                    tile.associatedFeaturesId.push(feature.id);
+                    this.updateFeatureListWithTile(feature.id,tile);
+                } 
                 features.splice(i, 1);
             }
 
-            $(".labelLoaded")[0].innerText = "loaded : "+this.result.featuresLoaded;
+            $(".labelLoaded")[0].innerText = "loaded : "+this.features.length;
             $(".labelTotal")[0].innerText = "total : ~ "+this.result.featuresTotal;
             
+            // Only if tile was LOADING...
+            if (tile.osState === OpenSearchLayer.TileState.LOADING) {
+                // ...set to LOADED
+                tile.osState = OpenSearchLayer.TileState.LOADED;
+            }
+
             this.globe.refresh();
-        }
+        };
         
         /**************************************************************************************************************/
 

@@ -145,7 +145,7 @@ function () {
                 if (xhr.status === 200) {
                     response = JSON.parse(xhr.response);
                     nbFound = self.layer.result.parseResponse(response);
-                    self.layer.cache.addTile(bound,response.features,nbFound);
+                    //self.layer.cache.addTile(bound,response.features,nbFound);
                     self.layer.manageFeaturesResponse(response.features,tile);
                 }
                 else if (xhr.status >= 400) {

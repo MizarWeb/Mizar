@@ -71,6 +71,7 @@ define(['../Tiling/Tile',
         var Planet = function (options) {
             AbstractGlobe.prototype.constructor.call(this, Constants.GLOBE.Planet, options);
             this.sky = false;
+            this.manualRendererlayers = [];
         };
 
         /**************************************************************************************************************/
@@ -147,6 +148,20 @@ define(['../Tiling/Tile',
             }
         };
 
+        Planet.prototype.addManualRendererLayer = function (layer) {
+            this.manualRendererlayers.push(layer);
+        }
+
+        Planet.prototype.removeManualRendererLayer = function (layer) {
+            var newArray = [];
+            for (var i=0;i<this.manualRendererlayers.length;i++) {
+                if ( this.manualRendererlayers[i].ID !== layer.ID) {
+                    newArray.push(this.manualRendererlayers[i]);
+                }
+            }
+            this.manualRendererlayers = newArray;
+        }
+        
         /**
          * @private
          * @function render
@@ -162,6 +177,10 @@ define(['../Tiling/Tile',
                 }
                 // Render tiles
                 this.tileManager.render();
+
+                for (var i=0;i<this.manualRendererlayers.length;i++) {
+                    this.manualRendererlayers[i].render();
+                }
             }
         };
 
