@@ -712,6 +712,14 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Laye
             this.components[componentId] = isVisible;
         };
 
+        /**
+         * @function getComponentVisibility
+         * @memberOf AbstractContext#
+         */
+        AbstractContext.prototype.getComponentVisibility = function (componentId) {
+            return this.components[componentId];
+        };
+
         /**************************************************************************************************************/
 
         /**

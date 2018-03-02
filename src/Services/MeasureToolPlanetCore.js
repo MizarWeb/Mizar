@@ -470,7 +470,11 @@ define(["jquery", "underscore-min", "../Utils/Constants",
             mizarAPI = mizar;
             navigation = mizarAPI.getActivatedContext().getNavigation();
             var elevationLayer = _.find(mizarAPI.getActivatedContext().getLayers(),  function(obj) { return obj.type ===  Constants.LAYER.WCSElevation ||  obj.type ===  Constants.LAYER.WMSElevation});
-            scale = elevationLayer.scale;
+            if(elevationLayer !== undefined) {
+                scale = elevationLayer.scale;
+            } else {
+                scale = 1;
+            }
             dragging = false;
 
             // Layer containing measure feature

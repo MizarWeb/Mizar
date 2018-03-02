@@ -72,12 +72,6 @@ define(['../Utils/Utils', './AbstractLayer', '../Renderer/RasterOverlayRenderer'
             this.coordinates = options.coordinates || null;
             this.zIndex = options.zIndex || 0;
             this.crossOrigin = options.crossOrigin || 'anonymous';
-            this.baseUrlRaw = options.baseUrl;
-
-            // Get capabilities url (without proxy)
-            this.getCapabilitiesRaw = options.baseUrl;
-            // Get map url (without proxy)
-            this.getMapRaw = this.baseUrlRaw;
 
             // Init cache if defined
             if (options.cache) {
@@ -89,7 +83,6 @@ define(['../Utils/Utils', './AbstractLayer', '../Renderer/RasterOverlayRenderer'
             this._overlay = true;
             this._ready = true; // Ready is use by TileManager
 
-            this.baseUrl = this.proxify(this.baseUrlRaw);
         };
 
         /**************************************************************************************************************/
@@ -98,74 +91,6 @@ define(['../Utils/Utils', './AbstractLayer', '../Renderer/RasterOverlayRenderer'
 
         /**************************************************************************************************************/
 
-        /**
-         * Add parameter to
-         * @function addParameterTo
-         * @memberOf AbstractRasterLayer#
-         * @param {String} url - parameter url
-         * @param {String} name - parameter name
-         * @param {String} value - parameter value
-         * @return {String} url updated
-         */
-        AbstractRasterLayer.prototype.addParameterTo = function (url,name,value) {
-            var separator = "&";
-            if ((typeof url !== "string") || (url.indexOf('?', 0) === -1)) {
-              separator = "?";
-            }
-            return url + separator + name + "=" + value;
-        };
-
-        /**************************************************************************************************************/
-
-        /**
-         * Add parameter to getCapabilities url
-         * @function addGetCapabilitiesParameter
-         * @memberOf AbstractRasterLayer#
-         * @param {String} name - parameter name
-         * @param {String} value - parameter value
-         */
-        AbstractRasterLayer.prototype.addGetCapabilitiesParameter = function (name,value) {
-            this.getCapabilitiesRaw = this.addParameterTo(this.getCapabilitiesRaw,name,value);
-        };
-
-        /**************************************************************************************************************/
-
-        /**
-         * Get getCapabilities url
-         * @function getGetCapabilitiesUrl
-         * @memberOf AbstractRasterLayer#
-         * @return {String} url
-         */
-        AbstractRasterLayer.prototype.getGetCapabilitiesUrl = function () {
-            this.getCapabilities = this.proxify(this.getCapabilitiesRaw);
-            return this.getCapabilities;
-        };
-
-        /**
-         * Add parameter to getMap url
-         * @function addGetMapParameter
-         * @memberOf AbstractRasterLayer#
-         * @param {String} name - parameter name
-         * @param {String} value - parameter value
-         */
-        AbstractRasterLayer.prototype.addGetMapParameter = function (name,value) {
-          this.getMapRaw = this.addParameterTo(this.getMapRaw,name,value);
-        };
-
-        /**************************************************************************************************************/
-
-        /**
-         * Get getMap url
-         * @function getGetMapUrl
-         * @memberOf AbstractRasterLayer#
-         * @return {String} url
-         */
-        AbstractRasterLayer.prototype.getGetMapUrl = function () {
-            this.getMap = this.proxify(this.getMapRaw);
-            return this.getMap;
-        };
-
-        /**************************************************************************************************************/
         /**
          * Attach the raster layer to the planet
          * @function _attach

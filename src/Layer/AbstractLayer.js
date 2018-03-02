@@ -35,11 +35,11 @@
  * along with GlobWeb. If not, see <http://www.gnu.org/licenses/>.
  ***************************************/
 
-define(["jquery","underscore-min", "../Utils/Event", "../Utils/Utils", "../Utils/Constants", "../Utils/UtilityFactory","xmltojson"],
-    function ($,_, Event, Utils,Constants, UtilityFactory,XmlToJson) {
+define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Utils/Constants", "../Utils/UtilityFactory", "xmltojson"],
+    function ($, _, Event, Utils, Constants, UtilityFactory, XmlToJson) {
 
         /**
-         * AbstactLayer configuration
+         * AbstractLayer configuration
          * @typedef {Object} AbstractLayer.configuration
          * @property {String} [name=""] - Layer name
          * @property {String} [attribution=""] - Attribution
@@ -86,30 +86,32 @@ define(["jquery","underscore-min", "../Utils/Event", "../Utils/Utils", "../Utils
 
             this.globe = null;
             this.options = options || {};
-            this.ID = "URN:Mizar:Layer:"+_.uniqueId(this.constructor.name + ':');
-            this.name = this.options.hasOwnProperty('name') ? this.options.name : "";
-            this.attribution = this.options.hasOwnProperty('attribution') ? this.options.attribution : "";
-            this.copyrightUrl = this.options.hasOwnProperty('copyrightUrl') ? this.options.copyrightUrl : "";
-            this.ack = this.options.hasOwnProperty('ack') ? this.options.ack : "";
-            this.icon = this.options.hasOwnProperty('icon') ? this.options.icon : "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAAXNSR0IArs4c6QAAAAZiS0dEAAAAAAAA+UO7fwAAAAlwSFlzAAALEwAACxMBAJqcGAAAAAd0SU1FB9wMBQkVBRMIQtMAAAAZdEVYdENvbW1lbnQAQ3JlYXRlZCB3aXRoIEdJTVBXgQ4XAAAAvklEQVQY012QMWpCURBFz3yfG7CIwSatpLGwsJJsQEHssr2UttapkkK0zRJEFPKLj5UYPGme8vgDt5l7uNwZKEYNdaZO1FR6VQkBT8AbMAGe1e7dTwXUB8bAFPgF9sBWPUXENbWgBTAELkCTw7bqMdR5kTQCehlogB/gE/iqcs9OVhT9I8v7EZU6UJfqh3pWa3WlvqsvakoRcVOPwCYnvQI1sM67Q0T8JYAWvAEOwDewj4jr4z0teJdf84AA/gF1uG92uhcfoAAAAABJRU5ErkJggg==";
-            this.description = this.options.hasOwnProperty('description') ? this.options.description : "";
-            this.visible = this.options.hasOwnProperty('visible') ? this.options.visible : false;
-            this.properties = this.options.hasOwnProperty('properties') ? this.options.properties : {};
+            this.ID = "URN:Mizar:Layer:" + _.uniqueId(this.constructor.name + ':');
+            this.name = this.options.name != null ? this.options.name : "";
+            this.attribution = this.options.attribution || "";
+            this.copyrightUrl = this.options.copyrightUrl || "";
+            this.ack = this.options.ack || "";
+            this.icon = this.options.icon || "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAAXNSR0IArs4c6QAAAAZiS0dEAAAAAAAA+UO7fwAAAAlwSFlzAAALEwAACxMBAJqcGAAAAAd0SU1FB9wMBQkVBRMIQtMAAAAZdEVYdENvbW1lbnQAQ3JlYXRlZCB3aXRoIEdJTVBXgQ4XAAAAvklEQVQY012QMWpCURBFz3yfG7CIwSatpLGwsJJsQEHssr2UttapkkK0zRJEFPKLj5UYPGme8vgDt5l7uNwZKEYNdaZO1FR6VQkBT8AbMAGe1e7dTwXUB8bAFPgF9sBWPUXENbWgBTAELkCTw7bqMdR5kTQCehlogB/gE/iqcs9OVhT9I8v7EZU6UJfqh3pWa3WlvqsvakoRcVOPwCYnvQI1sM67Q0T8JYAWvAEOwDewj4jr4z0teJdf84AA/gF1uG92uhcfoAAAAABJRU5ErkJggg==";
+            this.description = this.options.description || "";
+            this.visible = this.options.visible || false;
+            this.properties = this.options.properties || {};
+            this.services = this.options.services || [];
             this.type = type;
-            this.pickable = this.options.hasOwnProperty('pickable') ? this.options.pickable : false;
-            this.services = this.options.hasOwnProperty('services') ? this.options.services : [];
+            this.pickable = this.options.pickable || false;
             this.dataType = this.options.dataType || "";
             this.background = options.background;
-            this.category = this.options.background ? "background" : this.options.category;
+            this.category = (this.options.background) ? "background" : this.options.category;
             this.coordinateSystem = options.coordinateSystem;
             this.format = this.options.format || "";
             this.baseUrl = this.options.baseUrl || "";
             this.deletable = this.options.deletable || false;
+            this.getCapabilitiesUrl = this.options.getCapabilities || null;
             this.getCapabilitiesEnabled = false;
             this.getCapabilitiesTileManager = null;
             this.callbackContext = null;
-            this.linkedTo = this.options.hasOwnProperty('linkedTo') ? this.options.linkedTo : "";
-            this.currentWMS = [];
+            this.linkedTo = this.options.linkedTo || "";
+            this.servicesRunningOnCollection = [];
+            this.servicesRunningOnRecords = {};
 
             // Update layer color
             this.color = _createColor.call(this, this.options);
@@ -125,7 +127,7 @@ define(["jquery","underscore-min", "../Utils/Event", "../Utils/Utils", "../Utils
                 this.attribution = this.attribution.replace(' ', ' target=_blank ');
             }
 
-            this.services = _createAvailableServices(this.options);
+            //this.services = _createAvailableServices(this.options);
 
             // If the layer is eligible to GetCapabilities and no layers are provided,
             // this array is filled with a config by layer to load
@@ -209,6 +211,7 @@ define(["jquery","underscore-min", "../Utils/Event", "../Utils/Utils", "../Utils
             return color
         }
 
+
         /**************************************************************************************************************/
 
         Utils.inherits(Event, AbstractLayer);
@@ -224,55 +227,165 @@ define(["jquery","underscore-min", "../Utils/Event", "../Utils/Utils", "../Utils
         AbstractLayer.prototype.getShortName = function () {
             var shortName = Utils.formatId(this.name);
             if (typeof shortName === 'string') {
-              shortName = shortName.replace(/[^a-z0-9\s]/gi, '').replace(/[_\s]/g, '-');
+                shortName = shortName.replace(/[^a-z0-9\s]/gi, '').replace(/[_\s]/g, '-');
             }
 
             return shortName;
-        }
+        };
 
         /**************************************************************************************************************/
 
         /**
-         * is relative layer ?
-         * @function isAssociatedLayer
-         * @memberof AbstractLayer#
-         * @param {Integer} featureId feature id to search
-         * @return {Boolean} is associated layer of this feature displayed ?
-         * @private
+         * @function hasServicesRunningOnCollection
+         * @memberOf AbstractLayer#
          */
-        AbstractLayer.prototype.isAssociatedLayer = function(featureId) {
-            return false;
-        }
+        AbstractLayer.prototype.hasServicesRunningOnCollection = function () {
+            return this.servicesRunningOnCollection.length > 0;
+        };
 
         /**
-         * Add parameter to
-         * @function addParameterTo
+         * @function getServicesRunningOnCollection
          * @memberOf AbstractLayer#
-         * @param {String} url - parameter url
-         * @param {String} name - parameter name
-         * @param {String} value - parameter value
-         * @return {String} url updated
          */
-        AbstractLayer.prototype.addParameterTo = function (url,name,value) {
-            var separator = "&";
-            if ((typeof url !== "string") || (url.indexOf('?', 0) === -1)) {
-              separator = "?";
+        AbstractLayer.prototype.getServicesRunningOnCollection = function () {
+            var layers = [];
+            for (var layerIndex in this.servicesRunningOnCollection) {
+                var layerID = this.servicesRunningOnCollection[layerIndex];
+                var layer = this.callbackContext.getLayerByID(layerID);
+                if (layer != null) {
+                    layers.push(layer);
+                }
             }
-            return url + separator + name + "=" + value;
+            return layers;
         };
-
-        /**************************************************************************************************************/
 
         /**
-         * Add parameter to getCapabilities url
-         * @function addGetCapabilitiesParameter
+         * @function removeServicesRunningOnCollection
          * @memberOf AbstractLayer#
-         * @param {String} name - parameter name
-         * @param {String} value - parameter value
          */
-        AbstractLayer.prototype.addGetCapabilitiesParameter = function (name,value) {
-            this.getCapabilitiesRaw = this.addParameterTo(this.getCapabilitiesRaw,name,value);
+        AbstractLayer.prototype.removeServicesRunningOnCollection = function () {
+            for (var layerIndex in this.servicesRunningOnCollection) {
+                var layerID = this.servicesRunningOnCollection[layerIndex];
+                this.callbackContext.removeLayer(layerID);
+            }
+            return this.servicesRunningOnCollection.length === 0;
         };
+
+        /**
+         * @function hasServicesRunningOnRecords
+         * @memberOf AbstractLayer#
+         */
+        AbstractLayer.prototype.hasServicesRunningOnRecords = function () {
+            return Object.keys(this.servicesRunningOnRecords).length > 0;
+        };
+
+        /**
+         * @function getServicesRunningOnRecords
+         * @memberOf AbstractLayer#
+         */
+        AbstractLayer.prototype.getServicesRunningOnRecords = function () {
+            var layers = [];
+            for (var featureIndex in this.servicesRunningOnRecords) {
+                var featureID = this.servicesRunningOnRecords[featureIndex];
+                layers = layers.concat(this.getServicesRunningOnRecord(featureID));
+            }
+            return layers;
+        };
+
+        /**
+         * @function removeServicesRunningOnRecords
+         * @memberOf AbstractLayer#
+         */
+        AbstractLayer.prototype.removeServicesRunningOnRecords = function () {
+            for (var featureID in this.servicesRunningOnRecords) {
+                this.removeServicesRunningOnRecord(featureID);
+            }
+            return Object.keys(this.servicesRunningOnRecords).length === 0;
+        };
+
+        /**
+         * @function hasServicesRunningOnRecord
+         * @memberOf AbstractLayer#
+         */
+        AbstractLayer.prototype.hasServicesRunningOnRecord = function (featureID) {
+            return this.servicesRunningOnRecords.hasOwnProperty(featureID);
+        };
+
+        /**
+         * @function getServicesRunningOnRecord
+         * @memberOf AbstractLayer#
+         */
+        AbstractLayer.prototype.getServicesRunningOnRecord = function (featureID) {
+            var layers = [];
+            if (this.hasServicesRunningOnRecord(featureID)) {
+                var servicesForFeatureID = this.servicesRunningOnRecords[featureID];
+                for (var layerIndex in servicesForFeatureID.layerIds) {
+                    var layerID = servicesForFeatureID[layerIndex];
+                    var layer = this.callbackContext.getLayerByID(layerID);
+                    if (layer != null) {
+                        layers.push(layer);
+                    }
+                }
+            } else {
+                // do nothing
+            }
+            return layers;
+        };
+
+        /**
+         * @function addServicesRunningOnRecord
+         * @memberOf AbstractLayer#
+         */
+        AbstractLayer.prototype.addServicesRunningOnRecord = function (featureID, layerIDs) {
+            var isAdded;
+            if (featureID != null && layerIDs != null && !this.hasServicesRunningOnRecord(featureID)) {
+                var layersIDArray = Array.isArray(layerIDs) ? layerIDs : [layerIDs];
+                this.servicesRunningOnRecords[featureID] = {
+                    "layerIds": layersIDArray
+                };
+                isAdded = true;
+            } else {
+                isAdded = false;
+            }
+            return isAdded;
+        };
+
+        /**
+         * @function removeServicesRunningOnRecord
+         * @memberOf AbstractLayer#
+         */
+        AbstractLayer.prototype.removeServicesRunningOnRecord = function (featureID) {
+            var isRemoved;
+            if (this.hasServicesRunningOnRecord(featureID)) {
+                var servicesForFeatureID = this.servicesRunningOnRecords[featureID];
+                for (var layerIndex in servicesForFeatureID.layerIds) {
+                    var layerID = servicesForFeatureID.layerIds[layerIndex];
+                    this.callbackContext.removeLayer(layerID);
+                }
+                delete this.servicesRunningOnRecords[featureID];
+                isRemoved = true;
+            } else {
+                isRemoved = false;
+            }
+            return isRemoved;
+        };
+
+        /**
+         * @function addServicesRunningOnCollection
+         * @memberOf AbstractLayer#
+         */
+        AbstractLayer.prototype.addServicesRunningOnCollection = function (layerIDs) {
+            var isAdded;
+            if (layerIDs != null) {
+                var layersIDArray = Array.isArray(layerIDs) ? layerIDs : [layerIDs];
+                this.servicesRunningOnCollection = this.servicesRunningOnCollection.concat(layersIDArray);
+                isAdded = true;
+            } else {
+                isAdded = false;
+            }
+            return isAdded
+        };
+
 
         /**************************************************************************************************************/
 
@@ -283,33 +396,9 @@ define(["jquery","underscore-min", "../Utils/Event", "../Utils/Utils", "../Utils
          * @return {String} url
          */
         AbstractLayer.prototype.getGetCapabilitiesUrl = function () {
-            this.getCapabilities = this.proxify(this.getCapabilitiesRaw);
-            return this.getCapabilities;
+            return this.proxify(this.getCapabilitiesUrl);
         };
 
-        /**
-         * Add parameter to getMap url
-         * @function addGetMapParameter
-         * @memberOf AbstractLayer#
-         * @param {String} name - parameter name
-         * @param {String} value - parameter value
-         */
-        AbstractLayer.prototype.addGetMapParameter = function (name,value) {
-          this.getMapRaw = this.addParameterTo(this.getMapRaw,name,value);
-        };
-
-        /**************************************************************************************************************/
-
-        /**
-         * Get getMap url
-         * @function getGetMapUrl
-         * @memberOf AbstractLayer#
-         * @return {String} url
-         */
-        AbstractLayer.prototype.getGetMapUrl = function () {
-            this.getMap = this.proxify(this.getMapRaw);
-            return this.getMap;
-        };
 
         /**************************************************************************************************************/
 
@@ -322,33 +411,35 @@ define(["jquery","underscore-min", "../Utils/Event", "../Utils/Utils", "../Utils
          * @param {Object} sourceObject source object
          * @return {JSON} data loaded
          */
-        AbstractLayer.prototype.loadGetCapabilities = function (callback,paramUrl,sourceObject) {
+        AbstractLayer.prototype.loadGetCapabilities = function (callback, paramUrl, sourceObject) {
+            var url;
+            var urlRaw;
             if (typeof paramUrl === 'undefined') {
-            url = this.getGetCapabilitiesUrl();
-            urlRaw = this.getCapabilitiesRaw;
-          } else  {
-            url = this.proxify(paramUrl);
-            urlRaw = paramUrl;
-          }
-          this.getCapabilitiesEnabled = true;
-          $.ajax({
-              type: "GET",
-              url: url,
-              dataType: 'text',
-              success: function (response) {
-                var myOptions = {
-                    mergeCDATA: true,
-                    xmlns: false,
-                    attrsAsObject: false,
-                    childrenAsArray: false
-                };
-                result = xmlToJSON.parseString(response,myOptions);
-                callback(result,sourceObject);
-              },
-              error: function (xhr, ajaxOptions, thrownError) {
-                  console.error("Unknow server "+urlRaw);
-              }
-          });
+                url = this.getGetCapabilitiesUrl();
+                urlRaw = this.getCapabilitiesUrl;
+            } else {
+                url = this.proxify(paramUrl);
+                urlRaw = paramUrl;
+            }
+            this.getCapabilitiesEnabled = true;
+            $.ajax({
+                type: "GET",
+                url: url,
+                dataType: 'text',
+                success: function (response) {
+                    var myOptions = {
+                        mergeCDATA: true,
+                        xmlns: false,
+                        attrsAsObject: false,
+                        childrenAsArray: false
+                    };
+                    var result = xmlToJSON.parseString(response, myOptions);
+                    callback(result, sourceObject);
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    console.error("Unknow server " + urlRaw);
+                }
+            });
         };
 
         /**************************************************************************************************************/
@@ -361,27 +452,27 @@ define(["jquery","underscore-min", "../Utils/Event", "../Utils/Utils", "../Utils
          * @param {String} url - URL
          * @return {String} Url proxified
          */
-         AbstractLayer.prototype.proxify = function (url) {
-           if (typeof url !== 'string') {
-             return url;
-           }
-           var proxifiedUrl = url;
-           var proxyDone = false;
-           if ( (this.options) && (this.options.proxy) ) {
-             if (this.options.proxy.use === true) {
-                proxyDone = true;
-                if (url.toLowerCase().startsWith("http") === false) {
-                    proxifiedUrl = url;
-                } else if (url.startsWith(this.options.proxy.url)) {
-                 proxifiedUrl = url; // No change, proxy always set
-               } else {
-                 proxifiedUrl = this.options.proxy.url + encodeURIComponent(url); // Add proxy redirection
-               }
+        AbstractLayer.prototype.proxify = function (url) {
+            if (typeof url !== 'string') {
+                return url;
             }
-           }
-           //console.log("Proxy done ? "+proxyDone);
-           return proxifiedUrl;
-         };
+            var proxifiedUrl = url;
+            var proxyDone = false;
+            if ((this.options) && (this.options.proxy)) {
+                if (this.options.proxy.use === true) {
+                    proxyDone = true;
+                    if (url.toLowerCase().startsWith("http") === false) {
+                        proxifiedUrl = url;
+                    } else if (url.startsWith(this.options.proxy.url)) {
+                        proxifiedUrl = url; // No change, proxy always set
+                    } else {
+                        proxifiedUrl = this.options.proxy.url + encodeURIComponent(url); // Add proxy redirection
+                    }
+                }
+            }
+            //console.log("Proxy done ? "+proxyDone);
+            return proxifiedUrl;
+        };
 
         /**
          * @function getGlobe
@@ -491,14 +582,14 @@ define(["jquery","underscore-min", "../Utils/Event", "../Utils/Utils", "../Utils
          * @throws {RangeError} opacity - opacity value should be a value in [0..1]
          */
         AbstractLayer.prototype.setOpacity = function (arg) {
-            if (typeof arg === "number" && arg >=0.0 && arg <=1.0) {
+            if (typeof arg === "number" && arg >= 0.0 && arg <= 1.0) {
                 this.opacity = arg;
                 if (this.globe) {
                     this.globe.renderContext.requestFrame();
                 }
                 this.publish(Constants.EVENT_MSG.LAYER_OPACITY_CHANGED, this);
             } else {
-               throw new RangeError('opacity value should be a value in [0..1]', "AbstractLayer.js");
+                throw new RangeError('opacity value should be a value in [0..1]', "AbstractLayer.js");
             }
         };
 
@@ -573,10 +664,10 @@ define(["jquery","underscore-min", "../Utils/Event", "../Utils/Utils", "../Utils
         };
 
         /**
-         * @function getBaseURl
+         * @function getBaseUrl
          * @memberOf AbstractLayer#
          */
-        AbstractLayer.prototype.getBaseURl = function() {
+        AbstractLayer.prototype.getBaseUrl = function () {
             return this.baseUrl;
         };
 
@@ -584,7 +675,7 @@ define(["jquery","underscore-min", "../Utils/Event", "../Utils/Utils", "../Utils
          * @function getDataType
          * @memberOf AbstractLayer#
          */
-        AbstractLayer.prototype.getDataType = function() {
+        AbstractLayer.prototype.getDataType = function () {
             return this.dataType;
         };
 
@@ -592,7 +683,7 @@ define(["jquery","underscore-min", "../Utils/Event", "../Utils/Utils", "../Utils
          * @function getFormat
          * @memberOf AbstractLayer#
          */
-        AbstractLayer.prototype.getFormat = function() {
+        AbstractLayer.prototype.getFormat = function () {
             return this.format;
         };
 
@@ -600,7 +691,7 @@ define(["jquery","underscore-min", "../Utils/Event", "../Utils/Utils", "../Utils
          * @function isDeletable
          * @memberOf AbstractLayer#
          */
-        AbstractLayer.prototype.isDeletable = function() {
+        AbstractLayer.prototype.isDeletable = function () {
             return this.deletable;
         };
 
@@ -608,7 +699,7 @@ define(["jquery","underscore-min", "../Utils/Event", "../Utils/Utils", "../Utils
          * @function getColor
          * @memberOf AbstractLayer#
          */
-        AbstractLayer.prototype.getColor = function() {
+        AbstractLayer.prototype.getColor = function () {
             return this.color;
         };
 
@@ -616,12 +707,12 @@ define(["jquery","underscore-min", "../Utils/Event", "../Utils/Utils", "../Utils
          * @function getStyle
          * @memberOf AbstractLayer#
          */
-        AbstractLayer.prototype.getStyle = function() {
+        AbstractLayer.prototype.getStyle = function () {
             return this.style;
         };
 
 
-        AbstractLayer.prototype.isBackground = function() {
+        AbstractLayer.prototype.isBackground = function () {
             return this.background;
         };
 
