@@ -206,6 +206,14 @@ Context.prototype.setComponentVisibility = function (componentId, isVisible) {
 };
 
 /**
+ * Get the UI component visibility.
+ * @param {string} componentId - Id of the component
+ * @returns {boolean} - The visibility of the component
+ */
+Context.prototype.getComponentVisibility = function (componentId) {
+};
+
+/**
  * Shows components in the current state given by this.components.
  */
 Context.prototype.showComponents = function() {

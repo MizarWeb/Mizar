@@ -129,24 +129,89 @@ define(function () {
     /**
      *    Return if v is [min;max]
      */
-    Utils.isValueBetween = function (v,min,max) {
-        return ((v>=min) && (v<=max));
-    }
+    Utils.isValueBetween = function (v, min, max) {
+        return ((v >= min) && (v <= max));
+    };
 
     /**
      *     Return if 2 bounds (north,south,east,west) intersects
      */
-    Utils.boundsIntersects = function (a,b) {
-        xOk = Utils.isValueBetween(a.west,b.west,b.east) ||
-              Utils.isValueBetween(a.east,b.west,b.east) ||
-              ((a.west <= b.west) && (a.east >= b.east));
+    Utils.boundsIntersects = function (a, b) {
+        xOk = Utils.isValueBetween(a.west, b.west, b.east) ||
+            Utils.isValueBetween(a.east, b.west, b.east) ||
+            ((a.west <= b.west) && (a.east >= b.east));
 
-        yOk = Utils.isValueBetween(a.north,b.south,b.north) ||
-              Utils.isValueBetween(a.south,b.south,b.north) ||
-              ((a.south <= b.south) && (a.north >= b.north));
+        yOk = Utils.isValueBetween(a.north, b.south, b.north) ||
+            Utils.isValueBetween(a.south, b.south, b.north) ||
+            ((a.south <= b.south) && (a.north >= b.north));
 
         return xOk && yOk;
-    }
+    };
+
+    Utils.computeBaseUrlFromCapabilities = function (capabilitiesUrl, parameters) {
+        if (typeof capabilitiesUrl != "string" || capabilitiesUrl.length == 0 || !Array.isArray(parameters)) return null;
+
+        var url = capabilitiesUrl;
+        if (url.indexOf("?") > -1) {
+            url = url.substr(0, url.indexOf("?"));
+        }
+        // url cannot be undefined because we need to query a getCapabilities or something else with a parameter
+        var queryString = capabilitiesUrl.replace(url + "?", "") || capabilitiesUrl;
+        var query = Utils.parseQuery(queryString);
+        // we delete all parameters required by a standard.
+        for (var i = 0; i < parameters.length; i++) {
+            var parameter = parameters[i];
+            delete query[parameter];
+        }
+        // we build the new Url with remaining parameters.
+        var nbParameter = 0;
+        for (var key in query) {
+            var value = query[key];
+            if (nbParameter == 0) {
+                url = url + "?" + key + "=" + value;
+            } else {
+                url = url + "&" + key + "=" + value;
+            }
+            nbParameter++;
+        }
+
+        return url;
+    };
+
+    Utils.parseQuery = function(str) {
+        if (typeof str != "string" || str.length == 0) return {};
+        var s = str.split("&");
+        var s_length = s.length;
+        var bit, query = {}, first, second;
+        for (var i = 0; i < s_length; i++) {
+            bit = s[i].split("=");
+            first = decodeURIComponent(bit[0]);
+            if (first.length == 0) continue;
+            second = decodeURIComponent(bit[1]);
+            if (typeof query[first] == "undefined") query[first] = second;
+            else if (query[first] instanceof Array) query[first].push(second);
+            else query[first] = [query[first], second];
+        }
+        return query;
+    };
+
+    /**
+     * Add parameter to
+     * @function addParameterTo
+     * @memberOf AbstractLayer#
+     * @param {String} url - parameter url
+     * @param {String} name - parameter name
+     * @param {String} value - parameter value
+     * @return {String} url updated
+     */
+    Utils.addParameterTo = function (url, name, value) {
+        var separator = "&";
+        if ((typeof url !== "string") || (url.indexOf('?', 0) === -1)) {
+            separator = "?";
+        }
+        return url + separator + name + "=" + value;
+    };
+
     return Utils;
 
 });

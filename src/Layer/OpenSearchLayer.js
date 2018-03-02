@@ -49,19 +49,10 @@ define(['jquery','../Renderer/FeatureStyle', '../Renderer/VectorRendererManager'
          * @param {Boolean} [options.invertY=false] a boolean, if set all the image data of current layer is flipped along the vertical axis
          * @param {Boolean} [options.coordSystemRequired=true]
          * @param {FeatureStyle} [options.style=new FeatureStyle()]
-         * @memberof module:Layer
+         * @memberOf module:Layer
          */
           var OpenSearchLayer = function (options) {
             AbstractLayer.prototype.constructor.call(this, Constants.LAYER.OpenSearch, options);
-
-            if (typeof options.serviceUrl !== 'undefined') {
-              this.serviceUrl = this.proxify(options.serviceUrl);
-            }
-
-            if (typeof options.getCapabilities !== 'undefined') {
-              this.describeUrl = this.proxify(options.getCapabilities);
-            }
-
 
             this.name = options.name;
             this.title = options.title;
@@ -72,7 +63,6 @@ define(['jquery','../Renderer/FeatureStyle', '../Renderer/VectorRendererManager'
             this.maxRequests = options.maxRequests || 2;
             this.invertY = options.invertY || false;
             this.coordSystemRequired = options.hasOwnProperty('coordSystemRequired') ? options.coordSystemRequired : true;
-            this.formDescription = null;
 
             this.extId = "os";
 
@@ -108,9 +98,9 @@ define(['jquery','../Renderer/FeatureStyle', '../Renderer/VectorRendererManager'
             // Force Refresh
             this.forceRefresh = false;
 
-            if (typeof this.describeUrl !== 'undefined') {
+            if (typeof this.getGetCapabilitiesUrl() !== 'undefined') {
               this.hasForm = true;
-              this.loadGetCapabilities(this.manageCapabilities,this.describeUrl,this);
+              this.loadGetCapabilities(this.manageCapabilities,this.getGetCapabilitiesUrl(),this);
             } else {
               this.hasForm = false;
             }
@@ -133,29 +123,29 @@ define(['jquery','../Renderer/FeatureStyle', '../Renderer/VectorRendererManager'
         /**
          * Go to next page
          * @function nextPage
-         * @memberof OpenSearchLayer#
+         * @memberOf OpenSearchLayer#
          */
         OpenSearchLayer.prototype.nextPage = function () {
-            var num = OpenSearchUtils.getCurrentValue(this.formDescription,"page");
+            var num = OpenSearchUtils.getCurrentValue(this.getServices().queryForm,"page");
             // If not specified, set default to 1
             if ((num === null) || (typeof num === "undefined")) {
                 num = 1;
             }
-            OpenSearchUtils.setCurrentValueToParam(this.formDescription,"page",num*1+1);
+            OpenSearchUtils.setCurrentValueToParam(this.getServices().queryForm,"page",num*1+1);
 
             // update labels
             $(".labelPage")[0].innerText = "Page "+(num+1);
 
             this.forceRefresh = true;
             this.globe.renderContext.requestFrame();
-        }
+        };
 
         /**************************************************************************************************************/
 
         /**
          * When getCapabilities is loading, manage it
          * @function manageCapabilities
-         * @memberof OpenSearchLayer#
+         * @memberOf OpenSearchLayer#
          * @param json Json object
          * @param sourceObject Object where data is stored
          * @private
@@ -174,8 +164,8 @@ define(['jquery','../Renderer/FeatureStyle', '../Renderer/VectorRendererManager'
           }
           if (dataForm != null) {
             // Load form description
-            sourceObject.formDescription = new OpenSearchForm(dataForm,"application/json");
-            OpenSearchUtils.initNavigationValues(sourceObject.formDescription);
+            sourceObject.getServices().queryForm = new OpenSearchForm(dataForm,"application/json");
+            OpenSearchUtils.initNavigationValues(sourceObject.getServices().queryForm);
           } else {
             console.log("Form not correct");
           }
@@ -218,7 +208,7 @@ define(['jquery','../Renderer/FeatureStyle', '../Renderer/VectorRendererManager'
         /**
          * Traverse
          * @function traverse
-         * @memberof OSData.prototype
+         * @memberOf OSData.prototype
          * @param {Tile} tile Tile
          * @private
          */
@@ -262,7 +252,7 @@ define(['jquery','../Renderer/FeatureStyle', '../Renderer/VectorRendererManager'
         /**
          * Dispose renderable data from tile
          * @function dispose
-         * @memberof OSData.prototype
+         * @memberOf OSData.prototype
          * @param renderContext
          * @param tilePool
          * @private
@@ -293,7 +283,7 @@ define(['jquery','../Renderer/FeatureStyle', '../Renderer/VectorRendererManager'
         /**
          * Attaches the layer to the globe
          * @function _attach
-         * @memberof OpenSearchLayer#
+         * @memberOf OpenSearchLayer#
          * @param g The globe
          * @private
          */
@@ -308,7 +298,7 @@ define(['jquery','../Renderer/FeatureStyle', '../Renderer/VectorRendererManager'
         /**
          * Detach the layer from the globe
          * @function _detach
-         * @memberof OpenSearchLayer#
+         * @memberOf OpenSearchLayer#
          * @private
          */
         OpenSearchLayer.prototype._detach = function () {
@@ -321,7 +311,7 @@ define(['jquery','../Renderer/FeatureStyle', '../Renderer/VectorRendererManager'
         /**
          * Launches request to the OpenSearch service.
          * @function launchRequest
-         * @memberof OpenSearchLayer#
+         * @memberOf OpenSearchLayer#
          * @param {Tile} tile Tile
          * @param {String} url Url
          * @fires Context#startLoad
@@ -342,7 +332,7 @@ define(['jquery','../Renderer/FeatureStyle', '../Renderer/VectorRendererManager'
         /**
          * Remove all previous features
          * @function removeFeatures
-         * @memberof OpenSearchLayer#
+         * @memberOf OpenSearchLayer#
          */
         OpenSearchLayer.prototype.removeFeatures = function () {
             // clean renderers
@@ -380,7 +370,7 @@ define(['jquery','../Renderer/FeatureStyle', '../Renderer/VectorRendererManager'
         /**
          * Check if feature is outside extent
          * @function launchRequest
-         * @memberof OpenSearchLayer#
+         * @memberOf OpenSearchLayer#
          * @param {Tile} tile Tile
          * @param {String} url Url
          * @fires Context#startLoad
@@ -410,7 +400,7 @@ define(['jquery','../Renderer/FeatureStyle', '../Renderer/VectorRendererManager'
                      (north<extent.south) ||
                      (west>extent.east) ||
                      (east<extent.west) );
-        }
+        };
 
         /**************************************************************************************************************/
 
@@ -418,7 +408,7 @@ define(['jquery','../Renderer/FeatureStyle', '../Renderer/VectorRendererManager'
          * Remove all previous features
          * @function removeFeaturesOutside
          * @param {JSon} extent Extent
-         * @memberof OpenSearchLayer#
+         * @memberOf OpenSearchLayer#
          */
         OpenSearchLayer.prototype.removeFeaturesOutside = function (extent) {
             // clean renderers
@@ -441,7 +431,7 @@ define(['jquery','../Renderer/FeatureStyle', '../Renderer/VectorRendererManager'
         /**
          * Adds feature to the layer and to the tile extension.
          * @function addFeature
-         * @memberof OpenSearchLayer#
+         * @memberOf OpenSearchLayer#
          * @param {Feature} feature Feature
          * @param {Tile} tile Tile
          */
@@ -507,7 +497,7 @@ define(['jquery','../Renderer/FeatureStyle', '../Renderer/VectorRendererManager'
         /**
          * Add a feature to renderers
          * @function _addFeatureToRenderers
-         * @memberof GeoJsonLayer#
+         * @memberOf GeoJsonLayer#
          * @param {GeoJSON} feature Feature
          * @private
          */
@@ -538,7 +528,7 @@ define(['jquery','../Renderer/FeatureStyle', '../Renderer/VectorRendererManager'
         /**
          * Removes feature from Dynamic OpenSearch layer.
          * @function removeFeature
-         * @memberof OpenSearchLayer#
+         * @memberOf OpenSearchLayer#
          * @param {String} identifier identifier
          */
         OpenSearchLayer.prototype.removeFeature = function (identifier) {
@@ -580,7 +570,7 @@ define(['jquery','../Renderer/FeatureStyle', '../Renderer/VectorRendererManager'
         /**
          * Load quicklook
          * @function loadQuicklook
-         * @memberof OpenSearchLayer#
+         * @memberOf OpenSearchLayer#
          * @param {Feature} feature Feature
          * @param {String} url Url of image
          */
@@ -613,7 +603,7 @@ define(['jquery','../Renderer/FeatureStyle', '../Renderer/VectorRendererManager'
         /**
          * Indicate if quicklook is currently displayed
          * @function isQuicklookDisplayed
-         * @memberof OpenSearchLayer#
+         * @memberOf OpenSearchLayer#
          * @return {Boolean} Is quicklook currently displayed ?
          */
         OpenSearchLayer.prototype.isQuicklookDisplayed = function () {
@@ -626,7 +616,7 @@ define(['jquery','../Renderer/FeatureStyle', '../Renderer/VectorRendererManager'
        /**
          * Remove quicklook
          * @function removeQuicklook
-         * @memberof OpenSearchLayer#
+         * @memberOf OpenSearchLayer#
          */
         OpenSearchLayer.prototype.removeQuicklook = function () {
             if (this.currentQuicklookLayer === null) {
@@ -642,7 +632,7 @@ define(['jquery','../Renderer/FeatureStyle', '../Renderer/VectorRendererManager'
        /**
          * Modifies feature style.
          * @function modifyFeatureStyle
-         * @memberof OpenSearchLayer#
+         * @memberOf OpenSearchLayer#
          * @param {Feature} feature Feature
          * @param {FeatureStyle} style Style
          */
@@ -675,7 +665,7 @@ define(['jquery','../Renderer/FeatureStyle', '../Renderer/VectorRendererManager'
         /**
          * Generate the tile data
          * @function generate
-         * @memberof OpenSearchLayer#
+         * @memberOf OpenSearchLayer#
          * @param {Tile} tile Tile
          * @private
          */
@@ -690,14 +680,14 @@ define(['jquery','../Renderer/FeatureStyle', '../Renderer/VectorRendererManager'
         /**
          * Prepare parameters for a given bound
          * @function prepareParameters
-         * @memberof OpenSearchLayer#
+         * @memberOf OpenSearchLayer#
          * @param {Bound} bound Bound
          */
         OpenSearchLayer.prototype.prepareParameters = function (bound) {
             var param;      // param managed
             var code;       // param code
-            for (var i=0;i<this.formDescription.parameters.length;i++) {
-                param = this.formDescription.parameters[i];
+            for (var i=0;i<this.getServices().queryForm.parameters.length;i++) {
+                param = this.getServices().queryForm.parameters[i];
                 code = param.value;
                 code = code.replace("?}","}");
                 if (code === "{geo:box}") {
@@ -705,24 +695,24 @@ define(['jquery','../Renderer/FeatureStyle', '../Renderer/VectorRendererManager'
                     param.currentValue = bound.west+","+bound.south+","+bound.east+","+bound.north;
                 }
             }
-        }
+        };
             
         /**************************************************************************************************************/
 
         /**
          * Build request url
          * @function buildUrl
-         * @memberof OpenSearchLayer#
+         * @memberOf OpenSearchLayer#
          * @param {Bound} bound Bound
          * @return {String} Url
          */
         OpenSearchLayer.prototype.buildUrl = function (bound) {
 
             //var url = this.serviceUrl + "/search?order=" + tile.order + "&healpix=" + tile.pixelIndex;
-            if (this.formDescription === null) {
+            if (!this.getServices().hasOwnProperty("queryForm")) {
                 return null;
             }
-            var url = this.formDescription.template;
+            var url = this.getServices().queryForm.template;
 
             // Prepare parameters for this tile
             this.prepareParameters(bound);
@@ -730,8 +720,8 @@ define(['jquery','../Renderer/FeatureStyle', '../Renderer/VectorRendererManager'
             // Check each parameter
             var param;          // param managed
             var currentValue;   // value set 
-            for (var i=0;i<this.formDescription.parameters.length;i++) {
-                param = this.formDescription.parameters[i];
+            for (var i=0;i<this.getServices().queryForm.parameters.length;i++) {
+                param = this.getServices().queryForm.parameters[i];
                 //console.log("check param ",param.value);
                 currentValue = param.currentValueTransformed();
                 if (currentValue === null) {
@@ -748,7 +738,7 @@ define(['jquery','../Renderer/FeatureStyle', '../Renderer/VectorRendererManager'
                 }
             }
 
-            return url;
+            return this.proxify(url);
         };
 
         /**************************************************************************************************************/
@@ -769,7 +759,7 @@ define(['jquery','../Renderer/FeatureStyle', '../Renderer/VectorRendererManager'
         /**
          * Render function
          * @function render
-         * @memberof OpenSearchLayer#
+         * @memberOf OpenSearchLayer#
          * @param tiles The array of tiles to render
          */
         OpenSearchLayer.prototype.render = function (tiles) {
@@ -814,7 +804,7 @@ define(['jquery','../Renderer/FeatureStyle', '../Renderer/VectorRendererManager'
                 if (isZoomLevelChanged) {
                     console.log("Changement of zoom level, go to page 1");
                     // Go to page 1
-                    OpenSearchUtils.setCurrentValueToParam(this.formDescription,"page",1);
+                    OpenSearchUtils.setCurrentValueToParam(this.getServices().queryForm,"page",1);
 
                     this.result.featuresLoaded = 0;
                     $(".labelLoaded")[0].innerText = "loaded : "+this.result.featuresLoaded;
@@ -852,7 +842,7 @@ define(['jquery','../Renderer/FeatureStyle', '../Renderer/VectorRendererManager'
          * @function getExtent
          * @param {Array} tiless Array of tiles
          * @return {Json} Extent (north, south, east, west)
-         * @memberof OpenSearchLayer#
+         * @memberOf OpenSearchLayer#
          */
 
         OpenSearchLayer.prototype.getExtent = function(tiles) {
@@ -861,7 +851,7 @@ define(['jquery','../Renderer/FeatureStyle', '../Renderer/VectorRendererManager'
                 "west":+180,
                 "north":-90,
                 "south":+90
-            }
+            };
             var bound;
             for (var i=0;i<tiles.length;i++) {
                 bound = tiles[i].bound;
@@ -871,7 +861,7 @@ define(['jquery','../Renderer/FeatureStyle', '../Renderer/VectorRendererManager'
                 result.west  = bound.west <result.west  ? bound.west   : result.west;
             }
             return result;
-        }
+        };
 
         /**************************************************************************************************************/
 
@@ -879,7 +869,7 @@ define(['jquery','../Renderer/FeatureStyle', '../Renderer/VectorRendererManager'
          * Get geometry extent 
          * @function getGeometryExtent
          * @param {Json} geometry Geometry
-         * @memberof OpenSearchLayer#
+         * @memberOf OpenSearchLayer#
          */
         OpenSearchLayer.prototype.getGeometryExtent = function(geometry) {
             var result = {
@@ -887,7 +877,7 @@ define(['jquery','../Renderer/FeatureStyle', '../Renderer/VectorRendererManager'
                 "west":+180,
                 "north":-90,
                 "south":+90
-            }
+            };
             for (var i=0;i<geometry.coordinates[0].length;i++) {
                 coord = geometry.coordinates[0][i];
                 result.south = coord[1] < result.south ? coord[1]  : result.south;
@@ -897,19 +887,19 @@ define(['jquery','../Renderer/FeatureStyle', '../Renderer/VectorRendererManager'
                 
             }
             return result;
-        }
+        };
 
         /**************************************************************************************************************/
 
         /**
          * Submit OpenSearch form
          * @function submit
-         * @memberof OpenSearchLayer#
+         * @memberOf OpenSearchLayer#
          */
         OpenSearchLayer.prototype.submit = function() {
-            this.formDescription.updateFromGUI();
+            this.getServices().queryForm.updateFromGUI();
             this.resetAll();
-        }
+        };
 
         /**************************************************************************************************************/
         
@@ -940,7 +930,7 @@ define(['jquery','../Renderer/FeatureStyle', '../Renderer/VectorRendererManager'
                 throw new TypeError("the parameter of setVisible should be a boolean", "AbstractLayer.js");
             }
 
-        }
+        };
         
         /**************************************************************************************************************/
 
@@ -974,7 +964,7 @@ define(['jquery','../Renderer/FeatureStyle', '../Renderer/VectorRendererManager'
         /**
          * Reset pool, cache and all OpenSearch data loaded
          * @function resetAll
-         * @memberof OpenSearchLayer#
+         * @memberOf OpenSearchLayer#
          */
         OpenSearchLayer.prototype.resetAll = function() {
             // Reset pool
@@ -984,26 +974,26 @@ define(['jquery','../Renderer/FeatureStyle', '../Renderer/VectorRendererManager'
             // Remove all features
             this.removeFeaturesOutside(null);
             
-        }
+        };
 
         /**************************************************************************************************************/
 
         /**
          * Clean the cache
          * @function cleanCache
-         * @memberof OpenSearchLayer#
+         * @memberOf OpenSearchLayer#
          */
         OpenSearchLayer.prototype.cleanCache = function() {
             this.cache.reset();
             this.previousViewKey = null;
-        }
+        };
 
         /**************************************************************************************************************/
 
         /**
          * Update the GUI (mainly debug purpose)
          * @function updateGUI
-         * @memberof OpenSearchLayer#
+         * @memberOf OpenSearchLayer#
          */
         OpenSearchLayer.prototype.updateGUI = function () {
             var message = "";
@@ -1013,14 +1003,14 @@ define(['jquery','../Renderer/FeatureStyle', '../Renderer/VectorRendererManager'
             message += this.pool.getPoolsStatus()+"<br>";
             message += this.cache.getCacheStatus();
             //$("#resultNavigation").html(message);
-        }
+        };
 
         /**************************************************************************************************************/
 
         /**
          * Check is feature still added to tile
          * @function featureStillAddedToTile
-         * @memberof OpenSearchLayer#
+         * @memberOf OpenSearchLayer#
          * @param {Feature} feature Feature
          * @param {Tile} tile Tile
          * @private
@@ -1036,14 +1026,14 @@ define(['jquery','../Renderer/FeatureStyle', '../Renderer/VectorRendererManager'
             var num = this.featuresAdded.indexOf(ind);
 
             return (num >= 0);
-        }
+        };
             
         /**************************************************************************************************************/
 
         /**
          * Load WMS layer
          * @function loadWMS
-         * @memberof OpenSearchLayer#
+         * @memberOf OpenSearchLayer#
          * @param {Json} selectedData Selected data
          * @private
          */
@@ -1055,7 +1045,6 @@ define(['jquery','../Renderer/FeatureStyle', '../Renderer/VectorRendererManager'
                 "type": "WMS",
                 "name": name,
                 "baseUrl":endpoint,
-                "getCapabilities":endpoint,
                 "onlyFirst":true,
                 "format":"image/png",
                 "visible": true,
@@ -1066,99 +1055,53 @@ define(['jquery','../Renderer/FeatureStyle', '../Renderer/VectorRendererManager'
             var idLayerAdded = selectedData.layer.callbackContext.addLayer(layerDescription).ID;
             
             // Add feature id of wms into list a current WMS displayed
-            this.currentWMS.push({
-                "featureId" : selectedData.feature.id,
-                "layerId" : idLayerAdded
-            });
+            this.addServicesRunningOnRecord(selectedData.feature.id, idLayerAdded);
 
             $(".QLWMS_"+selectedData.layer.getShortName())[0].style = "display:inline";
-        }
+        };
         
         /**************************************************************************************************************/
 
         /**
          * Unload all WMS layer
          * @function unloadAllWMS
-         * @memberof OpenSearchLayer#
+         * @memberOf OpenSearchLayer#
          * @private
          */
         OpenSearchLayer.prototype.unloadAllWMS = function() {
-            // Remove feature id
-            var layerId = null;
-            for (var i=0;i<this.currentWMS.length;i++) {
-                layerId = this.currentWMS[i].layerId;
-                this.callbackContext.removeLayer(layerId);
-            }
+
+            this.removeServicesRunningOnRecords();
+            this.removeServicesRunningOnCollection();
 
             this.callbackContext.refresh();
-            
-            this.currentWMS = [];
 
             $(".QLWMS_"+this.getShortName())[0].style = "display:none";
-        }
+        };
 
         /**************************************************************************************************************/
 
         /**
          * Unload WMS layer
          * @function unloadWMS
-         * @memberof OpenSearchLayer#
+         * @memberOf OpenSearchLayer#
          * @param {Json} selectedData Selected data
          * @private
          */
         OpenSearchLayer.prototype.unloadWMS = function(selectedData) {
             // Remove feature id
-            var newCurrentWMS = [];
-            var layerId = null;
-            for (var i=0;i<this.currentWMS.length;i++) {
-                if (this.currentWMS[i].featureId !== selectedData.feature.id) {
-                    newCurrentWMS.push(this.currentWMS[i]);
-                } else {
-                    layerId = this.currentWMS[i].layerId;
-                }
-            }
+            this.removeServicesRunningOnRecord(selectedData.feature.id);
 
-            if (layerId === null) {
-                console.log("OpenSearchLayer.unloadWMS : layer not found");
-                return;
-            }
-
-            this.currentWMS = newCurrentWMS;
-
-            // remove layer
-            selectedData.layer.callbackContext.removeLayer(layerId);
             selectedData.layer.callbackContext.refresh();
 
-            if (this.currentWMS.length === 0) {
-                $(".QLWMS_"+selectedData.layer.getShortName())[0].style = "display:none";
+            $(".QLWMS_"+selectedData.layer.getShortName())[0].style = "display:none";
 
-            }
-        }
-        /**************************************************************************************************************/
-
-        /**
-         * is associated layer ?
-         * @function isAssociatedLayer
-         * @memberof AbstractLayer#
-         * @param {Integer} featureId feature id to search
-         * @return {Boolean} is associated layer of this feature displayed ?
-         * @private
-         */
-        OpenSearchLayer.prototype.isAssociatedLayer = function(featureId) {
-            // Check if any WMS layer is loaded
-            for (var i=0;i<this.currentWMS.length;i++) {
-                if (this.currentWMS[i].featureId === featureId) {
-                    return true;
-                }
-            }
-            return false;
-        }
+        };
 
         /**************************************************************************************************************/
         /**
          * Manage a response to OpenSearch query
          * @function manageFeaturesResponse
-         * @memberof OpenSearchLayer#
+         * @memberOf OpenSearchLayer#
          * @param {Array} features Array of features loaded
          * @param {Tile} tile Tile
          * @private
@@ -1189,14 +1132,14 @@ define(['jquery','../Renderer/FeatureStyle', '../Renderer/VectorRendererManager'
             $(".labelTotal")[0].innerText = "total : ~ "+this.result.featuresTotal;
             
             this.globe.refresh();
-        }
+        };
         
         /**************************************************************************************************************/
 
         /**
          * Update features
          * @function updateFeatures
-         * @memberof OpenSearchLayer#
+         * @memberOf OpenSearchLayer#
          * @param {Array} features Array of features
          * @private
          */

@@ -159,7 +159,7 @@ Layer.prototype.getCoordinateSystem = function() {};
  * Returns the base URL
  * @returns {string} the base URL
  */
-Layer.prototype.getBaseURl = function() {};
+Layer.prototype.getBaseUrl = function() {};
 
 /**
  * Returns true when the layer is deletable by the client
@@ -182,8 +182,91 @@ Layer.prototype.getStyle = function() {};
 
 /**
  * Returns true when the layer is set as background otherwise false.
+ * @returns {Boolean} True when the layer is set as background otherwise False
  */
 Layer.prototype.isBackground = function() {};
+
+/**
+ * Returns True when at least on service related to this whole layer is loaded otherwise False.
+ * A service is a layer which is created from this layer.
+ * @returns {Boolean} True when at least on service related to this whole layer is loaded otherwise False
+ */
+Layer.prototype.hasServicesRunningOnCollection = function() {};
+
+/**
+ * Returns the loaded services related to the whole layer.
+ * When no loaded services, an empty array is returned.
+ * @returns {Array<Layer>} an array of loaded services related to the whole layer.
+ */
+Layer.prototype.getServicesRunningOnCollection = function() {};
+
+/**
+ * Adds a reference to loaded service related to the collection.
+ * @param {String|Array<String>} layerIDs services related to the collection
+ * @returns {Boolean} True when the references are added otherwise False
+ * @protected
+ */
+Layer.prototype.addServicesRunningOnCollection = function(layerIDs) {};
+
+/**
+ * Removes all loaded services on collection.
+ * @returns {Boolean} True when all loaded services on the collection are unloaded otherwise False
+ * @protected
+ */
+Layer.prototype.removeServicesRunningOnCollection = function() {};
+
+/**
+ * Returns True when at least one service related to a record of this layer is loaded otherwise False.
+ * A service is a layer which is created from this layer.
+ * @returns {Boolean} True when at least one service related to a record of this layer is loaded otherwise False
+ */
+Layer.prototype.hasServicesRunningOnRecords = function() {};
+
+/**
+ * Returns the loaded services related to a record of this layer.
+ * When no loaded services, an empty array is returned.
+ * @returns {Array<Layer>} an array of loaded services related to a record of this layer.
+ */
+Layer.prototype.getServicesRunningOnRecords = function() {};
+
+/**
+ * Removes all loaded services on records.
+ * @returns {Boolean} True when all loaded services on records are unloaded otherwise False
+ * @protected
+ */
+Layer.prototype.removeServicesRunningOnRecords = function() {};
+
+/**
+ * Returns True when at least one service is related to a record otherwise False.
+ * A service is a layer which is created from this layer.
+ * @param {String} featureID Record ID
+ * @returns {Boolean} True when when at least one service is related to a featureID otherwise False
+ */
+Layer.prototype.hasServicesRunningOnRecord = function(featureID) {};
+
+/**
+ * Returns an array of layerID related to a record.
+ * @param {String} featureID Record ID
+ * @returns {Array<Layer>} layers related to the featureID
+ */
+Layer.prototype.getServicesRunningOnRecord = function(featureID) {};
+
+/**
+ * Adds a reference to loaded services related to a record
+ * @param {String} featureID record ID from which services are loaded
+ * @param {String|Array<String>} layerIDs services related to a record
+ * @returns {Boolean} True when the references are added otherwise False
+ * @protected
+ */
+Layer.prototype.addServicesRunningOnRecord = function(featureID, layerIDs) {};
+
+/**
+ * Removes loaded services on a record.
+ * @param {String} featureID
+ * @returns {Boolean} True when all loaded services related to a record are unloaded otherwise False
+ * @protected
+ */
+Layer.prototype.removeServicesRunningOnRecord = function(featureID) {};
 
 /**
  * Attachs the raster layer to the planet.
