@@ -78,32 +78,27 @@ define(['../Utils/Utils', './AbstractRasterLayer', '../Utils/Constants','../Tili
             this.scaleData = options.scaleData || 1;
 
             // Build the base GetMap URL
-            var url = options.baseUrl;
-            if (url.indexOf('?', 0) === -1) {
-                url += '?service=wcs';
-            }
-            else {
-                url += '&service=wcs';
-            }
-            url += "&version=" + this.version;
-            url += "&request=GetCoverage";
+            var url = this.baseUrl;
+            url = Utils.addParameterTo(url, "service", "wcs");
+            url = Utils.addParameterTo(url, "version", this.version);
+            url = Utils.addParameterTo(url, "request", "GetCoverage");
 
             switch (this.version.substring(0, 3)) {
                 case '2.0':
                     this.crs = options.outputCRS || options.crs || 'http://www.opengis.net/def/crs/EPSG/0/4326';
-                    url += '&outputCRS=' + this.crs;
-                    url += "&size=x(" + this.tilePixelSize + ")";
-                    url += "&size=y(" + this.tilePixelSize + ")";
-                    url += "&coverageid=" + options.coverage;
+                    url = Utils.addParameterTo(url, "outputCRS", this.crs);
+                    url = Utils.addParameterTo(url, "size", "x(" + this.tilePixelSize + ")");
+                    url = Utils.addParameterTo(url, "size", "y(" + this.tilePixelSize + ")");
+                    url = Utils.addParameterTo(url, "coverageid", options.coverage);
                     break;
                 case '1.0':
-                    url += "&width=" + this.tilePixelSize;
-                    url += "&height=" + this.tilePixelSize;
-                    url += '&crs=' + (options.crs || 'EPSG:4326');
-                    url += "&coverage=" + options.coverage;
+                    url = Utils.addParameterTo(url, "width",  this.tilePixelSize);
+                    url = Utils.addParameterTo(url, "height",  this.tilePixelSize);
+                    url = Utils.addParameterTo(url, "crs",  options.crs || 'EPSG:4326');
+                    url = Utils.addParameterTo(url, "coverage",  options.coverage);
                     break;
             }
-            url += '&format=' + this.format;
+            url = Utils.addParameterTo(url, "format",  this.format);
             this.getCoverageBaseUrl = url;
         };
 
@@ -182,10 +177,10 @@ define(['../Utils/Utils', './AbstractRasterLayer', '../Utils/Constants','../Tili
         };
 
         /**
-         * @function getBaseURl
+         * @function getBaseUrl
          * @memberOf WCSElevationLayer#
          */
-        WCSElevationLayer.prototype.getBaseURl = function() {
+        WCSElevationLayer.prototype.getBaseUrl = function() {
             return this.getCoverageBaseUrl;
         };
 
@@ -201,18 +196,11 @@ define(['../Utils/Utils', './AbstractRasterLayer', '../Utils/Constants','../Tili
             var url = this.getCoverageBaseUrl;
 
             if (this.version.substring(0, 3) === '2.0') {
-                url += '&subset=x,' + this.crs + '(' + geoBound.west + ',' + geoBound.east + ')';
-                url += '&subset=y,' + this.crs + '(' + geoBound.south + ',' + geoBound.north + ')';
+                url = Utils.addParameterTo(url, "subset", "x"+this.crs + "(" + geoBound.west + "," + geoBound.east + ")");
+                url = Utils.addParameterTo(url, "subset", "y"+this.crs + "(" + geoBound.south + "," + geoBound.north + ")");
             }
             else if (this.version.substring(0, 3) === '1.0') {
-                url += "&bbox=";
-                url += geoBound.west;
-                url += ",";
-                url += geoBound.south;
-                url += ",";
-                url += geoBound.east;
-                url += ",";
-                url += geoBound.north;
+                url = Utils.addParameterTo(url, "bbox",geoBound.west+","+geoBound.south+","+geoBound.east+","+geoBound.north);
             }
             return this.proxify(url);
         };

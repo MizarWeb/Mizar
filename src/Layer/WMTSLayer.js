@@ -86,85 +86,30 @@ define(['../Utils/Utils', './AbstractRasterLayer', '../Utils/Constants','../Tili
          * @see {@link http://www.opengeospatial.org/standards/sld SLD} standard
          */
         var WMTSLayer = function (options) {
-            AbstractRasterLayer.prototype.constructor.call(this, Constants.LAYER.WMTS, options);
-            this.options = options;
-            this.tiling = new WMTSTiling();
 
+            _computeBaseUrlAndCapabilities.call(this, options);
+
+            AbstractRasterLayer.prototype.constructor.call(this, Constants.LAYER.WMTS, options);
+
+            this.tiling = new WMTSTiling();
+            this.getTileBaseUrl = null;
 
             if (options.byPass === true) {
                 // Special, options still filled from getCapabilities !
-                this.urlRaw = this.options.baseUrl;
-                this.name = this.options.name;
-                var url = this.urlRaw;
-                if (url.indexOf('?', 0) === -1) {
-                    url += '?service=wmts';
-                }
-                else {
-                    url += '&service=wmts';
-                }
-                url += "&version=";
-                url += this.options.version || "1.0.0.0";
-                url += "&request=GetTile";
-                url += "&layer=" + this.options.layer;
-                url += "&tilematrixset=" + this.options.matrixSet;
-                if (this.options.style) {
-                    url += "&style=" + this.options.style;
-                }
-                url += "&format=";
-                this.format = this.options.hasOwnProperty('format') ? this.options.format : 'image/png';
-                url += this.format;
-                if (this.options.time) {
-                    url += "&time=" + this.options.time;
-                }
-                this.getTileBaseUrl = url;
-                this.numberOfLevels = this.options.tileMatrix.length;
-                this.tiling.update(this.options.tileMatrix);
-                if ((this.options.getCapabilitiesTileManager !== null) && (typeof this.options.getCapabilitiesTileManager !== "undefined")) {
-                    this.options.getCapabilitiesTileManager.setImageryProvider(this);
+                this.getTileBaseUrl = _queryImage.call(this, this.getBaseUrl(), options);
+                this.numberOfLevels = options.tileMatrix.length;
+                this.tiling.update(options.tileMatrix);
+                if ((options.getCapabilitiesTileManager !== null) && (typeof options.getCapabilitiesTileManager !== "undefined")) {
+                    options.getCapabilitiesTileManager.setImageryProvider(this);
                 }
 
-            } else if ((typeof options.baseUrl !== 'undefined') && (options.baseUrl !== null)) {
+            } else {
                 // Check getCapabilities
                 this.getCapabilitiesEnabled = true;
                 this.afterLoad = options.afterLoad;
-                this.urlRaw = options.baseUrl;
-                this.addGetCapabilitiesParameter("service","WMTS");
-                this.addGetCapabilitiesParameter("version",options.hasOwnProperty('version') ? options.version : '1.0.0.0');
-                this.addGetCapabilitiesParameter("request","getCapabilities");
+                this.urlRaw = options.getCapabilities;
                 // manage get capabilities
-                this.loadGetCapabilities(this.manageCapabilities,this.getCapabilitiesRaw,this);
-            }
-            /* else if ((typeof options.baseUrl !== 'undefined') && (options.baseUrl !== null)) {
-                // manage base url
-                // Build the base GetTile URL
-                var url = options.baseUrl;
-                if (url.indexOf('?', 0) === -1) {
-                    url += '?service=wmts';
-                }
-                else {
-                    url += '&service=wmts';
-                }
-                url += "&version=";
-                url += options.version || '1.0.0';
-                url += "&request=GetTile";
-                url += "&layer=" + options.layer;
-                url += "&tilematrixset=" + options.matrixSet;
-                if (options.style) {
-                    url += "&style=" + options.style;
-                }
-                url += "&format=";
-                this.format = options.hasOwnProperty('format') ? options.format : 'image/png';
-                url += this.format;
-                if (options.time) {
-                    url += "&time=" + options.time;
-                }
-
-                this.getTileBaseUrl = url;
-                this.numberOfLevels = this.options.tileMatrix.TileMatrix.length;
-                this.tiling.update(this.options.tileMatrix);
-            }*/ else {
-                // manage nothing, not enough data
-                console.log("ERROR !");
+                this.loadGetCapabilities(this.manageCapabilities,this.getGetCapabilitiesUrl(),this);
             }
         };
 
@@ -174,8 +119,43 @@ define(['../Utils/Utils', './AbstractRasterLayer', '../Utils/Constants','../Tili
 
         /**************************************************************************************************************/
 
+        function _queryImage(baseUrl, options) {
+            var url = this.getBaseUrl();
+            url = Utils.addParameterTo("service","wmts");
+            url = Utils.addParameterTo("version",options.version || "1.0.0.0");
+            url = Utils.addParameterTo(url,"request", "GetTile");
+            url = Utils.addParameterTo(url,"layer", options.layer);
+            url = Utils.addParameterTo(url, "tilematrixset", options.matrixSet);
+            if (options.style) {
+                url = Utils.addParameterTo(url, "style",options.style);
+            }
+            url = Utils.addParameterTo(url, "format", options.hasOwnProperty('format') ? options.format : 'image/png');
+            if (options.time) {
+                url = Utils.addParameterTo(url, "time", options.time);
+            }
+            return url;
+        }
+
+        function _computeBaseUrlAndCapabilities(options) {
+            if(options.getCapabilities) {
+                options.baseUrl = Utils.computeBaseUrlFromCapabilities(options.getCapabilities,["service","request","version"]);
+            } else if(options.baseUrl) {
+                options.getCapabilities = _computeCapabilitiesFromBaseUrl.call(this, options.baseUrl, options);
+            } else {
+                throw new ReferenceError('No URL to access to the WMS server is defined', 'WMSLayer.js');
+            }
+        }
+
+        function _computeCapabilitiesFromBaseUrl(baseUrl, options) {
+            var getCapabilitiesUrl = baseUrl;
+            getCapabilitiesUrl = Utils.addParameterTo(getCapabilitiesUrl, "service", "WMTS");
+            getCapabilitiesUrl = Utils.addParameterTo(getCapabilitiesUrl, "request", "getCapabilities");
+            getCapabilitiesUrl = Utils.addParameterTo(getCapabilitiesUrl, "version", options.hasOwnProperty('version') ? options.version : '1.0.0.0');
+            return getCapabilitiesUrl;
+        }
+
         WMTSLayer.prototype.getMatrixSet = function(json,name) {
-            matrix = json.Capabilities.Contents.TileMatrixSet;
+            var matrix = json.Capabilities.Contents.TileMatrixSet;
             if ( (matrix.length === null) || (typeof matrix.length === "undefined")) {
                 // only one !
                 if (matrix.Indentifier["_text"] === name) {
@@ -189,7 +169,7 @@ define(['../Utils/Utils', './AbstractRasterLayer', '../Utils/Constants','../Tili
                 }
             }
             return null;
-        }
+        };
         /**
          * When getCapabilities is loading, manage it
          * @function manageCapabilities
@@ -204,7 +184,7 @@ define(['../Utils/Utils', './AbstractRasterLayer', '../Utils/Constants','../Tili
                 var layers = json.Capabilities.Contents.Layer;
                 if ( (layers.length === null) || (typeof layers.length === "undefined")) {
                     // Only one layer ! Load it !
-                    layerName = layers.Identifier["_text"];
+                    var layerName = layers.Identifier["_text"];
                     sourceObject.options.layer = layerName;
                     if ((sourceObject.options.matrixSet === null) || (typeof sourceObject.options.matrixSet === "undefined")) {
                         sourceObject.options.matrixSet = json.Capabilities.Contents.TileMatrixSet.Identifier["_text"];
@@ -240,29 +220,8 @@ define(['../Utils/Utils', './AbstractRasterLayer', '../Utils/Constants','../Tili
             if ( (sourceObject.afterLoad !== null) && (typeof sourceObject.afterLoad !== "undefined")) {
                 sourceObject.afterLoad(sourceObject);
             }
-            var url = sourceObject.urlRaw;
-            if (url.indexOf('?', 0) === -1) {
-                url += '?service=wmts';
-            }
-            else {
-                url += '&service=wmts';
-            }
-            url += "&version=";
-            url += sourceObject.options.version || "1.0.0.0";
-            url += "&request=GetTile";
-            url += "&layer=" + sourceObject.options.layer;
-            url += "&tilematrixset=" + sourceObject.options.matrixSet;
-            if (sourceObject.options.style) {
-                url += "&style=" + sourceObject.options.style;
-            }
-            url += "&format=";
-            this.format = sourceObject.options.hasOwnProperty('format') ? options.format : 'image/png';
-            url += this.format;
-            if (sourceObject.options.time) {
-                url += "&time=" + sourceObject.options.time;
-            }
 
-            sourceObject.getTileBaseUrl = url;
+            sourceObject.getTileBaseUrl =  _queryImage.call(this, sourceObject.baseUrl, sourceObject.options);
     
             // more than one matrixset ?
             var matrixSet = null;
@@ -311,21 +270,12 @@ define(['../Utils/Utils', './AbstractRasterLayer', '../Utils/Constants','../Tili
          */
         WMTSLayer.prototype.getUrl = function (tile) {
             var url = this.getTileBaseUrl;
-            url += "&tilematrix=";
-            url += tile.level;
-            url += "&tilecol=" + tile.x;
-            url += "&tilerow=" + tile.y;
-
+            url = Utils.addParameterTo(url, "tilematrix", tile.level);
+            url = Utils.addParameterTo(url, "tilecol", tile.x);
+            url = Utils.addParameterTo(url, "tilerow", tile.y);
             return this.proxify(url);
         };
 
-        /**
-         * @function getBaseURl
-         * @memberOf WMTSLayer#
-         */
-        WMTSLayer.prototype.getBaseURl = function() {
-            return this.getTileBaseUrl;
-        };
 
         /**************************************************************************************************************/
 
