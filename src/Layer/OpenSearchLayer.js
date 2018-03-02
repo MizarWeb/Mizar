@@ -536,9 +536,9 @@ define(['jquery','../Renderer/FeatureStyle', '../Renderer/VectorRendererManager'
          * @param {FeatureStyle} style Style
          */
         OpenSearchLayer.prototype.modifyFeatureStyle = function (feature, style) {
-           if (this.globe.vectorRendererManager.removeGeometry(feature.geometry,this)) {
-            feature.properties.style = style;
-            this.globe.vectorRendererManager.addGeometry(this, feature.geometry, style);
+            if (this.globe.vectorRendererManager.removeGeometry(feature.geometry,this)) {
+                feature.properties.style = style;
+                this.globe.vectorRendererManager.addGeometry(this, feature.geometry, style);
             }
         };
 
@@ -847,9 +847,16 @@ define(['jquery','../Renderer/FeatureStyle', '../Renderer/VectorRendererManager'
          * @memberOf OpenSearchLayer#
          * @throws {RangeError} opacity - opacity value should be a value in [0..1]
          */
-        OpenSearchLayer.prototype.setOpacity = function (arg) {
+        OpenSearchLayer.prototype.setOpacityOS = function (arg) {
+            console.log("OpenSearch setOpacity to "+arg);
             if (typeof arg === "number" && arg >=0.0 && arg <=1.0) {
                 this.opacity = arg;
+                targetStyle = new FeatureStyle(this.style);
+                targetStyle.opacity = this.opacity;
+
+                for (var i=0;i<this.features.length;i++) {
+                    this.modifyFeatureStyle(this.features[i],targetStyle);
+                }
 
                 var linkedLayers = this.callbackContext.getLinkedLayers(this.ID);
                 // Change for wms linked layers
