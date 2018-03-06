@@ -119,9 +119,9 @@ define(['../Utils/Utils', './AbstractRasterLayer', '../Utils/Constants','../Tili
         /**************************************************************************************************************/
 
         function _queryImage(baseUrl, options) {
-            var url = this.getBaseUrl();
-            url = Utils.addParameterTo("service","wmts");
-            url = Utils.addParameterTo("version",options.version || "1.0.0.0");
+            var url = baseUrl;
+            url = Utils.addParameterTo(url, "service","wmts");
+            url = Utils.addParameterTo(url, "version",options.version || "1.0.0.0");
             url = Utils.addParameterTo(url,"request", "GetTile");
             url = Utils.addParameterTo(url,"layer", options.layer);
             url = Utils.addParameterTo(url, "tilematrixset", options.matrixSet);
