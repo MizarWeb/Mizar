@@ -326,7 +326,7 @@ define(
             this._setupPosAfterTrans(geoPos);
             dest[0] = geoPos[0];
             dest[1] = geoPos[1];
-            dest[2] = geoPos.length > 2 ? geoPos[2] : this.geoide.getRealPlanetRadius();
+            dest[2] = geoPos.length > 2 ? geoPos[2] : 0;
             return dest;
         };
 
