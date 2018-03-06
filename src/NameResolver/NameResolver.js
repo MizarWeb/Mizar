@@ -199,10 +199,10 @@ define(["jquery", "underscore-min", "../Utils/Constants",
                         type: 'Feature',
                         properties: {
                             type: 'layer',
-                            name: layer.name,
-                            description: layer.description,
-                            layerType: layer.type,
-                            visible: layer.visible,
+                            name: layer.getName(),
+                            description: layer.getDescription(),
+                            layerType: layer.getType(),
+                            visible: layer.isVisible(),
                             background: layer.category === "background"
                         }
                     }

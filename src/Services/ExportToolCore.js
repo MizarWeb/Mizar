@@ -36,7 +36,7 @@ define(["jquery", "underscore-min", "jszip", "saveAs","../Gui/dialog/ErrorDialog
             availableLayers = [];
             _.each(layers, function (layer) {
                 if (layer.isVisible() && layer.category !== "Other" && layer.category !== "Solar System"
-                    && layer.name !== "SAMP" && layer.name !== "Planets") {
+                    && layer.getName() !== "SAMP" && layer.getName() !== "Planets") {
                     layer.layerId = _.uniqueId('layer_');
                     availableLayers.push(layer);
                 }
@@ -67,10 +67,10 @@ define(["jquery", "underscore-min", "jszip", "saveAs","../Gui/dialog/ErrorDialog
             var dataLayers = [];
             _.each(availableLayers, function (layer) {
                 if ($('#' + layer.layerId).is(':checked')) {
-                    if (layer.type === Constants.LAYER.OpenSearch || layer.type === Constants.LAYER.GeoJSON) {
+                    if (layer.getType() === Constants.LAYER.OpenSearch || layer.getType() === Constants.LAYER.GeoJSON) {
                         //if (layer.type === "DynamicOpenSearch") {
                         dataLayers.push(layer);
-                    } else if (layer.type === Constants.LAYER.Hips || layer.type === Constants.LAYER.HipsCat) {
+                    } else if (layer.getType() === Constants.LAYER.Hips || layer.getType() === Constants.LAYER.HipsCat) {
                         backgroundLayers.push(layer);
                     }
                 }

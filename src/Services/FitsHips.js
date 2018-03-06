@@ -12,7 +12,7 @@ define([], function() {
                 "hipsMetadata": layer.getHipsMetadata()
             };
             var fitsLayer = mizarAPI.LayerFactory.create(selectedLayer);
-            fitsLayer.ID = layer.ID;
+            fitsLayer.ID = layer.getID();
             if (layer.isBackground()) {
                 mizarAPI.getActivatedContext()._getGlobe().setBaseImagery(fitsLayer);
             } else {
@@ -30,7 +30,7 @@ define([], function() {
     function _removeFitsLayer(ID) {
         var isRemoved;
         var layer = mizarAPI.getActivatedContext().getLayerByID(ID);
-        if(layer && layer.format!=="fits") {
+        if(layer && layer.getFormat()!=="fits") {
             mizarAPI.getActivatedContext()._getGlobe().setBaseImagery(layer);
             isRemoved = true;
         } else {

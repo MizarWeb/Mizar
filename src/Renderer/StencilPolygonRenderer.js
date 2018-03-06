@@ -312,7 +312,7 @@ StencilPolygonRenderer.prototype.render = function(renderables, start, end)
 
 		var style = renderable.bucket.style;
 		gl.uniform4f(this.program.uniforms.u_color, style.fillColor[0], style.fillColor[1], style.fillColor[2],
-				style.fillColor[3] * renderable.bucket.layer.opacity);  // use fillColor
+				style.fillColor[3] * renderable.bucket.layer.getOpacity());  // use fillColor
 
 		gl.bindBuffer(gl.ARRAY_BUFFER, renderable.vertexBuffer);
 		gl.vertexAttribPointer(this.program.attributes.vertex, 3, gl.FLOAT, false, 0, 0);

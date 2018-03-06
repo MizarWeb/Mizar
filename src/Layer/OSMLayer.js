@@ -77,7 +77,8 @@ define(['../Utils/Utils', './AbstractRasterLayer', '../Utils/Constants', '../Til
          * @return {String} Url
          */
         OSMLayer.prototype.getUrl = function (tile) {
-            return this.baseUrl + '/' + tile.level + '/' + tile.x + '/' + tile.y + '.png';
+            var url =  this.baseUrl + '/' + tile.level + '/' + tile.x + '/' + tile.y + '.png';
+            return this.proxify(url, tile.level);
         };
 
 

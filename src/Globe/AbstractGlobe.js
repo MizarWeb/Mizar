@@ -240,9 +240,9 @@ define(['../Utils/Event', '../Utils/Utils',
          */
         AbstractGlobe.prototype.addLayer = function (layer) {
             var globe = this;
-            if (layer.url) {
+            if (layer.isVectorLayer()) {
                 $.ajax({
-                    url: layer.url,
+                    url: layer.getUrl(),
                     success: function (data) {
                         layer.addFeatureCollection(data);
                         layer.id = globe.nbCreatedLayers;
@@ -507,6 +507,14 @@ define(['../Utils/Event', '../Utils/Utils',
          */
         AbstractGlobe.prototype.getTileManager = function () {
             return this.tileManager;
+        };
+
+        /**
+         * @function getVectorRendererManager
+         * @memberOf AbstractGlobe#
+         */
+        AbstractGlobe.prototype.getVectorRendererManager = function() {
+            return this.vectorRendererManager;
         };
 
         /**

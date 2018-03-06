@@ -75,8 +75,8 @@ define(['../Utils/Utils', './AbstractLayer', '../Utils/Constants', '../Renderer/
          * @memberof TileWireframeLayer#
          */
         TileWireframeLayer.prototype.buildIndexBuffer = function () {
-            var gl = this.globe.renderContext.gl;
-            var size = this.globe.tileManager.tileConfig.tesselation;
+            var gl = this.getGlobe().getRenderContext().gl;
+            var size = this.getGlobe().getTileManager().tileConfig.tesselation;
             var indices = [];
             var i, j, ii, n, k;
             var step = this.outline ? size - 1 : 1;
@@ -147,7 +147,7 @@ define(['../Utils/Utils', './AbstractLayer', '../Utils/Constants', '../Renderer/
             AbstractLayer.prototype._attach.call(this, g);
 
             if (this.isVisible()) {
-                this.globe.tileManager.addPostRenderer(this);
+                this.getGlobe().getTileManager().addPostRenderer(this);
             }
 
             if (!this.program) {
@@ -167,7 +167,7 @@ define(['../Utils/Utils', './AbstractLayer', '../Utils/Constants', '../Renderer/
                 fragmentShader += "	gl_FragColor = vec4(color,alpha);\n";
                 fragmentShader += "}\n";
 
-                this.program = new Program(this.globe.renderContext);
+                this.program = new Program(this.getGlobe().getRenderContext());
                 this.program.createFromSource(vertexShader, fragmentShader);
 
                 this.buildIndexBuffer();
@@ -183,7 +183,7 @@ define(['../Utils/Utils', './AbstractLayer', '../Utils/Constants', '../Renderer/
          * @private
          */
         TileWireframeLayer.prototype._detach = function () {
-            this.globe.tileManager.removePostRenderer(this);
+            this.getGlobe().getTileManager().removePostRenderer(this);
             AbstractLayer.prototype._detach.call(this);
         };
 
@@ -196,7 +196,7 @@ define(['../Utils/Utils', './AbstractLayer', '../Utils/Constants', '../Renderer/
          * @param {Array} tiles Array of Tile
          */
         TileWireframeLayer.prototype.render = function (tiles) {
-            var rc = this.globe.renderContext;
+            var rc = this.getGlobe().getRenderContext();
             var gl = rc.gl;
 
             gl.enable(gl.BLEND);
@@ -252,10 +252,10 @@ define(['../Utils/Utils', './AbstractLayer', '../Utils/Constants', '../Renderer/
 
             if (typeof arg === "boolean") {
                 if (this.isVisible()) {
-                    this.globe.tileManager.addPostRenderer(this);
+                    this.getGlobe().getTileManager().addPostRenderer(this);
                 }
                 else {
-                    this.globe.tileManager.removePostRenderer(this);
+                    this.getGlobe().getTileManager().removePostRenderer(this);
                 }
             }
 

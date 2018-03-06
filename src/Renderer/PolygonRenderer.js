@@ -491,7 +491,7 @@ PolygonRenderer.prototype.render = function(renderables, start, end)
 		mat4.multiply(viewProjMatrix,renderable.matrix,modelViewProjMatrix);
 		gl.uniformMatrix4fv(program.uniforms.mvp, false, modelViewProjMatrix);
 		gl.uniform4f(program.uniforms.u_color, style.fillColor[0], style.fillColor[1], style.fillColor[2],
-				style.fillColor[3] * renderable.bucket.layer.opacity);  // use fillColor
+				style.fillColor[3] * renderable.bucket.layer.getOpacity());  // use fillColor
 
 		renderable.bindBuffers(renderContext);
 		gl.lineWidth( style.strokeWidth );
@@ -508,7 +508,7 @@ PolygonRenderer.prototype.render = function(renderables, start, end)
 		gl.drawElements( gl.TRIANGLES, renderable.triIndices.length, renderable.indexType, 0);
 		if ( renderable.lineIndices.length > 0 )
 		{
-			gl.uniform4f(program.uniforms.u_color, style.strokeColor[0], style.strokeColor[1], style.strokeColor[2], style.strokeColor[3] * renderable.bucket.layer.opacity);
+			gl.uniform4f(program.uniforms.u_color, style.strokeColor[0], style.strokeColor[1], style.strokeColor[2], style.strokeColor[3] * renderable.bucket.getOpacity.opacity);
 			var size = renderable.indexType === gl.UNSIGNED_INT ? 4 : 2;
 			gl.drawElements( gl.LINES, renderable.lineIndices.length, renderable.indexType, renderable.triIndices.length * size);
 		}

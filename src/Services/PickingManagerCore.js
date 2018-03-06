@@ -86,7 +86,7 @@ define(["../Renderer/FeatureStyle", "../Layer/OpenSearchLayer", "../Utils/Utils"
                     case Constants.GEOMETRY.MultiLineString:
                     case Constants.GEOMETRY.Polygon:
                     case Constants.GEOMETRY.MultiPolygon:
-                        style.strokeColor = selectedData.layer.style.strokeColor;
+                        style.strokeColor = selectedData.layer.getStyle().strokeColor;
                         break;
                     case Constants.GEOMETRY.Point:
                         // Use stroke color while reverting
@@ -95,7 +95,7 @@ define(["../Renderer/FeatureStyle", "../Layer/OpenSearchLayer", "../Utils/Utils"
                     default:
                         break;
                 }
-                style.zIndex = selectedData.layer.style.zIndex;
+                style.zIndex = selectedData.layer.getStyle().zIndex;
                 selectedData.layer.modifyFeatureStyle(selectedData.feature, style);
             }
         }
@@ -166,7 +166,7 @@ define(["../Renderer/FeatureStyle", "../Layer/OpenSearchLayer", "../Utils/Utils"
                     case Constants.GEOMETRY.MultiLineString:
                     case Constants.GEOMETRY.Polygon:
                     case Constants.GEOMETRY.MultiPolygon:
-                        style.strokeColor = selectedData.layer.style.strokeColor;
+                        style.strokeColor = selectedData.layer.getStyle().strokeColor;
                         style.strokeWidth = 1;
                         break;
                     case Constants.GEOMETRY.Point:
@@ -176,9 +176,9 @@ define(["../Renderer/FeatureStyle", "../Layer/OpenSearchLayer", "../Utils/Utils"
                     default:
                         break;
                 }
-                style.zIndex = selectedData.layer.style.zIndex;
+                style.zIndex = selectedData.layer.getStyle().zIndex;
 
-                if (selectedData.layer.globe) {
+                if (selectedData.layer.getGlobe()) {
                     // Layer is still attached to globe
                     selectedData.layer.modifyFeatureStyle(selectedData.feature, style);
                 }
@@ -199,7 +199,7 @@ define(["../Renderer/FeatureStyle", "../Layer/OpenSearchLayer", "../Utils/Utils"
                     style = new FeatureStyle(selectedData.feature.properties.style);
                 }
                 else {
-                    style = new FeatureStyle(selectedData.layer.style);
+                    style = new FeatureStyle(selectedData.layer.getStyle());
                 }
                 switch (selectedData.feature.geometry.type) {
                     case Constants.GEOMETRY.LineString:

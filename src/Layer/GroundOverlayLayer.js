@@ -88,7 +88,7 @@ define(['../Utils/Utils', './AbstractLayer', '../Utils/Constants', '../Renderer/
             this.image.layer = this;
 
             this.image.onload = function() {
-                this.layer.globe.refresh();
+                this.layer.getGlobe().refresh();
             }
         };
 
@@ -109,8 +109,8 @@ define(['../Utils/Utils', './AbstractLayer', '../Utils/Constants', '../Renderer/
             // Add layer to ground overlay renderer, create one if needed
             var renderer = planet.groundOverlayRenderer;
             if (!renderer) {
-                renderer = new GroundOverlayRenderer(planet.tileManager);
-                planet.tileManager.addPostRenderer(renderer);
+                renderer = new GroundOverlayRenderer(planet.getTileManager());
+                planet.getTileManager().addPostRenderer(renderer);
                 planet.groundOverlayRenderer = renderer;
             }
             renderer.groundOverlays.push(this);
@@ -131,7 +131,7 @@ define(['../Utils/Utils', './AbstractLayer', '../Utils/Constants', '../Renderer/
          */
         GroundOverlayLayer.prototype.update = function (quad,url) {
             console.log("GroundOverlayLayer.update",quad);
-            this.globe.groundOverlayRenderer.enabled = true;
+            this.getGlobe().groundOverlayRenderer.enabled = true;
 
             this.geoBound = null;
             this.geoBound = new GeoBound();
@@ -148,7 +148,7 @@ define(['../Utils/Utils', './AbstractLayer', '../Utils/Constants', '../Renderer/
             this.computeTransform();
 
             this.image.onload = function() {
-                this.layer.globe.refresh();
+                this.layer.getGlobe().refresh();
             }
         }
     
@@ -164,15 +164,15 @@ define(['../Utils/Utils', './AbstractLayer', '../Utils/Constants', '../Renderer/
          */
         GroundOverlayLayer.prototype._detach = function (planet) {
             // Remove layer from the planet renderer for ground overlay
-            var prevRenderer = this.globe.groundOverlayRenderer;
+            var prevRenderer = this.getGlobe().groundOverlayRenderer;
             if (prevRenderer) {
                 var index = prevRenderer.groundOverlays.indexOf(this);
                 if (index !== -1) {
                     prevRenderer.groundOverlays.splice(index, 1);
 
                     if (prevRenderer.groundOverlays.length === 0) {
-                        this.globe.tileManager.removePostRenderer(prevRenderer);
-                        this.globe.groundOverlayRenderer = null;
+                        this.getGlobe().getTileManager().removePostRenderer(prevRenderer);
+                        this.getGlobe().groundOverlayRenderer = null;
                     }
                 }
             }
@@ -230,7 +230,7 @@ define(['../Utils/Utils', './AbstractLayer', '../Utils/Constants', '../Renderer/
             var q3 = this.quad[2];
             var q4 = this.quad[3];
 
-            var tileConfig = this.globe.tileManager.tileConfig;
+            var tileConfig = this.getGlobe().getTileManager().tileConfig;
             if (tileConfig.srs !== 'EPSG:4326') {
                 q1 = tileConfig.project(q1);
                 q2 = tileConfig.project(q2);

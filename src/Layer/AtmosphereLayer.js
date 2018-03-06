@@ -124,9 +124,9 @@ define(['../Utils/Utils', './AbstractLayer', '../Utils/Constants','../Renderer/P
      */
     AtmosphereLayer.prototype._attach = function (g) {
         this.globe = g;
-        this._innerRadius = this.globe.getCoordinateSystem().getGeoide().getRadius();
+        this._innerRadius = this.getGlobe().getCoordinateSystem().getGeoide().getRadius();
         this._outerRadius = this._innerRadius * 1.005;
-        var renderContext = g.renderContext;
+        var renderContext = g.getRenderContext();
 
         // Setup program, uniform now that we have the render context
 
@@ -207,10 +207,10 @@ define(['../Utils/Utils', './AbstractLayer', '../Utils/Constants','../Renderer/P
         gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(indices), gl.STATIC_DRAW);
         this._numIndices = indices.length;
 
-        this._originalProgram = g.tileManager.program;
+        this._originalProgram = g.getTileManager().program;
 
         g.preRenderers.push(this);
-        g.tileManager.addPostRenderer(this);
+        g.getTileManager().addPostRenderer(this);
     };
 
     /**************************************************************************************************************/
@@ -223,7 +223,7 @@ define(['../Utils/Utils', './AbstractLayer', '../Utils/Constants','../Renderer/P
      * @private
      */
     AtmosphereLayer.prototype._initUniforms = function (uniforms) {
-        var gl = this.globe.renderContext.gl;
+        var gl = this.getGlobe().getRenderContext().gl;
 
         var g = -0.95;		// The Mie phase asymmetry factor
         var scale = 1.0 / ( this._outerRadius - this._innerRadius );
@@ -264,13 +264,13 @@ define(['../Utils/Utils', './AbstractLayer', '../Utils/Constants','../Renderer/P
         if (!this._isValid) {
             return;
         }
-        var tileManager = this.globe.tileManager;
+        var tileManager = this.getGlobe().getTileManager();
         if (!this.isVisible()) {
             tileManager.program = this._originalProgram;
             return;
         }
 
-        var rc = this.globe.renderContext;
+        var rc = this.getGlobe().getRenderContext();
         var gl = rc.gl;
         var x,y,z;
 
@@ -328,10 +328,10 @@ define(['../Utils/Utils', './AbstractLayer', '../Utils/Constants','../Renderer/P
      * @memberof AtmosphereLayer#
      */
     AtmosphereLayer.prototype.render = function () {
-        if (!this._isValid || !this.isVisible() || !this.globe) {
+        if (!this._isValid || !this.isVisible() || !this.getGlobe()) {
             return;
         }
-        var rc = this.globe.renderContext;
+        var rc = this.getGlobe().getRenderContext();
         var gl = rc.gl;
 
         gl.enable(gl.CULL_FACE);

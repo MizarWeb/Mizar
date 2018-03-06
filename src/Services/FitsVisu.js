@@ -113,7 +113,7 @@ define(["jquery", "../Utils/Constants",
             var feature = featureData.feature;
             var layer = featureData.layer;
             
-            if (layer.type === "OpenSearch") {
+            if (layer.getType() === "OpenSearch") {
                 layer.loadQuicklook(feature,url);
             }
         }
@@ -219,7 +219,7 @@ define(["jquery", "../Utils/Constants",
                     $('#quicklookFits').removeClass('selected');
                 }
                 else {
-                    if (featureData.layer.type === "OpenSearch") {
+                    if (featureData.layer.getType() === "OpenSearch") {
                         featureData.layer.removeQuicklook();
                     } else {
                         var style = featureData.feature.properties.style;
@@ -258,7 +258,7 @@ define(["jquery", "../Utils/Constants",
                     style.fill = true;
                     var url;
                     if (featureData.isWms) {
-                        url = mizarAPI._getUrl(feature.properties.services.browse.layer.url);
+                        url = mizarAPI._getUrl(feature.properties.services.browse.layer.getUrl());
                     } else {
                         url = mizarAPI._getUrl(feature.properties.quicklook);
                     }

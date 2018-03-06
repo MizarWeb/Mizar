@@ -196,7 +196,7 @@ define(['./AbstractLayer', '../Utils/Utils', '../Renderer/Ray', '../Renderer/Pro
             AbstractLayer.prototype._attach.call(this, g);
 
             if (this.isVisible()) {
-                this.globe.tileManager.addPostRenderer(this);
+                this.getGlobe().getTileManager().addPostRenderer(this);
             }
 
             if (!this.gridProgram) {
@@ -303,14 +303,14 @@ define(['./AbstractLayer', '../Utils/Utils', '../Renderer/Ray', '../Renderer/Pro
                 fragmentLabelShader += "	gl_FragColor = vec4(textureColor.rgb, textureColor.a * alpha); \n";
                 fragmentLabelShader += "} \n";
 
-                this.gridProgram = new Program(this.globe.renderContext);
-                this.labelProgram = new Program(this.globe.renderContext);
+                this.gridProgram = new Program(this.getGlobe().getRenderContext());
+                this.labelProgram = new Program(this.getGlobe().getRenderContext());
                 this.gridProgram.createFromSource(vertexShader, fragmentShader);
                 this.labelProgram.createFromSource(vertexLabelShader, fragmentLabelShader);
             }
 
             // Texture used to show the equatorial coordinates
-            this.labelMesh = new Mesh(this.globe.renderContext);
+            this.labelMesh = new Mesh(this.getGlobe().getRenderContext());
             var vertices = [-0.5, -0.5, 0.0,
                 -0.5, 0.5, 0.0,
                 0.5, 0.5, 0.0,
@@ -320,7 +320,7 @@ define(['./AbstractLayer', '../Utils/Utils', '../Renderer/Ray', '../Renderer/Pro
             this.labelMesh.setIndices(indices);
 
             // Init grid buffers
-            var gl = this.globe.renderContext.gl;
+            var gl = this.getGlobe().getRenderContext().gl;
             this.vertexBuffer = gl.createBuffer();
             this.indexBuffer = gl.createBuffer();
 
@@ -339,7 +339,7 @@ define(['./AbstractLayer', '../Utils/Utils', '../Renderer/Ray', '../Renderer/Pro
          * @private
          */
         CoordinateGridLayer.prototype._detach = function () {
-            var gl = this.globe.renderContext.gl;
+            var gl = this.getGlobe().getRenderContext().gl;
             gl.deleteBuffer(this.vertexBuffer);
             gl.deleteBuffer(this.indexBuffer);
 
@@ -350,7 +350,7 @@ define(['./AbstractLayer', '../Utils/Utils', '../Renderer/Ray', '../Renderer/Pro
                 }
             }
 
-            this.globe.tileManager.removePostRenderer(this);
+            this.getGlobe().getTileManager().removePostRenderer(this);
             AbstractLayer.prototype._detach.call(this);
 
         };
@@ -379,7 +379,7 @@ define(['./AbstractLayer', '../Utils/Utils', '../Renderer/Ray', '../Renderer/Pro
          * @param {Array} tiles Tiles
          */
         CoordinateGridLayer.prototype.render = function (tiles) {
-            var renderContext = this.globe.renderContext;
+            var renderContext = this.getGlobe().getRenderContext();
             var gl = renderContext.gl;
 
             gl.disable(gl.DEPTH_TEST);
@@ -392,7 +392,7 @@ define(['./AbstractLayer', '../Utils/Utils', '../Renderer/Ray', '../Renderer/Pro
             var geoBound;
             // Transform geoBound computed in default coordinate system to coordinate system of current grid if different
             var self = this;
-            geoBound = this.globe.getViewportGeoBound(function (coordinate) {
+            geoBound = this.getGlobe().getViewportGeoBound(function (coordinate) {
                 //return coordinate;
                 return self.globe.getCoordinateSystem().convert(coordinate, Constants.CRS.Equatorial, self.gridCrs.getGeoideName());
             });
@@ -478,10 +478,10 @@ define(['./AbstractLayer', '../Utils/Utils', '../Renderer/Ray', '../Renderer/Pro
             AbstractLayer.prototype.setVisible.call(this, arg);
             if (typeof arg === "boolean") {
                 if (this.isVisible()) {
-                    this.globe.tileManager.addPostRenderer(this);
+                    this.getGlobe().getTileManager().addPostRenderer(this);
                 }
                 else {
-                    this.globe.tileManager.removePostRenderer(this);
+                    this.getGlobe().getTileManager().removePostRenderer(this);
                 }
             }
         };
@@ -552,15 +552,15 @@ define(['./AbstractLayer', '../Utils/Utils', '../Renderer/Ray', '../Renderer/Pro
                         var cosPhi = Math.cos(radPhi);
 
                         // z is the up vector
-                        var x = cosPhi * sinTheta * this.globe.getCoordinateSystem().getGeoide().getRadius();
-                        var y = sinPhi * sinTheta * this.globe.getCoordinateSystem().getGeoide().getRadius();
-                        var z = cosTheta * this.globe.getCoordinateSystem().getGeoide().getRadius();
+                        var x = cosPhi * sinTheta * this.getGlobe().getCoordinateSystem().getGeoide().getRadius();
+                        var y = sinPhi * sinTheta * this.getGlobe().getCoordinateSystem().getGeoide().getRadius();
+                        var z = cosTheta * this.getGlobe().getCoordinateSystem().getGeoide().getRadius();
 
                         //TODO a modifier
                         if (this.gridCrs.getGeoideName() !== Constants.CRS.Equatorial) {
-                            var geo = this.globe.getCoordinateSystem().from3DToGeo([x, y, z]);
-                            geo = this.globe.getCoordinateSystem().convert(geo, this.gridCrs.getGeoideName(), Constants.CRS.Equatorial);
-                            var eq = this.globe.getCoordinateSystem().fromGeoTo3D(geo);
+                            var geo = this.getGlobe().getCoordinateSystem().from3DToGeo([x, y, z]);
+                            geo = this.getGlobe().getCoordinateSystem().convert(geo, this.gridCrs.getGeoideName(), Constants.CRS.Equatorial);
+                            var eq = this.getGlobe().getCoordinateSystem().fromGeoTo3D(geo);
                             vertexPositionData.push(eq[0], eq[1], eq[2]);
                         } else {
                             vertexPositionData.push(x, y, z);
@@ -570,7 +570,7 @@ define(['./AbstractLayer', '../Utils/Utils', '../Renderer/Ray', '../Renderer/Pro
                 }
             }
 
-            var gl = this.globe.renderContext.gl;
+            var gl = this.getGlobe().getRenderContext().gl;
             gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexBuffer);
             gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertexPositionData), gl.STATIC_DRAW);
             this.vertexBuffer.itemSize = 3;
@@ -626,10 +626,10 @@ define(['./AbstractLayer', '../Utils/Utils', '../Renderer/Ray', '../Renderer/Pro
                     label = angle + "°";
                     break;
                 case "HMS":
-                    label = this.globe.getCoordinateSystem().fromDegreesToHMS(angle);
+                    label = this.getGlobe().getCoordinateSystem().fromDegreesToHMS(angle);
                     break;
                 case "DMS":
-                    label = this.globe.getCoordinateSystem().fromDegreesToDMS(angle);
+                    label = this.getGlobe().getCoordinateSystem().fromDegreesToDMS(angle);
                     break;
                 default:
                     console.error(format + " : format not supported");
@@ -647,13 +647,13 @@ define(['./AbstractLayer', '../Utils/Utils', '../Renderer/Ray', '../Renderer/Pro
          * @return {Array} Geocenter as array of float
          */
         CoordinateGridLayer.prototype.computeGeoCenter = function () {
-            var ray = Ray.createFromPixel(this.globe.getRenderContext(), this.globe.getRenderContext().canvas.width / 2.0, this.globe.getRenderContext().canvas.height / 2.0);
-            var center3d = ray.computePoint(ray.sphereIntersect([0, 0, 0], this.globe.getCoordinateSystem().getGeoide().getRadius()));
+            var ray = Ray.createFromPixel(this.getGlobe().getRenderContext(), this.getGlobe().getRenderContext().canvas.width / 2.0, this.getGlobe().getRenderContext().canvas.height / 2.0);
+            var center3d = ray.computePoint(ray.sphereIntersect([0, 0, 0], this.getGlobe().getCoordinateSystem().getGeoide().getRadius()));
             var geoCenter = [];
-            this.globe.getCoordinateSystem().from3DToGeo(center3d, geoCenter);
+            this.getGlobe().getCoordinateSystem().from3DToGeo(center3d, geoCenter);
 
             // Convert geoCenter into grid's coordinate system
-            geoCenter = this.globe.getCoordinateSystem().convert(geoCenter, Constants.CRS.Equatorial, this.gridCrs.getGeoideName());
+            geoCenter = this.getGlobe().getCoordinateSystem().convert(geoCenter, Constants.CRS.Equatorial, this.gridCrs.getGeoideName());
 
             return geoCenter;
         };
@@ -668,8 +668,8 @@ define(['./AbstractLayer', '../Utils/Utils', '../Renderer/Ray', '../Renderer/Pro
          * @param {float[]} posGeo Updated geographic position of label
          */
         CoordinateGridLayer.prototype.updateLabel = function (label, posGeo) {
-            posGeo = this.globe.getCoordinateSystem().convert(posGeo, this.gridCrs.getGeoideName(), Constants.CRS.Equatorial);
-            var pos3d = this.globe.getCoordinateSystem().fromGeoTo3D(posGeo);
+            posGeo = this.getGlobe().getCoordinateSystem().convert(posGeo, this.gridCrs.getGeoideName(), Constants.CRS.Equatorial);
+            var pos3d = this.getGlobe().getCoordinateSystem().fromGeoTo3D(posGeo);
             var vertical = vec3.create();
             vec3.normalize(pos3d, vertical);
 

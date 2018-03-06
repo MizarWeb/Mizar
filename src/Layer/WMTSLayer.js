@@ -107,7 +107,6 @@ define(['../Utils/Utils', './AbstractRasterLayer', '../Utils/Constants','../Tili
                 // Check getCapabilities
                 this.getCapabilitiesEnabled = true;
                 this.afterLoad = options.afterLoad;
-                this.urlRaw = options.getCapabilities;
                 // manage get capabilities
                 this.loadGetCapabilities(this.manageCapabilities,this.getGetCapabilitiesUrl(),this);
             }
@@ -273,7 +272,7 @@ define(['../Utils/Utils', './AbstractRasterLayer', '../Utils/Constants','../Tili
             url = Utils.addParameterTo(url, "tilematrix", tile.level);
             url = Utils.addParameterTo(url, "tilecol", tile.x);
             url = Utils.addParameterTo(url, "tilerow", tile.y);
-            return this.proxify(url);
+            return this.proxify(url, tile.level);
         };
 
 

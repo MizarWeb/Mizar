@@ -278,7 +278,7 @@ define(['../Utils/Utils', './AbstractRasterLayer', '../Utils/Constants','../Tili
 
             // Request a frame
             if (self.globe) {
-                self.globe.renderContext.requestFrame();
+                self.globe.getRenderContext().requestFrame();
             }
         };
 
@@ -303,7 +303,8 @@ define(['../Utils/Utils', './AbstractRasterLayer', '../Utils/Constants','../Tili
      */
     BingLayer.prototype.getUrl = function (tile) {
         var url = this.baseUrl.replace("{quadkey}", BingTileSystem.tileXYToQuadKey(tile.x, tile.y, tile.level));
-        return url.replace("{subdomain}", this.baseUrlSubDomains[Math.floor(Math.random() * this.baseUrlSubDomains.length)]);
+        url =  url.replace("{subdomain}", this.baseUrlSubDomains[Math.floor(Math.random() * this.baseUrlSubDomains.length)]);
+        return this.proxify(url, tile.level);
     };
 
     /**************************************************************************************************************/

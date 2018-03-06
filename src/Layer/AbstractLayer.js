@@ -112,6 +112,7 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Util
             this.linkedTo = this.options.linkedTo || "";
             this.servicesRunningOnCollection = [];
             this.servicesRunningOnRecords = {};
+            this.vectorLayer = false;
 
             // Update layer color
             this.color = _createColor.call(this, this.options);
@@ -555,13 +556,11 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Util
          */
         AbstractLayer.prototype.setVisible = function (arg) {
             if (typeof arg === "boolean") {
-                if (this.visible !== arg && this.globe.attributionHandler) {
-                    this.globe.attributionHandler.toggleAttribution(this);
+                if (this.visible !== arg && this.getGlobe().attributionHandler) {
+                    this.getGlobe().attributionHandler.toggleAttribution(this);
                 }
                 this.visible = arg;
-                if (this.globe) {
-                    this.globe.renderContext.requestFrame();
-                }
+                this.getGlobe().getRenderContext().requestFrame();
                 this.publish(Constants.EVENT_MSG.LAYER_VISIBILITY_CHANGED, this);
             } else {
                 throw new TypeError("the parameter of setVisible should be a boolean", "AbstractLayer.js");
@@ -584,9 +583,7 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Util
         AbstractLayer.prototype.setOpacity = function (arg) {
             if (typeof arg === "number" && arg >= 0.0 && arg <= 1.0) {
                 this.opacity = arg;
-                if (this.globe) {
-                    this.globe.renderContext.requestFrame();
-                }
+                this.getGlobe().getRenderContext().requestFrame();
                 this.publish(Constants.EVENT_MSG.LAYER_OPACITY_CHANGED, this);
             } else {
                 throw new RangeError('opacity value should be a value in [0..1]', "AbstractLayer.js");
@@ -711,9 +708,30 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Util
             return this.style;
         };
 
+        /**
+         * Sets the vector layer style.
+         * @function setStyle
+         * @memberOf AbstractLayer#
+         * @param {FeatureStyle} arg Feature style
+         */
+        AbstractLayer.prototype.setStyle = function (arg) {
+            this.style = arg;
+        };
 
+        /**
+         * @function isBackground
+         * @memberOf AbstractLayer#
+         */
         AbstractLayer.prototype.isBackground = function () {
             return this.background;
+        };
+
+        /**
+         * @function isVectorLayer
+         * @memberOf AbstractLayer#
+         */
+        AbstractLayer.prototype.isVectorLayer = function() {
+            return this.vectorLayer;
         };
 
         return AbstractLayer;

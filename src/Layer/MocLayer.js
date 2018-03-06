@@ -165,7 +165,7 @@ define(["jquery", "underscore-min", "./AbstractLayer", '../Utils/Constants','../
 
 
             // As post renderer, moc layer will regenerate data on tiles in case of base imagery change
-            g.tileManager.addPostRenderer(this);
+            g.getTileManager().addPostRenderer(this);
         };
 
         /**************************************************************************************************************/
@@ -181,7 +181,7 @@ define(["jquery", "underscore-min", "./AbstractLayer", '../Utils/Constants','../
                 var geometries = this.featuresSet[tile.pixelIndex];
                 if (geometries) {
                     for (var i = 0; i < geometries.length; i++) {
-                        this.globe.vectorRendererManager.addGeometryToTile(this, geometries[i], this.style, tile);
+                        this.getGlobe().getVectorRendererManager().addGeometryToTile(this, geometries[i], this.style, tile);
                     }
                 }
             }
@@ -209,14 +209,14 @@ define(["jquery", "underscore-min", "./AbstractLayer", '../Utils/Constants','../
         MocLayer.prototype._detach = function () {
             for (var tileIndex in this.featuresSet) {
                 if(this.featuresSet.hasOwnProperty(tileIndex)) {
-                    var tile = this.globe.tileManager.level0Tiles[tileIndex];
+                    var tile = this.getGlobe().getTileManager().level0Tiles[tileIndex];
                     for (var i = 0; i < this.featuresSet[tileIndex].length; i++) {
-                        this.globe.vectorRendererManager.removeGeometryFromTile(this.featuresSet[tileIndex][i], tile);
+                        this.getGlobe().getVectorRendererManager().removeGeometryFromTile(this.featuresSet[tileIndex][i], tile);
                     }
                 }
             }
             this.featuresSet = null;
-            this.globe.tileManager.removePostRenderer(this);
+            this.getGlobe().getTileManager().removePostRenderer(this);
 
             AbstractLayer.prototype._detach.call(this);
         };
@@ -267,7 +267,7 @@ define(["jquery", "underscore-min", "./AbstractLayer", '../Utils/Constants','../
          * @param response MOC response
          */
         MocLayer.prototype.handleDistribution = function (response) {
-            var gl = this.globe.tileManager.renderContext.gl;
+            var gl = this.getGlobe().getTileManager().getRenderContext().gl;
             this.featuresSet = {};
             var parentIndex;
             var i,u,v;
@@ -325,7 +325,7 @@ define(["jquery", "underscore-min", "./AbstractLayer", '../Utils/Constants','../
                         for (u = 0; u < 2; u++) {
                             for (v = 0; v < size; v++) {
                                 vertice = HEALPixBase.fxyf((ix + u * (size - 1) * step) / nside, (iy + v * step) / nside, face);
-                                geo = this.globe.getCoordinateSystem().getWorldFrom3D(vertice);
+                                geo = this.getGlobe().getCoordinateSystem().getWorldFrom3D(vertice);
                                 if (u === 0) {
                                     // Invert to clockwise sense
                                     geometry.coordinates[0][2 * u * size + (size - 1) - v] = [geo[0], geo[1]];
@@ -340,7 +340,7 @@ define(["jquery", "underscore-min", "./AbstractLayer", '../Utils/Constants','../
                         for (v = 0; v < 2; v++) {
                             for (u = 0; u < size; u++) {
                                 vertice = HEALPixBase.fxyf((ix + u * step) / nside, (iy + v * (size - 1) * step) / nside, face);
-                                geo = this.globe.getCoordinateSystem().getWorldFrom3D(vertice);
+                                geo = this.getGlobe().getCoordinateSystem().getWorldFrom3D(vertice);
                                 if (v === 1) {
                                     // Invert to clockwise sense
                                     geometry.coordinates[0][size + 2 * v * size + (size - 1) - u] = [geo[0], geo[1]];
@@ -351,14 +351,14 @@ define(["jquery", "underscore-min", "./AbstractLayer", '../Utils/Constants','../
                             }
                         }
 
-                        var parentTile = this.globe.tileManager.level0Tiles[parentIndex];
+                        var parentTile = this.getGlobe().getTileManager().level0Tiles[parentIndex];
 
                         if (!this.featuresSet[parentIndex]) {
                             this.featuresSet[parentIndex] = [];
                         }
 
                         this.featuresSet[parentIndex].push(geometry);
-                        this.globe.vectorRendererManager.addGeometryToTile(this, geometry, this.style, parentTile);
+                        this.getGlobe().getVectorRendererManager().addGeometryToTile(this, geometry, this.style, parentTile);
                     }
                 }
             }

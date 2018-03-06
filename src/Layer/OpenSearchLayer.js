@@ -63,9 +63,7 @@ define(['jquery','../Renderer/FeatureStyle', '../Renderer/VectorRendererManager'
             this.maxRequests = options.maxRequests || 2;
             this.invertY = options.invertY || false;
             this.coordSystemRequired = options.hasOwnProperty('coordSystemRequired') ? options.coordSystemRequired : true;
-
-            this.extId = "os";
-
+            
             this.oldBound = null;
             
             this.previousViewKey = null;
@@ -154,7 +152,7 @@ define(['jquery','../Renderer/FeatureStyle', '../Renderer/VectorRendererManager'
             for (var i=0;i<this.tilesLoaded.length;i++) {
                 this.tilesLoaded[i].tile.osState = OpenSearchLayer.TileState.NOT_LOADED;
             }
-            this.globe.renderContext.requestFrame();
+            this.getGlobe().getRenderContext().requestFrame();
         };
 
         /**************************************************************************************************************/
@@ -209,7 +207,7 @@ define(['jquery','../Renderer/FeatureStyle', '../Renderer/VectorRendererManager'
         OpenSearchLayer.prototype._attach = function (g) {
             AbstractLayer.prototype._attach.call(this, g);
             this.extId += this.id;
-            g.tileManager.addPostRenderer(this);
+            g.getTileManager().addPostRenderer(this);
             //g.addManualRendererLayer(this);
         };
 
@@ -222,7 +220,7 @@ define(['jquery','../Renderer/FeatureStyle', '../Renderer/VectorRendererManager'
          * @private
          */
         OpenSearchLayer.prototype._detach = function () {
-            this.globe.tileManager.removePostRenderer(this);
+            this.getGlobe().getTileManager().removePostRenderer(this);
             //this.globe.vectorRendererManager.removePostRenderer(this);
             //g.removeManualRendererLayer(this);
             AbstractLayer.prototype._detach.call(this);
@@ -271,7 +269,7 @@ define(['jquery','../Renderer/FeatureStyle', '../Renderer/VectorRendererManager'
         OpenSearchLayer.prototype.removeFeatures = function () {
             // clean renderers
             for (var i=0;i<this.features.length;i++) {
-                    this.globe.vectorRendererManager.removeGeometry(features[i].geometry);
+                    this.getGlobe().vectorRendererManager.removeGeometry(features[i].geometry);
             }
             this.features = [];
             this.featuresId = [];
@@ -285,7 +283,7 @@ define(['jquery','../Renderer/FeatureStyle', '../Renderer/VectorRendererManager'
             var self = this;
 
             //this.globe.refresh();
-            this.globe.renderContext.requestFrame();
+            this.getGlobe().getRenderContext().requestFrame();
             
         };
 
@@ -396,7 +394,7 @@ define(['jquery','../Renderer/FeatureStyle', '../Renderer/VectorRendererManager'
             if (this.globe) {
                 this._addFeatureToRenderers(feature);
                 if (this.isVisible()) {
-                    this.globe.renderContext.requestFrame();
+                    this.getGlobe().getRenderContext().requestFrame();
                 }
             }
         };
@@ -424,12 +422,12 @@ define(['jquery','../Renderer/FeatureStyle', '../Renderer/VectorRendererManager'
             if (geometry.type === "GeometryCollection") {
                 var geoms = geometry.geometries;
                 for (var i = 0; i < geoms.length; i++) {
-                    this.globe.vectorRendererManager.addGeometry(this, geoms[i], style);
+                    this.getGlobe().vectorRendererManager.addGeometry(this, geoms[i], style);
                 }
             }
             else {
                 // Add geometry to renderers
-                this.globe.vectorRendererManager.addGeometry(this, geometry, style);
+                this.getGlobe().vectorRendererManager.addGeometry(this, geometry, style);
             }
         };
         /**************************************************************************************************************/
@@ -449,7 +447,7 @@ define(['jquery','../Renderer/FeatureStyle', '../Renderer/VectorRendererManager'
             var index = this.featuresIdLoaded.indexOf(featureId);
             if (index !== -1) this.featuresIdLoaded.splice(index, 1);
 
-            this.globe.vectorRendererManager.removeGeometry(feature.geometry,this);
+            this.getGlobe().vectorRendererManager.removeGeometry(feature.geometry,this);
 
             // Remove from list of features
             this.features.splice(featureIndex,1);
@@ -485,7 +483,7 @@ define(['jquery','../Renderer/FeatureStyle', '../Renderer/VectorRendererManager'
             } else {
                 this.currentQuicklookLayer.update(quad,url);
             }
-            this.globe.refresh();
+            this.getGlobe().refresh();
          };
     
         /**************************************************************************************************************/
@@ -527,9 +525,9 @@ define(['jquery','../Renderer/FeatureStyle', '../Renderer/VectorRendererManager'
          * @param {FeatureStyle} style Style
          */
         OpenSearchLayer.prototype.modifyFeatureStyle = function (feature, style) {
-           if (this.globe.vectorRendererManager.removeGeometry(feature.geometry,this)) {
+           if (this.getGlobe().vectorRendererManager.removeGeometry(feature.geometry,this)) {
             feature.properties.style = style;
-            this.globe.vectorRendererManager.addGeometry(this, feature.geometry, style);
+            this.getGlobe().vectorRendererManager.addGeometry(this, feature.geometry, style);
             }
         };
 
@@ -719,7 +717,7 @@ define(['jquery','../Renderer/FeatureStyle', '../Renderer/VectorRendererManager'
                     }*/
 
                     // Remove all feature outside view of tiles
-                    doRemove = false;
+                    var doRemove = false;
                     if (this.lastRemovingDateTime === null) {
                         doRemove = true;
                     } else {
@@ -809,8 +807,8 @@ define(['jquery','../Renderer/FeatureStyle', '../Renderer/VectorRendererManager'
         OpenSearchLayer.prototype.setVisible = function (arg) {
             if (typeof arg === "boolean") {
                 // Change for current layer
-                if (this.visible !== arg && this.globe.attributionHandler) {
-                    this.globe.attributionHandler.toggleAttribution(this);
+                if (this.visible !== arg && this.getGlobe().attributionHandler) {
+                    this.getGlobe().attributionHandler.toggleAttribution(this);
                 }
                 this.visible = arg;
 
@@ -820,8 +818,8 @@ define(['jquery','../Renderer/FeatureStyle', '../Renderer/VectorRendererManager'
                     linkedLayers[i].setVisible(arg);
                 }
 
-                if (this.globe) {
-                    this.globe.renderContext.requestFrame();
+                if (this.getGlobe()) {
+                    this.getGlobe().getRenderContext().requestFrame();
                 }
                 this.publish(Constants.EVENT_MSG.LAYER_VISIBILITY_CHANGED, this);
             } else {
@@ -848,8 +846,8 @@ define(['jquery','../Renderer/FeatureStyle', '../Renderer/VectorRendererManager'
                     linkedLayers[i].opacity = arg;
                 }
                 
-                if (this.globe) {
-                    this.globe.renderContext.requestFrame();
+                if (this.getGlobe()) {
+                    this.getGlobe().getRenderContext().requestFrame();
                 }
                 this.publish(Constants.EVENT_MSG.LAYER_OPACITY_CHANGED, this);
             } else {
@@ -917,7 +915,7 @@ define(['jquery','../Renderer/FeatureStyle', '../Renderer/VectorRendererManager'
             var num = this.featuresIdLoaded.indexOf(featureId);
 
             return (num >= 0);
-        }
+        };
 
         /**
          * Check is feature still added to tile
@@ -1102,7 +1100,7 @@ define(['jquery','../Renderer/FeatureStyle', '../Renderer/VectorRendererManager'
                 tile.osState = OpenSearchLayer.TileState.LOADED;
             }
 
-            this.globe.refresh();
+            this.getGlobe().refresh();
         };
         
         /**************************************************************************************************************/

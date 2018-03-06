@@ -148,7 +148,7 @@ define(['./AbstractHipsLayer', '../Renderer/FeatureStyle', '../Renderer/VectorRe
         HipsCatLayer.prototype._attach = function (g) {
             AbstractHipsLayer.prototype._attach.call(this, g);
             this.extId += this.id;
-            g.tileManager.addPostRenderer(this);
+            g.getTileManager().addPostRenderer(this);
         };
 
         /**************************************************************************************************************/
@@ -158,7 +158,7 @@ define(['./AbstractHipsLayer', '../Renderer/FeatureStyle', '../Renderer/VectorRe
          * @private
          */
         HipsCatLayer.prototype._detach = function () {
-            this.globe.tileManager.removePostRenderer(this);
+            this.getGlobe().getTileManager().removePostRenderer(this);
             AbstractHipsLayer.prototype._detach.call(this);
         };
 
@@ -185,7 +185,7 @@ define(['./AbstractHipsLayer', '../Renderer/FeatureStyle', '../Renderer/VectorRe
 
             // Pusblish the start load event, only if there is no pending requests
             if (this.maxRequests === this.freeRequests.length) {
-                this.globe.publishEvent(Constants.EVENT_MSG.LAYER_START_LOAD, this);
+                this.getGlobe().publishEvent(Constants.EVENT_MSG.LAYER_START_LOAD, this);
             }
 
             var xhr = this.freeRequests.pop();
@@ -294,7 +294,7 @@ define(['./AbstractHipsLayer', '../Renderer/FeatureStyle', '../Renderer/VectorRe
             // MS: Feature could be added from ClusterOpenSearch which have features with different styles
             var style = feature.properties.style ? feature.properties.style : this.style;
 
-            this.globe.vectorRendererManager.addGeometryToTile(this, feature.geometry, style, tile);
+            this.getGlobe().getVectorRendererManager().addGeometryToTile(this, feature.geometry, style, tile);
         };
 
 
@@ -350,8 +350,8 @@ define(['./AbstractHipsLayer', '../Renderer/FeatureStyle', '../Renderer/VectorRe
                 var i;
                 for (i = 0; i < featureData.tiles.length; i++) {
                     var tile = featureData.tiles[i];
-                    this.globe.vectorRendererManager.removeGeometryFromTile(feature.geometry, tile);
-                    this.globe.vectorRendererManager.addGeometryToTile(this, feature.geometry, style, tile);
+                    this.getGlobe().getVectorRendererManager().removeGeometryFromTile(feature.geometry, tile);
+                    this.getGlobe().getVectorRendererManager().addGeometryToTile(this, feature.geometry, style, tile);
                 }
 
             }
@@ -405,7 +405,7 @@ define(['./AbstractHipsLayer', '../Renderer/FeatureStyle', '../Renderer/VectorRe
          */
         OSData.prototype.traverse = function (tile) {
             var i;
-            if (!this.layer.visible)
+            if (!this.layer.isVisible())
                 return;
 
             if (tile.state !== Tile.State.LOADED)
@@ -494,7 +494,7 @@ define(['./AbstractHipsLayer', '../Renderer/FeatureStyle', '../Renderer/VectorRe
          * @returns {*}
          */
         HipsCatLayer.prototype.getUrl = function (tile) {
-            return this.buildUrl(tile);
+            return this.proxify(this.buildUrl(tile));
         };
 
         /**************************************************************************************************************/

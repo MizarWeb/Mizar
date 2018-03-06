@@ -158,7 +158,7 @@ function () {
 
                 // Publish event that layer have received new features
                 if (response !== undefined && response.features !== null && response.features.length > 0) {
-                    self.layer.globe.publishEvent("features:added", {layer: self.layer, features: response.features});
+                    self.layer.getGlobe().publishEvent("features:added", {layer: self.layer, features: response.features});
                 }
             }
         };
@@ -194,7 +194,7 @@ function () {
 
             if (this.runningRequests.length === 0) {
                 // no request running, stop ihm indicator
-                this.layer.globe.publishEvent("endLoad", this.layer);
+                this.layer.getGlobe().publishEvent("endLoad", this.layer);
             }
             return;
         }
@@ -215,7 +215,7 @@ function () {
         this.runningRequests.push(xhr);
 
         // Start ihm indicator
-        this.layer.globe.publishEvent("startLoad", this.layer);
+        this.layer.getGlobe().publishEvent("startLoad", this.layer);
         
         // Launch request
         xhr.send();
