@@ -35,7 +35,7 @@
  * along with GlobWeb. If not, see <http://www.gnu.org/licenses/>.
  ***************************************/
 
-define(function () {
+define(["jquery"], function ($) {
 
     var Utils = {};
 
@@ -210,6 +210,20 @@ define(function () {
             separator = "?";
         }
         return url + separator + name + "=" + value;
+    };
+
+    Utils.requestUrl = function (url, datatype, options, callback, fallBack) {
+        $.ajax({
+            type: "GET",
+            url: url,
+            dataType: datatype,
+            success: function (response) {
+                callback(response, options);
+            },
+            error: function (request, status, error) {
+                fallBack(request, status, error, options);
+            }
+        });
     };
 
     return Utils;

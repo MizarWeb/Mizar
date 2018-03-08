@@ -641,7 +641,9 @@ define(['jquery','../Renderer/FeatureStyle', '../Renderer/VectorRendererManager'
             }
 
             if (needRefresh) {
-                // todo sort tiles
+                // Sort tiles in order to load the first tiles closed to the camera
+                this.tiles.sort(_sortTilesByDistance);
+
 
                 // =========================================================================
                 // Determination of zoom level change

@@ -150,7 +150,7 @@ function () {
                 }
                 else if (xhr.status >= 400) {
                     //tileData.complete = true;
-                    this.debug(xhr.responseText);
+                    self.debug(xhr.responseText);
                     return;
                 }
 
