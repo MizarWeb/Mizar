@@ -137,6 +137,9 @@ define(function () {
      *     Return if 2 bounds (north,south,east,west) intersects
      */
     Utils.boundsIntersects = function (a, b) {
+        if ((typeof a.north === "undefined") || (typeof b.north === "undefined")) {
+            return false;
+        }
         xOk = Utils.isValueBetween(a.west, b.west, b.east) ||
             Utils.isValueBetween(a.east, b.west, b.east) ||
             ((a.west <= b.west) && (a.east >= b.east));
@@ -147,6 +150,31 @@ define(function () {
 
         return xOk && yOk;
     };
+
+    /**
+     *     Return if 2 bounds (north,south,east,west) intersects
+     */
+    Utils.getBBoxFromCoordinateArray = function (array) {
+        if (typeof array.length === "undefined") {
+            return null;
+        }
+        var result = {
+            north : -90,
+            south : 90,
+            east : -90,
+            west : 90
+        };
+        for (var i=0;i<array.length;i++) {
+            lon = array[i][0];
+            lat = array[i][1];
+            result.north = ( lat > result.north ) ? lat : result.north;
+            result.south = ( lat < result.south ) ? lat : result.south;
+            result.east  = ( lon > result.east  ) ? lon : result.east;
+            result.west  = ( lon < result.west  ) ? lon : result.west;
+        }
+        return result;
+    };
+
 
     Utils.computeBaseUrlFromCapabilities = function (capabilitiesUrl, parameters) {
         if (typeof capabilitiesUrl != "string" || capabilitiesUrl.length == 0 || !Array.isArray(parameters)) return null;

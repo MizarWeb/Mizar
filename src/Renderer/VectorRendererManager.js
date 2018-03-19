@@ -152,6 +152,27 @@ VectorRendererManager.prototype.addGeometry = function(layer, geometry, style)
 	}
 };
 
+/**
+ * Add geometries to the renderer
+ * @function addGeometries
+ * @memberof VectorRendererManager.prototype
+ * @param layer
+ * @param geometries
+ * @param styles
+ */
+VectorRendererManager.prototype.addGeometries = function(layer, geometries, styles)
+{
+	var renderer;
+	for (var i=0;i<geometries.length;i++) {
+		renderer = this.getRenderer(geometries[i],styles[i]);
+		if (renderer) {
+			renderer.addGeometry(layer, geometries[i], styles[i]);
+		} else {
+			console.log("No renderer for VectorRendererManager");
+		}
+	}
+};
+
 /**************************************************************************************************************/
 
 /**
@@ -167,12 +188,37 @@ VectorRendererManager.prototype.removeGeometry = function(geometry,layer)
 	var bucket = geometry._bucket;
 	if ( bucket && bucket.layer === layer )
 	{
+		/*if (layer.type === "OpenSearch") {
+			if (bucket.renderer.removeGeometryOneLevel(geometry) !== "undefined") {
+				bucket.renderer.removeGeometryOneLevel(geometry);
+				return true;
+			}
+		}*/
 		bucket.renderer.removeGeometry(geometry);
 		return true;
 	}
 	return false;
 };
 
+/**
+ * Remove geometries from the renderer
+ * @function removeGeometries
+ * @memberof VectorRendererManager.prototype
+ * @param geometries
+ * @param layer
+ * @return {Boolean}
+ */
+VectorRendererManager.prototype.removeGeometries = function(geometries,layer)
+{
+	for (var i=0;i<geometries.length;i++) {
+		var bucket = geometries[i]._bucket;
+		if ( bucket && bucket.layer === layer )
+		{
+			bucket.renderer.removeGeometry(geometries[i]);
+		}
+	}
+	return true;
+};
 /**************************************************************************************************************/
 
 /**
@@ -203,7 +249,7 @@ VectorRendererManager.prototype.addGeometryToTile = function(layer, geometry, st
 VectorRendererManager.prototype.removeGeometryFromTile = function(geometry,tile)
 {
 	var bucket = geometry._bucket;
-	bucket.renderer.removeGeometryFromTile(geometry,tile);
+	bucket.renderer.removeGeometryFromTile(geometry,tile,false);
 };
 
 

@@ -193,6 +193,9 @@ define(["../Renderer/FeatureStyle", "../Layer/OpenSearchLayer", "../Utils/Utils"
          */
         function focusSelection(newSelection) {
             var style;
+            var startTime;
+            var endTime;
+            var focusLayers = {};
             for (var i = 0; i < newSelection.length; i++) {
                 var selectedData = newSelection[i];
                 if (selectedData.feature.properties.style) {
@@ -216,7 +219,27 @@ define(["../Renderer/FeatureStyle", "../Layer/OpenSearchLayer", "../Utils/Utils"
                         break;
                 }
                 style.zIndex = this.selectedStyle.zIndex;
+                /*if (typeof selectedData.layer.modifyFeatureStyles !== "undefined") {
+                    if (typeof focusLayers[selectedData.layer.ID] === "undefined") {
+                        focusLayers[selectedData.layer.ID] = {
+                            layer : selectedData.layer,
+                            focusFeatures : [],
+                            focusStyles : []
+                        };
+                    }
+                    console.log("add to batch modify");
+                    focusLayers[selectedData.layer.ID].focusFeatures.push(selectedData.feature);
+                    focusLayers[selectedData.layer.ID].focusStyles.push(style);
+                } else {*/
                 selectedData.layer.modifyFeatureStyle(selectedData.feature, style);
+            /*}*/
+            }
+            for (var layerID in focusLayers) {
+                currentLayer = focusLayers[layerID];
+                currentLayer.layer.modifyFeatureStyles(
+                    currentLayer.focusFeatures,
+                    currentLayer.focusStyles
+                );
             }
         }
 
@@ -343,7 +366,6 @@ define(["../Renderer/FeatureStyle", "../Layer/OpenSearchLayer", "../Utils/Utils"
          * @return {Array} newSelection
          */
         function computePickSelection(pickPoint) {
-
             if (!pickPoint) {
                 return [];
             }
@@ -370,7 +392,6 @@ define(["../Renderer/FeatureStyle", "../Layer/OpenSearchLayer", "../Utils/Utils"
                                 tileData = tile.extension[pickableLayer.extId];
                             }
                         }*/
-                        
                         if (tileData) {
                             //for (j = 0; j < tileData.featureIds.length; j++) {
                             for (j = 0; j < pickableLayer.features.length; j++) {

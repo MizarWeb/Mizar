@@ -34,8 +34,8 @@
  * You should have received a copy of the GNU General Public License
  * along with GlobWeb. If not, see <http://www.gnu.org/licenses/>.
  ***************************************/
-define(['jquery','../Renderer/FeatureStyle', '../Renderer/VectorRendererManager', '../Utils/Utils', './AbstractLayer', './GroundOverlayLayer','../Renderer/RendererTileData', '../Tiling/Tile','../Tiling/GeoTiling','../Utils/Constants','./OpenSearch/OpenSearchForm','./OpenSearch/OpenSearchUtils','./OpenSearch/OpenSearchResult','./OpenSearch/OpenSearchRequestPool','./OpenSearch/OpenSearchCache'],
-    function ($,FeatureStyle, VectorRendererManager, Utils, AbstractLayer, GroundOverlayLayer,RendererTileData, Tile,GeoTiling,Constants,OpenSearchForm,OpenSearchUtils,OpenSearchResult,OpenSearchRequestPool,OpenSearchCache) {
+define(['../Renderer/FeatureStyle', '../Renderer/VectorRendererManager', '../Utils/Utils', './AbstractLayer', './GroundOverlayLayer','../Renderer/RendererTileData', '../Tiling/Tile','../Tiling/GeoTiling','../Utils/Constants','./OpenSearch/OpenSearchForm','./OpenSearch/OpenSearchUtils','./OpenSearch/OpenSearchResult','./OpenSearch/OpenSearchRequestPool','./OpenSearch/OpenSearchCache'],
+    function (FeatureStyle, VectorRendererManager, Utils, AbstractLayer, GroundOverlayLayer,RendererTileData, Tile,GeoTiling,Constants,OpenSearchForm,OpenSearchUtils,OpenSearchResult,OpenSearchRequestPool,OpenSearchCache) {
 
         /**
          * @name OpenSearchLayer
@@ -148,7 +148,11 @@ define(['jquery','../Renderer/FeatureStyle', '../Renderer/VectorRendererManager'
             OpenSearchUtils.setCurrentValueToParam(this.getServices().queryForm,"page",num*1+1);
 
             // update labels
-            $(".labelPage")[0].innerText = "Page "+(num+1);
+            this.callbackContext.publish(Constants.EVENT_MSG.LAYER_UPDATE_STATS_ATTRIBUTES,
+                {
+                    "page" : (num+1)
+                }
+            );
 
             //this.forceRefresh = true;
             for (var i=0;i<this.tilesLoaded.length;i++) {
@@ -389,6 +393,7 @@ define(['jquery','../Renderer/FeatureStyle', '../Renderer/VectorRendererManager'
             // MS: Feature could be added from ClusterOpenSearch which have features with different styles
             var style = feature.properties.style ? feature.properties.style : this.style;
             style.visible = true;
+            style.opacity = this.opacity;
 
             this.features.push(feature);
 
@@ -432,7 +437,44 @@ define(['jquery','../Renderer/FeatureStyle', '../Renderer/VectorRendererManager'
                 this.globe.vectorRendererManager.addGeometry(this, geometry, style);
             }
         };
+
+        /**
+         * Add features to renderers
+         * @function _addFeatureToRenderers
+         * @memberOf GeoJsonLayer#
+         * @param {Array} features Array of Feature
+         * @private
+         */
+        OpenSearchLayer.prototype._addFeaturesToRenderers = function (features) {
+            var geometries = [];
+            for (var i=0;i<features.length;i++) {
+                geometries.push(features[i].geometry);
+            }
+            // Manage style, if undefined try with properties, otherwise use defaultStyle
+            var style = this.style;
+            var props = features[0].properties;
+            if (props && props.style) {
+                style = props.style;
+            }
+
+            this.globe.vectorRendererManager.addGeometries(this, geometries, style);
+            
+        };
+
         /**************************************************************************************************************/
+
+
+
+        /**
+         * Remove a feature from renderers
+         * @function _removeFeatureFromRenderers
+         * @memberOf GeoJsonLayer#
+         * @param {GeoJSON} feature Feature
+         * @private
+         */
+        OpenSearchLayer.prototype._removeFeatureFromRenderers = function (feature) {
+            return this.globe.vectorRendererManager.removeGeometry(feature.geometry, this);
+        };
 
         /**
          * Removes feature from Dynamic OpenSearch layer.
@@ -503,7 +545,7 @@ define(['jquery','../Renderer/FeatureStyle', '../Renderer/VectorRendererManager'
 
          /**************************************************************************************************************/
 
-       /**
+       /**removeGeometry
          * Remove quicklook
          * @function removeQuicklook
          * @memberOf OpenSearchLayer#
@@ -519,7 +561,7 @@ define(['jquery','../Renderer/FeatureStyle', '../Renderer/VectorRendererManager'
 
        /**************************************************************************************************************/
 
-       /**
+        /**
          * Modifies feature style.
          * @function modifyFeatureStyle
          * @memberOf OpenSearchLayer#
@@ -527,9 +569,9 @@ define(['jquery','../Renderer/FeatureStyle', '../Renderer/VectorRendererManager'
          * @param {FeatureStyle} style Style
          */
         OpenSearchLayer.prototype.modifyFeatureStyle = function (feature, style) {
-            if (this.globe.vectorRendererManager.removeGeometry(feature.geometry,this)) {
+            if (this._removeFeatureFromRenderers(feature)) {
                 feature.properties.style = style;
-                this.globe.vectorRendererManager.addGeometry(this, feature.geometry, style);
+                this._addFeatureToRenderers(feature);
             }
         };
 
@@ -669,8 +711,7 @@ define(['jquery','../Renderer/FeatureStyle', '../Renderer/VectorRendererManager'
                     OpenSearchUtils.setCurrentValueToParam(this.getServices().queryForm,"page",1);
 
                     this.result.featuresLoaded = 0;
-                    $(".labelLoaded")[0].innerText = "loaded : "+this.features.length;
-                    $(".labelPage")[0].innerText = "Page 1";
+                    this.result.featuresLoaded = this.features.length;
                 }
 
                 // =========================================================================
@@ -907,7 +948,6 @@ define(['jquery','../Renderer/FeatureStyle', '../Renderer/VectorRendererManager'
             message += "# Features : "+this.features.length+"<br>";
             message += this.pool.getPoolsStatus()+"<br>";
             message += this.cache.getCacheStatus();
-            //$("#resultNavigation").html(message);
         };
 
         /**************************************************************************************************************/
@@ -973,7 +1013,14 @@ define(['jquery','../Renderer/FeatureStyle', '../Renderer/VectorRendererManager'
             // Add feature id of wms into list a current WMS displayed
             this.addServicesRunningOnRecord(selectedData.feature.id, idLayerAdded);
 
-            $(".QLWMS_"+selectedData.layer.getShortName())[0].style = "display:inline";
+            if (typeof this.callbackContext !== "undefined") {
+                this.callbackContext.publish(Constants.EVENT_MSG.LAYER_TOGGLE_WMS,
+                    {
+                        "layer_name" : selectedData.layer.getShortName(),
+                        "visible" : true
+                    }
+                );
+            }
         };
         
         /**************************************************************************************************************/
@@ -991,7 +1038,16 @@ define(['jquery','../Renderer/FeatureStyle', '../Renderer/VectorRendererManager'
 
             this.callbackContext.refresh();
 
-            $(".QLWMS_"+this.getShortName())[0].style = "display:none";
+            if (typeof this.callbackContext !== "undefined") {
+                if (typeof selectedData !== "undefined") {
+                    this.callbackContext.publish(Constants.EVENT_MSG.LAYER_TOGGLE_WMS,
+                        {
+                            "layer_name" : selectedData.layer.getShortName(),
+                            "visible" : false
+                        }
+                    );
+                }
+            }
         };
 
         /**************************************************************************************************************/
@@ -1009,8 +1065,14 @@ define(['jquery','../Renderer/FeatureStyle', '../Renderer/VectorRendererManager'
 
             selectedData.layer.callbackContext.refresh();
 
-            $(".QLWMS_"+selectedData.layer.getShortName())[0].style = "display:none";
-
+            if (typeof this.callbackContext !== "undefined") {
+                this.callbackContext.publish(Constants.EVENT_MSG.LAYER_TOGGLE_WMS,
+                    {
+                        "layer_name" : selectedData.layer.getShortName(),
+                        "visible" : false
+                    }
+                );
+            }
         };
 
         OpenSearchLayer.prototype.getFeatureById = function(featureId) {
@@ -1100,8 +1162,15 @@ define(['jquery','../Renderer/FeatureStyle', '../Renderer/VectorRendererManager'
                 features.splice(i, 1);
             }
 
-            $(".labelLoaded")[0].innerText = "loaded : "+this.features.length;
-            $(".labelTotal")[0].innerText = "total : ~ "+this.result.featuresTotal;
+
+            if (typeof this.callbackContext !== "undefined") {
+                this.callbackContext.publish(Constants.EVENT_MSG.LAYER_UPDATE_STATS_ATTRIBUTES,
+                    {
+                        "nb_loaded" : this.features.length,
+                        "nb_total" : this.result.featuresTotal
+                    }
+                );
+            }
             
             // Only if tile was LOADING...
             if (tile.osState === OpenSearchLayer.TileState.LOADING) {

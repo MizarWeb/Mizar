@@ -211,7 +211,7 @@ define(["jquery", "underscore-min", "./AbstractLayer", '../Utils/Constants','../
                 if(this.featuresSet.hasOwnProperty(tileIndex)) {
                     var tile = this.globe.tileManager.level0Tiles[tileIndex];
                     for (var i = 0; i < this.featuresSet[tileIndex].length; i++) {
-                        this.globe.vectorRendererManager.removeGeometryFromTile(this.featuresSet[tileIndex][i], tile);
+                        this.globe.vectorRendererManager.removeGeometryFromTile(this.featuresSet[tileIndex][i], tile,false);
                     }
                 }
             }

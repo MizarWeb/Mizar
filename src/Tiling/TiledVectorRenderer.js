@@ -79,9 +79,9 @@ define(['../Utils/Utils', '../Renderer/VectorRenderer', '../Renderer/Program'], 
      Render all redenrable on the given tiles
      */
     TiledVectorRenderer.prototype.render = function (renderables, start, end) {
+        
         var renderContext = this.tileManager.renderContext;
         var gl = renderContext.gl;
-
         var modelViewMatrix = mat4.create();
 
         // Setup program
@@ -104,6 +104,7 @@ define(['../Utils/Utils', '../Renderer/VectorRenderer', '../Renderer/Program'], 
             gl.uniform1f(this.program.uniforms.zOffset, tile.radius * 0.0007);
 
             currentStyle = renderable.bucket.style;
+
 
             renderable.bindBuffers(renderContext);
 

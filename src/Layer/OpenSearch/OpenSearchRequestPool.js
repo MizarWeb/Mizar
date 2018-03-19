@@ -26,7 +26,7 @@ function () {
      * @memberof module:Layer
      */
     var OpenSearchRequestPool = function (layer) {
-        this.maxRunningRequests = 6;
+        this.maxRunningRequests = 3;
         this.maxPoolingRequests = 50;
 
         this.debugMode = false;

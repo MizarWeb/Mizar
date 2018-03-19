@@ -1506,7 +1506,6 @@ define(["jquery", "underscore-min",
             this.UtilityFactory = null;
         };
 
-
         // Make object MIZAR available in caller web page
         window.Mizar = Mizar;
 

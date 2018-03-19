@@ -350,7 +350,7 @@ define(['./AbstractHipsLayer', '../Renderer/FeatureStyle', '../Renderer/VectorRe
                 var i;
                 for (i = 0; i < featureData.tiles.length; i++) {
                     var tile = featureData.tiles[i];
-                    this.globe.vectorRendererManager.removeGeometryFromTile(feature.geometry, tile);
+                    this.globe.vectorRendererManager.removeGeometryFromTile(feature.geometry, tile,false);
                     this.globe.vectorRendererManager.addGeometryToTile(this, feature.geometry, style, tile);
                 }
 

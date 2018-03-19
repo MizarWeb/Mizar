@@ -35,8 +35,8 @@
  * along with GlobWeb. If not, see <http://www.gnu.org/licenses/>.
  ***************************************/
 
-define(['./RendererTileData','../Tiling/Tile'],
-	function(RendererTileData, Tile) {
+define(['./RendererTileData','../Tiling/Tile','../Utils/Utils'],
+	function(RendererTileData, Tile,Utils) {
 
 /**************************************************************************************************************/
 
@@ -81,7 +81,6 @@ VectorRenderer.prototype.findBucket = function(layer,style)
 
 	return null;
 };
-
 
 /**************************************************************************************************************/
 
@@ -155,7 +154,6 @@ VectorRenderer.prototype.addGeometry = function(layer, geometry, style)
 {
 	var bucket = this.getOrCreateBucket(layer, geometry, style);
 	geometry._bucket = bucket;
-
 	var tileIndices = this.maxTilePerGeometry > 0 ? this.tileManager.tiling.getOverlappedLevelZeroTiles(geometry) : null;
 	if ( tileIndices && tileIndices.length < this.maxTilePerGeometry )
 	{
@@ -190,6 +188,7 @@ VectorRenderer.prototype.addGeometry = function(layer, geometry, style)
  * @function removeGeometry
  * @memberof VectorRenderer.prototype
  * @param geometry
+ * @private
  */
 VectorRenderer.prototype.removeGeometry = function(geometry)
 {
@@ -272,7 +271,7 @@ VectorRenderer.prototype.addGeometryToTile = function(layer, geometry, style, ti
  * Internal method to add a geometry to a tile
  * @function _addGeometryToTile
  * @memberof VectorRenderer.prototype
- * @param {Bucket} bucket Bucket
+ * @param {Bucket} bucket Buckeont
  * @param geometry
  * @param {Tile} tile Tile
  * @private
@@ -307,18 +306,27 @@ VectorRenderer.prototype._addGeometryToTile = function(bucket, geometry, tile)
 /**************************************************************************************************************/
 
 /**
- * Remove a geometry from a tile
- * @function removeGeometryFromTile
+ * Remove a geometry from a tile (recursive)
+ * @function _removeGeometryFromTile
  * @memberof VectorRenderer.prototype
  * @param geometry
+ * @param {Bound} bbox Bbox of geometry
  * @param {Tile} tile Tile
+ * @param {Integer} level Level
+ * @private
  */
-VectorRenderer.prototype.removeGeometryFromTile = function(geometry,tile)
+VectorRenderer.prototype._removeGeometryFromTile = function(geometry,bbox,tile,level)
 {
+	var maxLevel = 0;
+	if (Utils.boundsIntersects(bbox,tile.bound) === false) {
+		return maxLevel;
+	}
+
 	var tileData = null;
 	if (tile && tile.extension) {
 		tileData = tile.extension.renderer;
 	}
+
 	if (tileData)
 	{
 		var i = 0;
@@ -339,24 +347,44 @@ VectorRenderer.prototype.removeGeometryFromTile = function(geometry,tile)
 					i++;
 				}
 
-				// Remove geoemtry from children if needed
-				if ( renderable.hasChildren && tile.children)
+				// Remove geometry from children if needed
+				if ( (renderable.hasChildren === true) && tile.children)
 				{
 					for ( var n = 0; n < 4; n++ )
 					{
 						if ( tile.children[n].state === Tile.State.LOADED )
 						{
-							this.removeGeometryFromTile( geometry, tile.children[n] );
+							levelReturned = this._removeGeometryFromTile( geometry, bbox,tile.children[n],level+1);
+							if (levelReturned > maxLevel) {
+								maxLevel = levelReturned;
+							}
 						}
 					}
 				}
-			}
-			else
+			} else
 			{
 				i++;
 			}
 		}
 	}
+	return maxLevel;
+};
+
+
+/**
+ * Remove a geometry from a tile
+ * @function removeGeometryFromTile
+ * @memberof VectorRenderer.prototype
+ * @param geometry
+ * @param {Tile} tile Tile
+ */
+VectorRenderer.prototype.removeGeometryFromTile = function(geometry,tile)
+{
+	var bbox = Utils.getBBoxFromCoordinateArray(geometry.coordinates[0]);
+	//var startDate = new Date();
+	maxLevel = this._removeGeometryFromTile(geometry,bbox,tile,0);
+	//var endDate = new Date();
+	//console.log("Delta remove : "+(endDate*1.0 - startDate*1.0)+"ms with "+maxLevel+" levels");
 };
 
 /**************************************************************************************************************/
