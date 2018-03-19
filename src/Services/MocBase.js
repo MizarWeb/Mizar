@@ -36,8 +36,8 @@ define(["jquery", "../Renderer/FeatureStyle", "../Layer/MocLayer", "../Utils/Con
          */
         function createMocSublayer(layer, successCallback, errorCallback) {
             var ID;
-            if (layer.baseUrl) {
-                ID = handleMocLayer(layer, layer.baseUrl);
+            if (layer.getBaseUrl()) {
+                ID = handleMocLayer(layer, layer.getBaseUrl());
                 var mocLayer = mizarAPI.getLayerByID(ID);
                 if(layer.skyFraction) {
                     mocLayer.coverage = Numeric.roundNumber(parseFloat(layer.skyFraction)*100, 2)+"%";
@@ -63,8 +63,8 @@ define(["jquery", "../Renderer/FeatureStyle", "../Layer/MocLayer", "../Utils/Con
         function handleMocLayer(layer, mocServiceUrl) {
             var style;
             // checks if style is defined
-            if (layer.style) {
-                style = layer.style;
+            if (layer.getStyle()) {
+                style = layer.getStyle();
                 style.fill = true;
                 if (style.hasOwnProperty('fillColor')) {
                     // add transparency when fill color is defined
@@ -113,7 +113,7 @@ define(["jquery", "../Renderer/FeatureStyle", "../Layer/MocLayer", "../Utils/Con
             for (var i = 0; i < layersToIntersect.length; i++) {
                 var layer = layersToIntersect[i];
 
-                layerNames += layer.name;
+                layerNames += layer.getName();
                 url += layer.describeUrl;
                 if (i !== layersToIntersect.length - 1) {
                     url += ';';

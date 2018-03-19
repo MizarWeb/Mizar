@@ -189,9 +189,9 @@ RasterOverlayRenderable.prototype.onRequestFinished = function(completed)
 	this.requestFinished = completed;
 	var layer = this.bucket.layer;
 	layer._numRequests--;
-	if ( layer.globe && layer._numRequests === 0 )
+	if ( layer.getGlobe() && layer._numRequests === 0 )
 	{
-		layer.globe.publishEvent(Constants.EVENT_MSG.END_LOAD,layer);
+		layer.getGlobe().publishEvent(Constants.EVENT_MSG.END_LOAD,layer);
 	}
 };
 
@@ -766,7 +766,7 @@ RasterOverlayRenderer.prototype.render = function( renderables, start, end )
 		mat4.multiply( rc.viewMatrix, renderable.tile.matrix, modelViewMatrix );
 		gl.uniformMatrix4fv(program.uniforms.modelViewMatrix, false, modelViewMatrix);
 
-		gl.uniform1f(program.uniforms.opacity, layer.opacity );
+		gl.uniform1f(program.uniforms.opacity, layer.getOpacity() );
 		gl.uniform4f(program.uniforms.textureTransform, renderable.uvScale, renderable.uvScale, renderable.uTrans, renderable.vTrans );
 
 		gl.activeTexture(gl.TEXTURE0);

@@ -96,7 +96,7 @@ RendererTileData.prototype.traverse = function(tile,isLeaf)
 	{
 		var renderable = this.renderables[i];
 		var bucket = renderable.bucket;
-		if ( bucket.layer.isVisible() && bucket.layer.opacity > 0 )
+		if ( bucket.layer.isVisible() && bucket.layer.getOpacity() > 0 )
 		{
 			if ( renderable.traverse )
 			{

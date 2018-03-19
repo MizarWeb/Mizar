@@ -201,7 +201,13 @@ Globe.prototype.setRenderContext = function (context) {};
 Globe.prototype.getTileManager = function () {};
 
 /**
- * Renders the Planet.
+ * Returns the vector renderer manager.
+ * @return {VectorRendererManager} vector renderer manager
+ */
+Globe.prototype.getVectorRendererManager = function() {};
+
+/**
+ * Renders the globe.
  * The pixel is expressed in the canvas frame, i.e. (0,0) corresponds to the lower-left corner of the pixel
  * (private for now because it is automatically called in requestAnimationFrame)
  * @private

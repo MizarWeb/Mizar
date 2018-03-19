@@ -179,6 +179,13 @@ Layer.prototype.getColor = function() {};
  */
 Layer.prototype.getStyle = function() {};
 
+/**
+ * Sets the vector layer style.
+ * @function setStyle
+ * @param {FeatureStyle} arg Feature style
+ */
+Layer.prototype.setStyle = function (arg) {};
+
 
 /**
  * Returns true when the layer is set as background otherwise false.
@@ -267,6 +274,12 @@ Layer.prototype.addServicesRunningOnRecord = function(featureID, layerIDs) {};
  * @protected
  */
 Layer.prototype.removeServicesRunningOnRecord = function(featureID) {};
+
+/**
+ * Returns True when the layer is a vector otherwise False when this is a raster.
+ * @returns {Boolean} True when the layer is a vector otherwise False when this is a raster.
+ */
+Layer.prototype.isVectorLayer = function() {};
 
 /**
  * Attachs the raster layer to the planet.

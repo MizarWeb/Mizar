@@ -52,12 +52,12 @@ define(function () {
 
         this.cacheLevel = options.hasOwnProperty('cacheLevel') ? options.cacheLevel : 1;
 
-        if (!localStorage.getItem(this.layer.name)) {
+        if (!localStorage.getItem(this.layer.getName())) {
             // Create cache space in local storage named after layer
-            localStorage.setItem(this.layer.name, JSON.stringify({}));
+            localStorage.setItem(this.layer.getName(), JSON.stringify({}));
         }
 
-        this._cacheMap = JSON.parse(localStorage.getItem(this.layer.name));
+        this._cacheMap = JSON.parse(localStorage.getItem(this.layer.getName()));
 
         this.imgCanvas = document.createElement("canvas");
         // Make sure canvas is as big as layer requests
@@ -125,7 +125,7 @@ define(function () {
             console.log("Stored for " + tileRequest.image.src);
 
             // Update local storage with new cache
-            localStorage.setItem(this.layer.name, JSON.stringify(this._cacheMap));
+            localStorage.setItem(this.layer.getName(), JSON.stringify(this._cacheMap));
         }
     };
 

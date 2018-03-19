@@ -156,8 +156,8 @@ define(['../Utils/Constants', '../Utils/Utils', '../Utils/Constants', '../Tiling
                         var fitsData = self.imageRequest.image;
                         if (self.globe) {
                             // Create level zero image
-                            var gl = self.globe.renderContext.gl;
-                            self.levelZeroImage = new DynamicImage(self.globe.renderContext, fitsData.typedArray, gl.LUMINANCE, gl.FLOAT, fitsData.width, fitsData.height);
+                            var gl = self.globe.getRenderContext().gl;
+                            self.levelZeroImage = new DynamicImage(self.globe.getRenderContext(), fitsData.typedArray, gl.LUMINANCE, gl.FLOAT, fitsData.width, fitsData.height);
                             self.getLevelZeroTexture = function () {
                                 return self.levelZeroImage.texture;
                             };
@@ -175,7 +175,7 @@ define(['../Utils/Constants', '../Utils/Utils', '../Utils/Constants', '../Tiling
 
                     // Request a frame
                     if (self.globe) {
-                        self.globe.renderContext.requestFrame();
+                        self.globe.getRenderContext().requestFrame();
                     }
                 },
                 /**
@@ -212,7 +212,7 @@ define(['../Utils/Constants', '../Utils/Utils', '../Utils/Constants', '../Tiling
             AbstractHipsLayer.prototype._attach.call(this, g);
 
             // Enable float texture extension to have higher luminance range
-            var gl = this.globe.renderContext.gl;
+            var gl = this.getGlobe().getRenderContext().gl;
 
             this.requestLevelZeroImage();
             var ext = gl.getExtension("OES_texture_float");
@@ -266,7 +266,7 @@ define(['../Utils/Constants', '../Utils/Utils', '../Utils/Constants', '../Tiling
             url += tile.pixelIndex;
             url += "." + this.format;
 
-            return url;
+            return this.proxify(url);
         };
 
         /**************************************************************************************************************/
@@ -415,7 +415,7 @@ define(['../Utils/Constants', '../Utils/Utils', '../Utils/Constants', '../Tiling
                 // // Handle different types/formats.. just in case.
                 // var dataType;
                 // var typedArray;
-                // var gl = this.globe.renderContext.gl;
+                // var gl = this.globe.getRenderContext().gl;
                 // var glType;
                 // if ( fitsData.arrayType.name == "Float32Array" )
                 // {
@@ -481,7 +481,7 @@ define(['../Utils/Constants', '../Utils/Utils', '../Utils/Constants', '../Tiling
                 this.levelZeroImage.dispose();
             }
             if (this.levelZeroTexture) {
-                this.globe.renderContext.gl.deleteTexture(this.levelZeroTexture);
+                this.getGlobe().getRenderContext().gl.deleteTexture(this.levelZeroTexture);
             }
 
             this.levelZeroImage = null;

@@ -368,7 +368,7 @@ define(['../Utils/Utils', './VectorRenderer', './Program', './FeatureStyle', './
                 var bucket = renderable.bucket;
 
                 if (currentBucket !== bucket) {
-                    gl.uniform1f(this.program.uniforms.alpha, bucket.layer.opacity);
+                    gl.uniform1f(this.program.uniforms.alpha, bucket.layer.getOpacity());
                     var color = bucket.style.fillColor;
                     gl.uniform3f(this.program.uniforms.color, color[0], color[1], color[2]);
                     gl.uniform1f(this.program.uniforms.pointSize, bucket.textureWidth);

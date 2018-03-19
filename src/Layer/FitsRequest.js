@@ -30,7 +30,7 @@ define(['../Utils/ImageRequest'], function (ImageRequest) {
 
 
         var self = this;
-        if (noRequest) {
+        if (noRequest || url == null) {
             self.failCallback(self);
             return;
         }

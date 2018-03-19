@@ -293,8 +293,8 @@ define(['../Utils/Utils', './AbstractRasterLayer', '../Utils/Constants', '../Til
             if (toLoadLayers.length === 1) {
                 // only one layer to load !
                 _parseMetadata.call(this, sourceObject, jsLayers, jsCapability.Layer, sourceObject.options);
-                sourceObject.options.layers = toLoadLayers[0];
-                sourceObject.getMapBaseUrl = _queryImage.call(this, sourceObject.baseUrl, sourceObject.tilePixelSize, sourceObject.tilePixelSize, sourceObject.options);
+                sourceObject.layers = toLoadLayers[0];
+                sourceObject.getMapBaseUrl = _queryImage.call(this, sourceObject.baseUrl, sourceObject.tilePixelSize, sourceObject.tilePixelSize, sourceObject);
                 sourceObject.getCapabilitiesEnabled = false;
             } else {
                 // More than one layer, duplicate config
@@ -331,12 +331,11 @@ define(['../Utils/Utils', './AbstractRasterLayer', '../Utils/Constants', '../Til
                 url = this.getMapBaseUrl;
                 url = Utils.addParameterTo(url, "srs", tile.config.srs);
                 url = Utils.addParameterTo(url, "bbox", bbox);
-                url = this.proxify(url);
             } else {
                 url = null;
             }
 
-            return url;
+            return this.proxify(url, tile.level);
         };
 
         /**************************************************************************************************************/

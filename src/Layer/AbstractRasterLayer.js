@@ -60,6 +60,7 @@ define(['../Utils/Utils', './AbstractLayer', '../Renderer/RasterOverlayRenderer'
          * @param {LAYER} type - the type of the layer
          * @param {AbstractRasterLayer.configuration} options -Configuration properties for the AbstractRasterLayer.
          * @constructor
+         * @implements {RasterLayer}
          */
         var AbstractRasterLayer = function (type, options) {
             AbstractLayer.prototype.constructor.call(this, type, options);
@@ -67,11 +68,14 @@ define(['../Utils/Utils', './AbstractLayer', '../Renderer/RasterOverlayRenderer'
             // Base properties
             this.tilePixelSize = options.tilePixelSize;
             this.tiling = options.tiling;
-            this.numberOfLevels = options.numberOfLevels;
+            this.numberOfLevels = options.numberOfLevels || 21;
+            this.minLevel = options.minLevel;
+            this.maxLevel = options.maxLevel;
             this.geoBound = options.geoBound || null;
             this.coordinates = options.coordinates || null;
             this.zIndex = options.zIndex || 0;
             this.crossOrigin = options.crossOrigin || 'anonymous';
+
 
             // Init cache if defined
             if (options.cache) {
@@ -92,6 +96,51 @@ define(['../Utils/Utils', './AbstractLayer', '../Renderer/RasterOverlayRenderer'
         /**************************************************************************************************************/
 
         /**
+         * Returns the URL to query the raster.
+         * @param {Tile} tile for which the URL is created
+         * @returns {string} the URL
+         */
+        AbstractRasterLayer.prototype.getUrl = function(tile) {
+            throw new SyntaxError("getUrl() not implemented","AbstractRasterLayer.js");
+        };
+
+
+        /**
+         * Returns the proxified Url when the tile level is between [minLevel, maxLevel]
+         * @param url url
+         * @returns {Boolean} the proxified Url when the tile level is between [minLevel, maxLevel]
+         */
+        AbstractRasterLayer.prototype.proxify = function(url, level) {
+            var proxifyUrl;
+            if(this.isBetweenMinMaxLevel(level)) {
+                proxifyUrl = AbstractLayer.prototype.proxify.call(this, url);
+            } else {
+                proxifyUrl = null;
+            }
+            return proxifyUrl;
+        };
+
+        /**
+         * Returns True when the tile is defined between [minLevel,maxLevel] otherwise False.
+         * @param level level of the tile
+         * @returns {Boolean} True when the tile level is defined between [minLevel,maxLevel] otherwise False.
+         */
+        AbstractRasterLayer.prototype.isBetweenMinMaxLevel = function(level) {
+            var isInside;
+            if(this.minLevel != null && this.maxLevel != null) {
+                isInside = this.minLevel <= level && level <= this.maxLevel;
+            } else if(this.minLevel != null) {
+                isInside = level >= this.minLevel;
+            } else if(this.maxLevel != null) {
+                isInside = level <= this.maxLevel;
+            } else {
+                isInside = true;
+            }
+
+            return isInside;
+        };
+
+        /**
          * Attach the raster layer to the planet
          * @function _attach
          * @memberOf AbstractRasterLayer#
@@ -110,7 +159,7 @@ define(['../Utils/Utils', './AbstractLayer', '../Renderer/RasterOverlayRenderer'
                 // Create the renderer if needed
                 if (!g.rasterOverlayRenderer) {
                     var renderer = new RasterOverlayRenderer(g);
-                    g.vectorRendererManager.renderers.push(renderer);
+                    g.getVectorRendererManager().renderers.push(renderer);
                     g.rasterOverlayRenderer = renderer;
                 }
                 g.rasterOverlayRenderer.addOverlay(this);
@@ -127,8 +176,8 @@ define(['../Utils/Utils', './AbstractLayer', '../Renderer/RasterOverlayRenderer'
          */
         AbstractRasterLayer.prototype._detach = function () {
             // Remove raster from overlay renderer if needed
-            if (this._overlay && this.globe.rasterOverlayRenderer) {
-                this.globe.rasterOverlayRenderer.removeOverlay(this);
+            if (this._overlay && this.getGlobe().rasterOverlayRenderer) {
+                this.getGlobe().rasterOverlayRenderer.removeOverlay(this);
             }
 
             AbstractLayer.prototype._detach.call(this);

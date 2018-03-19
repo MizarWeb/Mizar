@@ -340,6 +340,7 @@ Context.prototype.getAdditionalLayers = function () {
  * as additional layer.
  * @param {Object} mizarDescription - See the base properties {@link AbstractLayer.configuration} and specific properties for specific layers
  * @return {Layer} the created layer
+ * @throws {RangeError} Unable to create the layer
  * @fires Context#backgroundLayer:add
  * @fires Context#additionalLayer:add
  */

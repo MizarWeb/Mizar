@@ -75,7 +75,7 @@ define(['../Utils/Utils', '../Tiling/HEALPixTiling', './AbstractHipsLayer', '../
 
                 // Request a frame
                 if (self.globe) {
-                    self.globe.renderContext.requestFrame();
+                    self.globe.getRenderContext().requestFrame();
                 }
             };
             this.levelZeroImage.onerror = function (event) {
@@ -135,7 +135,7 @@ define(['../Utils/Utils', '../Tiling/HEALPixTiling', './AbstractHipsLayer', '../
             url += tile.pixelIndex;
             url += "." + this.format;
 
-            return url;
+            return this.proxify(url);
         };
 
 

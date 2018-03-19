@@ -224,7 +224,7 @@ define(['../Utils/Utils', '../Utils/Constants', './VectorRenderer', './VectorRen
          */
         PointRenderable.prototype.add = function (geometry) {
             // TODO: Find a better way to access to coordinate system
-            var coordinateSystem = this.bucket.layer.globe.getCoordinateSystem();
+            var coordinateSystem = this.bucket.layer.getGlobe().getCoordinateSystem();
             var posGeo = geometry.coordinates;
 
             posGeo = coordinateSystem.convert(posGeo, geometry.crs.properties.name, coordinateSystem.getGeoideName());
@@ -454,7 +454,7 @@ define(['../Utils/Utils', '../Utils/Constants', './VectorRenderer', './VectorRen
                         var z = poiVec[2] * scale + worldPoi[2];
 
                         gl.uniform3f(this.program.uniforms.poiPosition, x, y, z);
-                        gl.uniform1f(this.program.uniforms.alpha, bucket.layer.opacity);
+                        gl.uniform1f(this.program.uniforms.alpha, bucket.layer.getOpacity());
                         var color = bucket.style.fillColor;
                         gl.uniform3f(this.program.uniforms.color, color[0], color[1], color[2]);
 

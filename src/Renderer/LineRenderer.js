@@ -326,7 +326,7 @@ LineRenderer.prototype.render = function(renderables, start, end)
 		gl.lineWidth( style.strokeWidth );
 
 		// Update uniforms
-		gl.uniform4f(this.program.uniforms.u_color, style.strokeColor[0], style.strokeColor[1], style.strokeColor[2], style.strokeColor[3] * renderable.bucket.layer.opacity);
+		gl.uniform4f(this.program.uniforms.u_color, style.strokeColor[0], style.strokeColor[1], style.strokeColor[2], style.strokeColor[3] * renderable.bucket.layer.getOpacity());
 		gl.uniform1f(this.program.uniforms.speed, style.hasOwnProperty('speed') ? style.speed : 1.0);
 		gl.uniform1f(this.program.uniforms.time, Date.now()/1000 - this.time);
 		gl.uniform1f(this.program.uniforms.gradientLength, style.hasOwnProperty('gradientLength') ? style.gradientLength : 10.0);

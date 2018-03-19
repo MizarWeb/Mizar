@@ -19,6 +19,8 @@
 define(['jquery', './AbstractProvider', '../Utils/Utils', '../Renderer/FeatureStyle'],
     function ($, AbstractProvider, Utils, FeatureStyle) {
 
+        const DEFAULT_STROKE_COLOR = [1.0, 1.0, 1.0, 1.0];
+
         var self;
         var featureCollection;
 
@@ -71,6 +73,7 @@ define(['jquery', './AbstractProvider', '../Utils/Utils', '../Renderer/FeatureSt
             var crs = featureCollection.crs;
             var features = featureCollection.features;
             var ptMaxSize = (layer.options.pointMaxSize) ? layer.options.pointMaxSize : 20;
+            var strokeColor = layer.color ? layer.color : DEFAULT_STROKE_COLOR;
             for (var i = 0; i < features.length; i++) {
                 var currentFeature = features[i];
                 currentFeature.geometry['crs'] = crs;
@@ -78,7 +81,7 @@ define(['jquery', './AbstractProvider', '../Utils/Utils', '../Renderer/FeatureSt
                 currentFeature.properties['style'] =  new FeatureStyle(
                     {
                         label: craterName,
-                        fillColor: [1.0, 1.0, 1.0, 1.0],
+                        strokeColor: strokeColor,
                         pointMaxSize : ptMaxSize
                     }
                 );

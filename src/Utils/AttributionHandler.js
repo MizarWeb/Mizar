@@ -88,11 +88,11 @@ define(function () {
         var div = document.createElement('div');
 
         var attribution;
-        var title = (layer.ack !== undefined) ? layer.ack : "";
-        if (layer.copyrightUrl !== "" && layer.copyrightUrl !== undefined) {
-            attribution = '<a class="whiteLink" href="' + layer.copyrightUrl  + '" target="_blank" title="'+ title +'">' + layer.attribution + '</a>';
+        var title = (layer.getAck() != null) ? layer.getAck() : "";
+        if (layer.getCopyrightUrl() !== "" && layer.getCopyrightUrl() !== undefined) {
+            attribution = '<a class="whiteLink" href="' + layer.getCopyrightUrl()  + '" target="_blank" title="'+ title +'">' + layer.getAttribution() + '</a>';
         } else {
-            attribution = layer.attribution;
+            attribution = layer.getAttribution();
         }
 
         div.innerHTML = attribution;

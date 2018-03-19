@@ -53,7 +53,7 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Laye
                 // When the background takes time to load, the viewMatrix computed by "computeViewMatrix" is created but
                 // with empty values. Because of that, the globe cannot be displayed without moving the camera.
                 // So we rerun "computeViewMatrix" once "baseLayersReady" is loaded to display the globe
-                if(self.getNavigation().getRenderContext().viewMatrix[0] !== "undefined") {
+                if (self.getNavigation().getRenderContext().viewMatrix[0] !== "undefined") {
                     self.getNavigation().computeViewMatrix();
                 }
             });
@@ -146,7 +146,7 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Laye
          * @memberOf AbstractContext#
          * @protected
          */
-        AbstractContext.prototype._fillDataProvider = function(layer, mizarDescription) {
+        AbstractContext.prototype._fillDataProvider = function (layer, mizarDescription) {
             if (mizarDescription.data && this.dataProviders[mizarDescription.data.type]) {
                 var callback = this.dataProviders[mizarDescription.data.type];
                 callback(layer, mizarDescription.data);
@@ -158,13 +158,13 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Laye
          * @function getDataProviderLayers
          * @memberOf AbstractContext#
          */
-        AbstractContext.prototype.getDataProviderLayers = function() {
+        AbstractContext.prototype.getDataProviderLayers = function () {
             var dpLayers = [];
             var layers = this.getLayers();
             var i = layers.length;
             var layer = layers[i];
-            while(layer) {
-                if(layer.hasOwnProperty('options') && layer.options.hasOwnProperty('type') && layer.options.type === Constants.LAYER.GeoJSON) {
+            while (layer) {
+                if (layer.hasOwnProperty('options') && layer.options.hasOwnProperty('type') && layer.options.type === Constants.LAYER.GeoJSON) {
                     dpLayers.push(layer);
                 }
                 layer = layers[++i];
@@ -231,7 +231,7 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Laye
          * @function getPixelFromLonLat
          * @memberOf AbstractContext#
          */
-        AbstractContext.prototype.getPixelFromLonLat = function(longitude, latitude){
+        AbstractContext.prototype.getPixelFromLonLat = function (longitude, latitude) {
             return this.globe.getPixelFromLonLat(longitude, latitude);
         };
 
@@ -273,7 +273,7 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Laye
          */
         AbstractContext.prototype.getLayerByID = function (layerId) {
             return _.find(_.union(this.getLayers()), function (layer) {
-                return (layer.ID === layerId);
+                return (layer.getID() === layerId);
             });
         };
 
@@ -290,9 +290,12 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Laye
          * @memberOf AbstractContext#
          */
         AbstractContext.prototype.addLayers = function (layersDescription) {
-            for (var i=0;i<layersDescription.length;i++) {
-                this.addLayer(layersDescription[i]);
+            var layers = [];
+            for (var i = 0; i < layersDescription.length; i++) {
+                var layer = this.addLayer(layersDescription[i]);
+                layers.push(layer);
             }
+            return layers;
         };
 
         /**
@@ -300,50 +303,45 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Laye
          * @memberOf AbstractContext#
          * @private
          */
-        AbstractContext.prototype.addLayerFromObject = function (layer,layerDescription) {
-            if (layer.multiLayers.length>1) {
-                this.addLayers(layer.multiLayers);
-                //layer = null;
-                return;
+        AbstractContext.prototype.addLayerFromObject = function (layer, layerDescription) {
+            if (layer.multiLayers.length > 1) {
+                return this.addLayers(layer.multiLayers);
             }
-            if(layer === undefined) {
-                var text = layerDescription.hipsMetadata.hipsMetadata.ID;
-                ErrorDialog.open("<font style='color:orange'>Warning : No implementation is defined for this layer <b>" + text + "</b></font>");
-            } else {
-                this.layers.push(layer);
-                _addToGlobe.call(this, layer);
 
-                this._fillDataProvider(layer, layerDescription);
+            this.layers.push(layer);
+            _addToGlobe.call(this, layer);
 
-                if (layer.isPickable()) {
-                    ServiceFactory.create(Constants.SERVICE.PickingManager).addPickableLayer(layer);
-                }
-                var self = this;
-                layer.subscribe(Constants.EVENT_MSG.LAYER_VISIBILITY_CHANGED, function (layer) {
-                    if (layer.isVisible() && layer.properties && !layer.background
-                        && layer.properties.hasOwnProperty("initialRa") && layer.properties.hasOwnProperty("initialDec") && layer.properties.hasOwnProperty("initialFov")) {
+            this._fillDataProvider(layer, layerDescription);
 
-                        if (layer.globe.getType() === Constants.GLOBE.Sky) {
-                            var fov = (layer.properties.initialFov) ? layer.properties.initialFov : layer.globe.getRenderContext().fov;
-                            self.getNavigation().zoomTo([layer.properties.initialRa, layer.properties.initialDec], {
-                                fov: fov,
-                                duration: 3000
-                            });
-                        }
-                        else {
-                            self.getNavigation().zoomTo([layer.properties.initialRa, layer.properties.initialDec], {
-                                distance: layer.properties.initialFov,
-                                duration: 3000
-                            });
-                        }
+            if (layer.isPickable()) {
+                ServiceFactory.create(Constants.SERVICE.PickingManager).addPickableLayer(layer);
+            }
+            var self = this;
+            layer.subscribe(Constants.EVENT_MSG.LAYER_VISIBILITY_CHANGED, function (layer) {
+                if (layer.isVisible() && layer.getProperties() && !layer.isBackground()
+                    && layer.getProperties().hasOwnProperty("initialRa") && layer.getProperties().hasOwnProperty("initialDec") && layer.getProperties().hasOwnProperty("initialFov")) {
+
+                    if (layer.globe.getType() === Constants.GLOBE.Sky) {
+                        var fov = (layer.getProperties().initialFov) ? layer.getProperties().initialFov : layer.getGlobe().getRenderContext().fov;
+                        self.getNavigation().zoomTo([layer.getProperties().initialRa, layer.getProperties().initialDec], {
+                            fov: fov,
+                            duration: 3000
+                        });
                     }
-                });
-                var layerEvent = (layer.category === "background") ? Constants.EVENT_MSG.LAYER_BACKGROUND_ADDED : Constants.EVENT_MSG.LAYER_ADDITIONAL_ADDED;
-                this.publish(layerEvent, layer);
-            }
+                    else {
+                        self.getNavigation().zoomTo([layer.getProperties().initialRa, layer.getProperties().initialDec], {
+                            distance: layer.getProperties().initialFov,
+                            duration: 3000
+                        });
+                    }
+                }
+            });
+            var layerEvent = (layer.category === "background") ? Constants.EVENT_MSG.LAYER_BACKGROUND_ADDED : Constants.EVENT_MSG.LAYER_ADDITIONAL_ADDED;
+            this.publish(layerEvent, layer);
+
 
             // Check if the visible background layer is still loaded
-            if ((layer.visible === true) && (layer.category === "background")) {
+            if ((layer.isVisible() === true) && (layer.category === "background")) {
                 this.visibleBackgroundLoaded = true;
             }
 
@@ -355,7 +353,7 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Laye
             }
             return layer;
         };
-        
+
         /**
          * @function addLayer
          * @memberOf AbstractContext#
@@ -373,7 +371,7 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Laye
                 layer.callbackContext = this;
                 return layer;
             }
-            return this.addLayerFromObject(layer,layerDescription);
+            return this.addLayerFromObject(layer, layerDescription);
         };
 
         // /**
@@ -417,7 +415,7 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Laye
                 }
             });
             var linkedLayers = [];
-            for (var i=0;i<indexes.length;i++) {
+            for (var i = 0; i < indexes.length; i++) {
                 linkedLayers.push(this.layers[indexes[i]]);
             }
             return linkedLayers;
@@ -439,19 +437,19 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Laye
                 removedLayer = removedLayers[0];
                 var self = this;
                 removedLayer.unsubscribe(Constants.EVENT_MSG.LAYER_VISIBILITY_CHANGED, function (layer) {
-                    if (layer.isVisible() && layer.properties && !layer.background
-                        && layer.properties.hasOwnProperty("initialRa") && layer.properties.hasOwnProperty("initialDec") && layer.properties.hasOwnProperty("initialFov")) {
+                    if (layer.isVisible() && layer.getProperties() && !layer.isBackground()
+                        && layer.getProperties().hasOwnProperty("initialRa") && layer.getProperties.hasOwnProperty("initialDec") && layer.getProperties.hasOwnProperty("initialFov")) {
 
-                        if (layer.globe.getType() === Constants.GLOBE.Sky) {
-                            var fov = (layer.properties.initialFov) ? layer.properties.initialFov : layer.globe.getRenderContext().fov;
-                            self.getNavigation().zoomTo([layer.properties.initialRa, layer.properties.initialDec], {
+                        if (layer.getGlobe().getType() === Constants.GLOBE.Sky) {
+                            var fov = (layer.getProperties().initialFov) ? layer.getProperties().initialFov : layer.getGlobe().getRenderContext().fov;
+                            self.getNavigation().zoomTo([layer.getProperties().initialRa, layer.getProperties().initialDec], {
                                 fov: fov,
                                 duration: 3000
                             });
                         }
                         else {
-                            self.getNavigation().zoomTo([layer.properties.initialRa, layer.properties.initialDec], {
-                                distance: layer.properties.initialFov,
+                            self.getNavigation().zoomTo([layer.getProperties().initialRa, layer.getProperties().initialDec], {
+                                distance: layer.getProperties().initialFov,
                                 duration: 3000
                             });
                         }
@@ -471,8 +469,8 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Laye
          */
         AbstractContext.prototype.removeAllLayers = function () {
             var nbLayers = this.layers.length;
-            while(nbLayers!=0) {
-                var layerIndex = nbLayers-1;
+            while (nbLayers != 0) {
+                var layerIndex = nbLayers - 1;
                 var layerID = this.layers[layerIndex].ID;
                 this.attributionHandler.removeAttribution(this.layers[layerIndex]);
                 this.removeLayer(layerID);
@@ -484,15 +482,15 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Laye
          * @function addDraw
          * @memberOf AbstractContext#
          */
-        AbstractContext.prototype.addDraw = function(layer) {
+        AbstractContext.prototype.addDraw = function (layer) {
             this.globe.addLayer(layer);
         };
 
-         /**
+        /**
          * @function removeDraw
          * @memberOf AbstractContext#
          */
-        AbstractContext.prototype.removeDraw = function(layer) {
+        AbstractContext.prototype.removeDraw = function (layer) {
             this.globe.removeLayer(layer);
         };
 
@@ -520,7 +518,7 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Laye
          */
         AbstractContext.prototype.refresh = function () {
             if (this.globe) {
-              this.globe.refresh();
+                this.globe.refresh();
             }
         };
 
@@ -632,13 +630,8 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Laye
             var self = this;
             this.subscribe(Constants.EVENT_MSG.BASE_LAYERS_ERROR, function (layer) {
                 $(self.canvas.parentElement).find('#loading').hide();
-                if(layer.obs_title != null) {
-                    var prefixe = "";
-                    var text = layer.obs_title;
-                    ErrorDialog.open("Hips layer " + prefixe + "<font style='color:yellow'><b>" + text + "</b></font> not valid in Hips registry <font color='grey'><i>(" + layer.hips_service_url + " - reason : "+ layer.message +")</i></font>.");
-                } else {
-                    ErrorDialog.open("Cannot add the layer <font style='color:yellow'><b>" + JSON.stringify(layer) + "</b></font><font color='grey'><i>(reason : "+ layer.message +")</i></font>.");
-                }
+                //JSON.stringify(layer)
+                ErrorDialog.open("Cannot add the layer <font style='color:yellow'><b>" + layer.getName() + "</b></font><font color='grey'><i>(" + layer.getBaseUrl() + " - reason : " + layer.message + ")</i></font>.");
             });
         };
 
@@ -839,7 +832,7 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Laye
             this.elevationTracker.detach();
             var i = 0;
             var layer = this.layers[i];
-            while(layer) {
+            while (layer) {
                 this.attributionHandler.disable(layer);
                 layer = this.layers[++i];
             }
@@ -861,7 +854,7 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Laye
             this.elevationTracker.attachTo(this);
             var i = 0;
             var layer = this.layers[i];
-            while(layer) {
+            while (layer) {
                 this.attributionHandler.enable(layer);
                 layer = this.layers[++i];
             }
@@ -879,7 +872,7 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Laye
          * @abstract
          */
         AbstractContext.prototype.setCompassVisible = function (divName, visible) {
-            throw new SyntaxError("compass visible not implemented","AbstractContext.js");
+            throw new SyntaxError("compass visible not implemented", "AbstractContext.js");
         };
 
 
@@ -949,7 +942,7 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Laye
         };
 
         AbstractContext.prototype.trackerDestroy = function () {
-            if(this.elevationTracker) {
+            if (this.elevationTracker) {
                 this.elevationTracker.destroy();
                 this.elevationTracker = null;
             }
@@ -981,16 +974,16 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Laye
                 // When the background takes time to load, the viewMatrix computed by "computeViewMatrix" is created but
                 // with empty values. Because of that, the globe cannot be displayed without moving the camera.
                 // So we rerun "computeViewMatrix" once "baseLayersReady" is loaded to display the globe
-                if(self.getNavigation().getRenderContext().viewMatrix[0] !== "undefined") {
+                if (self.getNavigation().getRenderContext().viewMatrix[0] !== "undefined") {
                     self.getNavigation().computeViewMatrix();
                 }
             });
-            if(this.navigation) {
+            if (this.navigation) {
                 this.navigation.destroy();
                 this.navigation = null;
             }
 
-            if(this.globe) {
+            if (this.globe) {
                 this.globe.destroy();
                 this.globe = null;
             }

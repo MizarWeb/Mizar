@@ -202,7 +202,7 @@ define(['../Utils/Utils', './AbstractRasterLayer', '../Utils/Constants','../Tili
             else if (this.version.substring(0, 3) === '1.0') {
                 url = Utils.addParameterTo(url, "bbox",geoBound.west+","+geoBound.south+","+geoBound.east+","+geoBound.north);
             }
-            return this.proxify(url);
+            return this.proxify(url, tile.level);
         };
 
         /**************************************************************************************************************/

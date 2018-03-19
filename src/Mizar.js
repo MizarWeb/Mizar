@@ -1149,8 +1149,9 @@ define(["jquery", "underscore-min",
             var result;
             try {
                 var layer = this.getActivatedContext().addLayer(layerDescription);
+                console.log(layer);
                 if (layer !== null) {
-                    result = layer.ID;
+                    result = layer.getID();
                 } else {
                     result = null;
                 }
@@ -1167,9 +1168,9 @@ define(["jquery", "underscore-min",
                         prefixe = "";
                         text = hipsLayer.hipsMetadata.obs_title;
                     }
-                    ErrorDialog.open("Hips layer " + prefixe + "<font style='color:yellow'><b>" + text + "</b></font> not valid in Hips registry <font color='grey'><i>(" + hipsLayer.hipsMetadata.hips_service_url + " - reason : "+ e.message +")</i></font>.");
+                    //ErrorDialog.open("Hips layer " + prefixe + "<font style='color:yellow'><b>" + text + "</b></font> not valid in Hips registry <font color='grey'><i>(" + hipsLayer.hipsMetadata.hips_service_url + " - reason : "+ e.message +")</i></font>.");
                 } else {
-                    ErrorDialog.open("Cannot add the layer <font style='color:yellow'><b>" + JSON.stringify(layerDescription) + "</b></font><font color='grey'><i>(reason : "+ e.message +")</i></font>.");
+                    //ErrorDialog.open("Cannot add the layer <font style='color:yellow'><b>" + JSON.stringify(layerDescription) + "</b></font><font color='grey'><i>(reason : "+ e.message +")</i></font>.");
                 }
             }
             return result;
@@ -1314,7 +1315,7 @@ define(["jquery", "underscore-min",
         Mizar.prototype.searchOnLayerDescription = function (query, mode) {
             var layers = this.getLayers(mode);
             return _.filter(layers, function (layer) {
-                return (  (String(layer.name).indexOf(query) >= 0) || (String(layer.description || "").indexOf(query) >= 0) );
+                return (  (String(layer.getName()).indexOf(query) >= 0) || (String(layer.getDescription() || "").indexOf(query) >= 0) );
             });
         };
 
@@ -1329,7 +1330,7 @@ define(["jquery", "underscore-min",
         Mizar.prototype.searchSkyLayer = function (query) {
             var layers = this.getSkyLayers();
             return _.filter(layers, function (layer) {
-                return (  (String(layer.name).indexOf(query) >= 0) || (String(layer.description || "").indexOf(query) >= 0) );
+                return (  (String(layer.getName()).indexOf(query) >= 0) || (String(layer.getDescription() || "").indexOf(query) >= 0) );
             });
         };
 
@@ -1345,7 +1346,7 @@ define(["jquery", "underscore-min",
             var layers = this.getPlanetLayers();
             //Search by name
             return _.filter(layers, function (layer) {
-                return ( (String(layer.name).indexOf(query) >= 0) || (String(layer.description || "").indexOf(query) >= 0) );
+                return ( (String(layer.getName()).indexOf(query) >= 0) || (String(layer.getDescription() || "").indexOf(query) >= 0) );
             });
         };
 
@@ -1393,7 +1394,6 @@ define(["jquery", "underscore-min",
             }
             return result;
         };
-
 
         /**
          * Returns the service based on its name
