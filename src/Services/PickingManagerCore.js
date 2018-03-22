@@ -96,7 +96,13 @@ define(["../Renderer/FeatureStyle", "../Layer/OpenSearchLayer", "../Utils/Utils"
                         break;
                 }
                 style.zIndex = selectedData.layer.getStyle().zIndex;
-                selectedData.layer.modifyFeatureStyle(selectedData.feature, style);
+                console.log("blur");
+                if (typeof selectedData.layer.unhighlight !== "undefined") {
+                    console.log("unhighlight detected");
+                    selectedData.layer.unhighlight(selectedData.feature,style);
+                } else {
+                    selectedData.layer.modifyFeatureStyle(selectedData.feature, style);
+                }
             }
         }
 
@@ -137,7 +143,13 @@ define(["../Renderer/FeatureStyle", "../Layer/OpenSearchLayer", "../Utils/Utils"
                         break;
                 }
                 style.zIndex = this.selectedStyle.zIndex;
-                selectedData.layer.modifyFeatureStyle(selectedData.feature, style);
+                console.log("focus");
+                if (typeof selectedData.layer.highlight !== "undefined") {
+                    console.log("highlight detected");
+                    selectedData.layer.highlight(selectedData.feature,style);
+                } else {
+                    selectedData.layer.modifyFeatureStyle(selectedData.feature, style);
+                }
             }
             globe.refresh();
         }
@@ -180,7 +192,13 @@ define(["../Renderer/FeatureStyle", "../Layer/OpenSearchLayer", "../Utils/Utils"
 
                 if (selectedData.layer.getGlobe()) {
                     // Layer is still attached to globe
-                    selectedData.layer.modifyFeatureStyle(selectedData.feature, style);
+                    console.log("blur");
+                    if (typeof selectedData.layer.unhighlight !== "undefined") {
+                        console.log("unhighlight detected");
+                        selectedData.layer.unhighlight(selectedData.feature,style);
+                    } else {
+                        selectedData.layer.modifyFeatureStyle(selectedData.feature, style);
+                    }
                 }
             }
         }
@@ -219,28 +237,22 @@ define(["../Renderer/FeatureStyle", "../Layer/OpenSearchLayer", "../Utils/Utils"
                         break;
                 }
                 style.zIndex = this.selectedStyle.zIndex;
-                /*if (typeof selectedData.layer.modifyFeatureStyles !== "undefined") {
-                    if (typeof focusLayers[selectedData.layer.ID] === "undefined") {
-                        focusLayers[selectedData.layer.ID] = {
-                            layer : selectedData.layer,
-                            focusFeatures : [],
-                            focusStyles : []
-                        };
-                    }
-                    console.log("add to batch modify");
-                    focusLayers[selectedData.layer.ID].focusFeatures.push(selectedData.feature);
-                    focusLayers[selectedData.layer.ID].focusStyles.push(style);
-                } else {*/
-                selectedData.layer.modifyFeatureStyle(selectedData.feature, style);
-            /*}*/
+                console.log("focus");
+                if (typeof selectedData.layer.highlight !== "undefined") {
+                    console.log("highlight detected");
+                    selectedData.layer.highlight(selectedData.feature,style);
+                } else {
+                    selectedData.layer.modifyFeatureStyle(selectedData.feature, style);
+                }
             }
-            for (var layerID in focusLayers) {
+/*            for (var layerID in focusLayers) {
                 currentLayer = focusLayers[layerID];
                 currentLayer.layer.modifyFeatureStyles(
                     currentLayer.focusFeatures,
                     currentLayer.focusStyles
                 );
             }
+        */
         }
 
         /**************************************************************************************************************/

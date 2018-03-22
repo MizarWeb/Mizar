@@ -133,6 +133,7 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Util
             // If the layer is eligible to GetCapabilities and no layers are provided,
             // this array is filled with a config by layer to load
             // After loading, each config is loaded in a layer object, bypassing GetCapabilities
+            //TODOFL remove it !
             this.multiLayers = [];
 
         };

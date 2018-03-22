@@ -126,6 +126,8 @@ BatchRenderable.prototype.remove = function( geometry )
  */
 BatchRenderable.prototype.add = function( geometry, tile )
 {
+	var hasTile = (typeof tile !== "undefined");
+
 	this.tile = tile;
 
 	// Store previous number of vertices/indices needed for "after-build" computation
@@ -133,7 +135,10 @@ BatchRenderable.prototype.add = function( geometry, tile )
 	var numLineIndices = this.lineIndices.length;
 	var numTriIndices = this.triIndices.length;
 
-	var geometryInTile = this.build( geometry, tile );
+	var geometryInTile = (hasTile === false);
+	if (hasTile === true) {
+		geometryInTile = this.build( geometry, tile );
+	} 
 	if ( geometryInTile )
 	{
 		this.geometryInfos.push({
@@ -160,6 +165,10 @@ BatchRenderable.prototype.add = function( geometry, tile )
  */
 BatchRenderable.prototype.dispose = function(renderContext)
 {
+	if (typeof renderContext === "undefined") {
+		return;
+	}
+
 	var gl = renderContext.gl;
 
 	if ( this.indexBuffer ) {

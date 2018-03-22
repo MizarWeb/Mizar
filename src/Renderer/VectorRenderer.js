@@ -150,6 +150,29 @@ VectorRenderer.prototype._recursiveAddGeometryToTile = function(bucket, geometry
  * @param geometry
  * @param style
  */
+VectorRenderer.prototype.addGeometryCurrentLevel = function(layer, geometry, style)
+{
+	var bucket = this.getOrCreateBucket(layer, geometry, style);
+	geometry._bucket = bucket;
+
+	// Attach to mainRenderable
+	if (!bucket.mainRenderable)
+	{
+		console.log("create main renderable");
+		bucket.mainRenderable = bucket.createRenderable();
+	}
+	console.log("add to main renderable",bucket.mainRenderable);
+	bucket.mainRenderable.add(geometry);
+};
+
+/**
+ * Add a geometry to a vector renderer
+ * @function addGeometry
+ * @memberof VectorRenderer.prototype
+ * @param layer
+ * @param geometry
+ * @param style
+ */
 VectorRenderer.prototype.addGeometry = function(layer, geometry, style)
 {
 	var bucket = this.getOrCreateBucket(layer, geometry, style);
@@ -182,6 +205,25 @@ VectorRenderer.prototype.addGeometry = function(layer, geometry, style)
 };
 
 /**************************************************************************************************************/
+
+/**
+ * Remove a geometry from a vector renderer
+ * @function removeGeometryCurrentLevel
+ * @memberof VectorRenderer.prototype
+ * @param geometry
+ * @private
+ */
+VectorRenderer.prototype.removeGeometryCurrentLevel = function(geometry)
+{
+	var bucket = geometry._bucket;
+	if ( bucket.mainRenderable ) {
+		var numGeometries = bucket.mainRenderable.remove(geometry);
+		if ( numGeometries === 0 ) {
+			bucket.mainRenderable.dispose(this.renderContext);
+			bucket.mainRenderable = null;
+		}
+	}
+};
 
 /**
  * Remove a geometry from a vector renderer

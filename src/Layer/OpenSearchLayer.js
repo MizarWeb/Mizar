@@ -436,32 +436,51 @@ define(['../Renderer/FeatureStyle', '../Renderer/VectorRendererManager', '../Uti
             }
         };
 
+        /**************************************************************************************************************/
+
         /**
-         * Add features to renderers
-         * @function _addFeatureToRenderers
+         * Add a feature to renderers current level
+         * @function _addFeatureToRenderersCurrentLevel
          * @memberOf GeoJsonLayer#
-         * @param {Array} features Array of Feature
+         * @param {GeoJSON} feature Feature
          * @private
          */
-        OpenSearchLayer.prototype._addFeaturesToRenderers = function (features) {
-            var geometries = [];
-            for (var i=0;i<features.length;i++) {
-                geometries.push(features[i].geometry);
-            }
+        OpenSearchLayer.prototype._addFeatureToRenderersCurrentLevel = function (feature) {
+            var geometry = feature.geometry;
+
             // Manage style, if undefined try with properties, otherwise use defaultStyle
             var style = this.style;
-            var props = features[0].properties;
+            var props = feature.properties;
             if (props && props.style) {
                 style = props.style;
             }
 
-            this.globe.vectorRendererManager.addGeometries(this, geometries, style);
-            
+            // Manage geometry collection
+            if (geometry.type === "GeometryCollection") {
+                var geoms = geometry.geometries;
+                for (var i = 0; i < geoms.length; i++) {
+                    this.getGlobe().vectorRendererManager.addGeometryCurrentLevel(this, geoms[i], style);
+                }
+            }
+            else {
+                // Add geometry to renderers
+                this.getGlobe().vectorRendererManager.addGeometryCurrentLevel(this, geometry, style);
+            }
         };
 
         /**************************************************************************************************************/
 
 
+        /**
+         * Remove a feature from renderers
+         * @function _removeFeatureFromRenderers
+         * @memberOf GeoJsonLayer#
+         * @param {GeoJSON} feature Feature
+         * @private
+         */
+        OpenSearchLayer.prototype._removeFeatureFromRenderersCurrentLevel = function (feature) {
+            return this.globe.vectorRendererManager.removeGeometryCurrentLevel(feature.geometry, this);
+        };
 
         /**
          * Remove a feature from renderers
@@ -560,7 +579,32 @@ define(['../Renderer/FeatureStyle', '../Renderer/VectorRendererManager', '../Uti
        /**************************************************************************************************************/
 
         /**
-         * Modifies feature style.
+         * Highlight feature
+         * @function highlight
+         * @memberOf OpenSearchLayer#
+         * @param {Feature} feature Feature
+         * @param {FeatureStyle} style Style
+         */
+        OpenSearchLayer.prototype.highlight = function (feature, style) {
+            console.log("highlight !");
+            feature.properties.style = style;
+            this._addFeatureToRenderersCurrentLevel(feature);
+        };
+
+        /**
+         * Unhighlight feature
+         * @function unhighlight
+         * @memberOf OpenSearchLayer#
+         * @param {Feature} feature Feature
+         * @param {FeatureStyle} style Style
+         */
+        OpenSearchLayer.prototype.unhighlight = function (feature, style) {
+            console.log("unhighlight !");
+            this._removeFeatureFromRenderersCurrentLevel(feature);
+        };
+
+        /**
+         * Modify feature style.
          * @function modifyFeatureStyle
          * @memberOf OpenSearchLayer#
          * @param {Feature} feature Feature
@@ -649,7 +693,7 @@ define(['../Renderer/FeatureStyle', '../Renderer/VectorRendererManager', '../Uti
          * @private
          */
         function _sortTilesByDistance(t1, t2) {
-            return t1.tile.distance - t2.tile.distance;
+            return t1.distance - t2.distance;
         }
 
         /**************************************************************************************************************/

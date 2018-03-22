@@ -142,6 +142,24 @@ VectorRendererManager.prototype.generate = function(tile)
  * @param geometry
  * @param style
  */
+VectorRendererManager.prototype.addGeometryCurrentLevel = function(layer, geometry, style)
+{
+	var renderer = this.getRenderer(geometry,style);
+	if (renderer) {
+		renderer.addGeometryCurrentLevel(layer, geometry, style);
+	} else {
+		console.log("No renderer for VectorRendererManager");
+	}
+};
+
+/**
+ * Add a geometry to the renderer
+ * @function addGeometry
+ * @memberof VectorRendererManager.prototype
+ * @param layer
+ * @param geometry
+ * @param style
+ */
 VectorRendererManager.prototype.addGeometry = function(layer, geometry, style)
 {
 	var renderer = this.getRenderer(geometry,style);
@@ -149,27 +167,6 @@ VectorRendererManager.prototype.addGeometry = function(layer, geometry, style)
 		renderer.addGeometry(layer, geometry, style);
 	} else {
 		console.log("No renderer for VectorRendererManager");
-	}
-};
-
-/**
- * Add geometries to the renderer
- * @function addGeometries
- * @memberof VectorRendererManager.prototype
- * @param layer
- * @param geometries
- * @param styles
- */
-VectorRendererManager.prototype.addGeometries = function(layer, geometries, styles)
-{
-	var renderer;
-	for (var i=0;i<geometries.length;i++) {
-		renderer = this.getRenderer(geometries[i],styles[i]);
-		if (renderer) {
-			renderer.addGeometry(layer, geometries[i], styles[i]);
-		} else {
-			console.log("No renderer for VectorRendererManager");
-		}
 	}
 };
 
@@ -195,6 +192,25 @@ VectorRendererManager.prototype.removeGeometry = function(geometry,layer)
 			}
 		}*/
 		bucket.renderer.removeGeometry(geometry);
+		return true;
+	}
+	return false;
+};
+
+/**
+ * Remove a geometry from the renderer
+ * @function removeGeometryCurrentLevel
+ * @memberof VectorRendererManager.prototype
+ * @param geometry
+ * @param layer
+ * @return {Boolean}
+ */
+VectorRendererManager.prototype.removeGeometryCurrentLevel = function(geometry,layer)
+{
+	var bucket = geometry._bucket;
+	if ( bucket && bucket.layer === layer )
+	{
+		bucket.renderer.removeGeometryCurrentLevel(geometry);
 		return true;
 	}
 	return false;

@@ -1149,7 +1149,7 @@ define(["jquery", "underscore-min",
             var result;
             try {
                 var layer = this.getActivatedContext().addLayer(layerDescription);
-                console.log(layer);
+                //console.log(layer);
                 if (layer !== null) {
                     result = layer.getID();
                 } else {
