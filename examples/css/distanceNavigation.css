@@ -1,0 +1,34 @@
+#distanceDiv {
+    display:none;
+    position: absolute;
+    right: 375px;
+    margin-top: 5px;
+    top: 15px;
+    pointer-events: none;
+    overflow-x: hidden;
+    overflow-y: auto;
+    width: 145px;
+    height: 21px;
+
+    background-color: rgb(255, 255, 255);
+    box-shadow: 0 0 6px #FF9E52, inset 0 1px 2px rgba(0, 0, 0, 0.08);
+    opacity: 0.8;
+    border-radius: 10px;
+    padding: 5px 5px 5px 5px;
+    border: solid 1px orange;
+    font-weight: bold;
+}
+input#distanceButtom {
+    position: absolute;
+    border: 0;
+    width: 20px;
+    height: 20px;
+    overflow: hidden;
+    background: url(../css/images/icon_distance.png) no-repeat;
+}
+#distTracker {
+    position: relative;
+    float:left;
+    display: block;
+    padding-left: 30px;
+}

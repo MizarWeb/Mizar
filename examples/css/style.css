@@ -1,6 +1,8 @@
 @import url('jquery-ui.min.css');
 @import url('jquery-ui.structure.min.css');
 @import url('jquery-ui.theme.min.css');
+/*@import url('jquery-ui-timepicker-addon.min');*/
+@import url('layerManager.css');
 @import url('nameResolver.css');
 @import url('reverseNameResolver.css');
 @import url('featurePopup.css');
@@ -14,6 +16,8 @@
 @import url('images/compass.css');
 @import url('layerManager.css');
 @import url('service.css');
+@import url('distanceNavigation.css');
+@import url('../node_modules/jquery-datetimepicker/jquery.datetimepicker.css');
 
 em {
     color: #6BCAFF;
@@ -24,6 +28,15 @@ body {
     padding: 0px;
     margin: 0px;
     overflow: hidden;
+}
+
+/************************/
+/*		CRS box		*/
+/************************/
+.crsBox {
+    border: 1px solid orange;
+    border-radius: 20px;
+    box-shadow: 0 0 6px #FF9E52, inset 0 1px 2px rgba(0, 0, 0, 0.08);
 }
 
 /************************/
@@ -54,8 +67,19 @@ body {
     pointer-events: none;
 }
 
+
 #attributions div {
     color: white;
+    text-overflow:ellipsis;
+    width: 250px;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+#attributions div:hover {
+    text-overflow:clip;
+    width:auto;
+    white-space: normal;
 }
 
 #attributions a {
@@ -143,8 +167,43 @@ body {
     height: 48px;
     background: url(images/loading.gif) no-repeat;
     position: absolute;
+    display: none;
     left: 50%;
     top: 50%;
+    z-index: 200;
+}
+
+#loadingSplash {
+    width: 113px;
+    height: 113px;
+    background: url(images/pleaseWait.gif) no-repeat;
+    position: relative;
+    bottom: -100px;
+    margin:auto;
+
+}
+
+#splash {
+    width:100%;
+    height:100%;
+    position: absolute;
+    background-color: white;
+    z-index: 100;
+}
+#splash > h1 {
+    text-align: center;
+    color: rgba(34, 12, 64, 0.6);
+    font-size:280%;
+    padding-top: 5%;
+}
+#splash-logo {
+    position:relative;
+    background: url(images/logo_cnes.png) no-repeat;
+    bottom: -220px;
+    width: 539px;
+    height: 200px;
+    margin:auto;
+
 }
 
 /*** Navigation options block(nameResolver, compass) ***/
@@ -225,6 +284,20 @@ body {
     cursor: pointer;
 }
 
+/*** Warning button ***/
+#warningButton {
+    width: 32px;
+    height: 32px;
+    border: 0px solid black;
+    overflow: hidden;
+    outline: none;
+    display: inline-block;
+    background: url(./images/warning.png) no-repeat;
+    position: relative;
+    left: -20px;
+    pointer-events: auto;
+}
+
 /*** Search tool ***/
 #searchInvoker {
     width: 32px;
@@ -268,19 +341,49 @@ body {
 /*** tracker on bottom ***/
 #tracker {
     position: absolute;
-    left: 45%;
+    left: 40%;
     color: white;
     bottom: 0;
+}
+
+/*** TrackerInfo button ***/
+#posTrackerInfo {
+    position: relative;
+    float:left;
+    padding-right: 16px;
+    display: none;
+    z-index:1;
+}
+
+#posTrackerInfoButton {
+    width: 16px;
+    height: 16px;
+    background: url(./images/information.png) no-repeat;
+    border: 1px solid orange;
+    border-radius: 20px;
+    box-shadow: 0 0 6px #FF9E52, inset 0 1px 2px rgba(0, 0, 0, 0.08);
+    position: relative;
+    pointer-events: auto;
+}
+
+/*** Position result navigation on bottom ***/
+#resultNavigation {
+    position: absolute;
+    left: 77%;
+    color: white;
+    bottom: 24px;
 }
 
 /*** Position tracker on bottom ***/
 #posTracker {
     position: relative;
+    float:left;
 }
 
 /*** Elevation tracker on bottom ***/
 #elevTracker {
     position: relative;
+    padding-left: 32px;
 }
 
 /*** Stylized fade on hover effect ***/

@@ -18,7 +18,7 @@
         samp: "../external/samp",
         string: "../node_modules/string/dist/string",
         gzip: "../external/gzip.min",
-        saveAs: "../node_modules/file-saver/FileSaver.min",
+        saveAs: "../node_modules/file-saver/dist/FileSaver.min",
         jszip: "../node_modules/jszip/dist/jszip.min",
         xmltojson: "../node_modules/xmltojson/lib/xmlToJSON.min"
     },

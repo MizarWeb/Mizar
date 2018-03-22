@@ -115,7 +115,7 @@ define(['../Utils/Utils', './AbstractRasterLayer', '../Utils/Constants','../Tili
          * @param {String} text Response as text
          */
         WCSElevationLayer.prototype.parseElevations = function (text) {
-            if (text === null) {
+            if (text === null || text.match("ServiceExceptionReport") != null) {
                 return this._returnZeroElevations();
             }
             switch (this.format) {

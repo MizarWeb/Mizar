@@ -65,8 +65,16 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Laye
             this.visibleBackgroundLoaded = false;
 
             this.initCanvas(this.canvas);
-            this.positionTracker = _createTrackerPosition.call(this, this.mizarConfiguration);
-            this.elevationTracker = _createTrackerElevation.call(this, this.mizarConfiguration, ctxOptions);
+
+            if (this.mizarConfiguration.positionTracker === true) {
+                this.positionTracker = _createTrackerPosition.call(this, this.mizarConfiguration);
+            }
+
+            if (this.mizarConfiguration.elevationTracker === true) {
+                this.elevationTracker = _createTrackerElevation.call(this, this.mizarConfiguration, ctxOptions);
+            }
+
+
         };
 
         /**
@@ -535,6 +543,7 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Laye
         AbstractContext.prototype.initCanvas = function (canvas) {
             var width, height;
             var parentCanvas = $(canvas.parentElement);
+
             $(canvas.parentElement).find('#loading').show();
 
             if ($(canvas).attr("width")) {
@@ -617,15 +626,21 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Laye
                             ? this.mizarConfiguration.attributionHandler.element : 'globeAttributions'
                     }
                 );
-                if (this.mizarConfiguration.isMobile) {
+                if (this.mizarConfiguration.isMobile === true) {
                     this.initTouchNavigation(options);
                 }
-                this.positionTracker.attachTo(this);
-                this.elevationTracker.attachTo(this);
 
-                // it will be updated by the position tracker
-                this.setComponentVisibility("posTrackerInfo", false);
-            }
+                if (typeof this.positionTracker !== "undefined") {
+                    this.positionTracker.attachTo(this);
+                    // it will be updated by the position tracker
+                    this.setComponentVisibility("posTrackerInfo", false);
+                }
+                
+                if (typeof this.elevationTracker !== "undefined") {
+                    this.elevationTracker.attachTo(this);
+                }
+
+                }
             //When base layer failed to load, open error dialog
             var self = this;
             this.subscribe(Constants.EVENT_MSG.BASE_LAYERS_ERROR, function (layer) {

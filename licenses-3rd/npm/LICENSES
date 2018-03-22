@@ -1,4 +1,4 @@
-├─ balanced-match@0.4.2
+├─ balanced-match@1.0.0
 │  ├─ licenses: MIT
 │  ├─ repository: https://github.com/juliangruber/balanced-match
 │  ├─ publisher: Julian Gruber
@@ -11,12 +11,13 @@
 │  ├─ publisher: James Halliday
 │  ├─ email: mail@substack.net
 │  └─ url: http://substack.net
-├─ brace-expansion@1.1.7
+├─ brace-expansion@1.1.11
 │  ├─ licenses: MIT
 │  ├─ repository: https://github.com/juliangruber/brace-expansion
 │  ├─ publisher: Julian Gruber
 │  ├─ email: mail@juliangruber.com
-│  └─ url: http://juliangruber.com
+│  ├─ url: http://juliangruber.com
+│  └─ licenseFile: node_modules/brace-expansion/LICENSE
 ├─ buffers@0.1.1
 │  ├─ licenses: UNKNOWN
 │  ├─ repository: https://github.com/substack/node-buffers
@@ -65,7 +66,7 @@
 │  ├─ publisher: Yehuda Katz, Tom Dale, Stefan Penner and contributors
 │  ├─ url: Conversion to ES6 API by Jake Archibald
 │  └─ licenseFile: node_modules/es6-promise/LICENSE
-├─ file-saver@1.3.3
+├─ file-saver@1.3.4
 │  ├─ licenses: MIT
 │  ├─ repository: https://github.com/eligrey/FileSaver.js
 │  ├─ publisher: Eli Grey
@@ -85,7 +86,7 @@
 │  ├─ email: i@izs.me
 │  ├─ url: http://blog.izs.me/
 │  └─ licenseFile: node_modules/fstream/LICENSE
-├─ glob@7.1.1
+├─ glob@7.1.2
 │  ├─ licenses: ISC
 │  ├─ repository: https://github.com/isaacs/node-glob
 │  ├─ publisher: Isaac Z. Schlueter
@@ -119,6 +120,10 @@
 ├─ inherits@2.0.1
 │  ├─ licenses: ISC
 │  ├─ repository: https://github.com/isaacs/inherits
+│  └─ licenseFile: node_modules/util/node_modules/inherits/LICENSE
+├─ inherits@2.0.3
+│  ├─ licenses: ISC
+│  ├─ repository: https://github.com/isaacs/inherits
 │  └─ licenseFile: node_modules/inherits/LICENSE
 ├─ isarray@0.0.1
 │  ├─ licenses: MIT
@@ -138,13 +143,13 @@
 │  ├─ publisher: jQuery Foundation and other contributors
 │  ├─ url: https://github.com/jquery/jquery-ui/blob/1.12.1/AUTHORS.txt
 │  └─ licenseFile: node_modules/jquery-ui-dist/LICENSE.txt
-├─ jquery@3.2.1
+├─ jquery@3.3.1
 │  ├─ licenses: MIT
 │  ├─ repository: https://github.com/jquery/jquery
 │  ├─ publisher: JS Foundation and other contributors
-│  ├─ url: https://github.com/jquery/jquery/blob/3.2.1/AUTHORS.txt
+│  ├─ url: https://github.com/jquery/jquery/blob/3.3.1/AUTHORS.txt
 │  └─ licenseFile: node_modules/jquery/LICENSE.txt
-├─ jszip@3.1.3
+├─ jszip@3.1.5
 │  ├─ licenses: (MIT OR GPL-3.0)
 │  ├─ repository: https://github.com/Stuk/jszip
 │  ├─ publisher: Stuart Knightley
@@ -181,7 +186,7 @@
 │  ├─ email: mail@substack.net
 │  ├─ url: http://substack.net
 │  └─ licenseFile: node_modules/mkdirp/LICENSE
-├─ natives@1.1.0
+├─ natives@1.1.2
 │  ├─ licenses: ISC
 │  ├─ repository: https://github.com/isaacs/natives
 │  ├─ publisher: Isaac Z. Schlueter
@@ -199,7 +204,7 @@
 │  ├─ repository: https://github.com/nearinfinity/node-over
 │  ├─ publisher: Joe Ferner
 │  └─ email: joe@fernsroth.com
-├─ pako@1.0.5
+├─ pako@1.0.6
 │  ├─ licenses: (MIT AND Zlib)
 │  ├─ repository: https://github.com/nodeca/pako
 │  └─ licenseFile: node_modules/pako/LICENSE
@@ -236,18 +241,18 @@
 │  ├─ publisher: Isaac Z. Schlueter
 │  ├─ email: i@izs.me
 │  ├─ url: http://blog.izs.me/
-│  └─ licenseFile: node_modules/readable-stream/LICENSE
+│  └─ licenseFile: node_modules/match-stream/node_modules/readable-stream/LICENSE
 ├─ readable-stream@2.0.6
 │  ├─ licenses: MIT
 │  ├─ repository: https://github.com/nodejs/readable-stream
-│  └─ licenseFile: node_modules/jszip/node_modules/readable-stream/LICENSE
-├─ requirejs@2.3.3
+│  └─ licenseFile: node_modules/readable-stream/LICENSE
+├─ requirejs@2.3.5
 │  ├─ licenses: MIT
 │  ├─ repository: https://github.com/jrburke/r.js
 │  ├─ publisher: James Burke
 │  ├─ email: jrburke@gmail.com
 │  └─ url: http://github.com/jrburke
-├─ rimraf@2.6.1
+├─ rimraf@2.6.2
 │  ├─ licenses: ISC
 │  ├─ repository: https://github.com/isaacs/rimraf
 │  ├─ publisher: Isaac Z. Schlueter
@@ -304,11 +309,17 @@
 │  ├─ publisher: Joyent
 │  ├─ url: http://www.joyent.com
 │  └─ licenseFile: node_modules/util/LICENSE
-└─ wrappy@1.0.2
-   ├─ licenses: ISC
-   ├─ repository: https://github.com/npm/wrappy
-   ├─ publisher: Isaac Z. Schlueter
-   ├─ email: i@izs.me
-   ├─ url: http://blog.izs.me/
-   └─ licenseFile: node_modules/wrappy/LICENSE
+├─ wrappy@1.0.2
+│  ├─ licenses: ISC
+│  ├─ repository: https://github.com/npm/wrappy
+│  ├─ publisher: Isaac Z. Schlueter
+│  ├─ email: i@izs.me
+│  ├─ url: http://blog.izs.me/
+│  └─ licenseFile: node_modules/wrappy/LICENSE
+└─ xmltojson@1.3.5
+   ├─ licenses: MIT
+   ├─ repository: https://github.com/metatribal/xmlToJSON
+   ├─ publisher: William Summers
+   ├─ email: william.summers@metatribal.com
+   └─ licenseFile: node_modules/xmltojson/LICENSE
 

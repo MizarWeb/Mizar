@@ -23,7 +23,7 @@
 /*			Common				*/
 /********************************/
 
-#featureList .selected, #quicklook.selected, #quicklookFits.selected, #healpix.selected, #solarObjects.selected, #dynamicImageView.selected
+#featureList.selected, #quicklook.selected, #quicklookWms.selected, #quicklookFits.selected, #healpix.selected, #solarObjects.selected, #dynamicImageView.selected
 {
 	box-shadow: inset 0px 0px 3px 1px #F8A102;
 	border-radius: 8px;
@@ -214,6 +214,15 @@
 #quicklook
 {
 	background-image: url(images/quicklook.png);
+}
+
+#quicklookWms
+{
+	background-image: url(images/quicklook_wms.png);
+}
+#quicklookWms2
+{
+	background-image: url(images/quicklook_wms.png);
 }
 
 #quicklookFits

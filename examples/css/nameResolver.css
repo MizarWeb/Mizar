@@ -79,6 +79,10 @@ input#searchClear {
     margin-left: 30px;
     color: white;
     padding: 5px;
+/*    overflow : scroll;
+    overflow-x : hidden;
+    overflow-y : scroll;
+*/
 }
 
 #resolverSearchResult .selected {
@@ -133,5 +137,3 @@ input#searchClear {
     margin: 0px;
     margin-top: 2px;
 }
-
-

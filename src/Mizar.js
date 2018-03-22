@@ -184,7 +184,7 @@ define(["jquery", "underscore-min",
 
             if (options.planetContext) {
                 this.createContext(Mizar.CONTEXT.Planet, options.planetContext);
-                this.setActivatedContext(Mizar.CONTEXT.Planet)
+                this.setActivatedContext(Mizar.CONTEXT.Planet);
             }
 
             if (options.groundContext) {
@@ -1149,7 +1149,6 @@ define(["jquery", "underscore-min",
             var result;
             try {
                 var layer = this.getActivatedContext().addLayer(layerDescription);
-                //console.log(layer);
                 if (layer !== null) {
                     result = layer.getID();
                 } else {
