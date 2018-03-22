@@ -8,6 +8,14 @@
 	border: none;
 }
 
+.osForm
+{
+	max-height	: 500px;
+	overflow		:scroll;
+	overflow-x	:hidden;
+
+}
+
 /*** Stylizing tabs ***/
 #layerServices > .ui-widget-header {
 	background: transparent;
@@ -205,7 +213,7 @@
 	margin: 5px;
 }
 
-.progressBar .ui-progressbar-value 
+.progressBar .ui-progressbar-value
 {
 	background: orange;
 }

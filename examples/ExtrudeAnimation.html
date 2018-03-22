@@ -25,6 +25,7 @@
 
                     mizar.createStats({element: 'fps', verbose: false});
 
+/*
                     var afterVectorLoad = function () {
                         // Generate random country indices
                         var countriesToExtrude = [];
@@ -63,13 +64,14 @@
                         mizar.getActivatedContext().addAnimation(animation);
 
                         // Start animation 2s after
-                        setTimeout(function () {
+                       /*setTimeout(function () {
                             animation.start();
                         }, 2000);
-                    };
+                    };*/
 
+                    console.log("mizar",mizar);
                     var extrude = mizar.getCrs().getGeoide().getRealPlanetRadius() / 10.0;
-                    var extrusionScale = 0.21;
+                    /*var extrusionScale = 0.21;
                     console.log("extrude",extrude);
                     console.log("extrusionScale",extrusionScale);
                     var layerID = mizar.addLayer({
@@ -88,8 +90,8 @@
                         visible:true,
                         callback: afterVectorLoad
                     });
-
-                    var vectorLayer = mizar.getLayerByID(layerID);
+                    
+                    var vectorLayer = mizar.getLayerByID(layerID);*/
                 });
 
 

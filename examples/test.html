@@ -1,0 +1,106 @@
+<!doctype html>
+<html>
+
+<head>
+    <title>Getting started with navigation</title>
+    <meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
+
+    <!-- mode dev -->
+    <script type="text/javascript" data-main="../src/rconfig.js" src="../node_modules/requirejs/require.js"></script>
+
+    <!-- mode prod -->
+    <!--<script type="text/javascript" src="../Mizar.min.js"></script>-->
+
+    <script type="text/javascript">
+
+        // mode dev
+        require(['Mizar'], function (Mizar) {
+
+            div = "MizarCanvas";
+            mizarDiv = (typeof div === "string") ? document.getElementById(div) : div;
+
+            var context = {
+                "layers": [
+                    {
+                        "type": "WCSElevation",
+                        "name": "Elevation",
+                        "baseUrl": "http://demonstrator.telespazio.com/wcspub",
+                        "coverage": "GTOPO",
+                        "version": "1.0.0",
+                        "minElevation": -32000,
+                        "scale": 15
+                    },
+                    {
+                        "name": "Blue Marble",
+                        "type": "WMS",
+                        "baseUrl": "http://demonstrator.telespazio.com/wmspub",
+                        "getCapabilities": "http://demonstrator.telespazio.com/wmspub",
+                        "layers": "BlueMarble",
+                        "byPass": true,
+                        "visible": true,
+                        "background": true
+                    },
+                    {
+                        "category": "Other",
+                        "type": "Atmosphere",
+                        "exposure": 1.4,
+                        "wavelength": [ 0.56, 0.66, 0.78 ],
+                        "name": "Atmosphere",
+                        "lightDir": [ 0, 1, 0 ],
+                        "visible": false
+                    },
+                    {
+                        "category": "Other",
+                        "type": "TileWireframe",
+                        "name": "Coordinates Grid",
+                        "outline": true,
+                        "visible": true
+                    }
+                ]};
+
+            // Create Mizar
+            var mizar =  new Mizar({
+                        canvas: $(mizarDiv)[0],
+                        configuration: {
+                            "mizarBaseUrl":"localhost/Mizar",
+                            "debug":false,
+                            "isMobile":false,
+                            "positionTracker":false,
+                            "elevationTracker":false,
+                            "registry":false,
+                            "proxyUse":false,
+                            "proxyUrl":""
+                        },
+                        planetContext : {
+                            "category": "Planets",
+                            "type": "Planet",
+                            "name": "Earth",
+                            "coordinateSystem": {
+                            "geoideName": "EPSG:4326"
+                        },
+                        "visible": true
+                        }
+                    });
+
+            
+            // Layers load
+            for (var i = 0; i < context.layers.length; i++) {
+                var layer = context.layers[i];
+                var layerID = mizar.addLayer(layer);
+                if(layer.type === Mizar.LAYER.WCSElevation) {
+                    mizar.setBaseElevation(layer.name);
+                }
+            }
+        });
+
+    </script>
+
+</head>
+
+
+<body style="margin: 0; padding: 0;">
+<div class="global">
+    <canvas id="MizarCanvas" style="border: none; margin: 0; padding: 0;"></canvas>
+</div>
+</body>
+</html>

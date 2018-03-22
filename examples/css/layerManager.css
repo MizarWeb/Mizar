@@ -54,7 +54,7 @@
 }
 
 .unknown {
-	background: url(../css/images/unknown.png) 0 0 no-repeat !important;
+	background: url(images/unknown.png) 0 0 no-repeat !important;
 }
 
 /*** Additionnal layers ***/
@@ -121,7 +121,7 @@
 	font-weight:bold;
 	pointer-events: none;
 	-webkit-user-select: none;
-	-moz-user-select: moz-none;
+	-moz-user-select: -moz-none;
 }
 
 .ui-icon-empty {
