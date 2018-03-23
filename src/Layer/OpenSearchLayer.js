@@ -586,7 +586,6 @@ define(['../Renderer/FeatureStyle', '../Renderer/VectorRendererManager', '../Uti
          * @param {FeatureStyle} style Style
          */
         OpenSearchLayer.prototype.highlight = function (feature, style) {
-            console.log("highlight !");
             feature.properties.style = style;
             this._addFeatureToRenderersCurrentLevel(feature);
         };
@@ -599,7 +598,6 @@ define(['../Renderer/FeatureStyle', '../Renderer/VectorRendererManager', '../Uti
          * @param {FeatureStyle} style Style
          */
         OpenSearchLayer.prototype.unhighlight = function (feature, style) {
-            console.log("unhighlight !");
             this._removeFeatureFromRenderersCurrentLevel(feature);
         };
 
@@ -664,7 +662,6 @@ define(['../Renderer/FeatureStyle', '../Renderer/VectorRendererManager', '../Uti
             var currentValue;   // value set 
             for (var i=0;i<this.getServices().queryForm.parameters.length;i++) {
                 param = this.getServices().queryForm.parameters[i];
-                //console.log("check param ",param.value);
                 currentValue = param.currentValueTransformed();
                 if (currentValue === null) {
                     // Remove parameter if not mandatory (with a ?)
@@ -924,7 +921,6 @@ define(['../Renderer/FeatureStyle', '../Renderer/VectorRendererManager', '../Uti
          * @throws {RangeError} opacity - opacity value should be a value in [0..1]
          */
         OpenSearchLayer.prototype.setOpacityOS = function (arg) {
-            console.log("OpenSearch setOpacity to "+arg);
             if (typeof arg === "number" && arg >=0.0 && arg <=1.0) {
                 this.opacity = arg;
                 targetStyle = new FeatureStyle(this.style);

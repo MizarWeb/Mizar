@@ -96,10 +96,9 @@ define(["../Renderer/FeatureStyle", "../Layer/OpenSearchLayer", "../Utils/Utils"
                         break;
                 }
                 style.zIndex = selectedData.layer.getStyle().zIndex;
-                console.log("blur");
                 if (typeof selectedData.layer.unhighlight !== "undefined") {
-                    console.log("unhighlight detected");
-                    selectedData.layer.unhighlight(selectedData.feature,style);
+                    //selectedData.layer.unhighlight(selectedData.feature,style);
+                    selectedData.layer.modifyFeatureStyle(selectedData.feature, style);
                 } else {
                     selectedData.layer.modifyFeatureStyle(selectedData.feature, style);
                 }
@@ -143,10 +142,9 @@ define(["../Renderer/FeatureStyle", "../Layer/OpenSearchLayer", "../Utils/Utils"
                         break;
                 }
                 style.zIndex = this.selectedStyle.zIndex;
-                console.log("focus");
                 if (typeof selectedData.layer.highlight !== "undefined") {
-                    console.log("highlight detected");
-                    selectedData.layer.highlight(selectedData.feature,style);
+                    //selectedData.layer.highlight(selectedData.feature,style);
+                    selectedData.layer.modifyFeatureStyle(selectedData.feature, style);
                 } else {
                     selectedData.layer.modifyFeatureStyle(selectedData.feature, style);
                 }
@@ -192,10 +190,9 @@ define(["../Renderer/FeatureStyle", "../Layer/OpenSearchLayer", "../Utils/Utils"
 
                 if (selectedData.layer.getGlobe()) {
                     // Layer is still attached to globe
-                    console.log("blur");
                     if (typeof selectedData.layer.unhighlight !== "undefined") {
-                        console.log("unhighlight detected");
-                        selectedData.layer.unhighlight(selectedData.feature,style);
+                        //selectedData.layer.unhighlight(selectedData.feature,style);
+                        selectedData.layer.modifyFeatureStyle(selectedData.feature, style);
                     } else {
                         selectedData.layer.modifyFeatureStyle(selectedData.feature, style);
                     }
@@ -237,10 +234,9 @@ define(["../Renderer/FeatureStyle", "../Layer/OpenSearchLayer", "../Utils/Utils"
                         break;
                 }
                 style.zIndex = this.selectedStyle.zIndex;
-                console.log("focus");
                 if (typeof selectedData.layer.highlight !== "undefined") {
-                    console.log("highlight detected");
-                    selectedData.layer.highlight(selectedData.feature,style);
+                    //selectedData.layer.highlight(selectedData.feature,style);
+                    selectedData.layer.modifyFeatureStyle(selectedData.feature, style);
                 } else {
                     selectedData.layer.modifyFeatureStyle(selectedData.feature, style);
                 }

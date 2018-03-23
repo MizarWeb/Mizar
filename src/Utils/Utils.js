@@ -137,7 +137,10 @@ define(["jquery"], function ($) {
      *     Return if 2 bounds (north,south,east,west) intersects
      */
     Utils.boundsIntersects = function (a, b) {
-        if ((typeof a.north === "undefined") || (typeof b.north === "undefined")) {
+        if ( (a === null) || (b === null)) {
+            return false;
+        }
+        if ((a.north === null) || (typeof a.north === "undefined") || (b.north === null) || (typeof b.north === "undefined")) {
             return false;
         }
         xOk = Utils.isValueBetween(a.west, b.west, b.east) ||

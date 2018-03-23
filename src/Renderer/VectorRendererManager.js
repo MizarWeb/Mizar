@@ -142,24 +142,6 @@ VectorRendererManager.prototype.generate = function(tile)
  * @param geometry
  * @param style
  */
-VectorRendererManager.prototype.addGeometryCurrentLevel = function(layer, geometry, style)
-{
-	var renderer = this.getRenderer(geometry,style);
-	if (renderer) {
-		renderer.addGeometryCurrentLevel(layer, geometry, style);
-	} else {
-		console.log("No renderer for VectorRendererManager");
-	}
-};
-
-/**
- * Add a geometry to the renderer
- * @function addGeometry
- * @memberof VectorRendererManager.prototype
- * @param layer
- * @param geometry
- * @param style
- */
 VectorRendererManager.prototype.addGeometry = function(layer, geometry, style)
 {
 	var renderer = this.getRenderer(geometry,style);
@@ -197,44 +179,6 @@ VectorRendererManager.prototype.removeGeometry = function(geometry,layer)
 	return false;
 };
 
-/**
- * Remove a geometry from the renderer
- * @function removeGeometryCurrentLevel
- * @memberof VectorRendererManager.prototype
- * @param geometry
- * @param layer
- * @return {Boolean}
- */
-VectorRendererManager.prototype.removeGeometryCurrentLevel = function(geometry,layer)
-{
-	var bucket = geometry._bucket;
-	if ( bucket && bucket.layer === layer )
-	{
-		bucket.renderer.removeGeometryCurrentLevel(geometry);
-		return true;
-	}
-	return false;
-};
-
-/**
- * Remove geometries from the renderer
- * @function removeGeometries
- * @memberof VectorRendererManager.prototype
- * @param geometries
- * @param layer
- * @return {Boolean}
- */
-VectorRendererManager.prototype.removeGeometries = function(geometries,layer)
-{
-	for (var i=0;i<geometries.length;i++) {
-		var bucket = geometries[i]._bucket;
-		if ( bucket && bucket.layer === layer )
-		{
-			bucket.renderer.removeGeometry(geometries[i]);
-		}
-	}
-	return true;
-};
 /**************************************************************************************************************/
 
 /**

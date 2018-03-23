@@ -150,29 +150,6 @@ VectorRenderer.prototype._recursiveAddGeometryToTile = function(bucket, geometry
  * @param geometry
  * @param style
  */
-VectorRenderer.prototype.addGeometryCurrentLevel = function(layer, geometry, style)
-{
-	var bucket = this.getOrCreateBucket(layer, geometry, style);
-	geometry._bucket = bucket;
-
-	// Attach to mainRenderable
-	if (!bucket.mainRenderable)
-	{
-		console.log("create main renderable");
-		bucket.mainRenderable = bucket.createRenderable();
-	}
-	console.log("add to main renderable",bucket.mainRenderable);
-	bucket.mainRenderable.add(geometry);
-};
-
-/**
- * Add a geometry to a vector renderer
- * @function addGeometry
- * @memberof VectorRenderer.prototype
- * @param layer
- * @param geometry
- * @param style
- */
 VectorRenderer.prototype.addGeometry = function(layer, geometry, style)
 {
 	var bucket = this.getOrCreateBucket(layer, geometry, style);
@@ -205,25 +182,6 @@ VectorRenderer.prototype.addGeometry = function(layer, geometry, style)
 };
 
 /**************************************************************************************************************/
-
-/**
- * Remove a geometry from a vector renderer
- * @function removeGeometryCurrentLevel
- * @memberof VectorRenderer.prototype
- * @param geometry
- * @private
- */
-VectorRenderer.prototype.removeGeometryCurrentLevel = function(geometry)
-{
-	var bucket = geometry._bucket;
-	if ( bucket.mainRenderable ) {
-		var numGeometries = bucket.mainRenderable.remove(geometry);
-		if ( numGeometries === 0 ) {
-			bucket.mainRenderable.dispose(this.renderContext);
-			bucket.mainRenderable = null;
-		}
-	}
-};
 
 /**
  * Remove a geometry from a vector renderer
@@ -360,7 +318,7 @@ VectorRenderer.prototype._addGeometryToTile = function(bucket, geometry, tile)
 VectorRenderer.prototype._removeGeometryFromTile = function(geometry,bbox,tile,level)
 {
 	var maxLevel = 0;
-	if (Utils.boundsIntersects(bbox,tile.bound) === false) {
+	if ((bbox !== null) && (Utils.boundsIntersects(bbox,tile.bound) === false)) {
 		return maxLevel;
 	}
 
@@ -422,9 +380,9 @@ VectorRenderer.prototype._removeGeometryFromTile = function(geometry,bbox,tile,l
  */
 VectorRenderer.prototype.removeGeometryFromTile = function(geometry,tile)
 {
-	var bbox = Utils.getBBoxFromCoordinateArray(geometry.coordinates[0]);
+	//var bbox = Utils.getBBoxFromCoordinateArray(geometry.coordinates[0]);
 	//var startDate = new Date();
-	maxLevel = this._removeGeometryFromTile(geometry,bbox,tile,0);
+	maxLevel = this._removeGeometryFromTile(geometry,null,tile,0);
 	//var endDate = new Date();
 	//console.log("Delta remove : "+(endDate*1.0 - startDate*1.0)+"ms with "+maxLevel+" levels");
 };

@@ -268,18 +268,20 @@ define(["jquery", "underscore-min", "../Utils/Constants",
         function updateMeasure() {
             self.clear();
             var coordinates = self.computeMeasure();
-
             // Get dem scale of elevation layer
             var mntScale;
             if (
                (mizarAPI.getActivatedContext().elevationTracker !== null) &&
+               (typeof mizarAPI.getActivatedContext().elevationTracker !== "undefined") &&
                (mizarAPI.getActivatedContext().elevationTracker.options !== null) &&
-               (mizarAPI.getActivatedContext().elevationTracker.options.elevationLayer !== undefined) &&
-               (mizarAPI.getActivatedContext().elevationTracker.options.elevationLayer.scale !== null) ) {
+               (typeof mizarAPI.getActivatedContext().elevationTracker.options !== "undefined") &&
+               (typeof mizarAPI.getActivatedContext().elevationTracker.options.elevationLayer !== "undefined") &&
+               (typeof mizarAPI.getActivatedContext().elevationTracker.options.elevationLayer.scale !== "undefined") ) {
                 mntScale = mizarAPI.getActivatedContext().elevationTracker.options.elevationLayer.scale;
             } else {
                 mntScale = 1;
             }
+            
             var firstPoint = self.geoPickPoint;
             var secondPoint = self.secondGeoPickPoint;
             var maxElevation = 0;
@@ -361,6 +363,7 @@ define(["jquery", "underscore-min", "../Utils/Constants",
                 }
             };
             measureLayer.addFeature(self.measureFeature);
+            
             measureLayer.addFeature(self.measureLabel);
         }
 

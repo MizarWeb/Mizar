@@ -213,7 +213,6 @@ define(['../Utils/Utils', './AbstractLayer', '../Utils/Constants', '../Renderer/
             } else {
                 isRemoved = false;
             }
-
             return isRemoved;
         };
 
