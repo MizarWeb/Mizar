@@ -213,10 +213,10 @@ Ray.prototype.sphereIntersect = function( center, radius )
     return tNear < 0 ? tFar : tNear;
 };
 
-var EPS = 1e-6;
 
 /**************************************************************************************************************/
 
+var EPS = 1e-15;
  /**
   * Ray triangle intersection optimized
   * @function triangleIntersectOptimized
