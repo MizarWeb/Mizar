@@ -66,11 +66,11 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Laye
 
             this.initCanvas(this.canvas);
 
-            if (this.mizarConfiguration.positionTracker === true) {
+            if (this.mizarConfiguration.positionTracker.enabled === true) {
                 this.positionTracker = _createTrackerPosition.call(this, this.mizarConfiguration);
             }
 
-            if (this.mizarConfiguration.elevationTracker === true) {
+            if (this.mizarConfiguration.elevationTracker.enabled === true) {
                 this.elevationTracker = _createTrackerElevation.call(this, this.mizarConfiguration, ctxOptions);
             }
 
@@ -635,7 +635,7 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Laye
                     // it will be updated by the position tracker
                     this.setComponentVisibility("posTrackerInfo", false);
                 }
-                
+
                 if (typeof this.elevationTracker !== "undefined") {
                     this.elevationTracker.attachTo(this);
                 }
