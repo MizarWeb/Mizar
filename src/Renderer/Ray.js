@@ -72,6 +72,7 @@ Ray.createFromPixel = function( renderContext, x, y )
 	var ny = -(((y / renderContext.canvas.height) * 2.0) - 1.0);
 
 	var tmpMat = mat4.create();
+	mat4.inverse(renderContext.viewProjectionMatrix, tmpMat);
 	mat4.multiply(renderContext.projectionMatrix, renderContext.viewMatrix, tmpMat);
 	mat4.inverse(tmpMat);
 	// Transform pos to world using inverse viewProjection matrix
