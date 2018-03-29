@@ -71,23 +71,21 @@ Ray.createFromPixel = function( renderContext, x, y )
 	var nx = ((x / renderContext.canvas.width) * 2.0) - 1.0;
 	var ny = -(((y / renderContext.canvas.height) * 2.0) - 1.0);
 
-	var tmpMat = mat4.create();
-	mat4.inverse(renderContext.viewProjectionMatrix, tmpMat);
-	mat4.multiply(renderContext.projectionMatrix, renderContext.viewMatrix, tmpMat);
-	mat4.inverse(tmpMat);
+	var inverseViewProjectionMatrix = mat4.create();
+	mat4.inverse(renderContext.viewProjectionMatrix, inverseViewProjectionMatrix);
 	// Transform pos to world using inverse viewProjection matrix
-	var pos3D = mat4.multiplyVec4(tmpMat, [ nx, ny, -1, 1]);
+	var pos3D = mat4.multiplyVec4(inverseViewProjectionMatrix, [ nx, ny, -1, 1]);
+
 	pos3D[0] /= pos3D[3];
 	pos3D[1] /= pos3D[3];
 	pos3D[2] /= pos3D[3];
 
-//	console.log('Old EP ' + renderContext.eyePosition );
+	// console.log('Old EP ' + renderContext.eyePosition );
 	var inverseViewMatrix = mat4.create();
 	mat4.inverse( renderContext.viewMatrix, inverseViewMatrix );
 	vec3.set( [ 0.0, 0.0, 0.0 ], renderContext.eyePosition );
 	mat4.multiplyVec3( inverseViewMatrix, renderContext.eyePosition );
-//	console.log('New EP ' + renderContext.eyePosition );
-
+	// console.log('New EP ' + renderContext.eyePosition );
 
 	var orig = vec3.create( renderContext.eyePosition );
 	var dir = vec3.subtract( pos3D, renderContext.eyePosition, vec3.create() );

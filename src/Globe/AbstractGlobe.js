@@ -352,12 +352,30 @@ define(['../Utils/Event', '../Utils/Utils',
         AbstractGlobe.prototype.getLonLatFromPixel = function (x, y) {
             //console.log("AbstractGlobe.getLonLatFromPixel");
             var ray = Ray.createFromPixel(this.renderContext, x, y);
-            //console.log("Ray",ray);
-            var intersection = _computeIntersection.call(this, ray, this.coordinateSystem);
-            //console.log("intersection",intersection);
+
+            var intersection;
+
+            if (this.hasMesh()) {
+                intersection = Number.MAX_VALUE;
+                for (var i = 0; i < this.tileManager.level0Tiles.length; ++i) {
+                    const tile = this.tileManager.level0Tiles[i];
+                    const t = tile.intersect(ray, this.tileManager.tileIndexBuffer.indices, this.renderContext);
+                    if (t < intersection && t >= 0) {
+                        intersection = t;
+                    }
+                }
+                if (intersection === Number.MAX_VALUE) {
+                    intersection = -1;
+                }
+            } else {
+                //console.log("Ray",ray);
+                intersection = _computeIntersection.call(this, ray, this.coordinateSystem);
+            }
+
+            // console.log("intersection",intersection);
             var result = _computePosition.call(this, ray, intersection, this.coordinateSystem);
-            //console.log("result",result);
-            //console.log("=================================");
+            // console.log("result",result);
+            // console.log("=================================");
             return result;
         };
 
@@ -540,6 +558,10 @@ define(['../Utils/Event', '../Utils/Utils',
          */
         AbstractGlobe.prototype.disable = function () {
             this.isEnable = false;
+        };
+
+        AbstractGlobe.prototype.hasMesh = function() {
+            return false;
         };
 
         return AbstractGlobe;
