@@ -78,6 +78,7 @@ define(['../Utils/Utils', './AbstractRasterLayer', '../Utils/Constants', '../Til
             options.tilePixelSize = options.tilePixelSize || 256;
             options.tiling = new GeoTiling(4, 2);
             options.numberOfLevels = options.numberOfLevels || 21;
+            options.transparent = options.transparent || true;
 
             this.restrictTo = options.restrictTo;
 
@@ -329,6 +330,7 @@ define(['../Utils/Utils', './AbstractRasterLayer', '../Utils/Constants', '../Til
             if(this.isBackground() || _tileIsIntersectedFootprint(bound, this.restrictTo)) {
                 var bbox = bound.west + "," + bound.south + "," + bound.east + "," + bound.north;
                 url = this.getMapBaseUrl;
+                url = Utils.addParameterTo(url, "transparent", this.options.transparent);
                 url = Utils.addParameterTo(url, "srs", tile.config.srs);
                 url = Utils.addParameterTo(url, "bbox", bbox);
             } else {
