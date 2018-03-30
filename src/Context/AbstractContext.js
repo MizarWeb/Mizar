@@ -299,11 +299,15 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Laye
          */
         AbstractContext.prototype.addLayers = function (layersDescription) {
             var layers = [];
+            var layersID = [];
             for (var i = 0; i < layersDescription.length; i++) {
                 var layer = this.addLayer(layersDescription[i]);
                 layers.push(layer);
+                layersID.push(layer.ID);
             }
-            return layers;
+            var layerEvent = (layer.category === "background") ? Constants.EVENT_MSG.LAYER_BACKGROUND_ADDED : Constants.EVENT_MSG.LAYER_ADDITIONAL_ADDED;
+            this.publish(Constants.EVENT_MSG.LAYER_ASYNCHRONE_LOADED, layersID);
+            return layersID;
         };
 
         /**
@@ -312,8 +316,13 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Laye
          * @private
          */
         AbstractContext.prototype.addLayerFromObject = function (layer, layerDescription) {
-            if (layer.multiLayers.length > 1) {
-                return this.addLayers(layer.multiLayers);
+            if ( (typeof layer.multiLayers !== "undefined") && (layer.multiLayers.length >= 1) ) {
+                layer.layersID =  this.addLayers(layer.multiLayers);
+                // need call back ?
+                if (typeof layer.internalAsynchroneCallback !== "undefined") {
+                    layer.internalAsynchroneCallback(layer);
+                }
+                return layer.ID;
             }
 
             this.layers.push(layer);

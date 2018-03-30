@@ -23,6 +23,7 @@
  * @memberOf module:Layer
  */
 define(["jquery","../Utils/Constants", "./WMSLayer", "./WMTSLayer", "./WCSElevationLayer", "./VectorLayer",
+        "./AsynchroneWMSLayer",
         "./AtmosphereLayer", "./BingLayer", "./GroundOverlayLayer", "./OSMLayer",
         "./TileWireframeLayer", "./CoordinateGridLayer",
         "./HipsFitsLayer",
@@ -31,8 +32,10 @@ define(["jquery","../Utils/Constants", "./WMSLayer", "./WMTSLayer", "./WCSElevat
         "./OpenSearchLayer",
         "./WMSElevationLayer","./HipsMetadata","./HipsCatLayer", "./GeoJsonLayer"
     ],
-    function ($, Constants, WMSLayer, WMTSLayer, WCSElevationLayer, VectorLayer, AtmosphereLayer,
-              BingLayer, GroundOverlayLayer, OSMLayer, TileWireframeLayer, CoordinateGridLayer,
+    function ($, Constants, WMSLayer, WMTSLayer, WCSElevationLayer, VectorLayer,
+              AsynchroneWMSLayer,
+              AtmosphereLayer,BingLayer, GroundOverlayLayer, OSMLayer,
+              TileWireframeLayer, CoordinateGridLayer,
               HipsFitsLayer,
               HipsGraphicLayer,
               MocLayer,
@@ -196,6 +199,7 @@ define(["jquery","../Utils/Constants", "./WMSLayer", "./WMTSLayer", "./WCSElevat
              * @see {@link module:Layer.VectorLayer VectorLayer} : A layer to draw a vector
              * @see {@link module:Layer.WCSElevationLayer WCSElevationLayer} : A layer to draw the elevation
              * @see {@link module:Layer.WMSElevationLayer WMSElevationLayer} : A layer to draw the elevation
+             * @see {@link module:Layer.AsynchroneWMSLayer AsynchroneWMSLayer} : A layer to draw images coming from the WMS server (asynchrone loading to manage GetCapabilities)
              * @see {@link module:Layer.WMSLayer WMSLayer} : A layer to draw images coming from the WMS server
              * @see {@link module:Layer.WMTSLayer WMTSLayer} : A layer to draw predefined tiles coming from a WMTS server
              */
@@ -205,7 +209,16 @@ define(["jquery","../Utils/Constants", "./WMSLayer", "./WMTSLayer", "./WCSElevat
                 var layer;
                 switch (options.type) {
                     case Constants.LAYER.WMS :
-                        layer = new WMSLayer(options);
+                        var hasDescriptive = ( (typeof options.baseUrl !== "undefined") || (typeof options.getCapabilities !== "undefined") );
+                        var hasByPass = ( (typeof options.byPass !== "undefined") && (options.byPass === true) );
+                        if ( (hasDescriptive === false) || (hasByPass === true) ) {
+                            // Load it directly
+                            layer = new WMSLayer(options);
+                        } else {
+                            // we have a descriptive url, load as asynchrone
+                            options.type = Constants.LAYER.AsynchroneWMS;
+                            layer = new AsynchroneWMSLayer(options);
+                        }
                         break;
                     case Constants.LAYER.WMTS :
                         layer = new WMTSLayer(options);
@@ -260,7 +273,6 @@ define(["jquery","../Utils/Constants", "./WMSLayer", "./WMTSLayer", "./WCSElevat
                         throw new RangeError("Unable to create the layer " + options.type, "LayerFactor.js");
                 }
                 return layer;
-
             }
 
         }

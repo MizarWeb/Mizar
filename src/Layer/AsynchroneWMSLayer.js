@@ -35,8 +35,8 @@
  * along with GlobWeb. If not, see <http://www.gnu.org/licenses/>.
  ***************************************/
 
-define(['../Utils/Utils', './AbstractRasterLayer', '../Utils/Constants', '../Tiling/GeoTiling'],
-    function (Utils, AbstractRasterLayer, Constants, GeoTiling) {
+define(['../Utils/Utils', './AbstractAsynchroneRasterLayer', '../Utils/Constants', '../Tiling/GeoTiling'],
+    function (Utils, AbstractAsynchroneRasterLayer, Constants, GeoTiling) {
 
 
         /**
@@ -53,67 +53,51 @@ define(['../Utils/Utils', './AbstractRasterLayer', '../Utils/Constants', '../Til
          */
 
         /**
-         * @name GetCapabilitiesLayer
+         * @name AsynchroneWMSLayer
          * @class
-         *    Creates a layer for managing the GetCapability and retreive automatically layers
-         * @augments AbstractRasterLayer
+         *    Creates a layer for imagery data using WMS (Web Map Service) protocol
+         *    based on a GeoTiling(4, 2) with a pixelSize = 256 by default.<br/>
+         *    WMS provides a standard interface for requesting a geospatial map image.
+         *    The standard guarantees that these images can all be overlaid on one another.
+         *    <br/><br/>
+         *    Example of a WMS request<br/>
+         *    <code>
+         *        http://example.com/wms?request=GetMap&service=WMS&version=1.1.1&layers=MyLayer
+         *        &styles=population&srs=EPSG:4326&bbox=-145.15104058007,21.731919794922,-57.154894212888,58.961058642578&
+         *        &width=780&height=330&format=image/png
+         *    </code>
+         *
+         * @augments AbstractAsynchroneLayer
          * @param {AbstractRasterLayer.wms_configuration} options - WMS Configuration
          * @constructor
          * @memberOf module:Layer
+         * @see {@link http://www.opengeospatial.org/standards/wms WMS} standard
          */
-        var GetCapabilitiesLayer = function (options) {
+        var AsynchroneWMSLayer = function (options) {
+            options.tilePixelSize = options.tilePixelSize || 256;
+            options.tiling = new GeoTiling(4, 2);
+            options.numberOfLevels = options.numberOfLevels || 21;
 
             this.restrictTo = options.restrictTo;
-            _computeBaseUrlAndCapabilities.call(this, options);
 
-            if (options.type === "WMS") {
-                typeLayer = Constants.LAYER.WMS;
-            } else if (options.type === "WMTS") {
-                typeLayer = Constants.LAYER.WMTS;
-            } else {
-                throw new ReferenceError("Layer type not recognized : "+options.type,"GetCapabilitiesLayer.js");
-            }
-
-            AbstractRasterLayer.prototype.constructor.call(this, typeLayer, options);
-
-            // If the layer is eligible to GetCapabilities and no layers are provided,
-            // this array is filled with a config by layer to load
-            // After loading, each config is loaded in a layer object, bypassing GetCapabilities
-            this.multiLayers = [];
-            this.layers = options.layers;
+            AbstractAsynchroneRasterLayer.prototype.constructor.call(this, Constants.LAYER.WMS, options);
 
             if (options.byPass === true) {
-                this.getMapBaseUrl = _queryImage.call(this, this.getBaseUrl(), this.tilePixelSize, this.tilePixelSize, options);
+                options.type = typeLayer;
+                this.multiLayers.push ( options );
+                return this.ID;                                
             } else {
+                this.layers = options.layers;
                 this.loadGetCapabilities(this.manageCapabilities, this.getGetCapabilitiesUrl(), this);
             }
-
             return this.ID;
         };
 
         /**************************************************************************************************************/
 
-        Utils.inherits(AbstractRasterLayer, GetCapabilitiesLayer);
+        Utils.inherits(AbstractAsynchroneRasterLayer, AsynchroneWMSLayer);
 
         /**************************************************************************************************************/
-
-        function _computeBaseUrlAndCapabilities(options) {
-            if(options.getCapabilities) {
-                options.baseUrl = Utils.computeBaseUrlFromCapabilities(options.getCapabilities,["service","request","version"]);
-            } else if(options.baseUrl) {
-                options.getCapabilities = _computeCapabilitiesFromBaseUrl.call(this, options.baseUrl, options);
-            } else {
-                throw new ReferenceError('No URL to access to the WMS server is defined', 'WMSLayer.js');
-            }
-        }
-
-        function _computeCapabilitiesFromBaseUrl(baseUrl, options) {
-            var getCapabilitiesUrl = baseUrl;
-            getCapabilitiesUrl = Utils.addParameterTo(getCapabilitiesUrl, "service", "WMS");
-            getCapabilitiesUrl = Utils.addParameterTo(getCapabilitiesUrl, "request", "getCapabilities");
-            getCapabilitiesUrl = Utils.addParameterTo(getCapabilitiesUrl, "version", options.hasOwnProperty('version') ? options.version : '1.1.1');
-            return getCapabilitiesUrl;
-        }
 
         function _queryImage(baseUrl, xTilePixelSize, yTilePixelSize, options) {
             // Build the base GetMap URL
@@ -137,6 +121,14 @@ define(['../Utils/Utils', './AbstractRasterLayer', '../Utils/Constants', '../Til
 
             return url;
         }
+
+        /**
+         * ========================================================================================================
+         * 
+         *                      Parse functions
+         * 
+         * ========================================================================================================
+         */
 
         function _parseAbstract(layer, globalLayer) {
             var result;
@@ -198,7 +190,6 @@ define(['../Utils/Utils', './AbstractRasterLayer', '../Utils/Constants', '../Til
             return result;
         }
 
-
         function _parseMetadata(sourceObject, layer, globalLayer, options) {
             var logo = _parseLogo.call(this, layer, globalLayer);
             var logoSrc;
@@ -228,48 +219,6 @@ define(['../Utils/Utils', './AbstractRasterLayer', '../Utils/Constants', '../Til
         }
 
 
-        /**
-         * Returns the list of layers to load
-         * @function getLisLayersToLoad
-         * @memberOf WMSLayer#
-         * @param {Json} foundLayers
-         * @param {Array/String} searchLayers
-         * @return {Array} Array of layers name
-         */
-        WMSLayer.prototype.getListLayersToLoad = function (foundLayers, searchLayers, onlyFirst) {
-            // Trivial case : no layers specified, so need to load all
-            var isLoadAll = ( (searchLayers === "") || (searchLayers === null) || (typeof searchLayers === "undefined"));
-            var isOnlyFirst = ( (onlyFirst !== null) && (typeof onlyFirst !== "undefined") && (onlyFirst === true));
-
-            if (isLoadAll === false) {
-                // Get array of layers search
-                var arrSearchLayers = searchLayers.split(",");
-            }
-
-            if (typeof foundLayers.length === "undefined") {
-                // If we found only one element, set it into array
-                foundLayers = [foundLayers];
-            }
-
-            var toLoadLayers = [];
-            for (var i = 0; i < foundLayers.length; i++) {
-                var foundName = foundLayers[i].Name["_text"];
-                if (isLoadAll === true) {
-                    toLoadLayers.push(foundName);
-                } else {
-                    for (var j = 0; j < arrSearchLayers.length; j++) {
-                        if (foundName === arrSearchLayers[j]) {
-                            toLoadLayers.push(foundName);
-                        }
-                    }
-                }
-            }
-
-            if ((onlyFirst) && (toLoadLayers.length > 1)) {
-                toLoadLayers = [toLoadLayers[0]];
-            }
-            return toLoadLayers;
-        };
 
         /**************************************************************************************************************/
 
@@ -281,31 +230,35 @@ define(['../Utils/Utils', './AbstractRasterLayer', '../Utils/Constants', '../Til
          * @param sourceObject Object where data is stored
          * @private
          */
-        WMSLayer.prototype.manageCapabilities = function (json, sourceObject) {
+        AsynchroneWMSLayer.prototype.manageCapabilities = function (json, sourceObject) {
+            if (typeof json.WMT_MS_Capabilities === "undefined") {
+                console.log("Error, can't open getCapabilities for layer ",sourceObject);
+                throw new Error("Can't open getCapabilities");
+            }
             var jsRoot = json.WMT_MS_Capabilities;
             var jsCapability = jsRoot.Capability;
             var jsLayers = jsCapability.Layer.Layer;
             var toLoadLayers = sourceObject.getListLayersToLoad(jsLayers, sourceObject.options.layers, sourceObject.options.onlyFirst);
-            if (toLoadLayers.length === 1) {
-                // only one layer to load !
-                _parseMetadata.call(this, sourceObject, jsLayers, jsCapability.Layer, sourceObject.options);
-                sourceObject.layers = toLoadLayers[0];
-                sourceObject.getMapBaseUrl = _queryImage.call(this, sourceObject.baseUrl, sourceObject.tilePixelSize, sourceObject.tilePixelSize, sourceObject);
-                sourceObject.getCapabilitiesEnabled = false;
-            } else {
-                // More than one layer, duplicate config
-                for (var i = 0; i < toLoadLayers.length; i++) {
-                    var layerName = toLoadLayers[i];
-                    var newConfig = Object.assign({}, sourceObject.options);
-                    _parseMetadata.call(this, newConfig, jsLayers[i], jsCapability.Layer, sourceObject.options);
-                    newConfig.layers = layerName;
-                    newConfig.byPass = true;
-                    sourceObject.multiLayers.push(newConfig);
-                }
+
+            // duplicate config for each wms layers and create wms layer
+            for (var i = 0; i < toLoadLayers.length; i++) {
+                var layerName = toLoadLayers[i];
+                var newConfig = Object.assign({}, sourceObject.options);
+                _parseMetadata.call(this, newConfig, jsLayers[i], jsCapability.Layer, sourceObject.options);
+                newConfig.type = "WMS";
+                newConfig.layers = layerName;
+                newConfig.byPass = true;
+                sourceObject.multiLayers.push ( newConfig );
             }
+            
             if ((sourceObject.callbackContext !== null) && (typeof sourceObject.callbackContext !== "undefined")) {
                 sourceObject.callbackContext.addLayerFromObject(sourceObject, sourceObject.options);
             }
+
+            sourceObject.areLayersLoaded = true;
+
+            // TODOFL : callback when loaded
+            //
         };
 
         /**
@@ -315,7 +268,7 @@ define(['../Utils/Utils', './AbstractRasterLayer', '../Utils/Constants', '../Til
          * @param {Tile} tile Tile
          * @return {String} Url
          */
-        WMSLayer.prototype.getUrl = function (tile) {
+        AsynchroneWMSLayer.prototype.getUrl = function (tile) {
             // Just add the bounding box to the GetMap URL
             var bound = tile.bound;
 
@@ -336,6 +289,6 @@ define(['../Utils/Utils', './AbstractRasterLayer', '../Utils/Constants', '../Til
 
         /**************************************************************************************************************/
 
-        return WMSLayer;
+        return AsynchroneWMSLayer;
 
     });
