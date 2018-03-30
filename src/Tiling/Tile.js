@@ -35,8 +35,8 @@
  * along with GlobWeb. If not, see <http://www.gnu.org/licenses/>.
  ***************************************/
 
-define(['../Renderer/BoundingBox', '../Renderer/glMatrix'],
-    function (BoundingBox) {
+define(['../Renderer/BoundingBox', '../Renderer/Ray', '../Renderer/glMatrix'],
+    function (BoundingBox, Ray) {
 
         /**************************************************************************************************************/
 
@@ -445,6 +445,73 @@ define(['../Renderer/BoundingBox', '../Renderer/glMatrix'],
         };
 
         /**************************************************************************************************************/
+
+        Tile.prototype.intersect = function(ray, indices, rc) {
+            if (this.isCulled(rc)) {
+                return -1;
+            }
+
+            // We intersect, check the children recursively for a finer result
+            var minChildrenIntersection;
+
+            if (this.children) {
+                for (var i = 0; i < this.children.length; ++i) {
+                    const child = this.children[i];
+                    if (child.vertices) {
+                        const intersection = child.intersect(ray, indices, rc);
+                        if (intersection >= 0 && (!minChildrenIntersection || intersection < minChildrenIntersection)) {
+                            minChildrenIntersection = intersection;
+                        }
+                    }
+                }
+            }
+
+            // Children will be more fine-grained
+            var final_t;
+            if (minChildrenIntersection && minChildrenIntersection >= 0) {
+                final_t = minChildrenIntersection;
+            } else {
+                var intersection = null;
+
+                for (var i = 0; indices && i < indices.length / 3; ++i) {
+                    const i0 = indices[i*3 + 0] * 3;
+                    const i1 = indices[i*3 + 1] * 3;
+                    const i2 = indices[i*3 + 2] * 3;
+
+                    var v0 = [this.vertices[i0+0], this.vertices[i0+1], this.vertices[i0+2]];
+                    var v1 = [this.vertices[i1+0], this.vertices[i1+1], this.vertices[i1+2]];
+                    var v2 = [this.vertices[i2+0], this.vertices[i2+1], this.vertices[i2+2]];
+
+                    v0 = mat4.multiplyVec3(this.matrix, v0);
+                    v1 = mat4.multiplyVec3(this.matrix, v1);
+                    v2 = mat4.multiplyVec3(this.matrix, v2);
+
+                    var verts = [
+                        v0[0], v0[1], v0[2],
+                        v1[0], v1[1], v1[2],
+                        v2[0], v2[1], v2[2],
+                    ];
+
+                    const tmp_i = ray.triangleIntersectOptimized(verts, 0, 3, 6);
+                    if (tmp_i) {
+                        if (!intersection || tmp_i.t < intersection.t) {
+                            intersection = tmp_i;
+                        }
+                    }
+                }
+
+                if (intersection) {
+                    final_t = intersection.t;
+                }
+            }
+
+            if (!final_t) {
+                return -1;
+            }
+
+            const result = final_t;
+            return result;
+        };
 
         return Tile;
 

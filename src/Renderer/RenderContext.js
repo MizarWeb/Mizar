@@ -116,6 +116,7 @@ define(['./Frustum', './glMatrix'],
             this.viewMatrix = mat4.create();
             this.modelViewMatrix = mat4.create();
             this.projectionMatrix = mat4.create();
+            this.viewProjectionMatrix = mat4.create();
             this.gl = gl;
             this.canvas = canvas;
             this.frustum = new Frustum();
@@ -283,6 +284,8 @@ define(['./Frustum', './glMatrix'],
             // Init projection matrix
             mat4.perspective(this.fov, this.canvas.width / this.canvas.height, this.minNear, this.far, this.projectionMatrix);
 
+            // No need to do this computation every time
+            mat4.multiply(this.projectionMatrix, this.viewMatrix, this.viewProjectionMatrix);
             // Compute the frustum from the projection matrix
             this.frustum.compute(this.projectionMatrix);
 
