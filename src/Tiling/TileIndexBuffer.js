@@ -47,6 +47,7 @@ define(function () {
         this.renderContext = renderContext;
         this.config = config;
         this.solidIndexBuffer = null;
+        this.indices = null;
         this.subSolidIndexBuffer = [null, null, null, null];
         this.subIndices = [null, null, null, null];
     };
@@ -175,17 +176,17 @@ define(function () {
         if (this.solidIndexBuffer === null) {
             var i,j;
             var size = this.config.tesselation;
-            var indices = [];
+            this.indices = [];
             // Build the grid
             for (j = 0; j < size - 1; j++) {
                 for (i = 0; i < size - 1; i++) {
-                    indices.push(j * size + i);
-                    indices.push((j + 1) * size + i);
-                    indices.push(j * size + i + 1);
+                    this.indices.push(j * size + i);
+                    this.indices.push((j + 1) * size + i);
+                    this.indices.push(j * size + i + 1);
 
-                    indices.push(j * size + i + 1);
-                    indices.push((j + 1) * size + i);
-                    indices.push((j + 1) * size + i + 1);
+                    this.indices.push(j * size + i + 1);
+                    this.indices.push((j + 1) * size + i);
+                    this.indices.push((j + 1) * size + i + 1);
                 }
             }
 
@@ -193,60 +194,60 @@ define(function () {
                 // Top skirt
                 var start = size * size;
                 for (i = 0; i < size - 1; i++) {
-                    indices.push(start + i);
-                    indices.push(i);
-                    indices.push(start + i + 1);
+                    this.indices.push(start + i);
+                    this.indices.push(i);
+                    this.indices.push(start + i + 1);
 
-                    indices.push(start + i + 1);
-                    indices.push(i);
-                    indices.push(i + 1);
+                    this.indices.push(start + i + 1);
+                    this.indices.push(i);
+                    this.indices.push(i + 1);
                 }
 
                 // Bottom skirt
                 start += size;
                 for (i = 0; i < size - 1; i++) {
-                    indices.push((size - 1) * size + i);
-                    indices.push(start + i);
-                    indices.push((size - 1) * size + i + 1);
+                    this.indices.push((size - 1) * size + i);
+                    this.indices.push(start + i);
+                    this.indices.push((size - 1) * size + i + 1);
 
-                    indices.push((size - 1) * size + i + 1);
-                    indices.push(start + i);
-                    indices.push(start + i + 1);
+                    this.indices.push((size - 1) * size + i + 1);
+                    this.indices.push(start + i);
+                    this.indices.push(start + i + 1);
                 }
 
                 // Left skirt
                 start += size;
                 for (j = 0; j < size - 1; j++) {
-                    indices.push(start + j);
-                    indices.push(start + j + 1);
-                    indices.push(j * size);
+                    this.indices.push(start + j);
+                    this.indices.push(start + j + 1);
+                    this.indices.push(j * size);
 
-                    indices.push(j * size);
-                    indices.push(start + j + 1);
-                    indices.push((j + 1) * size);
+                    this.indices.push(j * size);
+                    this.indices.push(start + j + 1);
+                    this.indices.push((j + 1) * size);
                 }
 
                 // Right skirt
                 start += size;
                 for (j = 0; j < size - 1; j++) {
-                    indices.push(j * size + size - 1);
-                    indices.push((j + 1) * size + size - 1);
-                    indices.push(start + j);
+                    this.indices.push(j * size + size - 1);
+                    this.indices.push((j + 1) * size + size - 1);
+                    this.indices.push(start + j);
 
-                    indices.push(start + j);
-                    indices.push((j + 1) * size + size - 1);
-                    indices.push(start + j + 1);
+                    this.indices.push(start + j);
+                    this.indices.push((j + 1) * size + size - 1);
+                    this.indices.push(start + j + 1);
                 }
             }
 
             var gl = this.renderContext.gl;
             var ib = gl.createBuffer();
             gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, ib);
-            gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(indices), gl.STATIC_DRAW);
-            this.numIndices = indices.length;
+            gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(this.indices), gl.STATIC_DRAW);
+            this.numIndices = this.indices.length;
 
             this.solidIndexBuffer = ib;
-            this.solidIndexBuffer.numIndices = indices.length;
+            this.solidIndexBuffer.numIndices = this.indices.length;
         }
 
         return this.solidIndexBuffer;
