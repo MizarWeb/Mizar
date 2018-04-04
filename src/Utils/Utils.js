@@ -249,13 +249,40 @@ define(["jquery"], function ($) {
             url: url,
             dataType: datatype,
             success: function (response) {
-                callback(response, options);
+                if(callback) {
+                    callback(response, options);
+                }
             },
             error: function (request, status, error) {
-                fallBack(request, status, error, options);
+                if(fallBack) {
+                    fallBack(request, status, error, options);
+                }
             }
         });
     };
+
+
+    Utils.proxify = function (url, proxy) {
+        if (typeof url !== 'string') {
+            return url;
+        }
+        var proxifiedUrl = url;
+        var proxyDone = false;
+        if (proxy) {
+            if (proxy.use === true) {
+                proxyDone = true;
+                if (url.toLowerCase().startsWith("http") === false) {
+                    proxifiedUrl = url;
+                } else if (url.startsWith(proxy.url)) {
+                    proxifiedUrl = url; // No change, proxy always set
+                } else {
+                    proxifiedUrl = proxy.url + encodeURIComponent(url); // Add proxy redirection
+                }
+            }
+        }
+        return proxifiedUrl;
+    };
+
 
     return Utils;
 
