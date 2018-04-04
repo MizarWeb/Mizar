@@ -16,8 +16,8 @@
  * You should have received a copy of the GNU General Public License
  * along with MIZAR. If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
-define(["./ConstellationProvider","./OpenSearchProvider","./PlanetProvider","./StarProvider","./CraterProvider","../Utils/Constants"],
-    function(ConstellationProvider, OpenSearchProvider, PlanetProvider, StarProvider, CraterProvider, Constants) {
+define(["./ConstellationProvider","./PlanetProvider","./StarProvider","./CraterProvider","../Utils/Constants"],
+    function(ConstellationProvider, PlanetProvider, StarProvider, CraterProvider, Constants) {
         
 
     return {
@@ -31,9 +31,6 @@ define(["./ConstellationProvider","./OpenSearchProvider","./PlanetProvider","./S
                     break;
                 case Constants.PROVIDER.Crater:
                     obj = new CraterProvider(options);
-                    break;
-                case Constants.PROVIDER.OpenSearch:
-                    obj = new OpenSearchProvider(options);
                     break;
                 case Constants.PROVIDER.Planet:
                     obj = new PlanetProvider(options);
