@@ -1048,19 +1048,20 @@ define(['../Renderer/FeatureStyle', '../Renderer/VectorRendererManager', '../Uti
                 "background": false,
                 "linkedTo": selectedData.layer.ID
             };
-            var idLayerAdded = selectedData.layer.callbackContext.addLayer(layerDescription).ID;
-            
-            // Add feature id of wms into list a current WMS displayed
-            this.addServicesRunningOnRecord(selectedData.feature.id, idLayerAdded);
+            var self = this;
+            selectedData.layer.callbackContext.addLayer(layerDescription, function(layerID) {
+                // Add feature id of wms into list a current WMS displayed
+                self.addServicesRunningOnRecord(selectedData.feature.id, layerID);
 
-            if (typeof this.callbackContext !== "undefined") {
-                this.callbackContext.publish(Constants.EVENT_MSG.LAYER_TOGGLE_WMS,
-                    {
-                        "layer_name" : selectedData.layer.getShortName(),
-                        "visible" : true
-                    }
-                );
-            }
+                if (typeof self.callbackContext !== "undefined") {
+                    self.callbackContext.publish(Constants.EVENT_MSG.LAYER_TOGGLE_WMS,
+                        {
+                            "layer_name" : selectedData.layer.getShortName(),
+                            "visible" : true
+                        }
+                    );
+                }
+            })
         };
         
         /**************************************************************************************************************/

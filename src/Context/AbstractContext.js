@@ -16,14 +16,111 @@
  * You should have received a copy of the GNU General Public License
  * along with MIZAR. If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
-define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Layer/LayerFactory", "../Services/ServiceFactory", "../Utils/Constants",
+define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Layer/LayerFactory", "../Services/ServiceFactory", "../Utils/Constants", "../Registry/WMSServer","../Registry/WMTSServer",
         "../Gui/Tracker/PositionTracker", "../Gui/Tracker/ElevationTracker", "../Utils/AttributionHandler", "../Gui/dialog/ErrorDialog",
         "../Renderer/PointRenderer", "../Renderer/LineStringRenderable", "../Renderer/PolygonRenderer", "../Renderer/LineRenderer",
         "../Renderer/PointSpriteRenderer", "../Renderer/ConvexPolygonRenderer"],
-    function ($, _, Event, Utils, LayerFactory, ServiceFactory, Constants,
+    function ($, _, Event, Utils, LayerFactory, ServiceFactory, Constants, WMSServer, WMTSServer,
               PositionTracker, ElevationTracker, AttributionHandler, ErrorDialog) {
 
         //TODO : attention de bien garder les ...Renderer dans le define
+
+        //Handler
+        var Handler = function(){
+            this.next = {
+                handleRequest: function(layerDescription, callback){
+                    console.log('All strategies exhausted.');
+                }
+            }
+        } ;
+        Handler.prototype.setNext = function(next){
+            this.next = next;
+            return next;
+        };
+        Handler.prototype.handleRequest = function(layerDescription, callback){};
+
+
+        var PendingAtmosphere = function(pendingLayers, layers){
+            this.layers = layers;
+            this.pendingLayers = pendingLayers;
+        };
+        PendingAtmosphere.prototype = new Handler();
+        PendingAtmosphere.prototype.hasLayerBackground = function() {
+            var hasBackground = false;
+            for(var i=0; i< this.layers.length; i++) {
+                var layer = this.layers[i];
+                if (layer.isBackground() && layer.isVisible()) {
+                    hasBackground = true;
+                    break;
+                }
+            }
+            return hasBackground;
+        };
+        PendingAtmosphere.prototype.handleRequest = function(layerDescription, callback) {
+            if(layerDescription.type === Constants.LAYER.Atmosphere && !this.hasLayerBackground()) {
+                this.pendingLayers.push(layerDescription);
+            } else {
+                this.next.handleRequest(layerDescription, callback);
+            }
+        };
+
+
+        //Wms server
+        var WmsServer = function(mizarConfiguration, pendingLayers){
+            this.pendingLayers = pendingLayers;
+            this.proxyUse = mizarConfiguration.proxyUse;
+            this.proxyUrl = mizarConfiguration.proxyUrl;
+        };
+        WmsServer.prototype = new Handler();
+        WmsServer.prototype.handleRequest = function(layerDescription, callback){
+            if(layerDescription.type === Constants.LAYER.WMS) {
+                var wmsServer = new WMSServer(this.proxyUse, this.proxyUrl, layerDescription);
+                var self = this;
+                wmsServer.createLayers(function(layers) {
+                    _handlePendingLayers(self.pendingLayers, layers);
+                    callback(layers);
+                });
+            } else {
+                this.next.handleRequest(layerDescription, callback);
+            }
+        };
+
+        // wmts server
+        var WmtsServer = function(mizarConfiguration, pendingLayers){
+            this.pendingLayers = pendingLayers;
+            this.proxyUse = mizarConfiguration.proxyUse;
+            this.proxyUrl = mizarConfiguration.proxyUrl;
+        };
+        WmtsServer.prototype = new Handler();
+        WmtsServer.prototype.handleRequest = function(layerDescription, callback){
+            if(layerDescription.type === Constants.LAYER.WMTS) {
+                var wmsServer = new WMTSServer(this.proxyUse, this.proxyUrl, layerDescription);
+                var self = this;
+                wmsServer.createLayers(function(layers) {
+                    _handlePendingLayers(self.pendingLayers, layers);
+                    callback(layers);
+                });
+            } else {
+                this.next.handleRequest(layerDescription, callback);
+            }
+        };
+
+        //Strategy2
+        var Layer = function(pendingLayers){
+            this.pendingLayers = pendingLayers;
+        };
+        Layer.prototype = new Handler();
+        Layer.prototype.handleRequest = function(layerDescription, callback){
+            var layers = [];
+            try {
+                var layer = LayerFactory.create(layerDescription);
+                layers.push(layer);
+                _handlePendingLayers(this.pendingLayers, layers);
+                callback(layers);
+            } catch(RangeError) {
+                this.next.handleRequest(layerDescription, callback);
+            }
+        };
 
         /**
          * @name AbstractContext
@@ -61,8 +158,7 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Laye
             this.ctxOptions = ctxOptions;
             this.mode = mode;
             this.layers = [];
-            this.pendingAtmosphereDescription = null;
-            this.visibleBackgroundLoaded = false;
+            this.pendingLayers = [];
 
             this.initCanvas(this.canvas);
 
@@ -76,6 +172,22 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Laye
 
 
         };
+
+        function _handlePendingLayers(pendingLayers, layers) {
+            for (var i=0; i<layers.length; i++) {
+                var layer = layers[i];
+                if(pendingLayers.length != 0 && layer.isBackground() && layer.isVisible()) {
+                    for(var j=0; j<pendingLayers.length; j++) {
+                        var pendingLayerDescription = pendingLayers[j];
+                        try {
+                            layers.push(LayerFactory.create(pendingLayerDescription));
+                            pendingLayers = _.without(pendingLayers, pendingLayerDescription)
+                        } catch(RangeError) {
+                        }
+                    }
+                }
+            }
+        }
 
         /**
          * Creates tracker position
@@ -311,84 +423,72 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Laye
         };
 
         /**
-         * @function addLayerFromObject
-         * @memberOf AbstractContext#
-         * @private
-         */
-        AbstractContext.prototype.addLayerFromObject = function (layer, layerDescription) {
-            if ( (typeof layer.multiLayers !== "undefined") && (layer.multiLayers.length >= 1) ) {
-                layer.layersID =  this.addLayers(layer.multiLayers);
-                // need call back ?
-                if (typeof layer.internalAsynchroneCallback !== "undefined") {
-                    layer.internalAsynchroneCallback(layer);
-                }
-                return layer.ID;
-            }
-
-            this.layers.push(layer);
-            _addToGlobe.call(this, layer);
-
-            this._fillDataProvider(layer, layerDescription);
-
-            if (layer.isPickable()) {
-                ServiceFactory.create(Constants.SERVICE.PickingManager).addPickableLayer(layer);
-            }
-            var self = this;
-            layer.subscribe(Constants.EVENT_MSG.LAYER_VISIBILITY_CHANGED, function (layer) {
-                if (layer.isVisible() && layer.getProperties() && !layer.isBackground()
-                    && layer.getProperties().hasOwnProperty("initialRa") && layer.getProperties().hasOwnProperty("initialDec") && layer.getProperties().hasOwnProperty("initialFov")) {
-
-                    if (layer.globe.getType() === Constants.GLOBE.Sky) {
-                        var fov = (layer.getProperties().initialFov) ? layer.getProperties().initialFov : layer.getGlobe().getRenderContext().fov;
-                        self.getNavigation().zoomTo([layer.getProperties().initialRa, layer.getProperties().initialDec], {
-                            fov: fov,
-                            duration: 3000
-                        });
-                    }
-                    else {
-                        self.getNavigation().zoomTo([layer.getProperties().initialRa, layer.getProperties().initialDec], {
-                            distance: layer.getProperties().initialFov,
-                            duration: 3000
-                        });
-                    }
-                }
-            });
-            var layerEvent = (layer.category === "background") ? Constants.EVENT_MSG.LAYER_BACKGROUND_ADDED : Constants.EVENT_MSG.LAYER_ADDITIONAL_ADDED;
-            this.publish(layerEvent, layer);
-
-
-            // Check if the visible background layer is still loaded
-            if ((layer.isVisible() === true) && (layer.category === "background")) {
-                this.visibleBackgroundLoaded = true;
-            }
-
-            // If an atmosphere layer is needed, load it now !
-            if ((this.visibleBackgroundLoaded === true) && (this.pendingAtmosphereDescription !== null)) {
-                layerDescription = this.pendingAtmosphereDescription;
-                this.pendingAtmosphereDescription = null;
-                this.addLayer(layerDescription);
-            }
-            return layer;
-        };
-
-        /**
          * @function addLayer
          * @memberOf AbstractContext#
          */
-        AbstractContext.prototype.addLayer = function (layerDescription) {
+        AbstractContext.prototype.addLayer = function (layerDescription, callback) {
             layerDescription.getCapabilitiesTileManager = this.globe.tileManager;
-            if ((layerDescription.type === Constants.LAYER.Atmosphere) && (this.visibleBackgroundLoaded === false)) {
-                this.pendingAtmosphereDescription = layerDescription;
-                return null;
-            }
-            var layer = LayerFactory.create(layerDescription);
-            layer.getCapabilitiesTileManager = this.globe.tileManager;
-            if (layer.getCapabilitiesEnabled === true) {
-                // Wait for getCapabilities loading
-                layer.callbackContext = this;
-                return layer;
-            }
-            return this.addLayerFromObject(layer, layerDescription);
+
+            var pendingAtmos = new PendingAtmosphere(this.pendingLayers, this.layers);
+            var wmsServer = new WmsServer(this.getMizarConfiguration(), this.pendingLayers);
+            var wmtsServer = new WmtsServer(this.pendingLayers);
+            var strategy2 = new Layer(this.pendingLayers);
+
+
+            pendingAtmos.setNext(wmsServer);
+            wmsServer.setNext(wmtsServer);
+            wmtsServer.setNext(strategy2);
+
+            var self = this;
+            pendingAtmos.handleRequest(layerDescription, function(layers) {
+
+                for (var i=0; i<layers.length; i++) {
+                    var layer = layers[i];
+                    layer.callbackContext = self;
+                    self.layers.push(layer);
+                    _addToGlobe.call(self, layer);
+
+                    self._fillDataProvider(layer, layerDescription);
+
+                    if (layer.isPickable()) {
+                        ServiceFactory.create(Constants.SERVICE.PickingManager).addPickableLayer(layer);
+                    }
+
+                    layer.subscribe(Constants.EVENT_MSG.LAYER_VISIBILITY_CHANGED, function (layer) {
+                        if (layer.isVisible() && layer.getProperties() && !layer.isBackground()
+                            && layer.getProperties().hasOwnProperty("initialRa") && layer.getProperties().hasOwnProperty("initialDec") && layer.getProperties().hasOwnProperty("initialFov")) {
+
+                            if (layer.globe.getType() === Constants.GLOBE.Sky) {
+                                var fov = (layer.getProperties().initialFov) ? layer.getProperties().initialFov : layer.getGlobe().getRenderContext().fov;
+                                self.getNavigation().zoomTo([layer.getProperties().initialRa, layer.getProperties().initialDec], {
+                                    fov: fov,
+                                    duration: 3000
+                                });
+                            }
+                            else {
+                                var bbox = layer.getProperties().bbox;
+                                var long = self.getNavigation().getCenter()[0];
+                                var lat = self.getNavigation().getCenter()[1];
+                                if(bbox[0] <= long && long <= bbox[1] && bbox[2] <= lat && lat <= bbox[3]) {
+                                    // do nothing
+                                } else {
+                                    self.getNavigation().zoomTo([layer.getProperties().initialRa, layer.getProperties().initialDec], {
+                                        distance: layer.getProperties().initialFov,
+                                        duration: 3000
+                                    });
+                                }
+
+                            }
+                        }
+                    });
+                    var layerEvent = (layer.category === "background") ? Constants.EVENT_MSG.LAYER_BACKGROUND_ADDED : Constants.EVENT_MSG.LAYER_ADDITIONAL_ADDED;
+                    self.publish(layerEvent, layer);
+                    if(callback) {
+                        callback(layer.ID);
+                    }
+                }
+            });
+
         };
 
         // /**
@@ -436,7 +536,7 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Laye
                 linkedLayers.push(this.layers[indexes[i]]);
             }
             return linkedLayers;
-        }
+        };
 
         /**
          * @function removeLayer
@@ -509,24 +609,6 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Laye
          */
         AbstractContext.prototype.removeDraw = function (layer) {
             this.globe.removeLayer(layer);
-        };
-
-        /**
-         * Initializes the touch navigation handler.
-         * @param {Object} options to add touch navigation
-         * @param {Navigation} options.navigation Navigation object
-         * @function initTouchNavigation
-         * @memberOf AbstractContext#
-         */
-        AbstractContext.prototype.initTouchNavigation = function (options) {
-            options.navigation.touch = {
-                inversed: this.globe.isSky(),
-                zoomOnDblClick: true
-            };
-            var self = this;
-            window.addEventListener("orientationchange", function () {
-                self.refresh();
-            }, false);
         };
 
         /**
@@ -635,9 +717,6 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Laye
                             ? this.mizarConfiguration.attributionHandler.element : 'globeAttributions'
                     }
                 );
-                if (this.mizarConfiguration.isMobile === true) {
-                    this.initTouchNavigation(options);
-                }
 
                 if (typeof this.positionTracker !== "undefined") {
                     this.positionTracker.attachTo(this);
@@ -883,7 +962,7 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Laye
                 layer = this.layers[++i];
             }
             var renderers = this.getRenderContext().renderers;
-            for (var i = 0; i < renderers.length; i++) {
+            for (i = 0; i < renderers.length; i++) {
                 if (renderers[i].getType() === this.getMode()) {
                     renderers[i].enable();
                 }
@@ -1013,6 +1092,8 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Laye
             }
             this.canvas = null;
         };
+
+
 
         /**************************************************************************************************************/
 
