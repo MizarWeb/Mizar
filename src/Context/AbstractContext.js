@@ -467,6 +467,12 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Laye
                             }
                             else {
                                 var bbox = layer.getProperties().bbox;
+                                if(bbox[0] > 180) {
+                                    bbox[0] -= 360;
+                                }
+                                if(bbox[1] > 180) {
+                                    bbox[1] -= 360;
+                                }
                                 var long = self.getNavigation().getCenter()[0];
                                 var lat = self.getNavigation().getCenter()[1];
                                 if(bbox[0] <= long && long <= bbox[1] && bbox[2] <= lat && lat <= bbox[3]) {
