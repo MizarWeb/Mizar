@@ -323,7 +323,8 @@ define(["jquery", "underscore-min", "../Utils/Constants",
                 },
                 properties: {
                     style: new FeatureStyle({
-                        fillColor: [1, 0, 0, 1]
+                        fillColor: [1, 0, 0, 1],
+                        zIndex:10
                     })
                 },
                 type: "Feature"
@@ -433,7 +434,7 @@ define(["jquery", "underscore-min", "../Utils/Constants",
          *
          * @param {Array} firstPoint
          * @param {Array} secondPoint
-         * @returns {number} distance elevation in meters
+         * @returns {number} distance elevation in kilometers
          */
         function calculateDistanceElevation(firstPoint, secondPoint) {
             var R = mizarAPI.getCrs().getGeoide().getRealPlanetRadius();
@@ -463,7 +464,7 @@ define(["jquery", "underscore-min", "../Utils/Constants",
             distance = Numeric.roundNumber(distance.toFixed(3), 2);
 
             var elevation = mizarAPI.getActivatedContext().getElevation(secondPoint[0], secondPoint[1]);
-            elevation = Numeric.roundNumber(elevation / scale, 0)
+            elevation = Numeric.roundNumber(elevation / scale, 0);
             var pointElevation = [distance, elevation];
 
             self.elevations.push(pointElevation);
