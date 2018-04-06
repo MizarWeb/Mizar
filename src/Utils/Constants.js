@@ -241,12 +241,14 @@ define(function () {
      * @property {String} Json - Json
      * @property {String} Planet - Planet
      * @property {String} Star - Star
+     * @property {String} Trajectory - Trajectory
      */
     Constants.PROVIDER = {
         "Constellation" : "Constellation",
         "Planet" : "Planet",
         "Star" : "Star",
-        "Crater" : "Crater"
+        "Crater" : "Crater",
+        "Trajectory" : "Trajectory"
     };
 
     /**
