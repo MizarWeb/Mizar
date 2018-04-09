@@ -59,7 +59,7 @@ define(["underscore-min", "./AbstractRasterLayer", "../Utils/Utils", "../Utils/C
          */
         var AbstractHipsLayer = function (hipsMetadata, options) {
             _checkAndSetDefaultOptions.call(this, options);
-            this.hipsMetadata = _createMetadata.call(this, hipsMetadata, this.proxify(options.baseUrl));
+            this.hipsMetadata = _createMetadata.call(this, hipsMetadata, Utils.proxify(options.baseUrl, options.proxy));
             _overloadHipsMetataByConfiguration.call(this, options, this.hipsMetadata);
 
             options.tiling = new HEALPixTiling(options.baseLevel || 2, {coordinateSystem: options.coordinateSystem});

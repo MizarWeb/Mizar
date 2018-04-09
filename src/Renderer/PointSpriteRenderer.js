@@ -119,7 +119,7 @@ define(['../Utils/Utils', './VectorRenderer', './Program', './FeatureStyle', './
             var pt = crs.get3DFromWorldInCrs(geometry.coordinates, geometry.crs.properties.name);
             var realPlanetRadius = crs.getGeoide().getRealPlanetRadius();
             var planetRadius = crs.getGeoide().getRadius();
-            var scale = this.bucket.renderer.globe.isSky() ? 0.95 : 1.0005 + crs.getElevation(globe, geometry) / realPlanetRadius;
+            var scale = this.bucket.renderer.globe.isSky() ? 0.95 : 1.0 + (crs.getElevation(globe, geometry) + 2) / realPlanetRadius;
             //TODO Instead of 0.95, it should be 0.9995. But with this value, the point is dislayed
             //TODO after order > 5. With order<=5, the image need more control points. Without these
             //TODO control point, the image does not fit perfectly the sphere and the point is behind the image
@@ -143,7 +143,7 @@ define(['../Utils/Utils', './VectorRenderer', './Program', './FeatureStyle', './
             for (var i=0;i<this.geometries.length;i++) {
                 this.add(this.geometries[i],false);
             }
-        }
+        };
 
         /**************************************************************************************************************/
 
