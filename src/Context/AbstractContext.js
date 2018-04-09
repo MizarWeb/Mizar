@@ -382,6 +382,7 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Laye
                 return null;
             }
             var layer = LayerFactory.create(layerDescription);
+
             layer.getCapabilitiesTileManager = this.globe.tileManager;
             if (layer.getCapabilitiesEnabled === true) {
                 // Wait for getCapabilities loading

@@ -105,7 +105,6 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Util
             this.format = this.options.format || "";
             this.baseUrl = this.options.baseUrl || "";
             this.deletable = this.options.deletable || false;
-            this.getCapabilitiesUrl = this.options.getCapabilities || null;
             this.getCapabilitiesEnabled = false;
             this.getCapabilitiesTileManager = null;
             this.callbackContext = null;

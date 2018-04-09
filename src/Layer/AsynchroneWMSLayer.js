@@ -232,7 +232,7 @@ define(['../Utils/Utils', './AbstractAsynchroneRasterLayer', '../Utils/Constants
          */
         AsynchroneWMSLayer.prototype.manageCapabilities = function (json, sourceObject) {
             if (typeof json.WMT_MS_Capabilities === "undefined") {
-                console.log("Error, can't open getCapabilities for layer ",sourceObject);
+                console.log("Error, can't open getCapabilities for layer ",sourceObject,json);
                 throw new Error("Can't open getCapabilities");
             }
             var jsRoot = json.WMT_MS_Capabilities;

@@ -52,7 +52,7 @@ define(['../Utils/Utils', './AbstractRasterLayer', '../Utils/Constants', '../Til
             this.type = type;
 
             this.restrictTo = options.restrictTo;
-            this._computeBaseUrlAndCapabilities(options);
+            this._computeBaseUrl(options);
 
             if (typeof options.asynchroneCallback !== "undefined") {
                 this.asynchroneCallback = options.asynchroneCallback;
@@ -101,13 +101,13 @@ define(['../Utils/Utils', './AbstractRasterLayer', '../Utils/Constants', '../Til
 
         /**************************************************************************************************************/
 
-        AbstractAsynchroneRasterLayer.prototype._computeBaseUrlAndCapabilities = function(options) {
-            if(options.getCapabilities) {
-                options.baseUrl = Utils.computeBaseUrlFromCapabilities(options.getCapabilities,["service","request","version"]);
-            } else if(options.baseUrl) {
-                options.getCapabilities = _computeCapabilitiesFromBaseUrl.call(this, options.baseUrl, options);
+        AbstractAsynchroneRasterLayer.prototype._computeBaseUrl = function(options) {
+            console.log(options.baseUrl);
+            if (options.baseUrl.toUpperCase().indexOf("SERVICE=GETCAPABILITIES")>=0) {
+                this.getCapabilitiesUrl =Utils.computeBaseUrlFromCapabilities(options.baseUrl,["service","request","version"]);
             } else {
-                throw new ReferenceError('No URL to access to the server is defined', 'WMSLayer.js');
+                options.baseUrl = _computeCapabilitiesFromBaseUrl.call(this, options.baseUrl, options);
+                this.getCapabilitiesUrl = options.baseUrl;
             }
         }
 
