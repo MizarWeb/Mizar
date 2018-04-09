@@ -23,7 +23,6 @@
  * @memberOf module:Layer
  */
 define(["jquery","../Utils/Constants", "./WMSLayer", "./WMTSLayer", "./WCSElevationLayer", "./VectorLayer",
-        "./AsynchroneWMSLayer",
         "./AtmosphereLayer", "./BingLayer", "./GroundOverlayLayer", "./OSMLayer",
         "./TileWireframeLayer", "./CoordinateGridLayer",
         "./HipsFitsLayer",
@@ -33,7 +32,6 @@ define(["jquery","../Utils/Constants", "./WMSLayer", "./WMTSLayer", "./WCSElevat
         "./WMSElevationLayer","./HipsMetadata","./HipsCatLayer", "./GeoJsonLayer"
     ],
     function ($, Constants, WMSLayer, WMTSLayer, WCSElevationLayer, VectorLayer,
-              AsynchroneWMSLayer,
               AtmosphereLayer,BingLayer, GroundOverlayLayer, OSMLayer,
               TileWireframeLayer, CoordinateGridLayer,
               HipsFitsLayer,
@@ -209,16 +207,7 @@ define(["jquery","../Utils/Constants", "./WMSLayer", "./WMTSLayer", "./WCSElevat
                 var layer;
                 switch (options.type) {
                     case Constants.LAYER.WMS :
-                        var hasDescriptive = ( (typeof options.baseUrl !== "undefined") || (typeof options.getCapabilities !== "undefined") );
-                        var hasByPass = ( (typeof options.byPass !== "undefined") && (options.byPass === true) );
-                        if ( (hasDescriptive === false) || (hasByPass === true) ) {
-                            // Load it directly
-                            layer = new WMSLayer(options);
-                        } else {
-                            // we have a descriptive url, load as asynchrone
-                            options.type = Constants.LAYER.AsynchroneWMS;
-                            layer = new AsynchroneWMSLayer(options);
-                        }
+                        layer = new WMSLayer(options);
                         break;
                     case Constants.LAYER.WMTS :
                         layer = new WMTSLayer(options);

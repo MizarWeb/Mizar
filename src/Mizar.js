@@ -23,7 +23,7 @@
  * @author CNES
  */
 define(["jquery", "underscore-min",
-        "./Context/ContextFactory", "./Navigation/NavigationFactory", "./Layer/LayerFactory", "./Crs/CoordinateSystemFactory",
+        "./Context/ContextFactory", "./Navigation/NavigationFactory", "./Layer/LayerFactory","./Crs/CoordinateSystemFactory",
         "./Animation/AnimationFactory", "./Utils/UtilityFactory", "./Services/ServiceFactory", "./Provider/ProviderFactory",
         "./Utils/Utils", "./Utils/Event", "./Utils/Stats", "./Utils/Constants", "./Gui/dialog/ErrorDialog", "./Layer/HipsMetadata"],
     function ($, _,
@@ -1145,15 +1145,11 @@ define(["jquery", "underscore-min",
          * @see {@link Mizar#setActivatedContext}
          * @see {@link Mizar#createContext}
          */
-        Mizar.prototype.addLayer = function (layerDescription) {
+        Mizar.prototype.addLayer = function (layerDescription, callback) {
             var result;
             try {
-                var layer = this.getActivatedContext().addLayer(layerDescription);
-                if (layer !== null) {
-                    result = layer.getID();
-                } else {
-                    result = null;
-                }
+                var layer = this.getActivatedContext().addLayer(layerDescription, callback);
+
             } catch(e) {
                 result = false;
                 var prefixe;
@@ -1172,7 +1168,6 @@ define(["jquery", "underscore-min",
                     //ErrorDialog.open("Cannot add the layer <font style='color:yellow'><b>" + JSON.stringify(layerDescription) + "</b></font><font color='grey'><i>(reason : "+ e.message +")</i></font>.");
                 }
             }
-            return result;
         };
 
         /**

@@ -72,6 +72,10 @@ define(['../Utils/Utils', '../Utils/Event', '../Navigation/NavigationHandlerFact
             this.ctx = ctx;
             this.renderContext = this.ctx.getRenderContext();
             this.options = options || {};
+            this.options['isMobile'] = ctx.getMizarConfiguration().isMobile;
+            if (this.options.isMobile === true) {
+                this.initTouchNavigation();
+            }
 
             // Create default handlers if none are created in options
             this.handlers = _createHandlers.call(this, this.options);
@@ -154,6 +158,24 @@ define(['../Utils/Utils', '../Utils/Event', '../Navigation/NavigationHandlerFact
         Utils.inherits(Event, AbstractNavigation);
 
         /**************************************************************************************************************/
+
+        /**
+         * Initializes the touch navigation handler.
+         * @param {Object} options to add touch navigation
+         * @param {Navigation} options.navigation Navigation object
+         * @function initTouchNavigation
+         * @memberOf AbstractContext#
+         */
+        AbstractNavigation.prototype.initTouchNavigation = function () {
+            this.options['touch'] = {
+                inversed: this.ctx.globe.isSky(),
+                zoomOnDblClick: true
+            };
+            var self = this;
+            window.addEventListener("orientationchange", function () {
+                self.ctx.refresh();
+            }, false);
+        };
 
         /**
          * Returns the {@link TYPE type} of navigation.

@@ -35,13 +35,13 @@
  * along with GlobWeb. If not, see <http://www.gnu.org/licenses/>.
  ***************************************/
 
-define(['../Utils/Utils', './AbstractRasterLayer', '../Utils/Constants', '../Tiling/GeoTiling'],
-    function (Utils, AbstractRasterLayer, Constants, GeoTiling) {
+define(['../Utils/Utils', './AbstractRasterLayer', '../Utils/Constants', './WMSMetadata', '../Tiling/GeoTiling'],
+    function (Utils, AbstractRasterLayer, Constants, WMSMetadata, GeoTiling) {
 
 
         /**
          * Configuration parameters to query a Web Map Service (WMS)
-         * @typedef {AbstractRasterLayer.configuration} AbstractRasterLayer.wms_configuration
+         * @typedef {AbstractLayer.configuration} AbstractRasterLayer.wms_configuration
          * @property {int} [tilePixelSize = 256] - tile in pixels
          * @property {int} [numberOfLevels = 21] - number of levels
          * @property {string} [version = "1.1.1"] - WMS version
@@ -67,8 +67,8 @@ define(['../Utils/Utils', './AbstractRasterLayer', '../Utils/Constants', '../Til
          *        &width=780&height=330&format=image/png
          *    </code>
          *
-         * @augments AbstractAsynchroneRasterLayer
-         * @param {AbstractRasterLayer.wms_configuration} options - WMS Configuration
+         * @augments AbstractLayer
+         * @param {AbstractLayer.wms_configuration} options - WMS Configuration
          * @constructor
          * @memberOf module:Layer
          * @see {@link http://www.opengeospatial.org/standards/wms WMS} standard
@@ -78,6 +78,7 @@ define(['../Utils/Utils', './AbstractRasterLayer', '../Utils/Constants', '../Til
             options.tilePixelSize = options.tilePixelSize || 256;
             options.tiling = new GeoTiling(4, 2);
             options.numberOfLevels = options.numberOfLevels || 21;
+            options.transparent = options.transparent || false;
 
             this.restrictTo = options.restrictTo;
 
@@ -147,6 +148,7 @@ define(['../Utils/Utils', './AbstractRasterLayer', '../Utils/Constants', '../Til
             if(this.isBackground() || _tileIsIntersectedFootprint(bound, this.restrictTo)) {
                 var bbox = bound.west + "," + bound.south + "," + bound.east + "," + bound.north;
                 url = this.getMapBaseUrl;
+                url = Utils.addParameterTo(url, "transparent", this.options.transparent);
                 url = Utils.addParameterTo(url, "srs", tile.config.srs);
                 url = Utils.addParameterTo(url, "bbox", bbox);
             } else {

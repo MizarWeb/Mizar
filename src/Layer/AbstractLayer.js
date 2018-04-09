@@ -98,8 +98,9 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Util
             this.services = this.options.services || [];
             this.type = type;
             this.pickable = this.options.pickable || false;
+            this.pickable = this.options.pickable || false;
             this.dataType = this.options.dataType || "";
-            this.background = options.background;
+            this.background = options.background || false;
             this.category = (this.options.background) ? "background" : this.options.category;
             this.coordinateSystem = options.coordinateSystem;
             this.format = this.options.format || "";
@@ -427,6 +428,7 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Util
                 type: "GET",
                 url: url,
                 dataType: 'text',
+                async: false,
                 success: function (response) {
                     var myOptions = {
                         mergeCDATA: true,
@@ -454,25 +456,7 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Util
          * @return {String} Url proxified
          */
         AbstractLayer.prototype.proxify = function (url) {
-            if (typeof url !== 'string') {
-                return url;
-            }
-            var proxifiedUrl = url;
-            var proxyDone = false;
-            if ((this.options) && (this.options.proxy)) {
-                if (this.options.proxy.use === true) {
-                    proxyDone = true;
-                    if (url.toLowerCase().startsWith("http") === false) {
-                        proxifiedUrl = url;
-                    } else if (url.startsWith(this.options.proxy.url)) {
-                        proxifiedUrl = url; // No change, proxy always set
-                    } else {
-                        proxifiedUrl = this.options.proxy.url + encodeURIComponent(url); // Add proxy redirection
-                    }
-                }
-            }
-            //console.log("Proxy done ? "+proxyDone);
-            return proxifiedUrl;
+            return Utils.proxify(url, this.options.proxy);
         };
 
         /**
