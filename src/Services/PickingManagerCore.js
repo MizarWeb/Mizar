@@ -361,7 +361,7 @@ define(["../Renderer/FeatureStyle", "../Layer/OpenSearchLayer", "../Utils/Utils"
                     var isLabel = feature.properties.style && feature.properties.style.label;
                     return UtilsIntersection.pointInSphere(ctx, pickPoint, point, feature.geometry._bucket.textureHeight) && !isLabel;
                 default:
-                    console.log("Picking for " + feature.geometry.type + " is not implemented yet");
+                    console.log("Picking for " + feature.geometry.type + " is not yet");
                     return false;
             }
         }

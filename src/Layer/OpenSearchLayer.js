@@ -102,6 +102,8 @@ define(['../Renderer/FeatureStyle', '../Renderer/VectorRendererManager', '../Uti
             // Force Refresh
             this.forceRefresh = false;
 
+            this.getCapabilitiesUrl = options.baseUrl;
+
             if (typeof this.getGetCapabilitiesUrl() !== 'undefined') {
               this.hasForm = true;
               this.loadGetCapabilities(this.manageCapabilities,this.getGetCapabilitiesUrl(),this);
@@ -276,21 +278,16 @@ define(['../Renderer/FeatureStyle', '../Renderer/VectorRendererManager', '../Uti
          */
         OpenSearchLayer.prototype.removeFeatures = function () {
             // clean renderers
-            for (var i=0;i<this.features.length;i++) {
-                    this.getGlobe().vectorRendererManager.removeGeometry(features[i].geometry);
+            while (this.features.length>0) {
+                    //this.getGlobe().vectorRendererManager.removeGeometry(this.features[i].geometry);
+                    this.removeFeature(this.features[0].id);
             }
-            this.features = [];
-            this.featuresId = [];
-            // clean tiles
+
             for (var i=0;i<this.tilesLoaded.length;i++) {
                 this.tilesLoaded[i].tile.osState = OpenSearchLayer.TileState.NOT_LOADED;
             }
-            this.tilesLoaded = [];
 
-            // Clean old results
-            var self = this;
-
-            //this.globe.refresh();
+           //this.globe.refresh();
             this.getGlobe().getRenderContext().requestFrame();
             
         };
@@ -962,8 +959,7 @@ define(['../Renderer/FeatureStyle', '../Renderer/VectorRendererManager', '../Uti
             // Reset cache
             this.cleanCache();
             // Remove all features
-            this.removeFeaturesOutside(null);
-            
+            this.removeFeatures();
         };
 
         /**************************************************************************************************************/
