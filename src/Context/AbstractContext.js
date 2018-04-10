@@ -162,11 +162,11 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Laye
 
             this.initCanvas(this.canvas);
 
-            if ("positionTracker" in  this.mizarConfiguration) {
+            if (this.mizarConfiguration.positionTracker != null) {
                 this.positionTracker = _createTrackerPosition.call(this, this.mizarConfiguration);
             }
 
-            if ("elevationTracker" in this.mizarConfiguration) {
+            if (this.mizarConfiguration.elevationTracker !=null) {
                 this.elevationTracker = _createTrackerElevation.call(this, this.mizarConfiguration, ctxOptions);
             }
 
