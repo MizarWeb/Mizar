@@ -160,7 +160,7 @@ define(['../Renderer/FeatureStyle', '../Renderer/VectorRendererManager', '../Uti
 
             //this.forceRefresh = true;
             for (var i=0;i<this.tilesLoaded.length;i++) {
-                this.tilesLoaded[i].tile.osState = OpenSearchLayer.TileState.NOT_LOADED;
+                this.tilesLoaded[i].tile.osState[this.getID()] = OpenSearchLayer.TileState.NOT_LOADED;
             }
             this.getGlobe().getRenderContext().requestFrame();
         };
@@ -284,7 +284,7 @@ define(['../Renderer/FeatureStyle', '../Renderer/VectorRendererManager', '../Uti
             }
 
             for (var i=0;i<this.tilesLoaded.length;i++) {
-                this.tilesLoaded[i].tile.osState = OpenSearchLayer.TileState.NOT_LOADED;
+                this.tilesLoaded[i].tile.osState[this.getID()] = OpenSearchLayer.TileState.NOT_LOADED;
             }
 
            //this.globe.refresh();
@@ -365,7 +365,7 @@ define(['../Renderer/FeatureStyle', '../Renderer/VectorRendererManager', '../Uti
                     nbRemoved++;
                 }
             }
-            console.log(nbRemoved+" tiles removed");
+            //console.log(nbRemoved+" tiles removed");
         };
 
         /**************************************************************************************************************/
@@ -707,10 +707,11 @@ define(['../Renderer/FeatureStyle', '../Renderer/VectorRendererManager', '../Uti
                 return;
             }
 
+
             this.tiles = tiles;
 
-            var needRefresh = false;
-            var globalKey = this.cache.getArrayBoundKey(tiles);
+            this.needRefresh = false;
+            this.globalKey = this.cache.getArrayBoundKey(this.tiles);
 
             if (this.forceRefresh === true) {
                 // Remove cache, in order to reload new features
@@ -719,12 +720,12 @@ define(['../Renderer/FeatureStyle', '../Renderer/VectorRendererManager', '../Uti
             }
 
             if (this.previousViewKey === null) {
-                needRefresh = true;
+                this.needRefresh = true;
             } else {
-                needRefresh = ( this.previousViewKey !== globalKey);
+                this.needRefresh = ( this.previousViewKey !== this.globalKey);
             }
 
-            if (needRefresh) {
+            if (this.needRefresh) {
                 // Sort tiles in order to load the first tiles closed to the camera
                 this.tiles.sort(_sortTilesByDistance);
 
@@ -733,21 +734,22 @@ define(['../Renderer/FeatureStyle', '../Renderer/VectorRendererManager', '../Uti
                 // Determination of zoom level change
                 // =========================================================================
 
-                var newTileWidth = this.tiles[0].bound.east-this.tiles[0].bound.west;
-                var ctx = this.callbackContext;
-                var distance = null;
-                if (ctx) {
-                    var initNav = ctx.getNavigation();
-                    distance = initNav.getDistance();
+                this.newTileWidth = this.tiles[0].bound.east-this.tiles[0].bound.west;
+                this.ctx = this.callbackContext;
+                this.distance = null;
+                if (this.ctx) {
+                    this.initNav = this.ctx.getNavigation();
+                    this.distance = this.initNav.getDistance();
                 }
+
                 // TODO : warning, float comparison not ok
-                var isZoomLevelChanged = false;
-                isZoomLevelChanged = (newTileWidth !== this.previousTileWidth);
-                if (ctx) {
-                    isZoomLevelChanged = isZoomLevelChanged && (distance !== this.previousDistance);
-                    this.previousDistance = distance;
-                } }
-                if (isZoomLevelChanged) {
+                this.isZoomLevelChanged = false;
+                this.isZoomLevelChanged = (this.newTileWidth !== this.previousTileWidth);
+                if (this.ctx) {
+                    this.isZoomLevelChanged = this.isZoomLevelChanged && (this.distance !== this.previousDistance);
+                    this.previousDistance = this.distance;
+                } 
+                if (this.isZoomLevelChanged) {
                     console.log("Changement of zoom level, go to page 1");
                     // Go to page 1
                     OpenSearchUtils.setCurrentValueToParam(this.getServices().queryForm,"page",1);
@@ -760,29 +762,31 @@ define(['../Renderer/FeatureStyle', '../Renderer/VectorRendererManager', '../Uti
                 // Check each tile
                 // =========================================================================
 
-                this.previousTileWidth = newTileWidth;
-                this.previousViewKey = globalKey;
+                this.previousTileWidth = this.newTileWidth;
+                this.previousViewKey = this.globalKey;
                 this.result.featuresTotal = 0;
-                for (var i=0;i<tiles.length;i++) {
-                    var currentTile = tiles[i];
-                    if (typeof currentTile.key === "undefined") {
-                        currentTile.key = this.cache.getKey(currentTile.bound);
+                for (var i=0;i<this.tiles.length;i++) {
+                    this.currentTile = this.tiles[i];
+                    if (typeof this.currentTile.key === "undefined") {
+                        this.currentTile.key = this.cache.getKey(this.currentTile.bound);
                     }
                     // If no state defined...
-                    if ( (currentTile.osState === null) || (typeof currentTile.osState === 'undefined')) {
+                    if ( (this.currentTile.osState === null) || (typeof this.currentTile.osState === 'undefined')) {
                         //...set it to NOT_LOADED
-                        currentTile.osState = OpenSearchLayer.TileState.NOT_LOADED;
+                        this.currentTile.osState = [];
                     }
-
-                    if (currentTile.osState === OpenSearchLayer.TileState.NOT_LOADED) {
-                        var url = this.buildUrl(currentTile.bound);
+                    if ( (this.currentTile.osState[this.getID()] === null) || (typeof this.currentTile.osState[this.getID()] === 'undefined')) {
+                        this.currentTile.osState[this.getID()] = OpenSearchLayer.TileState.NOT_LOADED;
+                    }
+                    if (this.currentTile.osState[this.getID()] === OpenSearchLayer.TileState.NOT_LOADED) {
+                        var url = this.buildUrl(this.currentTile.bound);
                         if (url !== null) {
-                            currentTile.osState = OpenSearchLayer.TileState.LOADING;
-                            this.launchRequest(currentTile, url);
+                            this.currentTile.osState[this.getID()] = OpenSearchLayer.TileState.LOADING;
+                            this.launchRequest(this.currentTile, url);
                         }
-                    } else if (currentTile.osState === OpenSearchLayer.TileState.LOADED) {
+                    } else if (this.currentTile.osState[this.getID()] === OpenSearchLayer.TileState.LOADED) {
                         //console.log("tile still loaded !!!");
-                    } else if (currentTile.osState === OpenSearchLayer.TileState.LOADING) {
+                    } else if (this.currentTile.osState[this.getID()] === OpenSearchLayer.TileState.LOADING) {
                         //console.log("tile loading...");
                     }
 
@@ -802,18 +806,19 @@ define(['../Renderer/FeatureStyle', '../Renderer/VectorRendererManager', '../Uti
                     }*/
 
                     // Remove all feature outside view of tiles
-                    var doRemove = false;
+                    this.doRemove = false;
                     if (this.lastRemovingDateTime === null) {
-                        doRemove = true;
+                        this.doRemove = true;
                     } else {
-                        doRemove = (Date.now() - this.lastRemovingDateTime) >= (this.removingDeltaSeconds * 1000);
+                        this.doRemove = (Date.now() - this.lastRemovingDateTime) >= (this.removingDeltaSeconds * 1000);
                     }
-                    if (doRemove) {
-                        var viewExtent = this.getExtent(tiles);
+                    if (this.doRemove) {
+                        var viewExtent = this.getExtent(this.tiles);
                         this.lastRemovingDateTime = Date.now();
                         this.removeFeaturesOutside(viewExtent);
                     }
                 }
+            }
         };
         
         /**************************************************************************************************************/
@@ -878,6 +883,7 @@ define(['../Renderer/FeatureStyle', '../Renderer/VectorRendererManager', '../Uti
          * @memberOf OpenSearchLayer#
          */
         OpenSearchLayer.prototype.submit = function() {
+            console.log("submit",this);
             this.getServices().queryForm.updateFromGUI();
             this.resetAll();
         };
@@ -1215,9 +1221,9 @@ define(['../Renderer/FeatureStyle', '../Renderer/VectorRendererManager', '../Uti
             }
             
             // Only if tile was LOADING...
-            if (tile.osState === OpenSearchLayer.TileState.LOADING) {
+            if (tile.osState[this.getID()] === OpenSearchLayer.TileState.LOADING) {
                 // ...set to LOADED
-                tile.osState = OpenSearchLayer.TileState.LOADED;
+                tile.osState[this.getID()] = OpenSearchLayer.TileState.LOADED;
             }
 
             this.getGlobe().refresh();
