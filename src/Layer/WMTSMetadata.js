@@ -169,10 +169,12 @@ define([], function() {
             this.tileMatrixSetLink = WMTSMetadata.parseTileMatrixSetLink(json.TileMatrixSetLink);
             this.title = WMTSMetadata.getValueTag(json.Title);
             this.abstract = WMTSMetadata.getValueTag(json.Abstract);
-            this.wgs84BoundingBox = {
-                "lowerCorner": WMTSMetadata.getValueTag(json.WGS84BoundingBox.LowerCorner),
-                "upperCorner": WMTSMetadata.getValueTag(json.WGS84BoundingBox.UpperCorner)
-            };
+            if(json.WGS84BoundingBox) {
+                this.wgs84BoundingBox = {
+                    "lowerCorner": WMTSMetadata.getValueTag(json.WGS84BoundingBox.LowerCorner),
+                    "upperCorner": WMTSMetadata.getValueTag(json.WGS84BoundingBox.UpperCorner)
+                };
+            }
             this.metadata;
             this.resourceURL;
         }
