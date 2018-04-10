@@ -141,6 +141,7 @@ define(['../Utils/Utils', './AbstractVectorLayer', '../Utils/Constants'],
         GeoJsonLayer.prototype.addFeature = function (feature, globalCrs) {
             //feature.properties.style = this.style;
             _checkValidGeoJson.call(this, feature);
+
             feature = _setCrs.call(this, feature, globalCrs);
             
             feature = _setID.call(this, feature);
