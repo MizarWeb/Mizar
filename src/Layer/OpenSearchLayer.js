@@ -115,7 +115,10 @@ define(['../Renderer/FeatureStyle', '../Renderer/VectorRendererManager', '../Uti
             // Id of current feature displayed
             this.currentIdDisplayed = null;
 
-            document.currentOpenSearchLayer = this;
+            if (typeof document.currentOpenSearchLayer === "undefined") {
+                document.currentOpenSearchLayer = [];
+            }
+            document.currentOpenSearchLayer[this.ID] = this;
         };
 
         /**************************************************************************************************************/
@@ -148,6 +151,7 @@ define(['../Renderer/FeatureStyle', '../Renderer/VectorRendererManager', '../Uti
             // update labels
             this.callbackContext.publish(Constants.EVENT_MSG.LAYER_UPDATE_STATS_ATTRIBUTES,
                 {
+                    "shortName" : this.getShortName(),
                     "page" : (num+1)
                 }
             );
@@ -1207,6 +1211,7 @@ define(['../Renderer/FeatureStyle', '../Renderer/VectorRendererManager', '../Uti
             if (typeof this.callbackContext !== "undefined") {
                 this.callbackContext.publish(Constants.EVENT_MSG.LAYER_UPDATE_STATS_ATTRIBUTES,
                     {
+                        "shortName" : this.getShortName(),
                         "nb_loaded" : this.features.length,
                         "nb_total" : this.result.featuresTotal
                     }
