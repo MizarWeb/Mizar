@@ -155,27 +155,34 @@ define([], function() {
         if(json === undefined) {
             this.identifier = null;
             this.format = null;
+            this.infoFormat = null;
             this.style = null;
             this.tileMatrixSetLink = null;
             this.title = null;
             this.abstract = null;
             this.wgs84BoundingBox = null;
+            this.boundingBox = null;
+            this.keywords = null;
             this.metadata = null;
+            this.datasetDescriptionSummary = null;
+            this.otherSource = null;
+            this.dimension = null;
             this.resourceURL = null;
         } else {
             this.identifier = WMTSMetadata.getValueTag(json.Identifier);
             this.format = WMTSMetadata.parseFormat(json.Format);
+            this.infoFormat;
             this.style;
             this.tileMatrixSetLink = WMTSMetadata.parseTileMatrixSetLink(json.TileMatrixSetLink);
             this.title = WMTSMetadata.getValueTag(json.Title);
             this.abstract = WMTSMetadata.getValueTag(json.Abstract);
-            if(json.WGS84BoundingBox) {
-                this.wgs84BoundingBox = {
-                    "lowerCorner": WMTSMetadata.getValueTag(json.WGS84BoundingBox.LowerCorner),
-                    "upperCorner": WMTSMetadata.getValueTag(json.WGS84BoundingBox.UpperCorner)
-                };
-            }
+            this.wgs84BoundingBox = WMTSMetadata.parseWGS84BoundingBox(json.WGS84BoundingBox);
+            this.boundingBox = WMTSMetadata.parseBoundingBox(json.BoundingBox);
+            this.keywords = WMTSMetadata.parseKeywordList(json.Keywords);
             this.metadata;
+            this.datasetDescriptionSummary;
+            this.otherSource;
+            this.dimension;
             this.resourceURL;
         }
     };
@@ -271,7 +278,46 @@ define([], function() {
             }
         }
         return acccessConstraints;
-    };    
+    };
+
+    WMTSMetadata.parseWGS84BoundingBox = function(wgs84BoundingBoxJson) {
+        var wgs84BoundingBox = [];
+        if(wgs84BoundingBoxJson !== undefined) {
+            if(Array.isArray(wgs84BoundingBoxJson)) {
+                for (var wgs84 in wgs84BoundingBoxJson) {
+                    wgs84BoundingBox.push({
+                        "lowerCorner": WMTSMetadata.getValueTag(wgs84.LowerCorner),
+                        "upperCorner": WMTSMetadata.getValueTag(wgs84.UpperCorner)
+                    });
+                }
+            } else {
+                wgs84BoundingBox.push({
+                    "lowerCorner": WMTSMetadata.getValueTag(wgs84BoundingBoxJson.LowerCorner),
+                    "upperCorner": WMTSMetadata.getValueTag(wgs84BoundingBoxJson.UpperCorner)
+                });            }
+        }
+        return wgs84BoundingBox;
+    };
+
+    WMTSMetadata.parseBoundingBox = function(BoundingBoxJson) {
+        //TODO crs dimensions
+        var boundingBox = [];
+        if(BoundingBoxJson !== undefined) {
+            if(Array.isArray(BoundingBoxJson)) {
+                for (var bbox in BoundingBoxJson) {
+                    boundingBox.push({
+                        "lowerCorner": WMTSMetadata.getValueTag(bbox.LowerCorner),
+                        "upperCorner": WMTSMetadata.getValueTag(bbox.UpperCorner)
+                    });
+                }
+            } else {
+                boundingBox.push({
+                    "lowerCorner": WMTSMetadata.getValueTag(BoundingBoxJson.LowerCorner),
+                    "upperCorner": WMTSMetadata.getValueTag(BoundingBoxJson.UpperCorner)
+                });            }
+        }
+        return boundingBox;
+    };
 
     return WMTSMetadata;
 

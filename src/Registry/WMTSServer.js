@@ -1,5 +1,5 @@
-define(["../Utils/Utils", "xmltojson", "../Layer/WMTSMetadata", "../Layer/LayerFactory"],
-    function (Utils, XmlToJson, WMTSMetadata, LayerFactory) {
+define(["underscore-min", "../Utils/Utils", "xmltojson", "./WMTSMetadata", "../Layer/LayerFactory"],
+    function (_, Utils, XmlToJson, WMTSMetadata, LayerFactory) {
 
         var WMTSServer = function (proxyUse, proxyUrl, options) {
             if (options.getCapabilities) {
@@ -13,6 +13,10 @@ define(["../Utils/Utils", "xmltojson", "../Layer/WMTSMetadata", "../Layer/LayerF
             this.proxyUrl = proxyUrl;
             this.options = options;
         };
+
+        function _mustBeSkipped(layersFromConf, currentLayer) {
+            return (layersFromConf.length !== 0 && !_.contains(layersFromConf, currentLayer.identifier)) || !_.contains(currentLayer.tileMatrixSetLink, "WGS84");
+        }
 
         WMTSServer.prototype.getMetadata = function (callback, fallback) {
             var self = this;
@@ -37,42 +41,31 @@ define(["../Utils/Utils", "xmltojson", "../Layer/WMTSMetadata", "../Layer/LayerF
             );
         };
 
+
         WMTSServer.prototype.createLayers = function (callback, fallback) {
             this.getMetadata(function (layerDescription, metadata) {
-                var jsonLayers = metadata.getCapability().getLayer();
+                var layersFromConf = layerDescription.hasOwnProperty('layers') ? layerDescription.layers.split(',') : [];
+                var jsonLayers = metadata.contents;
                 var layers = [];
-                for (var i = 0; i < jsonLayers.getLayer().length; i++) {
-                    var jsonLayer = jsonLayers.getLayer()[i];
+                for (var i = 0; i < jsonLayers.layers.length; i++) {
+                    var jsonLayer = jsonLayers.layers[i];
+                    if (_mustBeSkipped.call(this, layersFromConf, jsonLayer)) {
+                        continue;
+                    }
                     var attribution;
                     if (layerDescription.attribution) {
                         attribution = layerDescription.attribution;
-                    } else if (Object.keys(jsonLayer.getAttribution()).length !== 0) {
-                        var logo = jsonLayer.getAttribution()['Logo'] !== null ? "<img src='" + jsonLayer.getAttribution()['Logo'] + "' height='25px'/> " : "";
-                        var title = jsonLayer.getAttribution()['Title'] !== null ? jsonLayer.getAttribution()['Title'] : "";
-                        attribution = logo + title;
-                    } else if (Object.keys(jsonLayers.getAttribution()).length !== 0) {
-                        var logo = jsonLayers.getAttribution()['Logo'] !== null ? "<img src='" + jsonLayers.getAttribution()['Logo'] + "' height='25px'/> " : "";
-                        var title = jsonLayers.getAttribution()['Title'] !== null ? jsonLayers.getAttribution()['Title'] : "";
-                        attribution = logo + title;
                     } else {
                         attribution = null;
                     }
 
-                    var copyrightURL;
-                    if (layerDescription.copyrightUrl) {
-                        copyrightURL = layerDescription.copyrightUrl;
-                    } else if (Object.keys(jsonLayer.getAttribution()).length !== 0) {
-                        copyrightURL = jsonLayer.getAttribution()['OnlineResource'] !== null ? jsonLayer.getAttribution()['OnlineResource'] : "";
-                    } else if (Object.keys(jsonLayers.getAttribution()).length !== 0) {
-                        copyrightURL = jsonLayers.getAttribution()['OnlineResource'] !== null ? jsonLayers.getAttribution()['OnlineResource'] : "";
-                    } else {
-                        copyrightURL = "";
-                    }
+                    var copyrightURL = null;
+
                     var layerDesc = Object.assign({}, layerDescription, {});
-                    layerDesc.name = layerDescription.name || jsonLayer.getTitle();
+                    layerDesc.name = layerDescription.name || jsonLayer.identifier;
                     layerDesc.format = layerDescription.format || "image/png";
-                    layerDesc.layers = layerDescription.layers || jsonLayer.getName();
-                    layerDesc.description = layerDescription.description || (jsonLayer.getAbstract() != null) ? jsonLayer.getAbstract() : jsonLayers.getAbstract();
+                    layerDesc.layers = layerDescription.layers || jsonLayer.title;
+                    layerDesc.description = layerDescription.description || (jsonLayer.abstract != null) ? jsonLayer.abstract : jsonLayers.abstract;
                     layerDesc.attribution = attribution;
                     layerDesc.copyrightUrl = copyrightURL;
 
