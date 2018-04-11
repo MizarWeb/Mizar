@@ -238,8 +238,10 @@ define(['./Tile', './GeoTiling', './TilePool', './TileRequest', './TileIndexBuff
                 // Reset the shared buffers : texture coordinate and indices
                 var gl = this.renderContext.gl;
                 this.tileIndexBuffer.reset();
-                gl.deleteBuffer(this.tcoordBuffer);
-                this.tcoordBuffer = null;
+                if (this.tcoordBuffer) {
+                    gl.deleteBuffer(this.tcoordBuffer);
+                    this.tcoordBuffer = null;
+                }
             }
         };
 
