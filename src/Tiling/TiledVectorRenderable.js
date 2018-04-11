@@ -160,10 +160,9 @@ define(['../Utils/Utils', '../Renderer/BatchRenderable','../Utils/Constants'],
             if ((typeof this.bucket.layer.minLevel === 'undefined') || (typeof this.bucket.layer.maxLevel === 'undefined')) {
                 tileInRange = true;
             } else {
-                tileInRange = this.bucket.layer.minLevel <= tile.level && this.bucket.layer.maxLevel > tile.level;
+                tileInRange = this.bucket.layer.minLevel <= tile.level && tile.level <= this.bucket.layer.maxLevel;
             }
 
-            tileInRange = true;
             if (tileInRange) {
                 var coords = geometry.coordinates;
                 switch (geometry.type) {
