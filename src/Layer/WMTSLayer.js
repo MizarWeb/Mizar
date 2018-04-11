@@ -35,7 +35,7 @@
  * along with GlobWeb. If not, see <http://www.gnu.org/licenses/>.
  ***************************************/
 
-define(['../Utils/Utils', './AbstractRasterLayer', '../Utils/Constants', './WMTSMetadata'],
+define(['../Utils/Utils', './AbstractRasterLayer', '../Utils/Constants', '../Registry/WMTSMetadata'],
     function (Utils, AbstractRasterLayer, Constants, WMTSMetadata) {
         /**
          * Configuration parameters to query a Web Map Tile Service (WMTS)
@@ -100,7 +100,7 @@ define(['../Utils/Utils', './AbstractRasterLayer', '../Utils/Constants', './WMTS
         function _queryImage(baseUrl, options) {
             var url = baseUrl;
             url = Utils.addParameterTo(url, "service","wmts");
-            url = Utils.addParameterTo(url, "version",options.version || "1.0.0.0");
+            url = Utils.addParameterTo(url, "version",options.version || "1.0.0");
             url = Utils.addParameterTo(url,"request", "GetTile");
             url = Utils.addParameterTo(url,"layer", options.layer);
             url = Utils.addParameterTo(url, "tilematrixset", "WGS84");

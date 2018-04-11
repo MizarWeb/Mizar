@@ -431,7 +431,7 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Laye
 
             var pendingAtmos = new PendingAtmosphere(this.pendingLayers, this.layers);
             var wmsServer = new WmsServer(this.getMizarConfiguration(), this.pendingLayers);
-            var wmtsServer = new WmtsServer(this.pendingLayers);
+            var wmtsServer = new WmtsServer(this.getMizarConfiguration(), this.pendingLayers);
             var strategy2 = new Layer(this.pendingLayers);
 
 

@@ -89,7 +89,7 @@ define(["jquery", "underscore-min", "../Utils/Constants",
             var vert = HEALPixBase.fxyf((ix + i) / nside, (iy + j) / nside, face);
             var geoPos = [];
             mizarAPI.getCrs().getWorldFrom3D(vert, geoPos);
-            zoomTo(geoPos[0], geoPos[1], mizarAPI.getCrs().getGeoideName(), onSuccess);
+            zoomTo(geoPos[0], geoPos[1], null, mizarAPI.getCrs().getGeoideName(), onSuccess);
         }
 
         function zoomToSexagesimal(coordinates, onSuccess) {
@@ -104,7 +104,7 @@ define(["jquery", "underscore-min", "../Utils/Constants",
             // Convert to geo and zoom
             var geoPos = [];
             mizarAPI.getCrs().getDecimalDegFromSexagesimal([word[0], word[1]], geoPos);
-            zoomTo(geoPos[0], geoPos[1], mizarAPI.getCrs().getGeoideName(), onSuccess);
+            zoomTo(geoPos[0], geoPos[1], null, mizarAPI.getCrs().getGeoideName(), onSuccess);
         }
 
         function zoomToDecimal(matchDegree, onSuccess, onErrorOutOfBound) {
@@ -113,7 +113,7 @@ define(["jquery", "underscore-min", "../Utils/Constants",
             var lat = parseFloat(matchDegree[3]);
             var geo = [lon, lat];
             if (currentGeoBound.isPointInside(geo)) {
-              zoomTo(geo[0], geo[1], mizarAPI.getCrs().getGeoideName(), onSuccess);
+              zoomTo(geo[0], geo[1], null, mizarAPI.getCrs().getGeoideName(), onSuccess);
             } else {
               onErrorOutOfBound.call(this);
             }
@@ -218,11 +218,12 @@ define(["jquery", "underscore-min", "../Utils/Constants",
          *    Zoom to the given longitude/latitude and add target at the end
          *    @param lon Longitude
          *    @param lat Latitude
+         *    @param distanceCamera Final Distance in meters from the ground to the camera - only use for PlanetContext / set to null for the others contexts
          *    @param crs coordinate reference system of the (longitude, latitude)
          *    @param callback Callback once animation is over
          *    @param args Callback arguments
          */
-        function zoomTo(lon, lat, crs, callback, args) {
+        function zoomTo(lon, lat, distanceCamera, crs, callback, args) {
 
             if (args !== null && typeof args !== 'undefined') {
                 // updates the coordinates, which is displayed at the screen in the current CRS
@@ -250,7 +251,7 @@ define(["jquery", "underscore-min", "../Utils/Constants",
                 });
             }
             else {
-                var distance = mizarAPI.getActivatedContext().getNavigation().getDistance();
+                var distance = distanceCamera == null ? mizarAPI.getActivatedContext().getNavigation().getDistance() : distanceCamera;
                 mizarAPI.getActivatedContext().getNavigation().zoomTo([lon, lat], {
                     distance: distance,
                     duration: duration,

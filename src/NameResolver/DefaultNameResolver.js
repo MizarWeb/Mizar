@@ -64,7 +64,7 @@ define(["jquery", "underscore-min", "../Utils/Utils", "./AbstractNameResolver"],
                         var zoomToCallback = function() {
                             searchLayer(objectName, onSuccess, onError, response);
                         };
-                        zoomTo(firstFeature.geometry.coordinates[0], firstFeature.geometry.coordinates[1], zoomToCallback, response);
+                        zoomTo(firstFeature.geometry.coordinates[0], firstFeature.geometry.coordinates[1], null, zoomToCallback, response);
 
                     } else {
                         onError();

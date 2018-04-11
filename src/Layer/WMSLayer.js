@@ -35,7 +35,7 @@
  * along with GlobWeb. If not, see <http://www.gnu.org/licenses/>.
  ***************************************/
 
-define(['../Utils/Utils', './AbstractRasterLayer', '../Utils/Constants', './WMSMetadata', '../Tiling/GeoTiling'],
+define(['../Utils/Utils', './AbstractRasterLayer', '../Utils/Constants', '../Registry/WMSMetadata', '../Tiling/GeoTiling'],
     function (Utils, AbstractRasterLayer, Constants, WMSMetadata, GeoTiling) {
 
 
