@@ -332,8 +332,8 @@ define(['../Renderer/FeatureStyle', '../Renderer/VectorRendererManager', '../Uti
 
             tile.associatedFeaturesId = [];
             // Remove the tile
-            index = -1;
-            for (var i=0;i<this.tilesLoaded.length;i++) {
+            var index = -1;
+            for (i=0;i<this.tilesLoaded.length;i++) {
                 if (this.tilesLoaded[i].tile.key === tile.key) {
                     index = i;
                     break;
@@ -527,6 +527,7 @@ define(['../Renderer/FeatureStyle', '../Renderer/VectorRendererManager', '../Uti
          * @param {String} url Url of image
          */
         OpenSearchLayer.prototype.loadQuicklook = function (feature, url) {
+            console.log("Load quicklook for "+this.getID());
             // Save coordinates
             this.currentIdDisplayed = feature.id;
             
@@ -574,6 +575,7 @@ define(['../Renderer/FeatureStyle', '../Renderer/VectorRendererManager', '../Uti
             if (this.currentQuicklookLayer === null) {
                 return;
             }
+            console.log("Remove quicklook for "+this.getID());
 
             this.currentQuicklookLayer._detach();
             this.currentQuicklookLayer = null;
@@ -908,6 +910,14 @@ define(['../Renderer/FeatureStyle', '../Renderer/VectorRendererManager', '../Uti
                 // Change for wms linked layers
                 for (var i=0;i<linkedLayers.length;i++) {
                     linkedLayers[i].setVisible(arg);
+                }
+
+                if ( (typeof this.currentQuicklookLayer !== "undefined") && (this.currentQuicklookLayer !== null) ) {
+                    //this.currentQuicklookLayer.setVisible(this.visible);
+                    if (this.visible === false) {
+                        this.removeQuicklook();
+                    }
+                        
                 }
 
                 if (this.getGlobe()) {
