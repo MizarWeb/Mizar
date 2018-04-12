@@ -1,4 +1,4 @@
-define(["underscore-min", "../Utils/Utils", "xmltojson", "../Layer/WMSMetadata", "../Layer/LayerFactory"],
+define(["underscore-min", "../Utils/Utils", "xmltojson", "./WMSMetadata", "../Layer/LayerFactory"],
     function (_, Utils, XmlToJson, WMSMetadata, LayerFactory) {
 
         var WMSServer = function (proxyUse, proxyUrl, options) {
