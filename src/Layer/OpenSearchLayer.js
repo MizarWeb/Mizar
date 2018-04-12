@@ -93,8 +93,8 @@ define(['../Renderer/FeatureStyle', '../Renderer/VectorRendererManager', '../Uti
             // OpenSearch result
             this.result = new OpenSearchResult();
 
-            // Pool for request management
-            this.pool = new OpenSearchRequestPool(this);
+            // Pool for request management (manage outside to be sharable between multiple opensearch layers)
+            this.pool = options.openSearchRequestPool;
             
             // Cache for data management
             this.cache = new OpenSearchCache();
@@ -158,7 +158,7 @@ define(['../Renderer/FeatureStyle', '../Renderer/VectorRendererManager', '../Uti
                 }
             );
 
-            //this.forceRefresh = true;
+            this.forceRefresh = true;
             for (var i=0;i<this.tilesLoaded.length;i++) {
                 this.tilesLoaded[i].tile.osState[this.getID()] = OpenSearchLayer.TileState.NOT_LOADED;
             }
@@ -265,8 +265,7 @@ define(['../Renderer/FeatureStyle', '../Renderer/VectorRendererManager', '../Uti
                     }
                 );
             }
-
-            this.pool.addQuery(url,tile,key);
+            this.pool.addQuery(url,tile,key,this);
         };
 
         /**************************************************************************************************************/
@@ -505,6 +504,9 @@ define(['../Renderer/FeatureStyle', '../Renderer/VectorRendererManager', '../Uti
             var featureIndex = this.getFeatureIndexById(featureId);
             var feature = this.features[featureIndex];
 
+            if (typeof feature === "undefined") {
+                return;
+            }
             // remove id from featuresId
             var index = this.featuresIdLoaded.indexOf(featureId);
             if (index !== -1) this.featuresIdLoaded.splice(index, 1);
@@ -883,7 +885,6 @@ define(['../Renderer/FeatureStyle', '../Renderer/VectorRendererManager', '../Uti
          * @memberOf OpenSearchLayer#
          */
         OpenSearchLayer.prototype.submit = function() {
-            console.log("submit",this);
             this.getServices().queryForm.updateFromGUI();
             this.resetAll();
         };
