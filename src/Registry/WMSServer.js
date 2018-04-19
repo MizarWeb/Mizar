@@ -24,12 +24,12 @@ define(["underscore-min", "../Utils/Utils", "xmltojson", "./WMSMetadata", "../La
             if (layerDescription.attribution) {
                 attribution = layerDescription.attribution;
             } else if (Object.keys(jsonLayer.getAttribution()).length !== 0) {
-                var logo = jsonLayer.getAttribution()['Logo'] !== null ? "<img src='" + jsonLayer.getAttribution()['Logo'] + "' height='25px'/> " : "";
-                var title = jsonLayer.getAttribution()['Title'] !== null ? jsonLayer.getAttribution()['Title'] : "";
+                var logo = jsonLayer.getAttribution()['Logo'] != null ? "<img src='" + jsonLayer.getAttribution()['Logo'] + "' height='25px'/> " : "";
+                var title = jsonLayer.getAttribution()['Title'] != null ? jsonLayer.getAttribution()['Title'] : "";
                 attribution = logo + title;
             } else if (Object.keys(jsonLayers.getAttribution()).length !== 0) {
-                var logo = jsonLayers.getAttribution()['Logo'] !== null ? "<img src='" + jsonLayers.getAttribution()['Logo'] + "' height='25px'/> " : "";
-                var title = jsonLayers.getAttribution()['Title'] !== null ? jsonLayers.getAttribution()['Title'] : "";
+                var logo = jsonLayers.getAttribution()['Logo'] != null ? "<img src='" + jsonLayers.getAttribution()['Logo'] + "' height='25px'/> " : "";
+                var title = jsonLayers.getAttribution()['Title'] != null ? jsonLayers.getAttribution()['Title'] : "";
                 attribution = logo + title;
             } else {
                 attribution = null;
