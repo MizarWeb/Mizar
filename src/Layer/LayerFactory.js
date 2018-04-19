@@ -29,7 +29,8 @@ define(["jquery","../Utils/Constants", "./WMSLayer", "./WMTSLayer", "./WCSElevat
         "./HipsGraphicLayer",
         "./MocLayer",
         "./OpenSearchLayer",
-        "./WMSElevationLayer","./HipsMetadata","./HipsCatLayer", "./GeoJsonLayer"
+        "./WMSElevationLayer","./HipsMetadata","./HipsCatLayer", "./GeoJsonLayer",
+        "./OpenSearch/OpenSearchRequestPool"
     ],
     function ($, Constants, WMSLayer, WMTSLayer, WCSElevationLayer, VectorLayer,
               AtmosphereLayer,BingLayer, GroundOverlayLayer, OSMLayer,
@@ -38,13 +39,15 @@ define(["jquery","../Utils/Constants", "./WMSLayer", "./WMTSLayer", "./WCSElevat
               HipsGraphicLayer,
               MocLayer,
               OpenSearchLayer,
-              WMSElevationLayer, HipsMetadata, HipsCatLayer, GeoJsonLayer) {
+              WMSElevationLayer, HipsMetadata, HipsCatLayer, GeoJsonLayer,
+              OpenSearchRequestPool) {
 
         this.proxy = {
           url : null,
           use : false
         };
 
+        this.openSearchRequestPool = new OpenSearchRequestPool();
 
         function createHips(hipsMetadata, options) {
             options.proxy = this.proxy;
@@ -165,6 +168,7 @@ define(["jquery","../Utils/Constants", "./WMSLayer", "./WMTSLayer", "./WCSElevat
          */
         function createOpenSearch(options) {
             options.proxy = this.proxy;
+            options.openSearchRequestPool = this.openSearchRequestPool;
             var layer = new OpenSearchLayer(options);
             if (options.displayProperties) {
                 layer.displayProperties = options.displayProperties;

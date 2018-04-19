@@ -93,8 +93,8 @@ define(['../Renderer/FeatureStyle', '../Renderer/VectorRendererManager', '../Uti
             // OpenSearch result
             this.result = new OpenSearchResult();
 
-            // Pool for request management
-            this.pool = new OpenSearchRequestPool(this);
+            // Pool for request management (manage outside to be sharable between multiple opensearch layers)
+            this.pool = options.openSearchRequestPool;
             
             // Cache for data management
             this.cache = new OpenSearchCache();
@@ -158,7 +158,7 @@ define(['../Renderer/FeatureStyle', '../Renderer/VectorRendererManager', '../Uti
                 }
             );
 
-            //this.forceRefresh = true;
+            this.forceRefresh = true;
             for (var i=0;i<this.tilesLoaded.length;i++) {
                 this.tilesLoaded[i].tile.osState[this.getID()] = OpenSearchLayer.TileState.NOT_LOADED;
             }
@@ -265,8 +265,7 @@ define(['../Renderer/FeatureStyle', '../Renderer/VectorRendererManager', '../Uti
                     }
                 );
             }
-
-            this.pool.addQuery(url,tile,key);
+            this.pool.addQuery(url,tile,key,this);
         };
 
         /**************************************************************************************************************/
@@ -333,8 +332,8 @@ define(['../Renderer/FeatureStyle', '../Renderer/VectorRendererManager', '../Uti
 
             tile.associatedFeaturesId = [];
             // Remove the tile
-            index = -1;
-            for (var i=0;i<this.tilesLoaded.length;i++) {
+            var index = -1;
+            for (i=0;i<this.tilesLoaded.length;i++) {
                 if (this.tilesLoaded[i].tile.key === tile.key) {
                     index = i;
                     break;
@@ -505,6 +504,9 @@ define(['../Renderer/FeatureStyle', '../Renderer/VectorRendererManager', '../Uti
             var featureIndex = this.getFeatureIndexById(featureId);
             var feature = this.features[featureIndex];
 
+            if (typeof feature === "undefined") {
+                return;
+            }
             // remove id from featuresId
             var index = this.featuresIdLoaded.indexOf(featureId);
             if (index !== -1) this.featuresIdLoaded.splice(index, 1);
@@ -525,6 +527,7 @@ define(['../Renderer/FeatureStyle', '../Renderer/VectorRendererManager', '../Uti
          * @param {String} url Url of image
          */
         OpenSearchLayer.prototype.loadQuicklook = function (feature, url) {
+            console.log("Load quicklook for "+this.getID());
             // Save coordinates
             this.currentIdDisplayed = feature.id;
             
@@ -572,6 +575,7 @@ define(['../Renderer/FeatureStyle', '../Renderer/VectorRendererManager', '../Uti
             if (this.currentQuicklookLayer === null) {
                 return;
             }
+            console.log("Remove quicklook for "+this.getID());
 
             this.currentQuicklookLayer._detach();
             this.currentQuicklookLayer = null;
@@ -883,7 +887,6 @@ define(['../Renderer/FeatureStyle', '../Renderer/VectorRendererManager', '../Uti
          * @memberOf OpenSearchLayer#
          */
         OpenSearchLayer.prototype.submit = function() {
-            console.log("submit",this);
             this.getServices().queryForm.updateFromGUI();
             this.resetAll();
         };
@@ -907,6 +910,14 @@ define(['../Renderer/FeatureStyle', '../Renderer/VectorRendererManager', '../Uti
                 // Change for wms linked layers
                 for (var i=0;i<linkedLayers.length;i++) {
                     linkedLayers[i].setVisible(arg);
+                }
+
+                if ( (typeof this.currentQuicklookLayer !== "undefined") && (this.currentQuicklookLayer !== null) ) {
+                    //this.currentQuicklookLayer.setVisible(this.visible);
+                    if (this.visible === false) {
+                        this.removeQuicklook();
+                    }
+                        
                 }
 
                 if (this.getGlobe()) {
