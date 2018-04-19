@@ -188,10 +188,11 @@ define(['../Utils/Utils', './AbstractLayer', '../Renderer/RasterOverlayRenderer'
          * @memberOf AbstractLayer#
          */
         AbstractLayer.prototype.forceRefresh = function () {
-            var tiles = this.getGlobe().tileManager.tilesToRender;
+            var tiles = this.getGlobe().tileManager.visibleTiles;
             for (var i=0;i<tiles.length;i++) {
                 tiles[i].state = 0;
             }
+            this.getGlobe().refresh();
         };
 
         /**************************************************************************************************************/
