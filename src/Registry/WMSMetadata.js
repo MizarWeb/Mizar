@@ -552,7 +552,6 @@ define([], function(){
                 "OnlineResource" : url,
                 "Title" : title
             }
-            */
         }
         return attrib;
     };
