@@ -904,6 +904,7 @@ define(["jquery", "underscore-min",
          */
         Mizar.prototype.createContext = function (contextMode, options) {
             var result;
+            console.log(contextMode);
             try {
                 options.renderContext = this.renderContext;
                 var ctx = this.ContextFactory.create(contextMode, this.getOptions(), options);
@@ -924,6 +925,7 @@ define(["jquery", "underscore-min",
                 this.renderContext = ctx.getRenderContext();
                 result = true;
             } catch (e) {
+                console.log("Error",e);
                 result = false;
                 ErrorDialog.open("Cannot create the context : <font style='color:orange'><b>" + e.message + "</b></font>", true);
             }

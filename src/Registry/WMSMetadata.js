@@ -450,7 +450,7 @@ define([], function(){
         if (json === undefined) {
 
         } else {
-            var logo = WMSMetadata.getValueTag(json.LogoURL.OnlineResource._attrhref);
+            /*var logo = WMSMetadata.getValueTag(json.LogoURL.OnlineResource._attrhref);
             var url = WMSMetadata.getValueTag(json.OnlineResource._attrhref);
             var title = WMSMetadata.getValueTag(json.Title);
             attrib =  {
@@ -458,6 +458,7 @@ define([], function(){
                 "OnlineResource" : url,
                 "Title" : title
             }
+            */
         }
         return attrib;
     };

@@ -179,6 +179,9 @@ function () {
 
     /**
      * Check for each layer if there is remaining load needed
+o     * Check if there is any remaining query in the pool 
+     * @function checkPool
+     * @memberof OpenSearchRequestPool#
      */
     OpenSearchRequestPool.prototype.checkEachLayerFinished = function () {
         for (var key in this.layers) {

@@ -114,7 +114,6 @@ define(["jquery","../Utils/Constants", "./WMSLayer", "./WMTSLayer", "./WCSElevat
                     break;
                 case hipsProperties.DataProductType.meta:
                     throw new RangeError("Hips : cannot handle META dataproduct", "LayerFactor.js");
-                    break;
                 default:
                     throw new RangeError("Hips : Unknown dataproduct type", "LayerFactor.js");
             }

@@ -87,8 +87,8 @@ define(['../Utils/Utils', './AbstractRasterLayer', '../Utils/Constants', '../Reg
             AbstractRasterLayer.prototype.constructor.call(this, Constants.LAYER.WMS, options);
 
             this.getMapBaseUrl = _queryImage.call(this, this.getBaseUrl(), this.tilePixelSize, this.tilePixelSize, options);
-
             this.layers = options.layers;
+
         };
 
         /**************************************************************************************************************/
@@ -157,6 +157,11 @@ define(['../Utils/Utils', './AbstractRasterLayer', '../Utils/Constants', '../Reg
 
             return this.proxify(url, tile.level);
         };
+
+        WMSLayer.prototype.setParameter = function (paramName,value) {
+            this.options[paramName] = value;
+            this.getMapBaseUrl = _queryImage.call(this, this.getBaseUrl(), this.tilePixelSize, this.tilePixelSize, this.options);
+        }
 
         /**************************************************************************************************************/
 

@@ -159,14 +159,14 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Laye
             this.mode = mode;
             this.layers = [];
             this.pendingLayers = [];
-
             this.initCanvas(this.canvas);
 
-            if (this.mizarConfiguration.positionTracker != null) {
+
+            if ( (this.mizarConfiguration.positionTracker != null) && (this.mizarConfiguration.positionTracker == true) ) {
                 this.positionTracker = _createTrackerPosition.call(this, this.mizarConfiguration);
             }
 
-            if (this.mizarConfiguration.elevationTracker !=null) {
+            if ( (this.mizarConfiguration.elevationTracker != null) && (this.mizarConfiguration.elevationTracker == true) ){
                 this.elevationTracker = _createTrackerElevation.call(this, this.mizarConfiguration, ctxOptions);
             }
 

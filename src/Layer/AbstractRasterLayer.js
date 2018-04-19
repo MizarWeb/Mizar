@@ -183,6 +183,17 @@ define(['../Utils/Utils', './AbstractLayer', '../Renderer/RasterOverlayRenderer'
             AbstractLayer.prototype._detach.call(this);
         };
 
+        /**
+         * @function forceRefresh
+         * @memberOf AbstractLayer#
+         */
+        AbstractLayer.prototype.forceRefresh = function () {
+            var tiles = this.getGlobe().tileManager.tilesToRender;
+            for (var i=0;i<tiles.length;i++) {
+                tiles[i].state = 0;
+            }
+        };
+
         /**************************************************************************************************************/
 
         return AbstractRasterLayer;

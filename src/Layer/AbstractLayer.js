@@ -129,12 +129,13 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Util
             }
 
             //this.services = _createAvailableServices(this.options);
-
-            // If the layer is eligible to GetCapabilities and no layers are provided,
-            // this array is filled with a config by layer to load
-            // After loading, each config is loaded in a layer object, bypassing GetCapabilities
-            //TODOFL remove it !
             this.multiLayers = [];
+
+            // Time management properties
+            // Specify if the layer can manage the time parameter (default to false)
+            this.isTimeResponsive = false;
+            // Save the previous time value (to check if time has changed)
+            this.previousTimeValue = null;
 
         };
 
@@ -142,7 +143,7 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Util
         function _createAvailableServices(options) {
             var availableServices;
             if (options.hasOwnProperty('availableServices')) {
-                availableServices = options.availableServices
+                availableServices = options.availableServices; 
             } else {
                 availableServices = [];
             }
@@ -243,6 +244,15 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Util
          */
         AbstractLayer.prototype.hasServicesRunningOnCollection = function () {
             return this.servicesRunningOnCollection.length > 0;
+        };
+
+
+        /**
+         * @function forceRefresh
+         * @memberOf AbstractLayer#
+         */
+        AbstractLayer.prototype.forceRefresh = function () {
+            throw new Error("forceRefresh not implemented");
         };
 
         /**

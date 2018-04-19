@@ -13,6 +13,34 @@
 
     <script type="text/javascript">
 
+        var seaLevel = [ "0.0m","0.5m","1.0m","1.5m","2.0m","2.5m","3.0m"];
+        var currentSeaLevel = 3;
+
+        function updateSeaLevel() {
+            document.getElementById("sl").value=seaLevel[currentSeaLevel];
+            if (typeof this.palavasLayer !== "undefined") {
+                this.palavasLayer.setParameter("styles",seaLevel[currentSeaLevel]);
+                this.palavasLayer.forceRefresh();
+            }
+            
+        }
+        function init() {
+            document.getElementById("sl").value=seaLevel[currentSeaLevel];
+        }
+        function previous() {
+            if (currentSeaLevel>0) {
+                currentSeaLevel --;
+                updateSeaLevel();
+            }
+        }
+        function next() {
+            if (currentSeaLevel<(seaLevel.length-1)) {
+                currentSeaLevel ++;
+                updateSeaLevel();
+            }
+        }
+    
+
         // mode dev
         require(['Mizar'], function (Mizar) {
 
@@ -33,14 +61,31 @@
                     {
                         "name": "Blue Marble",
                         "type": "WMS",
-                        "baseUrl": "http://demonstrator.telespazio.com/wmspub",
-                        "getCapabilities": "http://demonstrator.telespazio.com/wmspub",
-                        "layers": "BlueMarble",
-                        "byPass": true,
+                        "baseUrl": "http://80.158.6.138/mapserv?map=WMS_BLUEMARBLE",
                         "visible": true,
                         "background": true
                     },
+                    /*{
+                        "name": "Niger",
+                        "type": "WMS",
+                        "baseUrl": "http://80.158.6.138/mapserv?map=WMS_NIGER",
+                        "layers": "NIGER_SCENE",
+                        "visible": true,
+                        "background": false,
+                        "transparent":true,
+                        "format":"image/png"
+                    },*/
                     {
+                        "name": "Palavas",
+                        "type": "WMS",
+                        "baseUrl": "http://80.158.6.138/mapserv?map=WMS_PALAVAS",
+                        "layers": "PALAVAS",
+                        "visible": true,
+                        "background": false,
+                        "transparent":true,
+                        "format":"image/png"
+                    },
+                   {
                         "category": "Other",
                         "type": "Atmosphere",
                         "exposure": 1.4,
@@ -58,14 +103,15 @@
                     }
                 ]};
 
+
             // Create Mizar
             var mizar =  new Mizar({
                         canvas: $(mizarDiv)[0],
                         configuration: {
-                            "mizarBaseUrl":"localhost/Mizar",
+                            "mizarBaseUrl":"localhost/js/MizarWidget/external/Mizar/examples",
                             "debug":false,
                             "isMobile":false,
-                            "positionTracker":false,
+                            "positionTracker":true,
                             "elevationTracker":false,
                             "registry":false,
                             "proxyUse":false,
@@ -81,15 +127,31 @@
                             "visible": true
                         }
                     });
-
+            this.mizar = mizar;
             
             // Layers load
             for (var i = 0; i < context.layers.length; i++) {
                 var layer = context.layers[i];
-                var layerID = mizar.addLayer(layer);
-                if(layer.type === Mizar.LAYER.WCSElevation) {
-                    mizar.setBaseElevation(layer.name);
-                }
+
+                mizar.addLayer(layer,function (id) {
+                    var cbLayer = mizar.getLayerByID(id);
+                    console.log(cbLayer);
+                    if (cbLayer.type === Mizar.LAYER.WCSElevation) {
+                        mizar.setBaseElevation(cbLayer.name);
+                    }
+                    if (cbLayer.name === "Palavas") {
+                        this.palavasLayer = cbLayer;
+                    }
+
+                    if (cbLayer.isBackground() === true) {
+                        setTimeout(function go() {
+                            mizar.activatedContext.navigation.zoomTo([4.025,43.54],
+                            //116.217,29.15
+                            { "distance" : 45000,
+                              "duration" : 100 });
+                        },4000);
+                    }
+                });
             }
             
             
@@ -169,14 +231,14 @@
                 options.name = currentThematic.name;
                 options.color = currentThematic.color;
 
-                var climateId = mizar.addLayer(options);
-                climateLayer = mizar.getLayerByID(climateId);
-                climateLayer.addFeatureCollection(climateData[i]);
+                var climateId = mizar.addLayer(options,function(id) {
+                    var climateLayer = mizar.getLayerByID(id);
+                    climateLayer.addFeatureCollection(climateData[i]);
+                });
             }
 
 
-            mizar.activatedContext.navigation.zoomTo([116.217,29.15]);
-
+            //console.log("SERVICE",mizar.getServiceByName(Mizar.SERVICE.PickingManager));
         });
 
     </script>
@@ -184,7 +246,17 @@
 </head>
 
 
-<body style="margin: 0; padding: 0;">
-<canvas id="MizarCanvas" style="border: none; margin: 0; padding: 0;"></canvas>
+<body style="margin: 0; padding: 0;" onload="init();">
+    <div>
+        <input type="button" value="<" onclick="previous()"/>
+        <input id="sl" type="text" value=""/>
+        <input type="button" value=">" onclick="next()"/>
+        
+    </div>
+    <div id="tracker">
+        <div id="posTracker" style="position: relative; float:left;">ICI !</div>
+    </div>
+    <canvas id="MizarCanvas" style="border: none; margin: 0; padding: 0;"></canvas>
+
 </body>
 </html>

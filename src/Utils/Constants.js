@@ -311,6 +311,9 @@ define(function () {
      * @property {String} LAYER_START_LOAD - Overlay rasters or vectors start to load
      * @property {String} LAYER_END_LOAD - Overlay rasters  or vectors finish to load
      * @property {String} LAYER_START_BACKGROUND_LOAD - Background rasters start to load
+     * @property {String} LAYER_FORCE_REFRESH - Force refresh of a layer
+     * @property {String} LAYER_TIME_CHANGED" - Time layer changer
+     * @property {String} LAYERS_TIME_CHANGED" - Time changed for ALL layers
      * @property {String} LAYER_END_BACKGROUND_LOAD - Background rasters finish to load
      * @property {String} BASE_LAYERS_ERROR - Error at the initialisation of layer to render
      * @property {String} BASE_LAYERS_READY - Initialisation of the rendering is fine
@@ -340,6 +343,9 @@ define(function () {
         "LAYER_END_BACKGROUND_LOAD" : "endBackgroundLoad",
         "LAYER_UPDATE_STATS_ATTRIBUTES" : "updateStatsAttribute",
         "LAYER_TOGGLE_WMS" : "toggleWMS",
+        "LAYER_FORCE_REFRESH" : "layer:forceRefresh",
+        "LAYER_TIME_CHANGED" : "layer:time:changed",
+        "LAYERS_TIME_CHANGED" : "layers:time:changed",
         "BASE_LAYERS_ERROR" : "baseLayersError",
         "BASE_LAYERS_READY" : "baseLayersReady",
         "CRS_MODIFIED" : "modifiedCrs",

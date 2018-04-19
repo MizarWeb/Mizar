@@ -130,7 +130,6 @@ define(['../Utils/Utils', './AbstractLayer', '../Utils/Constants', '../Renderer/
          * @param {String} url Url of image
          */
         GroundOverlayLayer.prototype.update = function (quad,url) {
-            console.log("GroundOverlayLayer.update",quad);
             this.getGlobe().groundOverlayRenderer.enabled = true;
 
             this.geoBound = null;

@@ -32,9 +32,17 @@ define(["jquery"],
             this.context = null;
             this.navigation = null;
             this.element = options.element;
-            document.getElementById(this.element).innerHTML = "";
+            //if (document.getElementById(this.element)) {
+                document.getElementById(this.element).innerHTML = "";
+            //} else {
+            //    console.log("Can't get div "+this.element);
+            //}
             if (options.position) {
-                $("#" + this.element).css(options.position, "2px");
+                //if ($("#" + this.element)) {
+                    $("#" + this.element).css(options.position, "2px");
+                //} else {
+                //    console.log("Can't get div "+this.element);                    
+                //}
             }
         };
 
