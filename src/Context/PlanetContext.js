@@ -255,7 +255,9 @@ define(["jquery", "underscore-min", "../Utils/Utils", "./AbstractContext", "../U
          */
         PlanetContext.prototype.setBaseElevation = function (layer) {
             this.globe.setBaseElevation(layer);
-            this.elevationTracker.setScaleLayer(layer);
+            if (this.elevationTracker != null) {
+                this.elevationTracker.setScaleLayer(layer);
+            }
         };
 
         /**
