@@ -342,7 +342,7 @@ define([], function(){
      *          <element ref="wms:Title"/>
      *          <element ref="wms:Abstract" minOccurs="0"/>
      *          <element ref="wms:KeywordList" minOccurs="0"/>
-     *          <element ref="wms:CRS" minOccurs="0" maxOccurs="unbounded"/>
+     *          <element ref="wms:SRS" minOccurs="0" maxOccurs="unbounded"/>
      *          <element ref="wms:EX_GeographicBoundingBox" minOccurs="0"/>
      *          <element ref="wms:BoundingBox" minOccurs="0" maxOccurs="unbounded"/>
      *          <element ref="wms:Dimension" minOccurs="0" maxOccurs="unbounded"/>
@@ -361,7 +361,7 @@ define([], function(){
      *      <attribute name="cascaded" type="nonNegativeInteger"/>
      *      <attribute name="opaque" type="boolean" default="0"/>
      *      <attribute name="noSubsets" type="boolean" default="0"/>
-     *      <attribute name="fixedWidth" type="nonNegativeInteger"/>
+     *      <attribute name="noSubsets" type="nonNegativeInteger"/>
      *      <attribute name="fixedHeight" type="nonNegativeInteger"/>
      *  </complexType>
      * </element>
@@ -370,25 +370,111 @@ define([], function(){
      */
     var Layer = function(jsonLayer) {
 
+        this.queryable = WMSMetadata.getValueTag(jsonLayer._attrqueryable);
+        this.cascaded = WMSMetadata.getValueTag(jsonLayer._attrcascaded);
+        this.opaque = WMSMetadata.getValueTag(jsonLayer._attropaque);
+
         this.name = WMSMetadata.getValueTag(jsonLayer.Name);
         this.title = WMSMetadata.getValueTag(jsonLayer.Title);
         this.abstract = WMSMetadata.getValueTag(jsonLayer.Abstract);
         this.keywordList = WMSMetadata.parseKeywordList(jsonLayer.KeywordList);
-        //this.crs;
+        this.srs = this._parseSrs(jsonLayer.SRS);
         this.geographicBoundingBox = this._parseLatLonBoundingBox(jsonLayer.LatLonBoundingBox);
         this.boundingBox = this._parseBoundingBox(jsonLayer.BoundingBox);
-        //this.dimension;
+        this.dimension = this._parseDimension(jsonLayer.Dimension);
         this.attribution = this._parseAttribution(jsonLayer.Attribution);
         //this.authorityURL;
         //this.identifier = WMSMetadata.getValueTag(jsonLayer.Identifier);
-        //this.metadataURL;
+        this.metadataURL = this._parseMetadataURL(jsonLayer.MetadataURL);
         //this.dataURL;
         //this.featureListURL;
         //this.style;
         this.minScaleDenominator = WMSMetadata.getValueTag(jsonLayer.MinScaleDenominator);
         this.maxScaleDenominator = WMSMetadata.getValueTag(jsonLayer.MaxScaleDenominator);
         this.layer = this._parseLayer(jsonLayer.Layer);
+        if (this.layer.length != 0) {
+            var geoBoundingBoxInSubLayer = this.layer[0].getGeoBbox(); //longMin, longMax, latMin, latMax
+            if(geoBoundingBoxInSubLayer == null) {
+                geoBoundingBoxInSubLayer = [-180, 180, -90, 90];
+            }
+            for (var i=1 ; i< this.layer.length; i++) {
+                var subLayer = this.layer[i];
+                var geoBox = subLayer.getGeoBbox();
+                if(geoBox == null) {
+                    continue;
+                }
+                if(geoBox[0] > geoBoundingBoxInSubLayer[0]) {
+                    geoBoundingBoxInSubLayer[0] = geoBox[0];
+                }
+                if(geoBox[1] < geoBoundingBoxInSubLayer[1]) {
+                    geoBoundingBoxInSubLayer[1] = geoBox[1];
+                }
+                if(geoBox[2] > geoBoundingBoxInSubLayer[2]) {
+                    geoBoundingBoxInSubLayer[2] = geoBox[2];
+                }
+                if(geoBox[3] < geoBoundingBoxInSubLayer[3]) {
+                    geoBoundingBoxInSubLayer[3] = geoBox[3];
+                }
+            }
+            this.geographicBoundingBox = geoBoundingBoxInSubLayer;
+        }
 
+    };
+
+    Layer.prototype._parseAuthorityURL = function(authorityJson) {
+        var result = [];
+        if (authorityJson !== undefined) {
+            if (Array.isArray(authorityJson)) {
+                for (var dim in authorityJson) {
+                    result.push(WMSMetadata.getValueTag(authorityJson[dim]));
+                }
+            } else {
+                result.push(WMSMetadata.getValueTag(authorityJson));
+            }
+        }
+        return result;
+    };
+
+    Layer.prototype._parseMetadataURL = function(metadataJson) {
+        var result = [];
+        if(metadataJson !== undefined) {
+            if(Array.isArray(metadataJson)) {
+                for (var dim in dimJson) {
+                    result.push(WMSMetadata.getValueTag(metadataJson[dim]));
+                }
+            } else {
+                result.push(WMSMetadata.getValueTag(metadataJson));
+            }
+        }
+        return result;
+    };
+
+    Layer.prototype._parseDimension = function(dimJson) {
+        var result = [];
+        if(dimJson !== undefined) {
+            if(Array.isArray(dimJson)) {
+                for (var dim in dimJson) {
+                    result.push(WMSMetadata.getValueTag(dimJson.Dimension[dim]));
+                }
+            } else {
+                result.push(WMSMetadata.getValueTag(dimJson));
+            }
+        }
+        return result;
+    };
+
+    Layer.prototype._parseSrs = function(srsJson) {
+        var result = [];
+        if(srsJson !== undefined) {
+            if(Array.isArray(srsJson)) {
+                for (var srs in srsJson) {
+                    result.push(WMSMetadata.getValueTag(srsJson[srs]));
+                }
+            } else {
+                result.push(WMSMetadata.getValueTag(srsJson));
+            }
+        }
+        return result;
     };
 
     Layer.prototype._parseLayer = function(jsonLayer) {
@@ -450,8 +536,16 @@ define([], function(){
         if (json === undefined) {
 
         } else {
-            /*var logo = WMSMetadata.getValueTag(json.LogoURL.OnlineResource._attrhref);
-            var url = WMSMetadata.getValueTag(json.OnlineResource._attrhref);
+
+            var logo;
+            if(json.LogoURL) {
+                logo = WMSMetadata.getValueTag(json.LogoURL.OnlineResource._attrhref);
+            }
+
+            var url;
+            if(json.OnlineResource) {
+                url = WMSMetadata.getValueTag(json.OnlineResource._attrhref);
+            }
             var title = WMSMetadata.getValueTag(json.Title);
             attrib =  {
                 "Logo":logo,
@@ -496,6 +590,104 @@ define([], function(){
         return this.layer;
     };
 
+    Layer.prototype.getSrs = function() {
+        return this.srs;
+    };
+
+
+    /**
+     * <element name="MetadataURL">
+     *   <annotation>
+     *      <documentation>
+     *          A Map Server may use zero or more MetadataURL elements to offer detailed, standardized metadata about the data underneath a particular layer. The type attribute indicates the standard to which the metadata complies. The format element indicates how the metadata is structured.
+     *      </documentation>
+     *   </annotation>
+     *   <complexType>
+     *      <sequence>
+     *          <element ref="wms:Format"/>
+     *          <element ref="wms:OnlineResource"/>
+     *      </sequence>
+     *      <attribute name="type" type="NMTOKEN" use="required"/>
+     *   </complexType>
+     * </element>
+     * @param json
+     * @constructor
+     */
+    var MetadataURL = function(json) {
+        this.format = WMSMetadata.getValueTag(json.Format);
+        this.onlineResource = WMSMetadata.getValueTag(json.OnlineResource);
+    };
+
+    MetadataURL.prototype.getFormat = function() {
+        return this.format;
+    };
+
+    MetadataURL.prototype.getOnlineResource = function() {
+        return this.onlineResource;
+    };
+
+    /**
+     * <element name="Dimension">
+     *   <annotation>
+     *     <documentation>
+     *       The Dimension element declares the existence of a dimension and indicates what values along a dimension are valid.
+     *      </documentation>
+     *   </annotation>
+     *   <complexType>
+     *      <simpleContent>
+     *          <extension base="string">
+     *              <attribute name="name" type="string" use="required"/>
+     *              <attribute name="units" type="string" use="required"/>
+     *              <attribute name="unitSymbol" type="string"/>
+     *              <attribute name="default" type="string"/>
+     *              <attribute name="multipleValues" type="boolean"/>
+     *              <attribute name="nearestValue" type="boolean"/>
+     *              <attribute name="current" type="boolean"/>
+     *          </extension>
+     *      </simpleContent>
+     *   </complexType>
+     * </element>
+     * @param json
+     * @constructor
+     */
+    var Dimension = function(json) {
+        this.name = WMSMetadata.getValueTag(json.name);
+        this.units = WMSMetadata.getValueTag(json.units);
+        this.unitSymbol = WMSMetadata.getValueTag(json.unitSymbol);
+        this.default = WMSMetadata.getValueTag(json.default);
+        this.multipleValues = WMSMetadata.getValueTag(json.multiplesValues);
+        this.nearestValue = WMSMetadata.getValueTag(json.nearestValue);
+        this.current = WMSMetadata.getValueTag(json.current);
+    };
+
+    Dimension.prototype.getName = function() {
+        return this.name;
+    };
+
+    Dimension.prototype.getUnits = function() {
+        return this.units;
+    };
+
+    Dimension.prototype.getUnitSymbol = function() {
+        return this.unitSymbol;
+    };
+
+    Dimension.prototype.getDefault = function() {
+        return this.default;
+    };
+
+    Dimension.prototype.getMultipleValues = function() {
+        return this.multipleValues;
+    };
+
+    Dimension.prototype.getNearestValue = function() {
+        return this.nearestValue;
+    };
+
+    Dimension.prototype.getCurrent = function() {
+        return this.current;
+    };
+
     var WMSMetadata = function(json) {
         this.version = WMSMetadata.getValueTag(json.WMT_MS_Capabilities._attrversion);
         this.service = new Service(json.WMT_MS_Capabilities.Service);
@@ -514,6 +706,20 @@ define([], function(){
 
     WMSMetadata.prototype.getCapability = function() {
         return this.capability;
+    };
+
+    WMSMetadata.parseDimension = function(json) {
+        var result = [];
+        if(json !== undefined) {
+            if(Array.isArray(json.Dimension)) {
+                for (var dim in json) {
+                    result.push(WMSMetadata.getValueTag(json.Dimension[dim]));
+                }
+            } else {
+                result.push(WMSMetadata.getValueTag(json.Dimension));
+            }
+        }
+        return result;
     };
 
     WMSMetadata.getValueTag = function(json) {
@@ -536,7 +742,7 @@ define([], function(){
 
     WMSMetadata.parseKeywordList = function(keywordsJson) {
         var keywords = [];
-        if(keywordsJson !== undefined && keywordsJson.hasOwnProperty['Keyword']) {
+        if(keywordsJson !== undefined) {
             if(Array.isArray(keywordsJson.Keyword)) {
                 for (var keyword in keywordsJson.Keyword) {
                     keywords.push(WMSMetadata.getValueTag(keywordsJson.Keyword[keyword]));

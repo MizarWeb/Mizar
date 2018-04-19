@@ -65,7 +65,7 @@ define(["underscore-min", "../Utils/Utils", "xmltojson", "./WMSMetadata", "../La
                 }
                 var deltaLat = bbox[3]-bbox[2];
                 var delta = (deltaLong > deltaLat) ? deltaLat : deltaLong;
-                var distance = delta * 3000000 / 180;
+                var distance = Math.abs(delta) * 3000000 / 180;
                 center = [centerLong, centerLat, distance];
             }
             return center;
