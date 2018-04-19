@@ -485,6 +485,10 @@ define([], function(){
             for (var i=0 ; i<jsonLayer.length; i++) {
                 layers.push(new Layer(jsonLayer[i]));
             }
+        } else if (Array.isArray(jsonLayer.Layer)) {
+            for (var i = 0; i < jsonLayer.Layer.length; i++) {
+                layers.push(new Layer(jsonLayer.Layer[i]));
+            }
         } else {
             layers.push(new Layer(jsonLayer))
         }
