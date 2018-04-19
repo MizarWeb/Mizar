@@ -243,6 +243,29 @@ define(["jquery"], function ($) {
         return url + separator + name + "=" + value;
     };
 
+    Utils.parseBaseURL = function(url) {
+        var result;
+        var index = url.indexOf('?');
+        if (index == -1) {
+            result = url;
+        } else {
+            result = url.substring(0, url.indexOf('?')+1);
+        }
+        return result;
+    };
+
+    Utils.parseQueryString = function (url) {
+        var queryString = url.substring(url.indexOf('?')+1).split('&');
+        var params = {};
+        var pair;
+        // march and parse
+        for (var i = queryString.length - 1; i >= 0; i--) {
+            pair = queryString[i].split('=');
+            params[decodeURIComponent(pair[0])] = decodeURIComponent(pair[1] || '');
+        }
+        return params;
+    };
+
     Utils.requestUrl = function (url, datatype, options, callback, fallBack) {
         $.ajax({
             type: "GET",
