@@ -151,7 +151,7 @@ define(function () {
      * CRS
      * @property {String} Equatorial - Equatorial coordinate reference system
      * @property {String} Galactic - Galactic coordinate reference system
-     * @property {String} WGS84 - EPSG:4326 coordinate reference system
+     * @property {String} WGS84 - CRS:84 coordinate reference system
      * @property {String} Mars_2000 - IAU2000:49901 coordinate reference system
      * @property {String} Mars_2000_old - IAU2000:49900 coordinate reference system
      * @property {String} Moon_2000 - IAU2000:30101 coordinate reference system
@@ -161,7 +161,7 @@ define(function () {
     Constants.CRS = {
         "Equatorial": "Equatorial",
         "Galactic": "Galactic",
-        "WGS84": "EPSG:4326",
+        "WGS84": "CRS:84",
         "Mars_2000": "IAU2000:49901",
         "Mars_2000_old": "IAU2000:49900",
         "Moon_2000": "IAU2000:30101",

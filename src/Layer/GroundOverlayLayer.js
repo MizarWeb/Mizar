@@ -230,7 +230,7 @@ define(['../Utils/Utils', './AbstractLayer', '../Utils/Constants', '../Renderer/
             var q4 = this.quad[3];
 
             var tileConfig = this.getGlobe().getTileManager().tileConfig;
-            if (tileConfig.srs !== 'EPSG:4326') {
+            if (tileConfig.srs !== 'CRS:84') {
                 q1 = tileConfig.project(q1);
                 q2 = tileConfig.project(q2);
                 q3 = tileConfig.project(q3);
