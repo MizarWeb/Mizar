@@ -188,11 +188,20 @@ define(['../Utils/Utils', './AbstractLayer', '../Renderer/RasterOverlayRenderer'
          * @memberOf AbstractLayer#
          */
         AbstractLayer.prototype.forceRefresh = function () {
+            var rc = this.getGlobe().tileManager.renderContext;
+            var tp = this.getGlobe().tileManager.tilePool;
             var tiles = this.getGlobe().tileManager.visibleTiles;
             for (var i=0;i<tiles.length;i++) {
-                tiles[i].state = 0;
+                var renderables = tiles[i].extension.renderer.renderables;
+                for (var renderableIdx=0 ; renderableIdx < renderables.length ; renderableIdx++) {
+                    var renderable = renderables[renderableIdx];
+                    if (renderable.bucket.layer.ID === this.ID) {
+                        renderable.bucket.renderer.removeOverlay(this);
+                        renderable.bucket.renderer.addOverlay(this);
+                    }
+                }
             }
-            this.getGlobe().refresh();
+            this.globe.refresh();
         };
 
         /**************************************************************************************************************/

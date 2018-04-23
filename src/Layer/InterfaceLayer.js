@@ -29,6 +29,12 @@
 function Layer() {}
 
 /**
+ * Returns the metadata form the API.
+ * @return {Object} metadata
+ */
+Layer.prototype.getMetadataAPI = function () {};
+
+/**
  * Returns the globe.
  * @return {Globe}
  */

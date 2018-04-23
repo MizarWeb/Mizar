@@ -113,6 +113,7 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Util
             this.servicesRunningOnCollection = [];
             this.servicesRunningOnRecords = {};
             this.vectorLayer = false;
+            this.metadataAPI = (this.options.metadataAPI) ? this.options.metadataAPI : null;
 
             // Update layer color
             this.color = _createColor.call(this, this.options);
@@ -467,6 +468,14 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Util
          */
         AbstractLayer.prototype.proxify = function (url) {
             return Utils.proxify(url, this.options.proxy);
+        };
+
+        /**
+         * @function getMetadataAPI
+         * @memberOf AbstractLayer#
+         */
+        AbstractLayer.prototype.getMetadataAPI = function () {
+            return this.metadataAPI;
         };
 
         /**
