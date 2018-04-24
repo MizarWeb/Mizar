@@ -891,6 +891,25 @@ define(["jquery", "underscore-min",
             return result;
         };
 
+
+        /**
+         * Sets the current or integrated time of the application
+         * @param time single, multiple or range of values
+         * @function setTime
+         * @memberOf Mizar#
+         */
+        Mizar.prototype.setTime = function(time) {
+            this.activatedContext.setTime(time);
+        };
+
+        /**
+         * Returns the current or integrated time.
+         * @returns {string} the simple, multiple or range of values
+         */
+        Mizar.prototype.getTime = function() {
+            return this.activatedContext.getTime();
+        };
+
         //               ***************************** context management *****************************
 
         /**

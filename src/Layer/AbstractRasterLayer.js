@@ -188,37 +188,22 @@ define(['../Utils/Utils', './AbstractLayer', '../Renderer/RasterOverlayRenderer'
          * @memberOf AbstractLayer#
          */
         AbstractLayer.prototype.forceRefresh = function () {
-            return;
-            
             var tiles = this.getGlobe().tileManager.visibleTiles;
 
             for (var i=0;i<tiles.length;i++) {
                 var renderables = tiles[i].extension.renderer.renderables;
                 for (var renderableIdx=0 ; renderableIdx < renderables.length ; renderableIdx++) {
                     var renderable = renderables[renderableIdx];
-                    if (renderable.bucket.layer.name === "Palavas") {
-                        //var imgs = renderable.bucket.renderer.imageRequests;
-                        //for (var imgIdx=0; imgIdx < imgs.length; imgIdx++) {
-                        //    delete imgs[imgIdx].renderable;
-                        //}
-        
-                        //renderable.dispose(rc,tp);
-        
-                        //renderable.bucket.renderer.requestOverlayTextureForTile(renderable);
+                    if (renderable.bucket.layer.ID === this.ID) {
         
                         //Works but good be much better
-                        //renderable.bucket.renderer.removeOverlay(this);
-                        //renderable.bucket.renderer.addOverlay(this);
-                        renderable.bucket.renderer.updateOverlay(this);
+                        renderable.bucket.renderer.removeOverlay(this);
+                        renderable.bucket.renderer.addOverlay(this);
+                        //renderable.bucket.renderer.updateOverlay(this);
+                        break;
                     }
                 }
-
-
-                //tiles[i].state = 0;
             }
-
-
-
 
             this.getGlobe().refresh();
         };

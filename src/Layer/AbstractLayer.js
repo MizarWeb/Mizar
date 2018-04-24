@@ -222,6 +222,12 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Util
 
         /**************************************************************************************************************/
 
+
+        AbstractLayer.prototype.setTime = function(time) {
+            throw new Error("setTime not implemented");
+        };
+
+
         /**
          * return short name
          * @function getShortName

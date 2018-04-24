@@ -28,11 +28,14 @@
  */
 function Layer() {}
 
+
+Layer.prototype.setTime = function() {};
+
 /**
  * Returns the metadata form the API.
  * @return {Object} metadata
  */
-Layer.prototype.getMetadataAPI = function () {};
+Layer.prototype.getMetadataAPI = function() {};
 
 /**
  * Returns the globe.
@@ -191,7 +194,6 @@ Layer.prototype.getStyle = function() {};
  * @param {FeatureStyle} arg Feature style
  */
 Layer.prototype.setStyle = function (arg) {};
-
 
 /**
  * Returns true when the layer is set as background otherwise false.
