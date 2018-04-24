@@ -519,7 +519,7 @@ RasterOverlayRenderer.prototype.addOverlayToTile = function( tile, bucket, paren
 		{
 			if ( tile.children[i].state === Tile.State.LOADED )
 			{
-				this.addOverlayToTile( tile.children[i], bucket, level+1,renderable );
+				this.addOverlayToTile( tile.children[i], bucket, renderable );
 			}
 		}
 	}
