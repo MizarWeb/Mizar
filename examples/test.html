@@ -49,14 +49,14 @@
 
             var context = {
                 "layers": [
-                    {
+                   {
                         "type": "WCSElevation",
                         "name": "Elevation",
-                        "baseUrl": "http://demonstrator.telespazio.com/wcspub",
-                        "coverage": "GTOPO",
+                        "baseUrl": "http://80.158.6.138/mapserv?map=WMS_SRTM",
+                        "coverage": "SRTM",
                         "version": "1.0.0",
                         "minElevation": -32000,
-                        "scale": 15
+                        "scale": 2
                     },
                     {
                         "name": "Blue Marble",
@@ -76,15 +76,25 @@
                         "format":"image/png"
                     },*/
                     {
-                        "name": "Palavas",
+                        "name": "Palavas_Fond",
                         "type": "WMS",
                         "baseUrl": "http://80.158.6.138/mapserv?map=WMS_PALAVAS",
-                        "layers": "PALAVAS",
+                        "layers": "S2_PALAVAS",
                         "visible": true,
                         "background": false,
                         "transparent":true,
                         "format":"image/png"
                     },
+                    {
+                        "name": "Palavas",
+                        "type": "WMS",
+                        "baseUrl": "http://80.158.6.138/mapserv?map=WMS_PALAVAS",
+                        "layers": "DEM_PALAVAS",
+                        "visible": true,
+                        "background": false,
+                        "transparent":true,
+                        "format":"image/png"
+                    }/*,
                    {
                         "category": "Other",
                         "type": "Atmosphere",
@@ -100,7 +110,7 @@
                         "name": "Coordinates Grid",
                         "outline": true,
                         "visible": true
-                    }
+                    }*/
                 ]};
 
 
@@ -137,20 +147,21 @@
                     var cbLayer = mizar.getLayerByID(id);
                     console.log(cbLayer);
                     if (cbLayer.type === Mizar.LAYER.WCSElevation) {
+                        console.log("set base !");
                         mizar.setBaseElevation(cbLayer.name);
                     }
                     if (cbLayer.name === "Palavas") {
                         this.palavasLayer = cbLayer;
                     }
 
-                    if (cbLayer.isBackground() === true) {
+                    /*if (cbLayer.isBackground() === true) {
                         setTimeout(function go() {
                             mizar.activatedContext.navigation.zoomTo([4.025,43.54],
                             //116.217,29.15
                             { "distance" : 45000,
-                              "duration" : 100 });
+                              "duration" : 2000 });
                         },4000);
-                    }
+                    }*/
                 });
             }
             
@@ -247,14 +258,13 @@
 
 
 <body style="margin: 0; padding: 0;" onload="init();">
-    <div>
+    <div style="position:absolute; z-index: 10;">
         <input type="button" value="<" onclick="previous()"/>
         <input id="sl" type="text" value=""/>
         <input type="button" value=">" onclick="next()"/>
-        
-    </div>
-    <div id="tracker">
-        <div id="posTracker" style="position: relative; float:left;">ICI !</div>
+        <div id="tracker">
+            <div id="posTracker" style="float:left;"></div>
+        </div>
     </div>
     <canvas id="MizarCanvas" style="border: none; margin: 0; padding: 0;"></canvas>
 

@@ -84,7 +84,7 @@ define(['../Utils/Utils', './AbstractRasterLayer', '../Utils/Constants', '../Reg
 
             //this._computeBaseUrlAndCapabilities(options);
 
-            AbstractRasterLayer.prototype.constructor.call(this, Constants.LAYER.WMS, options);
+            AbstractRasterLayer.prototype.constructor.call(this, options.type, options);
 
             this.getMapBaseUrl = _queryImage.call(this, this.getBaseUrl(), this.tilePixelSize, this.tilePixelSize, options);
             this.layers = options.layers;
