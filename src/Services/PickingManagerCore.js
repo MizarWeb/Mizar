@@ -368,6 +368,15 @@ define(["../Renderer/FeatureStyle", "../Layer/OpenSearchLayer", "../Utils/Utils"
 
         /**************************************************************************************************************/
 
+        function computeFilterPickSelection(pickPoint) {
+            var selection = this.computePickSelection(pickPoint);
+            var returnedSelection = [];
+            for (var i=0;i<selection.length;i++) {
+                returnedSelection.push(selection[i]);
+            }
+            return returnedSelection;
+        }
+
         /**
          * Compute the selection at the picking point
          * @param {Array} pickPoint
@@ -485,6 +494,7 @@ define(["../Renderer/FeatureStyle", "../Layer/OpenSearchLayer", "../Utils/Utils"
             fixDateLine: fixDateLine,
             featureIsPicked: featureIsPicked,
             computePickSelection: computePickSelection,
+            computeFilterPickSelection: computeFilterPickSelection,
             setSelection: setSelection,
             highlightObservation: highlightObservation,
             updateContext: updateContext
