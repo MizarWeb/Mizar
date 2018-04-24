@@ -904,7 +904,6 @@ define(["jquery", "underscore-min",
          */
         Mizar.prototype.createContext = function (contextMode, options) {
             var result;
-            console.log(contextMode);
             try {
                 options.renderContext = this.renderContext;
                 var ctx = this.ContextFactory.create(contextMode, this.getOptions(), options);

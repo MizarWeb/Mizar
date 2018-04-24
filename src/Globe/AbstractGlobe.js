@@ -55,7 +55,6 @@ define(['../Utils/Event', '../Utils/Utils',
          * @implements {Globe}
          */
         var AbstractGlobe = function (type, options) {
-
             _checkOptions(options);
 
             this.type = type;

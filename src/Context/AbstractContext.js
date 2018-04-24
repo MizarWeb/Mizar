@@ -161,16 +161,12 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Laye
             this.pendingLayers = [];
             this.initCanvas(this.canvas);
 
-
             if ( this.mizarConfiguration.positionTracker != null ) {
                 this.positionTracker = _createTrackerPosition.call(this, this.mizarConfiguration);
             }
-
             if ( this.mizarConfiguration.elevationTracker != null) {
                 this.elevationTracker = _createTrackerElevation.call(this, this.mizarConfiguration, ctxOptions);
             }
-
-
         };
 
         function _handleCameraWhenLayerAdded(layer) {

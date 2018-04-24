@@ -69,7 +69,7 @@ define(['../Utils/Utils', './AbstractRasterLayer', '../Utils/Constants','../Tili
             options.tilePixelSize = options.tilePixelSize || 33;
             options.tiling = new GeoTiling(4, 2);
             options.numberOfLevels = options.numberOfLevels || 21;
-            AbstractRasterLayer.prototype.constructor.call(this, Constants.LAYER.WMSElevation, options);
+            AbstractRasterLayer.prototype.constructor.call(this, Constants.LAYER.WCSElevation, options);
 
             this.version = options.version || '2.0.0';
             this.format = options.format || 'image/x-aaigrid';

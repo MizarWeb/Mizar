@@ -1,0 +1,10 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "geometry": { "type": "Point", "coordinates": [116.217 , 29.15] },
+      "type": "Feature",
+      "properties": { "name": "Poyang lake", "title": "Poyang lake", "description": "Poyang lake" }
+    }
+  ]
+}

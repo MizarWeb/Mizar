@@ -5,12 +5,12 @@
     <title>Getting started with navigation</title>
     <meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
 
-    <!-- mode dev -->
-    <script type="text/javascript" src="test_layers.js"></script>
-    <script type="text/javascript" data-main="../src/rconfig.js" src="../node_modules/requirejs/require.js"></script>
+    <link rel=stylesheet href="./css/style.min.css">
+    <link rel=stylesheet href="./css/jquery-ui.min.css">
 
     <!-- mode prod -->
-    <!--<script type="text/javascript" src="../Mizar.min.js"></script>-->
+    <script type="text/javascript" src="test_layers.js"></script>
+    <script type="text/javascript" src="../Mizar.min.js"></script>
 
     <script type="text/javascript">
 
@@ -41,19 +41,19 @@
             }
         }
     
-
-        // mode dev
-        require(['Mizar'], function (Mizar) {
-
+        function start() {
+            init();
             div = "MizarCanvas";
             mizarDiv = (typeof div === "string") ? document.getElementById(div) : div;
+            
             mizarConf.canvas = $(mizarDiv)[0];
             mizarConf.planetContext.coordinateSystem.geoideName = Mizar.CRS.WGS84;
-
-
+            
             // Create Mizar
             var mizar =  new Mizar(mizarConf);
+
             this.mizar = mizar;
+            
             // Layers load
             for (var i = 0; i < context.layers.length; i++) {
                 var layer = context.layers[i];
@@ -62,6 +62,7 @@
                     var cbLayer = mizar.getLayerByID(id);
                     console.log(cbLayer);
                     if (cbLayer.type === Mizar.LAYER.WCSElevation) {
+                        console.log("set base !");
                         mizar.setBaseElevation(cbLayer.name);
                     }
                     if (cbLayer.name === "Palavas") {
@@ -80,7 +81,6 @@
             }
             
             
-
             for (var i=0;i<climateData.length;i++) {
                 var currentThematicId = climateData[i].thematicId;
                 var currentThematic = null;
@@ -100,20 +100,19 @@
 
 
             //console.log("SERVICE",mizar.getServiceByName(Mizar.SERVICE.PickingManager));
-        });
-
+        }
     </script>
 
 </head>
 
 
-<body style="margin: 0; padding: 0;" onload="init();">
+<body style="margin: 0; padding: 0;" onload="start();">
     <div style="position:absolute; z-index: 10;">
         <input type="button" value="<" onclick="previous()"/>
         <input id="sl" type="text" value=""/>
         <input type="button" value=">" onclick="next()"/>
         <div id="tracker">
-            <div id="posTracker" style="background-color:white;float:left;"></div>
+            <div id="posTracker" style="float:left;"></div>
         </div>
     </div>
     <canvas id="MizarCanvas" style="border: none; margin: 0; padding: 0;"></canvas>
