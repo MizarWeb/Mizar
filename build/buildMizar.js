@@ -2,8 +2,8 @@
     baseUrl: "../src",
     name: "../build/almond",
     include: ['Mizar'],
-    out: "../Mizar.min.js",
-    optimize: "uglify2",
+    out: "../Mizar.min",
+    optimize: "none",
     wrap: {
         startFile: '../build/start.frag',
         endFile: '../build/end.frag'
@@ -18,7 +18,7 @@
         samp: "../external/samp",
         string: "../node_modules/string/dist/string",
         gzip: "../external/gzip.min",
-        saveAs: "../node_modules/file-saver/dist/FileSaver.min",
+        saveAs: "../node_modules/file-saver/FileSaver.min",
         jszip: "../node_modules/jszip/dist/jszip.min",
         xmltojson: "../node_modules/xmltojson/lib/xmlToJSON.min"
     },

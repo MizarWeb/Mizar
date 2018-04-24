@@ -1,5 +1,5 @@
-define(["underscore-min", "../Utils/Utils", "xmltojson", "./WMSMetadata", "../Layer/LayerFactory"],
-    function (_, Utils, XmlToJson, WMSMetadata, LayerFactory) {
+define(["jquery","underscore-min", "../Utils/Utils", "xmltojson", "./WMSMetadata", "../Layer/LayerFactory"],
+    function ($, _, Utils, XmlToJson, WMSMetadata, LayerFactory) {
 
         var WMSServer = function (proxyUse, proxyUrl, options) {
             if (options.getCapabilities) {
@@ -20,16 +20,16 @@ define(["underscore-min", "../Utils/Utils", "xmltojson", "./WMSMetadata", "../La
 
 
         function _computeAttribution(layerDescription, jsonLayers, jsonLayer) {
-            var attribution;
+            var attribution, logo, title;
             if (layerDescription.attribution) {
                 attribution = layerDescription.attribution;
             } else if (Object.keys(jsonLayer.getAttribution()).length !== 0) {
-                var logo = jsonLayer.getAttribution()['Logo'] != null ? "<img src='" + jsonLayer.getAttribution()['Logo'] + "' height='25px'/> " : "";
-                var title = jsonLayer.getAttribution()['Title'] != null ? jsonLayer.getAttribution()['Title'] : "";
+                logo = jsonLayer.getAttribution()['Logo'] != null ? "<img src='" + jsonLayer.getAttribution()['Logo'] + "' height='25px'/> " : "";
+                title = jsonLayer.getAttribution()['Title'] != null ? jsonLayer.getAttribution()['Title'] : "";
                 attribution = logo + title;
             } else if (Object.keys(jsonLayers.getAttribution()).length !== 0) {
-                var logo = jsonLayers.getAttribution()['Logo'] != null ? "<img src='" + jsonLayers.getAttribution()['Logo'] + "' height='25px'/> " : "";
-                var title = jsonLayers.getAttribution()['Title'] != null ? jsonLayers.getAttribution()['Title'] : "";
+                logo = jsonLayers.getAttribution()['Logo'] != null ? "<img src='" + jsonLayers.getAttribution()['Logo'] + "' height='25px'/> " : "";
+                title = jsonLayers.getAttribution()['Title'] != null ? jsonLayers.getAttribution()['Title'] : "";
                 attribution = logo + title;
             } else {
                 attribution = null;
@@ -106,37 +106,48 @@ define(["underscore-min", "../Utils/Utils", "xmltojson", "./WMSMetadata", "../La
             );
         };
 
+        function _createLayer(layerDescription, jsonLayers, jsonLayer) {
+            var attribution = _computeAttribution.call(this, layerDescription, jsonLayers, jsonLayer);
+            var copyrightURL = _computeCopyrightURL.call(this, layerDescription, jsonLayers, jsonLayer);
+            var center = _computeCenterBbox.call(this, jsonLayer);
+            var layerDesc = Object.assign({}, layerDescription, {});
+            layerDesc.name = layerDescription.name || jsonLayer.getTitle();
+            layerDesc.format = layerDescription.format || "image/png";
+            layerDesc.layers = layerDescription.layers || jsonLayer.getName();
+            layerDesc.description = layerDescription.description || (jsonLayer.getAbstract() != null) ? jsonLayer.getAbstract() : jsonLayers.getAbstract();
+            layerDesc.attribution = attribution;
+            layerDesc.copyrightUrl = copyrightURL;
+            layerDesc.properties = {
+                "initialRa":center[0],
+                "initialDec":center[1],
+                "initialFov":center[2],
+                "bbox":_bbox.call(this, jsonLayer)
+            };
+            layerDesc.metadataAPI = jsonLayer;
+
+            return LayerFactory.create(layerDesc);
+        }
+
+        function _createLayers(layerDescription, layersFromConf, jsonLayers) {
+            var layers = [];
+            for (var i = 0; i < jsonLayers.getLayer().length; i++) {
+                var jsonLayer = jsonLayers.getLayer()[i];
+                if(jsonLayer.getLayer().length !=0) {
+                    layers = layers.concat(_createLayers(layerDescription, layersFromConf, jsonLayer));
+                }
+                if (_mustBeSkipped.call(this, layersFromConf, jsonLayer.name)) {
+                        continue;
+                }
+                layers.push(_createLayer.call(this, layerDescription, jsonLayers, jsonLayer));
+            }
+            return layers;
+        }
+
         WMSServer.prototype.createLayers = function (callback, fallback) {
             this.getMetadata(function (layerDescription, metadata) {
                 var layersFromConf = layerDescription.hasOwnProperty('layers') ? layerDescription.layers.split(',') : [];
                 var jsonLayers = metadata.getCapability().getLayer();
-                var layers = [];
-                for (var i = 0; i < jsonLayers.getLayer().length; i++) {
-                    var jsonLayer = jsonLayers.getLayer()[i];
-                    if (_mustBeSkipped.call(this, layersFromConf, jsonLayer.name)) {
-                        continue;
-                    }
-
-                    var attribution = _computeAttribution.call(this, layerDescription, jsonLayers, jsonLayer);
-                    var copyrightURL = _computeCopyrightURL.call(this, layerDescription, jsonLayers, jsonLayer);
-                    var center = _computeCenterBbox.call(this, jsonLayer);
-                    var layerDesc = Object.assign({}, layerDescription, {});
-                    layerDesc.name = layerDescription.name || jsonLayer.getTitle();
-                    layerDesc.format = layerDescription.format || "image/png";
-                    layerDesc.layers = layerDescription.layers || jsonLayer.getName();
-                    layerDesc.description = layerDescription.description || (jsonLayer.getAbstract() != null) ? jsonLayer.getAbstract() : jsonLayers.getAbstract();
-                    layerDesc.attribution = attribution;
-                    layerDesc.copyrightUrl = copyrightURL;
-                    layerDesc.properties = {
-                        "initialRa":center[0],
-                        "initialDec":center[1],
-                        "initialFov":center[2],
-                        "bbox":_bbox.call(this, jsonLayer)
-                    };
-
-                    var layer = LayerFactory.create(layerDesc);
-                    layers.push(layer);
-                }
+                var layers = _createLayers(layerDescription, layersFromConf, jsonLayers);
                 callback(layers);
             }, fallback)
         };
@@ -146,7 +157,7 @@ define(["underscore-min", "../Utils/Utils", "xmltojson", "./WMSMetadata", "../La
             var getCapabilitiesUrl = baseUrl;
             getCapabilitiesUrl = Utils.addParameterTo(getCapabilitiesUrl, "service", "WMS");
             getCapabilitiesUrl = Utils.addParameterTo(getCapabilitiesUrl, "request", "getCapabilities");
-            getCapabilitiesUrl = Utils.addParameterTo(getCapabilitiesUrl, "version", options.hasOwnProperty('version') ? options.version : '1.1.1');
+            getCapabilitiesUrl = Utils.addParameterTo(getCapabilitiesUrl, "version", options.hasOwnProperty('version') ? options.version : '1.3.0');
             return getCapabilitiesUrl;
         };
 

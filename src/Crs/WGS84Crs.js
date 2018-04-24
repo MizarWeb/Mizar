@@ -46,7 +46,7 @@ define(['./AbstractCrs', '../Renderer/GeoBound', '../Utils/Utils', '../Utils/Con
          * <br/>
          * WGS84Crs is initialized with the following parameters :
          * <ul>
-         *     <li>geoideName = EPSG:4326</li>
+         *     <li>geoideName = CRS:84</li>
          *     <li>radius = 1</li>
          *     <li>realPlanetRadius = 6378137 meters</li>
          *     <li>type = Planet</li>

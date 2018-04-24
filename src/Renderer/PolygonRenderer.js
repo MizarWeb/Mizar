@@ -240,7 +240,7 @@ define(['../Utils/Constants', '../Utils/Utils', './VectorRenderer', './VectorRen
 
             var geometryBound = new GeoBound();
             var csBound = new GeoBound(coordinateSystem.getGeoBound().getWest(), coordinateSystem.getGeoBound().getSouth(), coordinateSystem.getGeoBound().getEast(), coordinateSystem.getGeoBound().getNorth());
-            var crsName = "EPSG:4326";
+            var crsName = "CRS:84";
             if (typeof geometry.crs !== "undefined") {
                 crsName = geometry.crs.properties.name;
             }

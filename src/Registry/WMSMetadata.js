@@ -18,6 +18,19 @@
  ******************************************************************************/
 define([], function(){
 
+    /**
+     * The Attribution type.
+     * @typedef {Object} Attribution
+     * @property {string} Logo - Logo for attribution.
+     * @property {string} OnlineResource - OnlineResource for attribution.
+     * @property {string} Title - Title for attribution.
+     */
+
+    /**
+     * The Bounding box type.
+     * @typedef {Object} BoundingBox
+     * @property {string} crs - crs name with associated bounding box [longMin, longMax, latMin, latMax]
+     */
 
     /**
      * General service metadata
@@ -52,6 +65,7 @@ define([], function(){
      * @constructor
      */
     var Service = function(jsonService) {
+        this.name =  WMSMetadata.getValueTag(jsonService.Name);
         this.title = WMSMetadata.getValueTag(jsonService.Title);
         this.abstract = WMSMetadata.getValueTag(jsonService.Abstract);
         this.keywordList = WMSMetadata.parseKeywordList(jsonService.KeywordList);
@@ -64,42 +78,90 @@ define([], function(){
         this.maxHeight = WMSMetadata.getValueTag(jsonService.MaxHeight);
     };
 
+    /**
+     * Returns the name.
+     * @returns {string} name is for machine-to-machine communication
+     */
+    Service.prototype.getName = function() {
+        return this.name;
+    };
+
+    /**
+     * Returns the title.
+     * @returns {string} The Title is for informative display to a human.
+     */
     Service.prototype.getTitle = function() {
         return this.title;
     };
 
+    /**
+     * Returns the abstract.
+     * @returns {string|null} The abstract is a longer narrative description of an object.
+     */
     Service.prototype.getAbstract = function() {
         return this.abstract;
     };
 
+    /**
+     * Returns the list of keywords as an array of string.
+     * @returns {string[]} List of keywords or keyword phrases to help catalog searching.
+     */
     Service.prototype.getKeywordList = function() {
         return this.keywordList;
     };
 
+    /**
+     * Returns the OnlineResource.
+     * @returns {string} An OnlineResource is typically an HTTP URL.
+     */
     Service.prototype.getOnlineResource = function() {
         return this.onlineResource;
     };
 
+    /**
+     * Returns the information about a contact person for the service.
+     * @returns {ContactInformation} Information about a contact person for the service.
+     */
     Service.prototype.getContactInformation = function() {
         return this.contactInformation;
     };
 
+    /**
+     * Returns the fees.
+     * @returns {string|null} the fees.
+     */
     Service.prototype.getFees = function() {
         return this.fees;
     };
 
+    /**
+     * Returns the accessConstraints.
+     * @returns {string|null} the access constraints
+     */
     Service.prototype.getAccessConstraints = function() {
         return this.accessContraints;
     };
 
+    /**
+     * Returns the limit of the layer's number.
+     * @returns {int|null} the limit of the layer's number.
+     */
     Service.prototype.getLayerLimit = function() {
         return this.layerLimit;
     };
 
+    /**
+     * Returns the max width.
+     * @returns {int|null} the max width.
+     */
     Service.prototype.getMaxWidth = function() {
         return this.maxWidth;
     };
 
+    /**
+     * Returns the max height.
+     * @returns {int|null} the max height.
+     */
     Service.prototype.getMaxHeight = function() {
         return this.maxHeight;
     };
@@ -144,26 +206,50 @@ define([], function(){
         }
     };
 
+    /**
+     * Returns the contact person primary.
+     * @returns {null|ContactPersonPrimary} the contact person primary.
+     */
     ContactInformation.prototype.getContactPersonPrimary = function() {
         return this.contactPersonPrimary;
     };
 
+    /**
+     * Returns the contact position.
+     * @returns {null|string} the contact position.
+     */
     ContactInformation.prototype.getContactPosition = function() {
         return this.contactPosition;
     };
 
+    /**
+     * Returns the contact address.
+     * @returns {null|ContactAddress} the contact address.
+     */
     ContactInformation.prototype.getContactAddress = function() {
         return this.contactAddress;
     };
 
+    /**
+     * Returns the contact voice telephone.
+     * @returns {null|string} the contact voice telephone.
+     */
     ContactInformation.prototype.getContactVoiceTelephone = function() {
         return this.contactVoiceTelephone;
     };
 
+    /**
+     * Returns the contact fac simile telephone.
+     * @returns {null|string} the contact fac simile telephone.
+     */
     ContactInformation.prototype.getContactFacsimileTelephone = function() {
         return this.contactFacsimileTelephone;
     };
 
+    /**
+     * Returns the contact electronic mail address.
+     * @returns {null|string} the contact electronic mail address.
+     */
     ContactInformation.prototype.getContactElectronicMailAddress = function() {
         return this.contactElectronicMailAddress;
     };
@@ -190,10 +276,18 @@ define([], function(){
         }
     };
 
+    /**
+     * Returns the contact person.
+     * @returns {string}
+     */
     ContactPersonPrimary.prototype.getContactPerson = function() {
         return this.contactPerson;
     };
 
+    /**
+     * Returns the contact organization.
+     * @returns {string}
+     */
     ContactPersonPrimary.prototype.getContactOrganization = function() {
         return this.contactOrganization;
     };
@@ -232,26 +326,50 @@ define([], function(){
         }
     };
 
-    ContactAddress.prototype.getAdressType = function() {
+    /**
+     * Returns the address type.
+     * @returns {null|string} the address type
+     */
+    ContactAddress.prototype.getAddressType = function() {
         return this.addressType;
     };
 
-    ContactAddress.prototype.getAdress = function() {
+    /**
+     * Returns the address.
+     * @returns {null|string} the address
+     */
+    ContactAddress.prototype.getAddress = function() {
         return this.address;
     };
 
+    /**
+     * Returns the city.
+     * @returns {null|string} the city
+     */
     ContactAddress.prototype.getCity = function() {
         return this.city;
     };
 
+    /**
+     * Retrusn the state or principe.
+     * @returns {null|string} the state or principe.
+     */
     ContactAddress.prototype.getStateOrPrincipe = function() {
         return this.stateOrPrincipe;
     };
 
+    /**
+     * Returns the post code.
+     * @returns {null|string} the post code.
+     */
     ContactAddress.prototype.getPostCode = function() {
         return this.postCode;
     };
 
+    /**
+     * Returns the country.
+     * @returns {null|string}
+     */
     ContactAddress.prototype.getCountry = function() {
         return this.country;
     };
@@ -297,6 +415,10 @@ define([], function(){
         return this.extentedCapabilities;
     };
 
+    /**
+     * Returns the nested list of zero or more map Layers offered by this server.
+     * @returns {Layer} the layer.
+     */
     Capability.prototype.getLayer = function() {
         return this.layer;
     };
@@ -373,17 +495,31 @@ define([], function(){
         this.queryable = WMSMetadata.getValueTag(jsonLayer._attrqueryable);
         this.cascaded = WMSMetadata.getValueTag(jsonLayer._attrcascaded);
         this.opaque = WMSMetadata.getValueTag(jsonLayer._attropaque);
+        this.noSubsets = WMSMetadata.getValueTag(jsonLayer._attrnoSubsets);
+        this.fixedWidth = WMSMetadata.getValueTag(jsonLayer._attrfixedWidth);
+        this.fixedHeight = WMSMetadata.getValueTag(jsonLayer._attrfixedHeight);
+
 
         this.name = WMSMetadata.getValueTag(jsonLayer.Name);
         this.title = WMSMetadata.getValueTag(jsonLayer.Title);
         this.abstract = WMSMetadata.getValueTag(jsonLayer.Abstract);
         this.keywordList = WMSMetadata.parseKeywordList(jsonLayer.KeywordList);
-        this.srs = this._parseSrs(jsonLayer.SRS);
-        this.geographicBoundingBox = this._parseLatLonBoundingBox(jsonLayer.LatLonBoundingBox);
+        if(jsonLayer.CRS === undefined) {
+            this.crs = this._parseCrs(jsonLayer.SRS);
+        } else {
+            this.crs = this._parseCrs(jsonLayer.CRS);
+        }
+        if(jsonLayer.LatLonBoundingBox === undefined) {
+            this.geographicBoundingBox = this._parseGeoBoundingBox(jsonLayer.EX_GeographicBoundingBox);
+        } else {
+            this.geographicBoundingBox = this._parseLatLonBoundingBox(jsonLayer.LatLonBoundingBox);
+        }
+
+
         this.boundingBox = this._parseBoundingBox(jsonLayer.BoundingBox);
         this.dimension = this._parseDimension(jsonLayer.Dimension);
         this.attribution = this._parseAttribution(jsonLayer.Attribution);
-        //this.authorityURL;
+        this.authorityURL = this._parseAuthorityURL(jsonLayer.AuthorityURL);
         //this.identifier = WMSMetadata.getValueTag(jsonLayer.Identifier);
         this.metadataURL = this._parseMetadataURL(jsonLayer.MetadataURL);
         //this.dataURL;
@@ -424,12 +560,12 @@ define([], function(){
     Layer.prototype._parseAuthorityURL = function(authorityJson) {
         var result = [];
         if (authorityJson !== undefined) {
-            if (Array.isArray(authorityJson)) {
-                for (var dim in authorityJson) {
-                    result.push(WMSMetadata.getValueTag(authorityJson[dim]));
+            if (Array.isArray(authorityJson.OnlineResource)) {
+                for (var dim in authorityJson.OnlineResource) {
+                    result.push(WMSMetadata.getValueTag(authorityJson.OnlineResource[dim].attrhref));
                 }
             } else {
-                result.push(WMSMetadata.getValueTag(authorityJson));
+                result.push(WMSMetadata.getValueTag(authorityJson.OnlineResource.attrhref));
             }
         }
         return result;
@@ -450,28 +586,50 @@ define([], function(){
     };
 
     Layer.prototype._parseDimension = function(dimJson) {
-        var result = [];
+        var result = {};
         if(dimJson !== undefined) {
             if(Array.isArray(dimJson)) {
                 for (var dim in dimJson) {
-                    result.push(WMSMetadata.getValueTag(dimJson.Dimension[dim]));
+                    result[WMSMetadata.getValueTag(dimJson.Dimension[dim]._attrname)] = {
+                        units: WMSMetadata.getValueTag(dimJson.Dimension[dim]._attrunits),
+                        unitSymbol:WMSMetadata.getValueTag(dimJson.Dimension[dim]._attrunitSymbol),
+                        default: WMSMetadata.getValueTag(dimJson.Dimension[dim]._attrdefault),
+                        multipleValues: WMSMetadata.getValueTag(dimJson.Dimension[dim]._attrmultipleValues),
+                        nearestValue: WMSMetadata.getValueTag(dimJson.Dimension[dim]._attrnearestValue),
+                        current: WMSMetadata.getValueTag(dimJson.Dimension[dim]._attrcurrent),
+                        value:WMSMetadata.getValueTag(dimJson.Dimension[dim])
+                    };
                 }
             } else {
-                result.push(WMSMetadata.getValueTag(dimJson));
+                result[WMSMetadata.getValueTag(dimJson._attrname)] = {
+                    units: WMSMetadata.getValueTag(dimJson._attrunits),
+                    unitSymbol:WMSMetadata.getValueTag(dimJson._attrunitSymbol),
+                    default: WMSMetadata.getValueTag(dimJson._attrdefault),
+                    multipleValues: WMSMetadata.getValueTag(dimJson._attrmultipleValues),
+                    nearestValue: WMSMetadata.getValueTag(dimJson._attrnearestValue),
+                    current: WMSMetadata.getValueTag(dimJson._attrcurrent),
+                    value:WMSMetadata.getValueTag(dimJson)
+                };
             }
         }
         return result;
     };
 
-    Layer.prototype._parseSrs = function(srsJson) {
+    /**
+     * Returns the crs.
+     * @param crsJson
+     * @returns {Array}
+     * @private
+     */
+    Layer.prototype._parseCrs = function(crsJson) {
         var result = [];
-        if(srsJson !== undefined) {
-            if(Array.isArray(srsJson)) {
-                for (var srs in srsJson) {
-                    result.push(WMSMetadata.getValueTag(srsJson[srs]));
+        if(crsJson !== undefined) {
+            if(Array.isArray(crsJson)) {
+                for (var crs in crsJson) {
+                    result.push(WMSMetadata.getValueTag(crsJson[crs]));
                 }
             } else {
-                result.push(WMSMetadata.getValueTag(srsJson));
+                result.push(WMSMetadata.getValueTag(crsJson));
             }
         }
         return result;
@@ -485,46 +643,79 @@ define([], function(){
             for (var i=0 ; i<jsonLayer.length; i++) {
                 layers.push(new Layer(jsonLayer[i]));
             }
-        } else if (Array.isArray(jsonLayer.Layer)) {
+        } /*else if (Array.isArray(jsonLayer.Layer)) {
             for (var i = 0; i < jsonLayer.Layer.length; i++) {
                 layers.push(new Layer(jsonLayer.Layer[i]));
             }
-        } else {
+        }*/ else {
             layers.push(new Layer(jsonLayer))
         }
         return layers;
     };
 
+    /**
+     * Parses the bounding box.
+     * @param json bounding box definition as Json
+     * @returns {BoundingBox|{}}
+     * @private
+     */
     Layer.prototype._parseBoundingBox = function(json) {
         var bboxes = {};
+        var bbox, srs, longMin, longMax, latMin, latMax;
         if (json === undefined) {
 
         } else if(Array.isArray(json)) {
             for (var i=0;i< json.length;i++) {
-                var bbox = json[i];
-                var srs = WMSMetadata.getValueTag(bbox._attrSRS);
-                var longMin = WMSMetadata.getValueTag(bbox._attrminx);
-                var longMax = WMSMetadata.getValueTag(bbox._attrmaxx);
-                var latMin = WMSMetadata.getValueTag(bbox._attrminy);
-                var latMax = WMSMetadata.getValueTag(bbox._attrmaxy);
+                bbox = json[i];
+                srs = WMSMetadata.getValueTag(bbox._attrCRS);
+                longMin = WMSMetadata.getValueTag(bbox._attrminx);
+                longMax = WMSMetadata.getValueTag(bbox._attrmaxx);
+                latMin = WMSMetadata.getValueTag(bbox._attrminy);
+                latMax = WMSMetadata.getValueTag(bbox._attrmaxy);
                 bboxes[srs] = [longMin, longMax, latMin, latMax];
             }
         } else {
-            var srs = WMSMetadata.getValueTag(json._attrSRS);
-            var longMin = WMSMetadata.getValueTag(json._attrminx);
-            var longMax = WMSMetadata.getValueTag(json._attrmaxx);
-            var latMin = WMSMetadata.getValueTag(json._attrminy);
-            var latMax = WMSMetadata.getValueTag(json._attrmaxy);
+            srs = WMSMetadata.getValueTag(json._attrCRS);
+            longMin = WMSMetadata.getValueTag(json._attrminx);
+            longMax = WMSMetadata.getValueTag(json._attrmaxx);
+            latMin = WMSMetadata.getValueTag(json._attrminy);
+            latMax = WMSMetadata.getValueTag(json._attrmaxy);
             bboxes[srs] = [longMin, longMax, latMin, latMax];
         }
 
         return bboxes;
     };
 
+    /**
+     * Returns the geo long/lat of the bounding box.
+     * @param json bounding box as Json
+     * @returns {[]} [longMin, longMax, latMin, latMax] or empty array
+     * @private
+     */
+    Layer.prototype._parseGeoBoundingBox = function(json) {
+        var result;
+        if(json === undefined) {
+            result = [];
+        } else {
+            var longMin = WMSMetadata.getValueTag(json.westBoundLongitude);
+            var longMax = WMSMetadata.getValueTag(json.eastBoundLongitude);
+            var latMin = WMSMetadata.getValueTag(json.southBoundLatitude);
+            var latMax = WMSMetadata.getValueTag(json.northBoundLatitude);
+            result = [longMin, longMax, latMin, latMax];
+        }
+        return result;
+    };
+
+    /**
+     * Returns the geo long/lat of the bounding box.
+     * @param json bounding box as Json
+     * @returns {[]} [longMin, longMax, latMin, latMax] or empty array
+     * @private
+     */
     Layer.prototype._parseLatLonBoundingBox = function(json) {
         var result;
         if(json === undefined) {
-            result = null;
+            result = [];
         } else {
             var longMin = WMSMetadata.getValueTag(json._attrminx);
             var longMax = WMSMetadata.getValueTag(json._attrmaxx);
@@ -535,6 +726,12 @@ define([], function(){
         return result;
     };
 
+    /**
+     * Parses the attribution.
+     * @param json for attribution.
+     * @returns {Attribution|{}} the attribution.
+     * @private
+     */
     Layer.prototype._parseAttribution = function(json) {
         var attrib = {};
         if (json === undefined) {
@@ -560,41 +757,112 @@ define([], function(){
         return attrib;
     };
 
+    Layer.prototype.getQueryable = function() {
+        return this.queryable;
+    };
 
+    Layer.prototype.getCascaded = function() {
+        return this.cascaded;
+    };
+
+    Layer.prototype.getOpaque = function() {
+        return this.opaque;
+    };
+
+    Layer.prototype.getNoSubsets = function() {
+        return this.noSubsets;
+    };
+
+    Layer.prototype.getFixedWidth = function() {
+        return this.fixedWidth;
+    };
+
+    Layer.prototype.getFixedHeight = function() {
+        return this.fixedHeight;
+    };
+
+    /**
+     * Returns the name.
+     * @returns {string|null} the name.
+     */
     Layer.prototype.getName = function() {
         return this.name;
     };
 
+    /**
+     * Returns the title.
+     * @returns {string} the title.
+     */
     Layer.prototype.getTitle = function() {
         return this.title;
     };
 
+    /**
+     * Returns the abstract.
+     * @returns {string|null} the abstract.
+     */
     Layer.prototype.getAbstract = function() {
         return this.abstract;
     };
 
+    /**
+     * Returns the keywords list.
+     * @returns {string[]} the keywords list.
+     */
     Layer.prototype.getKeywordList = function() {
         return this.keywordList;
     };
 
+    /**
+     * Returns the crs.
+     * @returns {string[]} the crs
+     */
+    Layer.prototype.getCrs = function() {
+        return this.crs;
+    };
+
+    /**
+     * Returns the limits of the enclosing rectangle in longitude and latitude decimal degrees.
+     * @returns {float[]|[]} the limits of the enclosing rectangle in longitude and latitude decimal degrees.
+     */
     Layer.prototype.getGeoBbox = function() {
         return this.geographicBoundingBox;
     };
 
+    /**
+     * Returns the limits of the bounding box in units of the specified coordinate reference system.
+     * @returns {BoundingBox|{}} the limits of the bounding box in units of the specified coordinate reference system.
+     */
     Layer.prototype.getBbox = function() {
         return this.boundingBox;
     };
 
+    /**
+     * Returns the attribution.
+     * @returns {Attribution|{}}
+     */
     Layer.prototype.getAttribution= function() {
         return this.attribution;
     };
 
-    Layer.prototype.getLayer = function() {
-        return this.layer;
+    Layer.prototype.getDimension= function() {
+        return this.dimension;
     };
 
-    Layer.prototype.getSrs = function() {
-        return this.srs;
+    Layer.prototype.getMetadataURL= function() {
+        return this.metadataURL;
+    };
+
+    Layer.prototype.getMinScaleDenominator= function() {
+        return this.minScaleDenominator;
+    };
+
+    Layer.prototype.getMaxScaleDenominator= function() {
+        return this.maxScaleDenominator;
+    };
+
+    Layer.prototype.getLayer = function() {
+        return this.layer;
     };
 
 
@@ -692,11 +960,15 @@ define([], function(){
     };
 
     var WMSMetadata = function(json) {
-        this.version = WMSMetadata.getValueTag(json.WMT_MS_Capabilities._attrversion);
-        this.service = new Service(json.WMT_MS_Capabilities.Service);
-        this.capability = new Capability(json.WMT_MS_Capabilities.Capability);
-
-        //this.formats = this._parseFormats(json.WMT_MS_Capabilities.Capability.Request.GetMap.Format);
+        try {
+            this.version = WMSMetadata.getValueTag(json.WMS_Capabilities._attrversion);
+            this.service = new Service(json.WMS_Capabilities.Service);
+            this.capability = new Capability(json.WMS_Capabilities.Capability);
+        } catch(err) {
+            this.version = WMSMetadata.getValueTag(json.WMT_MS_Capabilities._attrversion);
+            this.service = new Service(json.WMT_MS_Capabilities.Service);
+            this.capability = new Capability(json.WMT_MS_Capabilities.Capability);
+        }
     };
 
     WMSMetadata.prototype.getVersion = function() {
@@ -709,20 +981,6 @@ define([], function(){
 
     WMSMetadata.prototype.getCapability = function() {
         return this.capability;
-    };
-
-    WMSMetadata.parseDimension = function(json) {
-        var result = [];
-        if(json !== undefined) {
-            if(Array.isArray(json.Dimension)) {
-                for (var dim in json) {
-                    result.push(WMSMetadata.getValueTag(json.Dimension[dim]));
-                }
-            } else {
-                result.push(WMSMetadata.getValueTag(json.Dimension));
-            }
-        }
-        return result;
     };
 
     WMSMetadata.getValueTag = function(json) {

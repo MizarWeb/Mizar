@@ -211,7 +211,7 @@ define(['../Utils/Utils', '../Utils/Constants',
         GeoTiling.prototype.generateLevelZeroTiles = function (config) {
             config.skirt = !config.coordinateSystem.isFlat();
             config.cullSign = 1;
-            config.srs = 'EPSG:4326';
+            config.srs = 'CRS:84';
 
             var level0Tiles = [];
 

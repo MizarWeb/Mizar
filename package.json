@@ -22,7 +22,7 @@
     "deploy:web:tmp": "npm run deploy:web --Mizar:output=/tmp/website",
     "open:doc": "firefox ./api_doc/index.html",
     "license": "license-checker --production --relativeLicensePath | awk 'NR > 5' > licenses-3rd/npm/LICENSES",
-    "build": "r.js -o build/buildMizar.js",
+    "build": "r.js -o build/buildMizar.js && uglifyjs Mizar.min > Mizar.min.js && rm Mizar.min",
     "jshin:": "jshint -c ./.jshintrc  src/*",
     "test": "echo \"Error: no test specified\" && exit 1",
     "push:git": "git push --tags origin HEAD:master"
@@ -90,6 +90,6 @@
     "jslint": "^0.10.3",
     "license-checker": "^8.0.3",
     "pre-commit": "^1.2.2",
-    "uglify": "^0.1.5"
+    "uglify-es": "^3.3.9"
   }
 }
