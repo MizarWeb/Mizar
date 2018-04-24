@@ -438,14 +438,14 @@ define(["jquery", "underscore-min", "../Utils/Constants",
          */
         function calculateDistanceElevation(firstPoint, secondPoint) {
             var R = mizarAPI.getCrs().getGeoide().getRealPlanetRadius();
-            var φ1 = Numeric.toRadian(firstPoint[1]);
-            var φ2 = Numeric.toRadian(secondPoint[1]);
-            var Δφ = Numeric.toRadian(secondPoint[1] - firstPoint[1]);
-            var Δλ = Numeric.toRadian(secondPoint[0] - firstPoint[0]);
+            var phi1 = Numeric.toRadian(firstPoint[1]);
+            var phi2 = Numeric.toRadian(secondPoint[1]);
+            var delta_phi = Numeric.toRadian(secondPoint[1] - firstPoint[1]);
+            var delta_lambda = Numeric.toRadian(secondPoint[0] - firstPoint[0]);
 
-            var a = Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
-                Math.cos(φ1) * Math.cos(φ2) *
-                Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
+            var a = Math.sin(delta_phi / 2) * Math.sin(delta_phi / 2) +
+                Math.cos(phi1) * Math.cos(phi2) *
+                Math.sin(delta_lambda / 2) * Math.sin(delta_lambda / 2);
             var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 
             var distance = R * c;

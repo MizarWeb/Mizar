@@ -87,7 +87,7 @@ define(['../Utils/Utils', './AbstractLayer', '../Utils/Constants', '../Renderer/
             }
             this.image.layer = this;
 
-            this.image.onload = function() {
+            this.image.onload = function() {
                 this.layer.getGlobe().refresh();
             }
         };
@@ -146,10 +146,10 @@ define(['../Utils/Utils', './AbstractLayer', '../Utils/Constants', '../Renderer/
 
             this.computeTransform();
 
-            this.image.onload = function() {
+            this.image.onload = function() {
                 this.layer.getGlobe().refresh();
             }
-        }
+        };
     
 
         //*************************************************************************
