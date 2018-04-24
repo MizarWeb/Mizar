@@ -161,6 +161,10 @@
 function Context() {
 }
 
+
+/***********************************************************************************
+ *                        Methods to get Configuration                             *
+ ***********************************************************************************/
 /**
  * Returns the context Configuration
  * @return {Object} - see options.skyContext or options.planetContext for {@link {Mizar}}
@@ -175,6 +179,10 @@ Context.prototype.getContextConfiguration = function () {
 Context.prototype.getMizarConfiguration = function () {
 };
 
+
+/***********************************************************************************
+ *                        Methods for handling GUI                                 *
+ ***********************************************************************************/
 /**
  * Returns the position tracker.
  * @return {PositionTracker}
@@ -220,7 +228,7 @@ Context.prototype.showComponents = function() {
 };
 
 /**
- * Start Navigation and "Show" sky or planet component.
+ * Start Navigation and "Show" sky or planet components.
  */
 Context.prototype.show = function () {
 };
@@ -234,7 +242,7 @@ Context.prototype.hideComponents = function(uiArray) {
 };
 
 /**
- * Stop navigation and hide sky or planet components.
+ * Stops navigation and hide sky or planet components.
  */
 Context.prototype.hide = function () {
 };
@@ -251,6 +259,9 @@ Context.prototype.showAdditionalLayers = function () {
 Context.prototype.hideAdditionalLayers = function () {
 };
 
+/**************************************************************************************
+ *                      Methods for interacting with the map                          *
+ **************************************************************************************/
 /**
  * Returns the lon-lat from a pixel.
  * The pixel is expressed in the canvas frame, i.e. (0,0) corresponds to the lower-left corner of the pixel
@@ -280,6 +291,9 @@ Context.prototype.getPixelFromLonLat = function(longitude, latitude){
 Context.prototype.getElevation = function (lon, lat) {
 };
 
+/***************************************************************************************
+ *                          Methods for handling layers                                *
+ ***************************************************************************************/
 /**
  * Returns the layers of a specific context.
  * @return {Layer[]} an array of layers
@@ -362,6 +376,9 @@ Context.prototype.removeAllLayers = function () {
 };
 
 
+/***************************************************************************************
+ *                  Methods for handling temporary draw on the map                     *
+ ***************************************************************************************/
 /**
  * Adds a temporary draw as a layer on the globe.<br/>
  * A temporary draw is used to create a subLayer or a simple draw. This added layer is not searchable and does not
@@ -378,11 +395,23 @@ Context.prototype.addDraw = function(layer) {
 Context.prototype.removeDraw = function(layer) {
 };
 
+/****************************************************************************************
+ *                  Methods for handling renderers                                      *
+ ****************************************************************************************/
 /**
  * Returns the rendering context.
  * @return {RenderContext} The rendering context
  */
 Context.prototype.getRenderContext = function () {
+};
+
+/**
+ * Renders the Planet.
+ * The pixel is expressed in the canvas frame, i.e. (0,0) corresponds to the lower-left corner of the pixel
+ * (private for now because it is automatically called in requestAnimationFrame)
+ * @private
+ */
+Context.prototype.render = function () {
 };
 
 /**
@@ -392,6 +421,15 @@ Context.prototype.getRenderContext = function () {
 Context.prototype.getMode = function () {
 };
 
+/**
+ * Refreshes rendering, must be called when canvas size is modified.
+ */
+Context.prototype.refresh = function () {
+};
+
+/***************************************************************************************
+ *                  Methods for handling coordinate systems                            *
+ ***************************************************************************************/
 /**
  * Sets the coordinate reference system.
  * @param cs - the coordinate reference system
@@ -408,6 +446,10 @@ Context.prototype.setCoordinateSystem = function (cs) {
 Context.prototype.getCoordinateSystem = function () {
 };
 
+
+/**************************************************************************************
+ *                      Methods for handling navigation                               *
+ **************************************************************************************/
 /**
  * Returns the navigation.
  * @returns {Navigation} navigation
@@ -415,6 +457,9 @@ Context.prototype.getCoordinateSystem = function () {
 Context.prototype.getNavigation = function () {
 };
 
+/**************************************************************************************
+ *                      Methods for handling animations                               *
+ **************************************************************************************/
 /**
  * Adds an animation.
  * @param {Animation} anim - the animation to add
@@ -429,6 +474,10 @@ Context.prototype.addAnimation = function (anim) {
 Context.prototype.removeAnimation = function (anim) {
 };
 
+/***************************************************************************************
+ *                          Methods for handling tiles                                 *
+ ***************************************************************************************/
+
 /**
  * Returns the tile manager.
  * @returns {TileManager}
@@ -436,25 +485,16 @@ Context.prototype.removeAnimation = function (anim) {
 Context.prototype.getTileManager = function () {
 };
 
-/**
- * Renders the Planet.
- * The pixel is expressed in the canvas frame, i.e. (0,0) corresponds to the lower-left corner of the pixel
- * (private for now because it is automatically called in requestAnimationFrame)
- * @private
- */
-Context.prototype.render = function () {
-};
+
+
+/******************************************************************************************
+ *                          Methods for handling memory                                   *
+ ******************************************************************************************/
 
 /**
  * Cleans up every reference to gl objects and unloads all tiles of the current context.
  */
 Context.prototype.dispose = function () {
-};
-
-/**
- * Refreshes rendering, must be called when canvas size is modified.
- */
-Context.prototype.refresh = function () {
 };
 
 /**
