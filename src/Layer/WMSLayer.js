@@ -131,6 +131,10 @@ define(['../Utils/Utils', './AbstractRasterLayer', '../Utils/Constants', '../Reg
             return isIntersect;
         }
 
+        WMSLayer.prototype.setTime = function(time) {
+            this.setParameter("time", time);
+        };
+
         /**
          * Returns the url for the given tile
          * @function getUrl
@@ -161,6 +165,7 @@ define(['../Utils/Utils', './AbstractRasterLayer', '../Utils/Constants', '../Reg
         WMSLayer.prototype.setParameter = function (paramName,value) {
             this.options[paramName] = value;
             this.getMapBaseUrl = _queryImage.call(this, this.getBaseUrl(), this.tilePixelSize, this.tilePixelSize, this.options);
+            this.forceRefresh();
         };
 
         /**************************************************************************************************************/

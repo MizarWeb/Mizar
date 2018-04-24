@@ -140,6 +140,7 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Laye
         var AbstractContext = function (mizarConfiguration, mode, ctxOptions) {
             Event.prototype.constructor.call(this);
             var self = this;
+            this.time = null;
             this.globe = null;	// Sky or globe
             this.navigation = null;
             this.attributionHandler = null;
@@ -267,6 +268,21 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Laye
         /**************************************************************************************************************/
         Utils.inherits(Event, AbstractContext);
         /**************************************************************************************************************/
+
+
+        AbstractContext.prototype.getTime = function() {
+            return this.time;
+        };
+
+
+        AbstractContext.prototype.setTime = function(time) {
+            this.time = time;
+            for(var i=0; i< this.layers.length; i++) {
+                var layer = this.layers[i];
+                layer.setTime(time);
+            }
+        };
+
 
         /**
          * ShowUp message.<br/>
