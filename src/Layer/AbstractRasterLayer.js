@@ -190,19 +190,30 @@ define(['../Utils/Utils', './AbstractLayer', '../Renderer/RasterOverlayRenderer'
         AbstractLayer.prototype.forceRefresh = function () {
             var tiles = this.getGlobe().tileManager.visibleTiles;
 
+
             for (var i=0;i<tiles.length;i++) {
+                //console.log("tile "+i);
                 var renderables = tiles[i].extension.renderer.renderables;
                 for (var renderableIdx=0 ; renderableIdx < renderables.length ; renderableIdx++) {
                     var renderable = renderables[renderableIdx];
                     if (renderable.bucket.layer.ID === this.ID) {
         
                         //Works but good be much better
-                        renderable.bucket.renderer.removeOverlay(this);
-                        renderable.bucket.renderer.addOverlay(this);
-                        //renderable.bucket.renderer.updateOverlay(this);
-                        break;
+                        //renderable.bucket.renderer.removeOverlay(this);
+                        //renderable.bucket.renderer.addOverlay(this);
+                        //console.log("renderable",renderable);
+                        renderable.bucket.renderer.updateOverlay(this);
+                        //console.log(tiles[i]);
+                        
                     }
+                    //renderable.bucket.renderer.render(renderables,renderableIdx,renderableIdx);
                 }
+
+
+
+            }
+            for (i=0;i<tiles.length;i++) {
+                tiles[i].state = 0;
             }
 
             this.getGlobe().refresh();

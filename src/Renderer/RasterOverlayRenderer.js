@@ -420,8 +420,6 @@ RasterOverlayRenderer.prototype.updateOverlay = function( overlay )
 	var index = this.buckets.indexOf( overlay._bucket );
 	var oldBucket = this.buckets[index];
 
-	console.log("oldBucket",oldBucket);
-
 	// Create it
 	var bucket = new Bucket(overlay);
 	bucket.renderer = this;
@@ -429,12 +427,21 @@ RasterOverlayRenderer.prototype.updateOverlay = function( overlay )
 
 	// Replace it
 	this.buckets[index] = bucket;
-	console.log("buckets",this.buckets);
 
 	overlay._bucket = bucket;
 
+	this.tileManager.visitTiles( function(tile)
+			{
+				var rs = tile.extension.renderer;
+				var renderable = rs ?  rs.getRenderable( overlay._bucket ) : null;
+				if ( renderable )
+				{
+					this.updateOverlayToTile( overlay, tile, bucket );
+				}
+			}
+	);
 	// For each tile in zero level
-/*	for ( var i = 0; i < this.tileManager.level0Tiles.length; i++ )
+	/*	for ( var i = 0; i < this.tileManager.level0Tiles.length; i++ )
 	{
 		var tile = this.tileManager.level0Tiles[i];
 		if ( tile.state === Tile.State.LOADED )

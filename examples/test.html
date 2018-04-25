@@ -68,14 +68,15 @@
                         this.palavasLayer = cbLayer;
                     }
 
-                    /*if (cbLayer.isBackground() === true) {
+                    if (cbLayer.isBackground() === true) {
                         setTimeout(function go() {
-                            mizar.activatedContext.navigation.zoomTo([4.025,43.54],
-                            //116.217,29.15
+                            mizar.activatedContext.navigation.zoomTo(
+                                //[4.025,43.54],
+                                [116.217,29.15],
                             { "distance" : 45000,
                               "duration" : 2000 });
                         },4000);
-                    }*/
+                    }
                 });
             }
             
@@ -99,7 +100,14 @@
             }
 
 
-            //console.log("SERVICE",mizar.getServiceByName(Mizar.SERVICE.PickingManager));
+            var picking = mizar.getServiceByName(Mizar.SERVICE.PickingManager);
+            mizarDiv.addEventListener('click', (e) => {
+                var pickPoint = mizar.getActivatedContext().getLonLatFromPixel(e.clientX, e.clientY);
+                if (pickPoint !== null) {
+                    var selection = picking.computeFilterPickSelection(pickPoint);
+                    console.log(selection);
+                }
+            });
         });
 
     </script>
@@ -116,7 +124,7 @@
             <div id="posTracker" style="background-color:white;float:left;"></div>
         </div>
     </div>
-    <canvas id="MizarCanvas" style="border: none; margin: 0; padding: 0;"></canvas>
+    <canvas id="MizarCanvas" onclick="click" style="border: none; margin: 0; padding: 0;"></canvas>
 
 </body>
 </html>
