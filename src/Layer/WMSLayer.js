@@ -163,9 +163,11 @@ define(['../Utils/Utils', './AbstractRasterLayer', '../Utils/Constants', '../Reg
         };
 
         WMSLayer.prototype.setParameter = function (paramName,value) {
-            this.options[paramName] = value;
-            this.getMapBaseUrl = _queryImage.call(this, this.getBaseUrl(), this.tilePixelSize, this.tilePixelSize, this.options);
-            this.forceRefresh();
+            if (this.hasDimension() && this.getDimensions()[paramName]) {
+                this.options[paramName] = value;
+                this.getMapBaseUrl = _queryImage.call(this, this.getBaseUrl(), this.tilePixelSize, this.tilePixelSize, this.options);
+                this.forceRefresh();
+            }
         };
 
         /**************************************************************************************************************/

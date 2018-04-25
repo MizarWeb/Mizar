@@ -329,9 +329,9 @@ define(["jquery"], function ($) {
     };
 
     /**
-     * Computes J0.
+     * Computes Julian day number at 0 hr UT
      * @param date date
-     * @returns {number} J0
+     * @returns {number} Julian day number at 0 hr UT
      * @private
      */
     Utils._J0 = function(date) {

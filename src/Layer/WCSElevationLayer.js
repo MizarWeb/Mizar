@@ -209,9 +209,11 @@ define(['../Utils/Utils', './AbstractRasterLayer', '../Utils/Constants','../Tili
         };
 
         WCSElevationLayer.prototype.setParameter = function (paramName,value) {
-            this.options[paramName] = value;
-            this.getCoverageBaseUrl = _queryImage.call(this, this.getBaseUrl(), this.options);
-            this.forceRefresh();
+            if (this.hasDimension() && this.getDimensions()[paramName]) {
+                this.options[paramName] = value;
+                this.getCoverageBaseUrl = _queryImage.call(this, this.getBaseUrl(), this.options);
+                this.forceRefresh();
+            }
         };
 
         /**************************************************************************************************************/
