@@ -199,12 +199,12 @@ define(['../Utils/Utils', './AbstractLayer', '../Renderer/RasterOverlayRenderer'
                     if (renderable.bucket.layer.ID === this.ID) {
         
                         //Works but good be much better
-                        //renderable.bucket.renderer.removeOverlay(this);
-                        //renderable.bucket.renderer.addOverlay(this);
+                        renderable.bucket.renderer.removeOverlay(this);
+                        renderable.bucket.renderer.addOverlay(this);
                         //console.log("renderable",renderable);
-                        renderable.bucket.renderer.updateOverlay(this);
+                        //renderable.bucket.renderer.updateOverlay(this);
                         //console.log(tiles[i]);
-                        
+                        break;
                     }
                     //renderable.bucket.renderer.render(renderables,renderableIdx,renderableIdx);
                 }
@@ -212,9 +212,9 @@ define(['../Utils/Utils', './AbstractLayer', '../Renderer/RasterOverlayRenderer'
 
 
             }
-            for (i=0;i<tiles.length;i++) {
-                tiles[i].state = 0;
-            }
+            //for (i=0;i<tiles.length;i++) {
+            //    tiles[i].state = 0;
+            //}
 
             this.getGlobe().refresh();
         };
