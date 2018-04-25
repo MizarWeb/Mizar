@@ -21,9 +21,9 @@
             document.getElementById("sl").value=seaLevel[currentSeaLevel];
             if (typeof this.palavasLayer !== "undefined") {
                 this.palavasLayer.setParameter("styles",seaLevel[currentSeaLevel]);
-                this.palavasLayer.forceRefresh();
+                this.palavasLayer.options.styles = seaLevel[currentSeaLevel];
+                this.mizar.reloadLayer(palavasLayer);
             }
-            
         }
         function init() {
             document.getElementById("sl").value=seaLevel[currentSeaLevel];
@@ -60,7 +60,6 @@
 
                 mizar.addLayer(layer,function (id) {
                     var cbLayer = mizar.getLayerByID(id);
-                    console.log(cbLayer);
                     if (cbLayer.type === Mizar.LAYER.WCSElevation) {
                         mizar.setBaseElevation(cbLayer.name);
                     }
@@ -71,9 +70,9 @@
                     if (cbLayer.isBackground() === true) {
                         setTimeout(function go() {
                             mizar.activatedContext.navigation.zoomTo(
-                                //[4.025,43.54],
-                                [116.217,29.15],
-                            { "distance" : 45000,
+                                [4.025,43.54],
+                                //[116.217,29.15],
+                            { "distance" : 100000,
                               "duration" : 2000 });
                         },4000);
                     }
@@ -105,7 +104,15 @@
                 var pickPoint = mizar.getActivatedContext().getLonLatFromPixel(e.clientX, e.clientY);
                 if (pickPoint !== null) {
                     var selection = picking.computeFilterPickSelection(pickPoint);
-                    console.log(selection);
+                    if (selection.length>0) {
+                        // Go on first point
+                        var coord = selection[0].feature.geometry.coordinates;
+                        mizar.activatedContext.navigation.zoomTo(
+                                coord,
+                            { "distance" : 500000,
+                              "duration" : 2000 });
+                        
+                    }
                 }
             });
         });

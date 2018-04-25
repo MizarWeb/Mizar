@@ -1498,6 +1498,20 @@ define(["jquery", "underscore-min",
 
 
         /**
+         * Reload a layer (keep id and ID)
+         * @function reloadLayer
+         * @memberOf Mizar#
+         */
+        Mizar.prototype.reloadLayer = function (layer) {
+            if (this.getActivatedContext() && this.getActivatedContext().globe) {
+                layer._detach(this.getActivatedContext().globe);
+                layer._attach(this.getActivatedContext().globe);
+            } else {
+               console.log("Context not yet available");
+            }
+        };
+
+        /**
          * Destroys Mizar
          * @function destroy
          * @memberOf Mizar#

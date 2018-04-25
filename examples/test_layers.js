@@ -42,6 +42,7 @@ var context = {
             "baseUrl": "http://80.158.6.138/mapserv?map=WMS_PALAVAS",
             "layers": "DEM_PALAVAS",
             "visible": true,
+            "styles" : "1.5m",
             "background": false,
             "transparent":true,
             "format":"image/png"

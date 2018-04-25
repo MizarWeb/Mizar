@@ -491,7 +491,6 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Laye
 
             var self = this;
             pendingAtmos.handleRequest(layerDescription, function(layers) {
-
                 for (var i=0; i<layers.length; i++) {
                     var layer = layers[i];
                     layer.callbackContext = self;
