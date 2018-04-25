@@ -206,6 +206,9 @@ define(['../Renderer/BoundingBox', '../Renderer/Ray', '../Renderer/glMatrix'],
             // Compute the eye in tile local space
             var mat = this.inverseMatrix;
             var c = renderContext.eyePosition;
+            if (!mat) {
+                return false;
+            }
             var ex = mat[0] * c[0] + mat[4] * c[1] + mat[8] * c[2] + mat[12];
             var ey = mat[1] * c[0] + mat[5] * c[1] + mat[9] * c[2] + mat[13];
             var ez = mat[2] * c[0] + mat[6] * c[1] + mat[10] * c[2] + mat[14];
