@@ -102,7 +102,7 @@ define(['../Utils/Utils', './AbstractRasterLayer', '../Utils/Constants', '../Reg
             url = Utils.addParameterTo(url, "service","wmts");
             url = Utils.addParameterTo(url, "version",options.version || "1.0.0");
             url = Utils.addParameterTo(url,"request", "GetTile");
-            url = Utils.addParameterTo(url,"layer", options.layer);
+            url = Utils.addParameterTo(url,"layer", options.layers);
             url = Utils.addParameterTo(url, "tilematrixset", "WGS84");
 //            url = Utils.addParameterTo(url, "tilematrixset", options.tilematrixset);
 
@@ -116,16 +116,16 @@ define(['../Utils/Utils', './AbstractRasterLayer', '../Utils/Constants', '../Reg
             return url;
         }
 
+        WMTSLayer.prototype.setTime = function(time) {
+            this.setParameter("time", time);
+        };
+
         WMTSLayer.getCapabilitiesFromBaseURl = function(baseUrl, options) {
             var getCapabilitiesUrl = baseUrl;
             getCapabilitiesUrl = Utils.addParameterTo(getCapabilitiesUrl, "service", "WMTS");
             getCapabilitiesUrl = Utils.addParameterTo(getCapabilitiesUrl, "request", "getCapabilities");
             getCapabilitiesUrl = Utils.addParameterTo(getCapabilitiesUrl, "version", options.hasOwnProperty('version') ? options.version : '1.0.0');
             return getCapabilitiesUrl;
-        };
-
-        WMTSLayer.parseCapabilities = function(json) {
-            return new WMTSMetadata(json);
         };
 
         /**************************************************************************************************************/
@@ -143,6 +143,12 @@ define(['../Utils/Utils', './AbstractRasterLayer', '../Utils/Constants', '../Reg
             url = Utils.addParameterTo(url, "tilecol", tile.x);
             url = Utils.addParameterTo(url, "tilerow", tile.y);
             return this.proxify(url, tile.level);
+        };
+
+        WMTSLayer.prototype.setParameter = function (paramName,value) {
+            this.options[paramName] = value;
+            this.getCoverageBaseUrl = _queryImage.call(this, this.getBaseUrl(), this.options);
+            this.forceRefresh();
         };
 
 

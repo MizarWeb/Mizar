@@ -132,11 +132,6 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Util
             //this.services = _createAvailableServices(this.options);
             this.multiLayers = [];
 
-            // Time management properties
-            // Specify if the layer can manage the time parameter (default to false)
-            this.isTimeResponsive = false;
-            // Save the previous time value (to check if time has changed)
-            this.previousTimeValue = null;
 
         };
 
@@ -222,9 +217,30 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Util
 
         /**************************************************************************************************************/
 
+        AbstractLayer.prototype.hasDimension = function() {
+            var hasDimension = false;
+            var metadata = this.getMetadataAPI();
+            if(metadata != null) {
+                var dimension = metadata.getDimension();
+                hasDimension = Object.keys(dimension).length > 0 ? true : false;
+            }
+            return hasDimension;
+        };
+
+        AbstractLayer.prototype.getDimensions = function() {
+            var metadata = this.getMetadataAPI();
+            var dimension;
+            if(metadata != null) {
+                dimension = metadata.getDimension();
+            } else {
+                dimension = {};
+            }
+            return dimension;
+        };
+
+
 
         AbstractLayer.prototype.setTime = function(time) {
-            throw new Error("setTime not implemented");
         };
 
 

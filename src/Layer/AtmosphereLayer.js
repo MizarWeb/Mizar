@@ -65,7 +65,7 @@
  * @implements {Layer}
  * @module Layer
  */
-define(['../Utils/Utils', './AbstractLayer', '../Utils/Constants','../Renderer/Program'], function (Utils, AbstractLayer, Constants, Program) {
+define(['../Utils/Utils', './AbstractLayer', '../Utils/Constants', '../Provider/PlanetProvider', '../Renderer/Program'], function (Utils, AbstractLayer, Constants, PlanetProvider, Program) {
 
     /**
      * Atmosphere layer configuration
@@ -97,7 +97,7 @@ define(['../Utils/Utils', './AbstractLayer', '../Utils/Constants','../Renderer/P
         this.sunBrightness = (options && options.sunBrightness) || 15.0;
         this.exposure = (options && options.exposure) || 2.0;
         this.wavelength = (options && options.wavelength) || [0.650, 0.570, 0.475];
-        this.lightDir = (options && options.lightDir) || [1, 0, 0];
+        this.lightDir = (options && options.lightDir) || _computeLightDir.call(this, new Date());
 
         // internal properties
         this._skyProgram = null;
@@ -114,6 +114,21 @@ define(['../Utils/Utils', './AbstractLayer', '../Utils/Constants','../Renderer/P
     Utils.inherits(AbstractLayer, AtmosphereLayer);
 
     /**************************************************************************************************************/
+
+    /**
+     * Computes light direction
+     * @param date date
+     * @returns {number[]} [x, y, z]
+     * @private
+     */
+    function _computeLightDir(date) {
+        var sunProvider = new PlanetProvider();
+        var sunPosition = sunProvider.getSunPosition(date);
+        var latitude = sunPosition.dec;
+        var longitude = -Utils.GHA(date, sunPosition.ra);
+        var coords =  Utils.longLat2XYZ(longitude, latitude);
+        return [coords.x, coords.y, coords.z];
+    }
 
     /**
      * Attaches the atmosphere layer to the planet.
@@ -347,6 +362,20 @@ define(['../Utils/Utils', './AbstractLayer', '../Utils/Constants','../Renderer/P
         gl.drawElements(gl.TRIANGLES, this._numIndices, gl.UNSIGNED_SHORT, 0);
 
         gl.disable(gl.CULL_FACE);
+    };
+
+    AtmosphereLayer.prototype.setTime = function(time) {
+        var date = new Date(time);
+        this.lightDir = _computeLightDir.call(this, date);
+        this._skyFromSpaceProgram.apply();
+        this._initUniforms(this._skyFromSpaceProgram.uniforms);
+        this._skyFromAtmosphereProgram.apply();
+        this._initUniforms(this._skyFromAtmosphereProgram.uniforms);
+        this._groundFromSpaceProgram.apply();
+        this._initUniforms(this._groundFromSpaceProgram.uniforms);
+        this._groundFromAtmosphereProgram.apply();
+        this._initUniforms(this._groundFromAtmosphereProgram.uniforms);
+
     };
 
     /**************************************************************************************************************/

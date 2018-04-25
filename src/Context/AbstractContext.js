@@ -474,6 +474,9 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Laye
          * @memberOf AbstractContext#
          */
         AbstractContext.prototype.addLayer = function (layerDescription, callback) {
+            if(this.getTime() != null) {
+                layerDescription.time = this.getTime();
+            }
             layerDescription.getCapabilitiesTileManager = this.globe.tileManager;
 
             var pendingAtmos = new PendingAtmosphere(this.pendingLayers, this.layers);

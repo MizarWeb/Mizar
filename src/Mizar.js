@@ -905,6 +905,8 @@ define(["jquery", "underscore-min",
         /**
          * Returns the current or integrated time.
          * @returns {string} the simple, multiple or range of values
+         * @function getTime
+         * @memberOf Mizar#
          */
         Mizar.prototype.getTime = function() {
             return this.activatedContext.getTime();
@@ -1169,7 +1171,6 @@ define(["jquery", "underscore-min",
             var result;
             try {
                 var layer = this.getActivatedContext().addLayer(layerDescription, callback);
-
             } catch(e) {
                 result = false;
                 var prefixe;

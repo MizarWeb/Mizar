@@ -29,6 +29,10 @@
 function Layer() {}
 
 
+Layer.prototype.hasDimension = function() {};
+
+Layer.prototype.getDimensions = function() {};
+
 Layer.prototype.setTime = function() {};
 
 /**

@@ -229,7 +229,6 @@ define(["jquery"], function ($) {
     /**
      * Add parameter to
      * @function addParameterTo
-     * @memberOf AbstractLayer#
      * @param {String} url - parameter url
      * @param {String} name - parameter name
      * @param {String} value - parameter value
@@ -304,6 +303,127 @@ define(["jquery"], function ($) {
             }
         }
         return proxifiedUrl;
+    };
+
+    /**
+     * Check if the time is valid ISO8601
+     * @param time
+     * @returns {boolean} True when the is valid ISO8601 otherwise false
+     */
+    Utils.isValidISO8601 = function(time) {
+        var date = Date.parse(time);
+        return !isNaN(unixTimeZero);
+    };
+
+    /**
+     * Converts UTC hms from date to hours.
+     * @param date date
+     * @returns {number} hours
+     * @private
+     */
+    Utils._UT = function(date) {
+        var hour = date.getUTCHours();
+        var min = date.getUTCMinutes();
+        var sec = date.getUTCSeconds();
+        return hour + min/60 + sec/3600;
+    };
+
+    /**
+     * Computes J0.
+     * @param date date
+     * @returns {number} J0
+     * @private
+     */
+    Utils._J0 = function(date) {
+        var year = date.getUTCFullYear();
+        var month = date.getUTCMonth()+1;
+        var day = date.getUTCDate();
+        var UT = Utils._UT(date);
+        var J0 = 367*year - Math.floor(7/4*(year + Math.floor((month+9)/12)))
+            + Math.floor(275*month/9) + day + 1721013.5;
+        //TODO check 1721013.5 should be -730531.5 !!!
+        return J0;
+    };
+
+    /**
+     * Computes Julian day.
+     * @param date date
+     * @returns {number} julian day
+     * @private
+     */
+    Utils.JD = function(date) {
+        return Utils._J0(date) + Utils._UT(date)/24;
+    };
+
+    /**
+     * Computes the Greenwich sidereal time at 0 hr UT.
+     * See equation [Seidelmann,1992]
+     * @param date date
+     * @returns {number} the Greenwich sidereal time at 0 hr UT
+     * @private
+     */
+    Utils._GST0 = function(date) {
+        //JC is Julian centuries between the Julian day J0 and J2000(2,451,545.0)
+        var julianCentury = (Utils._J0(date) - 2451545.0)/36525;
+        var GST0 = 100.4606184 + 36000.77004*julianCentury
+            + 0.000387933*julianCentury*julianCentury
+            - 2.583e-8*julianCentury*julianCentury*julianCentury;
+        return GST0%360;
+    };
+
+    /**
+     * Computes the Greenwich sidereal time at any other UT time.
+     * @param date date
+     * @returns {number} the Greenwich sidereal time at any other UT time
+     */
+    Utils.GST = function(date) {
+        return (Utils._GST0(date) + 360.98564724*Utils._UT(date)/24)%360;
+    };
+
+    /**
+     * Computes the local sidereal time.
+     * @param date date
+     * @param longitude longitude
+     * @returns {number}
+     */
+    Utils.LST = function( date, longitude ) {
+        return (Utils.GST(date) + longitude)%360;
+    };
+
+    /**
+     * Computes the Sidereal Hour Angle
+     * @param ra right ascension in decimal degree
+     * @returns {number} SHA in decimal degree
+     */
+    Utils.SHA = function(ra) {
+        return 360.0 - 15.0 * ra * 24.0 / 360.0;
+    };
+
+    /**
+     * Computes the GHA (Greenwich Hour Angle).
+     * GHA indicates the position past the plane of the Greenwich meridian measured in degrees. Equivalent to longitude on earth.
+     * @param date date
+     * @param ra right ascension in decimal degree
+     * @returns {number} Greenwich Hour Angle in decimal degree
+     */
+    Utils.GHA = function(date, ra) {
+        var GHA_Aries = 15.0 * Utils.GST(date) * 24.0 / 360.0;
+        return (Utils.SHA(ra) + GHA_Aries)%360;
+    };
+
+    /**
+     * Converts longitude/latitude to XYZ
+     * @param longitude longitude in decimal degree
+     * @param latitude latitude in decimal degree
+     * @returns {{x: number, y: number, z: number}}
+     */
+    Utils.longLat2XYZ = function(longitude, latitude) {
+        var cosLat = Math.cos(latitude*Math.PI/180);
+        return {
+            x:cosLat * Math.cos(longitude*Math.PI/180),
+            y:cosLat * Math.sin(longitude*Math.PI/180),
+            z:Math.sin(latitude*Math.PI/180)
+        };
     };
 
 
