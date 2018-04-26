@@ -248,7 +248,7 @@ define(['../Renderer/BoundingBox', '../Renderer/Ray', '../Renderer/glMatrix'],
 
                     eDv *= this.config.cullSign;
 
-                    if (eDv < -0.05) {
+                    if (eDv < -0.05 && c[2] > 0) {
                         return true;
                     }
                 }
