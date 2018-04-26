@@ -182,7 +182,7 @@ define(['./Program', '../Tiling/Tile', '../Utils/ImageRequest', './RendererTileD
             var layer = this.bucket.layer;
             layer._numRequests--;
             if (layer.getGlobe() && layer._numRequests === 0) {
-                layer.getGlobe().publishEvent(Constants.EVENT_MSG.END_LOAD, layer);
+                layer.getGlobe().publishEvent(Constants.EVENT_MSG.LAYER_END_LOAD, layer);
             }
         };
 
