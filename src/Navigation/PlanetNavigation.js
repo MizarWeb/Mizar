@@ -106,6 +106,22 @@ define(['../Utils/Utils', '../Utils/Constants', './AbstractNavigation', '../Anim
                         return d + this.targetHeight;
                     },
                 },
+
+                eye: {
+                    get: function() {
+                        return [
+                            this.inverseViewMatrix[12],
+                            this.inverseViewMatrix[13],
+                            this.inverseViewMatrix[14]
+                        ];
+                    },
+                },
+
+                geoEye: {
+                    get: function() {
+                        return this.ctx.getCoordinateSystem().from3DToGeo(this.eye);
+                    },
+                },
             });
 
             const geoide = this.ctx.getCoordinateSystem().getGeoide();
@@ -481,13 +497,25 @@ define(['../Utils/Utils', '../Utils/Constants', './AbstractNavigation', '../Anim
                 const oldTargetHeight = this.targetHeight;
                 const cameraHeight = this.cameraHeight;
 
+                const eye = this.geoEye;
+
+                const v = vec3.create();
+                vec3.subtract(eye, center, v);
+
+                var tilt;
+                const vdist = Math.sqrt(v[0] * v[0] + v[1] * v[1]);
+                if (vdist < 1e-5) {
+                    tilt = Math.PI / 2;
+                } else {
+                    tilt = Math.atan(v[2] / vdist);
+                }
+
+                // TODO: Properly compute distance
+                const d = v[2] / Math.sin(tilt);
+
+                this.tilt = tilt * 180 / Math.PI;
+                this._distance = d;
                 this.geoCenter = center;
-
-                const newTargetHeight = this.targetHeight;
-
-                const dold = cameraHeight - oldTargetHeight;
-                const dnew = cameraHeight - newTargetHeight;
-                this._distance = oldDistance * (dnew / dold);
             }
         };
 
