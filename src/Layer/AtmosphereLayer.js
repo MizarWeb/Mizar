@@ -88,6 +88,17 @@ define(['../Utils/Utils', './AbstractLayer', '../Utils/Constants', '../Provider/
      * @memberOf module:Layer
      */
     var AtmosphereLayer = function (options) {
+        options.dimension = {
+            time: {
+                units: "ISO8601",
+                unitSymbol: null,
+                default: null,
+                multipleValues: null,
+                nearestValue: null,
+                current: null,
+                value: "2018-04-26T00:00:00Z/2018-10-26T00:00:00Z/PT1H"
+            }
+        };
         AbstractLayer.prototype.constructor.call(this, Constants.LAYER.Atmosphere, options);
         if (!this.name) {
             this.name = "Atmosphere";
@@ -365,7 +376,10 @@ define(['../Utils/Utils', './AbstractLayer', '../Utils/Constants', '../Provider/
     };
 
     AtmosphereLayer.prototype.setTime = function(time) {
-        var date = new Date(time);
+        var timeArray = time.split("/");
+        // just take the first one.
+        var myTime = timeArray[0];
+        var date = new Date(myTime);
         this.lightDir = _computeLightDir.call(this, date);
         this._skyFromSpaceProgram.apply();
         this._initUniforms(this._skyFromSpaceProgram.uniforms);
@@ -375,7 +389,13 @@ define(['../Utils/Utils', './AbstractLayer', '../Utils/Constants', '../Provider/
         this._initUniforms(this._groundFromSpaceProgram.uniforms);
         this._groundFromAtmosphereProgram.apply();
         this._initUniforms(this._groundFromAtmosphereProgram.uniforms);
+        this.forceRefresh();
+    };
 
+    AtmosphereLayer.prototype.setParameter = function(param, value) {
+        if (param === "time") {
+            this.setTime(value);
+        }
     };
 
     /**************************************************************************************************************/

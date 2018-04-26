@@ -212,8 +212,17 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Laye
                         bbox[2] -= 360;
                     }
                     var navigation = layer.callbackContext.getNavigation();
-                    var long = navigation.getCenter()[0];
-                    var lat = navigation.getCenter()[1];
+
+                    var long,lat;
+                    var center =  navigation.getCenter();
+                    if (center == null) {
+                        long = 0;
+                        lat = 0;
+                    } else {
+                        long = center[0];
+                        lat = center[1];
+                    }
+
                     if(bbox[0] <= long && long <= bbox[2] && bbox[1] <= lat && lat <= bbox[3]) {
                         // do nothing
                     } else {

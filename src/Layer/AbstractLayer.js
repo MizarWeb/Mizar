@@ -265,8 +265,25 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Util
          * @function forceRefresh
          * @memberOf AbstractLayer#
          */
+        /**
+         * @function forceRefresh
+         * @memberOf AbstractLayer#
+         */
         AbstractLayer.prototype.forceRefresh = function () {
-            throw new Error("forceRefresh not implemented");
+            var tiles = this.getGlobe().tileManager.visibleTiles;
+            for (var i=0;i<tiles.length;i++) {
+                var renderables = tiles[i].extension.renderer.renderables;
+                for (var renderableIdx=0 ; renderableIdx < renderables.length ; renderableIdx++) {
+                    var renderable = renderables[renderableIdx];
+                    if (renderable.bucket.layer.ID === this.ID) {
+                        //Works but good be much better
+                        renderable.bucket.renderer.removeOverlay(this);
+                        renderable.bucket.renderer.addOverlay(this);
+                        break;
+                    }}
+            }
+
+            this.getGlobe().refresh();
         };
 
         /**
