@@ -44,7 +44,7 @@ define(function () {
      * @property {float} [zoomFactor = 1.0] - Factor for zooming into the scene
      * @property {boolean} [installOnDocument = false] -True to install the event listener on the document and not on the canvas
      */
-    
+
     /**
      * @name KeyboardNavigationHandler
      * @class
@@ -147,9 +147,11 @@ define(function () {
                     // Left arrow
                     if (event.shiftKey) {
                         _navigation.rotate(self.panFactor, 0);
+                        _navigation.doneRotating();
                     }
                     else {
                         _navigation.pan(self.panFactor, 0);
+                        _navigation.donePanning();
                     }
                     break;
                 case 90 :
@@ -159,10 +161,11 @@ define(function () {
                     // Up arrow
                     if (event.shiftKey) {
                         _navigation.rotate(0, self.panFactor);
+                        _navigation.doneRotating();
                     }
                     else {
-
                         _navigation.pan(0, self.panFactor);
+                        _navigation.donePanning();
                     }
                     break;
                 case 68 :
@@ -172,9 +175,11 @@ define(function () {
                     // Right arrow
                     if (event.shiftKey) {
                         _navigation.rotate(-self.panFactor, 0);
+                        _navigation.doneRotating();
                     }
                     else {
                         _navigation.pan(-self.panFactor, 0);
+                        _navigation.donePanning();
                     }
                     break;
                 case 83 :
@@ -184,10 +189,11 @@ define(function () {
                     // Down arrow
                     if (event.shiftKey) {
                         _navigation.rotate(0, -self.panFactor);
+                        _navigation.doneRotating();
                     }
                     else {
-
                         _navigation.pan(0, -self.panFactor);
+                        _navigation.donePanning();
                     }
                     break;
             }

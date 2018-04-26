@@ -124,15 +124,15 @@ define(['./Frustum', './glMatrix'],
             this.localFrustum = new Frustum();
             this.eyePosition = vec3.create();
             this.eyeDirection = vec3.create();
-            this.minNear = 0.0001;
+            this.minNear = options.minNear || 1e-10;
             this.minFar = options.minFar || 0; // No limit on far
-            this.near = RenderContext.minNear;
+            this.near = 1.0;
             this.far = 6.0;
             this.numActiveAttribArray = 0;
             this.frameRequested = false;
             this.fov = 45;
             this.renderers = [];
-
+            this.cameraUpdateFunction = null;
 
             // Initialize the window requestAnimationFrame
             if (!window.requestAnimationFrame) {
@@ -243,6 +243,9 @@ define(['./Frustum', './glMatrix'],
                 gl.viewport(0, 0, this.canvas.width, this.canvas.height);
 
                 // Update view dependent properties to be used during rendering : view matrix, frustum, projection, etc...
+                if (this.cameraUpdateFunction) {
+                    this.cameraUpdateFunction();
+                }
                 this.updateViewDependentProperties();
 
                 // Call render method of all registered renderers
@@ -282,7 +285,7 @@ define(['./Frustum', './glMatrix'],
             mat4.rotateVec3(inverseViewMatrix, this.eyeDirection);
 
             // Init projection matrix
-            mat4.perspective(this.fov, this.canvas.width / this.canvas.height, this.minNear, this.far, this.projectionMatrix);
+            mat4.perspective(this.fov, this.canvas.width / this.canvas.height, this.near, this.far, this.projectionMatrix);
 
             // No need to do this computation every time
             mat4.multiply(this.projectionMatrix, this.viewMatrix, this.viewProjectionMatrix);
