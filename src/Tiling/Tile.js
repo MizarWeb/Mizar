@@ -230,29 +230,32 @@ define(['../Renderer/BoundingBox', '../Renderer/Ray', '../Renderer/glMatrix'],
                 // Compute horizontal culling only if the eye is "behind" the tile
                 // and the coordinate system is not a plane(no need to compute horizon culling on plane)
                 if (ez < 0.0 && !this.config.coordinateSystem.isFlat()) {
-                    // Compute vertical at the closest point. The earth center is [0, 0, -radius] in tile local space.
-                    var vx = pt[0];
-                    var vy = pt[1];
-                    var vz = pt[2] + this.config.coordinateSystem.geoide.radius;
-                    var vl = Math.sqrt(vx * vx + vy * vy + vz * vz);
-                    vx /= vl;
-                    vy /= vl;
-                    vz /= vl;
+                    const eyeGeoAltitude = this.config.coordinateSystem.from3DToGeo(c)[2];
+                    if (eyeGeoAltitude > 0) {
+                        // Compute vertical at the closest point. The earth center is [0, 0, -radius] in tile local space.
+                        var vx = pt[0];
+                        var vy = pt[1];
+                        var vz = pt[2] + this.config.coordinateSystem.geoide.radius;
+                        var vl = Math.sqrt(vx * vx + vy * vy + vz * vz);
+                        vx /= vl;
+                        vy /= vl;
+                        vz /= vl;
 
-                    // Compute eye direction at the closest point (clampled on earth to avoid problem with mountains)
-                    // The position clamp to earth is Vertical * Radius + EarthCenter. The EarthCenter being 0,0,-radius a lot of simplification is done.
-                    var edx = ex - vx * this.config.coordinateSystem.geoide.radius;
-                    var edy = ey - vy * this.config.coordinateSystem.geoide.radius;
-                    var edz = ez - (vz - 1.0) * this.config.coordinateSystem.geoide.radius;
+                        // Compute eye direction at the closest point (clampled on earth to avoid problem with mountains)
+                        // The position clamp to earth is Vertical * Radius + EarthCenter. The EarthCenter being 0,0,-radius a lot of simplification is done.
+                        var edx = ex - vx * this.config.coordinateSystem.geoide.radius;
+                        var edy = ey - vy * this.config.coordinateSystem.geoide.radius;
+                        var edz = ez - (vz - 1.0) * this.config.coordinateSystem.geoide.radius;
 
-                    // Compute dot product between eye direction and the vertical at the point
-                    var el = Math.sqrt(edx * edx + edy * edy + edz * edz);
-                    var eDv = (edx * vx + edy * vy + edz * vz) / el;
+                        // Compute dot product between eye direction and the vertical at the point
+                        var el = Math.sqrt(edx * edx + edy * edy + edz * edz);
+                        var eDv = (edx * vx + edy * vy + edz * vz) / el;
 
-                    eDv *= this.config.cullSign;
+                        eDv *= this.config.cullSign;
 
-                    if (eDv < -0.05) {
-                        return true;
+                        if (eDv < -0.05) {
+                            return true;
+                        }
                     }
                 }
 
@@ -275,13 +278,13 @@ define(['../Renderer/BoundingBox', '../Renderer/Ray', '../Renderer/glMatrix'],
             for (var x in this.extension) {
                 if (this.extension[x].dispose) {
                     this.extension[x].dispose(renderContext, tilePool);
-                  }
+                }
             }
 
             if (this.state === Tile.State.LOADED) {
                 tilePool.disposeGLBuffer(this.vertexBuffer);
                 if (this.texture) {
-                  tilePool.disposeGLTexture(this.texture);
+                    tilePool.disposeGLTexture(this.texture);
                 }
 
                 this.vertexBuffer = null;
