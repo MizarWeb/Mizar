@@ -111,6 +111,8 @@ define(['../Utils/Utils', './AbstractRasterLayer', '../Utils/Constants','../Tili
             if (options.hasOwnProperty('time')) {
                 url = Utils.addParameterTo(url, "time", options.time);
             }
+            //url = Utils.addParameterTo(url, "time", "2003-01-01/2004-01-01");
+
             return url
         }
 
@@ -169,10 +171,18 @@ define(['../Utils/Utils', './AbstractRasterLayer', '../Utils/Constants','../Tili
                 }
             }
 
+            var oldVal=0;
             for (i = dataLinesStart; i < lines.length; i++) {
                 var elts = lines[i].trim().split(/\s+/);
                 for (var n = 0; n < elts.length; n++) {
-                    var elevation = parseInt(elts[n], 10);
+                    var elevation;
+                    if(isNaN(elts[n])) {
+                        elevation = oldVal;
+                    } else {
+                        elevation = parseFloat(elts[n], 10);
+                        oldVal = elevation;
+                    }
+                    //var elevation = parseInt(elts[n], 10);
                     if (elevation < this.options.minElevation) {
                         elevation = this.options.minElevation;
                     }

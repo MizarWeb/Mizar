@@ -22,7 +22,7 @@ require.config({
     include: ['Mizar'],
     insertRequire: ['Mizar'],
     out: "../build/generated/Mizar.min.js",
-    optimize: "uglify2",
+    optimize: "none",
     onBuildWrite: function (name, path, contents) {
         contents = contents
             .replace(/define\s*\([^{]*?{/, "")
@@ -43,7 +43,8 @@ require.config({
         gzip: "../external/gzip.min",
         saveAs: "../node_modules/file-saver/FileSaver.min",
         jszip: "../node_modules/jszip/dist/jszip.min",
-        xmltojson: "../node_modules/xmltojson/lib/xmlToJSON.min"
+        xmltojson: "../node_modules/xmltojson/lib/xmlToJSON.min",
+        "wms-capabilities": "../node_modules/wms-capabilities/dist/wms-capabilities"
     },
     shim: {
         "underscore-min": {

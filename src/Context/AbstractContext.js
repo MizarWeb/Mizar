@@ -16,11 +16,13 @@
  * You should have received a copy of the GNU General Public License
  * along with MIZAR. If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
-define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Layer/LayerFactory", "../Services/ServiceFactory", "../Utils/Constants", "../Registry/WMSServer","../Registry/WMTSServer",
+define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Layer/LayerFactory", "../Services/ServiceFactory", "../Utils/Constants",
+        "../Registry/WMSServer","../Registry/WMTSServer","../Registry/WCSServer",
         "../Gui/Tracker/PositionTracker", "../Gui/Tracker/ElevationTracker", "../Utils/AttributionHandler", "../Gui/dialog/ErrorDialog",
         "../Renderer/PointRenderer", "../Renderer/LineStringRenderable", "../Renderer/PolygonRenderer", "../Renderer/LineRenderer",
         "../Renderer/PointSpriteRenderer", "../Renderer/ConvexPolygonRenderer"],
-    function ($, _, Event, Utils, LayerFactory, ServiceFactory, Constants, WMSServer, WMTSServer,
+    function ($, _, Event, Utils, LayerFactory, ServiceFactory, Constants,
+              WMSServer, WMTSServer, WCSServer,
               PositionTracker, ElevationTracker, AttributionHandler, ErrorDialog) {
 
         //TODO : attention de bien garder les ...Renderer dans le define
@@ -40,12 +42,12 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Laye
         Handler.prototype.handleRequest = function(layerDescription, callback){};
 
 
-        var PendingAtmosphere = function(pendingLayers, layers){
+        var PendingLayers = function(pendingLayers, layers){
             this.layers = layers;
             this.pendingLayers = pendingLayers;
         };
-        PendingAtmosphere.prototype = new Handler();
-        PendingAtmosphere.prototype.hasLayerBackground = function() {
+        PendingLayers.prototype = new Handler();
+        PendingLayers.prototype.hasLayerBackground = function() {
             var hasBackground = false;
             for(var i=0; i< this.layers.length; i++) {
                 var layer = this.layers[i];
@@ -56,8 +58,8 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Laye
             }
             return hasBackground;
         };
-        PendingAtmosphere.prototype.handleRequest = function(layerDescription, callback) {
-            if(layerDescription.type === Constants.LAYER.Atmosphere && !this.hasLayerBackground()) {
+        PendingLayers.prototype.handleRequest = function(layerDescription, callback) {
+            if((layerDescription.type === Constants.LAYER.Atmosphere || layerDescription.type === Constants.LAYER.TileWireframe) && !this.hasLayerBackground()) {
                 this.pendingLayers.push(layerDescription);
             } else {
                 this.next.handleRequest(layerDescription, callback);
@@ -105,7 +107,27 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Laye
             }
         };
 
-        //Strategy2
+        // wcs server
+        var WcsServer = function(mizarConfiguration, pendingLayers){
+            this.pendingLayers = pendingLayers;
+            this.proxyUse = mizarConfiguration.proxyUse;
+            this.proxyUrl = mizarConfiguration.proxyUrl;
+        };
+        WcsServer.prototype = new Handler();
+
+        WcsServer.prototype.handleRequest = function(layerDescription, callback){
+            if(layerDescription.type === Constants.LAYER.WCSElevation) {
+                var wcsServer = new WCSServer(this.proxyUse, this.proxyUrl, layerDescription);
+                var self = this;
+                wcsServer.createLayers(function(layers) {
+                    _handlePendingLayers(self.pendingLayers, layers);
+                    callback(layers);
+                });
+            } else {
+                this.next.handleRequest(layerDescription, callback);
+            }
+        };
+
         var Layer = function(pendingLayers){
             this.pendingLayers = pendingLayers;
         };
@@ -186,13 +208,13 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Laye
                     if(bbox[0] > 180) {
                         bbox[0] -= 360;
                     }
-                    if(bbox[1] > 180) {
-                        bbox[1] -= 360;
+                    if(bbox[2] > 180) {
+                        bbox[2] -= 360;
                     }
                     var navigation = layer.callbackContext.getNavigation();
                     var long = navigation.getCenter()[0];
                     var lat = navigation.getCenter()[1];
-                    if(bbox[0] <= long && long <= bbox[1] && bbox[2] <= lat && lat <= bbox[3]) {
+                    if(bbox[0] <= long && long <= bbox[2] && bbox[1] <= lat && lat <= bbox[3]) {
                         // do nothing
                     } else {
                         navigation.zoomTo([layer.getProperties().initialRa, layer.getProperties().initialDec], {
@@ -213,10 +235,10 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Laye
                         var pendingLayerDescription = pendingLayers[j];
                         try {
                             layers.push(LayerFactory.create(pendingLayerDescription));
-                            pendingLayers = _.without(pendingLayers, pendingLayerDescription)
                         } catch(RangeError) {
                         }
                     }
+                    pendingLayers = _.without(pendingLayers, pendingLayerDescription);
                 }
             }
         }
@@ -479,18 +501,19 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Laye
             }
             layerDescription.getCapabilitiesTileManager = this.globe.tileManager;
 
-            var pendingAtmos = new PendingAtmosphere(this.pendingLayers, this.layers);
+            var pendingLayers = new PendingLayers(this.pendingLayers, this.layers);
             var wmsServer = new WmsServer(this.getMizarConfiguration(), this.pendingLayers);
             var wmtsServer = new WmtsServer(this.getMizarConfiguration(), this.pendingLayers);
+            var wcsServer = new WcsServer(this.getMizarConfiguration(), this.pendingLayers);
             var strategy2 = new Layer(this.pendingLayers);
 
-
-            pendingAtmos.setNext(wmsServer);
+            pendingLayers.setNext(wmsServer);
             wmsServer.setNext(wmtsServer);
-            wmtsServer.setNext(strategy2);
+            wmtsServer.setNext(wcsServer);
+            wcsServer.setNext(strategy2);
 
             var self = this;
-            pendingAtmos.handleRequest(layerDescription, function(layers) {
+            pendingLayers.handleRequest(layerDescription, function(layers) {
                 for (var i=0; i<layers.length; i++) {
                     var layer = layers[i];
                     layer.callbackContext = self;

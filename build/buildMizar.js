@@ -20,7 +20,8 @@
         gzip: "../external/gzip.min",
         saveAs: "../node_modules/file-saver/FileSaver.min",
         jszip: "../node_modules/jszip/dist/jszip.min",
-        xmltojson: "../node_modules/xmltojson/lib/xmlToJSON.min"
+        xmltojson: "../node_modules/xmltojson/lib/xmlToJSON.min",
+        "wms-capabilities": "../node_modules/wms-capabilities/dist/wms-capabilities"
     },
     shim: {
         "underscore-min": {

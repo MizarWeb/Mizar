@@ -35,8 +35,8 @@
  * along with GlobWeb. If not, see <http://www.gnu.org/licenses/>.
  ***************************************/
 
-define(['../Utils/Utils', './AbstractRasterLayer', '../Utils/Constants', '../Registry/WMSMetadata', '../Tiling/GeoTiling'],
-    function (Utils, AbstractRasterLayer, Constants, WMSMetadata, GeoTiling) {
+define(['../Utils/Utils', './AbstractRasterLayer', '../Utils/Constants', '../Tiling/GeoTiling'],
+    function (Utils, AbstractRasterLayer, Constants, GeoTiling) {
 
 
         /**
@@ -163,7 +163,7 @@ define(['../Utils/Utils', './AbstractRasterLayer', '../Utils/Constants', '../Reg
         };
 
         WMSLayer.prototype.setParameter = function (paramName,value) {
-            if (this.hasDimension() && this.getDimensions()[paramName]) {
+            if (paramName === "styles" || this.containsDimension(paramName)) {
                 this.options[paramName] = value;
                 this.getMapBaseUrl = _queryImage.call(this, this.getBaseUrl(), this.tilePixelSize, this.tilePixelSize, this.options);
                 this.forceRefresh();

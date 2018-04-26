@@ -106,6 +106,7 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Util
             this.format = this.options.format || "";
             this.baseUrl = this.options.baseUrl || "";
             this.deletable = this.options.deletable || false;
+            this.dimension = this.options.dimension;
             this.getCapabilitiesEnabled = false;
             this.getCapabilitiesTileManager = null;
             this.callbackContext = null;
@@ -218,26 +219,16 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Util
         /**************************************************************************************************************/
 
         AbstractLayer.prototype.hasDimension = function() {
-            var hasDimension = false;
-            var metadata = this.getMetadataAPI();
-            if(metadata != null) {
-                var dimension = metadata.getDimension();
-                hasDimension = Object.keys(dimension).length > 0 ? true : false;
-            }
-            return hasDimension;
+            return this.dimension != null;
         };
 
         AbstractLayer.prototype.getDimensions = function() {
-            var metadata = this.getMetadataAPI();
-            var dimension;
-            if(metadata != null) {
-                dimension = metadata.getDimension();
-            } else {
-                dimension = {};
-            }
-            return dimension;
+            return this.dimension == null ? {} : this.dimension;
         };
 
+        AbstractLayer.prototype.containsDimension = function(variable) {
+            return this.hasDimension() && this.dimension[variable] != null;
+        };
 
 
         AbstractLayer.prototype.setTime = function(time) {
