@@ -147,11 +147,9 @@ define(function () {
                     // Left arrow
                     if (event.shiftKey) {
                         _navigation.rotate(self.panFactor, 0);
-                        _navigation.doneRotating();
                     }
                     else {
                         _navigation.pan(self.panFactor, 0);
-                        _navigation.donePanning();
                     }
                     break;
                 case 90 :
@@ -161,11 +159,9 @@ define(function () {
                     // Up arrow
                     if (event.shiftKey) {
                         _navigation.rotate(0, self.panFactor);
-                        _navigation.doneRotating();
                     }
                     else {
                         _navigation.pan(0, self.panFactor);
-                        _navigation.donePanning();
                     }
                     break;
                 case 68 :
@@ -175,11 +171,9 @@ define(function () {
                     // Right arrow
                     if (event.shiftKey) {
                         _navigation.rotate(-self.panFactor, 0);
-                        _navigation.doneRotating();
                     }
                     else {
                         _navigation.pan(-self.panFactor, 0);
-                        _navigation.donePanning();
                     }
                     break;
                 case 83 :
@@ -189,14 +183,17 @@ define(function () {
                     // Down arrow
                     if (event.shiftKey) {
                         _navigation.rotate(0, -self.panFactor);
-                        _navigation.doneRotating();
                     }
                     else {
                         _navigation.pan(0, -self.panFactor);
-                        _navigation.donePanning();
                     }
                     break;
             }
+        };
+
+        var _handleKeyUp = function (event) {
+            _navigation.donePanning();
+            _navigation.doneRotating();
         };
 
         /**************************************************************************************************************/
@@ -214,10 +211,12 @@ define(function () {
 
             if (options && options.installOnDocument) {
                 document.addEventListener("keydown", _handleKeyDown);
+                document.addEventListener("keyup", _handleKeyUp);
             }
             else {
                 var canvas = _navigation.renderContext.canvas;
                 canvas.addEventListener("keydown", _handleKeyDown);
+                canvas.addEventListener("keyup", _handleKeyUp);
                 // Setup focus handling to receive keyboard event on canvas
                 canvas.tabIndex = "0";
                 canvas.addEventListener("mousedown", _setFocus);
@@ -230,10 +229,12 @@ define(function () {
         this.uninstall = function () {
             if (options && options.installOnDocument) {
                 document.removeEventListener("keydown", _handleKeyDown);
+                document.removeEventListener("keyup", _handleKeyUp);
             }
             else {
                 var canvas = _navigation.renderContext.canvas;
                 canvas.removeEventListener("keydown", _handleKeyDown);
+                canvas.removeEventListener("keyup", _handleKeyUp);
                 canvas.removeEventListener("mousedown", _setFocus);
             }
         };
