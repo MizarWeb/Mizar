@@ -489,32 +489,6 @@ define(['../Utils/Utils', '../Utils/Constants', './AbstractNavigation', '../Anim
 
             const center = this.ctx.globe.getLonLatFromPixel(width / 2, height / 2);
             if (center != null && center != undefined) {
-                // We want to maintain the camera height, and compute the new distance according to this height
-                // We know by trigonometry that cos(90 - tilt) = (camera height - tgt height) / distance
-                // So (camera height - old tgt height) / old distance = (camera height - new tgt height) / new distance
-                // And new distance = old distance * ((camera height - new tgt height) / (camera height - old tgt height))
-                const oldDistance = this._distance;
-                const oldTargetHeight = this.targetHeight;
-                const cameraHeight = this.cameraHeight;
-
-                const eye = this.geoEye;
-
-                const v = vec3.create();
-                vec3.subtract(eye, center, v);
-
-                var tilt;
-                const vdist = Math.sqrt(v[0] * v[0] + v[1] * v[1]);
-                if (vdist < 1e-5) {
-                    tilt = Math.PI / 2;
-                } else {
-                    tilt = Math.atan(v[2] / vdist);
-                }
-
-                // TODO: Properly compute distance
-                const d = v[2] / Math.sin(tilt);
-
-                this.tilt = tilt * 180 / Math.PI;
-                this._distance = d;
                 this.geoCenter = center;
             }
         };
