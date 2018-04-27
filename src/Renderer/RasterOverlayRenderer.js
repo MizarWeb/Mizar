@@ -87,6 +87,7 @@ define(['./Program', '../Tiling/Tile', '../Utils/ImageRequest', './RendererTileD
             this.frameNumber = 0;
 
 
+
             var self = this;
             for (var i = 0; i < 4; i++) {
                 var imageRequest = new ImageRequest({
@@ -330,8 +331,7 @@ define(['./Program', '../Tiling/Tile', '../Utils/ImageRequest', './RendererTileD
         var Bucket = function (layer) {
             this.layer = layer;
             this.renderer = null;
-            // TODO : hack
-            this.style = layer;
+            this.style = layer.style;
         };
 
         /**************************************************************************************************************/
@@ -452,6 +452,7 @@ define(['./Program', '../Tiling/Tile', '../Utils/ImageRequest', './RendererTileD
                 }
             );
         };
+
 
         /**************************************************************************************************************/
 

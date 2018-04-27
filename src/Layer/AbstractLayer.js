@@ -582,6 +582,16 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Util
             return this.visible;
         };
 
+
+        /**
+         * @function setOnTheTop
+         * @memberOf AbstractLayer#
+         */
+        AbstractLayer.prototype.setOnTheTop = function() {
+            var manager = this.getGlobe().getVectorRendererManager();
+            manager.setSelectedRasterBucket(this);
+        };
+
         /**
          * @function setVisible
          * @memberOf AbstractLayer#
@@ -593,10 +603,14 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Util
                     this.getGlobe().attributionHandler.toggleAttribution(this);
                 }
                 this.visible = arg;
+
+                if(!this.isBackground() && this.visible) {
+                    this.setOnTheTop();
+                }
                 this.getGlobe().getRenderContext().requestFrame();
                 this.publish(Constants.EVENT_MSG.LAYER_VISIBILITY_CHANGED, this);
             } else {
-                throw new TypeError("the parameter of setVisible should be a boolean", "AbstractLayer.js");
+                throw new TypeError("the parameter of sisible should be a boolean", "AbstractLayer.js");
             }
         };
 

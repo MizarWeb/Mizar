@@ -196,9 +196,10 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Laye
             if (layer.isVisible() && layer.getProperties() && !layer.isBackground()
                 && layer.getProperties().hasOwnProperty("initialRa") && layer.getProperties().hasOwnProperty("initialDec") && layer.getProperties().hasOwnProperty("initialFov")) {
 
+                var navigation = layer.callbackContext.getNavigation();
                 if (layer.globe.getType() === Constants.GLOBE.Sky) {
                     var fov = (layer.getProperties().initialFov) ? layer.getProperties().initialFov : layer.getGlobe().getRenderContext().fov;
-                    self.getNavigation().zoomTo([layer.getProperties().initialRa, layer.getProperties().initialDec], {
+                    navigation.zoomTo([layer.getProperties().initialRa, layer.getProperties().initialDec], {
                         fov: fov,
                         duration: 3000
                     });
@@ -211,7 +212,6 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Laye
                     if(bbox[2] > 180) {
                         bbox[2] -= 360;
                     }
-                    var navigation = layer.callbackContext.getNavigation();
 
                     var long,lat;
                     var center =  navigation.getCenter();

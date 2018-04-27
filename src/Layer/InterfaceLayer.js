@@ -97,6 +97,11 @@ Layer.prototype.getDescription = function() {};
 Layer.prototype.isVisible = function() {};
 
 /**
+ * Sets the layer on the top.
+ */
+Layer.prototype.setOnTheTop = function() {};
+
+/**
  * Sets visible the layer.
  * @param {Boolean} arg - True when the layer is displayed on the globe otherwise false
  * @fires Layer#visibility:changed

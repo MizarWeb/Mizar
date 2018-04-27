@@ -1079,6 +1079,26 @@ define(["jquery", "underscore-min",
         };
 
         /**
+         * Draws the layer on the top.
+         * @function setLayerOnTheTop
+         * @param layerID
+         * @return {boolean} Returns true when the layer is drawn on the top otherwise False.
+         * @memberOf Mizar#
+         */
+        Mizar.prototype.setLayerOnTheTop = function(layerID) {
+            var result;
+            var layer = this.getLayerByID(layerID);
+            if (layer != null) {
+                layer.setOnTheTop();
+                result = true;
+            } else {
+                result = false;
+                ErrorDialog.open("Cannot set the layer on the top : <font style='color:orange'><b>" + layerID + " does not exist</b></font>", true);
+            }
+            return result;
+        };
+
+        /**
          * Returns all the layers regardless of the {@link CONTEXT context}.
          * @function getAllLayers
          * @return {Layer[]} the layers
@@ -1121,7 +1141,6 @@ define(["jquery", "underscore-min",
          * @param {CONTEXT|undefined} mode - Context on which the function is applied
          * @returns {Layer|undefined|null} the layer or undefined when the layer is not found
          * @memberOf Mizar#
-         * @throws {RangeError} Will throw an error when the mode is not part of {@link CONTEXT}
          * @see {@link Mizar#setActivatedContext}
          * @see {@link Mizar#createContext}
          */
@@ -1199,7 +1218,6 @@ define(["jquery", "underscore-min",
          * @param {CONTEXT|undefined} mode - Context on which the function is applied
          * @returns {boolean} True when the layer is added otherwise False
          * @memberOf Mizar#
-         * @throws {RangeError} Will throw an error when the mode is not part of {@link CONTEXT}
          * @see {@link Mizar#setActivatedContext}
          * @see {@link Mizar#createContext}
          */
@@ -1225,7 +1243,6 @@ define(["jquery", "underscore-min",
          * @param {CONTEXT|undefined} mode - Context on which the function is applied
          * @returns {boolean} True when the layer is set as background otherwise False
          * @memberOf Mizar#
-         * @throws {RangeError} Will throw an error when the mode is not part of {@link CONTEXT}
          * @see {@link Mizar#setActivatedContext}
          * @see {@link Mizar#createContext}
          */
@@ -1274,7 +1291,6 @@ define(["jquery", "underscore-min",
          * @param {CONTEXT|undefined} mode - Context on which the function is applied
          * @returns {boolean} True when the base elevation is set otherwise false
          * @memberOf Mizar#
-         * @throws {RangeError} Will throw an error when the mode is not part of {@link CONTEXT}
          * @see {@link Mizar#setActivatedContext}
          * @see {@link Mizar#createContext}
          */
