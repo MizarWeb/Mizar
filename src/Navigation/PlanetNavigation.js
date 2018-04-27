@@ -409,8 +409,9 @@ define(['../Utils/Utils', '../Utils/Constants', './AbstractNavigation', '../Anim
             // Move accordingly
             var position = vec3.create();
             coordinateSystem.get3DFromWorld(this.geoCenter, position);
-            vec3.scale(x, dx * Math.max(this.distance, 10000 * this.scale), x);
-            vec3.scale(y, dy * Math.max(this.distance, 10000 * this.scale), y);
+            // FIXME: Might be interesting to be able to control minimum camera speed
+            vec3.scale(x, dx * Math.max(this.distance, 250 * this.scale), x);
+            vec3.scale(y, dy * Math.max(this.distance, 250 * this.scale), y);
             vec3.subtract(position, x, position);
             vec3.add(position, y, position);
 
