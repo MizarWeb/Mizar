@@ -88,6 +88,9 @@ define(['../Utils/Utils', './AbstractLayer', '../Utils/Constants', '../Provider/
      * @memberOf module:Layer
      */
     var AtmosphereLayer = function (options) {
+        var currentDate = new Date();
+        var tomorrow = new Date();
+        tomorrow.setDate(currentDate.getDate() + 1);
         options.dimension = {
             time: {
                 units: "ISO8601",
@@ -96,7 +99,7 @@ define(['../Utils/Utils', './AbstractLayer', '../Utils/Constants', '../Provider/
                 multipleValues: null,
                 nearestValue: null,
                 current: null,
-                value: "2018-04-26T00:00:00Z/2018-10-26T00:00:00Z/PT1H"
+                value: currentDate.toISOString()+"/"+tomorrow.toISOString()+"/PT1H"
             }
         };
         AbstractLayer.prototype.constructor.call(this, Constants.LAYER.Atmosphere, options);
