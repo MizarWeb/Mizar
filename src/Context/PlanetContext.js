@@ -252,8 +252,12 @@ define(["jquery", "underscore-min", "../Utils/Utils", "./AbstractContext", "../U
         /**
          * @function setBaseElevation
          * @memberOf PlanetContext#
+         * @throws TypeError : The provided error is not a WCSElevation or a WMSElevation
          */
         PlanetContext.prototype.setBaseElevation = function (layer) {
+            if(layer.getType() !== Constants.LAYER.WCSElevation && layer.getType() !== Constants.LAYER.WMSElevation ) {
+                throw new TypeError("The provided layer ID="+layer.getID()+" has a type +"+layer.getType()+" instead of WCSElevation or WMSElevation", "PlanetContext.js");
+            }
             this.globe.setBaseElevation(layer);
             if (this.elevationTracker != null) {
                 this.elevationTracker.setScaleLayer(layer);
