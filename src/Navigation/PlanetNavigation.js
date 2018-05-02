@@ -88,6 +88,8 @@ define(['../Utils/Utils', '../Utils/Constants', './AbstractNavigation', '../Anim
             this.tilt = 90.0;
             this.distance = this.maxDistance;
 
+            this.up = [0.0, 0.0, 1];
+
             this.inverseViewMatrix = mat4.create();
 
             var updateViewMatrix = (this.options.hasOwnProperty('updateViewMatrix') ? this.options.updateViewMatrix : true);
@@ -280,6 +282,7 @@ define(['../Utils/Utils', '../Utils/Constants', './AbstractNavigation', '../Anim
         PlanetNavigation.prototype.computeViewMatrix = function () {
             this.computeInverseViewMatrix();
             mat4.inverse(this.inverseViewMatrix, this.renderContext.getViewMatrix());
+            
             this.ctx.publish(Constants.EVENT_MSG.NAVIGATION_MODIFIED);
             this.renderContext.requestFrame();
         };
@@ -437,6 +440,11 @@ define(['../Utils/Utils', '../Utils/Constants', './AbstractNavigation', '../Anim
             this.heading += dx * 0.1;
             this.tilt += dy * 0.1;
 
+            // constant tiny angle
+            var angle = dx * Math.PI / 180.0;
+            var rot = quat4.fromAngleAxis(angle, this.geoCenter);
+            quat4.multiplyVec3(rot, this.up);
+
             this.computeViewMatrix();
 
             if (this.hasCollision()) {
@@ -468,6 +476,52 @@ define(['../Utils/Utils', '../Utils/Constants', './AbstractNavigation', '../Anim
             this.tilt = null;
             this.distance = null;
             this.inverseViewMatrix = null;
+        };
+
+
+        /**
+         * Moves up vector.
+         * @function moveUpTo
+         * @memberOf PlanetNavigation#
+         * @param {float[]} vec Vector
+         * @param {int} [duration = 1000] - Duration of animation in milliseconds
+         */
+        PlanetNavigation.prototype.moveUpTo = function (vec, duration) {
+            // Create a single animation to animate up
+            var startValue = [];
+            var endValue = [];
+            this.ctx.getCoordinateSystem().getWorldFrom3D(this.up, startValue);
+            this.ctx.getCoordinateSystem().getWorldFrom3D(vec, endValue);
+            var durationTime = duration || 1000;
+
+            var navigation = this;
+            var animation = AnimationFactory.create(
+                Constants.ANIMATION.Segmented,
+                {
+                    "duration": durationTime,
+                    "valueSetter": function (value) {
+                        var position3d = navigation.ctx.getCoordinateSystem().get3DFromWorld([value[0], value[1]]);
+                        navigation.up[0] = position3d[0];
+                        navigation.up[1] = position3d[1];
+                        navigation.up[2] = position3d[2];
+                        navigation.computeViewMatrix();
+                    }
+                });
+
+            animation.addSegment(
+                0.0, startValue,
+                1.0, endValue,
+                function (t, a, b) {
+                    var pt = Numeric.easeOutQuad(t);
+                    return [
+                        Numeric.lerp(pt, a[0], b[0]),  // geoPos.long
+                        Numeric.lerp(pt, a[1], b[1])   // geoPos.lat
+                    ];
+                }
+            );
+
+            this.ctx.addAnimation(animation);
+            animation.start();
         };
 
         /**************************************************************************************************************/

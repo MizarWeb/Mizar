@@ -4,9 +4,10 @@
 <head>
     <title>Getting started with navigation</title>
     <meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
+    <link rel="stylesheet" href="css/test.css">
 
     <!-- mode dev -->
-    <script type="text/javascript" src="test_layers.js"></script>
+    <script type="text/javascript" src="test.js"></script>
     <script type="text/javascript" data-main="../src/rconfig.js" src="../node_modules/requirejs/require.js"></script>
 
     <!-- mode prod -->
@@ -68,13 +69,13 @@
                     }
 
                     if (cbLayer.isBackground() === true) {
-                        setTimeout(function go() {
+                        /*setTimeout(function go() {
                             mizar.activatedContext.navigation.zoomTo(
                                 [4.025,43.54],
                                 //[116.217,29.15],
                             { "distance" : 100000,
                               "duration" : 2000 });
-                        },4000);
+                        },4000);*/
                     }
                 });
             }
@@ -130,8 +131,10 @@
         <div id="tracker">
             <div id="posTracker" style="background-color:white;float:left;"></div>
         </div>
+        <div id="compassDiv"></div>
     </div>
-    <canvas id="MizarCanvas" onclick="click" style="border: none; margin: 0; padding: 0;"></canvas>
+    <canvas id="MizarCanvas" onclick="click" style="border: none; margin: 0; padding: 0;">
+    </canvas>
 
 </body>
 </html>
