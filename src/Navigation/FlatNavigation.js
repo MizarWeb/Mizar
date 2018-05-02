@@ -112,6 +112,15 @@ define(['../Utils/Utils', '../Utils/Constants', './AbstractNavigation', '../Anim
 
         /**************************************************************************************************************/
 
+
+        FlatNavigation.prototype.getCenter = function () {
+            var center = AbstractNavigation.prototype.getCenter.call(this);
+            if (center == null) {
+                center = this.center;
+            }
+            return center;
+        };
+
         /**
          * Saves the current navigation state.
          * @function save

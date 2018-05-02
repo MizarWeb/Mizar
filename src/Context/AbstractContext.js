@@ -16,12 +16,12 @@
  * You should have received a copy of the GNU General Public License
  * along with MIZAR. If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
-define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Layer/LayerFactory", "../Services/ServiceFactory", "../Utils/Constants",
+define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Utils/UtilsIntersection", "../Layer/LayerFactory", "../Services/ServiceFactory", "../Utils/Constants",
         "../Registry/WMSServer","../Registry/WMTSServer","../Registry/WCSServer",
         "../Gui/Tracker/PositionTracker", "../Gui/Tracker/ElevationTracker", "../Utils/AttributionHandler", "../Gui/dialog/ErrorDialog",
         "../Renderer/PointRenderer", "../Renderer/LineStringRenderable", "../Renderer/PolygonRenderer", "../Renderer/LineRenderer",
         "../Renderer/PointSpriteRenderer", "../Renderer/ConvexPolygonRenderer"],
-    function ($, _, Event, Utils, LayerFactory, ServiceFactory, Constants,
+    function ($, _, Event, Utils, UtilsIntersection, LayerFactory, ServiceFactory, Constants,
               WMSServer, WMTSServer, WCSServer,
               PositionTracker, ElevationTracker, AttributionHandler, ErrorDialog) {
 
@@ -192,46 +192,40 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Laye
             }
         };
 
+        /**
+         * Zoom to the selected layer.
+         * @param layer - selected layer
+         * @private
+         */
         function _handleCameraWhenLayerAdded(layer) {
             if (layer.isVisible() && layer.getProperties() && !layer.isBackground()
-                && layer.getProperties().hasOwnProperty("initialRa") && layer.getProperties().hasOwnProperty("initialDec") && layer.getProperties().hasOwnProperty("initialFov")) {
-
+                && layer.getProperties().hasOwnProperty("initialRa") && layer.getProperties().hasOwnProperty("initialDec")) {
+                var fov = (layer.getProperties().initialFov) ? layer.getProperties().initialFov : layer.getGlobe().getRenderContext().getFov();
                 var navigation = layer.callbackContext.getNavigation();
-                if (layer.globe.getType() === Constants.GLOBE.Sky) {
-                    var fov = (layer.getProperties().initialFov) ? layer.getProperties().initialFov : layer.getGlobe().getRenderContext().fov;
-                    navigation.zoomTo([layer.getProperties().initialRa, layer.getProperties().initialDec], {
-                        fov: fov,
-                        duration: 3000
-                    });
-                }
-                else {
-                    var bbox = layer.getProperties().bbox;
-                    if(bbox[0] > 180) {
-                        bbox[0] -= 360;
-                    }
-                    if(bbox[2] > 180) {
-                        bbox[2] -= 360;
-                    }
-
-                    var long,lat;
-                    var center =  navigation.getCenter();
-                    if (center == null) {
-                        long = 0;
-                        lat = 0;
-                    } else {
-                        long = center[0];
-                        lat = center[1];
-                    }
-
-                    if(bbox[0] <= long && long <= bbox[2] && bbox[1] <= lat && lat <= bbox[3]) {
-                        // do nothing
-                    } else {
+                var center = navigation.getCenter();
+                var globeType = layer.globe.getType();
+                switch(globeType) {
+                    case Constants.GLOBE.Sky:
                         navigation.zoomTo([layer.getProperties().initialRa, layer.getProperties().initialDec], {
-                            distance: layer.getProperties().initialFov,
+                            fov: fov,
                             duration: 3000
                         });
-                    }
-
+                        break;
+                    case Constants.GLOBE.Planet:
+                        var bbox = layer.getProperties().bbox;
+                        if (UtilsIntersection.isValueBetween(center[0], bbox[0], bbox[2]) && UtilsIntersection.isValueBetween(center[1], bbox[1], bbox[3])) {
+                        } else {
+                            var crs = layer.globe.getCoordinateSystem();
+                            var planetRadius = crs.getGeoide().getRealPlanetRadius();
+                            var distanceCamera = Utils.computeDistanceCameraFromBbox(bbox, fov, planetRadius, crs.isFlat());
+                            navigation.zoomTo([layer.getProperties().initialRa, layer.getProperties().initialDec], {
+                                distance: distanceCamera,
+                                duration: 3000
+                            });
+                        }
+                        break;
+                    default:
+                        throw new Error("type "+globeType+" is not implemented", "AbstractContext.js");
                 }
             }
         }
@@ -301,11 +295,18 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Laye
         /**************************************************************************************************************/
 
 
+        /**
+         * @function getTime
+         * @memberOf AbstractContext#
+         */
         AbstractContext.prototype.getTime = function() {
             return this.time;
         };
 
-
+        /**
+         * @function setTime
+         * @memberOf AbstractContext#
+         */
         AbstractContext.prototype.setTime = function(time) {
             this.time = time;
             for(var i=0; i< this.layers.length; i++) {
@@ -607,11 +608,9 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Laye
             if (indexes.length > 0) {
                 var removedLayers = this.layers.splice(indexes[0], 1);
                 removedLayer = removedLayers[0];
-                var self = this;
                 removedLayer.unsubscribe(Constants.EVENT_MSG.LAYER_VISIBILITY_CHANGED, _handleCameraWhenLayerAdded);
                 ServiceFactory.create(Constants.SERVICE.PickingManager).removePickableLayer(removedLayer);
                 removedLayer._detach();
-
             }
             return removedLayer;
         };
@@ -968,8 +967,12 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Laye
          * @abstract
          */
         AbstractContext.prototype.disable = function () {
-            this.positionTracker.detach();
-            this.elevationTracker.detach();
+            if(this.positionTracker) {
+                this.positionTracker.detach();
+            }
+            if(this.elevationTracker) {
+                this.elevationTracker.detach();
+            }
             var i = 0;
             var layer = this.layers[i];
             while (layer) {
@@ -977,9 +980,9 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Laye
                 layer = this.layers[++i];
             }
             var renderers = this.getRenderContext().renderers;
-            for (var i = 0; i < renderers.length; i++) {
-                if (renderers[i].getType() === this.getMode()) {
-                    renderers[i].disable();
+            for (var j = 0; j < renderers.length; j++) {
+                if (renderers[j].getType() === this.getMode()) {
+                    renderers[j].disable();
                 }
             }
         };
@@ -990,8 +993,12 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Laye
          * @abstract
          */
         AbstractContext.prototype.enable = function () {
-            this.positionTracker.attachTo(this);
-            this.elevationTracker.attachTo(this);
+            if(this.positionTracker) {
+                this.positionTracker.detach();
+            }
+            if(this.elevationTracker) {
+                this.elevationTracker.detach();
+            }
             var i = 0;
             var layer = this.layers[i];
             while (layer) {

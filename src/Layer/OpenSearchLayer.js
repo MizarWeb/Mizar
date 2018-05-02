@@ -34,8 +34,8 @@
  * You should have received a copy of the GNU General Public License
  * along with GlobWeb. If not, see <http://www.gnu.org/licenses/>.
  ***************************************/
-define(['../Renderer/FeatureStyle', '../Renderer/VectorRendererManager', '../Utils/Utils', './AbstractLayer', './GroundOverlayLayer','../Renderer/RendererTileData', '../Tiling/Tile','../Tiling/GeoTiling','../Utils/Constants','./OpenSearch/OpenSearchForm','./OpenSearch/OpenSearchUtils','./OpenSearch/OpenSearchResult','./OpenSearch/OpenSearchRequestPool','./OpenSearch/OpenSearchCache'],
-    function (FeatureStyle, VectorRendererManager, Utils, AbstractLayer, GroundOverlayLayer,RendererTileData, Tile,GeoTiling,Constants,OpenSearchForm,OpenSearchUtils,OpenSearchResult,OpenSearchRequestPool,OpenSearchCache) {
+define(['../Renderer/FeatureStyle', '../Renderer/VectorRendererManager', '../Utils/Utils', '../Utils/UtilsIntersection', './AbstractLayer', './GroundOverlayLayer','../Renderer/RendererTileData', '../Tiling/Tile','../Tiling/GeoTiling','../Utils/Constants','./OpenSearch/OpenSearchForm','./OpenSearch/OpenSearchUtils','./OpenSearch/OpenSearchResult','./OpenSearch/OpenSearchRequestPool','./OpenSearch/OpenSearchCache'],
+    function (FeatureStyle, VectorRendererManager, Utils, UtilsIntersection, AbstractLayer, GroundOverlayLayer,RendererTileData, Tile,GeoTiling,Constants,OpenSearchForm,OpenSearchUtils,OpenSearchResult,OpenSearchRequestPool,OpenSearchCache) {
 
         /**
          * @name OpenSearchLayer
@@ -358,7 +358,7 @@ define(['../Renderer/FeatureStyle', '../Renderer/VectorRendererManager', '../Uti
             var nbRemoved = 0;
             for (var i=0;i<this.tilesLoaded.length;i++) {
                 var tile = this.tilesLoaded[i].tile;
-                var intersects = Utils.boundsIntersects(tile.bound,extent);
+                var intersects = UtilsIntersection.boundsIntersects(tile.bound,extent);
                 if (intersects === false) {
                     this.removeTile(tile);
                     nbRemoved++;

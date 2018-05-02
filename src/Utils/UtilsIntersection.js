@@ -131,6 +131,54 @@ define(["./Numeric", "../Tiling/HEALPixBase"], function (Numeric, HEALPixBase) {
         return (nbinter % 2) === 1;
     };
 
+    /**
+     * Checks if a value v is between the interval [min, max].
+     * @function isValueBetween
+     * @param {float} v - value
+     * @param {float} min - min value
+     * @param {float} max - max value
+     * @return {boolean} True when v is between min and max otherwise False
+     */
+    UtilsIntersection.isValueBetween = function (v, min, max) {
+        return ((v >= min) && (v <= max));
+    };
+
+    /**
+     * Checks is two bounding boxes intersect
+     * @function boundsIntersects
+     * @param {{west:float, north:float, east:float, south:float}} a - bounding box
+     * @param {{west:float, north:float, east:float, south:float}}b - bounding box
+     * @return {boolean} True when the two bounding boxes intersect otherwise False
+     */
+    UtilsIntersection.boundsIntersects = function (a, b) {
+        if ( (a === null) || (b === null)) {
+            return false;
+        }
+        if ((a.north === null) || (typeof a.north === "undefined") || (b.north === null) || (typeof b.north === "undefined")) {
+            return false;
+        }
+        var xOk = UtilsIntersection.isValueBetween(a.west, b.west, b.east) ||
+            UtilsIntersection.isValueBetween(a.east, b.west, b.east) ||
+            ((a.west <= b.west) && (a.east >= b.east));
+
+        var yOk = UtilsIntersection.isValueBetween(a.north, b.south, b.north) ||
+            UtilsIntersection.isValueBetween(a.south, b.south, b.north) ||
+            ((a.south <= b.south) && (a.north >= b.north));
+
+        return xOk && yOk;
+    };
+
+    /**
+     * Checks if the coordinates cross the date line.
+     * @function isCrossDateLine
+     * @param {float} minLong - min longitude
+     * @param {float} maxLong - max longitude
+     * @return {boolean} True when the coordinates cross the date line otherwise False
+     */
+    UtilsIntersection.isCrossDateLine = function(minLong, maxLong) {
+        return Math.abs(minLong - maxLong) > 180;
+    };
+
     return UtilsIntersection;
 
 });

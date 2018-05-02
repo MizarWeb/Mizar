@@ -266,7 +266,7 @@ define(['../Utils/Utils', '../Utils/Event', '../Navigation/NavigationHandlerFact
          * @memberOf AbstractNavigation#
          */
         AbstractNavigation.prototype.getCenter = function () {
-            return this.ctx.getLonLatFromPixel(this.renderContext.getCanvas().width * 0.5, this.renderContext.getCanvas().height * 0.5)
+            return this.ctx.getLonLatFromPixel(this.renderContext.getCanvas().width * 0.5, this.renderContext.getCanvas().height * 0.5);
         };
 
         /**

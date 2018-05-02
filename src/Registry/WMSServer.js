@@ -65,8 +65,7 @@ define(["jquery","underscore-min", "../Utils/Utils", "xmltojson", "../Layer/Laye
                 }
                 var deltaLat = bbox[3]-bbox[1];
                 var delta = (deltaLong > deltaLat) ? deltaLat : deltaLong;
-                var distance = Math.abs(delta) * 3000000 / 180;
-                center = [centerLong, centerLat, distance];
+                center = [centerLong, centerLat];
             }
             return center;
         }
@@ -133,7 +132,6 @@ define(["jquery","underscore-min", "../Utils/Utils", "xmltojson", "../Layer/Laye
             layerDesc.properties = {
                 "initialRa":center[0],
                 "initialDec":center[1],
-                "initialFov":center[2],
                 "bbox":_bbox.call(this, jsonLayer)
             };
             layerDesc.dimension = _parseDimension.call(this, jsonLayer.Dimension);

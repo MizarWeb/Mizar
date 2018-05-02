@@ -99,6 +99,21 @@ define(['../Utils/Utils', '../Utils/Constants',
         /**************************************************************************************************************/
 
         /**
+         * Returns the center of the navigation.
+         * @function getCenter
+         * @memberOf GroundNavigation#
+         * @return {float[]}
+         */
+        GroundNavigation.prototype.getCenter = function () {
+            var center = AbstractNavigation.prototype.getCenter.call(this);
+            if (center == null) {
+                center = [];
+                this.ctx.getCoordinateSystem().getWorldFrom3D(this.center3d, center);
+            }
+            return center;
+        };
+
+        /**
          Zoom to a 3d position
          @function zoomTo
          @param {float[]} geoPos Array of two floats corresponding to final Longitude and Latitude(in this order) to zoom

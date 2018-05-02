@@ -35,7 +35,7 @@
  * along with GlobWeb. If not, see <http://www.gnu.org/licenses/>.
  ***************************************/
 
-define(["jquery"], function ($) {
+define(["jquery", "./Numeric", "./UtilsIntersection"], function ($, Numeric, UtilsIntersection) {
 
     var Utils = {};
 
@@ -104,7 +104,8 @@ define(["jquery"], function ($) {
     }
 
     /**
-     *    Generate eye-friendly color based on hsv
+     * Generates eye-friendly color based on hsv.
+     * @return {int[]} rgb array
      */
     Utils.generateColor = function () {
         //use golden ratio
@@ -116,69 +117,40 @@ define(["jquery"], function ($) {
     };
 
     /**
-     *    Format the given feature identifier to remove special caracters(as ?, [, ], ., etc..) which cannot be used as HTML id's
+     * Format the given feature identifier to remove special caracters(as ?, [, ], ., etc..) which cannot be used as HTML id's
+     * @param {string} id - identifier
+     * @return {string} HTML identifier
      */
     Utils.formatId = function (id) {
+        var result;
         if (typeof id === 'string') {
-            return id.replace(/\s{1,}|\.{1,}|\[{1,}|\]{1,}|\({1,}|\){1,}|\~{1,}|\+{1,}|\°{1,}|\-{1,}|\'{1,}|\"{1,}/g, "");
+            result = id.replace(/\s{1,}|\.{1,}|\[{1,}|\]{1,}|\({1,}|\){1,}|\~{1,}|\+{1,}|\°{1,}|\-{1,}|\'{1,}|\"{1,}/g, "");
         } else {
-            return id;
+            result = id;
         }
+        return result;
     };
 
     /**
-     *    Return if v is [min;max]
+     * Checks if a value v is between the interval [min, max].
+     * @function isValueBetween
+     * @param {float} v - value
+     * @param {float} min - min value
+     * @param {float} max - max value
+     * @return {boolean} True when v is between min and max otherwise False
      */
     Utils.isValueBetween = function (v, min, max) {
         return ((v >= min) && (v <= max));
     };
 
-    /**
-     *     Return if 2 bounds (north,south,east,west) intersects
-     */
-    Utils.boundsIntersects = function (a, b) {
-        if ( (a === null) || (b === null)) {
-            return false;
-        }
-        if ((a.north === null) || (typeof a.north === "undefined") || (b.north === null) || (typeof b.north === "undefined")) {
-            return false;
-        }
-        xOk = Utils.isValueBetween(a.west, b.west, b.east) ||
-            Utils.isValueBetween(a.east, b.west, b.east) ||
-            ((a.west <= b.west) && (a.east >= b.east));
-
-        yOk = Utils.isValueBetween(a.north, b.south, b.north) ||
-            Utils.isValueBetween(a.south, b.south, b.north) ||
-            ((a.south <= b.south) && (a.north >= b.north));
-
-        return xOk && yOk;
-    };
 
     /**
-     *     Return if 2 bounds (north,south,east,west) intersects
+     * Computes base URL from getCapabilities URL.
+     * @function computeBaseUrlFromCapabilities
+     * @param {string} capabilitiesUrl - getCapabilities URL
+     * @param {string[]} parameters - parameters of the getCapabilities
+     * @return {string} base URL
      */
-    Utils.getBBoxFromCoordinateArray = function (array) {
-        if (typeof array.length === "undefined") {
-            return null;
-        }
-        var result = {
-            north : -90,
-            south : 90,
-            east : -90,
-            west : 90
-        };
-        for (var i=0;i<array.length;i++) {
-            lon = array[i][0];
-            lat = array[i][1];
-            result.north = ( lat > result.north ) ? lat : result.north;
-            result.south = ( lat < result.south ) ? lat : result.south;
-            result.east  = ( lon > result.east  ) ? lon : result.east;
-            result.west  = ( lon < result.west  ) ? lon : result.west;
-        }
-        return result;
-    };
-
-
     Utils.computeBaseUrlFromCapabilities = function (capabilitiesUrl, parameters) {
         if (typeof capabilitiesUrl != "string" || capabilitiesUrl.length == 0 || !Array.isArray(parameters)) return null;
 
@@ -242,6 +214,12 @@ define(["jquery"], function ($) {
         return url + separator + name + "=" + value;
     };
 
+    /**
+     * Parses the base URL.
+     * @function parseBaseURL
+     * @param {string} url - the URL
+     * @return {*} the base URL
+     */
     Utils.parseBaseURL = function(url) {
         var result;
         var index = url.indexOf('?');
@@ -253,6 +231,12 @@ define(["jquery"], function ($) {
         return result;
     };
 
+    /**
+     * Parses the query string and returns the parameters of the URL.
+     * @function parseQueryString
+     * @param {string} url - query string
+     * @return {{}} parameters of the query string
+     */
     Utils.parseQueryString = function (url) {
         var queryString = url.substring(url.indexOf('?')+1).split('&');
         var params = {};
@@ -265,6 +249,15 @@ define(["jquery"], function ($) {
         return params;
     };
 
+    /**
+     * Request an URL.
+     * @function requestUrl
+     * @param {string} url - URL to request
+     * @param {string} datatype - datatype of the response
+     * @param {Object} options - options
+     * @param {Utils~requestCallback} callback - The callback that handles the response.
+     * @param {Utils~requestFallback} fallBack - The fallback that handles the error.
+     */
     Utils.requestUrl = function (url, datatype, options, callback, fallBack) {
         $.ajax({
             type: "GET",
@@ -283,16 +276,36 @@ define(["jquery"], function ($) {
         });
     };
 
+    /**
+     * This callback process the response when the request is a success.
+     * @callback Utils~requestCallback
+     * @param {Object} response - the response of the server
+     * @param {Object} options - options
+     */
 
+    /**
+     * This fallback process the error of the server.
+     * @callback Utils~requestFallback
+     * @param {Object} request - the request to the server
+     * @param {int} status - status code
+     * @param {Object} error - error
+     * @param {Object} options - options
+     */
+
+    /**
+     * Proxifies an URL according to a proxy configuration.
+     * @function proxify
+     * @param {string} url - URL to proxify
+     * @param {{use:boolean, url:string}} proxy - proxy configuration
+     * @return {*}
+     */
     Utils.proxify = function (url, proxy) {
         if (typeof url !== 'string') {
             return url;
         }
         var proxifiedUrl = url;
-        var proxyDone = false;
         if (proxy) {
             if (proxy.use === true) {
-                proxyDone = true;
                 if (url.toLowerCase().startsWith("http") === false) {
                     proxifiedUrl = url;
                 } else if (url.startsWith(proxy.url)) {
@@ -306,84 +319,79 @@ define(["jquery"], function ($) {
     };
 
     /**
-     * Check if the time is valid ISO8601
-     * @param time
-     * @returns {boolean} True when the is valid ISO8601 otherwise false
-     */
-    Utils.isValidISO8601 = function(time) {
-        var date = Date.parse(time);
-        return !isNaN(unixTimeZero);
-    };
-
-    /**
      * Converts UTC hms from date to hours.
-     * @param date date
+     * @function _UT
+     * @param {date} date - date
      * @returns {number} hours
      * @private
      */
-    Utils._UT = function(date) {
+    function _UT(date) {
         var hour = date.getUTCHours();
         var min = date.getUTCMinutes();
         var sec = date.getUTCSeconds();
         return hour + min/60 + sec/3600;
-    };
+    }
 
     /**
-     * Computes Julian day number at 0 hr UT
-     * @param date date
+     * Computes Julian day number at 0 hr UT.
+     * @function _J0
+     * @param {date} date - date
      * @returns {number} Julian day number at 0 hr UT
      * @private
      */
-    Utils._J0 = function(date) {
+    function _J0(date) {
         var year = date.getUTCFullYear();
         var month = date.getUTCMonth()+1;
         var day = date.getUTCDate();
-        var UT = Utils._UT(date);
-        var J0 = 367*year - Math.floor(7/4*(year + Math.floor((month+9)/12)))
-            + Math.floor(275*month/9) + day + 1721013.5;
+        var UT = _UT(date);
         //TODO check 1721013.5 should be -730531.5 !!!
-        return J0;
-    };
+        return 367*year - Math.floor(7/4*(year + Math.floor((month+9)/12)))
+            + Math.floor(275*month/9) + day + 1721013.5;
+    }
 
     /**
      * Computes Julian day.
-     * @param date date
+     * @function JD
+     * @param {date} date - date
      * @returns {number} julian day
      * @private
      */
     Utils.JD = function(date) {
-        return Utils._J0(date) + Utils._UT(date)/24;
+        return _J0(date) + _UT(date)/24;
     };
 
     /**
      * Computes the Greenwich sidereal time at 0 hr UT.
      * See equation [Seidelmann,1992]
+     * @function _GST0
      * @param date date
      * @returns {number} the Greenwich sidereal time at 0 hr UT
      * @private
      */
-    Utils._GST0 = function(date) {
+    function _GST0(date) {
         //JC is Julian centuries between the Julian day J0 and J2000(2,451,545.0)
-        var julianCentury = (Utils._J0(date) - 2451545.0)/36525;
+        var julianCentury = (_J0(date) - 2451545.0)/36525;
         var GST0 = 100.4606184 + 36000.77004*julianCentury
             + 0.000387933*julianCentury*julianCentury
             - 2.583e-8*julianCentury*julianCentury*julianCentury;
         return GST0%360;
-    };
+    }
 
     /**
      * Computes the Greenwich sidereal time at any other UT time.
-     * @param date date
+     * @function GST
+     * @param {date} date - date
      * @returns {number} the Greenwich sidereal time at any other UT time
      */
     Utils.GST = function(date) {
-        return (Utils._GST0(date) + 360.98564724*Utils._UT(date)/24)%360;
+        return (_GST0(date) + 360.98564724*_UT(date)/24)%360;
     };
 
     /**
      * Computes the local sidereal time.
-     * @param date date
-     * @param longitude longitude
+     * @function LST
+     * @param {date} date - date
+     * @param {float} longitude - longitude
      * @returns {number}
      */
     Utils.LST = function( date, longitude ) {
@@ -392,7 +400,8 @@ define(["jquery"], function ($) {
 
     /**
      * Computes the Sidereal Hour Angle
-     * @param ra right ascension in decimal degree
+     * @function SHA
+     * @param {float} ra - right ascension in decimal degree
      * @returns {number} SHA in decimal degree
      */
     Utils.SHA = function(ra) {
@@ -402,8 +411,9 @@ define(["jquery"], function ($) {
     /**
      * Computes the GHA (Greenwich Hour Angle).
      * GHA indicates the position past the plane of the Greenwich meridian measured in degrees. Equivalent to longitude on earth.
-     * @param date date
-     * @param ra right ascension in decimal degree
+     * @function GHA
+     * @param {date} date - date
+     * @param {float} ra - right ascension in decimal degree
      * @returns {number} Greenwich Hour Angle in decimal degree
      */
     Utils.GHA = function(date, ra) {
@@ -413,17 +423,47 @@ define(["jquery"], function ($) {
 
     /**
      * Converts longitude/latitude to XYZ
-     * @param longitude longitude in decimal degree
-     * @param latitude latitude in decimal degree
-     * @returns {{x: number, y: number, z: number}}
+     * @function longLat2XYZ
+     * @param {float} longitude - longitude in decimal degree
+     * @param {float} latitude - latitude in decimal degree
+     * @returns {{x: float, y: float, z: float}} the cartesian coordinates
      */
     Utils.longLat2XYZ = function(longitude, latitude) {
-        var cosLat = Math.cos(latitude*Math.PI/180);
+        var latInRadians = Numeric.toRadian(latitude);
+        var longInRadians = Numeric.toRadian(longitude);
+        var cosLat = Math.cos(latInRadians);
         return {
-            x:cosLat * Math.cos(longitude*Math.PI/180),
-            y:cosLat * Math.sin(longitude*Math.PI/180),
-            z:Math.sin(latitude*Math.PI/180)
+            x:cosLat * Math.cos(longInRadians),
+            y:cosLat * Math.sin(longInRadians),
+            z:Math.sin(latInRadians)
         };
+    };
+
+    /**
+     * Computes the distance of the camera in meters for which the bbox of the target is the camera FOV.
+     * @function computeDistanceCameraFromBbox
+     * @param {float[]} bbox - bbox of the target
+     * @param {float} fov - camera FOV
+     * @param {float} planetRadius - planet radius in meters
+     * @param {boolean} isFlat - is it a projected CRS
+     * @return {float} the distance of the camera in meters.
+     */
+    Utils.computeDistanceCameraFromBbox = function(bbox, fov, planetRadius, isFlat) {
+        var angularDistance = Math.abs(bbox[2] - bbox[0]);
+        if (UtilsIntersection.isCrossDateLine(bbox[0], bbox[2])) {
+            angularDistance = 360 - angularDistance;
+        }
+        var visibleAngularDistance;
+        if(isFlat) {
+            visibleAngularDistance = angularDistance;
+        } else if (angularDistance > 180) {
+            visibleAngularDistance = 360 - angularDistance;
+        } else {
+            visibleAngularDistance = angularDistance;
+        }
+
+        var distance = 2 * Math.PI * planetRadius * visibleAngularDistance / 360;
+        return 0.5 * distance / Math.tan(0.5 * Numeric.toRadian(fov));
     };
 
 

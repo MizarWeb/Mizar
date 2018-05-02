@@ -146,10 +146,15 @@
  *         <td>{@link module:Context.PlanetContext PlanetContext}</td>
  *         <td>A context representing a planet</td>
  *     </tr>
+ *     <tr>
+ *         <td>&nbsp;</td>
+ *         <td>{@link module:Context.GroundContext GroundContext}</td>
+ *         <td>A context representing the ground</td>
+ *     </tr>
  * </table>
  * In addition to the two contexts, the client can define two sub-contexts :
  * <ul>
- *     <li>The planet without backgound</li>
+ *     <li>The planet without background</li>
  *     <li>The planet with the sky background</li>
  * </ul>
  * 
@@ -232,7 +237,6 @@ Context.prototype.showComponents = function() {
  */
 Context.prototype.show = function () {
 };
-
 
 /**
  * Hide components
@@ -455,6 +459,23 @@ Context.prototype.getCoordinateSystem = function () {
  * @returns {Navigation} navigation
  */
 Context.prototype.getNavigation = function () {
+};
+
+/**************************************************************************************
+ *                      Methods for handling time dimension                           *
+ **************************************************************************************/
+/**
+ * Returns the time dimension.
+ * @returns {string|null} the time dimension
+ */
+Context.prototype.getTime = function() {
+};
+
+/**
+ * Set the time dimension to all supported value.
+ * @param {date} time
+ */
+Context.prototype.setTime = function(time) {
 };
 
 /**************************************************************************************

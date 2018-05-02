@@ -35,9 +35,9 @@
  * along with GlobWeb. If not, see <http://www.gnu.org/licenses/>.
  ***************************************/
 
-define(['../Utils/Utils', '../Utils/Constants',
+define(['../Utils/Utils', '../Utils/Constants', '../Utils/UtilsIntersection',
         './Tile', '../Renderer/GeoBound', './HEALPixBase', '../Renderer/glMatrix'],
-    function (Utils, Constants,
+    function (Utils, Constants, UtilsIntersection,
               Tile, GeoBound, HEALPixBase) {
 
         /** @constructor
@@ -298,7 +298,7 @@ define(['../Utils/Utils', '../Utils/Constants',
                     maxY = Math.max(maxY, coords[i][1]);
 
                     // Check if the coordinates cross dateline
-                    if (checkDateLine && i > 0 && Math.abs(coords[i - 1][0] - coords[i][0]) > 180) {
+                    if (checkDateLine && i > 0 && UtilsIntersection.isCrossDateLine(coords[i - 1][0], coords[i][0])) {
                         minX = -180;
                         maxX = 180;
                     }

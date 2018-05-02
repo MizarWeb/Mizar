@@ -127,6 +127,20 @@ define(['../Utils/Utils', '../Utils/Constants', './AbstractNavigation', '../Anim
         /**************************************************************************************************************/
 
         /**
+         * Returns the center of the navigation.
+         * @function getCenter
+         * @memberOf PlanetNavigation#
+         * @return {float[]}
+         */
+        PlanetNavigation.prototype.getCenter = function () {
+            var center = AbstractNavigation.prototype.getCenter.call(this);
+            if (center == null) {
+                center = this.geoCenter;
+            }
+            return center;
+        };
+
+        /**
          * Saves the current navigation state.
          * @function save
          * @memberOf PlanetNavigation#

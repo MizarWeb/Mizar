@@ -35,8 +35,8 @@
  * along with GlobWeb. If not, see <http://www.gnu.org/licenses/>.
  ***************************************/
 
-define(['../Utils/Utils', './AbstractRasterLayer', '../Utils/Constants', '../Tiling/GeoTiling'],
-    function (Utils, AbstractRasterLayer, Constants, GeoTiling) {
+define(['../Utils/Utils', './AbstractRasterLayer', '../Utils/Constants', '../Tiling/GeoTiling', '../Utils/UtilsIntersection'],
+    function (Utils, AbstractRasterLayer, Constants, GeoTiling, UtilsIntersection) {
 
 
         /**
@@ -124,7 +124,7 @@ define(['../Utils/Utils', './AbstractRasterLayer', '../Utils/Constants', '../Til
             var isIntersect;
             if (footprint != null) {
                 // check if tile is inside restrict zone
-                isIntersect = Utils.boundsIntersects(tile, footprint);
+                isIntersect = UtilsIntersection.boundsIntersects(tile, footprint);
             } else {
                 isIntersect = true;
             }

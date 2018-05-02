@@ -173,6 +173,20 @@ define(['../Utils/Utils', '../Utils/Constants',
 
         /**************************************************************************************************************/
 
+        /**
+         * Returns the center of the navigation.
+         * @function getCenter
+         * @memberOf AstroNavigation#
+         * @return {float[]}
+         */
+        AstroNavigation.prototype.getCenter = function () {
+            var center = AbstractNavigation.prototype.getCenter.call(this);
+            if (center == null) {
+                center = [];
+                this.ctx.getCoordinateSystem().getWorldFrom3D(this.center3d, center);
+            }
+            return center;
+        };
 
         /**
          * ZoomTo a position
