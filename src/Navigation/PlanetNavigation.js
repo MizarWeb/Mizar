@@ -88,7 +88,7 @@ define(['../Utils/Utils', '../Utils/Constants', './AbstractNavigation', '../Anim
             this.tilt = 90.0;
             this.distance = this.maxDistance;
 
-            this.up = [0.0, 0.0, 1];
+            this.up = [0.0, 90.0, 0];
 
             this.inverseViewMatrix = mat4.create();
 
@@ -282,7 +282,6 @@ define(['../Utils/Utils', '../Utils/Constants', './AbstractNavigation', '../Anim
         PlanetNavigation.prototype.computeViewMatrix = function () {
             this.computeInverseViewMatrix();
             mat4.inverse(this.inverseViewMatrix, this.renderContext.getViewMatrix());
-            
             this.ctx.publish(Constants.EVENT_MSG.NAVIGATION_MODIFIED);
             this.renderContext.requestFrame();
         };
@@ -437,14 +436,14 @@ define(['../Utils/Utils', '../Utils/Constants', './AbstractNavigation', '../Anim
             var previousHeading = this.heading;
             var previousTilt = this.tilt;
 
-            this.heading += dx * 0.1;
-            this.tilt += dy * 0.1;
+            this.heading += dx * 0.035;
+            this.tilt += dy * 0.035;
 
             // constant tiny angle
-            var angle = dx * Math.PI / 180.0;
+/*            var angle = dx * 0.02 * Math.PI / 180.0;
             var rot = quat4.fromAngleAxis(angle, this.geoCenter);
             quat4.multiplyVec3(rot, this.up);
-
+*/
             this.computeViewMatrix();
 
             if (this.hasCollision()) {
@@ -490,8 +489,17 @@ define(['../Utils/Utils', '../Utils/Constants', './AbstractNavigation', '../Anim
             // Create a single animation to animate up
             var startValue = [];
             var endValue = [];
-            this.ctx.getCoordinateSystem().getWorldFrom3D(this.up, startValue);
-            this.ctx.getCoordinateSystem().getWorldFrom3D(vec, endValue);
+            this.ctx.getCoordinateSystem().getWorldFrom3D(this.up, endValue);
+            this.ctx.getCoordinateSystem().getWorldFrom3D(vec, startValue);
+
+
+            this.startHeading = this.heading;
+            if (this.heading>180) {
+                this.endHeading = 360;
+            } else {
+                this.endHeading = 0;
+            }
+
             var durationTime = duration || 1000;
 
             var navigation = this;
@@ -500,23 +508,17 @@ define(['../Utils/Utils', '../Utils/Constants', './AbstractNavigation', '../Anim
                 {
                     "duration": durationTime,
                     "valueSetter": function (value) {
-                        var position3d = navigation.ctx.getCoordinateSystem().get3DFromWorld([value[0], value[1]]);
-                        navigation.up[0] = position3d[0];
-                        navigation.up[1] = position3d[1];
-                        navigation.up[2] = position3d[2];
+                        navigation.heading = value;
                         navigation.computeViewMatrix();
                     }
                 });
 
+            
             animation.addSegment(
-                0.0, startValue,
-                1.0, endValue,
+                0.0, this.startHeading,
+                1.0, this.endHeading,
                 function (t, a, b) {
-                    var pt = Numeric.easeOutQuad(t);
-                    return [
-                        Numeric.lerp(pt, a[0], b[0]),  // geoPos.long
-                        Numeric.lerp(pt, a[1], b[1])   // geoPos.lat
-                    ];
+                    return Numeric.lerp(t,a,b);
                 }
             );
 

@@ -50,12 +50,31 @@ define(["jquery","../Utils/Constants"], function ($, Constants) {
 
     /**************************************************************************************************************/
 
+    function updateNorthWGS84() {
+        var navigation = ctx.getNavigation();
+        var currentHeading = navigation.heading;
+        while (navigation.heading>360) {
+            navigation.heading -= 360;
+        }
+        while (navigation.heading<0) {
+            navigation.heading += 360;
+        }
+        var upHeading = 0;
+        var degNorth = currentHeading-upHeading;
+
+        var northText = svgDoc.getElementById("NorthText");
+        northText.setAttribute("transform", "rotate(" + degNorth + " 40 40)");
+
+    }
     /**
      * Function updating the north position on compass
      */
     function updateNorth() {
         var geo = [];
         var coordinateSystem = ctx.getCoordinateSystem();
+        if (coordinateSystem.geoideName === "CRS:84") {
+            return updateNorthWGS84();
+        }
         var center = ctx.getNavigation().center3d ? ctx.getNavigation().center3d : center = ctx.getNavigation().geoCenter;
         coordinateSystem.from3DToGeo(center, geo, false);
         geo = coordinateSystem.convert(geo, crs, coordinateSystem.getGeoideName());
@@ -79,7 +98,7 @@ define(["jquery","../Utils/Constants"], function ($, Constants) {
         if (isNaN(radNorth)) {
             return;
         }
-        var degNorth = radNorth * 180 / Math.PI;
+        var degNorth = radNorth * 180 / 2 * Math.PI;
 
         // Find sign between up and north
         var sign;
