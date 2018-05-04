@@ -131,7 +131,6 @@ define(
                 position3d[2] * position3d[2]);
             var lon = Math.atan2(position3d[1] / r, position3d[0] / r);
             var lat = Math.asin(position3d[2] / r);
-
             dest[0] = Numeric.toDegree(lon);
             dest[1] = Numeric.toDegree(lat);
             dest[2] = this.geoide.getRealPlanetRadius() * (r - this.geoide.getRadius());
@@ -421,6 +420,7 @@ define(
 
             var convertedGeo = null;
             var convertType = null;
+            console.log("convert "+from + "2" + to);
             switch (from + "2" + to) {
                 case Constants.CRS.Galactic+"2"+Constants.CRS.Equatorial :
                     convertType = AstroCoordTransform.Type.GAL2EQ;

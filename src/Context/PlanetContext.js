@@ -85,8 +85,8 @@ define(["jquery", "underscore-min", "../Utils/Utils", "./AbstractContext", "../U
             this.components = {
                 "posTrackerInfo": true,
                 "posTracker": true,
-                "elevTracker": true//,
-                //"compassDiv": true
+                "elevTracker": true,
+                "compassDiv": true
             };
 
             var planetOptions = _createPlanetConfiguration.call(this, options);
@@ -97,8 +97,10 @@ define(["jquery", "underscore-min", "../Utils/Utils", "./AbstractContext", "../U
                 this.globe = GlobeFactory.create(Constants.GLOBE.Planet, planetOptions);
                 this.navigation = _createNavigation.call(this, this.getCoordinateSystem().isFlat(), options.navigation);
                 this.initGlobeEvents(this.globe);
+
                 ServiceFactory.create(Constants.SERVICE.PickingManager).init(this);
 
+                this.setCompassVisible(options.compass && this.components.compassDiv ? options.compass : "compassDiv", true);
             }
             catch (err) {
                 this._showUpError(this, err);
@@ -239,7 +241,8 @@ define(["jquery", "underscore-min", "../Utils/Utils", "./AbstractContext", "../U
             if (visible) {
                 this.compass = new Compass({
                     element: divName,
-                    ctx: this
+                    ctx: this,
+                    crs : Constants.CRS.WGS84
                 });
             } else {
                 if (this.compass) {
