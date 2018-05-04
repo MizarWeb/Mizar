@@ -7,7 +7,7 @@ var context = {
             "coverage": "SRTM",
             "version": "1.0.0",
             "minElevation": -32000,
-            "scale": 2
+            "scale": 50
         },
         {
             "name": "Blue Marble",
@@ -151,4 +151,14 @@ var mizarConf = {
         },
         "visible": true
     }
+};
+
+var demMontBlanc = {
+    "type": "WCSElevation",
+    "name": "Elevation Mont Blanc",
+    "baseUrl": "http://80.158.6.138/mapserv?map=WMS_MONT_BLANC_ELEV",
+    "coverage": "MNT_Mont_Blanc",
+    "version": "1.0.0",
+    "minElevation": -32000,
+    "scale": 50
 };

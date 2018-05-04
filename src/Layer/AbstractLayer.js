@@ -266,6 +266,9 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Util
          * @memberOf AbstractLayer#
          */
         AbstractLayer.prototype.forceRefresh = function () {
+            if ((this.getGlobe() === null) || (this.getGlobe().tileManager === null)) {
+                return;
+            }
             var tiles = this.getGlobe().tileManager.visibleTiles;
             for (var i=0;i<tiles.length;i++) {
                 var tile = tiles[i];
