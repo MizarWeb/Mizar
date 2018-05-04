@@ -98,7 +98,7 @@ define(["jquery","../Utils/Constants"], function ($, Constants) {
         if (isNaN(radNorth)) {
             return;
         }
-        var degNorth = radNorth * 180 / 2 * Math.PI;
+        var degNorth = radNorth * 180 / Math.PI;
 
         // Find sign between up and north
         var sign;
