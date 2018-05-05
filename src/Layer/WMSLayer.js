@@ -35,8 +35,8 @@
  * along with GlobWeb. If not, see <http://www.gnu.org/licenses/>.
  ***************************************/
 
-define(['../Utils/Utils', './AbstractRasterLayer', '../Utils/Constants', '../Tiling/GeoTiling', '../Utils/UtilsIntersection'],
-    function (Utils, AbstractRasterLayer, Constants, GeoTiling, UtilsIntersection) {
+define(["jquery", '../Utils/Utils', './AbstractRasterLayer', '../Utils/Constants', '../Tiling/GeoTiling', '../Utils/UtilsIntersection'],
+    function ($, Utils, AbstractRasterLayer, Constants, GeoTiling, UtilsIntersection) {
 
 
         /**
@@ -134,6 +134,42 @@ define(['../Utils/Utils', './AbstractRasterLayer', '../Utils/Constants', '../Til
         WMSLayer.prototype.setTime = function(time) {
             this.setParameter("time", time);
         };
+
+
+        WMSLayer.prototype.getLegend = function() {
+            var metadata = this.metadataAPI;
+            var legend;
+            if(metadata.Style) {
+                var defaultStyle = metadata.Style[0];
+                var title = defaultStyle.Title;
+                var format = defaultStyle.LegendURL[0].Format;
+                var url = defaultStyle.LegendURL[0].OnlineResource;
+                var size = defaultStyle.LegendURL[0].size;
+                legend = {
+                    title:title,
+                    format:format,
+                    url:url,
+                    size:size
+                }
+            } else {
+                legend = {};
+            }
+            return legend;
+        };
+
+        WMSLayer.prototype.setVisible = function (arg) {
+            AbstractRasterLayer.prototype.setVisible.call(this, arg);
+            if (document.getElementById("legendDiv")) {
+                var $crsInfo = $("#legendDiv");
+                var legend = this.getLegend();
+                if(Object.keys(legend).length > 0) {
+                    document.getElementById("legendDiv").innerHTML ="";
+                    if (arg === true) {
+                        document.getElementById("legendDiv").innerHTML ="<div id='legendTxt' class='column'>"+legend.title+"</div><div id='legendUrl' class='column'><img src='"+legend.url+"'/></div>";
+                    }
+                }
+            }
+       };
 
         /**
          * Returns the url for the given tile

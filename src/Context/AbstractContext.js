@@ -17,132 +17,15 @@
  * along with MIZAR. If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
 define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Utils/UtilsIntersection", "../Layer/LayerFactory", "../Services/ServiceFactory", "../Utils/Constants",
-        "../Registry/WMSServer","../Registry/WMTSServer","../Registry/WCSServer",
+        "../Registry/WMSServerRegistryHandler", "../Registry/WMTSServerRegistryHandler", "../Registry/WCSServerRegistryHandler", "../Registry/PendingLayersRegistryHandler", "../Registry/LayerRegistryHandler",
         "../Gui/Tracker/PositionTracker", "../Gui/Tracker/ElevationTracker", "../Utils/AttributionHandler", "../Gui/dialog/ErrorDialog",
         "../Renderer/PointRenderer", "../Renderer/LineStringRenderable", "../Renderer/PolygonRenderer", "../Renderer/LineRenderer",
         "../Renderer/PointSpriteRenderer", "../Renderer/ConvexPolygonRenderer"],
     function ($, _, Event, Utils, UtilsIntersection, LayerFactory, ServiceFactory, Constants,
-              WMSServer, WMTSServer, WCSServer,
+              WMSServerRegistryHandler, WMTSServerRegistryHandler, WCSServerRegistryHandler, PendingLayersRegistryHandler, LayerRegistryHandler,
               PositionTracker, ElevationTracker, AttributionHandler, ErrorDialog) {
 
         //TODO : attention de bien garder les ...Renderer dans le define
-
-        //Handler
-        var Handler = function(){
-            this.next = {
-                handleRequest: function(layerDescription, callback){
-                    console.log('All strategies exhausted.');
-                }
-            }
-        } ;
-        Handler.prototype.setNext = function(next){
-            this.next = next;
-            return next;
-        };
-        Handler.prototype.handleRequest = function(layerDescription, callback){};
-
-
-        var PendingLayers = function(pendingLayers, layers){
-            this.layers = layers;
-            this.pendingLayers = pendingLayers;
-        };
-        PendingLayers.prototype = new Handler();
-        PendingLayers.prototype.hasLayerBackground = function() {
-            var hasBackground = false;
-            for(var i=0; i< this.layers.length; i++) {
-                var layer = this.layers[i];
-                if (layer.isBackground() && layer.isVisible()) {
-                    hasBackground = true;
-                    break;
-                }
-            }
-            return hasBackground;
-        };
-        PendingLayers.prototype.handleRequest = function(layerDescription, callback) {
-            if((layerDescription.type === Constants.LAYER.Atmosphere || layerDescription.type === Constants.LAYER.TileWireframe) && !this.hasLayerBackground()) {
-                this.pendingLayers.push(layerDescription);
-            } else {
-                this.next.handleRequest(layerDescription, callback);
-            }
-        };
-
-
-        //Wms server
-        var WmsServer = function(mizarConfiguration, pendingLayers){
-            this.pendingLayers = pendingLayers;
-            this.proxyUse = mizarConfiguration.proxyUse;
-            this.proxyUrl = mizarConfiguration.proxyUrl;
-        };
-        WmsServer.prototype = new Handler();
-        WmsServer.prototype.handleRequest = function(layerDescription, callback){
-            if(layerDescription.type === Constants.LAYER.WMS) {
-                var wmsServer = new WMSServer(this.proxyUse, this.proxyUrl, layerDescription);
-                var self = this;
-                wmsServer.createLayers(function(layers) {
-                    _handlePendingLayers(self.pendingLayers, layers);
-                    callback(layers);
-                });
-            } else {
-                this.next.handleRequest(layerDescription, callback);
-            }
-        };
-
-        // wmts server
-        var WmtsServer = function(mizarConfiguration, pendingLayers){
-            this.pendingLayers = pendingLayers;
-            this.proxyUse = mizarConfiguration.proxyUse;
-            this.proxyUrl = mizarConfiguration.proxyUrl;
-        };
-        WmtsServer.prototype = new Handler();
-        WmtsServer.prototype.handleRequest = function(layerDescription, callback){
-            if(layerDescription.type === Constants.LAYER.WMTS) {
-                var wmsServer = new WMTSServer(this.proxyUse, this.proxyUrl, layerDescription);
-                var self = this;
-                wmsServer.createLayers(function(layers) {
-                    _handlePendingLayers(self.pendingLayers, layers);
-                    callback(layers);
-                });
-            } else {
-                this.next.handleRequest(layerDescription, callback);
-            }
-        };
-
-        // wcs server
-        var WcsServer = function(mizarConfiguration, pendingLayers){
-            this.pendingLayers = pendingLayers;
-            this.proxyUse = mizarConfiguration.proxyUse;
-            this.proxyUrl = mizarConfiguration.proxyUrl;
-        };
-        WcsServer.prototype = new Handler();
-
-        WcsServer.prototype.handleRequest = function(layerDescription, callback){
-            if(layerDescription.type === Constants.LAYER.WCSElevation) {
-                var wcsServer = new WCSServer(this.proxyUse, this.proxyUrl, layerDescription);
-                var self = this;
-                wcsServer.createLayers(function(layers) {
-                    _handlePendingLayers(self.pendingLayers, layers);
-                    callback(layers);
-                });
-            } else {
-                this.next.handleRequest(layerDescription, callback);
-            }
-        };
-
-        var Layer = function(pendingLayers){
-            this.pendingLayers = pendingLayers;
-        };
-        Layer.prototype = new Handler();
-        Layer.prototype.handleRequest = function(layerDescription, callback){
-            var layers = [];
-            try {
-                var layer = LayerFactory.create(layerDescription);
-                layers.push(layer);
-                _handlePendingLayers(this.pendingLayers, layers);
-                callback(layers);
-            } catch(RangeError) {
-                this.next.handleRequest(layerDescription, callback);
-            }
-        };
 
         /**
          * @name AbstractContext
@@ -184,10 +67,10 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Util
             this.pendingLayers = [];
             this.initCanvas(this.canvas);
 
-            if ( this.mizarConfiguration.positionTracker != null ) {
+            if (this.mizarConfiguration.positionTracker != null) {
                 this.positionTracker = _createTrackerPosition.call(this, this.mizarConfiguration);
             }
-            if ( this.mizarConfiguration.elevationTracker != null) {
+            if (this.mizarConfiguration.elevationTracker != null) {
                 this.elevationTracker = _createTrackerElevation.call(this, this.mizarConfiguration, ctxOptions);
             }
         };
@@ -204,7 +87,7 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Util
                 var navigation = layer.callbackContext.getNavigation();
                 var center = navigation.getCenter();
                 var globeType = layer.globe.getType();
-                switch(globeType) {
+                switch (globeType) {
                     case Constants.GLOBE.Sky:
                         navigation.zoomTo([layer.getProperties().initialRa, layer.getProperties().initialDec], {
                             fov: fov,
@@ -225,23 +108,7 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Util
                         }
                         break;
                     default:
-                        throw new Error("type "+globeType+" is not implemented", "AbstractContext.js");
-                }
-            }
-        }
-
-        function _handlePendingLayers(pendingLayers, layers) {
-            for (var i=0; i<layers.length; i++) {
-                var layer = layers[i];
-                if(pendingLayers.length != 0 && layer.isBackground() && layer.isVisible()) {
-                    for(var j=0; j<pendingLayers.length; j++) {
-                        var pendingLayerDescription = pendingLayers[j];
-                        try {
-                            layers.push(LayerFactory.create(pendingLayerDescription));
-                        } catch(RangeError) {
-                        }
-                    }
-                    pendingLayers = _.without(pendingLayers, pendingLayerDescription);
+                        throw new Error("type " + globeType + " is not implemented", "AbstractContext.js");
                 }
             }
         }
@@ -299,7 +166,7 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Util
          * @function getTime
          * @memberOf AbstractContext#
          */
-        AbstractContext.prototype.getTime = function() {
+        AbstractContext.prototype.getTime = function () {
             return this.time;
         };
 
@@ -307,9 +174,9 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Util
          * @function setTime
          * @memberOf AbstractContext#
          */
-        AbstractContext.prototype.setTime = function(time) {
+        AbstractContext.prototype.setTime = function (time) {
             this.time = time;
-            for(var i=0; i< this.layers.length; i++) {
+            for (var i = 0; i < this.layers.length; i++) {
                 var layer = this.layers[i];
                 layer.setTime(time);
             }
@@ -485,93 +352,55 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Util
         };
 
         /**
-         * @function addLayers
-         * @memberOf AbstractContext#
-         */
-        AbstractContext.prototype.addLayers = function (layersDescription) {
-            var layers = [];
-            var layersID = [];
-            for (var i = 0; i < layersDescription.length; i++) {
-                var layer = this.addLayer(layersDescription[i]);
-                layers.push(layer);
-                layersID.push(layer.ID);
-            }
-            var layerEvent = (layer.category === "background") ? Constants.EVENT_MSG.LAYER_BACKGROUND_ADDED : Constants.EVENT_MSG.LAYER_ADDITIONAL_ADDED;
-            this.publish(Constants.EVENT_MSG.LAYER_ASYNCHRONE_LOADED, layersID);
-            return layersID;
-        };
-
-        /**
          * @function addLayer
          * @memberOf AbstractContext#
          */
-        AbstractContext.prototype.addLayer = function (layerDescription, callback) {
-            if(this.getTime() != null) {
+        AbstractContext.prototype.addLayer = function (layerDescription, callback, fallback) {
+            if (this.getTime() != null) {
                 layerDescription.time = this.getTime();
             }
             layerDescription.getCapabilitiesTileManager = this.globe.tileManager;
 
-            var pendingLayers = new PendingLayers(this.pendingLayers, this.layers);
-            var wmsServer = new WmsServer(this.getMizarConfiguration(), this.pendingLayers);
-            var wmtsServer = new WmtsServer(this.getMizarConfiguration(), this.pendingLayers);
-            var wcsServer = new WcsServer(this.getMizarConfiguration(), this.pendingLayers);
-            var strategy2 = new Layer(this.pendingLayers);
+            var pendingLayersHandler = new PendingLayersRegistryHandler(this.pendingLayers, this.layers);
+            var wmsServerHandler = new WMSServerRegistryHandler(this.getMizarConfiguration(), this.pendingLayers);
+            var wmtsServerHandler = new WMTSServerRegistryHandler(this.getMizarConfiguration(), this.pendingLayers);
+            var wcsServerHandler = new WCSServerRegistryHandler(this.getMizarConfiguration(), this.pendingLayers);
+            var layerHandler = new LayerRegistryHandler(this.pendingLayers);
 
-            pendingLayers.setNext(wmsServer);
-            wmsServer.setNext(wmtsServer);
-            wmtsServer.setNext(wcsServer);
-            wcsServer.setNext(strategy2);
+            pendingLayersHandler.setNext(wmsServerHandler);
+            wmsServerHandler.setNext(wmtsServerHandler);
+            wmtsServerHandler.setNext(wcsServerHandler);
+            wcsServerHandler.setNext(layerHandler);
 
             var self = this;
-            pendingLayers.handleRequest(layerDescription, function(layers) {
-                for (var i=0; i<layers.length; i++) {
-                    var layer = layers[i];
-                    layer.callbackContext = self;
-                    self.layers.push(layer);
-                    _addToGlobe.call(self, layer);
+            pendingLayersHandler.handleRequest(layerDescription,
+                function (layers) {
+                    for (var i = 0; i < layers.length; i++) {
+                        var layer = layers[i];
+                        layer.callbackContext = self;
+                        self.layers.push(layer);
+                        _addToGlobe.call(self, layer);
 
-                    self._fillDataProvider(layer, layerDescription);
+                        self._fillDataProvider(layer, layerDescription);
 
-                    if (layer.isPickable()) {
-                        ServiceFactory.create(Constants.SERVICE.PickingManager).addPickableLayer(layer);
+                        if (layer.isPickable()) {
+                            ServiceFactory.create(Constants.SERVICE.PickingManager).addPickableLayer(layer);
+                        }
+
+                        layer.subscribe(Constants.EVENT_MSG.LAYER_VISIBILITY_CHANGED, _handleCameraWhenLayerAdded);
+                        var layerEvent = (layer.category === "background") ? Constants.EVENT_MSG.LAYER_BACKGROUND_ADDED : Constants.EVENT_MSG.LAYER_ADDITIONAL_ADDED;
+                        self.publish(layerEvent, layer);
+                        if (callback) {
+                            callback(layer.ID);
+                        }
                     }
-
-                    layer.subscribe(Constants.EVENT_MSG.LAYER_VISIBILITY_CHANGED, _handleCameraWhenLayerAdded);
-                    var layerEvent = (layer.category === "background") ? Constants.EVENT_MSG.LAYER_BACKGROUND_ADDED : Constants.EVENT_MSG.LAYER_ADDITIONAL_ADDED;
-                    self.publish(layerEvent, layer);
-                    if(callback) {
-                        callback(layer.ID);
+                },
+                function (e) {
+                    if(fallback) {
+                        fallback(e);
                     }
-                }
-            });
-
+                });
         };
-
-        // /**
-        //  * Zoom to when the visibility is changed.
-        //  * @param layer
-        //  * @private
-        //  */
-        // function onVisibilityChange(layer) {
-        //
-        //     if (layer.isVisible() && layer.properties && !layer.background
-        //         && layer.properties.hasOwnProperty("initialRa") && layer.properties.hasOwnProperty("initialDec") && layer.properties.hasOwnProperty("initialFov")) {
-        //
-        //         if (layer.globe.getType() === Constants.GLOBE.Sky) {
-        //             var fov = (layer.properties.initialFov) ? layer.properties.initialFov : layer.globe.getRenderContext().fov;
-        //             self.getNavigation().zoomTo([layer.properties.initialRa, layer.properties.initialDec], {
-        //                 fov: fov,
-        //                 duration: 3000
-        //             });
-        //         }
-        //         else {
-        //             self.getNavigation().zoomTo([layer.properties.initialRa, layer.properties.initialDec], {
-        //                 distance: layer.properties.initialFov,
-        //                 duration: 3000
-        //             });
-        //         }
-        //     }
-        // }
 
         /**
          * @function getLinkedLayers
@@ -764,7 +593,7 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Util
                     this.elevationTracker.attachTo(this);
                 }
 
-                }
+            }
             //When base layer failed to load, open error dialog
             var self = this;
             this.subscribe(Constants.EVENT_MSG.BASE_LAYERS_ERROR, function (layer) {
@@ -967,10 +796,10 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Util
          * @abstract
          */
         AbstractContext.prototype.disable = function () {
-            if(this.positionTracker) {
+            if (this.positionTracker) {
                 this.positionTracker.detach();
             }
-            if(this.elevationTracker) {
+            if (this.elevationTracker) {
                 this.elevationTracker.detach();
             }
             var i = 0;
@@ -993,10 +822,10 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Util
          * @abstract
          */
         AbstractContext.prototype.enable = function () {
-            if(this.positionTracker) {
+            if (this.positionTracker) {
                 this.positionTracker.detach();
             }
-            if(this.elevationTracker) {
+            if (this.elevationTracker) {
                 this.elevationTracker.detach();
             }
             var i = 0;
@@ -1136,7 +965,6 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Util
             }
             this.canvas = null;
         };
-
 
 
         /**************************************************************************************************************/

@@ -35,8 +35,8 @@
  * along with GlobWeb. If not, see <http://www.gnu.org/licenses/>.
  ***************************************/
 
-define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Utils/Constants", "../Utils/UtilityFactory", "xmltojson"],
-    function ($, _, Event, Utils, Constants, UtilityFactory, XmlToJson) {
+define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Utils/Constants", "../Utils/UtilityFactory", "xmltojson", "../Error/NetworkError"],
+    function ($, _, Event, Utils, Constants, UtilityFactory, XmlToJson, NetworkException) {
 
         /**
          * AbstractLayer configuration
@@ -481,7 +481,7 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Util
                     callback(result, sourceObject);
                 },
                 error: function (xhr, ajaxOptions, thrownError) {
-                    console.error("Unknow server " + urlRaw);
+                    throw new NetworkException(thrownError.message, "AbstractLayer.js", thrownError.code);
                 }
             });
         };
@@ -610,7 +610,7 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Util
                 this.getGlobe().getRenderContext().requestFrame();
                 this.publish(Constants.EVENT_MSG.LAYER_VISIBILITY_CHANGED, this);
             } else {
-                throw new TypeError("the parameter of sisible should be a boolean", "AbstractLayer.js");
+                throw new TypeError("the parameter of visible should be a boolean", "AbstractLayer.js");
             }
         };
 

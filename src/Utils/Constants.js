@@ -333,7 +333,6 @@ define(function () {
         "LAYER_BACKGROUND_ADDED" : "backgroundLayer:add",
         "LAYER_BACKGROUND_CHANGED" : "backgroundLayer:change",
         "LAYER_ADDITIONAL_ADDED" : "additionalLayer:add",
-        "LAYER_ASYNCHRONE_LOADED" : "asynchroneLayerLoaded",
         "LAYER_REMOVED" : "layer:remove",
         "LAYER_VISIBILITY_CHANGED" : "visibility:changed",
         "LAYER_OPACITY_CHANGED" : "opacity:changed",

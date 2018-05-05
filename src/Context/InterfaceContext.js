@@ -362,7 +362,7 @@ Context.prototype.getAdditionalLayers = function () {
  * @fires Context#backgroundLayer:add
  * @fires Context#additionalLayer:add
  */
-Context.prototype.addLayer = function (mizarDescription) {
+Context.prototype.addLayer = function (mizarDescription, callback, fallback) {
 };
 
 /**

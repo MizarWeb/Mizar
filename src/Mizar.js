@@ -1186,28 +1186,28 @@ define(["jquery", "underscore-min",
          * @see {@link Mizar#setActivatedContext}
          * @see {@link Mizar#createContext}
          */
-        Mizar.prototype.addLayer = function (layerDescription, callback) {
-            var result;
-            try {
-                var layer = this.getActivatedContext().addLayer(layerDescription, callback);
-            } catch(e) {
-                result = false;
-                var prefixe;
-                var text;
-                var hipsLayer = layerDescription.hipsMetadata;
-                if(hipsLayer != null) {
-                    if (typeof hipsLayer.hipsMetadata.obs_title === 'undefined') {
-                        prefixe = "ID ";
-                        text = hipsLayer.hipsMetadata.ID;
-                    } else {
-                        prefixe = "";
-                        text = hipsLayer.hipsMetadata.obs_title;
-                    }
-                    //ErrorDialog.open("Hips layer " + prefixe + "<font style='color:yellow'><b>" + text + "</b></font> not valid in Hips registry <font color='grey'><i>(" + hipsLayer.hipsMetadata.hips_service_url + " - reason : "+ e.message +")</i></font>.");
-                } else {
-                    //ErrorDialog.open("Cannot add the layer <font style='color:yellow'><b>" + JSON.stringify(layerDescription) + "</b></font><font color='grey'><i>(reason : "+ e.message +")</i></font>.");
-                }
-            }
+        Mizar.prototype.addLayer = function (layerDescription, callback, fallback) {
+            //var result;
+            //try {
+                this.getActivatedContext().addLayer(layerDescription, callback, fallback);
+            //} catch(e) {
+            //    result = false;
+            //    var prefixe;
+            //    var text;
+            //    var hipsLayer = layerDescription.hipsMetadata;
+            //    if(hipsLayer != null) {
+            //        if (typeof hipsLayer.hipsMetadata.obs_title === 'undefined') {
+            //            prefixe = "ID ";
+            //            text = hipsLayer.hipsMetadata.ID;
+            //        } else {
+            //            prefixe = "";
+            //            text = hipsLayer.hipsMetadata.obs_title;
+            //        }
+            //        //ErrorDialog.open("Hips layer " + prefixe + "<font style='color:yellow'><b>" + text + "</b></font> not valid in Hips registry <font color='grey'><i>(" + hipsLayer.hipsMetadata.hips_service_url + " - reason : "+ e.message +")</i></font>.");
+            //    } else {
+            //        //ErrorDialog.open("Cannot add the layer <font style='color:yellow'><b>" + JSON.stringify(layerDescription) + "</b></font><font color='grey'><i>(reason : "+ e.message +")</i></font>.");
+            //    }
+            //}
         };
 
         /**
