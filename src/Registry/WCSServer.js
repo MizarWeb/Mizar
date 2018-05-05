@@ -85,7 +85,7 @@ define(["jquery","underscore-min", "../Utils/Utils", "xmltojson", "../Layer/Laye
 
         WCSServer.prototype.createLayers = function (callback, fallback) {
             this.getMetadata(function (layerDescription, metadata) {
-                var layersFromConf = layerDescription.hasOwnProperty('layers') ? layerDescription.layers.split(',') : [];
+                var layersFromConf = layerDescription.hasOwnProperty('layers') ? layerDescription.layers.trim().split(/\s*,\s*/) : [];
                 var jsonLayers = [];
                 var contentMetadata = metadata.WCS_Capabilities.ContentMetadata;
                 if(Array.isArray(contentMetadata.CoverageOfferingBrief)) {
@@ -111,7 +111,7 @@ define(["jquery","underscore-min", "../Utils/Utils", "xmltojson", "../Layer/Laye
                     var layerDesc = Object.assign({}, layerDescription, {});
                     layerDesc.name = layerDescription.name || jsonLayer.label._text;
                     layerDesc.format = layerDescription.format;
-                    layerDesc.layers = layerDescription.layers || jsonLayer.name._text;
+                    layerDesc.layers = jsonLayer.name._text;
                     layerDesc.description = layerDescription.description;
                     layerDesc.attribution = attribution;
                     layerDesc.copyrightUrl = copyrightURL;

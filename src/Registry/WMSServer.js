@@ -125,7 +125,7 @@ define(["jquery","underscore-min", "../Utils/Utils", "xmltojson", "../Layer/Laye
             var layerDesc = Object.assign({}, layerDescription, {});
             layerDesc.name = layerDescription.name || jsonLayer.Title;
             layerDesc.format = layerDescription.format || "image/png";
-            layerDesc.layers = layerDescription.layers || jsonLayer.Name;
+            layerDesc.layers =  jsonLayer.Name;
             layerDesc.description = layerDescription.description || (jsonLayer.Abstract != null) ? jsonLayer.Abstract : jsonLayers.Abstract;
             layerDesc.attribution = attribution;
             layerDesc.copyrightUrl = copyrightURL;
@@ -157,7 +157,7 @@ define(["jquery","underscore-min", "../Utils/Utils", "xmltojson", "../Layer/Laye
 
         WMSServer.prototype.createLayers = function (callback, fallback) {
             this.getMetadata(function (layerDescription, metadata) {
-                var layersFromConf = layerDescription.hasOwnProperty('layers') ? layerDescription.layers.split(',') : [];
+                var layersFromConf = layerDescription.hasOwnProperty('layers') ? layerDescription.layers.trim().split(/\s*,\s*/) : [];
                 var jsonLayers = metadata.Capability.Layer;
                 var layers = _createLayers(layerDescription, layersFromConf, jsonLayers);
                 callback(layers);
