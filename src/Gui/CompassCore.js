@@ -40,23 +40,44 @@ define(["jquery","../Utils/Constants"], function ($, Constants) {
     function _alignWithNorth(event) {
         var up = [0, 0, 1];
         var coordinateSystem = ctx.getCoordinateSystem();
+        
         var temp = [];
         coordinateSystem.from3DToGeo(up, temp, false);
-        temp = coordinateSystem.convert(temp, coordinateSystem.getGeoideName(), Constants.CRS.Equatorial);
+        temp = coordinateSystem.convert(temp, coordinateSystem.getGeoideName(), crs);
         coordinateSystem.fromGeoTo3D(temp, up, false);
         ctx.getNavigation().moveUpTo(up);
     }
 
     /**************************************************************************************************************/
 
+    function updateNorthWGS84() {
+        var navigation = ctx.getNavigation();
+        var currentHeading = navigation.heading;
+        while (navigation.heading>360) {
+            navigation.heading -= 360;
+        }
+        while (navigation.heading<0) {
+            navigation.heading += 360;
+        }
+        var upHeading = 0;
+        var degNorth = currentHeading-upHeading;
+
+        var northText = svgDoc.getElementById("NorthText");
+        northText.setAttribute("transform", "rotate(" + degNorth + " 40 40)");
+
+    }
     /**
      * Function updating the north position on compass
      */
     function updateNorth() {
         var geo = [];
         var coordinateSystem = ctx.getCoordinateSystem();
-        coordinateSystem.from3DToGeo(ctx.getNavigation().center3d, geo, false);
-        geo = coordinateSystem.convert(geo, Constants.CRS.Equatorial, coordinateSystem.getGeoideName());
+        if (coordinateSystem.geoideName === "CRS:84") {
+            return updateNorthWGS84();
+        }
+        var center = ctx.getNavigation().center3d ? ctx.getNavigation().center3d : center = ctx.getNavigation().geoCenter;
+        coordinateSystem.from3DToGeo(center, geo, false);
+        geo = coordinateSystem.convert(geo, crs, coordinateSystem.getGeoideName());
 
         var LHV = [];
         coordinateSystem.getLHVTransform(geo, LHV);
@@ -67,13 +88,13 @@ define(["jquery","../Utils/Constants"], function ($, Constants) {
 
         var up = vec3.create(ctx.getNavigation().up);
         coordinateSystem.from3DToGeo(up, temp, false);
-        temp = coordinateSystem.convert(temp, Constants.CRS.Equatorial, coordinateSystem.getGeoideName());
+        temp = coordinateSystem.convert(temp, crs, coordinateSystem.getGeoideName());
         coordinateSystem.fromGeoTo3D(temp, up, false);
         vec3.normalize(up);
-
         // Find angle between up and north
         var cosNorth = vec3.dot(up, north) / (vec3.length(up) * vec3.length(north));
         var radNorth = Math.acos(cosNorth);
+
         if (isNaN(radNorth)) {
             return;
         }
@@ -108,6 +129,7 @@ define(["jquery","../Utils/Constants"], function ($, Constants) {
         init: function (options) {
             parentElement = options.element;
             ctx = options.ctx;
+            crs = options.crs;
             svgDoc = options.svgDoc;
         },
         updateNorth: updateNorth,

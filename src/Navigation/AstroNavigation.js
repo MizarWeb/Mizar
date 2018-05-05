@@ -476,7 +476,7 @@ define(['../Utils/Utils', '../Utils/Constants',
          */
         AstroNavigation.prototype.rotate = function (dx, dy) {
             // constant tiny angle
-            var angle = dx * 0.1 * Math.PI / 180.0;
+            var angle = dx * 0.035 * Math.PI / 180.0;
 
             var rot = quat4.fromAngleAxis(angle, this.center3d);
             quat4.multiplyVec3(rot, this.up);

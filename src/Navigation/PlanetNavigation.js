@@ -88,6 +88,8 @@ define(['../Utils/Utils', '../Utils/Constants', './AbstractNavigation', '../Anim
             this.tilt = 90.0;
             this.distance = this.maxDistance;
 
+            this.up = [0.0, 90.0, 0];
+
             this.inverseViewMatrix = mat4.create();
 
             var updateViewMatrix = (this.options.hasOwnProperty('updateViewMatrix') ? this.options.updateViewMatrix : true);
@@ -448,9 +450,14 @@ define(['../Utils/Utils', '../Utils/Constants', './AbstractNavigation', '../Anim
             var previousHeading = this.heading;
             var previousTilt = this.tilt;
 
-            this.heading += dx * 0.1;
-            this.tilt += dy * 0.1;
+            this.heading += dx * 0.035;
+            this.tilt += dy * 0.035;
 
+            // constant tiny angle
+/*            var angle = dx * 0.02 * Math.PI / 180.0;
+            var rot = quat4.fromAngleAxis(angle, this.geoCenter);
+            quat4.multiplyVec3(rot, this.up);
+*/
             this.computeViewMatrix();
 
             if (this.hasCollision()) {
@@ -482,6 +489,55 @@ define(['../Utils/Utils', '../Utils/Constants', './AbstractNavigation', '../Anim
             this.tilt = null;
             this.distance = null;
             this.inverseViewMatrix = null;
+        };
+
+
+        /**
+         * Moves up vector.
+         * @function moveUpTo
+         * @memberOf PlanetNavigation#
+         * @param {float[]} vec Vector
+         * @param {int} [duration = 1000] - Duration of animation in milliseconds
+         */
+        PlanetNavigation.prototype.moveUpTo = function (vec, duration) {
+            // Create a single animation to animate up
+            var startValue = [];
+            var endValue = [];
+            this.ctx.getCoordinateSystem().getWorldFrom3D(this.up, endValue);
+            this.ctx.getCoordinateSystem().getWorldFrom3D(vec, startValue);
+
+
+            this.startHeading = this.heading;
+            if (this.heading>180) {
+                this.endHeading = 360;
+            } else {
+                this.endHeading = 0;
+            }
+
+            var durationTime = duration || 1000;
+
+            var navigation = this;
+            var animation = AnimationFactory.create(
+                Constants.ANIMATION.Segmented,
+                {
+                    "duration": durationTime,
+                    "valueSetter": function (value) {
+                        navigation.heading = value;
+                        navigation.computeViewMatrix();
+                    }
+                });
+
+            
+            animation.addSegment(
+                0.0, this.startHeading,
+                1.0, this.endHeading,
+                function (t, a, b) {
+                    return Numeric.lerp(t,a,b);
+                }
+            );
+
+            this.ctx.addAnimation(animation);
+            animation.start();
         };
 
         /**************************************************************************************************************/
