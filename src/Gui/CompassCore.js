@@ -28,6 +28,7 @@ define(["jquery","../Utils/Constants"], function ($, Constants) {
      */
     var parentElement = null;
     var ctx = null;
+    var crs = null;
     var svgDoc;
 
     /**************************************************************************************************************/
@@ -38,27 +39,25 @@ define(["jquery","../Utils/Constants"], function ($, Constants) {
      * @private
      */
     function _alignWithNorth(event) {
-        var up = [0, 0, 1];
         var coordinateSystem = ctx.getCoordinateSystem();
-        
+        var radius = coordinateSystem.getGeoide().getRadius();
+
+        // scale the up direction to the sphere's surface in order to have the right value after projection.
+        var up = [0, 0, radius];
+
         var temp = [];
-        coordinateSystem.from3DToGeo(up, temp, false);
+        coordinateSystem.from3DToGeo(up, temp);
         temp = coordinateSystem.convert(temp, coordinateSystem.getGeoideName(), crs);
-        coordinateSystem.fromGeoTo3D(temp, up, false);
+        coordinateSystem.fromGeoTo3D(temp, up);
         ctx.getNavigation().moveUpTo(up);
     }
 
     /**************************************************************************************************************/
 
-    function updateNorthWGS84() {
+    function updateNorthPlanet() {
         var navigation = ctx.getNavigation();
-        var currentHeading = navigation.heading;
-        while (navigation.heading>360) {
-            navigation.heading -= 360;
-        }
-        while (navigation.heading<0) {
-            navigation.heading += 360;
-        }
+        var currentHeading = navigation.getHeading();
+
         var upHeading = 0;
         var degNorth = currentHeading-upHeading;
 
@@ -66,17 +65,12 @@ define(["jquery","../Utils/Constants"], function ($, Constants) {
         northText.setAttribute("transform", "rotate(" + degNorth + " 40 40)");
 
     }
-    /**
-     * Function updating the north position on compass
-     */
-    function updateNorth() {
+
+    function updateNorthSky() {
         var geo = [];
         var coordinateSystem = ctx.getCoordinateSystem();
-        if (coordinateSystem.geoideName === "CRS:84") {
-            return updateNorthWGS84();
-        }
         var center = ctx.getNavigation().center3d ? ctx.getNavigation().center3d : center = ctx.getNavigation().geoCenter;
-        coordinateSystem.from3DToGeo(center, geo, false);
+        coordinateSystem.from3DToGeo(center, geo);
         geo = coordinateSystem.convert(geo, crs, coordinateSystem.getGeoideName());
 
         var LHV = [];
@@ -87,9 +81,11 @@ define(["jquery","../Utils/Constants"], function ($, Constants) {
         var vertical = [LHV[8], LHV[9], LHV[10]];
 
         var up = vec3.create(ctx.getNavigation().up);
-        coordinateSystem.from3DToGeo(up, temp, false);
+        vec3.scale(up, coordinateSystem.getGeoide().getRadius());
+
+        coordinateSystem.from3DToGeo(up, temp);
         temp = coordinateSystem.convert(temp, crs, coordinateSystem.getGeoideName());
-        coordinateSystem.fromGeoTo3D(temp, up, false);
+        coordinateSystem.fromGeoTo3D(temp, up);
         vec3.normalize(up);
         // Find angle between up and north
         var cosNorth = vec3.dot(up, north) / (vec3.length(up) * vec3.length(north));
@@ -110,6 +106,22 @@ define(["jquery","../Utils/Constants"], function ($, Constants) {
 
         var northText = svgDoc.getElementById("NorthText");
         northText.setAttribute("transform", "rotate(" + degNorth + " 40 40)");
+    }
+    /**
+     * Function updating the north position on compass
+     */
+    function updateNorth() {
+        var mode = ctx.getMode();
+        switch (mode) {
+            case Constants.CONTEXT.Sky:
+                updateNorthSky();
+                break;
+            case Constants.CONTEXT.Planet:
+                updateNorthPlanet();
+                break;
+            default:
+                throw new RangeError("CompassCore is not supported for this context", "CompassCore.js");
+        }
     }
 
     /**************************************************************************************************************/

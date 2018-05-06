@@ -18,9 +18,9 @@
  ******************************************************************************/
 
 define(["jquery", "underscore-min", "../Utils/Utils", "./AbstractContext", "../Utils/Constants",
-        "../Globe/GlobeFactory", "../Navigation/NavigationFactory", "../Services/ServiceFactory"],
+        "../Globe/GlobeFactory", "../Navigation/NavigationFactory", "../Services/ServiceFactory", "../Gui/Compass"],
     function ($, _, Utils, AbstractContext, Constants,
-              GlobeFactory, NavigationFactory, ServiceFactory) {
+              GlobeFactory, NavigationFactory, ServiceFactory, Compass) {
 
         /**
          * ground context configuration
@@ -130,6 +130,25 @@ define(["jquery", "underscore-min", "../Utils/Utils", "./AbstractContext", "../U
         Utils.inherits(AbstractContext, GroundContext);
 
         /**************************************************************************************************************/
+
+        /**
+         * @function setCompassVisible
+         * @memberOf GroundContext#
+         */
+        GroundContext.prototype.setCompassVisible = function (divName, visible) {
+            if (visible) {
+                this.compass = new Compass({
+                    element: divName,
+                    ctx: this,
+                    crs : this.getCoordinateSystem().getGeoideName()
+                });
+            } else {
+                if (this.compass) {
+                    this.compass.remove();
+                }
+            }
+            this.setComponentVisibility(divName, visible);
+        };
 
         /**
          * @function setCoordinateSystem

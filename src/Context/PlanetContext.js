@@ -242,7 +242,7 @@ define(["jquery", "underscore-min", "../Utils/Utils", "./AbstractContext", "../U
                 this.compass = new Compass({
                     element: divName,
                     ctx: this,
-                    crs : Constants.CRS.WGS84
+                    crs : this.getCoordinateSystem().getGeoideName()
                 });
             } else {
                 if (this.compass) {

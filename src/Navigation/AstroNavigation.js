@@ -211,18 +211,12 @@ define(['../Utils/Utils', '../Utils/Constants',
             var middleFov = 25.0;	// arbitrary middle fov value which determines if the animation needs two segments
 
             this.ctx.getCoordinateSystem().getWorldFrom3D(this.center3d, geoStart);
-            var startValue = [geoStart[0], geoStart[1], this.renderContext.getFov()];
-            var endValue = [geoPos[0], geoPos[1], destFov];
 
-            // Compute the shortest path if needed
-            //TODO : not sure it is work for all cases, better to use scalar product
-            if (Math.abs(geoPos[0] - geoStart[0]) > 180.0) {
-                if (geoStart[0] < geoPos[0]) {
-                    startValue[0] += 360;
-                } else {
-                    endValue[0] += 360;
-                }
-            }
+            var path = Numeric.shortestPath360(geoStart[0], geoPos[0]);
+
+            var startValue = [path[0], geoStart[1], this.renderContext.getFov()];
+            var endValue = [path[1], geoPos[1], destFov];
+
             var animation = AnimationFactory.create(
                 Constants.ANIMATION.Segmented,
                 {
@@ -304,7 +298,7 @@ define(['../Utils/Utils', '../Utils/Constants',
         /**
          * Moves to a 3d position
          * @function moveTo
-         * @memberof AstroNavigation#
+         * @memberOf AstroNavigation#
          * @param {float[]} geoPos - Array of two floats corresponding to final Longitude and Latitude(in this order) to zoom
          * @param {int} [duration = 5000] - Duration of animation in milliseconds
          * @param {Function} [callback] - Callback on the end of animation
@@ -433,7 +427,7 @@ define(['../Utils/Utils', '../Utils/Constants',
         /**
          * Event handler for mouse wheel
          * @function zoom
-         * @memberof AstroNavigation#
+         * @memberOf AstroNavigation#
          * @param {float} delta Delta zoom
          * @param {float} scale Scale
          */
