@@ -21,16 +21,42 @@
 /**
  * Compass module : map control with "north" component
  */
-define(["jquery","../Utils/Constants"], function ($, Constants) {
+define(["jquery","./TimeTravelParams","../Utils/Constants"], function ($, TimeTravelParams, Constants) {
 
     /**
      *    Private variables
      */
+    
+    var params = new TimeTravelParams();
+
     var parentElement = null;
     var ctx = null;
-    var svgHourGlassDoc;
-    var svgRewingDoc;
-    var svgForwardDoc;
+
+    /**************************************************************************************************************/
+
+    /**
+     *    Go Rewind
+     *    
+     */
+    function goRewind() {
+        params.rewind();
+    }
+
+    /**
+     *    Go Forward
+     *    
+     */
+    function goForward() {
+        params.forward();
+    }
+
+    /**
+     *    Choose time
+     *    
+     */
+    function chooseTime() {
+        console.log("chooseTime");
+    }
 
     /**************************************************************************************************************/
 
@@ -39,6 +65,9 @@ define(["jquery","../Utils/Constants"], function ($, Constants) {
      *    
      */
     function remove() {
+        ctx.unsubscribe(Constants.EVENT_MSG.GLOBAL_TIME_FORWARD);
+        ctx.unsubscribe(Constants.EVENT_MSG.GLOBAL_TIME_REWIND);
+        ctx.unsubscribe(Constants.EVENT_MSG.GLOBAL_TIME_SET);
         document.getElementById(parentElement).innerHTML = '';
     }
 
@@ -48,12 +77,21 @@ define(["jquery","../Utils/Constants"], function ($, Constants) {
         init: function (options) {
             parentElement = options.element;
             ctx = options.ctx;
-            crs = options.crs;
-            svgHourGlassDoc = options.svgHourGlassDoc;
-            svgRewindDoc = options.svgRewindDoc;
-            svgForwardDoc = options.svgForwardDoc;
-        },
-        remove: remove
 
+            params.setContext(ctx);
+            params.setStartDate([2012,0,1]);
+            params.setEndDate([2017,0,1]);
+            params.setCurrentDate([2012,0,1]);
+            params.setStep(TimeTravelParams.STEP.YEAR,1);
+            
+            // subscribe
+            ctx.subscribe(Constants.EVENT_MSG.GLOBAL_TIME_FORWARD,goForward);
+            ctx.subscribe(Constants.EVENT_MSG.GLOBAL_TIME_REWIND,goRewind);
+            ctx.subscribe(Constants.EVENT_MSG.GLOBAL_TIME_SET,chooseTime);
+        },
+        goForward   : goForward,
+        goRewind    : goRewind,
+        chooseTime  : chooseTime,
+        remove      : remove
     };
 });

@@ -59,7 +59,23 @@ define(["jquery", "../Utils/Constants","./TimeTravelCore"],
 
         document.getElementById(parentElement).innerHTML = '<div id="objectForward"></div><div id="objectHourGlass"></div><div id="objectRewind"></div>';
 
-        console.log(document.getElementById(parentElement).innerHTML);
+        var _handleMouseUp = function (name) {
+            ctx.publish(name,ctx);
+        };
+
+        var _handleMouseUpSet = function (event) {
+            _handleMouseUp(Constants.EVENT_MSG.GLOBAL_TIME_SET);
+        };
+
+        var _handleMouseUpForward = function (event) {
+            _handleMouseUp(Constants.EVENT_MSG.GLOBAL_TIME_FORWARD);
+        };
+        
+        var _handleMouseUpRewind = function (event) {
+            _handleMouseUp(Constants.EVENT_MSG.GLOBAL_TIME_REWIND);
+        };
+
+        ctx.subscribe(Constants.EVENT_MSG.GLOBAL_TIME_CHANGED,this.updateDisplayDate);
 
         $.get(svgHourGlass,
             function (response) {
@@ -75,10 +91,13 @@ define(["jquery", "../Utils/Constants","./TimeTravelCore"],
                 options.svgHourGlassDoc = svgHourGlassDoc;
                 //TimeTravelCore.init(options);
 
+                svgHourGlassDoc.addEventListener('mouseup', _handleMouseUpSet);
+
                 //initialize();
                 // Publish modified event to update compass north
                 //ctx.publish(Constants.EVENT_MSG.NAVIGATION_MODIFIED);
                 if (svgRewindDoc && svgForwardDoc && svgHourGlassDoc) {
+                    TimeTravelCore.init(options);
                     $('#' + parentElement).css("display", "block");
                 }
             },
@@ -96,11 +115,13 @@ define(["jquery", "../Utils/Constants","./TimeTravelCore"],
     
                     options.svgRewindDoc = svgRewindDoc;
                     //TimeTravelCore.init(options);
+                    svgRewindDoc.addEventListener('mouseup', _handleMouseUpRewind);
     
                     //initialize();
                     // Publish modified event to update compass north
                     //ctx.publish(Constants.EVENT_MSG.NAVIGATION_MODIFIED);
                     if (svgRewindDoc && svgForwardDoc && svgHourGlassDoc) {
+                        TimeTravelCore.init(options);
                         $('#' + parentElement).css("display", "block");
                     }
                 },
@@ -118,129 +139,32 @@ define(["jquery", "../Utils/Constants","./TimeTravelCore"],
     
                     options.svgForwardDoc = svgForwardDoc;
                     //TimeTravelCore.init(options);
+                    svgForwardDoc.addEventListener('mouseup', _handleMouseUpForward);
     
                     //initialize();
                     // Publish modified event to update compass north
                     //ctx.publish(Constants.EVENT_MSG.NAVIGATION_MODIFIED);
                     if (svgRewindDoc && svgForwardDoc && svgHourGlassDoc) {
+                        TimeTravelCore.init(options);
                         $('#' + parentElement).css("display", "block");
                     }
                 },
                 "xml");
     
-        /**
-         *    Initialize interactive events
-         */
-        /*var initialize = function () {
-            // Svg interactive elements
-
-            var east = svgDoc.getElementById("East"); //get the inner element by id
-            var west = svgDoc.getElementById("West"); //get the inner element by id
-            var south = svgDoc.getElementById("South"); //get the inner element by id
-            var north = svgDoc.getElementById("North"); //get the inner element by id
-            var northText = svgDoc.getElementById("NorthText");
-            var outerCircle = svgDoc.getElementById("OuterCircle");
-
-            var panFactor = options.panFactor ? options.panFactor : 30;
-
-            var _lastMouseX = -1;
-            var _lastMouseY = -1;
-            var _dx = 0;
-            var _dy = 0;
-            var dragging = false;
-            var _outerCircleRadius = outerCircle.ownerSVGElement.clientWidth / 2;
-
-            var _handleMouseDown = function (event) {
-                event.preventDefault();
-                if (event.type.search("touch") >= 0) {
-                    event.layerX = event.changedTouches[0].clientX;
-                    event.layerY = event.changedTouches[0].clientY;
-                }
-
-                dragging = true;
-                _lastMouseX = event.layerX - _outerCircleRadius;
-                _lastMouseY = event.layerY - _outerCircleRadius;
-                _dx = 0;
-                _dy = 0;
-            };
-
-            svgDoc.addEventListener('mousedown', _handleMouseDown);
-
-
-            var _handleMouseMove = function (event) {
-                event.preventDefault();
-                if (event.type.search("touch") >= 0) {
-                    event.layerX = event.changedTouches[0].clientX;
-                    event.layerY = event.changedTouches[0].clientY;
-                }
-
-                if (!dragging) {
-                    return;
-                }
-
-                var c = _lastMouseX * (event.layerY - _outerCircleRadius) - _lastMouseY * (event.layerX - _outerCircleRadius); // c>0 -> clockwise, counterclockwise otherwise
-                ctx.getNavigation().rotate(c, 0);
-
-                _lastMouseX = event.layerX - _outerCircleRadius;
-                _lastMouseY = event.layerY - _outerCircleRadius;
-
-                CompassCore.updateNorth();
-            };
-
-            svgDoc.addEventListener('mousemove', _handleMouseMove);
-
-            var _handleMouseUp = function (event) {
-                event.preventDefault();
-                dragging = false;
-                // TODO add inertia
-            };
-
-            svgDoc.addEventListener('mouseup', _handleMouseUp);
-
-            east.addEventListener("click", function () {
-                ctx.getNavigation().pan(panFactor, 0.0);
-                CompassCore.updateNorth();
-            });
-
-            west.addEventListener("click", function () {
-                ctx.getNavigation().pan(-panFactor, 0.0);
-                CompassCore.updateNorth();
-            });
-
-            north.addEventListener("click", function () {
-                ctx.getNavigation().pan(0, panFactor);
-                CompassCore.updateNorth();
-            });
-
-            south.addEventListener("click", function () {
-                ctx.getNavigation().pan(0, -panFactor);
-                CompassCore.updateNorth();
-            });
-
-            northText.addEventListener("click", CompassCore._alignWithNorth);
-
-            if (options.isMobile) {
-                svgDoc.addEventListener('touchstart', _handleMouseDown);
-                svgDoc.addEventListener('touchup', _handleMouseUp);
-                svgDoc.addEventListener('touchmove', _handleMouseMove);
-                northText.addEventListener("touchstart", CompassCore._alignWithNorth);
-            }
-
-            // Update fov when moving
-            ctx.subscribe(Constants.EVENT_MSG.NAVIGATION_MODIFIED, CompassCore.updateNorth);
-            ctx.subscribe(Constants.EVENT_MSG.CRS_MODIFIED, CompassCore.updateNorth);
-    };*/
-
-
-  
     };
 
     /**************************************************************************************************************/
+    TimeTravel.prototype.updateDisplayDate = function (date) {
+        console.log("Date : ",date.display);
+    };
 
     /**
-     *    Remove compass element
+     *    functions
      */
     TimeTravel.prototype.remove = TimeTravelCore.remove;
+    TimeTravel.prototype.goRewind = TimeTravelCore.goRewind;
+    TimeTravel.prototype.goForward = TimeTravelCore.goForward;
+    TimeTravel.prototype.chooseTime = TimeTravelCore.chooseTime;
 
     /**************************************************************************************************************/
 

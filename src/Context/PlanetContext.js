@@ -274,6 +274,15 @@ define(["jquery", "underscore-min", "../Utils/Utils", "./AbstractContext", "../U
                     this.timeTravel.remove();
                 }
             }
+            /*if (visible === true) {
+                this.subscribe(Constants.EVENT_MSG.GLOBAL_TIME_REWIND,this.timeTravel.goRewind);
+                this.subscribe(Constants.EVENT_MSG.GLOBAL_TIME_FORWARD,this.timeTravel.goForward);
+                this.subscribe(Constants.EVENT_MSG.GLOBAL_TIME_SET,this.timeTravel.chooseTime);
+            } else {
+                this.unsubscribe(Constants.EVENT_MSG.GLOBAL_TIME_REWIND);
+                this.unsubscribe(Constants.EVENT_MSG.GLOBAL_TIME_FORWARD);
+                this.unsubscribe(Constants.EVENT_MSG.GLOBAL_TIME_SET);
+            }*/
             this.setComponentVisibility(divName, visible);
         };
 
