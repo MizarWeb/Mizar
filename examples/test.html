@@ -29,13 +29,15 @@
         function init() {
             document.getElementById("sl").value=seaLevel[currentSeaLevel];
         }
-        function previous() {
+        
+        function previousSeaLevel() {
             if (currentSeaLevel>0) {
                 currentSeaLevel --;
                 updateSeaLevel();
             }
         }
-        function next() {
+
+        function nextSeaLevel() {
             if (currentSeaLevel<(seaLevel.length-1)) {
                 currentSeaLevel ++;
                 updateSeaLevel();
@@ -46,7 +48,6 @@
             mizar.addLayer(demMontBlanc,function (id) {
                     var cbLayer = mizar.getLayerByID(id);
                     if (cbLayer.type === Mizar.LAYER.WCSElevation) {
-                        mizar.setTime("2003-08-21T00:00:00.000Z");
                         mizar.setBaseElevation(cbLayer.name);
                     }
                     
@@ -140,17 +141,21 @@
 
 
 <body style="margin: 0; padding: 0;" onload="init();">
-    <div style="position:absolute; z-index: 10;">
-        <input type="button" value="<" onclick="previous()"/>
+    <div style="position:absolute; z-index: 10; width:100%;">
+        <input type="button" value="<" onclick="previousSeaLevel()"/>
         <input id="sl" type="text" value=""/>
-        <input type="button" value=">" onclick="next()"/>
+        <input type="button" value=">" onclick="nextSeaLevel()"/>
         <div id="tracker">
             <div id="posTracker" style="background-color:white;float:left;"></div>
         </div>
         <input type="button" value="load DEM MontBlanc" onclick="loadDEMMontBlanc()"/>
         <input type="button" value="unload DEM MontBlanc" onclick="unloadDEMMontBlanc()"/>
         <input type="button" value="setTime" onclick="setTime()"/>
+    </div>
+    <div style="position: absolute; right:8px; z-index: 11; width:116px;">
         <div id="compassDiv"></div>
+    </div>
+    <div style="position: absolute; right:8px; bottom:50px; z-index: 11; width:116px;">
         <div id="timeTravelDiv"></div>
     </div>
     <canvas id="MizarCanvas" onclick="click" style="border: none; margin: 0; padding: 0;">

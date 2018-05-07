@@ -312,8 +312,8 @@ define(function () {
      * @property {String} LAYER_END_LOAD - Overlay rasters  or vectors finish to load
      * @property {String} LAYER_START_BACKGROUND_LOAD - Background rasters start to load
      * @property {String} LAYER_FORCE_REFRESH - Force refresh of a layer
-     * @property {String} LAYER_TIME_CHANGED" - Time layer changer
-     * @property {String} LAYERS_TIME_CHANGED" - Time changed for ALL layers
+     * @property {String} LAYER_TIME_CHANGED - Time layer changer
+     * @property {String} LAYERS_TIME_CHANGED - Time changed for ALL layers
      * @property {String} LAYER_END_BACKGROUND_LOAD - Background rasters finish to load
      * @property {String} BASE_LAYERS_ERROR - Error at the initialisation of layer to render
      * @property {String} BASE_LAYERS_READY - Initialisation of the rendering is fine
@@ -355,7 +355,11 @@ define(function () {
         "IMAGE_DOWNLOADED" : "image:download",
         "IMAGE_REMOVED" : "image:remove",
         "IMAGE_ADDED" : "image:add",
-        "FEATURED_ADDED" : "features:added"
+        "FEATURED_ADDED" : "features:added",
+        "GLOBAL_TIME_REWIND"    : "globalTime:rewind",
+        "GLOBAL_TIME_FORWARD"   : "globalTime:forward",
+        "GLOBAL_TIME_SET"       : "globalTime:set",
+        "GLOBAL_TIME_CHANGED"   : "globalTime:changed" // temporary, need to be link to LAYERS_TIME_CHANGED after dev
     };
 
     /**

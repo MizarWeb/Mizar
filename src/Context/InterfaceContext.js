@@ -211,6 +211,14 @@ Context.prototype.setCompassVisible = function (divName, visible) {
 };
 
 /**
+ * Sets the time travel to visible or not.
+ * @param {string} divName - Name of the time travel div
+ * @param {boolean} visible - Visible or not
+ */
+Context.prototype.setTimeTravelVisible = function (divName, visible) {
+};
+
+/**
  * Sets the UI component visibility.
  * @param {string} componentId - Id of the component
  * @param {boolean} isVisible - Sets to True when the component must be visible

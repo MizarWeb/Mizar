@@ -18,9 +18,11 @@
  ******************************************************************************/
 
 define(["jquery", "underscore-min", "../Utils/Utils", "./AbstractContext", "../Utils/Constants",
-        "../Globe/GlobeFactory", "../Navigation/NavigationFactory", "../Services/ServiceFactory", "../Gui/Compass"],
+        "../Globe/GlobeFactory", "../Navigation/NavigationFactory", "../Services/ServiceFactory",
+        "../Gui/Compass", "../Gui/TimeTravel"],
     function ($, _, Utils, AbstractContext, Constants,
-              GlobeFactory, NavigationFactory, ServiceFactory, Compass) {
+              GlobeFactory, NavigationFactory, ServiceFactory,
+              Compass,TimeTravel) {
 
         /**
          * ground context configuration
@@ -33,6 +35,7 @@ define(["jquery", "underscore-min", "../Utils/Utils", "./AbstractContext", "../U
          * @property {RenderContext} [renderContext] - Context rendering
          * @property {AbstractNavigation.astro_configuration} navigation - navigation configuration
          * @property {string} [compass="compassDiv"] - div element where compass is displayed
+         * @property {string} [timeTravel="timeTravelDiv"] - div element where time travel is displayed
          */
 
         /**
@@ -54,7 +57,8 @@ define(["jquery", "underscore-min", "../Utils/Utils", "./AbstractContext", "../U
                 "posTrackerInfo": true,
                 "posTracker": true,
                 "elevTracker": false,
-                "compassDiv": false
+                "compassDiv": false,
+                "timeTravel": false
             };
 
             var groundOptions = _createGroundConfiguration.call(this, options);
@@ -68,6 +72,7 @@ define(["jquery", "underscore-min", "../Utils/Utils", "./AbstractContext", "../U
                 ServiceFactory.create(Constants.SERVICE.PickingManager).init(this);
 
                 //this.setCompassVisible(options.compass && this.components.compassDiv ? options.compass : "compassDiv", true);
+                this.setTimeTravelVisible(options.timeTravel && this.components.timeTravelDiv ? options.timeTravel : "timeTravelDiv", true);
 
             }
             catch (err) {
@@ -113,7 +118,7 @@ define(["jquery", "underscore-min", "../Utils/Utils", "./AbstractContext", "../U
                 renderContext: options.renderContext,
                 canvas: this.canvas,
                 coordinateSystem: options.coordinateSystem,
-                shadersPath: this.mizarConfiguration['mizarAPIUrl']+'shaders/',
+                shadersPath: this.mizarConfiguration.mizarAPIUrl + 'shaders/',
                 lighting: false,
                 backgroundColor: [0.0, 0.0, 0.0, 1.0],
                 minFar: 0,
@@ -150,6 +155,27 @@ define(["jquery", "underscore-min", "../Utils/Utils", "./AbstractContext", "../U
             this.setComponentVisibility(divName, visible);
         };
 
+        /**************************************************************************************************************/
+
+        /**
+         * @function setTimeTravelVisible
+         * @memberOf GroundContext#
+         */
+        GroundContext.prototype.setTimeTravelVisible = function (divName, visible) {
+            if (visible) {
+                this.timeTravel = new TimeTravel({
+                    element: divName,
+                    ctx: this,
+                    crs : this.getCoordinateSystem().getGeoideName()
+                });
+            } else {
+                if (this.timeTravel) {
+                    this.timeTravel.remove();
+                }
+            }
+            this.setComponentVisibility(divName, visible);
+        };
+
         /**
          * @function setCoordinateSystem
          * @memberOf GroundContext#
@@ -169,6 +195,7 @@ define(["jquery", "underscore-min", "../Utils/Utils", "./AbstractContext", "../U
          */
         GroundContext.prototype.destroy = function () {
             //this.setCompassVisible(false);
+            this.setTimeTravelVisible(false);
             AbstractContext.prototype.destroy.call(this);
         };
 

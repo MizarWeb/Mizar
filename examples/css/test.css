@@ -1,6 +1,38 @@
 #compassDiv {
     pointer-events: auto;
     overflow: hidden;
-    margin-top: 45px;
-    margin-left: 160px;
+    margin-right: 16px;
+    margin-top: 16px;
+}
+
+#timeTravelDiv {
+    pointer-events: auto;
+    overflow: hidden;
+    margin-right: 16px;
+    margin-top: 16px;
+}
+#objectCompass svg {
+    float: right;
+}
+#objectHourGlass svg  {
+    float: right;
+    fill: white;
+}
+#objectForward svg  {
+    float: right;
+    fill: white;
+}
+#objectRewind svg {
+    float: right;
+    fill: white;
+}
+
+#objectHourGlass:hover svg  {
+    fill: red;
+}
+#objectForward:hover svg  {
+    fill: red;
+}
+#objectRewind:hover svg {
+    fill: red;
 }
