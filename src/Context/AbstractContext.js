@@ -465,6 +465,7 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Util
          * @memberOf AbstractContext#
          */
         AbstractContext.prototype.addDraw = function (layer) {
+            layer.getStyle()
             this.globe.addLayer(layer);
         };
 

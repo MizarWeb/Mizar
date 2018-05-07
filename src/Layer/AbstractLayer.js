@@ -38,6 +38,8 @@
 define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Utils/Constants", "../Utils/UtilityFactory", "xmltojson", "../Error/NetworkError"],
     function ($, _, Event, Utils, Constants, UtilityFactory, XmlToJson, NetworkException) {
 
+        const DEFAULT_ICON = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAAXNSR0IArs4c6QAAAAZiS0dEAAAAAAAA+UO7fwAAAAlwSFlzAAALEwAACxMBAJqcGAAAAAd0SU1FB9wMBQkVBRMIQtMAAAAZdEVYdENvbW1lbnQAQ3JlYXRlZCB3aXRoIEdJTVBXgQ4XAAAAvklEQVQY012QMWpCURBFz3yfG7CIwSatpLGwsJJsQEHssr2UttapkkK0zRJEFPKLj5UYPGme8vgDt5l7uNwZKEYNdaZO1FR6VQkBT8AbMAGe1e7dTwXUB8bAFPgF9sBWPUXENbWgBTAELkCTw7bqMdR5kTQCehlogB/gE/iqcs9OVhT9I8v7EZU6UJfqh3pWa3WlvqsvakoRcVOPwCYnvQI1sM67Q0T8JYAWvAEOwDewj4jr4z0teJdf84AA/gF1uG92uhcfoAAAAABJRU5ErkJggg==";
+
         /**
          * AbstractLayer configuration
          * @typedef {Object} AbstractLayer.configuration
@@ -91,7 +93,6 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Util
             this.attribution = this.options.attribution || "";
             this.copyrightUrl = this.options.copyrightUrl || "";
             this.ack = this.options.ack || "";
-            this.icon = this.options.icon || "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAAXNSR0IArs4c6QAAAAZiS0dEAAAAAAAA+UO7fwAAAAlwSFlzAAALEwAACxMBAJqcGAAAAAd0SU1FB9wMBQkVBRMIQtMAAAAZdEVYdENvbW1lbnQAQ3JlYXRlZCB3aXRoIEdJTVBXgQ4XAAAAvklEQVQY012QMWpCURBFz3yfG7CIwSatpLGwsJJsQEHssr2UttapkkK0zRJEFPKLj5UYPGme8vgDt5l7uNwZKEYNdaZO1FR6VQkBT8AbMAGe1e7dTwXUB8bAFPgF9sBWPUXENbWgBTAELkCTw7bqMdR5kTQCehlogB/gE/iqcs9OVhT9I8v7EZU6UJfqh3pWa3WlvqsvakoRcVOPwCYnvQI1sM67Q0T8JYAWvAEOwDewj4jr4z0teJdf84AA/gF1uG92uhcfoAAAAABJRU5ErkJggg==";
             this.description = this.options.description || "";
             this.visible = this.options.visible || false;
             this.properties = this.options.properties || {};
@@ -116,14 +117,8 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Util
             this.vectorLayer = false;
             this.metadataAPI = (this.options.metadataAPI) ? this.options.metadataAPI : null;
 
-            // Update layer color
-            this.color = _createColor.call(this, this.options);
-
-            // Layer opacity must be in range [0, 1]
-            this.opacity = _createOpacity.call(this, this.options);
-
             // Create style if needed
-            this.style = _createStyle.call(this, this.options, this.opacity, this.icon, this.color, this.visible);
+            this.style = _createStyle.call(this, this.options, this.icon);
 
             // Ensure that the attribution link will be opened in new tab
             if (this.attribution && this.attribution.search('<a') >= 0 && this.attribution.search('target=') < 0) {
@@ -140,7 +135,7 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Util
         function _createAvailableServices(options) {
             var availableServices;
             if (options.hasOwnProperty('availableServices')) {
-                availableServices = options.availableServices; 
+                availableServices = options.availableServices;
             } else {
                 availableServices = [];
             }
@@ -150,30 +145,61 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Util
         /**
          *
          * @param options
-         * @param opacity
-         * @param icon
-         * @param color
-         * @param visible
          * @returns {*}
          * @private
          */
-        function _createStyle(options, opacity, icon, color, visible) {
+        function _createStyle(options) {
             var style;
-            if (!options.hasOwnProperty('style')) {
+            if (options.hasOwnProperty('style')) {
+                // we use style from layerDescription.
+                style = UtilityFactory.create(Constants.UTILITY.CreateStyle, options.style);
+            } else if (options.style === "FeatureStyle") {
+                // use a previous definition
+                style = options.style;
+            } else {
+                // Update layer color
+                var color = _createColor.call(this, options);
+
+                // Layer opacity must be in range [0, 1]
+                var opacity = _createOpacity.call(this, options);
+
+                // Create a default icon if needed.
+                var icon = _createIcon.call(this, options);
+
+                // Create a default zIndex if needed
+                var zIndex = _createZIndex.call(this, options);
+
+                // create default style
                 style = UtilityFactory.create(Constants.UTILITY.CreateStyle, {
                     rendererHint: "Basic",
                     opacity: opacity,
                     iconUrl: icon,
                     fillColor: color,
                     strokeColor: color,
-                    visible: visible
+                    zIndex: zIndex
                 });
-            } else if (options.style === "FeatureStyle") {
-                style = options.style;
-            } else {
-                style = UtilityFactory.create(Constants.UTILITY.CreateStyle, options.style);
             }
             return style;
+        }
+
+        function _createZIndex(options) {
+            var zIndex;
+            if (options.hasOwnProperty('zIndex')) {
+                zIndex = options.zIndex;
+            } else {
+                zIndex = Constants.DISPLAY.DEFAULT_RASTER;
+            }
+            return zIndex;
+        }
+
+        function _createIcon(options) {
+            var icon;
+            if (options.hasOwnProperty('icon')) {
+                icon = options.icon;
+            } else {
+                icon = DEFAULT_ICON;
+            }
+            return icon;
         }
 
         /**
@@ -208,7 +234,7 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Util
                 var rgb = Utils.generateColor();
                 color = rgb.concat([1]);
             }
-            return color
+            return color;
         }
 
 
@@ -229,11 +255,6 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Util
         AbstractLayer.prototype.containsDimension = function(variable) {
             return this.hasDimension() && this.dimension[variable] != null;
         };
-
-
-        AbstractLayer.prototype.setTime = function(time) {
-        };
-
 
         /**
          * return short name
@@ -562,14 +583,6 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Util
         };
 
         /**
-         * @function getIcon
-         * @memberOf AbstractLayer#
-         */
-        AbstractLayer.prototype.getIcon = function () {
-            return this.icon;
-        };
-
-        /**
          * @function getDescription
          * @memberOf AbstractLayer#
          */
@@ -622,7 +635,7 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Util
          * @memberOf AbstractLayer#
          */
         AbstractLayer.prototype.getOpacity = function () {
-            return this.opacity;
+            return this.getStyle().getOpacity();
         };
 
         /**
@@ -631,13 +644,10 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Util
          * @throws {RangeError} opacity - opacity value should be a value in [0..1]
          */
         AbstractLayer.prototype.setOpacity = function (arg) {
-            if (typeof arg === "number" && arg >= 0.0 && arg <= 1.0) {
-                this.opacity = arg;
-                this.getGlobe().getRenderContext().requestFrame();
-                this.publish(Constants.EVENT_MSG.LAYER_OPACITY_CHANGED, this);
-            } else {
-                throw new RangeError('opacity value should be a value in [0..1]', "AbstractLayer.js");
-            }
+            var style = this.getStyle();
+            style.setOpacity(arg);
+            this.getGlobe().getRenderContext().requestFrame();
+            this.publish(Constants.EVENT_MSG.LAYER_OPACITY_CHANGED, this);
         };
 
         /**
@@ -740,14 +750,6 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Util
          */
         AbstractLayer.prototype.isDeletable = function () {
             return this.deletable;
-        };
-
-        /**
-         * @function getColor
-         * @memberOf AbstractLayer#
-         */
-        AbstractLayer.prototype.getColor = function () {
-            return this.color;
         };
 
         /**

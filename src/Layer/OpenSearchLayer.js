@@ -390,8 +390,8 @@ define(['../Renderer/FeatureStyle', '../Renderer/VectorRendererManager', '../Uti
 
             // MS: Feature could be added from ClusterOpenSearch which have features with different styles
             var style = feature.properties.style ? feature.properties.style : this.style;
-            style.visible = true;
-            style.opacity = this.opacity;
+            //style.visible = true;
+            style.opacity = this.getOpacity();
 
             this.features.push(feature);
 
@@ -938,26 +938,22 @@ define(['../Renderer/FeatureStyle', '../Renderer/VectorRendererManager', '../Uti
          * @memberOf OpenSearchLayer#
          * @throws {RangeError} opacity - opacity value should be a value in [0..1]
          */
-        OpenSearchLayer.prototype.setOpacityOS = function (arg) {
+        OpenSearchLayer.prototype.setOpacity = function (arg) {
             if (typeof arg === "number" && arg >=0.0 && arg <=1.0) {
-                this.opacity = arg;
-                targetStyle = new FeatureStyle(this.style);
-                targetStyle.opacity = this.opacity;
+                var targetStyle = new FeatureStyle(this.getStyle());
+                targetStyle.setOpacity(arg);
 
                 for (var i=0;i<this.features.length;i++) {
                     this.modifyFeatureStyle(this.features[i],targetStyle);
                 }
 
-                var linkedLayers = this.callbackContext.getLinkedLayers(this.ID);
+                var linkedLayers = this.callbackContext.getLinkedLayers(this.getID());
                 // Change for wms linked layers
-                for (var i=0;i<linkedLayers.length;i++) {
-                    linkedLayers[i].opacity = arg;
+                for (i=0;i<linkedLayers.length;i++) {
+                    linkedLayers[i].getStyle().setOpacity(arg);
                 }
-                
-                if (this.getGlobe()) {
-                    this.getGlobe().getRenderContext().requestFrame();
-                }
-                this.publish(Constants.EVENT_MSG.LAYER_OPACITY_CHANGED, this);
+
+                AbstractLayer.prototype.setOpacity.call(this, arg);
             } else {
                throw new RangeError('opacity value should be a value in [0..1]', "AbstractLayer.js");
             }

@@ -29,7 +29,7 @@ define(["../Renderer/FeatureStyle", "../Layer/OpenSearchLayer", "../Utils/Utils"
         var selectedStyle = new FeatureStyle({
             strokeColor: [1.0, 0.0, 0.0, 1.0],
             fillColor: [1.0, 1.0, 0.0, 1.0],
-            zIndex: 1
+            zIndex: Constants.DISPLAY.SELECTED_VECTOR
         });
 
         /**************************************************************************************************************/

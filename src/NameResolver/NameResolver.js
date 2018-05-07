@@ -242,9 +242,9 @@ define(["jquery", "underscore-min", "../Utils/Constants",
                     callback.call(this, args);
                 }
             };
-            [lon, lat] = mizarAPI.getCrs().convert([lon, lat], crs, mizarAPI.getCrs().getGeoideName());
+            var position = mizarAPI.getCrs().convert([lon, lat], crs, mizarAPI.getCrs().getGeoideName());
             if (mizarAPI.getActivatedContext().getMode() === Constants.CONTEXT.Sky) {
-                mizarAPI.getActivatedContext().getNavigation().zoomTo([lon, lat], {
+                mizarAPI.getActivatedContext().getNavigation().zoomTo(position, {
                     fov: zoomFov,
                     duration: duration,
                     callback: addTargetCallback

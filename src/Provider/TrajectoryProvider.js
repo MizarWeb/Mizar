@@ -75,7 +75,7 @@ define(["jquery", "./AbstractProvider", "../Renderer/FeatureStyle", "../Utils/Ut
                         iconUrl: "css/images/lander.png",
                         strokeColor: FeatureStyle.fromStringToColor("white"),
                         fillColor: FeatureStyle.fromStringToColor("white"),
-                        zIndex:5
+                        zIndex:Constants.DISPAY.DEFAULT_VECTOR
                     });
 
                     var trajectory = createTrajectory(mizarLayer, Constants.GEOMETRY.MultiLineString, mizarLayer.name, {"trajectory":geom, "color":"white", "dates":dates});

@@ -668,7 +668,7 @@ define(['./Program', '../Tiling/Tile', '../Utils/ImageRequest', './RendererTileD
                 }
 
                 if (imageRequest) {
-                    url = renderable.bucket.layer.getUrl(renderable.tile);
+                    var url = renderable.bucket.layer.getUrl(renderable.tile);
                     if (url !== null) {
                         renderable.onRequestStarted(imageRequest);
                         imageRequest.renderable = renderable;

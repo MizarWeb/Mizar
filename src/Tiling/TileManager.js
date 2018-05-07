@@ -150,8 +150,8 @@ define(['./Tile', './GeoTiling', './TilePool', './TileRequest', './TileIndexBuff
             this.postRenderers.push(renderer);
 
             this.postRenderers.sort(function (r1, r2) {
-                var z1 = r1.zIndex | 0;
-                var z2 = r2.zIndex | 0;
+                var z1 = r1.zIndex | Constants.DISPLAY.DEFAULT_RASTER;
+                var z2 = r2.zIndex | Constants.DISPLAY.DEFAULT_RASTER;
                 return z1 - z2;
             });
 

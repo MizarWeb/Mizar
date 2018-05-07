@@ -144,7 +144,7 @@ GroundOverlayRenderer.prototype.render = function( tiles )
 				if (!initialized)
 				{
 					gl.uniformMatrix3fv(this.program.uniforms.transform, false, go.inverseTransform );
-					gl.uniform1f(this.program.uniforms.opacity, go.opacity );
+					gl.uniform1f(this.program.uniforms.opacity, go.getOpacity() );
 
 					gl.activeTexture(gl.TEXTURE0);
 					gl.bindTexture(gl.TEXTURE_2D, go.texture);

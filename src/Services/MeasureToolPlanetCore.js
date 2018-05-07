@@ -324,7 +324,7 @@ define(["jquery", "underscore-min", "../Utils/Constants",
                 properties: {
                     style: new FeatureStyle({
                         fillColor: [1, 0, 0, 1],
-                        zIndex:10
+                        zIndex:Constants.DISPLAY.SERVICE_VECTOR
                     })
                 },
                 type: "Feature"

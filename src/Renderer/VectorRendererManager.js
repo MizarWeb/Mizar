@@ -35,15 +35,9 @@
  * along with GlobWeb. If not, see <http://www.gnu.org/licenses/>.
  ***************************************/
 
-define(["./RasterOverlayRenderer"], function (RasterOverlayRenderer) {
+define(["../Utils/Constants", "./RasterOverlayRenderer"], function (Constants, RasterOverlayRenderer) {
 
     /**************************************************************************************************************/
-
-    /**
-     * @constant
-     * @type {string}
-     */
-    const ZINDEX_SELECTED_RASTER_BUCKET = 100;
 
     /**
      @name VectorRendererManager
@@ -92,11 +86,11 @@ define(["./RasterOverlayRenderer"], function (RasterOverlayRenderer) {
                 while (bucketIdx--) {
                     var bucket = buckets[bucketIdx];
                     var layer = bucket.layer;
-                    if (bucket.style.zIndex == ZINDEX_SELECTED_RASTER_BUCKET) {
-                        bucket.style.zIndex = 0;
+                    if (bucket.style.zIndex == Constants.DISPLAY.SELECTED_RASTER && bucket.style.zIndex <= Constants.DISPLAY.SELECTED_RASTER) {
+                        bucket.style.zIndex = Constants.DISPLAY.DEFAULT_RASTER;
                     }
-                    if (layer.getID() === selectedLayer.getID()) {
-                        bucket.style.zIndex = ZINDEX_SELECTED_RASTER_BUCKET;
+                    if (layer.getID() === selectedLayer.getID() && bucket.style.zIndex <= Constants.DISPLAY.SELECTED_RASTER) {
+                        bucket.style.zIndex = Constants.DISPLAY.SELECTED_RASTER;
                     }
                 }
             }

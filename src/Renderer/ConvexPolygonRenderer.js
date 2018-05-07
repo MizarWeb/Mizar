@@ -571,7 +571,7 @@ define(['../Utils/Utils', '../Utils/Constants','./VectorRenderer', './Program', 
                 var bucket = renderable.bucket;
 
                 // Set the color
-                var color = bucket.style.strokeColor;
+                var color = bucket.style.getStrokeColor();
                 gl.uniform4f(this.basicProgram.uniforms.color, color[0], color[1], color[2], color[3] * bucket.layer.getOpacity());
 
                 // Update vertex buffer

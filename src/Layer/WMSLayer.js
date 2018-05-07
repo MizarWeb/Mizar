@@ -145,11 +145,15 @@ define(["jquery", '../Utils/Utils', './AbstractRasterLayer', '../Utils/Constants
                 var format = defaultStyle.LegendURL[0].Format;
                 var url = defaultStyle.LegendURL[0].OnlineResource;
                 var size = defaultStyle.LegendURL[0].size;
-                legend = {
-                    title:title,
-                    format:format,
-                    url:url,
-                    size:size
+                if(title === undefined || title === "default") {
+                    legend = {};
+                } else {
+                    legend = {
+                        title:title,
+                        format:format,
+                        url:url,
+                        size:size
+                    }
                 }
             } else {
                 legend = {};

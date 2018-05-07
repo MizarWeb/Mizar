@@ -78,13 +78,6 @@ Layer.prototype.getCopyrightUrl = function() {};
 Layer.prototype.getAck = function() {};
 
 /**
- * Returns the icon's url.<br/>
- * By default, a default image is returned.
- * @return {string}
- */
-Layer.prototype.getIcon = function() {};
-
-/**
  * Returns the layer description.
  * @return {string}
  */
@@ -184,12 +177,6 @@ Layer.prototype.getBaseUrl = function() {};
  * @returns {boolean} true when the layer is deletable by the client otherwise false
  */
 Layer.prototype.isDeletable = function() {};
-
-/**
- * Returns the layer's color
- * @returns {int[]} color in rgba
- */
-Layer.prototype.getColor = function() {};
 
 /**
  * Returns the style.

@@ -358,6 +358,25 @@ define(function () {
         "FEATURED_ADDED" : "features:added"
     };
 
+    /**
+     * @namespace
+     * DISPLAY_ORDER
+     * @property {String} RENDERING - Special rendering index
+     * @property {String} DEFAULT_RASTER - Default layer index (specially images)
+     * @property {String} SELECTED_RASTER - Selected layer index (specially images)
+     * @property {String} DEFAULT_VECTOR - Default vector index
+     * @property {String} SELECTED_VECTOR - Selected vector index
+     * @property {String} SERVICE_VECTOR - Service index
+     */
+    Constants.DISPLAY = {
+        "RENDERING" : -1,
+        "DEFAULT_RASTER" : 0,
+        "SELECTED_RASTER" : 10,
+        "DEFAULT_VECTOR" : 20,
+        "SELECTED_VECTOR" : 30,
+        "SERVICE_VECTOR" : 40
+    };
+
     /**************************************************************************************************************/
 
     return Constants;

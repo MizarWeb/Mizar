@@ -172,7 +172,7 @@ define(['./AbstractLayer', '../Utils/Utils', '../Renderer/Ray', '../Renderer/Pro
         CoordinateGridLayer.prototype.generateImageData = function (text) {
             var ctx = this.canvas2d.getContext("2d");
             ctx.clearRect(0, 0, this.canvas2d.width, this.canvas2d.height);
-            ctx.fillStyle = FeatureStyle.fromColorToString(this.color);
+            ctx.fillStyle = FeatureStyle.fromColorToString(this.getStyle().getStrokeColor());
             ctx.font = '18px sans-serif';
             ctx.textBaseline = 'top';
             ctx.textAlign = 'center';
@@ -415,8 +415,9 @@ define(['./AbstractLayer', '../Utils/Utils', '../Renderer/Ray', '../Renderer/Pro
             this.gridProgram.apply();
             mat4.multiply(renderContext.projectionMatrix, renderContext.viewMatrix, renderContext.modelViewMatrix);
             gl.uniformMatrix4fv(this.gridProgram.uniforms.viewProjectionMatrix, false, renderContext.modelViewMatrix);
-            gl.uniform1f(this.gridProgram.uniforms.alpha, this.opacity);
-            gl.uniform3f(this.gridProgram.uniforms.color, this.color[0], this.color[1], this.color[2]);
+            gl.uniform1f(this.gridProgram.uniforms.alpha, this.getOpacity());
+            var color = this.getStyle().getStrokeColor();
+            gl.uniform3f(this.gridProgram.uniforms.color, color[0], color[1], color[2]);
 
             gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexBuffer);
             gl.vertexAttribPointer(this.gridProgram.attributes.vertex, this.vertexBuffer.itemSize, gl.FLOAT, false, 0, 0);

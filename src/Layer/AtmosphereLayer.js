@@ -65,7 +65,8 @@
  * @implements {Layer}
  * @module Layer
  */
-define(['../Utils/Utils', './AbstractLayer', '../Utils/Constants', '../Provider/PlanetProvider', '../Renderer/Program'], function (Utils, AbstractLayer, Constants, PlanetProvider, Program) {
+define(['../Utils/Utils', './AbstractLayer', '../Utils/Constants', '../Provider/PlanetProvider', '../Renderer/Program'],
+        function (Utils, AbstractLayer, Constants, PlanetProvider, Program) {
 
     /**
      * Atmosphere layer configuration
@@ -102,6 +103,9 @@ define(['../Utils/Utils', './AbstractLayer', '../Utils/Constants', '../Provider/
                 value: currentDate.toISOString()+"/"+tomorrow.toISOString()+"/PT1H"
             }
         };
+        // For rendering
+        options.zIndex = Constants.DISPLAY.RENDERING;
+
         AbstractLayer.prototype.constructor.call(this, Constants.LAYER.Atmosphere, options);
         if (!this.name) {
             this.name = "Atmosphere";
@@ -118,9 +122,6 @@ define(['../Utils/Utils', './AbstractLayer', '../Utils/Constants', '../Provider/
         this._groundProgram = null;
         this._originalProgram = null;
         this._isValid = false;
-
-        // For rendering
-        this.zIndex = -1;
     };
 
     /**************************************************************************************************************/
