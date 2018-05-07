@@ -223,7 +223,14 @@ body {
     pointer-events: auto;
     overflow: hidden;
     margin-top: 45px;
-    margin-left: 160px;
+    margin-right: 160px;
+}
+
+#timeTravelDiv {
+    pointer-events: auto;
+    overflow: hidden;
+    margin-bottom: 45px;
+    margin-right: 300px;
 }
 
 /*** Left bottom components(share, mollweide, stats) ***/

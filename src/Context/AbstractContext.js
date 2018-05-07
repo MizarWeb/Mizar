@@ -851,6 +851,15 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Util
             throw new SyntaxError("compass visible not implemented", "AbstractContext.js");
         };
 
+        /**
+         * @function setTimeTravelVisible
+         * @memberOf AbstractContext#
+         * @abstract
+         */
+        AbstractContext.prototype.setTimeTravelVisible = function (divName, visible) {
+            throw new SyntaxError("time travel visible not implemented", "AbstractContext.js");
+        };
+
 
         /**
          * @function getMode
