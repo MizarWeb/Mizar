@@ -39,18 +39,6 @@ define(["jquery", "moment", "../Utils/Constants"], function ($, Moment, Constant
         Moment.locale('fr');
     };
 
-    TimeTravelParams.STEP = {
-        YEAR        : "years",
-        QUARTER     : "quarters",
-        MONTH       : "months",
-        WEEK        : "weeks",
-        DAY         : "days",
-        HOUR        : "hours",
-        MINUTE      : "minutes",
-        SECOND      : "seconds",
-        MILLISECOND : "milliseconds",
-        ENUMERATED  : null
-    };
 
     TimeTravelParams.prototype.setContext = function (ctx) {
         this.ctx = ctx;
@@ -92,9 +80,13 @@ define(["jquery", "moment", "../Utils/Constants"], function ($, Moment, Constant
         // when enumerated, erase all others params
         this.startDate   = 0;
         this.endDate     = values.length-1;
-        this.stepKind    = TimeTravelParams.STEP.ENUMERATED;
+        this.stepKind    = Constants.TIME_STEP.ENUMERATED;
         this.stepValue   = 1;
         this.currentDate = 0;
+    };
+
+    TimeTravelParams.prototype.apply = function () {
+        this.ctx.publish(Constants.EVENT_MSG.GLOBAL_TIME_CHANGED,{date:this.currentDate,display:this.getCurrentDisplayDate()});
     };
 
     TimeTravelParams.prototype.rewind = function () {
@@ -102,13 +94,13 @@ define(["jquery", "moment", "../Utils/Constants"], function ($, Moment, Constant
         if (this.stepKing === null) {
             this.currentDate -= this.step;
         } else {
-            this.currentDate = Moment(this.currentDate).subtract(this.stepKind,this.stepValue);
+            this.currentDate = Moment(this.currentDate).subtract(this.stepValue,this.stepKind);
         }
         if (this.currentDate < this.startDate) {
             console.log("can't go before...");
             this.currentDate = oldCurrentDate;
         } else {
-            this.ctx.publish(Constants.EVENT_MSG.GLOBAL_TIME_CHANGED,{date:this.currentDate,display:this.getCurrentDisplayDate()});
+            this.apply();
         }
     };
 
@@ -117,13 +109,13 @@ define(["jquery", "moment", "../Utils/Constants"], function ($, Moment, Constant
         if (this.stepKing === null) {
             this.currentDate += this.step;
         } else {
-            this.currentDate = Moment(this.currentDate).add(this.stepKind,this.stepValue);
+            this.currentDate = Moment(this.currentDate).add(this.stepValue,this.stepKind);
         }
         if (this.currentDate > this.endDate) {
             console.log("can't go after...");
             this.currentDate = oldCurrentDate;
         } else {
-            this.ctx.publish(Constants.EVENT_MSG.GLOBAL_TIME_CHANGED,{date:this.currentDate,display:this.getCurrentDisplayDate()});
+            this.apply();
         }
     };
 
@@ -135,11 +127,30 @@ define(["jquery", "moment", "../Utils/Constants"], function ($, Moment, Constant
         return str;
     };
 
+    TimeTravelParams.prototype.getDateFormated = function (date) {
+            // Check with STEP kind value
+            var formatPattern = "LLLL";
+            if (this.stepKind === Constants.TIME_STEP.YEAR) {
+                formatPattern = "Y";
+            } else if ( (this.stepKind === Constants.TIME_STEP.QUARTER) || (this.stepKind === Constants.TIME_STEP.MONTH) ) {
+                formatPattern = "MMM Y";
+            } else if ( (this.stepKind === Constants.TIME_STEP.WEEK) || (this.stepKind === Constants.TIME_STEP.DAY) ) {
+                formatPattern = "Do MMM Y";
+            } else if ( (this.stepKind === Constants.TIME_STEP.HOUR) || (this.stepKind === Constants.TIME_STEP.MINUTE) ) {
+                formatPattern = "Do MMM Y HH:mm";
+            } else if ( this.stepKind === Constants.TIME_STEP.SECOND) {
+                formatPattern = "Do MMM Y   HH:mm:ss";
+            } else {
+                formatPattern = "Do MMM Y   HH:mm:ss.SSS";
+            }    
+            return Moment(this.currentDate).format(formatPattern);
+    };
+
     TimeTravelParams.prototype.getCurrentDisplayDate = function() {
         if (this.enumeratedValues !== null) {
             return Moment(this.enumeratedValues[this.currentDate]).format("LLLL");
         } else {
-            return Moment(this.currentDate).format("LLLL");
+            return this.getDateFormated(this.currentDate);
         }
     };
 

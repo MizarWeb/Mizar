@@ -96,8 +96,6 @@
                     }
                 });
             }
-            
-            
 
             for (var i=0;i<climateData.length;i++) {
                 var currentThematicId = climateData[i].thematicId;
@@ -133,6 +131,16 @@
                     }
                 }
             });
+
+            console.log("caller :", mizar.getActivatedContext());
+
+            mizar.getActivatedContext().publish(Mizar.EVENT_MSG.GLOBAL_TIME_INIT,
+             {
+                 start : [2012,0,1],
+                 end : [2017,0,1],
+                 stepKind : Mizar.TIME_STEP.YEAR,
+                 stepValue : 5
+             });
         });
 
     </script>
@@ -157,6 +165,9 @@
     </div>
     <div style="position: absolute; right:8px; bottom:50px; z-index: 11; width:116px;">
         <div id="timeTravelDiv"></div>
+    </div>
+    <div style="position: absolute; right:8px; bottom:10px; z-index: 11; width:116px;">
+        <div id="textTimeTravelDiv"></div>
     </div>
     <canvas id="MizarCanvas" onclick="click" style="border: none; margin: 0; padding: 0;">
     </canvas>

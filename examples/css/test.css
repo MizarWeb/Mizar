@@ -11,6 +11,16 @@
     margin-right: 16px;
     margin-top: 16px;
 }
+
+#textTimeTravelDiv {
+    color : white;
+    vertical-align: middle;
+    text-align : center;
+    font-size: small;
+    margin-right: 16px;
+    margin-top: 16px;
+}
+
 #objectCompass svg {
     float: right;
 }

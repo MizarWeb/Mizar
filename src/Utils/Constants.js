@@ -359,7 +359,8 @@ define(function () {
         "GLOBAL_TIME_REWIND"    : "globalTime:rewind",
         "GLOBAL_TIME_FORWARD"   : "globalTime:forward",
         "GLOBAL_TIME_SET"       : "globalTime:set",
-        "GLOBAL_TIME_CHANGED"   : "globalTime:changed" // temporary, need to be link to LAYERS_TIME_CHANGED after dev
+        "GLOBAL_TIME_CHANGED"   : "globalTime:changed", // temporary, need to be link to LAYERS_TIME_CHANGED after dev
+        "GLOBAL_TIME_INIT"   : "globalTime:init" 
     };
 
     /**
@@ -379,6 +380,19 @@ define(function () {
         "DEFAULT_VECTOR" : 20,
         "SELECTED_VECTOR" : 30,
         "SERVICE_VECTOR" : 40
+    };
+
+    Constants.TIME_STEP = {
+        YEAR        : "years",
+        QUARTER     : "quarters",
+        MONTH       : "months",
+        WEEK        : "weeks",
+        DAY         : "days",
+        HOUR        : "hours",
+        MINUTE      : "minutes",
+        SECOND      : "seconds",
+        MILLISECOND : "milliseconds",
+        ENUMERATED  : null
     };
 
     /**************************************************************************************************************/

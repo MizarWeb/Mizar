@@ -121,6 +121,10 @@ define(['../Renderer/FeatureStyle', '../Renderer/VectorRendererManager', '../Uti
                 document.currentOpenSearchLayer = [];
             }
             document.currentOpenSearchLayer[this.ID] = this;
+
+            if (this.callbackContext) {
+                this.callbackContext.subscribe(Constants.EVENT_MSG.LAYERS_TIME_CHANGED,this.setTime);
+            }
         };
 
         /**************************************************************************************************************/
