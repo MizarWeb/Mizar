@@ -68,7 +68,17 @@ define(["jquery","./TimeTravelParams","../Utils/Constants"], function ($, TimeTr
         ctx.unsubscribe(Constants.EVENT_MSG.GLOBAL_TIME_FORWARD);
         ctx.unsubscribe(Constants.EVENT_MSG.GLOBAL_TIME_REWIND);
         ctx.unsubscribe(Constants.EVENT_MSG.GLOBAL_TIME_SET);
+        ctx.unsubscribe(Constants.EVENT_MSG.GLOBAL_TIME_INIT);
         document.getElementById(parentElement).innerHTML = '';
+    }
+
+    function initValues(values) {
+        console.log("ok");
+        params.setStartDate(values.start);
+        params.setEndDate(values.end);
+        params.setStep(values.stepKind,values.stepValue);
+        params.setCurrentDate(values.start);
+        params.apply();
     }
 
     /**************************************************************************************************************/
@@ -79,16 +89,14 @@ define(["jquery","./TimeTravelParams","../Utils/Constants"], function ($, TimeTr
             ctx = options.ctx;
 
             params.setContext(ctx);
-            params.setStartDate([2012,0,1]);
-            params.setEndDate([2017,0,1]);
-            params.setCurrentDate([2012,0,1]);
-            params.setStep(TimeTravelParams.STEP.YEAR,1);
             
             // subscribe
             ctx.subscribe(Constants.EVENT_MSG.GLOBAL_TIME_FORWARD,goForward);
             ctx.subscribe(Constants.EVENT_MSG.GLOBAL_TIME_REWIND,goRewind);
             ctx.subscribe(Constants.EVENT_MSG.GLOBAL_TIME_SET,chooseTime);
+            ctx.subscribe(Constants.EVENT_MSG.GLOBAL_TIME_INIT,initValues);
         },
+        initValues   : initValues,
         goForward   : goForward,
         goRewind    : goRewind,
         chooseTime  : chooseTime,

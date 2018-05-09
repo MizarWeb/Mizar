@@ -281,6 +281,27 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Util
             return this.servicesRunningOnCollection.length > 0;
         };
 
+        /**************************************************************************************************************/
+
+        /**
+         * @function postProcessDateTime
+         * @memberOf AbstractLayer#
+         */
+        AbstractLayer.prototype.postProcessTime = function (time) {
+            return time;
+        };
+
+        /**************************************************************************************************************/
+        
+        /**
+         * @function setDateTime
+         * @memberOf AbstractLayer#
+         */
+        AbstractLayer.prototype.setTime = function (time) {
+            return false;
+        };
+
+        /**************************************************************************************************************/
 
         /**
          * @function forceRefresh

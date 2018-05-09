@@ -10,6 +10,14 @@ var context = {
             "scale": 50
         },
         {
+            "category": "PEPS",
+            "type": "OpenSearch",
+            "baseUrl": "https://peps.cnes.fr/resto/api/collections/S1/describe.xml",
+            "color": "yellow",
+            "opacity": 20,
+            "visible": true
+        },
+        {
             "name": "Blue Marble",
             "type": "WMS",
             "baseUrl": "http://80.158.6.138/mapserv?map=WMS_BLUEMARBLE",

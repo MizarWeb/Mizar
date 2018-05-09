@@ -77,6 +77,8 @@ define(["jquery", "../Utils/Constants","./TimeTravelCore"],
 
         ctx.subscribe(Constants.EVENT_MSG.GLOBAL_TIME_CHANGED,this.updateDisplayDate);
 
+        TimeTravelCore.init(options);
+
         $.get(svgHourGlass,
             function (response) {
                 // Import contents of the svg document into this document
@@ -97,7 +99,6 @@ define(["jquery", "../Utils/Constants","./TimeTravelCore"],
                 // Publish modified event to update compass north
                 //ctx.publish(Constants.EVENT_MSG.NAVIGATION_MODIFIED);
                 if (svgRewindDoc && svgForwardDoc && svgHourGlassDoc) {
-                    TimeTravelCore.init(options);
                     $('#' + parentElement).css("display", "block");
                 }
             },
@@ -121,7 +122,6 @@ define(["jquery", "../Utils/Constants","./TimeTravelCore"],
                     // Publish modified event to update compass north
                     //ctx.publish(Constants.EVENT_MSG.NAVIGATION_MODIFIED);
                     if (svgRewindDoc && svgForwardDoc && svgHourGlassDoc) {
-                        TimeTravelCore.init(options);
                         $('#' + parentElement).css("display", "block");
                     }
                 },
@@ -145,7 +145,6 @@ define(["jquery", "../Utils/Constants","./TimeTravelCore"],
                     // Publish modified event to update compass north
                     //ctx.publish(Constants.EVENT_MSG.NAVIGATION_MODIFIED);
                     if (svgRewindDoc && svgForwardDoc && svgHourGlassDoc) {
-                        TimeTravelCore.init(options);
                         $('#' + parentElement).css("display", "block");
                     }
                 },
@@ -155,7 +154,10 @@ define(["jquery", "../Utils/Constants","./TimeTravelCore"],
 
     /**************************************************************************************************************/
     TimeTravel.prototype.updateDisplayDate = function (date) {
-        console.log("Date : ",date.display);
+        if (document.getElementById("textTimeTravelDiv") !== null) {
+            document.getElementById("textTimeTravelDiv").innerHTML = date.display;
+        }
+        ctx.publish(Constants.EVENT_MSG.LAYERS_TIME_CHANGED,date.date);
     };
 
     /**
@@ -165,6 +167,7 @@ define(["jquery", "../Utils/Constants","./TimeTravelCore"],
     TimeTravel.prototype.goRewind = TimeTravelCore.goRewind;
     TimeTravel.prototype.goForward = TimeTravelCore.goForward;
     TimeTravel.prototype.chooseTime = TimeTravelCore.chooseTime;
+    TimeTravel.prototype.initValues = TimeTravelCore.initValues;
 
     /**************************************************************************************************************/
 

@@ -283,6 +283,12 @@ define(["jquery", "underscore-min",
          */
         Mizar.EVENT_MSG = Constants.EVENT_MSG;
 
+        /**
+         * Static variable, supported {@link TIME_STEP constants} type
+         * @name TIME_STEP
+         * @memberOf Mizar#
+         */
+        Mizar.TIME_STEP = Constants.TIME_STEP;
 
         /**********************************************************************************************************
          *                                      Private methods
