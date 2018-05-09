@@ -35,7 +35,7 @@
  * along with GlobWeb. If not, see <http://www.gnu.org/licenses/>.
  ***************************************/
 
-define(["jquery", "./Numeric", "./UtilsIntersection"], function ($, Numeric, UtilsIntersection) {
+define(["jquery", "./Numeric", "./UtilsIntersection", "../Error/NetworkError"], function ($, Numeric, UtilsIntersection, NetworkError) {
 
     var Utils = {};
 
@@ -268,9 +268,18 @@ define(["jquery", "./Numeric", "./UtilsIntersection"], function ($, Numeric, Uti
                     callback(response, options);
                 }
             },
-            error: function (request, status, error) {
+            error: function (xhr, ajaxOptions, thrownError) {
+                var message;
+                var code;
+                if (xhr.status === 0) {
+                    message = "Unreachable URL or No 'Access-Control-Allow-Origin' header is present on the "+url;
+                    code = 0;
+                } else {
+                    message = thrownError.message;
+                    code = thrownError.code;
+                }
                 if(fallBack) {
-                    fallBack(request, status, error, options);
+                    fallBack(new NetworkError(message, "Utils.js", code));
                 }
             }
         });

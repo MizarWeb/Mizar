@@ -22,9 +22,9 @@
  * Name resolver module : search object name from its coordinates
  * TODO : move _handleMouseDown&Up to View ?
  */
-define(["jquery", "../Utils/Constants",
-        "./CDSReverseNameResolver","./DefaultReverseNameResolver"],
-        function ($, Constants) {
+define(["jquery", "../Utils/Constants","./DefaultReverseNameResolver",
+        "./CDSReverseNameResolver"],
+        function ($, Constants, DefaultReverseNameResolver) {
 
     var mizarAPI;
     var context;
@@ -91,13 +91,12 @@ define(["jquery", "../Utils/Constants",
             var reverseNameResolverClass;
             if (typeof context.getContextConfiguration().reverseNameResolver !== 'undefined') {
                 reverseNameResolverClass = require(context.getContextConfiguration().reverseNameResolver.jsObject);
+                reverseNameResolverImplementation = new reverseNameResolverClass(context);
             }
             else {
                 //Use default reverse name resolver if none defined...
-                reverseNameResolverClass = require("./DefaultReverseNameResolver");
+                reverseNameResolverImplementation = new DefaultReverseNameResolver(context);
             }
-
-            reverseNameResolverImplementation = new reverseNameResolverClass(context);
         }
     };
 

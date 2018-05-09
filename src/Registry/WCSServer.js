@@ -73,10 +73,10 @@ define(["jquery","underscore-min", "../Utils/Utils", "xmltojson", "../Layer/Laye
                     var metadata = XmlToJson.parseString(response, myOptions);
                     callback(self.options, metadata);
                 },
-                function (request, status, error, options) {
-                    console.error("Unknow server " + options.baseUrl);
+                function (e) {
                     if (fallback) {
-                        fallback(request, status, error, options);
+                        e.setLayerDescription(self.options);
+                        fallback(e);
                     }
                 }
             );

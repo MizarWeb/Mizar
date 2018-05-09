@@ -5,6 +5,7 @@ define([], function() {
         this.name = "NetworkError";
         this.code = (arguments.length > 2) ? arguments[2] : null;
         copyOwnPropertiesFrom(this, superInstance);
+        this.layerDescription = null;
     };
 
     function copyOwnPropertiesFrom(target, source) {
@@ -19,6 +20,14 @@ define([], function() {
     NetworkError.prototype = Object.create(Error.prototype);
 
     NetworkError.prototype.constructor = NetworkError;
+
+    NetworkError.prototype.setLayerDescription = function(layerDescription) {
+        this.layerDescription = layerDescription;
+    };
+
+    NetworkError.prototype.getLayerDescription = function() {
+        return this.layerDescription;
+    };
 
     return NetworkError;
 });

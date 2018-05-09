@@ -1,5 +1,5 @@
-define(['../Utils/Utils', './AbstractRegistryHandler', '../Layer/LayerFactory', "../Error/NetworkError"],
-    function(Utils, AbstractRegistryHandler, LayerFactory, NetworkException){
+define(['../Utils/Utils', './AbstractRegistryHandler', '../Layer/LayerFactory'],
+    function(Utils, AbstractRegistryHandler, LayerFactory){
 
     var LayerRegistryHandler = function(pendingLayers){
         AbstractRegistryHandler.prototype.constructor.call();
