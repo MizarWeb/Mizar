@@ -21,7 +21,7 @@ define(['../Utils/Utils', './AbstractRegistryHandler', '../Utils/Constants', "./
                 wmtsServer.createLayers(function(layers) {
                     self._handlePendingLayers(self.pendingLayers, layers);
                     callback(layers);
-                });
+                }, fallback);
             } else {
                 this.next.handleRequest(layerDescription, callback, fallback);
             }

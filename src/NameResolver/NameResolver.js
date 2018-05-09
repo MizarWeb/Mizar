@@ -350,7 +350,7 @@ define(["jquery", "underscore-min", "../Utils/Constants",
                 }
                 else {
                     //Use default name resolver if none defined...
-                    nameResolverClass = require("gw/NameResolver/DefaultNameResolver");
+                    nameResolverClass = require("./DefaultNameResolver");
                     isDefaultNameResolver = true;
                 }
 
