@@ -66,6 +66,18 @@ define(["jquery","../Utils/Constants"], function ($, Constants) {
 
     }
 
+    function updateNorthAzimuth() {
+        var navigation = ctx.getNavigation();
+        var currentHeading = navigation.getHeading();
+
+        var upHeading = 0;
+        var degNorth = upHeading-currentHeading;
+
+        var northText = svgDoc.getElementById("NorthText");
+        northText.setAttribute("transform", "rotate(" + degNorth + " 40 40)");
+
+    }
+
     function updateNorthSky() {
         var geo = [];
         var coordinateSystem = ctx.getCoordinateSystem();
@@ -118,6 +130,9 @@ define(["jquery","../Utils/Constants"], function ($, Constants) {
                 break;
             case Constants.CONTEXT.Planet:
                 updateNorthPlanet();
+                break;
+            case Constants.CONTEXT.Ground:
+                updateNorthAzimuth();
                 break;
             default:
                 throw new RangeError("CompassCore is not supported for this context", "CompassCore.js");

@@ -23,6 +23,26 @@ define(['../Utils/Utils', '../Utils/Constants',
     function (Utils, Constants, AbstractNavigation, SegmentedAnimation, AnimationFactory, Numeric, Ray) {
         /**************************************************************************************************************/
 
+        const AZIMUTH_ZERO = [1, 0.0, 0.0];
+
+        /**
+         * Min heading value in decimal degree.
+         * @type {number}
+         */
+        const MIN_HEADING = 0.0;
+
+        /**
+         * Max heading value in decimal degee.
+         * @type {number}
+         */
+        const MAX_HEADING = 360.0;
+
+        /**
+         * Default heading in decimal degree.
+         * @type {number}
+         */
+        const DEFAULT_HEADING = MIN_HEADING;
+
         /**
          * @name GroundNavigation
          * @class
@@ -44,6 +64,7 @@ define(['../Utils/Utils', '../Utils/Constants',
             // Initialize the navigation
             this.center3d = [1.0, 0.0, 0.0];
             this.up = [0.0, 0.0, 1.0];
+            this.heading = this.options.initTarget ? this.options.initTarget[0] : MIN_HEADING;
             _setInitTarget.call(this, this.options.initTarget);
             _setInitFov.call(this, this.options.initFov);
             _setUpVector.call(this, this.options.up);
@@ -224,118 +245,9 @@ define(['../Utils/Utils', '../Utils/Constants',
             this.zoomToAnimation = animation;
         };
 
-        /**************************************************************************************************************/
-
-        /**
-         * Moves to a 3d position
-         * @function moveTo
-         * @memberOf GroundNavigation#
-         * @param {float[]} geoPos - Array of two floats corresponding to final Longitude and Latitude(in this order) to zoom
-         * @param {int} [duration = 5000] - Duration of animation in milliseconds
-         * @param {Function} [callback] - Callback on the end of animation
-         */
-        GroundNavigation.prototype.moveTo = function (geoPos, duration, callback) {
-            var navigation = this;
-
-            var durationTime = duration || 5000;
-
-            // Create a single animation to animate center3d
-            var geoStart = [];
-            this.ctx.getCoordinateSystem().getWorldFrom3D(this.center3d, geoStart);
-
-            var startValue = [geoStart[0], geoStart[1]];
-            var endValue = [geoPos[0], geoPos[1]];
-
-            // Compute the shortest path if needed
-            if (Math.abs(geoPos[0] - geoStart[0]) > 180.0) {
-                if (geoStart[0] < geoPos[0]) {
-                    startValue[0] += 360;
-                } else {
-                    endValue[0] += 360;
-                }
-            }
-
-            var animation = AnimationFactory.create(
-                Constants.ANIMATION.Segmented,
-                {
-                    "duration": durationTime,
-                    "valueSetter": function (value) {
-                        var position3d = navigation.ctx.getCoordinateSystem().get3DFromWorld([value[0], value[1]]);
-                        navigation.center3d[0] = position3d[0];
-                        navigation.center3d[1] = position3d[1];
-                        navigation.center3d[2] = position3d[2];
-                        navigation.computeViewMatrix();
-                    }
-                });
-
-            animation.addSegment(
-                0.0, startValue,
-                1.0, endValue,
-                function (t, a, b) {
-                    var pt = Numeric.easeOutQuad(t);
-                    return [
-                        Numeric.lerp(pt, a[0], b[0]),  // geoPos.long
-                        Numeric.lerp(pt, a[1], b[1])   // geoPos.lat
-                    ];
-                }
-            );
-
-            animation.onstop = function () {
-                if (callback) {
-                    callback();
-                }
-            };
-
-            this.ctx.addAnimation(animation);
-            animation.start();
-        };
-
-        /**************************************************************************************************************/
-
-        /**
-         *    Move up vector
-         *    @function moveUpTo
-         *    @memberOf GroundNavigation#
-         */
         GroundNavigation.prototype.moveUpTo = function (vec, duration) {
-            // Create a single animation to animate up
-            var startValue = [];
-            var endValue = [];
-            this.ctx.getCoordinateSystem().getWorldFrom3D(this.up, startValue);
-            this.ctx.getCoordinateSystem().getWorldFrom3D(vec, endValue);
-            var durationTime = duration || 1000;
 
-            var navigation = this;
-            var animation = AnimationFactory.create(
-                Constants.ANIMATION.Segmented,
-                {
-                    "duration": durationTime,
-                    "valueSetter": function (value) {
-                        var position3d = navigation.ctx.getCoordinateSystem().get3DFromWorld([value[0], value[1]]);
-                        navigation.up[0] = position3d[0];
-                        navigation.up[1] = position3d[1];
-                        navigation.up[2] = position3d[2];
-                        navigation.computeViewMatrix();
-                    }
-                });
-
-            animation.addSegment(
-                0.0, startValue,
-                1.0, endValue,
-                function (t, a, b) {
-                    var pt = Numeric.easeOutQuad(t);
-                    return [
-                        Numeric.lerp(pt, a[0], b[0]),  // geoPos.long
-                        Numeric.lerp(pt, a[1], b[1])   // geoPos.lat
-                    ];
-                }
-            );
-
-            this.ctx.addAnimation(animation);
-            animation.start();
         };
-
-        /**************************************************************************************************************/
 
         /**
          Compute the view matrix
@@ -349,9 +261,18 @@ define(['../Utils/Utils', '../Utils/Constants',
             var vm = this.renderContext.viewMatrix;
 
             mat4.lookAt([0., 0., 0.], this.center3d, this.up, vm);
-            // mat4.inverse( vm );
-            // mat4.rotate(vm, this.heading * Math.PI/180., [1., 0., 0.])
-            // mat4.inverse( vm );
+
+            var geo=[];
+            this.ctx.getCoordinateSystem().getWorldFrom3D(this.center3d, geo);
+
+            var azimuth = geo[0];
+            if(azimuth < 0) {
+                azimuth = -1*azimuth;
+            } else {
+                azimuth = 360 - azimuth;
+            }
+
+            this.heading = azimuth;
 
             this.up = [0, 0, vm[9]];
             this.ctx.publish(Constants.EVENT_MSG.NAVIGATION_MODIFIED);
@@ -408,12 +329,10 @@ define(['../Utils/Utils', '../Utils/Constants',
          @memberOf GroundNavigation#
          */
         GroundNavigation.prototype.rotate = function (dx, dy) {
-            // constant tiny angle
-            var angle = dx * 0.1 * Math.PI / 180.;
+        };
 
-            var rot = quat4.fromAngleAxis(angle, this.center3d);
-            quat4.multiplyVec3(rot, this.up);
-            this.computeViewMatrix();
+        GroundNavigation.prototype.getHeading = function () {
+            return this.heading;
         };
 
         /**************************************************************************************************************/

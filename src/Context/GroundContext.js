@@ -57,7 +57,7 @@ define(["jquery", "underscore-min", "../Utils/Utils", "./AbstractContext", "../U
                 "posTrackerInfo": true,
                 "posTracker": true,
                 "elevTracker": false,
-                "compassDiv": false,
+                "compassDiv": true,
                 "timeTravel": false
             };
 
@@ -71,7 +71,7 @@ define(["jquery", "underscore-min", "../Utils/Utils", "./AbstractContext", "../U
                 this.initGlobeEvents(this.globe);
                 ServiceFactory.create(Constants.SERVICE.PickingManager).init(this);
 
-                //this.setCompassVisible(options.compass && this.components.compassDiv ? options.compass : "compassDiv", true);
+                this.setCompassVisible(options.compass && this.components.compassDiv ? options.compass : "compassDiv", true);
                 this.setTimeTravelVisible(options.timeTravel && this.components.timeTravelDiv ? options.timeTravel : "timeTravelDiv", true);
 
             }
