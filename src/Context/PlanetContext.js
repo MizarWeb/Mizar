@@ -132,7 +132,7 @@ define(["jquery", "underscore-min", "../Utils/Utils", "./AbstractContext", "../U
         /**
          * Create the navigation according to the isFlat parameter.
          * @param {boolean} isFlat - The globe is projected or in 3D
-         * @param {{AbstractNavigation.planet_configuration|AbstractNavigation.flat_configuration} navigationOpts - Options for navigation
+         * @param {AbstractNavigation.planet_configuration|AbstractNavigation.flat_configuration} navigationOpts - Options for navigation
          * @returns {FlatNavigation|PlanetNavigation} navigation
          * @private
          */

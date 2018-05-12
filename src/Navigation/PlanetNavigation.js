@@ -92,6 +92,19 @@ define(['../Utils/Utils', '../Utils/Constants', './AbstractNavigation', '../Anim
          */
         const DEFAULT_HEADING = MIN_HEADING;
 
+        /**
+         * Heading difference between two successive rotation (in degree) of the camera
+         * @type {number}
+         */
+        const DELTA_HEADING = 0.05;
+
+        /**
+         * Tilt difference between two successive rotation (in degree) of the camera
+         * @type {number}
+         */
+        const DELTA_TILT = 0.05;
+
+
 
         /**
          * @name PlanetNavigation
@@ -490,8 +503,8 @@ define(['../Utils/Utils', '../Utils/Constants', './AbstractNavigation', '../Anim
             var previousHeading = this.heading;
             var previousTilt = this.tilt;
 
-            this.heading += dx * 0.035;
-            this.tilt += dy * 0.035;
+            this.heading += dx * DELTA_HEADING;
+            this.tilt += dy * DELTA_TILT;
 
             this.computeViewMatrix();
 

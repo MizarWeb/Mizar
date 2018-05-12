@@ -262,54 +262,51 @@ define(["jquery", "underscore-min", "../Utils/Constants",
             mizarAPI.getPlanetContext().removeDraw(measureLayer);
         }
 
-        /**
-         *    Updates measure coordinates
-         */
-        function updateMeasure() {
-            self.clear();
-            var coordinates = self.computeMeasure();
-            // Get dem scale of elevation layer
+        function getMntScale() {
             var mntScale;
             if (
-               (mizarAPI.getActivatedContext().elevationTracker !== null) &&
-               (typeof mizarAPI.getActivatedContext().elevationTracker !== "undefined") &&
-               (mizarAPI.getActivatedContext().elevationTracker.options !== null) &&
-               (typeof mizarAPI.getActivatedContext().elevationTracker.options !== "undefined") &&
-               (typeof mizarAPI.getActivatedContext().elevationTracker.options.elevationLayer !== "undefined") &&
-               (typeof mizarAPI.getActivatedContext().elevationTracker.options.elevationLayer.scale !== "undefined") ) {
+                (mizarAPI.getActivatedContext().elevationTracker !== null) &&
+                (typeof mizarAPI.getActivatedContext().elevationTracker !== "undefined") &&
+                (mizarAPI.getActivatedContext().elevationTracker.options !== null) &&
+                (typeof mizarAPI.getActivatedContext().elevationTracker.options !== "undefined") &&
+                (typeof mizarAPI.getActivatedContext().elevationTracker.options.elevationLayer !== "undefined") &&
+                (typeof mizarAPI.getActivatedContext().elevationTracker.options.elevationLayer.scale !== "undefined") ) {
                 mntScale = mizarAPI.getActivatedContext().elevationTracker.options.elevationLayer.scale;
             } else {
                 mntScale = 1;
             }
-            
-            var firstPoint = self.geoPickPoint;
-            var secondPoint = self.secondGeoPickPoint;
+            return mntScale;
+        }
+
+        function computeMaxElevation(firstPoint, secondPoint) {
             var maxElevation = 0;
             // Get maximum elevation along the segment
             if ((firstPoint !== null) && (secondPoint !== null)) {
-              var intermediatesPoints = calculateIntermediateElevationPoint({},firstPoint,secondPoint);
-              // For each point, get elevation
-              for (var i=0;i<intermediatesPoints.length;i++) {
-                  var pt = intermediatesPoints[i];
-                  var elevation = mizarAPI.getActivatedContext().getElevation(pt[0], pt[1]);
-                  elevation = Numeric.roundNumber(elevation / scale, 0);
-                  if (elevation > maxElevation) {
-                    maxElevation = elevation;
-                  }
-              }
-              // Apply dem scale
-              maxElevation = maxElevation * mntScale;
+                var intermediatesPoints = calculateIntermediateElevationPoint({},firstPoint,secondPoint);
+                // For each point, get elevation
+                for (var i=0;i<intermediatesPoints.length;i++) {
+                    var pt = intermediatesPoints[i];
+                    var elevation = mizarAPI.getActivatedContext().getElevation(pt[0], pt[1]);
+                    elevation = Numeric.roundNumber(elevation / scale, 0);
+                    if (elevation > maxElevation) {
+                        maxElevation = elevation;
+                    }
+                }
 
-              // Add 10% to avoid collision display
-              maxElevation = maxElevation * 1.1;
+                // Get dem scale of elevation layer
+                var mntScale = getMntScale();
+
+                // Apply dem scale
+                maxElevation = maxElevation * mntScale;
+
+                // Add 10% to avoid collision display
+                maxElevation = maxElevation * 1.1;
             }
+            return maxElevation;
+        }
 
-            // Apply elevation to all point of displayed arrow
-            for (var i=0;i<coordinates.length;i++) {
-              coordinates[i][2] = maxElevation;
-            }
-
-            self.measureFeature = {
+        function createGeoJsonMeasurement(coordinates) {
+            return {
                 geometry: {
                     gid: "measureShape",
                     coordinates: coordinates,
@@ -329,20 +326,10 @@ define(["jquery", "underscore-min", "../Utils/Constants",
                 },
                 type: "Feature"
             };
+        }
 
-
-
-            var center = [(self.secondPickPoint[0] + self.pickPoint[0]) / 2, (self.secondPickPoint[1] + self.pickPoint[1]) / 2];
-            var geoCenter = mizarAPI.getActivatedContext().getLonLatFromPixel(center[0],center[1]);
-
-            // Apply elevation to label
-            geoCenter[2] = maxElevation;
-
-            var distance = self.calculateDistanceElevation(self.geoPickPoint, self.secondGeoPickPoint);
-
-            distance = Numeric.roundNumber(distance.toFixed(3), 2);
-
-            self.measureLabel = {
+        function createGeoJsonLabel(geoCenter, distance) {
+            return {
                 geometry: {
                     type: Constants.GEOMETRY.Point,
                     gid: "measureShape",
@@ -359,12 +346,40 @@ define(["jquery", "underscore-min", "../Utils/Constants",
                         label: distance + " km",
                         fillColor: [1, 1, 1, 1],
                         pointMaxSize : 600,
-                        extrusionScale: -100000
+                        zIndex:Constants.DISPLAY.SERVICE_VECTOR
                     })
                 }
             };
+        }
+
+        /**
+         *    Updates measure coordinates
+         */
+        function updateMeasure() {
+            self.clear();
+
+            // Create elevation
+            var firstPoint = self.geoPickPoint;
+            var secondPoint = self.secondGeoPickPoint;
+            var maxElevation = computeMaxElevation(firstPoint, secondPoint);
+
+            // Create measurement and  apply elevation to all point of displayed arrow
+            var coordinates = self.computeMeasure();
+            for (var i=0;i<coordinates.length;i++) {
+              coordinates[i][2] = maxElevation;
+            }
+            self.measureFeature = createGeoJsonMeasurement(coordinates);
+
+            // Create measurement label
+            var center = [(self.secondPickPoint[0] + self.pickPoint[0]) / 2, (self.secondPickPoint[1] + self.pickPoint[1]) / 2];
+            var geoCenter = mizarAPI.getActivatedContext().getLonLatFromPixel(center[0],center[1]);
+            geoCenter[2] = maxElevation;
+            var distance = self.calculateDistanceElevation(self.geoPickPoint, self.secondGeoPickPoint);
+            distance = Numeric.roundNumber(distance.toFixed(3), 2);
+            self.measureLabel = createGeoJsonLabel(geoCenter, distance);
+
+            // add measurement and label to the the GeoJson collection
             measureLayer.addFeature(self.measureFeature);
-            
             measureLayer.addFeature(self.measureLabel);
         }
 

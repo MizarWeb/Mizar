@@ -250,7 +250,7 @@ define(['../Utils/Utils', '../Utils/Event', '../Navigation/NavigationHandlerFact
         /**
          * Moves up vector.
          * @function moveUpTo
-         * @memberOf AstroNavigation#
+         * @memberOf AbstractNavigation#
          * @param {float[]} vec Vector
          * @param {int} [duration = 1000] - Duration of animation in milliseconds
          * @abstract

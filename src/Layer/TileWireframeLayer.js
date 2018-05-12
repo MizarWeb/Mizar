@@ -226,7 +226,6 @@ define(['../Utils/Utils', './AbstractLayer', '../Utils/Constants', '../Renderer/
                 // Bind the vertex buffer
                 gl.bindBuffer(gl.ARRAY_BUFFER, tile.vertexBuffer);
                 gl.vertexAttribPointer(vertexAttribute, 3, gl.FLOAT, false, 4 * tile.config.vertexSize, 0);
-
                 var indexBuffer = ( isLoaded || isLevelZero ) ? this.indexBuffer : this.subIndexBuffer[tile.parentIndex];
                 // Bind the index buffer only if different (index buffer is shared between tiles)
                 if (currentIB !== indexBuffer) {

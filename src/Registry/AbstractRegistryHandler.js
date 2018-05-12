@@ -17,22 +17,20 @@ define(["underscore-min",'../Layer/LayerFactory'], function(_, LayerFactory) {
     AbstractRegistryHandler.prototype.handleRequest = function(layerDescription, callback, fallback){};
 
     AbstractRegistryHandler.prototype._handlePendingLayers = function(pendingLayers, layers) {
-        var isFound = false;
-        for (var i=0; i<layers.length && !isFound; i++) {
+        for (var i=0; i<layers.length && pendingLayers.length !== 0; i++) {
             var layer = layers[i];
             if(pendingLayers.length != 0 && layer.isBackground() && layer.isVisible()) {
-                for(var j=0; j<pendingLayers.length; j++) {
+                var j = pendingLayers.length;
+                while( j > 0) {
+                    j--;
                     var pendingLayerDescription = pendingLayers[j];
-                    isFound = true;
                     try {
                         layers.push(LayerFactory.create(pendingLayerDescription));
+                        pendingLayers.splice(j, 1);
                     } catch(RangeError) {
                     }
                 }
             }
-        }
-        if(isFound) {
-            pendingLayers = [];
         }
     };
 
