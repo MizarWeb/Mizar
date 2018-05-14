@@ -255,7 +255,7 @@ define(['../Utils/Utils', '../Utils/Constants', './AbstractNavigation', '../Anim
             );
 
             // zoom in
-            _addZoomIn.call(this, zoomToAnimation, midValue, endValue);
+            _addZoomIn.call(this, zoomToAnimation, midValue, endValue, 0.5);
         }
 
         /**
@@ -263,11 +263,13 @@ define(['../Utils/Utils', '../Utils/Constants', './AbstractNavigation', '../Anim
          * @param {AbstractAnimation} zoomToAnimation - animation where the segment is added
          * @param {float[]} startValue - Starting position (longitude, latitude, distance as vector length)
          * @param {float[]} endValue - Ending position (longitude, latitude, distance as vector length)
+         * @param {float} [startParameter=0.0] - start parameter
          * @private
          */
-        function _addZoomIn(zoomToAnimation, startValue, endValue) {
+        function _addZoomIn(zoomToAnimation, startValue, endValue, startParameter) {
+            var parameter = startParameter ? startParameter : 0.0;
             zoomToAnimation.addSegment(
-                0.0, startValue,
+                parameter, startValue,
                 1.0, endValue,
                 function (t, a, b) {
                     var pt = Numeric.easeOutQuad(t);
@@ -393,7 +395,7 @@ define(['../Utils/Utils', '../Utils/Constants', './AbstractNavigation', '../Anim
             this.ctx.publish(Constants.EVENT_MSG.NAVIGATION_CHANGED_DISTANCE);
             var navigation = this;
             var duration = (options && options.duration) ? options.duration : DEFAULT_DURATION_ZOOM;
-            this.zoomToAnimation = _initZoomAnimation.call(this, navigation, duration);
+            var zoomToAnimation = _initZoomAnimation.call(this, navigation, duration);
 
             var destDistance = (options && options.distance) ? options.distance : this.distance / this.ctx.getCoordinateSystem().getGeoide().getHeightScale();
             var pos = this.ctx.getCoordinateSystem().get3DFromWorld(geoPos);
@@ -403,16 +405,16 @@ define(['../Utils/Utils', '../Utils/Constants', './AbstractNavigation', '../Anim
             var maxAltitude = _computeMaxAltitudeForZoomAnimation.call(this, this.ctx, this.center, pos);
 
             if (maxAltitude > this.distance) {
-                _addZoomOutThenZoomIn.call(this, this.zoomToAnimation, startValue, endValue, maxAltitude);
+                _addZoomOutThenZoomIn.call(this, zoomToAnimation, startValue, endValue, maxAltitude);
             }
             else {
-                _addZoomIn.call(this, this.zoomToAnimation, startValue, endValue);
+                _addZoomIn.call(this, zoomToAnimation, startValue, endValue);
             }
 
-            _addStop.call(this, this.zoomToAnimation, this.ctx, destDistance, options);
+            _addStop.call(this, zoomToAnimation, this.ctx, destDistance, options);
 
-            this.ctx.addAnimation(this.zoomToAnimation);
-            this.zoomToAnimation.start();
+            this.ctx.addAnimation(zoomToAnimation);
+            zoomToAnimation.start();
         };
 
         /**
@@ -548,10 +550,10 @@ define(['../Utils/Utils', '../Utils/Constants', './AbstractNavigation', '../Anim
             var durationTime = duration || DEFAULT_DURATION_NORTH;
 
             var navigation = this;
-            var animation = _initMoveUpAnimation.call(this, navigation, durationTime);
-            _rotateAnimationToNorth.call(this, animation, this.getHeading());
-            this.ctx.addAnimation(animation);
-            animation.start();
+            var moveUpToAnimation = _initMoveUpAnimation.call(this, navigation, durationTime);
+            _rotateAnimationToNorth.call(this, moveUpToAnimation, this.getHeading());
+            this.ctx.addAnimation(moveUpToAnimation);
+            moveUpToAnimation.start();
         };
 
         /**

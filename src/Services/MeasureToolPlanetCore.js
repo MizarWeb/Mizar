@@ -169,7 +169,7 @@ define(["jquery", "underscore-min", "../Utils/Constants",
         /**********************************************************************************************/
 
         function rotateVector2D(vec, theta) {
-            theta = theta * Math.PI / 180;
+            theta = Numeric.toRadian(theta);
             var cs = Math.cos(theta);
             var sn = Math.sin(theta);
 
@@ -206,52 +206,34 @@ define(["jquery", "underscore-min", "../Utils/Constants",
                     [self.geoPickPoint[0], self.geoPickPoint[1], null],
                     [self.secondGeoPickPoint[0], self.secondGeoPickPoint[1], null]
                 ];
-                return points;
+            } else {
+                var diff = [self.secondPickPoint[0] - self.pickPoint[0], self.secondPickPoint[1] - self.pickPoint[1]];
+                normalize2D(diff);
+
+                // First arrow
+                var arrow = rotateVector2D(diff, 30);
+                var arrow2 = rotateVector2D(diff, -30);
+                arrow = [self.pickPoint[0] + 10 * arrow[0], self.pickPoint[1] + 10 * arrow[1]];
+                arrow2 = [self.pickPoint[0] + 10 * arrow2[0], self.pickPoint[1] + 10 * arrow2[1]];
+
+                var diff2 = [-diff[0], -diff[1]];
+                var arrow3 = rotateVector2D(diff2, 30);
+                var arrow4 = rotateVector2D(diff2, -30);
+                arrow3 = [self.secondPickPoint[0] + 10 * arrow3[0], self.secondPickPoint[1] + 10 * arrow3[1]];
+                arrow4 = [self.secondPickPoint[0] + 10 * arrow4[0], self.secondPickPoint[1] + 10 * arrow4[1]];
+
+                points = [
+                    [arrow[0] * widthScale - 1, (rc.canvas.height - arrow[1]) * heightScale - 1, 1, 1],
+                    [self.pickPoint[0] * widthScale - 1, (rc.canvas.height - self.pickPoint[1]) * heightScale - 1, 1, 1],
+                    [arrow2[0] * widthScale - 1, (rc.canvas.height - arrow2[1]) * heightScale - 1, 1, 1],
+                    [self.pickPoint[0] * widthScale - 1, (rc.canvas.height - self.pickPoint[1]) * heightScale - 1, 1, 1],
+                    [self.secondPickPoint[0] * widthScale - 1, (rc.canvas.height - self.secondPickPoint[1]) * heightScale - 1, 1, 1],
+                    [arrow3[0] * widthScale - 1, (rc.canvas.height - arrow3[1]) * heightScale - 1, 1, 1],
+                    [self.secondPickPoint[0] * widthScale - 1, (rc.canvas.height - self.secondPickPoint[1]) * heightScale - 1, 1, 1],
+                    [arrow4[0] * widthScale - 1, (rc.canvas.height - arrow4[1]) * heightScale - 1, 1, 1]
+                ];
+                self.computeIntersection(points);
             }
-
-            var diff = [self.secondPickPoint[0] - self.pickPoint[0], self.secondPickPoint[1] - self.pickPoint[1]];
-            normalize2D(diff);
-
-            // First arrow
-            var arrow = rotateVector2D(diff, 30);
-            var arrow2 = rotateVector2D(diff, -30);
-            arrow = [self.pickPoint[0] + 10 * arrow[0], self.pickPoint[1] + 10 * arrow[1]];
-            arrow2 = [self.pickPoint[0] + 10 * arrow2[0], self.pickPoint[1] + 10 * arrow2[1]];
-
-            var diff2 = [-diff[0], -diff[1]];
-            var arrow3 = rotateVector2D(diff2, 30);
-            var arrow4 = rotateVector2D(diff2, -30);
-            arrow3 = [self.secondPickPoint[0] + 10 * arrow3[0], self.secondPickPoint[1] + 10 * arrow3[1]];
-            arrow4 = [self.secondPickPoint[0] + 10 * arrow4[0], self.secondPickPoint[1] + 10 * arrow4[1]];
-
-            points = [
-                [arrow[0] * widthScale - 1, (rc.canvas.height - arrow[1]) * heightScale - 1, 1, 1],
-                [self.pickPoint[0] * widthScale - 1, (rc.canvas.height - self.pickPoint[1]) * heightScale - 1, 1, 1],
-                [arrow2[0] * widthScale - 1, (rc.canvas.height - arrow2[1]) * heightScale - 1, 1, 1],
-                [self.pickPoint[0] * widthScale - 1, (rc.canvas.height - self.pickPoint[1]) * heightScale - 1, 1, 1]
-            ];
-            points = [
-                [self.geoPickPoint[0] ,self.geoPickPoint[1],null],
-                [self.secondGeoPickPoint[0] ,self.secondGeoPickPoint[1],null]
-            ];
-
-            ////calcul des points intermédiaires
-            //var distance = 1;
-            //var x = this.pickPoint[0], y = this.pickPoint[1];
-            //while (x < this.secondPickPoint[0] && y < this.secondPickPoint[1]) {
-            //    x += distance * diff[0];
-            //    y += distance * diff[1];
-            //    points.push([x * widthScale - 1, (rc.canvas.height - y) * heightScale - 1, 1, 1]);
-            //}
-
-            //ajout du dernier point
-/*            points.push(
-                [self.secondPickPoint[0] * widthScale - 1, (rc.canvas.height - self.secondPickPoint[1]) * heightScale - 1, 1, 1],
-                [arrow3[0] * widthScale - 1, (rc.canvas.height - arrow3[1]) * heightScale - 1, 1, 1],
-                [self.secondPickPoint[0] * widthScale - 1, (rc.canvas.height - self.secondPickPoint[1]) * heightScale - 1, 1, 1],
-                [arrow4[0] * widthScale - 1, (rc.canvas.height - arrow4[1]) * heightScale - 1, 1, 1]
-            );*/
-            //self.computeIntersection(points);
             return points;
         }
 
@@ -265,12 +247,10 @@ define(["jquery", "underscore-min", "../Utils/Constants",
         function getMntScale() {
             var mntScale;
             if (
-                (mizarAPI.getActivatedContext().elevationTracker !== null) &&
-                (typeof mizarAPI.getActivatedContext().elevationTracker !== "undefined") &&
-                (mizarAPI.getActivatedContext().elevationTracker.options !== null) &&
-                (typeof mizarAPI.getActivatedContext().elevationTracker.options !== "undefined") &&
+                (mizarAPI.getActivatedContext().elevationTracker != null) &&
+                (mizarAPI.getActivatedContext().elevationTracker.options != null) &&
                 (typeof mizarAPI.getActivatedContext().elevationTracker.options.elevationLayer !== "undefined") &&
-                (typeof mizarAPI.getActivatedContext().elevationTracker.options.elevationLayer.scale !== "undefined") ) {
+                (typeof mizarAPI.getActivatedContext().elevationTracker.options.elevationLayer.scale !== "undefined")) {
                 mntScale = mizarAPI.getActivatedContext().elevationTracker.options.elevationLayer.scale;
             } else {
                 mntScale = 1;
@@ -282,9 +262,9 @@ define(["jquery", "underscore-min", "../Utils/Constants",
             var maxElevation = 0;
             // Get maximum elevation along the segment
             if ((firstPoint !== null) && (secondPoint !== null)) {
-                var intermediatesPoints = calculateIntermediateElevationPoint({},firstPoint,secondPoint);
+                var intermediatesPoints = calculateIntermediateElevationPoint({}, firstPoint, secondPoint);
                 // For each point, get elevation
-                for (var i=0;i<intermediatesPoints.length;i++) {
+                for (var i = 0; i < intermediatesPoints.length; i++) {
                     var pt = intermediatesPoints[i];
                     var elevation = mizarAPI.getActivatedContext().getElevation(pt[0], pt[1]);
                     elevation = Numeric.roundNumber(elevation / scale, 0);
@@ -321,7 +301,7 @@ define(["jquery", "underscore-min", "../Utils/Constants",
                 properties: {
                     style: new FeatureStyle({
                         fillColor: [1, 0, 0, 1],
-                        zIndex:Constants.DISPLAY.SERVICE_VECTOR
+                        zIndex: Constants.DISPLAY.SERVICE_VECTOR
                     })
                 },
                 type: "Feature"
@@ -345,8 +325,8 @@ define(["jquery", "underscore-min", "../Utils/Constants",
                     style: new FeatureStyle({
                         label: distance + " km",
                         fillColor: [1, 1, 1, 1],
-                        pointMaxSize : 600,
-                        zIndex:Constants.DISPLAY.SERVICE_VECTOR
+                        pointMaxSize: 600,
+                        zIndex: Constants.DISPLAY.SERVICE_VECTOR
                     })
                 }
             };
@@ -365,14 +345,14 @@ define(["jquery", "underscore-min", "../Utils/Constants",
 
             // Create measurement and  apply elevation to all point of displayed arrow
             var coordinates = self.computeMeasure();
-            for (var i=0;i<coordinates.length;i++) {
-              coordinates[i][2] = maxElevation;
+            for (var i = 0; i < coordinates.length; i++) {
+                coordinates[i][2] = maxElevation;
             }
             self.measureFeature = createGeoJsonMeasurement(coordinates);
 
             // Create measurement label
             var center = [(self.secondPickPoint[0] + self.pickPoint[0]) / 2, (self.secondPickPoint[1] + self.pickPoint[1]) / 2];
-            var geoCenter = mizarAPI.getActivatedContext().getLonLatFromPixel(center[0],center[1]);
+            var geoCenter = mizarAPI.getActivatedContext().getLonLatFromPixel(center[0], center[1]);
             geoCenter[2] = maxElevation;
             var distance = self.calculateDistanceElevation(self.geoPickPoint, self.secondGeoPickPoint);
             distance = Numeric.roundNumber(distance.toFixed(3), 2);
@@ -414,10 +394,10 @@ define(["jquery", "underscore-min", "../Utils/Constants",
             var scale = options.scale | 50;
             var deltaX = firstPoint[0] - secondPoint[0];
             var intervalX;
-            if(deltaX >180.0) {
+            if (deltaX > 180.0) {
                 deltaX = 360.0 - deltaX;
                 intervalX = -deltaX / scale;
-            } else if(deltaX < -180.0) {
+            } else if (deltaX < -180.0) {
                 deltaX = 360.0 + deltaX;
                 intervalX = deltaX / scale;
             } else {
@@ -485,15 +465,23 @@ define(["jquery", "underscore-min", "../Utils/Constants",
             self.elevations.push(pointElevation);
         }
 
+        function _scaleElevation(mizarAPI) {
+            var scaleElavation;
+            var elevationLayer = _.find(mizarAPI.getActivatedContext().getLayers(), function (obj) {
+                return obj.type === Constants.LAYER.WCSElevation || obj.type === Constants.LAYER.WMSElevation
+            });
+            if (elevationLayer !== undefined) {
+                scaleElavation = elevationLayer.scale;
+            } else {
+                scaleElavation = 1;
+            }
+            return scaleElavation;
+        }
+
         function updateContext(mizar) {
             mizarAPI = mizar;
             navigation = mizarAPI.getActivatedContext().getNavigation();
-            var elevationLayer = _.find(mizarAPI.getActivatedContext().getLayers(),  function(obj) { return obj.type ===  Constants.LAYER.WCSElevation ||  obj.type ===  Constants.LAYER.WMSElevation});
-            if(elevationLayer !== undefined) {
-                scale = elevationLayer.scale;
-            } else {
-                scale = 1;
-            }
+            scale = _scaleElevation(mizarAPI);
             dragging = false;
 
             // Layer containing measure feature
@@ -515,17 +503,12 @@ define(["jquery", "underscore-min", "../Utils/Constants",
                 mizarAPI = options.mizar;
                 navigation = mizarAPI.getActivatedContext().getNavigation();
                 onselect = options.onselect;
-                var elevationLayer = _.find(mizarAPI.getActivatedContext().getLayers(),  function(obj) { return obj.type ===  Constants.LAYER.WCSElevation ||  obj.type ===  Constants.LAYER.WMSElevation});
-                if(elevationLayer !== undefined) {
-                    scale = elevationLayer.scale;
-                } else {
-                    scale = 1;
-                }
+                scale = _scaleElevation(mizarAPI);
                 self = this;
                 dragging = false;
 
                 // Layer containing measure feature
-                measureLayer = mizarAPI.LayerFactory.create({type:Constants.LAYER.Vector, visible:true});
+                measureLayer = mizarAPI.LayerFactory.create({type: Constants.LAYER.Vector, visible: true});
                 mizarAPI.getPlanetContext().addDraw(measureLayer);
 
                 this.activated = false;
@@ -538,7 +521,7 @@ define(["jquery", "underscore-min", "../Utils/Constants",
             _handleMouseUp: _handleMouseUp,
             _handleMouseMove: _handleMouseMove,
             clear: clear,
-            remove:remove,
+            remove: remove,
             updateContext: updateContext,
             calculateIntermediateElevationPoint: calculateIntermediateElevationPoint,
             calculateDistanceElevation: calculateDistanceElevation,
