@@ -345,6 +345,12 @@ define(function () {
         "LAYER_FORCE_REFRESH" : "layer:forceRefresh",
         "LAYER_TIME_CHANGED" : "layer:time:changed",
         "LAYERS_TIME_CHANGED" : "layers:time:changed",
+        /** json object like : 
+         { "date" : the current time,
+           "display" : the current date as string for display,
+           "period" : { "from" : , "to" : } <-- if null , no period managed
+         }
+        */
         "BASE_LAYERS_ERROR" : "baseLayersError",
         "BASE_LAYERS_READY" : "baseLayersReady",
         "CRS_MODIFIED" : "modifiedCrs",

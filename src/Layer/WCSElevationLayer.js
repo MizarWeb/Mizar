@@ -192,10 +192,6 @@ define(['../Utils/Utils', './AbstractRasterLayer', '../Utils/Constants','../Tili
             return elevations;
         };
 
-        WCSElevationLayer.prototype.setTime = function(time) {
-            this.setParameter("time", time);
-        };
-
         /**
          * Get an url for the given tile
          * @function getUrl
@@ -227,6 +223,14 @@ define(['../Utils/Utils', './AbstractRasterLayer', '../Utils/Constants','../Tili
 
         WCSElevationLayer.prototype.getScale = function() {
             return this.options.scale;
+        };
+
+        WCSElevationLayer.prototype.setTime = function(time) {
+            if (time.date) {
+                this.setParameter("time",time.date);
+            } else {
+                this.setParameter("time", time);
+            }
         };
 
         /**************************************************************************************************************/

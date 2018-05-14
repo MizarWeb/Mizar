@@ -157,7 +157,7 @@ define(["jquery", "../Utils/Constants","./TimeTravelCore"],
         if (document.getElementById("textTimeTravelDiv") !== null) {
             document.getElementById("textTimeTravelDiv").innerHTML = date.display;
         }
-        ctx.publish(Constants.EVENT_MSG.LAYERS_TIME_CHANGED,date.date);
+        ctx.setTime(date);
     };
 
     /**

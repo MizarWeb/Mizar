@@ -34,8 +34,8 @@
  * You should have received a copy of the GNU General Public License
  * along with GlobWeb. If not, see <http://www.gnu.org/licenses/>.
  ***************************************/
-define(['../Renderer/FeatureStyle', '../Renderer/VectorRendererManager', '../Utils/Utils', '../Utils/UtilsIntersection', './AbstractLayer', './GroundOverlayLayer','../Renderer/RendererTileData', '../Tiling/Tile','../Tiling/GeoTiling','../Utils/Constants','./OpenSearch/OpenSearchForm','./OpenSearch/OpenSearchUtils','./OpenSearch/OpenSearchResult','./OpenSearch/OpenSearchRequestPool','./OpenSearch/OpenSearchCache'],
-    function (FeatureStyle, VectorRendererManager, Utils, UtilsIntersection, AbstractLayer, GroundOverlayLayer,RendererTileData, Tile,GeoTiling,Constants,OpenSearchForm,OpenSearchUtils,OpenSearchResult,OpenSearchRequestPool,OpenSearchCache) {
+define(['../Renderer/FeatureStyle', '../Renderer/VectorRendererManager', '../Utils/Utils', '../Utils/UtilsIntersection', './AbstractLayer', './GroundOverlayLayer','../Renderer/RendererTileData', '../Tiling/Tile','../Tiling/GeoTiling','../Utils/Constants','./OpenSearch/OpenSearchForm','./OpenSearch/OpenSearchUtils','./OpenSearch/OpenSearchResult','./OpenSearch/OpenSearchRequestPool','./OpenSearch/OpenSearchCache',"moment"],
+    function (FeatureStyle, VectorRendererManager, Utils, UtilsIntersection, AbstractLayer, GroundOverlayLayer,RendererTileData, Tile,GeoTiling,Constants,OpenSearchForm,OpenSearchUtils,OpenSearchResult,OpenSearchRequestPool,OpenSearchCache,Moment) {
 
         /**
          * @name OpenSearchLayer
@@ -121,11 +121,9 @@ define(['../Renderer/FeatureStyle', '../Renderer/VectorRendererManager', '../Uti
                 document.currentOpenSearchLayer = [];
             }
             document.currentOpenSearchLayer[this.ID] = this;
-
-            if (this.callbackContext) {
-                this.callbackContext.subscribe(Constants.EVENT_MSG.LAYERS_TIME_CHANGED,this.setTime);
-            }
         };
+
+        
 
         /**************************************************************************************************************/
 
@@ -140,6 +138,39 @@ define(['../Renderer/FeatureStyle', '../Renderer/VectorRendererManager', '../Uti
         };
 
         /**************************************************************************************************************/
+
+        /**
+         * @function setDateTime
+         * @memberOf AbstractLayer#
+         * @param time Json object
+         *  {
+         *     "date" : current date,
+         *     "display" : current date as text for display
+         *     "period" : {
+         *          "from" : ,
+         *          "to" : }
+         *  }
+         */
+        OpenSearchLayer.prototype.setTime = function (time) {
+            var startTime = null;
+            var endTime = null;            
+
+            if (time.period) {
+                startTime = time.period.from;
+                endTime = time.period.to;
+            } else {
+                startTime = time.date;
+                endTime = time.date;
+            }
+
+            startTimeStr = Moment(startTime).format();
+            endTimeStr = Moment(endTime).format();
+
+            OpenSearchUtils.setCurrentValueToParam(this.getServices().queryForm,"startDate",startTimeStr);
+            OpenSearchUtils.setCurrentValueToParam(this.getServices().queryForm,"completionDate",endTimeStr);
+            
+            this.resetAll();
+        };
 
         /**
          * Go to next page
@@ -207,6 +238,8 @@ define(['../Renderer/FeatureStyle', '../Renderer/VectorRendererManager', '../Uti
             // Update GUI !!
             sourceObject.afterLoad(sourceObject);
           }
+
+          
         };
 
         /**************************************************************************************************************/
@@ -291,7 +324,9 @@ define(['../Renderer/FeatureStyle', '../Renderer/VectorRendererManager', '../Uti
             }
 
            //this.globe.refresh();
-            this.getGlobe().getRenderContext().requestFrame();
+           if (this.getGlobe() && this.getGlobe().getRenderContext()) {
+                this.getGlobe().getRenderContext().requestFrame();
+           }
             
         };
 
@@ -656,7 +691,6 @@ define(['../Renderer/FeatureStyle', '../Renderer/VectorRendererManager', '../Uti
          * @return {String} Url
          */
         OpenSearchLayer.prototype.buildUrl = function (bound) {
-
             //var url = this.serviceUrl + "/search?order=" + tile.order + "&healpix=" + tile.pixelIndex;
             if (!this.getServices().hasOwnProperty("queryForm")) {
                 return null;
@@ -685,7 +719,6 @@ define(['../Renderer/FeatureStyle', '../Renderer/VectorRendererManager', '../Uti
                     url = url.replace(param.value.replace("}","?}"),currentValue);
                 }
             }
-
             return this.proxify(url);
         };
 

@@ -287,19 +287,27 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Util
          * @function postProcessDateTime
          * @memberOf AbstractLayer#
          */
-        AbstractLayer.prototype.postProcessTime = function (time) {
+/*        AbstractLayer.prototype.postProcessTime = function (time) {
             return time;
         };
-
+*/
         /**************************************************************************************************************/
         
         /**
          * @function setDateTime
          * @memberOf AbstractLayer#
+         * @param time Json object
+         *  {
+         *     "date" : current date,
+         *     "display" : current date as text for display
+         *     "period" : {
+         *          "from" : ,
+         *          "to" : }
+         *  }
          */
-        AbstractLayer.prototype.setTime = function (time) {
+        /*AbstractLayer.prototype.setTime = function (time) {
             return false;
-        };
+        };*/
 
         /**************************************************************************************************************/
 
