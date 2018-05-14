@@ -76,7 +76,6 @@ define(['../Utils/Utils', './AbstractRasterLayer', '../Utils/Constants','../Tili
             options.scaleData = options.scaleData || 1;
             options.crs = options.crs || 'EPSG:4326';
             AbstractRasterLayer.prototype.constructor.call(this, Constants.LAYER.WCSElevation, options);
-
             // Build the base GetMap URL
             this.getCoverageBaseUrl = _queryImage.call(this, this.getBaseUrl(), options);
         };
@@ -224,6 +223,10 @@ define(['../Utils/Utils', './AbstractRasterLayer', '../Utils/Constants','../Tili
                 this.getCoverageBaseUrl = _queryImage.call(this, this.getBaseUrl(), this.options);
                 this.forceRefresh();
             }
+        };
+
+        WCSElevationLayer.prototype.getScale = function() {
+            return this.options.scale;
         };
 
         /**************************************************************************************************************/

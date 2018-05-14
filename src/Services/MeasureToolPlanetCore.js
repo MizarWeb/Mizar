@@ -131,40 +131,6 @@ define(["jquery", "underscore-min", "../Utils/Constants",
             updateMeasure();
         }
 
-        /**************************************************************************************************************/
-
-        /**
-         * Transform coordinates to the right world space dimension
-         * @param points
-         * @returns {Array} points  points transformed
-         */
-        function computeIntersection(points) {
-            var rc = self.renderContext;
-            var tmpMat = mat4.create();
-
-            // Computes eye in world space
-            mat4.inverse(rc.viewMatrix, tmpMat);
-            var eye = [tmpMat[12], tmpMat[13], tmpMat[14]];
-
-            // Computes the inverse of view/proj matrix
-            mat4.multiply(rc.projectionMatrix, rc.viewMatrix, tmpMat);
-            mat4.inverse(tmpMat);
-
-            // Transforms the four corners of measured shape into world space
-            // and then for each corner computes the intersection of ray starting from the eye to the sphere
-            var worldCenter = [0, 0, 0];
-            for (var i = 0; i < points.length; i++) {
-                mat4.multiplyVec4(tmpMat, points[i]);
-                vec3.scale(points[i], 1.0 / points[i][3]);
-                vec3.subtract(points[i], eye, points[i]);
-                vec3.normalize(points[i]);
-                var ray = new Ray(eye, points[i]);
-                var pos3d = ray.computePoint(ray.sphereIntersect(worldCenter, mizarAPI.getCrs().getGeoide().getRadius()));
-                points[i] = mizarAPI.getCrs().getWorldFrom3D(pos3d);
-            }
-
-            return points;
-        }
 
         /**********************************************************************************************/
 
@@ -195,45 +161,35 @@ define(["jquery", "underscore-min", "../Utils/Constants",
          */
         function computeMeasure() {
 
-            var rc = self.renderContext;
+            var geoDiff = [self.secondGeoPickPoint[0] - self.geoPickPoint[0], self.secondGeoPickPoint[1] - self.geoPickPoint[1], 0];
+            var diff  = vec3.create(geoDiff);
+            var length = vec3.length(diff);
+            vec3.normalize(diff);
+            vec3.scale(diff, length * 0.001);
 
-            var widthScale = 2 / rc.canvas.width;
-            var heightScale = 2 / rc.canvas.height;
+            // First arrow
+            var arrow = rotateVector2D(diff, 30);
+            var arrow2 = rotateVector2D(diff, -30);
+            arrow = [self.geoPickPoint[0] + 10 * arrow[0], self.geoPickPoint[1] + 10 * arrow[1]];
+            arrow2 = [self.geoPickPoint[0] + 10 * arrow2[0], self.geoPickPoint[1] + 10 * arrow2[1]];
 
-            var points;
-            if (mizarAPI.getActivatedContext().getNavigation().getType() === Constants.NAVIGATION.FlatNavigation) {
-                points = [
-                    [self.geoPickPoint[0], self.geoPickPoint[1], null],
-                    [self.secondGeoPickPoint[0], self.secondGeoPickPoint[1], null]
-                ];
-            } else {
-                var diff = [self.secondPickPoint[0] - self.pickPoint[0], self.secondPickPoint[1] - self.pickPoint[1]];
-                normalize2D(diff);
+            // Second arrow
+            var diff2 = [-diff[0], -diff[1]];
+            var arrow3 = rotateVector2D(diff2, 30);
+            var arrow4 = rotateVector2D(diff2, -30);
+            arrow3 = [self.secondGeoPickPoint[0] + 10 * arrow3[0], self.secondGeoPickPoint[1] + 10 * arrow3[1]];
+            arrow4 = [self.secondGeoPickPoint[0] + 10 * arrow4[0], self.secondGeoPickPoint[1] + 10 * arrow4[1]];
 
-                // First arrow
-                var arrow = rotateVector2D(diff, 30);
-                var arrow2 = rotateVector2D(diff, -30);
-                arrow = [self.pickPoint[0] + 10 * arrow[0], self.pickPoint[1] + 10 * arrow[1]];
-                arrow2 = [self.pickPoint[0] + 10 * arrow2[0], self.pickPoint[1] + 10 * arrow2[1]];
-
-                var diff2 = [-diff[0], -diff[1]];
-                var arrow3 = rotateVector2D(diff2, 30);
-                var arrow4 = rotateVector2D(diff2, -30);
-                arrow3 = [self.secondPickPoint[0] + 10 * arrow3[0], self.secondPickPoint[1] + 10 * arrow3[1]];
-                arrow4 = [self.secondPickPoint[0] + 10 * arrow4[0], self.secondPickPoint[1] + 10 * arrow4[1]];
-
-                points = [
-                    [arrow[0] * widthScale - 1, (rc.canvas.height - arrow[1]) * heightScale - 1, 1, 1],
-                    [self.pickPoint[0] * widthScale - 1, (rc.canvas.height - self.pickPoint[1]) * heightScale - 1, 1, 1],
-                    [arrow2[0] * widthScale - 1, (rc.canvas.height - arrow2[1]) * heightScale - 1, 1, 1],
-                    [self.pickPoint[0] * widthScale - 1, (rc.canvas.height - self.pickPoint[1]) * heightScale - 1, 1, 1],
-                    [self.secondPickPoint[0] * widthScale - 1, (rc.canvas.height - self.secondPickPoint[1]) * heightScale - 1, 1, 1],
-                    [arrow3[0] * widthScale - 1, (rc.canvas.height - arrow3[1]) * heightScale - 1, 1, 1],
-                    [self.secondPickPoint[0] * widthScale - 1, (rc.canvas.height - self.secondPickPoint[1]) * heightScale - 1, 1, 1],
-                    [arrow4[0] * widthScale - 1, (rc.canvas.height - arrow4[1]) * heightScale - 1, 1, 1]
-                ];
-                self.computeIntersection(points);
-            }
+            var points = [
+                [arrow[0], arrow[1], null],
+                [self.geoPickPoint[0], self.geoPickPoint[1], null],
+                [arrow2[0], arrow2[1], null],
+                [self.geoPickPoint[0], self.geoPickPoint[1], null],
+                [self.secondGeoPickPoint[0], self.secondGeoPickPoint[1], null],
+                [arrow3[0], arrow3[1], null],
+                [self.secondGeoPickPoint[0], self.secondGeoPickPoint[1], null],
+                [arrow4[0], arrow4[1], null]
+            ];
             return points;
         }
 
@@ -242,47 +198,6 @@ define(["jquery", "underscore-min", "../Utils/Constants",
         function remove() {
             self.clear();
             mizarAPI.getPlanetContext().removeDraw(measureLayer);
-        }
-
-        function getMntScale() {
-            var mntScale;
-            if (
-                (mizarAPI.getActivatedContext().elevationTracker != null) &&
-                (mizarAPI.getActivatedContext().elevationTracker.options != null) &&
-                (typeof mizarAPI.getActivatedContext().elevationTracker.options.elevationLayer !== "undefined") &&
-                (typeof mizarAPI.getActivatedContext().elevationTracker.options.elevationLayer.scale !== "undefined")) {
-                mntScale = mizarAPI.getActivatedContext().elevationTracker.options.elevationLayer.scale;
-            } else {
-                mntScale = 1;
-            }
-            return mntScale;
-        }
-
-        function computeMaxElevation(firstPoint, secondPoint) {
-            var maxElevation = 0;
-            // Get maximum elevation along the segment
-            if ((firstPoint !== null) && (secondPoint !== null)) {
-                var intermediatesPoints = calculateIntermediateElevationPoint({}, firstPoint, secondPoint);
-                // For each point, get elevation
-                for (var i = 0; i < intermediatesPoints.length; i++) {
-                    var pt = intermediatesPoints[i];
-                    var elevation = mizarAPI.getActivatedContext().getElevation(pt[0], pt[1]);
-                    elevation = Numeric.roundNumber(elevation / scale, 0);
-                    if (elevation > maxElevation) {
-                        maxElevation = elevation;
-                    }
-                }
-
-                // Get dem scale of elevation layer
-                var mntScale = getMntScale();
-
-                // Apply dem scale
-                maxElevation = maxElevation * mntScale;
-
-                // Add 10% to avoid collision display
-                maxElevation = maxElevation * 1.1;
-            }
-            return maxElevation;
         }
 
         function createGeoJsonMeasurement(coordinates) {
@@ -341,19 +256,14 @@ define(["jquery", "underscore-min", "../Utils/Constants",
             // Create elevation
             var firstPoint = self.geoPickPoint;
             var secondPoint = self.secondGeoPickPoint;
-            var maxElevation = computeMaxElevation(firstPoint, secondPoint);
 
             // Create measurement and  apply elevation to all point of displayed arrow
             var coordinates = self.computeMeasure();
-            for (var i = 0; i < coordinates.length; i++) {
-                coordinates[i][2] = maxElevation;
-            }
             self.measureFeature = createGeoJsonMeasurement(coordinates);
 
             // Create measurement label
             var center = [(self.secondPickPoint[0] + self.pickPoint[0]) / 2, (self.secondPickPoint[1] + self.pickPoint[1]) / 2];
             var geoCenter = mizarAPI.getActivatedContext().getLonLatFromPixel(center[0], center[1]);
-            geoCenter[2] = maxElevation;
             var distance = self.calculateDistanceElevation(self.geoPickPoint, self.secondGeoPickPoint);
             distance = Numeric.roundNumber(distance.toFixed(3), 2);
             self.measureLabel = createGeoJsonLabel(geoCenter, distance);
@@ -471,7 +381,7 @@ define(["jquery", "underscore-min", "../Utils/Constants",
                 return obj.type === Constants.LAYER.WCSElevation || obj.type === Constants.LAYER.WMSElevation
             });
             if (elevationLayer !== undefined) {
-                scaleElavation = elevationLayer.scale;
+                scaleElavation = elevationLayer.getScale();
             } else {
                 scaleElavation = 1;
             }
@@ -526,7 +436,6 @@ define(["jquery", "underscore-min", "../Utils/Constants",
             calculateIntermediateElevationPoint: calculateIntermediateElevationPoint,
             calculateDistanceElevation: calculateDistanceElevation,
             computeMeasure: computeMeasure,
-            computeIntersection: computeIntersection,
             storeDistanceAndElevation: storeDistanceAndElevation
         };
     });
