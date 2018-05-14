@@ -68,6 +68,26 @@ define(["jquery", "moment", "../Utils/Constants"], function ($, Moment, Constant
         return this.currentDate;
     };
 
+    TimeTravelParams.prototype.getCurrentPeriod = function() {
+        var fromDate = null;
+        var toDate = null;
+       
+
+        if (this.stepKind === Constants.TIME_STEP.ENUMERATED) {
+            fromDate = this.enumeratedValues[this.currentDate];
+            toDate = fromDate;
+        } else {
+            fromDate = this.currentDate;
+            toDate = Moment(this.currentDate).add(this.stepValue,this.stepKind);
+            toDate = Moment(toDate).subtract(1,Constants.TIME_STEP.SECOND);
+        }
+        var result = {
+            "from" : fromDate, 
+            "to" : toDate
+        };
+        return result;
+    };
+
     TimeTravelParams.prototype.setStep = function (kind,value) {
         this.stepKind = kind;
         this.stepValue = value;
@@ -86,12 +106,17 @@ define(["jquery", "moment", "../Utils/Constants"], function ($, Moment, Constant
     };
 
     TimeTravelParams.prototype.apply = function () {
-        this.ctx.publish(Constants.EVENT_MSG.GLOBAL_TIME_CHANGED,{date:this.currentDate,display:this.getCurrentDisplayDate()});
+        this.ctx.publish(Constants.EVENT_MSG.GLOBAL_TIME_CHANGED,
+            {
+                date:this.currentDate,
+                display:this.getCurrentDisplayDate(),
+                period : this.getCurrentPeriod()
+            });
     };
 
     TimeTravelParams.prototype.rewind = function () {
         oldCurrentDate = this.currentDate;
-        if (this.stepKing === null) {
+        if (this.stepKind === null) {
             this.currentDate -= this.step;
         } else {
             this.currentDate = Moment(this.currentDate).subtract(this.stepValue,this.stepKind);
@@ -106,7 +131,7 @@ define(["jquery", "moment", "../Utils/Constants"], function ($, Moment, Constant
 
     TimeTravelParams.prototype.forward = function () {
         oldCurrentDate = this.currentDate;
-        if (this.stepKing === null) {
+        if (this.stepKind === null) {
             this.currentDate += this.step;
         } else {
             this.currentDate = Moment(this.currentDate).add(this.stepValue,this.stepKind);

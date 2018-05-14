@@ -97,7 +97,6 @@ define(function () {
           param = form.parameters[i];
           if (param.name === name) {
             return param.currentValue;
-            break;
           }
       }
     };
@@ -115,13 +114,16 @@ define(function () {
       for (var i=0;i<form.parameters.length;i++) {
           param = form.parameters[i];
           if (param.name === "maxRecords") {
-            param.currentValue = 10;//Math.ceil(param.maxInclusive * 0.2);
+            param.currentValue = Math.ceil(param.maxInclusive * 0.2);
             //param.currentValue = Math.ceil(param.maxInclusive * 1);
             //param.currentValue = 20;
 
           } else if (param.name === "page") {
             param.currentValue = 1;
+          } else { 
+            //console.log(param.name,param);
           }
+
       }
     };
 

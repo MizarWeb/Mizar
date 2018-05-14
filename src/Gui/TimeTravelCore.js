@@ -55,7 +55,6 @@ define(["jquery","./TimeTravelParams","../Utils/Constants"], function ($, TimeTr
      *    
      */
     function chooseTime() {
-        console.log("chooseTime");
     }
 
     /**************************************************************************************************************/
@@ -73,7 +72,6 @@ define(["jquery","./TimeTravelParams","../Utils/Constants"], function ($, TimeTr
     }
 
     function initValues(values) {
-        console.log("ok");
         params.setStartDate(values.start);
         params.setEndDate(values.end);
         params.setStep(values.stepKind,values.stepValue);

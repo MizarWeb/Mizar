@@ -178,7 +178,9 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Util
             this.time = time;
             for (var i = 0; i < this.layers.length; i++) {
                 var layer = this.layers[i];
-                layer.setTime(time);
+                if (layer.setTime) {
+                    layer.setTime(time);
+                }
             }
         };
 
@@ -378,8 +380,13 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Util
                     for (var i = 0; i < layers.length; i++) {
                         var layer = layers[i];
                         layer.callbackContext = self;
+
                         self.layers.push(layer);
+                        if (layer.setTime) {
+                            layer.setTime(self.time);
+                        }
                         _addToGlobe.call(self, layer);
+
 
                         self._fillDataProvider(layer, layerDescription);
 
@@ -387,9 +394,14 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Util
                             ServiceFactory.create(Constants.SERVICE.PickingManager).addPickableLayer(layer);
                         }
 
-                        layer.subscribe(Constants.EVENT_MSG.LAYER_VISIBILITY_CHANGED, _handleCameraWhenLayerAdded);
+                       layer.subscribe(Constants.EVENT_MSG.LAYER_VISIBILITY_CHANGED, _handleCameraWhenLayerAdded);
                         var layerEvent = (layer.category === "background") ? Constants.EVENT_MSG.LAYER_BACKGROUND_ADDED : Constants.EVENT_MSG.LAYER_ADDITIONAL_ADDED;
                         self.publish(layerEvent, layer);
+
+                        if (layer.addEventTime) {
+                            layer.addEventTime();
+                        };
+
                         if (callback) {
                             callback(layer.ID);
                         }

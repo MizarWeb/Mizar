@@ -167,7 +167,7 @@
 
       var deb = this.currentValue.substr(0,10);
       var fin = this.currentValue.substr(-5);
-      var res = deb+"T"+fin+":00.00"
+      var res = deb+"T"+fin+":00.00";
       return res;
 
     }
