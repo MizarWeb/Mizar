@@ -324,7 +324,9 @@ define(['../Renderer/FeatureStyle', '../Renderer/VectorRendererManager', '../Uti
             }
 
            //this.globe.refresh();
-            this.getGlobe().getRenderContext().requestFrame();
+           if (this.getGlobe() && this.getGlobe().getRenderContext()) {
+                this.getGlobe().getRenderContext().requestFrame();
+           }
             
         };
 
