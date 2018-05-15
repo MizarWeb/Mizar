@@ -133,19 +133,22 @@
                 }
             });
 
+            // Test values with [] and step
             mizar.getActivatedContext().publish(Mizar.EVENT_MSG.GLOBAL_TIME_INIT,
              {
-                 start : [2012,0,1],
+                 /*start : [2012,0,1],
                  end : [2017,0,1],
-                 stepKind : Mizar.TIME_STEP.WEEK,
+                 stepKind : Mizar.TIME_STEP.MONTH,
                  stepValue : 1
+                 */
+                enumeratedValues : [ "1989","2000-01-27","2001-09-10","2002-09-29","2003-02-20",
+                                     "2013-03-07","2013-03-12","2013-05-01","2013-05-11","2013-06-05",
+                                     "2015-07-13","2015-07-28","2015-08-07","2015-08-12","2015-08-17","2015-08-22","2015-08-27","2015-09-11","2015-09-01" ]
              });
+
         });
-
     </script>
-
 </head>
-
 
 <body style="margin: 0; padding: 0;" onload="init();">
     <div style="position:absolute; z-index: 10; width:100%;">

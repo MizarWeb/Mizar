@@ -168,7 +168,7 @@ define(['../Renderer/FeatureStyle', '../Renderer/VectorRendererManager', '../Uti
 
             OpenSearchUtils.setCurrentValueToParam(this.getServices().queryForm,"startDate",startTimeStr);
             OpenSearchUtils.setCurrentValueToParam(this.getServices().queryForm,"completionDate",endTimeStr);
-            
+
             this.resetAll();
         };
 

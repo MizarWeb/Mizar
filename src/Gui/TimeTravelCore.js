@@ -72,12 +72,18 @@ define(["jquery","./TimeTravelParams","../Utils/Constants"], function ($, TimeTr
     }
 
     function initValues(values) {
-        params.setStartDate(values.start);
-        params.setEndDate(values.end);
-        params.setStep(values.stepKind,values.stepValue);
-        params.setCurrentDate(values.start);
-        params.apply();
+        if (values.enumeratedValues) {
+            params.setEnumeratedValues(values.enumeratedValues);
+            params.apply();
+        } else {
+            params.setStartDate(values.start);
+            params.setEndDate(values.end);
+            params.setStep(values.stepKind,values.stepValue);
+            params.setCurrentDate(values.start);
+            params.apply();
+        }
     }
+
 
     /**************************************************************************************************************/
 

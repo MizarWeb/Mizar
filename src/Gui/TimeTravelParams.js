@@ -24,12 +24,13 @@
 define(["jquery", "moment", "../Utils/Constants"], function ($, Moment, Constants) {
 
     var TimeTravelParams = function () {
-        this.startDate = null;
-        this.endDate = null;
+        this.startDate = new Date();
+        this.endDate = new Date();
 
-        this.currentDate = null;
+        this.currentDate = new Date();
 
-        this.step = null;
+        this.stepKind = Constants.TIME_STEP.DAY;
+        this.stepValue = 1;
 
         this.ctx = null;
 
@@ -42,7 +43,8 @@ define(["jquery", "moment", "../Utils/Constants"], function ($, Moment, Constant
 
     TimeTravelParams.prototype.setContext = function (ctx) {
         this.ctx = ctx;
-    }
+        this.apply();
+    };
 
     TimeTravelParams.prototype.setStartDate = function (date) {
         this.startDate = Moment(date);
@@ -74,13 +76,12 @@ define(["jquery", "moment", "../Utils/Constants"], function ($, Moment, Constant
        
 
         if (this.stepKind === Constants.TIME_STEP.ENUMERATED) {
-            fromDate = this.enumeratedValues[this.currentDate];
-            toDate = fromDate;
-        } else {
-            fromDate = this.currentDate;
-            toDate = Moment(this.currentDate).add(this.stepValue,this.stepKind);
-            toDate = Moment(toDate).subtract(1,Constants.TIME_STEP.SECOND);
+            return this.enumeratedValues[this.currentIndex].period;
         }
+        
+        fromDate = this.currentDate;
+        toDate = Moment(this.currentDate).add(this.stepValue,this.stepKind).subtract(1,Constants.TIME_STEP.MILLISECOND);
+
         var result = {
             "from" : fromDate, 
             "to" : toDate
@@ -93,34 +94,94 @@ define(["jquery", "moment", "../Utils/Constants"], function ($, Moment, Constant
         this.stepValue = value;
     };
 
+    TimeTravelParams.prototype.parseDate = function (value) {
+        value = value.trim();
+        var date = null;
+        var period = { "from": null, "to": null};
+
+        var regExpYear = /^\d{4}$/;
+        var regExpMonth = /^\d{4}\-\d{2}$/;
+        var regExpDay = /^\d{4}\-\d{2}\-\d{2}$/;
+        if (typeof value === "string") {
+            // Year management
+            if (regExpYear.test(value)) {
+                date = Moment(value,"YYYY");
+                period.from = date;
+                period.to = Moment(period.from).add(1,Constants.TIME_STEP.YEAR).subtract(1,Constants.TIME_STEP.MILLISECOND);
+            }
+            // Month management
+            if (regExpMonth.test(value)) {
+                date = Moment(value,"YYYY-MM");
+                period.from = date;
+                period.to = Moment(period.from).add(1,Constants.TIME_STEP.MONTH).subtract(1,Constants.TIME_STEP.MILLISECOND);
+            }
+            // Day management
+            if (regExpDay.test(value)) {
+                date = Moment(value,"YYYY-MM-DD");
+                period.from = date;
+                period.to = Moment(period.from).add(1,Constants.TIME_STEP.DAY).subtract(1,Constants.TIME_STEP.MILLISECOND);
+            }
+            if (date === null) {
+                date = Moment(value);
+            }
+        }
+        return {
+                    "date" : date,
+                    "display" : value,
+                    "period" : period
+            };
+    };
+
+    function sortTime(a,b){ 
+        return a.date>b.date?1:-1;
+    }
+
     TimeTravelParams.prototype.setEnumeratedValues = function (values) {
         // TODO soon : check format, need conversion ?
-        this.enumeratedValues = values;
+        this.enumeratedValues = [];
+        for (var i=0;i<values.length;i++) {
+            this.enumeratedValues.push(this.parseDate(values[i]));
+        }
         
+        // sort tab
+        this.enumeratedValues.sort(sortTime);
+
+        console.log(this.enumeratedValues);
+
+
         // when enumerated, erase all others params
         this.startDate   = 0;
-        this.endDate     = values.length-1;
+        this.endDate     = this.enumeratedValues.length-1;
         this.stepKind    = Constants.TIME_STEP.ENUMERATED;
         this.stepValue   = 1;
-        this.currentDate = 0;
+        this.currentIndex = 0;
+        this.currentDate = this.enumeratedValues[this.currentIndex].date;
     };
 
     TimeTravelParams.prototype.apply = function () {
-        this.ctx.publish(Constants.EVENT_MSG.GLOBAL_TIME_CHANGED,
-            {
-                date:this.currentDate,
-                display:this.getCurrentDisplayDate(),
-                period : this.getCurrentPeriod()
-            });
+        var details = {
+            date:this.currentDate,
+            display:this.getCurrentDisplayDate(),
+            period : this.getCurrentPeriod()
+        };
+        this.ctx.publish(Constants.EVENT_MSG.GLOBAL_TIME_CHANGED,details);
     };
 
     TimeTravelParams.prototype.rewind = function () {
-        oldCurrentDate = this.currentDate;
-        if (this.stepKind === null) {
-            this.currentDate -= this.step;
-        } else {
-            this.currentDate = Moment(this.currentDate).subtract(this.stepValue,this.stepKind);
+        // Special : enumerated values
+        if (this.stepKind === Constants.TIME_STEP.ENUMERATED) {
+            if (this.currentIndex>0) {
+                this.currentIndex--;
+                this.currentDate = this.enumeratedValues[this.currentIndex];
+                this.apply();
+                return;
+            }
         }
+         
+        oldCurrentDate = this.currentDate;
+
+        this.currentDate = Moment(this.currentDate).subtract(this.stepValue,this.stepKind);
+
         if (this.currentDate < this.startDate) {
             console.log("can't go before...");
             this.currentDate = oldCurrentDate;
@@ -130,12 +191,22 @@ define(["jquery", "moment", "../Utils/Constants"], function ($, Moment, Constant
     };
 
     TimeTravelParams.prototype.forward = function () {
-        oldCurrentDate = this.currentDate;
-        if (this.stepKind === null) {
-            this.currentDate += this.step;
-        } else {
-            this.currentDate = Moment(this.currentDate).add(this.stepValue,this.stepKind);
+        // Special : enumerated values
+        if (this.stepKind === Constants.TIME_STEP.ENUMERATED) {
+            if (this.currentIndex<(this.enumeratedValues.length-1)) {
+                this.currentIndex++;
+                this.currentDate = this.enumeratedValues[this.currentIndex];
+                this.apply();
+                return;
+            }
         }
+
+
+
+        oldCurrentDate = this.currentDate;
+
+        this.currentDate = Moment(this.currentDate).add(this.stepValue,this.stepKind);
+
         if (this.currentDate > this.endDate) {
             console.log("can't go after...");
             this.currentDate = oldCurrentDate;
@@ -172,8 +243,8 @@ define(["jquery", "moment", "../Utils/Constants"], function ($, Moment, Constant
     };
 
     TimeTravelParams.prototype.getCurrentDisplayDate = function() {
-        if (this.enumeratedValues !== null) {
-            return Moment(this.enumeratedValues[this.currentDate]).format("LLLL");
+        if (this.stepKind === Constants.TIME_STEP.ENUMERATED) {
+            return this.enumeratedValues[this.currentIndex].display;
         } else {
             return this.getDateFormated(this.currentDate);
         }
