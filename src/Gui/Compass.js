@@ -21,7 +21,7 @@
 /**
  * Compass module : map control with "north" composant
  */
-define(["jquery", "../Utils/Constants","./CompassCore"],
+define(["jquery", "../Utils/Constants","../Services/CompassCore"],
     function ($, Constants, CompassCore) {
 
     /**

@@ -133,6 +133,18 @@ define(["jquery", "moment", "../Utils/Constants"], function ($, Moment, Constant
     /**************************************************************************************************************/
 
     /**
+     * Get the current index
+     * @function getCurrentIndex
+     * @return Integer Current index
+     * @memberOf TimeTravelParams#
+     */
+    TimeTravelParams.prototype.getCurrentIndex = function () {
+        return this.currentIndex;
+    };
+
+    /**************************************************************************************************************/
+
+    /**
      * Get the current period
      * @function getCurrentPeriod
      * @return {Json} period { "from", "to" }
