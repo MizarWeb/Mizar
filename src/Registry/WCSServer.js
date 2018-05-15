@@ -5,10 +5,11 @@ define(["jquery","underscore-min", "../Utils/Utils", "xmltojson", "../Layer/Laye
             if (options.getCapabilities) {
                 options.baseUrl = Utils.computeBaseUrlFromCapabilities(options.getCapabilities, ["service", "request", "version"]);
             } else if (options.baseUrl) {
-                options.getCapabilities = WCSServer.getCapabilitiesFromBaseURl(options.baseUrl, options);
+                options.getCapabilities = WCSServer.getCapabilitiesFromBaseURL(options.baseUrl, options);
             } else {
                 throw new ReferenceError('No URL to access to the server is defined', 'WCSServer.js');
             }
+            options.describeCoverage = WCSServer.describeCoverageFromBaseURL(options.baseUrl, options);
             this.proxyUse = proxyUse;
             this.proxyUrl = proxyUrl;
             this.options = options;
@@ -63,6 +64,28 @@ define(["jquery","underscore-min", "../Utils/Utils", "xmltojson", "../Layer/Laye
         WCSServer.prototype.getMetadata = function (callback, fallback) {
             var self = this;
             Utils.requestUrl(Utils.proxify(this.options.getCapabilities, {"use" : this.proxyUse, "url" : this.proxyUrl}), 'text', {},
+                function (response) {
+                    var myOptions = {
+                        mergeCDATA: true,
+                        xmlns: false,
+                        attrsAsObject: false,
+                        childrenAsArray: false
+                    };
+                    var metadata = XmlToJson.parseString(response, myOptions);
+                    callback(self.options, metadata);
+                },
+                function (e) {
+                    if (fallback) {
+                        e.setLayerDescription(self.options);
+                        fallback(e);
+                    }
+                }
+            );
+        };
+
+        WCSServer.prototype.getCoverage = function (callback, fallback) {
+            var self = this;
+            Utils.requestUrl(Utils.proxify(this.options.describeCoverage, {"use" : this.proxyUse, "url" : this.proxyUrl}), 'text', {},
                 function (response) {
                     var myOptions = {
                         mergeCDATA: true,
@@ -148,12 +171,20 @@ define(["jquery","underscore-min", "../Utils/Utils", "xmltojson", "../Layer/Laye
         };
 
 
-        WCSServer.getCapabilitiesFromBaseURl = function (baseUrl, options) {
+        WCSServer.getCapabilitiesFromBaseURL = function (baseUrl, options) {
             var getCapabilitiesUrl = baseUrl;
             getCapabilitiesUrl = Utils.addParameterTo(getCapabilitiesUrl, "service", "WCS");
             getCapabilitiesUrl = Utils.addParameterTo(getCapabilitiesUrl, "request", "getCapabilities");
             getCapabilitiesUrl = Utils.addParameterTo(getCapabilitiesUrl, "version", options.hasOwnProperty('version') ? options.version : '1.0.0');
             return getCapabilitiesUrl;
+        };
+
+        WCSServer.describeCoverageFromBaseURL = function(baseUrl, options) {
+            var describeCoverageUrl = baseUrl;
+            describeCoverageUrl = Utils.addParameterTo(describeCoverageUrl, "service", "WCS");
+            describeCoverageUrl = Utils.addParameterTo(describeCoverageUrl, "request", "describeCoverage");
+            describeCoverageUrl = Utils.addParameterTo(describeCoverageUrl, "version", options.hasOwnProperty('version') ? options.version : '1.0.0');
+            return describeCoverageUrl;
         };
 
         return WCSServer;
