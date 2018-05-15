@@ -35,8 +35,8 @@
  * along with GlobWeb. If not, see <http://www.gnu.org/licenses/>.
  ***************************************/
 
-define(['../Utils/Utils', './AbstractRasterLayer', '../Utils/Constants', '../Registry/WMTSMetadata'],
-    function (Utils, AbstractRasterLayer, Constants, WMTSMetadata) {
+define(['../Utils/Utils', './AbstractLayer', './AbstractRasterLayer', '../Utils/Constants', '../Registry/WMTSMetadata'],
+    function (Utils, AbstractLayer, AbstractRasterLayer, Constants, WMTSMetadata) {
         /**
          * Configuration parameters to query a Web Map Tile Service (WMTS)
          * @typedef {AbstractRasterLayer} AbstractRasterLayer.wmts_configuration
@@ -111,12 +111,16 @@ define(['../Utils/Utils', './AbstractRasterLayer', '../Utils/Constants', '../Reg
             }
             url = Utils.addParameterTo(url, "format", options.hasOwnProperty('format') ? options.format : 'image/png');
             if (options.time) {
-                url = Utils.addParameterTo(url, "time", options.time);
+                var timeRequest = AbstractLayer.createTimeRequest(options.time);
+                var allowedTime = this.getDimensions().time;
+                var selectedDate = AbstractLayer.selectedTime(allowedTime.value, timeRequest);
+                url = Utils.addParameterTo(url, "time", selectedDate);
             }
             return url;
         }
 
         WMTSLayer.prototype.setTime = function(time) {
+            AbstractLayer.prototype.setTime(time);
             this.setParameter("time", time);
         };
 

@@ -16,8 +16,8 @@
  * You should have received a copy of the GNU General Public License
  * along with MIZAR. If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
-define(['jquery', './AbstractProvider', '../Utils/Utils', '../Renderer/FeatureStyle'],
-    function ($, AbstractProvider, Utils, FeatureStyle) {
+define(['jquery', './AbstractProvider', '../Utils/Utils', '../Renderer/FeatureStyle', '../Utils/Constants'],
+    function ($, AbstractProvider, Utils, FeatureStyle, Constants) {
 
         const DEFAULT_STROKE_COLOR = [1.0, 1.0, 1.0, 1.0];
 

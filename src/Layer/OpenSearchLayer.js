@@ -152,23 +152,18 @@ define(['../Renderer/FeatureStyle', '../Renderer/VectorRendererManager', '../Uti
          *  }
          */
         OpenSearchLayer.prototype.setTime = function (time) {
-            var startTime = null;
-            var endTime = null;            
+            AbstractLayer.prototype.setTime(time);
+            this.setParameter.call(this, 'mizar:time', time);
+        };
 
-            if (time.period) {
-                startTime = time.period.from;
-                endTime = time.period.to;
+        OpenSearchLayer.prototype.setParameter = function (paramName,value) {
+            if(paramName === 'mizar:time') {
+                var timeRequest = AbstractLayer.createTimeRequest(value);
+                OpenSearchUtils.setCurrentValueToParam(this.getServices().queryForm,"startDate",timeRequest.from);
+                OpenSearchUtils.setCurrentValueToParam(this.getServices().queryForm,"completionDate",timeRequest.to);
             } else {
-                startTime = time.date;
-                endTime = time.date;
+                OpenSearchUtils.setCurrentValueToParam(this.getServices().queryForm,paramName,value);
             }
-
-            startTimeStr = Moment(startTime).format();
-            endTimeStr = Moment(endTime).format();
-
-            OpenSearchUtils.setCurrentValueToParam(this.getServices().queryForm,"startDate",startTimeStr);
-            OpenSearchUtils.setCurrentValueToParam(this.getServices().queryForm,"completionDate",endTimeStr);
-
             this.resetAll();
         };
 
