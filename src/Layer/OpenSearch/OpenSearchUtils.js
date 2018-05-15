@@ -76,7 +76,6 @@ define(function () {
           if (param.name === name) {
             param.currentValue = value;
             $("#p_"+name).val(value);
-            console.log(name+" ==> "+value);
             break;
           }
       }

@@ -71,6 +71,13 @@ define(["jquery","./TimeTravelParams","../Utils/Constants"], function ($, TimeTr
         document.getElementById(parentElement).innerHTML = '';
     }
 
+    /**************************************************************************************************************/
+
+    /**
+     *    initValues
+     *    
+     */
+
     function initValues(values) {
         if (values.enumeratedValues) {
             params.setEnumeratedValues(values.enumeratedValues);

@@ -110,10 +110,15 @@ define(['../Utils/Utils', './AbstractLayer', './AbstractRasterLayer', '../Utils/
             if (options.hasOwnProperty('time')) {
                 var timeRequest = AbstractLayer.createTimeRequest(options.time);
                 var allowedTime = this.getDimensions().time;
-                var selectedDate = AbstractLayer.selectedTime(allowedTime.value, timeRequest);
-                url = Utils.addParameterTo(url, "time", selectedDate);
+                if (allowedTime.value) {
+                    var selectedDate = AbstractLayer.selectedTime(allowedTime.value, timeRequest);
+                    url = Utils.addParameterTo(url, "time", selectedDate);
+                } else {
+                    //TODO JCM
+                    console.log("No allowed time for WCS Elevation layer");
+                }
             }
-            return url
+            return url;
         }
 
 

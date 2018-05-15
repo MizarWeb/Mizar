@@ -140,8 +140,8 @@ define(['../Renderer/FeatureStyle', '../Renderer/VectorRendererManager', '../Uti
         /**************************************************************************************************************/
 
         /**
-         * @function setDateTime
-         * @memberOf AbstractLayer#
+         * @function setTime
+         * @memberOf OpenSearchLayer#
          * @param time Json object
          *  {
          *     "date" : current date,
@@ -156,11 +156,26 @@ define(['../Renderer/FeatureStyle', '../Renderer/VectorRendererManager', '../Uti
             this.setParameter.call(this, 'mizar:time', time);
         };
 
+        /**
+         * @function setParameter
+         * @memberOf OpenSearchLayer#
+         * @param String paramName Name of parameter
+         * @param JSON value Value
+         *  {
+         *     "date" : current date,
+         *     "display" : current date as text for display
+         *     "period" : {
+         *          "from" : ,
+         *          "to" : }
+         *  }
+         */
         OpenSearchLayer.prototype.setParameter = function (paramName,value) {
             if(paramName === 'mizar:time') {
-                var timeRequest = AbstractLayer.createTimeRequest(value);
-                OpenSearchUtils.setCurrentValueToParam(this.getServices().queryForm,"startDate",timeRequest.from);
-                OpenSearchUtils.setCurrentValueToParam(this.getServices().queryForm,"completionDate",timeRequest.to);
+                value.period.from = Moment(value.period.from).format("YYYY-MM-DD HH:mm");
+                value.period.to = Moment(value.period.to).format("YYYY-MM-DD HH:mm");
+
+                OpenSearchUtils.setCurrentValueToParam(this.getServices().queryForm,"startDate",value.period.from);
+                OpenSearchUtils.setCurrentValueToParam(this.getServices().queryForm,"completionDate",value.period.to);
             } else {
                 OpenSearchUtils.setCurrentValueToParam(this.getServices().queryForm,paramName,value);
             }
@@ -561,7 +576,6 @@ define(['../Renderer/FeatureStyle', '../Renderer/VectorRendererManager', '../Uti
          * @param {String} url Url of image
          */
         OpenSearchLayer.prototype.loadQuicklook = function (feature, url) {
-            console.log("Load quicklook for "+this.getID());
             // Save coordinates
             this.currentIdDisplayed = feature.id;
             
@@ -609,7 +623,6 @@ define(['../Renderer/FeatureStyle', '../Renderer/VectorRendererManager', '../Uti
             if (this.currentQuicklookLayer === null) {
                 return;
             }
-            console.log("Remove quicklook for "+this.getID());
 
             this.currentQuicklookLayer._detach();
             this.currentQuicklookLayer = null;

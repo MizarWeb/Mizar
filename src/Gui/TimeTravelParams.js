@@ -19,10 +19,15 @@
 /*global define: false */
 
 /**
- * Compass module : map control with "north" component
+ * Time travel module : time control 
  */
 define(["jquery", "moment", "../Utils/Constants"], function ($, Moment, Constants) {
 
+    /**
+     * @name TimeTravelParams
+     * @class
+     * Management of time travel
+     */
     var TimeTravelParams = function () {
         this.startDate = new Date();
         this.endDate = new Date();
@@ -40,36 +45,99 @@ define(["jquery", "moment", "../Utils/Constants"], function ($, Moment, Constant
         Moment.locale('fr');
     };
 
+    /**************************************************************************************************************/
 
+    /**
+     * Set the context
+     * @function setContext
+     * @param ctx Context context
+     * @memberOf TimeTravelParams#
+     */
     TimeTravelParams.prototype.setContext = function (ctx) {
         this.ctx = ctx;
         this.apply();
     };
 
+    /**************************************************************************************************************/
+
+    /**
+     * Set the start date
+     * @function setStartDate
+     * @param date Date start date
+     * @memberOf TimeTravelParams#
+     */
     TimeTravelParams.prototype.setStartDate = function (date) {
         this.startDate = Moment(date);
     };
 
+    /**************************************************************************************************************/
+    
+    /**
+     * Set the end date
+     * @function setEndDate
+     * @param date Date end date
+     * @memberOf TimeTravelParams#
+     */
     TimeTravelParams.prototype.setEndDate = function (date) {
         this.endDate = Moment(date);
     };
 
+    /**************************************************************************************************************/
+
+    /**
+     * Set the current date
+     * @function setCurrentDate
+     * @param date Date current date
+     * @memberOf TimeTravelParams#
+     */
     TimeTravelParams.prototype.setCurrentDate = function (date) {
         this.currentDate = Moment(date);
     };
 
+    /**************************************************************************************************************/
+
+    /**
+     * Get the start date
+     * @function getStartDate
+     * @return Date start date
+     * @memberOf TimeTravelParams#
+     */
     TimeTravelParams.prototype.getStartDate = function () {
         return this.startDate;
     };
 
+    /**************************************************************************************************************/
+
+    /**
+     * Get the end date
+     * @function getEndDate
+     * @return Date end date
+     * @memberOf TimeTravelParams#
+     */
     TimeTravelParams.prototype.getEndDate = function () {
         return this.endDate;
     };
 
+    /**************************************************************************************************************/
+
+    /**
+     * Get the current date
+     * @function getCurrentDate
+     * @return Date current date
+     * @memberOf TimeTravelParams#
+     */
     TimeTravelParams.prototype.getCurrentDate = function () {
         return this.currentDate;
     };
 
+    /**************************************************************************************************************/
+
+    /**
+     * Get the current period
+     * @function getCurrentPeriod
+     * @return {Json} period { "from", "to" }
+     * @memberOf TimeTravelParams#
+     */
     TimeTravelParams.prototype.getCurrentPeriod = function() {
         var fromDate = null;
         var toDate = null;
@@ -89,11 +157,29 @@ define(["jquery", "moment", "../Utils/Constants"], function ($, Moment, Constant
         return result;
     };
 
+    /**************************************************************************************************************/
+
+    /**
+     * Set step
+     * @function setStep
+     * @param String kind Constant for time step kind
+     * @param Integer value Number a step to do
+     * @memberOf TimeTravelParams#
+     */
     TimeTravelParams.prototype.setStep = function (kind,value) {
         this.stepKind = kind;
         this.stepValue = value;
     };
 
+    /**************************************************************************************************************/
+
+    /**
+     * Parse date
+     * @function parseDate
+     * @param String value Date to parse
+     * @return {Json} date { "date", "display", "period" { "from", "to" } }
+     * @memberOf TimeTravelParams#
+     */
     TimeTravelParams.prototype.parseDate = function (value) {
         value = value.trim();
         var date = null;
@@ -124,6 +210,8 @@ define(["jquery", "moment", "../Utils/Constants"], function ($, Moment, Constant
             if (date === null) {
                 date = Moment(value);
             }
+        } else {
+            date = Moment(value);
         }
         return {
                     "date" : date,
@@ -132,10 +220,24 @@ define(["jquery", "moment", "../Utils/Constants"], function ($, Moment, Constant
             };
     };
 
+    /**
+     * Sort enumerated values by date
+     * @function sortTime
+     * @param Date a First date
+     * @param Date b Second date
+     */
     function sortTime(a,b){ 
         return a.date>b.date?1:-1;
     }
 
+    /**************************************************************************************************************/
+
+    /**
+     * Set enumerated values
+     * @function setEnumeratedValues
+     * @param Array(String) values Array of enumerated values
+     * @memberOf TimeTravelParams#
+     */
     TimeTravelParams.prototype.setEnumeratedValues = function (values) {
         // TODO soon : check format, need conversion ?
         this.enumeratedValues = [];
@@ -146,9 +248,6 @@ define(["jquery", "moment", "../Utils/Constants"], function ($, Moment, Constant
         // sort tab
         this.enumeratedValues.sort(sortTime);
 
-        console.log(this.enumeratedValues);
-
-
         // when enumerated, erase all others params
         this.startDate   = 0;
         this.endDate     = this.enumeratedValues.length-1;
@@ -158,6 +257,13 @@ define(["jquery", "moment", "../Utils/Constants"], function ($, Moment, Constant
         this.currentDate = this.enumeratedValues[this.currentIndex].date;
     };
 
+    /**************************************************************************************************************/
+
+    /**
+     * Apply current date to IHM (launch event)
+     * @function apply
+     * @memberOf TimeTravelParams#
+     */
     TimeTravelParams.prototype.apply = function () {
         var details = {
             date:this.currentDate,
@@ -167,6 +273,13 @@ define(["jquery", "moment", "../Utils/Constants"], function ($, Moment, Constant
         this.ctx.publish(Constants.EVENT_MSG.GLOBAL_TIME_CHANGED,details);
     };
 
+    /**************************************************************************************************************/
+
+    /**
+     * Rewind to previous time step
+     * @function rewind
+     * @memberOf TimeTravelParams#
+     */
     TimeTravelParams.prototype.rewind = function () {
         // Special : enumerated values
         if (this.stepKind === Constants.TIME_STEP.ENUMERATED) {
@@ -190,6 +303,13 @@ define(["jquery", "moment", "../Utils/Constants"], function ($, Moment, Constant
         }
     };
 
+    /**************************************************************************************************************/
+
+    /**
+     * Forward to next time step
+     * @function forward
+     * @memberOf TimeTravelParams#
+     */
     TimeTravelParams.prototype.forward = function () {
         // Special : enumerated values
         if (this.stepKind === Constants.TIME_STEP.ENUMERATED) {
@@ -215,14 +335,15 @@ define(["jquery", "moment", "../Utils/Constants"], function ($, Moment, Constant
         }
     };
 
-    TimeTravelParams.prototype.toString = function() {
-        var str = "start :"+this.startDate.format("LLLL")+"\n";
-        str+= "end : "+this.endDate.format("LLLL")+"\n";
-        str+= "current : "+this.currentDate.format("LLLL")+"\n";
+    /**************************************************************************************************************/
 
-        return str;
-    };
-
+    /**
+     * Get date formated (when there is no enumerated values)
+     * @function getDateFormated
+     * @param Date date Date
+     * @return String Date formated
+     * @memberOf TimeTravelParams#
+     */
     TimeTravelParams.prototype.getDateFormated = function (date) {
             // Check with STEP kind value
             var formatPattern = "LLLL";
@@ -242,6 +363,14 @@ define(["jquery", "moment", "../Utils/Constants"], function ($, Moment, Constant
             return Moment(this.currentDate).format(formatPattern);
     };
 
+    /**************************************************************************************************************/
+
+    /**
+     * Return date to display on IHM
+     * @function getCurrentDisplayDate
+     * @return String Date formated
+     * @memberOf TimeTravelParams#
+     */
     TimeTravelParams.prototype.getCurrentDisplayDate = function() {
         if (this.stepKind === Constants.TIME_STEP.ENUMERATED) {
             return this.enumeratedValues[this.currentIndex].display;

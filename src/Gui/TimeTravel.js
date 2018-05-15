@@ -35,7 +35,7 @@ define(["jquery", "../Utils/Constants","./TimeTravelCore"],
      * Create a time travel Widget
      * @param options
      * @constructor
-     * @fires AbstractContext#modifiedNavigation
+     * @fires AbstractContext#GLOBAL_TIME_CHANGED
      */
     var TimeTravel = function (options) {
 
@@ -87,17 +87,14 @@ define(["jquery", "../Utils/Constants","./TimeTravelCore"],
                 // Update width/height
                 svgHourGlassDoc.height.baseVal.value = 32;
                 svgHourGlassDoc.width.baseVal.value = 32;
+
                 // Append the imported SVG root element to the appropriate HTML element
                 $("#objectHourGlass").append(svgHourGlassDoc);
 
                 options.svgHourGlassDoc = svgHourGlassDoc;
-                //TimeTravelCore.init(options);
 
                 svgHourGlassDoc.addEventListener('mouseup', _handleMouseUpSet);
 
-                //initialize();
-                // Publish modified event to update compass north
-                //ctx.publish(Constants.EVENT_MSG.NAVIGATION_MODIFIED);
                 if (svgRewindDoc && svgForwardDoc && svgHourGlassDoc) {
                     $('#' + parentElement).css("display", "block");
                 }
@@ -111,16 +108,13 @@ define(["jquery", "../Utils/Constants","./TimeTravelCore"],
                     // Update width/height
                     svgRewindDoc.height.baseVal.value = 32;
                     svgRewindDoc.width.baseVal.value = 32;
+
                     // Append the imported SVG root element to the appropriate HTML element
                     $("#objectRewind").append(svgRewindDoc);
     
                     options.svgRewindDoc = svgRewindDoc;
-                    //TimeTravelCore.init(options);
                     svgRewindDoc.addEventListener('mouseup', _handleMouseUpRewind);
     
-                    //initialize();
-                    // Publish modified event to update compass north
-                    //ctx.publish(Constants.EVENT_MSG.NAVIGATION_MODIFIED);
                     if (svgRewindDoc && svgForwardDoc && svgHourGlassDoc) {
                         $('#' + parentElement).css("display", "block");
                     }
@@ -134,16 +128,13 @@ define(["jquery", "../Utils/Constants","./TimeTravelCore"],
                     // Update width/height
                     svgForwardDoc.height.baseVal.value = 32;
                     svgForwardDoc.width.baseVal.value = 32;
+
                     // Append the imported SVG root element to the appropriate HTML element
                     $("#objectForward").append(svgForwardDoc);
     
                     options.svgForwardDoc = svgForwardDoc;
-                    //TimeTravelCore.init(options);
                     svgForwardDoc.addEventListener('mouseup', _handleMouseUpForward);
     
-                    //initialize();
-                    // Publish modified event to update compass north
-                    //ctx.publish(Constants.EVENT_MSG.NAVIGATION_MODIFIED);
                     if (svgRewindDoc && svgForwardDoc && svgHourGlassDoc) {
                         $('#' + parentElement).css("display", "block");
                     }
@@ -153,6 +144,13 @@ define(["jquery", "../Utils/Constants","./TimeTravelCore"],
     };
 
     /**************************************************************************************************************/
+    
+    /**
+     * Update display date and send current date to contexte
+     * @function updateDisplayDate
+     * @param Json date { "date" , "display", "period" { "from","to" } }
+     * @memberOf TimeTravel#
+     */
     TimeTravel.prototype.updateDisplayDate = function (date) {
         if (document.getElementById("textTimeTravelDiv") !== null) {
             document.getElementById("textTimeTravelDiv").innerHTML = date.display;
