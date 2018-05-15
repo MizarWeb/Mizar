@@ -16,12 +16,12 @@
  * You should have received a copy of the GNU General Public License
  * along with MIZAR. If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
-define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Utils/UtilsIntersection", "../Layer/LayerFactory", "../Services/ServiceFactory", "../Utils/Constants",
+define(["jquery", "underscore-min", "../Utils/Event", "moment", "../Utils/Utils", "../Utils/UtilsIntersection", "../Layer/LayerFactory", "../Services/ServiceFactory", "../Utils/Constants",
         "../Registry/WMSServerRegistryHandler", "../Registry/WMTSServerRegistryHandler", "../Registry/WCSServerRegistryHandler", "../Registry/PendingLayersRegistryHandler", "../Registry/LayerRegistryHandler",
         "../Gui/Tracker/PositionTracker", "../Gui/Tracker/ElevationTracker", "../Utils/AttributionHandler", "../Gui/dialog/ErrorDialog",
         "../Renderer/PointRenderer", "../Renderer/LineStringRenderable", "../Renderer/PolygonRenderer", "../Renderer/LineRenderer",
         "../Renderer/PointSpriteRenderer", "../Renderer/ConvexPolygonRenderer"],
-    function ($, _, Event, Utils, UtilsIntersection, LayerFactory, ServiceFactory, Constants,
+    function ($, _, Event, Moment, Utils, UtilsIntersection, LayerFactory, ServiceFactory, Constants,
               WMSServerRegistryHandler, WMTSServerRegistryHandler, WCSServerRegistryHandler, PendingLayersRegistryHandler, LayerRegistryHandler,
               PositionTracker, ElevationTracker, AttributionHandler, ErrorDialog) {
 
@@ -45,7 +45,7 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Util
         var AbstractContext = function (mizarConfiguration, mode, ctxOptions) {
             Event.prototype.constructor.call(this);
             var self = this;
-            this.time = null;
+            this.time = Moment().toISOString();
             this.globe = null;	// Sky or globe
             this.navigation = null;
             this.attributionHandler = null;
@@ -178,9 +178,7 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Util
             this.time = time;
             for (var i = 0; i < this.layers.length; i++) {
                 var layer = this.layers[i];
-                if (layer.setTime) {
-                    layer.setTime(time);
-                }
+                layer.setTime(time);
             }
         };
 
@@ -358,9 +356,6 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Util
          * @memberOf AbstractContext#
          */
         AbstractContext.prototype.addLayer = function (layerDescription, callback, fallback) {
-            if (this.getTime() != null) {
-                layerDescription.time = this.getTime();
-            }
             layerDescription.getCapabilitiesTileManager = this.globe.tileManager;
 
             var pendingLayersHandler = new PendingLayersRegistryHandler(this.pendingLayers, this.layers);
@@ -382,13 +377,14 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Util
                         layer.callbackContext = self;
 
                         self.layers.push(layer);
-                        if (layer.setTime) {
-                            layer.setTime(self.time);
-                        }
+
                         _addToGlobe.call(self, layer);
 
-
                         self._fillDataProvider(layer, layerDescription);
+
+                        if(layer.isVisible()) {
+                            layer.setTime(self.getTime());
+                        }
 
                         if (layer.isPickable()) {
                             ServiceFactory.create(Constants.SERVICE.PickingManager).addPickableLayer(layer);
@@ -398,9 +394,9 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Util
                         var layerEvent = (layer.category === "background") ? Constants.EVENT_MSG.LAYER_BACKGROUND_ADDED : Constants.EVENT_MSG.LAYER_ADDITIONAL_ADDED;
                         self.publish(layerEvent, layer);
 
-                        if (layer.addEventTime) {
-                            layer.addEventTime();
-                        };
+                        //if (layer.addEventTime) {
+                        //    layer.addEventTime();
+                        //}
 
                         if (callback) {
                             callback(layer.ID);

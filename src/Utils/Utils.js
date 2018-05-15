@@ -475,6 +475,23 @@ define(["jquery", "./Numeric", "./UtilsIntersection", "../Error/NetworkError"], 
         return 0.5 * distance / Math.tan(0.5 * Numeric.toRadian(fov));
     };
 
+    Utils.defineTimeRequest = function(temporalRanges, timeRequest) {
+        var startDate= timeRequest.from;
+        var stopDate = timeRequest.to;
+
+        var times = temporalRanges.split(",");
+        if(times.length == 1) {
+            // no range
+            var time = times[0]
+
+        } else {
+            // temporalRange
+            var startTime = times[0];
+            var stopTime = times[1];
+            var frequency = times[2];
+        }
+    };
+
 
     return Utils;
 

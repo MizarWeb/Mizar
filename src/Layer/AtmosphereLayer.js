@@ -380,10 +380,11 @@ define(['../Utils/Utils', './AbstractLayer', '../Utils/Constants', '../Provider/
     };
 
     AtmosphereLayer.prototype.setTime = function(time) {
-        var timeArray = time.split("/");
-        // just take the first one.
-        var myTime = timeArray[0];
-        var date = new Date(myTime);
+        AbstractLayer.prototype.setTime(time);
+        var timeRequest = AbstractLayer.createTimeRequest(time);
+        var allowedTime = this.getDimensions().time;
+        var selectedDate = AbstractLayer.selectedTime(allowedTime.value, timeRequest);
+        var date = new Date(selectedDate);
         this.lightDir = _computeLightDir.call(this, date);
         this._skyFromSpaceProgram.apply();
         this._initUniforms(this._skyFromSpaceProgram.uniforms);

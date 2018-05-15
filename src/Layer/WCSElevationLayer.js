@@ -35,8 +35,8 @@
  * along with GlobWeb. If not, see <http://www.gnu.org/licenses/>.
  ***************************************/
 
-define(['../Utils/Utils', './AbstractRasterLayer', '../Utils/Constants','../Tiling/GeoTiling'],
-    function (Utils, AbstractRasterLayer, Constants, GeoTiling) {
+define(['../Utils/Utils', './AbstractLayer', './AbstractRasterLayer', '../Utils/Constants','../Tiling/GeoTiling'],
+    function (Utils, AbstractLayer, AbstractRasterLayer, Constants, GeoTiling) {
 
         /**
          * WCSElevation configuration
@@ -108,10 +108,11 @@ define(['../Utils/Utils', './AbstractRasterLayer', '../Utils/Constants','../Tili
             }
             url = Utils.addParameterTo(url, "format",  options.format);
             if (options.hasOwnProperty('time')) {
-                url = Utils.addParameterTo(url, "time", options.time);
+                var timeRequest = AbstractLayer.createTimeRequest(options.time);
+                var allowedTime = this.getDimensions().time;
+                var selectedDate = AbstractLayer.selectedTime(allowedTime.value, timeRequest);
+                url = Utils.addParameterTo(url, "time", selectedDate);
             }
-            //url = Utils.addParameterTo(url, "time", "2003-01-01/2004-01-01");
-
             return url
         }
 
@@ -226,11 +227,8 @@ define(['../Utils/Utils', './AbstractRasterLayer', '../Utils/Constants','../Tili
         };
 
         WCSElevationLayer.prototype.setTime = function(time) {
-            if (time.date) {
-                this.setParameter("time",time.date);
-            } else {
-                this.setParameter("time", time);
-            }
+            AbstractLayer.prototype.setTime(time);
+            this.setParameter("time", time);
         };
 
         /**************************************************************************************************************/

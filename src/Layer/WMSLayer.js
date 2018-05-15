@@ -35,8 +35,8 @@
  * along with GlobWeb. If not, see <http://www.gnu.org/licenses/>.
  ***************************************/
 
-define(["jquery", '../Utils/Utils', './AbstractRasterLayer', '../Utils/Constants', '../Tiling/GeoTiling', '../Utils/UtilsIntersection'],
-    function ($, Utils, AbstractRasterLayer, Constants, GeoTiling, UtilsIntersection) {
+define(["jquery", '../Utils/Utils', './AbstractLayer', './AbstractRasterLayer', '../Utils/Constants', '../Tiling/GeoTiling', '../Utils/UtilsIntersection'],
+    function ($, Utils, AbstractLayer, AbstractRasterLayer, Constants, GeoTiling, UtilsIntersection) {
 
 
         /**
@@ -114,7 +114,10 @@ define(["jquery", '../Utils/Utils', './AbstractRasterLayer', '../Utils/Constants
             url = Utils.addParameterTo(url, "height", yTilePixelSize);
 
             if (options.hasOwnProperty('time')) {
-                url = Utils.addParameterTo(url, "time", options.time);
+                var timeRequest = AbstractLayer.createTimeRequest(options.time);
+                var allowedTime = this.getDimensions().time;
+                var selectedDate = AbstractLayer.selectedTime(allowedTime.value, timeRequest);
+                url = Utils.addParameterTo(url, "time", selectedDate);
             }
 
             return url;
@@ -132,6 +135,7 @@ define(["jquery", '../Utils/Utils', './AbstractRasterLayer', '../Utils/Constants
         }
 
         WMSLayer.prototype.setTime = function(time) {
+            AbstractLayer.prototype.setTime(time);
             this.setParameter("time", time);
         };
 

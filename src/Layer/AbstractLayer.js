@@ -35,8 +35,8 @@
  * along with GlobWeb. If not, see <http://www.gnu.org/licenses/>.
  ***************************************/
 
-define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Utils/Constants", "../Utils/UtilityFactory", "xmltojson", "../Error/NetworkError"],
-    function ($, _, Event, Utils, Constants, UtilityFactory, XmlToJson, NetworkError) {
+define(["jquery", "underscore-min", "../Utils/Event", "moment", "../Utils/Utils", "../Utils/Constants", "../Utils/UtilityFactory", "xmltojson", "../Error/NetworkError"],
+    function ($, _, Event, Moment, Utils, Constants, UtilityFactory, XmlToJson, NetworkError) {
 
         const DEFAULT_ICON = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAAXNSR0IArs4c6QAAAAZiS0dEAAAAAAAA+UO7fwAAAAlwSFlzAAALEwAACxMBAJqcGAAAAAd0SU1FB9wMBQkVBRMIQtMAAAAZdEVYdENvbW1lbnQAQ3JlYXRlZCB3aXRoIEdJTVBXgQ4XAAAAvklEQVQY012QMWpCURBFz3yfG7CIwSatpLGwsJJsQEHssr2UttapkkK0zRJEFPKLj5UYPGme8vgDt5l7uNwZKEYNdaZO1FR6VQkBT8AbMAGe1e7dTwXUB8bAFPgF9sBWPUXENbWgBTAELkCTw7bqMdR5kTQCehlogB/gE/iqcs9OVhT9I8v7EZU6UJfqh3pWa3WlvqsvakoRcVOPwCYnvQI1sM67Q0T8JYAWvAEOwDewj4jr4z0teJdf84AA/gF1uG92uhcfoAAAAABJRU5ErkJggg==";
 
@@ -116,6 +116,7 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Util
             this.servicesRunningOnRecords = {};
             this.vectorLayer = false;
             this.metadataAPI = (this.options.metadataAPI) ? this.options.metadataAPI : null;
+            this.time = null;
 
             // Create style if needed
             this.style = _createStyle.call(this, this.options, this.icon);
@@ -237,12 +238,153 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Util
             return color;
         }
 
+        function _unitWithoutTime(unit) {
+            var unitTime;
+            switch (unit) {
+                case 'Y':
+                    unitTime = 'years';
+                    break;
+                case 'M':
+                    unitTime = 'months';
+                    break;
+                case 'D':
+                    unitTime = 'days';
+                    break;
+                default:
+                    throw new Error();
+            }
+            return unitTime;
+        }
+
+        function _unitWithTime(unit) {
+            var unitTime;
+            switch (unit) {
+                case 'H':
+                    unitTime = 'hours';
+                    break;
+                case 'M':
+                    unitTime = 'minutes';
+                    break;
+                case 'S':
+                    unitTime = 'seconds';
+                    break;
+                default:
+                    throw new Error();
+            }
+            return unitTime;
+        }
+
+        function _timeResolution(resolution) {
+            var stepTime, unitTime;
+            var unit = resolution.slice(-1);
+            if (resolution.startsWith("PT")) {
+                //time => hour, min, sec
+                stepTime = resolution.substring(2, resolution.length - 1);
+                unitTime = _unitWithTime(unit);
+            } else if (resolution.startsWith('P')) {
+                //day, month year
+                stepTime = resolution.substring(1, resolution.length - 1);
+                unitTime = _unitWithoutTime(unit);
+            } else {
+                throw new Error();
+            }
+
+            return {
+                step:stepTime,
+                unit:unitTime
+            };
+        }
+
 
         /**************************************************************************************************************/
 
         Utils.inherits(Event, AbstractLayer);
 
         /**************************************************************************************************************/
+
+        AbstractLayer.createTimeRequest = function(timeRequest) {
+            var myRequest;
+            if(timeRequest.from && timeRequest.to) {
+                myRequest = timeRequest;
+            } else if(timeRequest.from) {
+                myRequest = {
+                    from:timeRequest.from,
+                    to:Moment().toISOString()
+                }
+            } else if(timeRequest.to) {
+                timeRequest.from = Moment("2000/01/01").toISOString();
+                myRequest = {
+                    from:Moment("2000/01/01").toISOString(),
+                    to:timeRequest.to
+                }
+            } else {
+                var time = Moment(timeRequest);
+                var format = time.creationData().isUTC ? time.creationData().format : "YYYY";
+                //"YYYY-MM-DDTHH:mm:ss.SSSSZ"
+                var timeResolution;
+                if(format.includes('ss')) {
+                    timeResolution = "seconds";
+                } else if (format.includes('mm')) {
+                    timeResolution = "minutes";
+                } else if (format.includes("HH")) {
+                    timeResolution = "hours";
+                } else if (format.includes('DD')) {
+                    timeResolution = "days";
+                } else if (format.includes("MM")) {
+                    timeResolution = "months"
+                } else if (format.includes("YYYY")) {
+                    timeResolution = "years";
+                } else {
+                    throw new Error();
+                }
+                myRequest = {
+                    from:time.startOf(timeResolution).toISOString(),
+                    to:time.endOf(timeResolution).toISOString()
+                }
+            }
+            return myRequest;
+        };
+
+        AbstractLayer.selectedTime = function(temporalRanges, timeRequest) {
+            var startDate= Moment(timeRequest.from);
+            var stopDate = Moment(timeRequest.to);
+            var times = temporalRanges.trim().split(",");
+            var selectedDate = null;
+            for(var timeIdx = 0; timeIdx < times.length && selectedDate == null; timeIdx++) {
+                var time = times[timeIdx];
+                var timeDefinition = time.trim().split("/");
+                if(timeDefinition.length == 1) {
+                    var dateTime = Moment(timeDefinition[0]);
+                    if (dateTime.isBetween(startDate, stopDate) || dateTime.isSame(startDate) || dateTime.isSame(stopDate)) {
+                        selectedDate = dateTime;
+                        break;
+                    }
+                } else {
+                    var startTime = Moment(timeDefinition[0]);
+                    var stopTime = Moment(timeDefinition[1]);
+                    var frequencyTime = timeDefinition[2];
+                    var timeObjDefinition = _timeResolution(frequencyTime);
+                    var nbValues = Math.floor(stopTime.diff(startTime, timeObjDefinition.unit) / parseInt(timeObjDefinition.step));
+                    for (var i=0; i<= nbValues; i++) {
+                        var currentDate = Moment(startDate);
+                        currentDate.add(i * timeObjDefinition.step, timeObjDefinition.unit);
+                        if (currentDate.isBetween(startDate, stopDate) || currentDate.isSame(startDate) || currentDate.isSame(stopDate)) {
+                            selectedDate = currentDate;
+                            break;
+                        }
+                    }
+                }
+            }
+            var selectedDateFormatted;
+            if (selectedDate == null) {
+                selectedDateFormatted = null;
+            } else if(selectedDate.creationData().format == null) {
+                selectedDateFormatted =  selectedDate.format("YYYY");
+            } else {
+                selectedDateFormatted =  selectedDate.format(selectedDate.creationData().format);
+            }
+            return selectedDateFormatted;
+        };
 
         AbstractLayer.prototype.hasDimension = function() {
             return this.dimension != null;
@@ -305,9 +447,9 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Util
          *          "to" : }
          *  }
          */
-        /*AbstractLayer.prototype.setTime = function (time) {
-            return false;
-        };*/
+        AbstractLayer.prototype.setTime = function (time) {
+            this.time = time;
+        };
 
         /**************************************************************************************************************/
 
@@ -652,6 +794,12 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Util
                 if(!this.isBackground() && this.visible) {
                     this.setOnTheTop();
                 }
+
+                var ctxTime = this.callbackContext.getTime();
+                if(ctxTime !== this.time) {
+                    this.setTime(ctxTime);
+                }
+
                 this.getGlobe().getRenderContext().requestFrame();
                 this.publish(Constants.EVENT_MSG.LAYER_VISIBILITY_CHANGED, this);
             } else {
