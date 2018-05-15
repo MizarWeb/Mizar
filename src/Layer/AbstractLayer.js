@@ -304,7 +304,9 @@ define(["jquery", "underscore-min", "../Utils/Event", "moment", "../Utils/Utils"
 
         AbstractLayer.createTimeRequest = function(timeRequest) {
             var myRequest;
-            if(timeRequest.from && timeRequest.to) {
+            if(timeRequest.period) {
+                myRequest = timeRequest.period;
+            } else if(timeRequest.from && timeRequest.to) {
                 myRequest = timeRequest;
             } else if(timeRequest.from) {
                 myRequest = {
@@ -318,7 +320,12 @@ define(["jquery", "underscore-min", "../Utils/Event", "moment", "../Utils/Utils"
                     to:timeRequest.to
                 }
             } else {
-                var time = Moment(timeRequest);
+                var time = null;
+                if (timeRequest.date) {
+                    time = Moment(timeRequest.date);
+                } else {
+                    time = Moment(timeRequest);
+                }
                 var format = time.creationData().isUTC ? time.creationData().format : "YYYY";
                 //"YYYY-MM-DDTHH:mm:ss.SSSSZ"
                 var timeResolution;
