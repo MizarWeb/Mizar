@@ -326,7 +326,7 @@ define(["jquery", "underscore-min", "../Utils/Event", "moment", "../Utils/Utils"
                 } else {
                     time = Moment(timeRequest);
                 }
-                var format = time.creationData().isUTC ? time.creationData().format : "YYYY";
+                var format = time.creationData().format ? time.creationData().format : "YYYY";
                 //"YYYY-MM-DDTHH:mm:ss.SSSSZ"
                 var timeResolution;
                 if(format.includes('ss')) {
