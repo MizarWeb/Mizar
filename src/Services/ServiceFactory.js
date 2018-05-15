@@ -20,12 +20,14 @@ define(["../Utils/Constants", "../Services/FitsVisu", "../Services/FitsHips", ".
         "../Services/ImageProcessingCore", "../Services/MeasureToolPlanetCore", "../Services/MeasureToolSkyCore",
         "../Services/MocBase", "../Services/MollweideViewerCore", "../Services/PickingManagerCore",
         "../Services/SampCore", "../Services/SelectionToolCore", "../Services/ExportToolCore",
-        "../NameResolver/NameResolver", "../ReverseNameResolver/ReverseNameResolver"],
+        "../NameResolver/NameResolver", "../ReverseNameResolver/ReverseNameResolver",
+        "../Services/TimeTravelCore"],
     function (Constants, FitsVisu, FitsHips, HistogramCore,
               ImageProcessingCore, MeasureToolPlanetCore, MeasureToolSkyCore,
               MocBase, MollweideViewerCore, PickingManagerCore,
               SampCore, SelectionToolCore, ExportToolCore,
-              NameResolver, ReverseNameResolver) {
+              NameResolver, ReverseNameResolver,
+              TimeTravelCore) {
 
         return {
 
@@ -52,6 +54,9 @@ define(["../Utils/Constants", "../Services/FitsVisu", "../Services/FitsHips", ".
                         break;
                     case Constants.SERVICE.MollweideViewer:
                         obj = MollweideViewerCore;
+                        break;
+                    case Constants.SERVICE.TimeTravel:
+                        obj = TimeTravelCore;
                         break;
                     case Constants.SERVICE.PickingManager:
                         obj = PickingManagerCore;

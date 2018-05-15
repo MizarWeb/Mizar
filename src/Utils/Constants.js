@@ -216,7 +216,8 @@ define(function () {
         "SelectionTool" : "SelectionTool",
         "NameResolver" : "NameResolver",
         "ReverseNameResolver" : "ReverseNameResolver",
-        "ExportTool" : "ExportTool"
+        "ExportTool" : "ExportTool",
+        "TimeTravel" : "TimeTravel"
     };
 
     /**

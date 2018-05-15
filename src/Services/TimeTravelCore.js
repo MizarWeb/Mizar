@@ -91,6 +91,46 @@ define(["jquery","./TimeTravelParams","../Utils/Constants"], function ($, TimeTr
         }
     }
 
+    /**
+     *    get start value (return 0 if isEnumerated)
+     *    
+     */
+    function getStart() {
+        return params.getStartDate();
+    }
+
+    /**
+     *    get end value (return length-1 if isEnumerated)
+     *    
+     */
+
+    function getEnd() {
+        return params.getStartDate();
+    }
+
+    /**
+     *    get current date
+     *    
+     */
+    function getCurrentDate() {
+        return params.getCurrentDate();
+    }
+
+    /**
+     *    get current index
+     *    
+     */
+    function getCurrentIndex() {
+        return params.getCurrentIndex();
+    }
+
+    /**
+     *    return if dates are enumerated
+     *    
+     */
+    function isEnumerated() {
+        return (params.stepKind === Constants.TIME_STEP.ENUMERATED);
+    }
 
     /**************************************************************************************************************/
 
@@ -102,15 +142,22 @@ define(["jquery","./TimeTravelParams","../Utils/Constants"], function ($, TimeTr
             params.setContext(ctx);
             
             // subscribe
-            ctx.subscribe(Constants.EVENT_MSG.GLOBAL_TIME_FORWARD,goForward);
-            ctx.subscribe(Constants.EVENT_MSG.GLOBAL_TIME_REWIND,goRewind);
-            ctx.subscribe(Constants.EVENT_MSG.GLOBAL_TIME_SET,chooseTime);
-            ctx.subscribe(Constants.EVENT_MSG.GLOBAL_TIME_INIT,initValues);
+            if (ctx) {
+                ctx.subscribe(Constants.EVENT_MSG.GLOBAL_TIME_FORWARD,goForward);
+                ctx.subscribe(Constants.EVENT_MSG.GLOBAL_TIME_REWIND,goRewind);
+                ctx.subscribe(Constants.EVENT_MSG.GLOBAL_TIME_SET,chooseTime);
+                ctx.subscribe(Constants.EVENT_MSG.GLOBAL_TIME_INIT,initValues);
+            }
         },
-        initValues   : initValues,
+        initValues  : initValues,
         goForward   : goForward,
         goRewind    : goRewind,
         chooseTime  : chooseTime,
-        remove      : remove
+        remove      : remove,
+        getStart    : getStart,
+        getEnd      : getEnd,
+        getCurrentDate : getCurrentDate,
+        getCurrentIndex : getCurrentIndex,
+        isEnumerated : isEnumerated
     };
 });

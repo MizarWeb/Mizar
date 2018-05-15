@@ -355,6 +355,7 @@ define(["jquery", "underscore-min", "../Utils/Event", "moment", "../Utils/Utils"
         AbstractLayer.selectedTime = function(temporalRanges, timeRequest) {
             var startDate= Moment(timeRequest.from);
             var stopDate = Moment(timeRequest.to);
+            
             var times = temporalRanges.trim().split(",");
             var selectedDate = null;
             for(var timeIdx = 0; timeIdx < times.length && selectedDate == null; timeIdx++) {
