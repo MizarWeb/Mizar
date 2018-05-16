@@ -295,6 +295,26 @@ define(["jquery", "underscore-min", "../Utils/Event", "moment", "../Utils/Utils"
             };
         }
 
+        function _formatResolution(format) {
+            var timeResolution;
+            if(format.includes('ss')) {
+                timeResolution = "seconds";
+            } else if (format.includes('mm')) {
+                timeResolution = "minutes";
+            } else if (format.includes("HH")) {
+                timeResolution = "hours";
+            } else if (format.includes('DD')) {
+                timeResolution = "days";
+            } else if (format.includes("MM")) {
+                timeResolution = "months"
+            } else if (format.includes("YYYY")) {
+                timeResolution = "years";
+            } else {
+                throw new Error();
+            }
+            return timeResolution;
+        }
+
 
         /**************************************************************************************************************/
 
@@ -314,9 +334,9 @@ define(["jquery", "underscore-min", "../Utils/Event", "moment", "../Utils/Utils"
                     to:Moment().toISOString()
                 }
             } else if(timeRequest.to) {
-                timeRequest.from = Moment("2000/01/01").toISOString();
+                timeRequest.from = Moment.utc("2000/01/01").format();
                 myRequest = {
-                    from:Moment("2000/01/01").toISOString(),
+                    from:Moment.utc("2000/01/01").format(),
                     to:timeRequest.to
                 }
             } else {
@@ -324,26 +344,10 @@ define(["jquery", "underscore-min", "../Utils/Event", "moment", "../Utils/Utils"
                 if (timeRequest.date) {
                     time = Moment(timeRequest.date);
                 } else {
-                    time = Moment(timeRequest);
+                    time = Moment.utc(timeRequest);
                 }
                 var format = time.creationData().format ? time.creationData().format : "YYYY";
-                //"YYYY-MM-DDTHH:mm:ss.SSSSZ"
-                var timeResolution;
-                if(format.includes('ss')) {
-                    timeResolution = "seconds";
-                } else if (format.includes('mm')) {
-                    timeResolution = "minutes";
-                } else if (format.includes("HH")) {
-                    timeResolution = "hours";
-                } else if (format.includes('DD')) {
-                    timeResolution = "days";
-                } else if (format.includes("MM")) {
-                    timeResolution = "months"
-                } else if (format.includes("YYYY")) {
-                    timeResolution = "years";
-                } else {
-                    throw new Error();
-                }
+                var timeResolution = _formatResolution.call(this, format);
                 myRequest = {
                     from:time.startOf(timeResolution).toISOString(),
                     to:time.endOf(timeResolution).toISOString()
@@ -353,30 +357,37 @@ define(["jquery", "underscore-min", "../Utils/Event", "moment", "../Utils/Utils"
         };
 
         AbstractLayer.selectedTime = function(temporalRanges, timeRequest) {
-            var startDate= Moment(timeRequest.from);
-            var stopDate = Moment(timeRequest.to);
-            
+            var startDate= Moment.utc(timeRequest.from);
+            var stopDate = Moment.utc(timeRequest.to);
             var times = temporalRanges.trim().split(",");
             var selectedDate = null;
             for(var timeIdx = 0; timeIdx < times.length && selectedDate == null; timeIdx++) {
                 var time = times[timeIdx];
                 var timeDefinition = time.trim().split("/");
                 if(timeDefinition.length == 1) {
-                    var dateTime = Moment(timeDefinition[0]);
-                    if (dateTime.isBetween(startDate, stopDate) || dateTime.isSame(startDate) || dateTime.isSame(stopDate)) {
+                    var dateTime = Moment.utc(timeDefinition[0]);
+                    var format = dateTime.creationData().format ? dateTime.creationData().format : "YYYY";
+                    var timeResolution = _formatResolution.call(this, format);
+                    if (dateTime.isBetween(startDate, stopDate) || dateTime.isSame(startDate) || dateTime.isSame(stopDate)
+                        || startDate.isBetween(dateTime.startOf(timeResolution).toISOString(), dateTime.endOf(timeResolution).toISOString())
+                        || stopDate.isBetween(dateTime.startOf(timeResolution).toISOString(), dateTime.endOf(timeResolution).toISOString())) {
                         selectedDate = dateTime;
                         break;
                     }
                 } else {
-                    var startTime = Moment(timeDefinition[0]);
-                    var stopTime = Moment(timeDefinition[1]);
+                    var startTime = Moment.utc(timeDefinition[0]);
+                    var stopTime = Moment.utc(timeDefinition[1]);
                     var frequencyTime = timeDefinition[2];
                     var timeObjDefinition = _timeResolution(frequencyTime);
                     var nbValues = Math.floor(stopTime.diff(startTime, timeObjDefinition.unit) / parseInt(timeObjDefinition.step));
                     for (var i=0; i<= nbValues; i++) {
-                        var currentDate = Moment(startDate);
+                        var currentDate = Moment.utc(startDate);
                         currentDate.add(i * timeObjDefinition.step, timeObjDefinition.unit);
-                        if (currentDate.isBetween(startDate, stopDate) || currentDate.isSame(startDate) || currentDate.isSame(stopDate)) {
+                        var format = currentDate.creationData().format ? currentDate.creationData().format : "YYYY";
+                        var timeResolution = _formatResolution.call(this, format);
+                        if (currentDate.isBetween(startDate, stopDate) || currentDate.isSame(startDate) || currentDate.isSame(stopDate)
+                            || startDate.isBetween(currentDate.startOf(timeResolution).toISOString(), currentDate.endOf(timeResolution).toISOString())
+                            || stopDate.isBetween(currentDate.startOf(timeResolution).toISOString(), currentDate.endOf(timeResolution).toISOString())) {
                             selectedDate = currentDate;
                             break;
                         }

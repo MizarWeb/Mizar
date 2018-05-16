@@ -88,6 +88,8 @@ define(["jquery", '../Utils/Utils', './AbstractLayer', './AbstractRasterLayer', 
 
             this.getMapBaseUrl = _queryImage.call(this, this.getBaseUrl(), this.tilePixelSize, this.tilePixelSize, options);
             this.layers = options.layers;
+            this.timeID = null;
+            this.mustbeSkipped = false;
 
         };
 
@@ -114,10 +116,11 @@ define(["jquery", '../Utils/Utils', './AbstractLayer', './AbstractRasterLayer', 
             url = Utils.addParameterTo(url, "height", yTilePixelSize);
 
             if (options.hasOwnProperty('time')) {
-                var timeRequest = AbstractLayer.createTimeRequest(options.time);
-                var allowedTime = this.getDimensions().time;
-                var selectedDate = AbstractLayer.selectedTime(allowedTime.value, timeRequest);
-                url = Utils.addParameterTo(url, "time", selectedDate);
+                this.mustbeSkipped = (this.timeID == null);
+                url = Utils.addParameterTo(url, "time", this.timeID);
+            } else {
+                this.mustbeSkipped = false;
+                this.timeID = null;
             }
 
             return url;
@@ -189,11 +192,14 @@ define(["jquery", '../Utils/Utils', './AbstractLayer', './AbstractRasterLayer', 
         WMSLayer.prototype.getUrl = function (tile) {
             // Just add the bounding box to the GetMap URL
             var bound = tile.bound;
+            var tileID = tile.level+"#"+tile.x+"#"+tile.y;
 
             var url;
             // we cannot reject the request to the server when the layer is defined as background otherwise there is
             // no image to show and Mizar is waiting for an image
-            if(this.isBackground() || _tileIsIntersectedFootprint(bound, this.restrictTo)) {
+            if(this.mustbeSkipped) {
+                url = null;
+            } else if(this.isBackground() || _tileIsIntersectedFootprint(bound, this.restrictTo)) {
                 var bbox = bound.west + "," + bound.south + "," + bound.east + "," + bound.north;
                 url = this.getMapBaseUrl;
                 url = Utils.addParameterTo(url, "transparent", this.options.transparent);
@@ -207,11 +213,48 @@ define(["jquery", '../Utils/Utils', './AbstractLayer', './AbstractRasterLayer', 
         };
 
         WMSLayer.prototype.setParameter = function (paramName,value) {
-            if (paramName === "styles" || this.containsDimension(paramName)) {
+            if ((paramName === "styles" || this.containsDimension(paramName)) && this._hasToBeRefreshed(paramName, value)) {
                 this.options[paramName] = value;
                 this.getMapBaseUrl = _queryImage.call(this, this.getBaseUrl(), this.tilePixelSize, this.tilePixelSize, this.options);
                 this.forceRefresh();
             }
+        };
+
+        /**
+         * Checks if Mizar must query the WMS server to refresh data.
+         * When the camera does not move but that the time change, we have two cases :
+         * - the requested time is included in the time frame of the image => no query
+         * - the requested time is outside of the time frame of the image => this is a new image, need to query
+         * @param paramName
+         * @param value
+         * @return {*}
+         * @private
+         */
+        WMSLayer.prototype._hasToBeRefreshed = function(paramName, value) {
+            var hasToBeRefreshed;
+            if(paramName==="time") {
+                var timeRequest = AbstractLayer.createTimeRequest(value);
+                var allowedTime = this.getDimensions().time;
+                var selectedDate = AbstractLayer.selectedTime(allowedTime.value, timeRequest);
+                if(this.timeID != null && selectedDate == null) {
+                    // we query because the state has changed
+                    hasToBeRefreshed = true;
+                    this.timeID = null;
+                } else if(selectedDate == null) {
+                    // No image found on the server related to the requested time, no need to query => we save network
+                    hasToBeRefreshed = false;
+                } else if (this.timeID === selectedDate) {
+                    // Same state, no need to query
+                    hasToBeRefreshed = false;
+                } else {
+                    // At the requested time, there is an image on the server and this is not the current one => query
+                    hasToBeRefreshed = true;
+                    this.timeID = selectedDate;
+                }
+            } else {
+                hasToBeRefreshed = true;
+            }
+            return hasToBeRefreshed;
         };
 
         /**************************************************************************************************************/
