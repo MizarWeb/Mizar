@@ -170,7 +170,7 @@ define(['../Utils/Utils', './AbstractLayer', './AbstractRasterLayer', '../Utils/
                     dataLinesStart = i;
                     break;
                 } else if(lines[i].substring(0, 1) === "NODATA_value") {
-                    var elt = lines[i].trim().split(/\s+/);;
+                    var elt = lines[i].trim().split(/\s+/);
                     noDATA = elt[1];
                 }
             }

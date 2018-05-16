@@ -146,20 +146,23 @@ define(["jquery","underscore-min", "../Utils/Utils", "xmltojson", "../Layer/Laye
                         "initialFov":center[2],
                         "bbox": bbox
                     };
-                    layerDesc.dimension = {
-                        time: {
+                    var timeValue = _timeVal.call(this, jsonLayer.lonLatEnvelope);
+                    layerDesc.dimension = {};
+                    if(timeValue != null) {
+                        layerDesc.dimension.time = {
                             units: "ISO8601",
                             unitSymbol: null,
                             default: null,
                             multipleValues: null,
                             nearestValue: null,
                             current: null,
-                            value: _timeVal.call(this, jsonLayer.lonLatEnvelope)
-                        }
-                    };
+                            value: timeValue
+                        };
+                    }
+
                     layerDesc.metadataAPI = jsonLayer;
 
-                    if(layerDesc.dimension.time.value != null) {
+                    if(layerDesc.dimension.time && layerDesc.dimension.time.value != null) {
                         layerDesc.time = layerDesc.dimension.time.value.split(",")[0];
                     }
 
