@@ -290,14 +290,14 @@ define(["jquery", "underscore-min", "../Utils/Event", "moment", "../Utils/Utils"
             }
 
             return {
-                step:stepTime,
-                unit:unitTime
+                step: stepTime,
+                unit: unitTime
             };
         }
 
         function _formatResolution(format) {
             var timeResolution;
-            if(format.includes('ss')) {
+            if (format.includes('ss')) {
                 timeResolution = "seconds";
             } else if (format.includes('mm')) {
                 timeResolution = "minutes";
@@ -315,6 +315,28 @@ define(["jquery", "underscore-min", "../Utils/Event", "moment", "../Utils/Utils"
             return timeResolution;
         }
 
+        function _closestDate(startDate, stopDate, stepTime, myTime) {
+            var startMoment = Moment.utc(startDate);
+            var stopMoment = Moment.utc(stopDate);
+            var myTimeMoment = Moment.utc(myTime);
+            var myDate;
+            if (myTimeMoment.isBetween(startMoment, stopMoment)) {
+                var duration1 = Moment.duration(myTimeMoment.diff(startMoment));
+                var duration2 = Moment.duration(stopMoment.diff(myTimeMoment));
+                if (duration1 > duration2) {
+                    var entier = Math.round(duration2.asHours() / stepTime);
+                    myDate = stopMoment.subtract({hours: entier * stepTime});
+                } else {
+                    var entier = Math.round(duration1.asHours() / stepTime);
+                    myDate = startMoment.add({hours: entier * stepTime})
+                }
+                myDate = myDate.toISOString();
+            } else {
+                myDate = null;
+            }
+            return myDate
+        }
+
 
         /**************************************************************************************************************/
 
@@ -322,22 +344,28 @@ define(["jquery", "underscore-min", "../Utils/Event", "moment", "../Utils/Utils"
 
         /**************************************************************************************************************/
 
-        AbstractLayer.createTimeRequest = function(timeRequest) {
+        AbstractLayer.createTimeRequest = function (timeRequest) {
             var myRequest;
-            if(timeRequest.period) {
+            if (timeRequest.period) {
                 myRequest = timeRequest.period;
-            } else if(timeRequest.from && timeRequest.to) {
+            } else if (timeRequest.from && timeRequest.to) {
                 myRequest = timeRequest;
-            } else if(timeRequest.from) {
+            } else if (timeRequest.from) {
                 myRequest = {
-                    from:timeRequest.from,
-                    to:Moment().toISOString()
+                    from: timeRequest.from,
+                    to: Moment().toISOString()
                 }
-            } else if(timeRequest.to) {
+            } else if (timeRequest.to) {
                 timeRequest.from = Moment.utc("2000/01/01").format();
                 myRequest = {
-                    from:Moment.utc("2000/01/01").format(),
-                    to:timeRequest.to
+                    from: Moment.utc("2000/01/01").format(),
+                    to: timeRequest.to
+                }
+            } else if (timeRequest.includes('/')) {
+                var times = timeRequest.split("/");
+                myRequest = {
+                    from: Moment.utc(times[0]).toISOString(),
+                    to: Moment.utc(times[1]).toISOString()
                 }
             } else {
                 var time = null;
@@ -349,22 +377,23 @@ define(["jquery", "underscore-min", "../Utils/Event", "moment", "../Utils/Utils"
                 var format = time.creationData().format ? time.creationData().format : "YYYY";
                 var timeResolution = _formatResolution.call(this, format);
                 myRequest = {
-                    from:time.startOf(timeResolution).toISOString(),
-                    to:time.endOf(timeResolution).toISOString()
+                    from: time.startOf(timeResolution).toISOString(),
+                    to: time.endOf(timeResolution).toISOString()
                 }
             }
+
             return myRequest;
         };
 
-        AbstractLayer.selectedTime = function(temporalRanges, timeRequest) {
-            var startDate= Moment.utc(timeRequest.from);
+        AbstractLayer.selectedTime = function (temporalRanges, timeRequest) {
+            var startDate = Moment.utc(timeRequest.from);
             var stopDate = Moment.utc(timeRequest.to);
             var times = temporalRanges.trim().split(",");
-            var selectedDate = null;
-            for(var timeIdx = 0; timeIdx < times.length && selectedDate == null; timeIdx++) {
+            var selectedDate, selectedDateFormatted = null;
+            for (var timeIdx = 0; timeIdx < times.length && selectedDate == null; timeIdx++) {
                 var time = times[timeIdx];
                 var timeDefinition = time.trim().split("/");
-                if(timeDefinition.length == 1) {
+                if (timeDefinition.length == 1) {
                     var dateTime = Moment.utc(timeDefinition[0]);
                     var format = dateTime.creationData().format ? dateTime.creationData().format : "YYYY";
                     var timeResolution = _formatResolution.call(this, format);
@@ -372,6 +401,13 @@ define(["jquery", "underscore-min", "../Utils/Event", "moment", "../Utils/Utils"
                         || startDate.isBetween(dateTime.startOf(timeResolution).toISOString(), dateTime.endOf(timeResolution).toISOString())
                         || stopDate.isBetween(dateTime.startOf(timeResolution).toISOString(), dateTime.endOf(timeResolution).toISOString())) {
                         selectedDate = dateTime;
+                        if (selectedDate == null) {
+                            selectedDateFormatted = null;
+                        } else if (selectedDate.creationData().format == null) {
+                            selectedDateFormatted = selectedDate.format("YYYY");
+                        } else {
+                            selectedDateFormatted = selectedDate.format(selectedDate.creationData().format);
+                        }
                         break;
                     }
                 } else {
@@ -380,7 +416,7 @@ define(["jquery", "underscore-min", "../Utils/Event", "moment", "../Utils/Utils"
                     var frequencyTime = timeDefinition[2];
                     var timeObjDefinition = _timeResolution(frequencyTime);
                     var nbValues = Math.floor(stopTime.diff(startTime, timeObjDefinition.unit) / parseInt(timeObjDefinition.step));
-                    for (var i=0; i<= nbValues; i++) {
+                    for (var i = 0; i <= nbValues; i++) {
                         var currentDate = Moment.utc(startDate);
                         currentDate.add(i * timeObjDefinition.step, timeObjDefinition.unit);
                         var format = currentDate.creationData().format ? currentDate.creationData().format : "YYYY";
@@ -388,32 +424,25 @@ define(["jquery", "underscore-min", "../Utils/Event", "moment", "../Utils/Utils"
                         if (currentDate.isBetween(startDate, stopDate) || currentDate.isSame(startDate) || currentDate.isSame(stopDate)
                             || startDate.isBetween(currentDate.startOf(timeResolution).toISOString(), currentDate.endOf(timeResolution).toISOString())
                             || stopDate.isBetween(currentDate.startOf(timeResolution).toISOString(), currentDate.endOf(timeResolution).toISOString())) {
-                            selectedDate = currentDate;
+                            selectedDateFormatted = _closestDate.call(this, startTime, stopTime, 6, currentDate.toISOString());
                             break;
                         }
                     }
                 }
             }
-            var selectedDateFormatted;
-            if (selectedDate == null) {
-                selectedDateFormatted = null;
-            } else if(selectedDate.creationData().format == null) {
-                selectedDateFormatted =  selectedDate.format("YYYY");
-            } else {
-                selectedDateFormatted =  selectedDate.format(selectedDate.creationData().format);
-            }
+
             return selectedDateFormatted;
         };
 
-        AbstractLayer.prototype.hasDimension = function() {
+        AbstractLayer.prototype.hasDimension = function () {
             return this.dimension != null;
         };
 
-        AbstractLayer.prototype.getDimensions = function() {
+        AbstractLayer.prototype.getDimensions = function () {
             return this.dimension == null ? {} : this.dimension;
         };
 
-        AbstractLayer.prototype.containsDimension = function(variable) {
+        AbstractLayer.prototype.containsDimension = function (variable) {
             return this.hasDimension() && this.dimension[variable] != null;
         };
 
@@ -448,12 +477,12 @@ define(["jquery", "underscore-min", "../Utils/Event", "moment", "../Utils/Utils"
          * @function postProcessDateTime
          * @memberOf AbstractLayer#
          */
-/*        AbstractLayer.prototype.postProcessTime = function (time) {
-            return time;
-        };
-*/
+        /*        AbstractLayer.prototype.postProcessTime = function (time) {
+         return time;
+         };
+         */
         /**************************************************************************************************************/
-        
+
         /**
          * @function setDateTime
          * @memberOf AbstractLayer#
@@ -481,12 +510,12 @@ define(["jquery", "underscore-min", "../Utils/Event", "moment", "../Utils/Utils"
                 return;
             }
             var tiles = this.getGlobe().tileManager.visibleTiles;
-            for (var i=0;i<tiles.length;i++) {
+            for (var i = 0; i < tiles.length; i++) {
                 var tile = tiles[i];
                 var extension = tile.extension;
                 if (extension.renderer) {
                     var renderables = extension.renderer.renderables;
-                    for (var renderableIdx=0 ; renderableIdx < renderables.length ; renderableIdx++) {
+                    for (var renderableIdx = 0; renderableIdx < renderables.length; renderableIdx++) {
                         var renderable = renderables[renderableIdx];
                         if (renderable.bucket.layer.ID === this.ID) {
                             renderable.bucket.renderer.removeOverlay(this);
@@ -793,7 +822,7 @@ define(["jquery", "underscore-min", "../Utils/Event", "moment", "../Utils/Utils"
          * @function setOnTheTop
          * @memberOf AbstractLayer#
          */
-        AbstractLayer.prototype.setOnTheTop = function() {
+        AbstractLayer.prototype.setOnTheTop = function () {
             var manager = this.getGlobe().getVectorRendererManager();
             manager.setSelectedRasterBucket(this);
         };
@@ -810,12 +839,12 @@ define(["jquery", "underscore-min", "../Utils/Event", "moment", "../Utils/Utils"
                 }
                 this.visible = arg;
 
-                if(!this.isBackground() && this.visible) {
+                if (!this.isBackground() && this.visible) {
                     this.setOnTheTop();
                 }
 
                 var ctxTime = this.callbackContext.getTime();
-                if(ctxTime !== this.time) {
+                if (ctxTime !== this.time) {
                     this.setTime(ctxTime);
                 }
 
@@ -978,7 +1007,7 @@ define(["jquery", "underscore-min", "../Utils/Event", "moment", "../Utils/Utils"
          * @function isVectorLayer
          * @memberOf AbstractLayer#
          */
-        AbstractLayer.prototype.isVectorLayer = function() {
+        AbstractLayer.prototype.isVectorLayer = function () {
             return this.vectorLayer;
         };
 
