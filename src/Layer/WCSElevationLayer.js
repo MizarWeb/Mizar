@@ -110,13 +110,8 @@ define(['../Utils/Utils', './AbstractLayer', './AbstractRasterLayer', '../Utils/
             if (options.hasOwnProperty('time')) {
                 var timeRequest = AbstractLayer.createTimeRequest(options.time);
                 var allowedTime = this.getDimensions().time;
-                if (allowedTime.value) {
-                    var selectedDate = AbstractLayer.selectedTime(allowedTime.value, timeRequest);
-                    url = Utils.addParameterTo(url, "time", selectedDate);
-                } else {
-                    //TODO JCM
-                    console.log("No allowed time for WCS Elevation layer");
-                }
+                var selectedDate = AbstractLayer.selectedTime(allowedTime.value, timeRequest);
+                url = Utils.addParameterTo(url, "time", selectedDate);
             }
             return url;
         }
@@ -169,19 +164,23 @@ define(['../Utils/Utils', './AbstractLayer', './AbstractRasterLayer', '../Utils/
             var lines = text.trim().split('\n');
 
             var dataLinesStart = 0;
+            var noDATA = Number.NEGATIVE_INFINITY;
             for (i = 0; i < lines.length; ++i) {
                 if (lines[i].substring(0, 1) === " ") {
                     dataLinesStart = i;
                     break;
+                } else if(lines[i].substring(0, 1) === "NODATA_value") {
+                    var elt = lines[i].trim().split(/\s+/);;
+                    noDATA = elt[1];
                 }
             }
 
-            var oldVal=0;
+            var oldVal = Number.NEGATIVE_INFINITY;
             for (i = dataLinesStart; i < lines.length; i++) {
                 var elts = lines[i].trim().split(/\s+/);
                 for (var n = 0; n < elts.length; n++) {
                     var elevation;
-                    if(isNaN(elts[n])) {
+                    if(isNaN(elts[n]) || elts[n] === noDATA) {
                         elevation = oldVal;
                     } else {
                         elevation = parseFloat(elts[n], 10);
