@@ -592,6 +592,8 @@ define(["jquery", "moment", "../Utils/Constants"], function ($, Moment, Constant
     TimeTravelParams.prototype.isCurrentDateTheFirst = function() {
         if (this.stepKind === Constants.TIME_STEP.ENUMERATED) {
             return (this.currentIndex === 0);
+        } else {
+            return this.currentDate === this.startDate;
         }
         return false;
     };
@@ -605,8 +607,9 @@ define(["jquery", "moment", "../Utils/Constants"], function ($, Moment, Constant
     TimeTravelParams.prototype.isCurrentDateTheLast = function() {
         if (this.stepKind === Constants.TIME_STEP.ENUMERATED) {
             return (this.currentIndex === (this.enumeratedValues.length-1));
+        } else {
+            return this.currentDate === this.endDate;
         }
-        return false;
     };
 
 
