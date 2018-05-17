@@ -89,6 +89,8 @@ define(['../Utils/Utils', './AbstractLayer', './AbstractRasterLayer', '../Utils/
 
             AbstractRasterLayer.prototype.constructor.call(this, Constants.LAYER.WMTS, options);
             this.getTileBaseUrl = _queryImage.call(this, this.getBaseUrl(), options);
+            this.timeID = null;
+            this.mustbeSkipped = false;
         };
 
         /**************************************************************************************************************/
@@ -110,11 +112,12 @@ define(['../Utils/Utils', './AbstractLayer', './AbstractRasterLayer', '../Utils/
                 url = Utils.addParameterTo(url, "style",options.style);
             }
             url = Utils.addParameterTo(url, "format", options.hasOwnProperty('format') ? options.format : 'image/png');
-            if (options.time) {
-                var timeRequest = AbstractLayer.createTimeRequest(options.time);
-                var allowedTime = this.getDimensions().time;
-                var selectedDate = AbstractLayer.selectedTime(allowedTime.value, timeRequest);
-                url = Utils.addParameterTo(url, "time", selectedDate);
+            if (options.hasOwnProperty('time')) {
+                this.mustbeSkipped = (this.timeID == null);
+                url = Utils.addParameterTo(url, "time", this.timeID);
+            } else {
+                this.mustbeSkipped = false;
+                this.timeID = null;
             }
             return url;
         }
@@ -142,19 +145,61 @@ define(['../Utils/Utils', './AbstractLayer', './AbstractRasterLayer', '../Utils/
          * @return {String} Url
          */
         WMTSLayer.prototype.getUrl = function (tile) {
-            var url = this.getTileBaseUrl;
-            url = Utils.addParameterTo(url, "tilematrix", tile.level+1);
-            url = Utils.addParameterTo(url, "tilecol", tile.x);
-            url = Utils.addParameterTo(url, "tilerow", tile.y);
+            var url;
+            if(this.mustbeSkipped) {
+                url = null;
+            } else {
+                url = this.getTileBaseUrl;
+                url = Utils.addParameterTo(url, "tilematrix", tile.level + 1);
+                url = Utils.addParameterTo(url, "tilecol", tile.x);
+                url = Utils.addParameterTo(url, "tilerow", tile.y);
+            }
             return this.proxify(url, tile.level);
         };
 
         WMTSLayer.prototype.setParameter = function (paramName,value) {
-            if (this.hasDimension() && this.getDimensions()[paramName]) {
+            if (this.containsDimension(paramName) && this._hasToBeRefreshed(paramName, value)) {
                 this.options[paramName] = value;
                 this.getCoverageBaseUrl = _queryImage.call(this, this.getBaseUrl(), this.options);
                 this.forceRefresh();
             }
+        };
+
+        /**
+         * Checks if Mizar must query the WMS server to refresh data.
+         * When the camera does not move but that the time change, we have two cases :
+         * - the requested time is included in the time frame of the image => no query
+         * - the requested time is outside of the time frame of the image => this is a new image, need to query
+         * @param paramName
+         * @param value
+         * @return {*}
+         * @private
+         */
+        WMTSLayer.prototype._hasToBeRefreshed = function(paramName, value) {
+            var hasToBeRefreshed;
+            if(paramName==="time") {
+                var timeRequest = AbstractLayer.createTimeRequest(value);
+                var allowedTime = this.getDimensions().time;
+                var selectedDate = AbstractLayer.selectedTime(allowedTime.value, timeRequest);
+                if(this.timeID != null && selectedDate == null) {
+                    // we query because the state has changed
+                    hasToBeRefreshed = true;
+                    this.timeID = null;
+                } else if(selectedDate == null) {
+                    // No image found on the server related to the requested time, no need to query => we save network
+                    hasToBeRefreshed = false;
+                } else if (this.timeID === selectedDate) {
+                    // Same state, no need to query
+                    hasToBeRefreshed = false;
+                } else {
+                    // At the requested time, there is an image on the server and this is not the current one => query
+                    hasToBeRefreshed = true;
+                    this.timeID = selectedDate;
+                }
+            } else {
+                hasToBeRefreshed = true;
+            }
+            return hasToBeRefreshed;
         };
 
 
