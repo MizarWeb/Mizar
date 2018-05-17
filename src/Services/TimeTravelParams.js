@@ -583,6 +583,33 @@ define(["jquery", "moment", "../Utils/Constants"], function ($, Moment, Constant
         }
     };
 
+    /**
+     * Is current date the first ?
+     * @function isCurrentDateTheFirst
+     * @return boolean If the current date is the first of range
+     * @memberOf TimeTravelParams#
+     */
+    TimeTravelParams.prototype.isCurrentDateTheFirst = function() {
+        if (this.stepKind === Constants.TIME_STEP.ENUMERATED) {
+            return (this.currentIndex === 0);
+        }
+        return false;
+    };
+
+    /**
+     * Is current date the last ?
+     * @function isCurrentDateTheLast
+     * @return boolean If the current date is the last of range
+     * @memberOf TimeTravelParams#
+     */
+    TimeTravelParams.prototype.isCurrentDateTheLast = function() {
+        if (this.stepKind === Constants.TIME_STEP.ENUMERATED) {
+            return (this.currentIndex === (this.enumeratedValues.length-1));
+        }
+        return false;
+    };
+
+
     TimeTravelParams.NO_ID = "NO_ID";
 
     return TimeTravelParams;

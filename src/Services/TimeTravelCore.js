@@ -130,6 +130,14 @@ define(["jquery","./TimeTravelParams","../Utils/Constants"], function ($, TimeTr
         return (params.stepKind === Constants.TIME_STEP.ENUMERATED);
     }
 
+    function isCurrentDateTheFirst() {
+        return params.isCurrentDateTheFirst();
+    }
+
+    function isCurrentDateTheLast() {
+        return params.isCurrentDateTheLast();
+    }
+
     /**************************************************************************************************************/
 
     return {
@@ -146,16 +154,18 @@ define(["jquery","./TimeTravelParams","../Utils/Constants"], function ($, TimeTr
                 ctx.subscribe(Constants.EVENT_MSG.GLOBAL_TIME_SET,chooseTime);
             }
         },
-        reset               : reset,
-        update              : update,
-        goForward           : goForward,
-        goRewind            : goRewind,
-        chooseTime          : chooseTime,
-        remove              : remove,
-        getStart            : getStart,
-        getEnd              : getEnd,
-        getCurrentDate      : getCurrentDate,
-        getCurrentIndex     : getCurrentIndex,
-        isEnumerated        : isEnumerated
+        reset                 : reset,
+        update                : update,
+        goForward             : goForward,
+        goRewind              : goRewind,
+        isCurrentDateTheFirst : isCurrentDateTheFirst,
+        isCurrentDateTheLast  : isCurrentDateTheLast,
+        chooseTime            : chooseTime,
+        remove                : remove,
+        getStart              : getStart,
+        getEnd                : getEnd,
+        getCurrentDate        : getCurrentDate,
+        getCurrentIndex       : getCurrentIndex,
+        isEnumerated          : isEnumerated
     };
 });
