@@ -52,6 +52,7 @@ define(["jquery", "underscore-min", "../Utils/Event", "moment", "../Utils/Utils"
             this.components = {};
             this.dataProviders = {};
             this.canvas = mizarConfiguration.canvas;
+            this.timeTravelService = ctxOptions.timeTravelService;
             this.subscribe(Constants.EVENT_MSG.BASE_LAYERS_READY, function (imagery) {
                 // When the background takes time to load, the viewMatrix computed by "computeViewMatrix" is created but
                 // with empty values. Because of that, the globe cannot be displayed without moving the camera.
@@ -377,6 +378,13 @@ define(["jquery", "underscore-min", "../Utils/Event", "moment", "../Utils/Utils"
                         layer.callbackContext = self;
 
                         self.layers.push(layer);
+
+                        if (layer.autoFillTimeTravel === true) {
+                            if ( (self.timeTravelService) && (typeof self.timeTravelService !== "undefined"))
+                            {
+                                self.timeTravelService.update(layer.timeTravelValues);
+                            }
+                        }
 
                         _addToGlobe.call(self, layer);
 

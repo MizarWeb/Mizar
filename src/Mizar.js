@@ -897,6 +897,16 @@ define(["jquery", "underscore-min",
             return result;
         };
 
+        /**
+         * Update the time travel navigation range
+         * @param {JSON} parameters Parameters
+         * @function setTime
+         * @memberOf Mizar#
+         */
+        Mizar.prototype.updateTimeTravel = function(parameters) {
+            console.log(this);
+            this.getServiceByName(Mizar.SERVICE.TimeTravel).update(parameters);
+        };
 
         /**
          * Sets the current or integrated time of the application
@@ -933,7 +943,10 @@ define(["jquery", "underscore-min",
             var result;
             try {
                 options.renderContext = this.renderContext;
+                options.timeTravelService = this.getServiceByName(Mizar.SERVICE.TimeTravel);
+                
                 var ctx = this.ContextFactory.create(contextMode, this.getOptions(), options);
+            
                 switch (contextMode) {
                     case Mizar.CONTEXT.Sky:
                         this.skyContext = ctx;

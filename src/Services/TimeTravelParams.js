@@ -195,7 +195,7 @@ define(["jquery", "moment", "../Utils/Constants"], function ($, Moment, Constant
     TimeTravelParams.prototype.parseDate = function (value) {
         value = value.trim();
         var date = null;
-        var period = { "from": null, "to": null};
+        var period = null;
 
         var regExpYear = /^\d{4}$/;
         var regExpMonth = /^\d{4}\-\d{2}$/;
@@ -204,18 +204,21 @@ define(["jquery", "moment", "../Utils/Constants"], function ($, Moment, Constant
             // Year management
             if (regExpYear.test(value)) {
                 date = Moment(value,"YYYY");
+                period = {};
                 period.from = date;
                 period.to = Moment(period.from).add(1,Constants.TIME_STEP.YEAR).subtract(1,Constants.TIME_STEP.MILLISECOND);
             }
             // Month management
             if (regExpMonth.test(value)) {
                 date = Moment(value,"YYYY-MM");
+                period = {};
                 period.from = date;
                 period.to = Moment(period.from).add(1,Constants.TIME_STEP.MONTH).subtract(1,Constants.TIME_STEP.MILLISECOND);
             }
             // Day management
             if (regExpDay.test(value)) {
                 date = Moment(value,"YYYY-MM-DD");
+                period = {};
                 period.from = date;
                 period.to = Moment(period.from).add(1,Constants.TIME_STEP.DAY).subtract(1,Constants.TIME_STEP.MILLISECOND);
             }
@@ -232,6 +235,8 @@ define(["jquery", "moment", "../Utils/Constants"], function ($, Moment, Constant
             };
     };
 
+    /**************************************************************************************************************/
+
     /**
      * Sort enumerated values by date
      * @function sortTime
@@ -245,16 +250,83 @@ define(["jquery", "moment", "../Utils/Constants"], function ($, Moment, Constant
     /**************************************************************************************************************/
 
     /**
-     * Set enumerated values
-     * @function setEnumeratedValues
-     * @param Array(String) values Array of enumerated values
+     * Add date to enumerated values (check if still present)
+     * @function addDateToEnumeratedValues
+     * @param Json date Date
+     * @param String ID Id
      * @memberOf TimeTravelParams#
+     * @private
      */
-    TimeTravelParams.prototype.setEnumeratedValues = function (values) {
+     TimeTravelParams.prototype.addDateToEnumeratedValues = function (date,ID) {
+        if (this.enumeratedValues === null) {
+            this.enumeratedValues = [];
+        }
+
+        for (var i=0;i<this.enumeratedValues.length;i++) {
+            if (this.enumeratedValues[i].display === date.display) {
+                // Still found : add only id
+                if ( (this.enumeratedValues[i].ids) && (this.enumeratedValues[i].ids.length) ) {
+                    this.enumeratedValues[i].ids.push(ID);
+                    return;
+                }
+            }
+        }
+        // Not found, add all
+        date.ids = [];
+        date.ids.push(ID);
+        this.enumeratedValues.push(date);
+    };
+
+    /**************************************************************************************************************/
+
+    /**
+     * Remove enumerated values for ID
+     * @function removeEnumeratedValuesForID
+     * @param String ID Id
+     * @memberOf TimeTravelParams#
+     * @private
+     */
+    TimeTravelParams.prototype.removeEnumeratedValuesForID = function (ID) {
+        if (ID === null) {
+            ID = TimeTravelParams.NO_ID;
+        }
+        for (var i=this.enumeratedValues.length-1;i>=0;i--) {
+            if ( (this.enumeratedValues[i].ids) && (this.enumeratedValues[i].ids.length) ) {
+                var index = this.enumeratedValues[i].ids.indexOf(ID);
+                if (index !== -1) {
+                    this.enumeratedValues[i].ids.splice(index, 1);
+                }
+                if (this.enumeratedValues[i].ids.length === 0) {
+                    this.enumeratedValues.splice(i,1);
+                }
+            }
+        }
+    };
+
+    /**************************************************************************************************************/
+
+    /**
+     * Add enumerated values for ID
+     * @function addEnumeratedValuesForID
+     * @param Array(String) values Array of enumerated values
+     * @param String ID Id
+     * @memberOf TimeTravelParams#
+     * @private
+     */
+    TimeTravelParams.prototype.addEnumeratedValuesForID = function (values,ID) {
+        if (values === null) {
+            // By pass
+            return;
+        }
+        if (ID === null) {
+            ID = TimeTravelParams.NO_ID;
+        }
+
+        
         // TODO soon : check format, need conversion ?
-        this.enumeratedValues = [];
         for (var i=0;i<values.length;i++) {
-            this.enumeratedValues.push(this.parseDate(values[i]));
+            date = this.parseDate(values[i]);
+            this.addDateToEnumeratedValues(date,ID);
         }
         
         // sort tab
@@ -267,6 +339,126 @@ define(["jquery", "moment", "../Utils/Constants"], function ($, Moment, Constant
         this.stepValue   = 1;
         this.currentIndex = 0;
         this.currentDate = this.enumeratedValues[this.currentIndex].date;
+    };
+
+    /**************************************************************************************************************/
+
+    /**
+     * Add values
+     * @function add values
+     * @param {Json} parameters Parameters
+     * @memberOf TimeTravelParams#
+     */
+    TimeTravelParams.prototype.addValues = function (parameters) {
+        if (!parameters) {
+            return;
+        }
+        if (parameters.enumeratedValues) {
+            this.addEnumeratedValuesForID(parameters.enumeratedValues,parameters.ID);
+        }
+    };
+
+    /**************************************************************************************************************/
+
+    /**
+     * Remove values
+     * @function remove values
+     * @param {Json} parameters Parameters
+     * @memberOf TimeTravelParams#
+     */
+    TimeTravelParams.prototype.removeValues = function (parameters) {
+        if (!parameters) {
+            return;
+        }
+        if (parameters.ID) {
+            this.removeEnumeratedValuesForID(parameters.ID);
+        }
+    };
+
+    /**************************************************************************************************************/
+
+    /**
+     * Update
+     * @function update
+     * @param {Json} parameters Parameters
+     * @memberOf TimeTravelParams#
+     */
+    TimeTravelParams.prototype.update = function (parameters) {
+        if (!parameters) {
+            return;
+        }
+        if (parameters.add) {
+            this.addValues(parameters.add);
+        }
+        if (parameters.remove) {
+            this.removeValues(parameters.remove);
+        }
+        this.apply();
+    };
+
+    /**************************************************************************************************************/
+
+    /**
+     * Reset values
+     * @function reset
+     * @memberOf TimeTravelParams#
+     */
+    TimeTravelParams.prototype.reset = function() {
+        this.startDate          = null;
+        this.endDate            = null;
+        this.stepKind           = null;
+        this.stepValue          = null;
+        this.currentIndex       = null;
+        this.currentDate        = null;
+        this.enumeratedValues   = null;
+    };
+
+    /**************************************************************************************************************/
+
+    /**
+     * Add values for ID
+     * @function addValuesForID
+     * @param {JSON} values Values 
+     * @param String ID Id of layer
+     * @memberOf TimeTravelParams#
+     * @private
+     */
+    TimeTravelParams.prototype.addValuesForID = function(values,ID) {
+        if (ID === null) {
+            ID = TimeTravelParams.NO_ID;
+        }
+        if (values.enumeratedValues) {
+            this.addEnumeratedValuesForID(values.enumeratedValues,ID);
+            // add enumerated values
+        } else {
+            this.startDate = Moment(values.start);
+            this.endDate = Moment(values.end);
+            this.stepKind = values.stepKind;
+            this.stepValue = values.stepValue;
+            // compile data with previous, manage ID
+            // TODO FL
+
+        }
+    };
+
+    /**************************************************************************************************************/
+
+    /**
+     * Remove values for ID
+     * @function resetValues
+     * @param String ID Id of layer
+     * @memberOf TimeTravelParams#
+     */
+    TimeTravelParams.prototype.removeValuesForID = function(ID) {
+        if (ID === null) {
+            ID = TimeTravelParams.NO_ID;
+        }
+        if ( (this.enumeratedValues) && (this.enumeratedValues.length>0) ) {
+            this.removeEnumeratedValuesForID(ID);
+            // add enumerated values
+        } else {
+            // nothing to do
+        }
     };
 
     /**************************************************************************************************************/
@@ -391,5 +583,10 @@ define(["jquery", "moment", "../Utils/Constants"], function ($, Moment, Constant
         }
     };
 
+    TimeTravelParams.NO_ID = "NO_ID";
+
     return TimeTravelParams;
 });
+
+
+

@@ -129,6 +129,7 @@ define(["jquery","underscore-min", "../Utils/Utils", "xmltojson", "../Layer/Laye
             layerDesc.description = layerDescription.description || (jsonLayer.Abstract != null) ? jsonLayer.Abstract : jsonLayers.Abstract;
             layerDesc.attribution = attribution;
             layerDesc.copyrightUrl = copyrightURL;
+            layerDesc.autoFillTimeTravel = layerDescription.autoFillTimeTravel;
             layerDesc.properties = {
                 "initialRa":center[0],
                 "initialDec":center[1],

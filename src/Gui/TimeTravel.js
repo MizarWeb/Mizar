@@ -165,7 +165,6 @@ define(["jquery", "../Utils/Constants","../Services/TimeTravelCore"],
     TimeTravel.prototype.goRewind = TimeTravelCore.goRewind;
     TimeTravel.prototype.goForward = TimeTravelCore.goForward;
     TimeTravel.prototype.chooseTime = TimeTravelCore.chooseTime;
-    TimeTravel.prototype.initValues = TimeTravelCore.initValues;
 
     /**************************************************************************************************************/
 

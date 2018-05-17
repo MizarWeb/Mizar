@@ -81,10 +81,25 @@ define(["jquery", '../Utils/Utils', './AbstractLayer', './AbstractRasterLayer', 
             options.transparent = options.transparent || false;
 
             this.restrictTo = options.restrictTo;
+            this.autoFillTimeTravel = options.autoFillTimeTravel;
 
             //this._computeBaseUrlAndCapabilities(options);
 
             AbstractRasterLayer.prototype.constructor.call(this, options.type, options);
+
+            this.timeTravelValues = null;
+            if (this.autoFillTimeTravel === true) {
+                if ( (options.dimension) && (options.dimension.time)) {
+                    if (options.dimension.time.value) {
+                        this.timeTravelValues = {
+                            "add" : {
+                                "enumeratedValues" : options.dimension.time.value.split(","),
+                                "ID" : this.ID
+                            }
+                        };
+                    }
+                }
+            }
 
             this.getMapBaseUrl = _queryImage.call(this, this.getBaseUrl(), this.tilePixelSize, this.tilePixelSize, options);
             this.layers = options.layers;

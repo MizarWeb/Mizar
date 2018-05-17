@@ -346,6 +346,7 @@ define(function () {
         "LAYER_FORCE_REFRESH" : "layer:forceRefresh",
         "LAYER_TIME_CHANGED" : "layer:time:changed",
         "LAYERS_TIME_CHANGED" : "layers:time:changed",
+        "TIME_TRAVEL_UPDATED" : "timeTravel:updated",
         /** json object like : 
          { "date" : the current time,
            "display" : the current date as string for display,

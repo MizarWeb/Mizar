@@ -27,6 +27,29 @@ var context = {
             "format":"image/png"
         },*/
         {
+            "category": 'POYANG',
+            "type": 'WMS',
+            "baseUrl": 'http://80.158.6.138/mapserv?map=WMS_POYANG',
+            "visible": true,
+            "background": false,
+            "transparent": true,
+            "format": 'image/png',
+            "layers": 'SPOT4,SPOT5,LANDSAT2000',
+            "autoFillTimeTravel" : true
+        },
+        {
+            "category": 'POYANG',
+            "type": 'WMS',
+            "baseUrl": 'http://80.158.6.138/mapserv?map=WMS_POYANG',
+            "visible": true,
+            "background": false,
+            "transparent": true,
+            "format": 'image/png',
+            "layers": 'SUBMERSION',
+            "zIndex": 11,
+            "autoFillTimeTravel" : true
+        },
+        {
             "name": "Palavas_Fond",
             "type": "WMS",
             "baseUrl": "http://80.158.6.138/mapserv?map=WMS_PALAVAS",

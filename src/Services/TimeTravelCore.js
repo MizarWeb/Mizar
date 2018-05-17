@@ -74,21 +74,19 @@ define(["jquery","./TimeTravelParams","../Utils/Constants"], function ($, TimeTr
     /**************************************************************************************************************/
 
     /**
-     *    initValues
+     *    reset values
      *    
      */
+    function reset() {
+        params.reset();
+    }
 
-    function initValues(values) {
-        if (values.enumeratedValues) {
-            params.setEnumeratedValues(values.enumeratedValues);
-            params.apply();
-        } else {
-            params.setStartDate(values.start);
-            params.setEndDate(values.end);
-            params.setStep(values.stepKind,values.stepValue);
-            params.setCurrentDate(values.start);
-            params.apply();
-        }
+    /**
+     *    update
+     *    
+     */
+    function update(parameters) {
+        params.update(parameters);
     }
 
     /**
@@ -146,18 +144,18 @@ define(["jquery","./TimeTravelParams","../Utils/Constants"], function ($, TimeTr
                 ctx.subscribe(Constants.EVENT_MSG.GLOBAL_TIME_FORWARD,goForward);
                 ctx.subscribe(Constants.EVENT_MSG.GLOBAL_TIME_REWIND,goRewind);
                 ctx.subscribe(Constants.EVENT_MSG.GLOBAL_TIME_SET,chooseTime);
-                ctx.subscribe(Constants.EVENT_MSG.GLOBAL_TIME_INIT,initValues);
             }
         },
-        initValues  : initValues,
-        goForward   : goForward,
-        goRewind    : goRewind,
-        chooseTime  : chooseTime,
-        remove      : remove,
-        getStart    : getStart,
-        getEnd      : getEnd,
-        getCurrentDate : getCurrentDate,
-        getCurrentIndex : getCurrentIndex,
-        isEnumerated : isEnumerated
+        reset               : reset,
+        update              : update,
+        goForward           : goForward,
+        goRewind            : goRewind,
+        chooseTime          : chooseTime,
+        remove              : remove,
+        getStart            : getStart,
+        getEnd              : getEnd,
+        getCurrentDate      : getCurrentDate,
+        getCurrentIndex     : getCurrentIndex,
+        isEnumerated        : isEnumerated
     };
 });
