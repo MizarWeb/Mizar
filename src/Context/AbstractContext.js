@@ -450,9 +450,18 @@ define(["jquery", "underscore-min", "../Utils/Event", "moment", "../Utils/Utils"
                     return index;
                 }
             });
+
             if (indexes.length > 0) {
+                // At least one layer to remove
                 var removedLayers = this.layers.splice(indexes[0], 1);
                 removedLayer = removedLayers[0];
+                if (removedLayer.autoFillTimeTravel === true) {
+                    this.timeTravelService.update({
+                        "remove" :
+                             { "ID" : layerID }
+                   });
+            }
+
                 removedLayer.unsubscribe(Constants.EVENT_MSG.LAYER_VISIBILITY_CHANGED, _handleCameraWhenLayerAdded);
                 ServiceFactory.create(Constants.SERVICE.PickingManager).removePickableLayer(removedLayer);
                 removedLayer._detach();

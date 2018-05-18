@@ -117,6 +117,9 @@ define(["jquery", "underscore-min", "../Utils/Event", "moment", "../Utils/Utils"
             this.vectorLayer = false;
             this.metadataAPI = (this.options.metadataAPI) ? this.options.metadataAPI : null;
             this.time = null;
+            // Do we take DEM into account with this layer ?
+            this.pickingNoDEM = this.options.pickingNoDEM ? this.options.pickingNoDEM : false;
+
             // Set if we need to auto fill the time travel range/step with auto discovered time values
             this.autoFillTimeTravel = (this.options.autoFillTimeTravel) ? this.options.autoFillTimeTravel : false;
 

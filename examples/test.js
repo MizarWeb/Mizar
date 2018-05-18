@@ -7,7 +7,7 @@ var context = {
             "coverage": "SRTM",
             "version": "1.0.0",
             "minElevation": -32000,
-            "scale": 50
+            "scale": 1
         },
         {
             "name": "Blue Marble",
@@ -116,7 +116,7 @@ var context = {
         { "id" : "DISASTER", "name" : "Natural Disasters", "color" : "#E9483F", "logo" : "images/thematics/DISASTER.png" }
     ];
     var climateData = [
-            {
+            /*{
                 "thematicId": "WATER",
                 "type": "FeatureCollection",
                 "features": [
@@ -148,15 +148,15 @@ var context = {
                         "properties": { "name": "Poyang lake", "title": "Poyang lake", "description": "Poyang lake" }
                     }
                 ]
-            },
+            },*/
             {
                 "thematicId": "DISASTER",
                 "type": "FeatureCollection",
                 "features": [
                     {
-                        "geometry": { "type": "Point", "coordinates": [117.217 , 28.15] },
+                        "geometry": { "type": "Point", "coordinates": [7.0848 ,  45.8053] },
                         "type": "Feature",
-                        "properties": { "name": "Poyang lake", "title": "Poyang lake", "description": "Poyang lake" }
+                        "properties": { "name": "Mont Blanc", "title": "Mont Blanc", "description": "Mont Blanc" }
                     }
                 ]
             }
@@ -192,5 +192,5 @@ var demMontBlanc = {
     "coverage": "MNT_Mont_Blanc",
     "version": "1.0.0",
     "minElevation": -32000,
-    "scale": 50
+    "scale": 2
 };

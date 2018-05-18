@@ -500,7 +500,6 @@ define(["jquery", "moment", "../Utils/Constants"], function ($, Moment, Constant
         this.currentDate = Moment(this.currentDate).subtract(this.stepValue,this.stepKind);
 
         if (this.currentDate < this.startDate) {
-            console.log("can't go before...");
             this.currentDate = oldCurrentDate;
         } else {
             this.apply();
@@ -532,7 +531,6 @@ define(["jquery", "moment", "../Utils/Constants"], function ($, Moment, Constant
         this.currentDate = Moment(this.currentDate).add(this.stepValue,this.stepKind);
 
         if (this.currentDate > this.endDate) {
-            console.log("can't go after...");
             this.currentDate = oldCurrentDate;
         } else {
             this.apply();
@@ -608,10 +606,10 @@ define(["jquery", "moment", "../Utils/Constants"], function ($, Moment, Constant
         if (this.stepKind === Constants.TIME_STEP.ENUMERATED) {
             return (this.currentIndex === (this.enumeratedValues.length-1));
         } else {
-            return this.currentDate === this.endDate;
+            nextDate = Moment(this.currentDate).add(this.stepValue,this.stepKind);
+            return (nextDate > this.endDate);
         }
     };
-
 
     TimeTravelParams.NO_ID = "NO_ID";
 
