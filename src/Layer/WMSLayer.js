@@ -183,6 +183,56 @@ define(["jquery", '../Utils/Utils', './AbstractLayer', './AbstractRasterLayer', 
             return legend;
         };
 
+        //WMSLayer.prototype.getFeatureInfo = function(position, resolution, callback, fallback) {
+        //    var positionResolution;
+        //    if (resolution) {
+        //        positionResolution = resolution;
+        //    } else {
+        //        positionResolution = {
+        //            longitude:0.0001,
+        //            latitude:0.0001
+        //        }
+        //    }
+        //    var url = this.getMapBaseUrl;
+        //    var baseURL = Utils.parseBaseURL(url);
+        //    var params = Utils.parseQueryString(url);
+        //    params['crs'] = "CRS:84";
+        //    params['query_layers'] = this.options.layers;
+        //    params['request'] = "GetFeatureInfo";
+        //    params['width'] = 2;
+        //    params['height'] = 2;
+        //    params['x'] = 1;
+        //    params['y'] = 1;
+        //    params['bbox'] = position.longitude+","+position.latitude+","+(position.longitude+positionResolution.longitude)+","+(position.latitude+positionResolution.latitude)
+        //
+        //    url = baseURL;
+        //    for(var param in params) {
+        //        url = Utils.addParameterTo(url, param, params[param]);
+        //    }
+        //
+        //    Utils.requestUrl(url, "text", null,
+        //        function(response, options) {
+        //            var lines = response.trim().split('\n');
+        //            var featuresInfo = {};
+        //            for (var i = 0; i < lines.length; ++i) {
+        //                var layerName;
+        //
+        //                if (lines[i].substring(0, 5) === "Layer") {
+        //                    layerName  = lines[i].match(/'(.*?)'/)[1];
+        //                } else if(lines[i].substring(0, 9) === "  Feature") {
+        //                    featuresInfo[layerName] = [];
+        //                } else if(lines[i].substring(0, 11) === "    value_0") {
+        //                    featuresInfo[layerName].push(parseFloat(lines[i].match(/'(.*?)'/)[1]));
+        //                }
+        //            }
+        //            if(callback) {
+        //                callback(featuresInfo);
+        //            }
+        //        },
+        //        fallback);
+        //
+        //};
+
         WMSLayer.prototype.setVisible = function (arg) {
             AbstractRasterLayer.prototype.setVisible.call(this, arg);
             if (document.getElementById("legendDiv")) {
@@ -228,49 +278,55 @@ define(["jquery", '../Utils/Utils', './AbstractLayer', './AbstractRasterLayer', 
         };
 
         WMSLayer.prototype.setParameter = function (paramName,value) {
-            if ((paramName === "styles" || this.containsDimension(paramName)) && this._hasToBeRefreshed(paramName, value)) {
-                this.options[paramName] = value;
-                this.getMapBaseUrl = _queryImage.call(this, this.getBaseUrl(), this.tilePixelSize, this.tilePixelSize, this.options);
-                this.forceRefresh();
+            if (paramName === "styles" || this.containsDimension(paramName)) {
+                if(this._hasToBeRefreshed(paramName, value)) {
+                    this.mustbeSkipped = false;
+                    this.options[paramName] = value;
+                    this.getMapBaseUrl = _queryImage.call(this, this.getBaseUrl(), this.tilePixelSize, this.tilePixelSize, this.options);
+                    this.forceRefresh();
+                } else {
+                    this.mustbeSkipped = true;
+                }
             }
         };
 
-        /**
-         * Checks if Mizar must query the WMS server to refresh data.
-         * When the camera does not move but that the time change, we have two cases :
-         * - the requested time is included in the time frame of the image => no query
-         * - the requested time is outside of the time frame of the image => this is a new image, need to query
-         * @param paramName
-         * @param value
-         * @return {*}
-         * @private
-         */
-        WMSLayer.prototype._hasToBeRefreshed = function(paramName, value) {
-            var hasToBeRefreshed;
-            if(paramName==="time") {
-                var timeRequest = AbstractLayer.createTimeRequest(value);
-                var allowedTime = this.getDimensions().time;
-                var selectedDate = AbstractLayer.selectedTime(allowedTime.value, timeRequest);
-                if(this.timeID != null && selectedDate == null) {
-                    // we query because the state has changed
-                    hasToBeRefreshed = true;
-                    this.timeID = null;
-                } else if(selectedDate == null) {
-                    // No image found on the server related to the requested time, no need to query => we save network
-                    hasToBeRefreshed = false;
-                } else if (this.timeID === selectedDate) {
-                    // Same state, no need to query
-                    hasToBeRefreshed = false;
-                } else {
-                    // At the requested time, there is an image on the server and this is not the current one => query
-                    hasToBeRefreshed = true;
-                    this.timeID = selectedDate;
-                }
-            } else {
-                hasToBeRefreshed = true;
-            }
-            return hasToBeRefreshed;
-        };
+        ///**
+        // * Checks if Mizar must query the WMS server to refresh data.
+        // * When the camera does not move but that the time change, we have two cases :
+        // * - the requested time is included in the time frame of the image => no query
+        // * - the requested time is outside of the time frame of the image => this is a new image, need to query
+        // * @param paramName
+        // * @param value
+        // * @return {*}
+        // * @private
+        // */
+        //WMSLayer.prototype._hasToBeRefreshed = function(paramName, value) {
+        //    var hasToBeRefreshed;
+        //    if(paramName==="time") {
+        //        var timeRequest = AbstractLayer.createTimeRequest(value);
+        //        var allowedTime = this.getDimensions().time;
+        //        var selectedDate = AbstractLayer.selectedTime(allowedTime.value, timeRequest);
+        //        if(this.timeID != null && selectedDate == null) {
+        //            // we query because the state has changed
+        //            hasToBeRefreshed = true;
+        //            this.timeID = null;
+        //        } else if(selectedDate == null) {
+        //            // No image found on the server related to the requested time, no need to query => we save network
+        //            hasToBeRefreshed = false;
+        //        } else if (this.timeID === selectedDate) {
+        //            // Same state, no need to query
+        //            hasToBeRefreshed = false;
+        //        } else {
+        //            // At the requested time, there is an image on the server and this is not the current one => query
+        //            hasToBeRefreshed = true;
+        //            this.timeID = selectedDate;
+        //        }
+        //    } else {
+        //        hasToBeRefreshed = true;
+        //    }
+        //    this.mustbeSkipped = !hasToBeRefreshed;
+        //    return hasToBeRefreshed;
+        //};
 
         /**************************************************************************************************************/
 

@@ -158,49 +158,55 @@ define(['../Utils/Utils', './AbstractLayer', './AbstractRasterLayer', '../Utils/
         };
 
         WMTSLayer.prototype.setParameter = function (paramName,value) {
-            if (this.containsDimension(paramName) && this._hasToBeRefreshed(paramName, value)) {
-                this.options[paramName] = value;
-                this.getCoverageBaseUrl = _queryImage.call(this, this.getBaseUrl(), this.options);
-                this.forceRefresh();
+            if (this.containsDimension(paramName)) {
+                if(this._hasToBeRefreshed.call(paramName, value)) {
+                    this.options[paramName] = value;
+                    this.getCoverageBaseUrl = _queryImage.call(this, this.getBaseUrl(), this.options);
+                    this.forceRefresh();
+                    this.mustbeSkipped = false;
+                } else {
+                    this.mustbeSkipped = true;
+                }
             }
         };
 
-        /**
-         * Checks if Mizar must query the WMS server to refresh data.
-         * When the camera does not move but that the time change, we have two cases :
-         * - the requested time is included in the time frame of the image => no query
-         * - the requested time is outside of the time frame of the image => this is a new image, need to query
-         * @param paramName
-         * @param value
-         * @return {*}
-         * @private
-         */
-        WMTSLayer.prototype._hasToBeRefreshed = function(paramName, value) {
-            var hasToBeRefreshed;
-            if(paramName==="time") {
-                var timeRequest = AbstractLayer.createTimeRequest(value);
-                var allowedTime = this.getDimensions().time;
-                var selectedDate = AbstractLayer.selectedTime(allowedTime.value, timeRequest);
-                if(this.timeID != null && selectedDate == null) {
-                    // we query because the state has changed
-                    hasToBeRefreshed = true;
-                    this.timeID = null;
-                } else if(selectedDate == null) {
-                    // No image found on the server related to the requested time, no need to query => we save network
-                    hasToBeRefreshed = false;
-                } else if (this.timeID === selectedDate) {
-                    // Same state, no need to query
-                    hasToBeRefreshed = false;
-                } else {
-                    // At the requested time, there is an image on the server and this is not the current one => query
-                    hasToBeRefreshed = true;
-                    this.timeID = selectedDate;
-                }
-            } else {
-                hasToBeRefreshed = true;
-            }
-            return hasToBeRefreshed;
-        };
+        ///**
+        // * Checks if Mizar must query the WMS server to refresh data.
+        // * When the camera does not move but that the time change, we have two cases :
+        // * - the requested time is included in the time frame of the image => no query
+        // * - the requested time is outside of the time frame of the image => this is a new image, need to query
+        // * @param paramName
+        // * @param value
+        // * @return {*}
+        // * @private
+        // */
+        //WMTSLayer.prototype._hasToBeRefreshed = function(paramName, value) {
+        //    var hasToBeRefreshed;
+        //    if(paramName==="time") {
+        //        var timeRequest = AbstractLayer.createTimeRequest(value);
+        //        var allowedTime = this.getDimensions().time;
+        //        var selectedDate = AbstractLayer.selectedTime(allowedTime.value, timeRequest);
+        //        if(this.timeID != null && selectedDate == null) {
+        //            // we query because the state has changed
+        //            hasToBeRefreshed = true;
+        //            this.timeID = null;
+        //        } else if(selectedDate == null) {
+        //            // No image found on the server related to the requested time, no need to query => we save network
+        //            hasToBeRefreshed = false;
+        //        } else if (this.timeID === selectedDate) {
+        //            // Same state, no need to query
+        //            hasToBeRefreshed = false;
+        //        } else {
+        //            // At the requested time, there is an image on the server and this is not the current one => query
+        //            hasToBeRefreshed = true;
+        //            this.timeID = selectedDate;
+        //        }
+        //    } else {
+        //        hasToBeRefreshed = true;
+        //    }
+        //    this.mustbeSkipped = !hasToBeRefreshed;
+        //    return hasToBeRefreshed;
+        //};
 
 
         /**************************************************************************************************************/
