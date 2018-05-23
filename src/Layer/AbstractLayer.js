@@ -543,6 +543,9 @@ define(["jquery", "underscore-min", "../Utils/Event", "moment", "../Utils/Utils"
                     for (var renderableIdx = 0; renderableIdx < renderables.length; renderableIdx++) {
                         var renderable = renderables[renderableIdx];
                         if (renderable.bucket.layer.ID === this.ID) {
+                            if(renderable.onRequestFinished) {
+                                renderable.onRequestFinished(false);
+                            }
                             renderable.bucket.renderer.removeOverlay(this);
                             renderable.bucket.renderer.addOverlay(this);
                             break;
