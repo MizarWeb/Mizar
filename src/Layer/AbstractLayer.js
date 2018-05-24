@@ -531,29 +531,8 @@ define(["jquery", "underscore-min", "../Utils/Event", "moment", "../Utils/Utils"
          * @memberOf AbstractLayer#
          */
         AbstractLayer.prototype.forceRefresh = function () {
-            if ((this.getGlobe() === null) || (this.getGlobe().tileManager === null)) {
-                return;
-            }
-            var tiles = this.getGlobe().tileManager.visibleTiles;
-            for (var i = 0; i < tiles.length; i++) {
-                var tile = tiles[i];
-                var extension = tile.extension;
-                if (extension.renderer) {
-                    var renderables = extension.renderer.renderables;
-                    for (var renderableIdx = 0; renderableIdx < renderables.length; renderableIdx++) {
-                        var renderable = renderables[renderableIdx];
-                        if (renderable.bucket.layer.ID === this.ID) {
-                            if(renderable.onRequestFinished) {
-                                renderable.onRequestFinished(false);
-                            }
-                            renderable.bucket.renderer.removeOverlay(this);
-                            renderable.bucket.renderer.addOverlay(this);
-                            break;
-                        }
-                    }
-                }
-            }
-
+            var tileManager = this.getGlobe().getTileManager();
+            tileManager.updateVisibleTiles(this);
             this.getGlobe().refresh();
         };
 

@@ -374,49 +374,6 @@ define(['./Program', '../Tiling/Tile', '../Utils/ImageRequest', './RendererTileD
             }
         };
 
-        /**
-         * Update an overlay into the renderer.
-         * The overlay is replaced into all loaded tiles.
-         * @function updateOverlay
-         * @memberof RasterOverlayRenderer.prototype
-         * @param overlay
-         */
-        RasterOverlayRenderer.prototype.updateOverlay = function (overlay) {
-            // Initialize num requests to 0
-            overlay._numRequests = 0;
-
-            // Get old bucket
-            var index = this.buckets.indexOf(overlay._bucket);
-            var oldBucket = this.buckets[index];
-
-            // Create it
-            var bucket = new Bucket(overlay);
-            bucket.renderer = this;
-            bucket.id = oldBucket.id;
-
-            // Replace it
-            this.buckets[index] = bucket;
-
-            overlay._bucket = bucket;
-
-            this.tileManager.visitTiles(function (tile) {
-                    var rs = tile.extension.renderer;
-                    var renderable = rs ? rs.getRenderable(overlay._bucket) : null;
-                    if (renderable) {
-                        this.updateOverlayToTile(overlay, tile, bucket);
-                    }
-                }
-            );
-            // For each tile in zero level
-            /*	for ( var i = 0; i < this.tileManager.level0Tiles.length; i++ )
-             {
-             var tile = this.tileManager.level0Tiles[i];
-             if ( tile.state === Tile.State.LOADED )
-             {
-             this.updateOverlayToTile( overlay, tile, bucket );
-             }
-             }*/
-        };
 
         /**************************************************************************************************************/
 
@@ -491,65 +448,6 @@ define(['./Program', '../Tiling/Tile', '../Utils/ImageRequest', './RendererTileD
                 }
             }
 
-        };
-
-        /**
-         * Add an overlay into a tile.
-         * Create tile data if needed, and create the renderable for the overlay.
-         * @function addOverlayToTile
-         * @memberof RasterOverlayRenderer.prototype
-         * @param tile
-         * @param bucket
-         * @param parentRenderable
-         */
-        RasterOverlayRenderer.prototype.updateOverlayToTile = function (overlay, tile, bucket, parentRenderable) {
-            if (!this.overlayIntersects(tile.geoBound, bucket.layer)) {
-                return;
-            }
-
-            if (!tile.extension.renderer) {
-                tile.extension.renderer = new RendererTileData(this.rendererManager);
-            }
-
-            // Create new
-            var renderable = bucket.createRenderable();
-            renderable.tile = tile;
-
-            // Remove previous
-            var rs = tile.extension.renderer;
-            var oldRenderable = rs ? rs.getRenderable(bucket) : null;
-            if (oldRenderable !== null) {
-                console.log("update");
-
-                var index = rs.renderables.indexOf(oldRenderable);
-                rs.renderables[index] = renderable;
-
-                // Remove old
-                // Dispose its data
-                oldRenderable.dispose(rc, tp);
-            } else {
-                console.log("creation");
-                tile.extension.renderer.renderables.push(renderable);
-            }
-
-
-            if (parentRenderable && parentRenderable.texture) {
-                renderable.updateTextureFromParent(parentRenderable);
-            }
-
-            tile.state = Tile.State.NONE;
-            /*if ( tile.children )
-             {
-             // Add the overlay to loaded children
-             for ( var i = 0; i < 4; i++ )
-             {
-             if ( tile.children[i].state === Tile.State.LOADED )
-             {
-             this.updateOverlayToTile( overlay, tile.children[i], bucket, renderable );
-             }
-             }
-             }
-             */
         };
 
         /**************************************************************************************************************/
