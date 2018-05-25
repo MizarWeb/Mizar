@@ -230,6 +230,10 @@ define(['../Utils/Utils', './AbstractLayer', './AbstractRasterLayer', '../Utils/
             return this.options.scale;
         };
 
+        WCSElevationLayer.prototype.getScaleData = function() {
+            return this.options.scaleData;
+        };
+
         WCSElevationLayer.prototype.setTime = function(time) {
             AbstractLayer.prototype.setTime(time);
             this.setParameter("time", time);
