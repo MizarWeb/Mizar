@@ -300,26 +300,6 @@ define(["jquery", "underscore-min", "../Utils/Event", "moment", "../Utils/Utils"
             };
         }
 
-        function _formatResolution(format) {
-            var timeResolution;
-            if (format.includes('ss')) {
-                timeResolution = "seconds";
-            } else if (format.includes('mm')) {
-                timeResolution = "minutes";
-            } else if (format.includes("HH")) {
-                timeResolution = "hours";
-            } else if (format.includes('DD')) {
-                timeResolution = "days";
-            } else if (format.includes("MM")) {
-                timeResolution = "months";
-            } else if (format.includes("YYYY")) {
-                timeResolution = "years";
-            } else {
-                throw new Error();
-            }
-            return timeResolution;
-        }
-
         function _closestDate(startDate, stopDate, stepTime, myTime) {
             var startMoment = Moment.utc(startDate);
             var stopMoment = Moment.utc(stopDate);
@@ -350,6 +330,43 @@ define(["jquery", "underscore-min", "../Utils/Event", "moment", "../Utils/Utils"
 
         /**************************************************************************************************************/
 
+        /**
+         * Checks if Mizar must query the WMS server to refresh data.
+         * When the camera does not move but that the time change, we have two cases :
+         * - the requested time is included in the time frame of the image => no query
+         * - the requested time is outside of the time frame of the image => this is a new image, need to query
+         * @param paramName
+         * @param value
+         * @return {*}
+         * @protected
+         */
+        AbstractLayer.prototype._hasToBeRefreshed = function(paramName, value) {
+            var hasToBeRefreshed;
+            if(paramName==="time") {
+                var timeRequest = AbstractLayer.createTimeRequest(value);
+                var allowedTime = this.getDimensions().time;
+                var selectedDate = AbstractLayer.selectedTime(allowedTime.value, timeRequest);
+                if(this.imageLoadedAtTime != null && selectedDate == null) {
+                    // we query because the state has changed
+                    hasToBeRefreshed = true;
+                    this.imageLoadedAtTime = selectedDate;
+                } else if(selectedDate == null) {
+                    // No image found on the server related to the requested time, no need to query => we save network
+                    hasToBeRefreshed = false;
+                } else if (this.imageLoadedAtTime === selectedDate) {
+                    // Same state, no need to query
+                    hasToBeRefreshed = false;
+                } else {
+                    // At the requested time, there is an image on the server and this is not the current one => query
+                    hasToBeRefreshed = true;
+                    this.imageLoadedAtTime = selectedDate;
+                }
+            } else {
+                hasToBeRefreshed = true;
+            }
+            return hasToBeRefreshed;
+        };
+
         AbstractLayer.createTimeRequest = function (timeRequest) {
             var myRequest;
             if (timeRequest.period) {
@@ -367,7 +384,7 @@ define(["jquery", "underscore-min", "../Utils/Event", "moment", "../Utils/Utils"
                     from: Moment.utc("2000/01/01").format(),
                     to: timeRequest.to
                 };
-            } else if (timeRequest.includes('/')) {
+            } else if (Utils.aContainsB.call(this, timeRequest, '/')) {
                 var times = timeRequest.split("/");
                 myRequest = {
                     from: Moment.utc(times[0]).toISOString(),
@@ -377,11 +394,13 @@ define(["jquery", "underscore-min", "../Utils/Event", "moment", "../Utils/Utils"
                 var time = null;
                 if (timeRequest.date) {
                     time = Moment(timeRequest.date);
-                } else {
+                } else if (isNaN(timeRequest)) {
                     time = Moment.utc(timeRequest);
+                } else {
+                    time = Moment.utc([parseInt(timeRequest)]);
                 }
                 var format = time.creationData().format ? time.creationData().format : "YYYY";
-                var timeResolution = _formatResolution.call(this, format);
+                var timeResolution = Utils.formatResolution.call(this, format);
                 myRequest = {
                     from: time.startOf(timeResolution).toISOString(),
                     to: time.endOf(timeResolution).toISOString()
@@ -402,11 +421,12 @@ define(["jquery", "underscore-min", "../Utils/Event", "moment", "../Utils/Utils"
                 var time = times[timeIdx];
                 var timeDefinition = time.trim().split("/");
                 if (timeDefinition.length == 1) {
+                    timeDefinition[0] = isNaN(timeDefinition[0]) ? timeDefinition[0] : [parseInt(timeDefinition[0])];
                     var dateTime = Moment.utc(timeDefinition[0]);
                     format = dateTime.creationData().format ? dateTime.creationData().format : "YYYY";
-                    timeResolution = _formatResolution.call(this, format);
-                    if (dateTime.isBetween(startDate, stopDate) || dateTime.isSame(startDate) || dateTime.isSame(stopDate) ||
-                        startDate.isBetween(dateTime.startOf(timeResolution).toISOString(), dateTime.endOf(timeResolution).toISOString()) ||
+                    timeResolution = Utils.formatResolution.call(this, format);
+                    if (dateTime.isBetween(startDate, stopDate) || dateTime.isSame(startDate) || dateTime.isSame(stopDate) || 
+                        startDate.isBetween(dateTime.startOf(timeResolution).toISOString(), dateTime.endOf(timeResolution).toISOString()) || 
                         stopDate.isBetween(dateTime.startOf(timeResolution).toISOString(), dateTime.endOf(timeResolution).toISOString())) {
                         selectedDate = dateTime;
                         if (selectedDate == null) {
@@ -428,9 +448,9 @@ define(["jquery", "underscore-min", "../Utils/Event", "moment", "../Utils/Utils"
                         var currentDate = Moment.utc(startDate);
                         currentDate.add(i * timeObjDefinition.step, timeObjDefinition.unit);
                         format = currentDate.creationData().format ? currentDate.creationData().format : "YYYY";
-                        timeResolution = _formatResolution.call(this, format);
-                        if (currentDate.isBetween(startDate, stopDate) || currentDate.isSame(startDate) || currentDate.isSame(stopDate) ||
-                            startDate.isBetween(currentDate.startOf(timeResolution).toISOString(), currentDate.endOf(timeResolution).toISOString()) ||
+                        timeResolution = Utils.formatResolution.call(this, format);
+                        if (currentDate.isBetween(startDate, stopDate) || currentDate.isSame(startDate) || currentDate.isSame(stopDate) || 
+                            startDate.isBetween(currentDate.startOf(timeResolution).toISOString(), currentDate.endOf(timeResolution).toISOString()) || 
                             stopDate.isBetween(currentDate.startOf(timeResolution).toISOString(), currentDate.endOf(timeResolution).toISOString())) {
                             selectedDateFormatted = _closestDate.call(this, startTime, stopTime, 6, currentDate.toISOString());
                             break;
@@ -514,26 +534,8 @@ define(["jquery", "underscore-min", "../Utils/Event", "moment", "../Utils/Utils"
          * @memberOf AbstractLayer#
          */
         AbstractLayer.prototype.forceRefresh = function () {
-            if ((this.getGlobe() === null) || (this.getGlobe().tileManager === null)) {
-                return;
-            }
-            var tiles = this.getGlobe().tileManager.visibleTiles;
-            for (var i = 0; i < tiles.length; i++) {
-                var tile = tiles[i];
-                var extension = tile.extension;
-                if (extension.renderer) {
-                    var renderables = extension.renderer.renderables;
-                    for (var renderableIdx = 0; renderableIdx < renderables.length; renderableIdx++) {
-                        var renderable = renderables[renderableIdx];
-                        if (renderable.bucket.layer.ID === this.ID) {
-                            renderable.bucket.renderer.removeOverlay(this);
-                            renderable.bucket.renderer.addOverlay(this);
-                            break;
-                        }
-                    }
-                }
-            }
-
+            var tileManager = this.getGlobe().getTileManager();
+            tileManager.updateVisibleTiles(this);
             this.getGlobe().refresh();
         };
 

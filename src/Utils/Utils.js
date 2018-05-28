@@ -492,6 +492,30 @@ define(["jquery", "./Numeric", "./UtilsIntersection", "../Error/NetworkError"], 
         }
     };
 
+    Utils.formatResolution = function(format) {
+        var timeResolution;
+        if (Utils.aContainsB.call(this, format, 'ss')) {
+            timeResolution = "seconds";
+        } else if (Utils.aContainsB.call(this, format, 'mm')) {
+            timeResolution = "minutes";
+        } else if (Utils.aContainsB.call(this, format, "HH")) {
+            timeResolution = "hours";
+        } else if (Utils.aContainsB.call(this, format, 'DD')) {
+            timeResolution = "days";
+        } else if (Utils.aContainsB.call(this, format, "MM")) {
+            timeResolution = "months"
+        } else if (Utils.aContainsB.call(this, format, "YYYY")) {
+            timeResolution = "years";
+        } else {
+            throw new Error();
+        }
+        return timeResolution;
+    };
+
+    Utils.aContainsB = function(a, b) {
+        return a.indexOf(b) >= 0;
+    };
+
 
     return Utils;
 

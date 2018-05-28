@@ -38,8 +38,8 @@ define(["jquery", "./AbstractTracker", "../../Utils/Utils", "../../Utils/Numeric
         var ElevationTracker = function (options) {
             AbstractTracker.prototype.constructor.call(this, options);
             this.scale = null;
-            if (options.elevationLayer !== null && options.elevationLayer !== undefined) {
-                this.scale = options.elevationLayer.hasOwnProperty('scale') ? options.elevationLayer.scale : 1;
+            if (options.elevationLayer != null) {
+                this.scale = options.elevationLayer.getScale();
             }
 
         };
@@ -55,7 +55,7 @@ define(["jquery", "./AbstractTracker", "../../Utils/Utils", "../../Utils/Numeric
          * @param elevationLayer
          */
         ElevationTracker.prototype.setScaleLayer = function (elevationLayer) {
-            this.scale = elevationLayer.hasOwnProperty('scale') ? elevationLayer.scale : 1;
+            this.scale = elevationLayer.getScale();
         };
 
         /**
