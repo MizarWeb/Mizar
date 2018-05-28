@@ -29,7 +29,7 @@ define(["../Renderer/FeatureStyle", "../Layer/OpenSearchLayer", "../Utils/Utils"
         var selectedStyle = new FeatureStyle({
             strokeColor: [1.0, 0.0, 0.0, 1.0],
             fillColor: [1.0, 1.0, 0.0, 1.0],
-            zIndex: 1
+            zIndex: Constants.DISPLAY.SELECTED_VECTOR
         });
 
         /**************************************************************************************************************/
@@ -319,7 +319,7 @@ define(["../Renderer/FeatureStyle", "../Layer/OpenSearchLayer", "../Utils/Utils"
          * @param {Array} pickPoint
          * @returns {Boolean} isPicked
          */
-        function featureIsPicked(feature, pickPoint) {
+        function featureIsPicked(feature, pickPoint,pickingNoDEM) {
             var i,j,p;
             var feat,featNext,ring;
             switch (feature.geometry.type) {
@@ -358,8 +358,12 @@ define(["../Renderer/FeatureStyle", "../Layer/OpenSearchLayer", "../Utils/Utils"
                 case Constants.GEOMETRY.Point:
                     var point = feature.geometry.coordinates;
                     // Do not pick the labeled features
-                    var isLabel = feature.properties.style && feature.properties.style.label;
-                    return UtilsIntersection.pointInSphere(ctx, pickPoint, point, feature.geometry._bucket.textureHeight) && !isLabel;
+                    var isLabel = feature && feature.properties && feature.properties.style && feature.properties.style.label;
+                    var pt = [ pickPoint[0], pickPoint[1], pickPoint[2] ];
+                    if (pickingNoDEM === true) {
+                        pt[2] = 0;
+                    }
+                    return UtilsIntersection.pointInSphere(ctx, pt, point, feature.geometry._bucket.textureHeight) && !isLabel;
                 default:
                     console.log("Picking for " + feature.geometry.type + " is not yet");
                     return false;
@@ -367,6 +371,15 @@ define(["../Renderer/FeatureStyle", "../Layer/OpenSearchLayer", "../Utils/Utils"
         }
 
         /**************************************************************************************************************/
+
+        function computeFilterPickSelection(pickPoint) {
+            var selection = this.computePickSelection(pickPoint);
+            var returnedSelection = [];
+            for (var i=0;i<selection.length;i++) {
+                returnedSelection.push(selection[i]);
+            }
+            return returnedSelection;
+        }
 
         /**
          * Compute the selection at the picking point
@@ -405,7 +418,7 @@ define(["../Renderer/FeatureStyle", "../Layer/OpenSearchLayer", "../Utils/Utils"
                             for (j = 0; j < pickableLayer.features.length; j++) {
                                 //feature = pickableLayer.features[pickableLayer.featuresSet[tileData.featureIds[j]].index];
                                 feature = pickableLayer.features[j];
-                                if (this.featureIsPicked(feature, pickPoint)) {
+                                if (this.featureIsPicked(feature, pickPoint,pickableLayer.pickingNoDEM)) {
                                     newSelection.push({feature: feature, layer: pickableLayer});
                                 }
                             }
@@ -416,7 +429,7 @@ define(["../Renderer/FeatureStyle", "../Layer/OpenSearchLayer", "../Utils/Utils"
                         // Search for picked features
                         for (j = 0; j < pickableLayer.features.length; j++) {
                             feature = pickableLayer.features[j];
-                            if (this.featureIsPicked(feature, pickPoint)) {
+                            if (this.featureIsPicked(feature, pickPoint,pickableLayer.pickingNoDEM)) {
                                 newSelection.push({feature: feature, layer: pickableLayer});
                             }
                         }
@@ -485,6 +498,7 @@ define(["../Renderer/FeatureStyle", "../Layer/OpenSearchLayer", "../Utils/Utils"
             fixDateLine: fixDateLine,
             featureIsPicked: featureIsPicked,
             computePickSelection: computePickSelection,
+            computeFilterPickSelection: computeFilterPickSelection,
             setSelection: setSelection,
             highlightObservation: highlightObservation,
             updateContext: updateContext

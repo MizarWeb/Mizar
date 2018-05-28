@@ -65,7 +65,7 @@ function () {
         if (this.debugMode === true) {
             console.log("Pool:"+message);
         }
-    }
+    };
 
     /**************************************************************************************************************/
 
@@ -80,7 +80,7 @@ function () {
         message += "Run : "+this.runningRequests.length+"/"+this.maxRunningRequests+ " , ";
         message += "Wait : "+this.poolingRequests.length+"/"+this.maxPoolingRequests;
         return message;
-    }
+    };
     
     /**************************************************************************************************************/
 
@@ -101,7 +101,7 @@ function () {
             this.debug("Take one request from pool");
             return this.freeRequests.pop();
         }
-    }
+    };
 
     /**************************************************************************************************************/
 
@@ -175,7 +175,7 @@ function () {
 
         // Check if request can be done
         this.checkPool();
-    }
+    };
 
     /**
      * Check for each layer if there is remaining load needed
@@ -245,8 +245,8 @@ o     * Check if there is any remaining query in the pool
             // check for another request
             this.checkPool();
         }
-    }
-    
+    };
+
 
     /**************************************************************************************************************/
 
@@ -285,7 +285,7 @@ o     * Check if there is any remaining query in the pool
         this.debug("after : "+this.getPoolsStatus());
 
         this.checkPool();
-    }
+    };
 
     /**************************************************************************************************************/
 
@@ -314,7 +314,7 @@ o     * Check if there is any remaining query in the pool
                 }
         }
         return false;
-    }
+    };
 
     /**************************************************************************************************************/
 
@@ -329,7 +329,7 @@ o     * Check if there is any remaining query in the pool
         this.removeRunningQueries();
         this.removePoolQueries();
         this.resetMode = false;
-    }
+    };
 
     /**************************************************************************************************************/
 
@@ -347,7 +347,7 @@ o     * Check if there is any remaining query in the pool
             this.freeRequests.push(xhr);
             xhr = this.runningRequests.pop();
         }
-    }
+    };
 
     /**************************************************************************************************************/
 
@@ -364,7 +364,7 @@ o     * Check if there is any remaining query in the pool
             this.freeRequests.push(xhr);
             xhr = this.poolingRequests.pop();
         }
-    }
+    };
 
     /*************************************************************************************************************/
 

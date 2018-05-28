@@ -71,7 +71,7 @@ define(['./Tile', './GeoTiling', './TilePool', './TileRequest', './TileIndexBuff
             // Tile requests : limit to 4 at a given time
             this.maxRequests = 4;
             this.availableRequests = [];
-            for (var i = 0; i < this.maxRequests; i++) {
+            for (var i = this.maxRequests; i--;) {
                 this.availableRequests[i] = new TileRequest(this);
             }
             this.pendingRequests = [];
@@ -141,6 +141,20 @@ define(['./Tile', './GeoTiling', './TilePool', './TileRequest', './TileIndexBuff
             this.program.createFromSource(this.vertexShader, this.fragmentShader);
         };
 
+
+        /**
+         /**
+         * Updates overlay of the layer with the updated layer
+         * @param renderable renderer related to the current layer
+         * @param layer updated layer
+         * @private
+         */
+        function _updateOverlay(renderable, layer) {
+            var bucket = renderable.bucket;
+            bucket.renderer.removeOverlay(bucket.layer);
+            bucket.renderer.addOverlay(layer);
+        }
+
         /**************************************************************************************************************/
 
         /**
@@ -150,8 +164,8 @@ define(['./Tile', './GeoTiling', './TilePool', './TileRequest', './TileIndexBuff
             this.postRenderers.push(renderer);
 
             this.postRenderers.sort(function (r1, r2) {
-                var z1 = r1.zIndex | 0;
-                var z2 = r2.zIndex | 0;
+                var z1 = r1.zIndex | Constants.DISPLAY.DEFAULT_RASTER;
+                var z2 = r2.zIndex | Constants.DISPLAY.DEFAULT_RASTER;
                 return z1 - z2;
             });
 
@@ -162,6 +176,8 @@ define(['./Tile', './GeoTiling', './TilePool', './TileRequest', './TileIndexBuff
                 });
             }
         };
+
+
 
         /**************************************************************************************************************/
 
@@ -255,7 +271,7 @@ define(['./Tile', './GeoTiling', './TilePool', './TileRequest', './TileIndexBuff
             this.abortRequests();
 
             // Reset all level zero tiles : destroy render data, and reset state to NONE
-            for (var i = 0; i < this.level0Tiles.length; i++) {
+            for (var i = this.level0Tiles.length; i--;) {
                 this.level0Tiles[i].deleteChildren(this.renderContext, this.tilePool);
                 this.level0Tiles[i].dispose(this.renderContext, this.tilePool);
             }
@@ -271,9 +287,53 @@ define(['./Tile', './GeoTiling', './TilePool', './TileRequest', './TileIndexBuff
          *    Abort all pending requests
          */
         TileManager.prototype.abortRequests = function () {
-            for (var i = this.pendingRequests.length - 1; i >= 0; i--) {
+            for (var i = this.pendingRequests.length; i--;) {
                 this.pendingRequests[i].abort();
             }
+        };
+
+        TileManager.prototype.abortLayerRequests = function(layer, callback) {
+            for (var i = this.visibleTiles.length; i--; ) {
+                var tile = this.visibleTiles[i];
+                var extension = tile.extension;
+                if (extension.renderer) {
+                    var renderables = extension.renderer.renderables;
+                    for (var renderableIdx = renderables.length; renderableIdx--;) {
+                        var renderable = renderables[renderableIdx];
+                        if (renderable.bucket.layer.ID === layer.getID()) {
+                            this.abortBucketRequests(renderable.bucket);
+                            if(callback) {
+                                callback(renderable, layer);
+                            }
+                            break;
+                        }
+                    }
+                }
+            }
+        };
+
+        /**
+         * Aborts requests of a layer.
+         * @param bucket bucket related to a layer
+         */
+        TileManager.prototype.abortBucketRequests = function (bucket) {
+            var imageRequests = bucket.renderer.imageRequests;
+            for (var i = imageRequests.length; i--;) {
+                var request = imageRequests[i];
+                if(request.renderable) {
+                    request.abort();
+                }
+            }
+        };
+
+
+
+        /**
+         * Updates the visible tiles of the layer.
+         * @param layer the layer where the tiles must be updated
+         */
+        TileManager.prototype.updateVisibleTiles = function (layer, callback) {
+            this.abortLayerRequests(layer,_updateOverlay);
         };
 
         /**************************************************************************************************************/
@@ -319,7 +379,7 @@ define(['./Tile', './GeoTiling', './TilePool', './TileRequest', './TileIndexBuff
             // First load level 0 tiles if needed
             if (!this.level0TilesLoaded) {
                 this.level0TilesLoaded = true;
-                for (i = 0; i < this.level0Tiles.length; i++) {
+                for (i = this.level0Tiles.length; i--;) {
                     tile = this.level0Tiles[i];
 
                     var tileIsLoaded = tile.state === Tile.State.LOADED;
@@ -347,7 +407,7 @@ define(['./Tile', './GeoTiling', './TilePool', './TileRequest', './TileIndexBuff
             // Traverse tiles
             if (this.level0TilesLoaded) {
                 // Normal traversal, iterate through level zero tiles and process them recursively
-                for (i = 0; i < this.level0Tiles.length; i++) {
+                for (i = this.level0Tiles.length; i--;) {
                     tile = this.level0Tiles[i];
                     if (!tile.isCulled(this.renderContext)) {
                         this.processTile(tile, 0);
@@ -434,7 +494,7 @@ define(['./Tile', './GeoTiling', './TilePool', './TileRequest', './TileIndexBuff
             tile.generate(this.tilePool, tileRequest.image, tileRequest.elevations);
 
             // Now post renderers can generate their data on the new tile
-            for (var i = 0; i < this.postRenderers.length; i++) {
+            for (var i = this.postRenderers.length; i--;) {
                 if (this.postRenderers[i].generate) {
                     this.postRenderers[i].generate(tile);
                 }
@@ -541,7 +601,7 @@ define(['./Tile', './GeoTiling', './TilePool', './TileRequest', './TileIndexBuff
 
                 var currentIB = null;
 
-                for (i = 0; i < this.tilesToRender.length; i++) {
+                for (i = this.tilesToRender.length; i--;) {
                     tile = this.tilesToRender[i];
 
                     var isLoaded = ( tile.state === Tile.State.LOADED );
@@ -586,7 +646,7 @@ define(['./Tile', './GeoTiling', './TilePool', './TileRequest', './TileIndexBuff
                 }
             }
 
-            for (i = 0; i < this.postRenderers.length; i++) {
+            for (i = this.postRenderers.length; i--;) {
                 this.postRenderers[i].render(this.visibleTiles);
             }
         };
@@ -607,7 +667,7 @@ define(['./Tile', './GeoTiling', './TilePool', './TileRequest', './TileIndexBuff
             this.tilesToRequest.sort(_sortTilesByDistance);
 
             var trl = this.tilesToRequest.length;
-            for (var i = 0; i < trl; i++) {
+            for (var i = trl; i--;) {
                 var tile = this.tilesToRequest[i];
                 if (this.availableRequests.length > 0) // Check to limit the number of requests done per frame
                 {
@@ -647,7 +707,7 @@ define(['./Tile', './GeoTiling', './TilePool', './TileRequest', './TileIndexBuff
             if (!this.level0TilesLoaded && this.imageryProvider && this.imageryProvider.levelZeroImage) {
                 this.imageryProvider.generateLevel0Textures(this.level0Tiles, this.tilePool);
 
-                for (var n = 0; n < this.level0Tiles.length; n++) {
+                for (var n = this.level0Tiles.length; n--;) {
                     var tile = this.level0Tiles[n];
                     // Generate the tile without tile request
                     this.generateTile(tile, {});

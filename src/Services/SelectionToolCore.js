@@ -22,8 +22,8 @@
  * Tool designed to select areas on planet
  */
 
-define(["jquery", "../Utils/UtilsIntersection", "../Utils/Numeric", "../Layer/VectorLayer", "../Renderer/FeatureStyle", "../Renderer/Ray", "../Renderer/glMatrix"],
-    function ($, UtilsIntersection, Numeric, VectorLayer, FeatureStyle, Ray) {
+define(["jquery", "../Utils/Constants", "../Utils/UtilsIntersection", "../Utils/Numeric", "../Layer/VectorLayer", "../Renderer/FeatureStyle", "../Renderer/Ray", "../Renderer/glMatrix"],
+    function ($, Constants, UtilsIntersection, Numeric, VectorLayer, FeatureStyle, Ray) {
 
         var ctx, navigation, onselect;
         /**
@@ -54,7 +54,7 @@ define(["jquery", "../Utils/UtilsIntersection", "../Utils/Numeric", "../Layer/Ve
             else {
                 style = new FeatureStyle();
             }
-            style.zIndex = 2;
+            style.zIndex = Constants.DISPLAY.SELECTED_VECTOR;
 
             // Layer containing selection feature
             this.selectionLayer = new VectorLayer({

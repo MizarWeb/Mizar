@@ -367,7 +367,6 @@ define(["jquery", "./AbstractProvider", "../Renderer/FeatureStyle", "../Utils/Co
                 // Add point itself
                 var poi_point = poiDesc(mizarLayer, Constants.GEOMETRY.Point, pname[p], obj);
                 pois.push(poi_point);
-
             }
 
             // Create feature collection
@@ -423,6 +422,20 @@ define(["jquery", "./AbstractProvider", "../Renderer/FeatureStyle", "../Utils/Co
                 layer.removeFeatureCollection(poiFeatureCollection);
                 computePositions(layer);
             }, interval);
+        };
+
+        PlanetProvider.prototype.getSunPosition = function(date) {
+            var year = date.getUTCFullYear();
+            var month = date.getUTCMonth() + 1;
+            var day = date.getUTCDate();
+            var hour = date.getUTCHours();
+            var mins = date.getUTCMinutes();
+            var secs = date.getUTCSeconds();
+            // compute day number for date/time
+            var dn = day_number(year, month, day, hour, mins + secs / 60);
+            var obj = new Coord();
+            get_coord(obj, 2, dn);
+            return obj;
         };
 
         return PlanetProvider;

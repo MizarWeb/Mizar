@@ -283,6 +283,12 @@ define(["jquery", "underscore-min",
          */
         Mizar.EVENT_MSG = Constants.EVENT_MSG;
 
+        /**
+         * Static variable, supported {@link TIME_STEP constants} type
+         * @name TIME_STEP
+         * @memberOf Mizar#
+         */
+        Mizar.TIME_STEP = Constants.TIME_STEP;
 
         /**********************************************************************************************************
          *                                      Private methods
@@ -891,6 +897,37 @@ define(["jquery", "underscore-min",
             return result;
         };
 
+        /**
+         * Update the time travel navigation range
+         * @param {JSON} parameters Parameters
+         * @function setTime
+         * @memberOf Mizar#
+         */
+        Mizar.prototype.updateTimeTravel = function(parameters) {
+            console.log(this);
+            this.getServiceByName(Mizar.SERVICE.TimeTravel).update(parameters);
+        };
+
+        /**
+         * Sets the current or integrated time of the application
+         * @param time single, multiple or range of values
+         * @function setTime
+         * @memberOf Mizar#
+         */
+        Mizar.prototype.setTime = function(time) {
+            this.activatedContext.setTime(time);
+        };
+
+        /**
+         * Returns the current or integrated time.
+         * @returns {string} the simple, multiple or range of values
+         * @function getTime
+         * @memberOf Mizar#
+         */
+        Mizar.prototype.getTime = function() {
+            return this.activatedContext.getTime();
+        };
+
         //               ***************************** context management *****************************
 
         /**
@@ -904,10 +941,12 @@ define(["jquery", "underscore-min",
          */
         Mizar.prototype.createContext = function (contextMode, options) {
             var result;
-            console.log(contextMode);
             try {
                 options.renderContext = this.renderContext;
+                options.timeTravelService = this.getServiceByName(Mizar.SERVICE.TimeTravel);
+                
                 var ctx = this.ContextFactory.create(contextMode, this.getOptions(), options);
+            
                 switch (contextMode) {
                     case Mizar.CONTEXT.Sky:
                         this.skyContext = ctx;
@@ -1059,6 +1098,26 @@ define(["jquery", "underscore-min",
         };
 
         /**
+         * Draws the layer on the top.
+         * @function setLayerOnTheTop
+         * @param layerID
+         * @return {boolean} Returns true when the layer is drawn on the top otherwise False.
+         * @memberOf Mizar#
+         */
+        Mizar.prototype.setLayerOnTheTop = function(layerID) {
+            var result;
+            var layer = this.getLayerByID(layerID);
+            if (layer != null) {
+                layer.setOnTheTop();
+                result = true;
+            } else {
+                result = false;
+                ErrorDialog.open("Cannot set the layer on the top : <font style='color:orange'><b>" + layerID + " does not exist</b></font>", true);
+            }
+            return result;
+        };
+
+        /**
          * Returns all the layers regardless of the {@link CONTEXT context}.
          * @function getAllLayers
          * @return {Layer[]} the layers
@@ -1101,7 +1160,6 @@ define(["jquery", "underscore-min",
          * @param {CONTEXT|undefined} mode - Context on which the function is applied
          * @returns {Layer|undefined|null} the layer or undefined when the layer is not found
          * @memberOf Mizar#
-         * @throws {RangeError} Will throw an error when the mode is not part of {@link CONTEXT}
          * @see {@link Mizar#setActivatedContext}
          * @see {@link Mizar#createContext}
          */
@@ -1147,29 +1205,28 @@ define(["jquery", "underscore-min",
          * @see {@link Mizar#setActivatedContext}
          * @see {@link Mizar#createContext}
          */
-        Mizar.prototype.addLayer = function (layerDescription, callback) {
-            var result;
-            try {
-                var layer = this.getActivatedContext().addLayer(layerDescription, callback);
-
-            } catch(e) {
-                result = false;
-                var prefixe;
-                var text;
-                var hipsLayer = layerDescription.hipsMetadata;
-                if(hipsLayer != null) {
-                    if (typeof hipsLayer.hipsMetadata.obs_title === 'undefined') {
-                        prefixe = "ID ";
-                        text = hipsLayer.hipsMetadata.ID;
-                    } else {
-                        prefixe = "";
-                        text = hipsLayer.hipsMetadata.obs_title;
-                    }
-                    //ErrorDialog.open("Hips layer " + prefixe + "<font style='color:yellow'><b>" + text + "</b></font> not valid in Hips registry <font color='grey'><i>(" + hipsLayer.hipsMetadata.hips_service_url + " - reason : "+ e.message +")</i></font>.");
-                } else {
-                    //ErrorDialog.open("Cannot add the layer <font style='color:yellow'><b>" + JSON.stringify(layerDescription) + "</b></font><font color='grey'><i>(reason : "+ e.message +")</i></font>.");
-                }
-            }
+        Mizar.prototype.addLayer = function (layerDescription, callback, fallback) {
+            //var result;
+            //try {
+                this.getActivatedContext().addLayer(layerDescription, callback, fallback);
+            //} catch(e) {
+            //    result = false;
+            //    var prefixe;
+            //    var text;
+            //    var hipsLayer = layerDescription.hipsMetadata;
+            //    if(hipsLayer != null) {
+            //        if (typeof hipsLayer.hipsMetadata.obs_title === 'undefined') {
+            //            prefixe = "ID ";
+            //            text = hipsLayer.hipsMetadata.ID;
+            //        } else {
+            //            prefixe = "";
+            //            text = hipsLayer.hipsMetadata.obs_title;
+            //        }
+            //        //ErrorDialog.open("Hips layer " + prefixe + "<font style='color:yellow'><b>" + text + "</b></font> not valid in Hips registry <font color='grey'><i>(" + hipsLayer.hipsMetadata.hips_service_url + " - reason : "+ e.message +")</i></font>.");
+            //    } else {
+            //        //ErrorDialog.open("Cannot add the layer <font style='color:yellow'><b>" + JSON.stringify(layerDescription) + "</b></font><font color='grey'><i>(reason : "+ e.message +")</i></font>.");
+            //    }
+            //}
         };
 
         /**
@@ -1180,7 +1237,6 @@ define(["jquery", "underscore-min",
          * @param {CONTEXT|undefined} mode - Context on which the function is applied
          * @returns {boolean} True when the layer is added otherwise False
          * @memberOf Mizar#
-         * @throws {RangeError} Will throw an error when the mode is not part of {@link CONTEXT}
          * @see {@link Mizar#setActivatedContext}
          * @see {@link Mizar#createContext}
          */
@@ -1206,7 +1262,6 @@ define(["jquery", "underscore-min",
          * @param {CONTEXT|undefined} mode - Context on which the function is applied
          * @returns {boolean} True when the layer is set as background otherwise False
          * @memberOf Mizar#
-         * @throws {RangeError} Will throw an error when the mode is not part of {@link CONTEXT}
          * @see {@link Mizar#setActivatedContext}
          * @see {@link Mizar#createContext}
          */
@@ -1255,7 +1310,6 @@ define(["jquery", "underscore-min",
          * @param {CONTEXT|undefined} mode - Context on which the function is applied
          * @returns {boolean} True when the base elevation is set otherwise false
          * @memberOf Mizar#
-         * @throws {RangeError} Will throw an error when the mode is not part of {@link CONTEXT}
          * @see {@link Mizar#setActivatedContext}
          * @see {@link Mizar#createContext}
          */
@@ -1477,6 +1531,20 @@ define(["jquery", "underscore-min",
             }
         };
 
+
+        /**
+         * Reload a layer (keep id and ID)
+         * @function reloadLayer
+         * @memberOf Mizar#
+         */
+        Mizar.prototype.reloadLayer = function (layer) {
+            if (this.getActivatedContext() && this.getActivatedContext().globe) {
+                layer._detach(this.getActivatedContext().globe);
+                layer._attach(this.getActivatedContext().globe);
+            } else {
+               console.log("Context not yet available");
+            }
+        };
 
         /**
          * Destroys Mizar

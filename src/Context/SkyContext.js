@@ -18,10 +18,10 @@
  ******************************************************************************/
 define(["underscore-min", "../Utils/Utils",
         "./AbstractContext", "../Globe/GlobeFactory", "../Navigation/NavigationFactory", "../Services/ServiceFactory",
-        "../Gui/Compass", "../Utils/Constants"],
+        "../Gui/Compass","../Gui/TimeTravel","../Utils/Constants"],
     function (_, Utils,
               AbstractContext, GlobeFactory, NavigationFactory, ServiceFactory,
-              Compass, Constants) {
+              Compass, TimeTravel,Constants) {
 
         /**
          * sky context configuration
@@ -34,6 +34,7 @@ define(["underscore-min", "../Utils/Utils",
          * @property {RenderContext} [renderContext] - Context rendering
          * @property {AbstractNavigation.astro_configuration} navigation - navigation configuration
          * @property {string} [compass="compassDiv"] - div element where compass is displayed
+         * @property {string} [timeTravel="timeTravelDiv"] - div element where time travel is displayed
          */
 
         /**
@@ -55,7 +56,8 @@ define(["underscore-min", "../Utils/Utils",
                 "posTrackerInfo": true,
                 "posTracker": true,
                 "elevTracker": false,
-                "compassDiv": true
+                "compassDiv": true,
+                "timeTravelDiv": true
             };
             var skyOptions = _createSkyConfiguration.call(this, options);
 
@@ -69,6 +71,7 @@ define(["underscore-min", "../Utils/Utils",
                 ServiceFactory.create(Constants.SERVICE.PickingManager).init(this);
 
                 this.setCompassVisible(options.compass && this.components.compassDiv ? options.compass : "compassDiv", true);
+                this.setTimeTravelVisible(options.timeTravel && this.components.timeTravelDiv ? options.timeTravel : "timeTravelDiv", true);
 
             }
             catch (err) {
@@ -119,7 +122,7 @@ define(["underscore-min", "../Utils/Utils",
                 lighting: false,
                 backgroundColor: [0.0, 0.0, 0.0, 1.0],
                 defaultColor: [200, 200, 200, 255],
-                shadersPath: this.mizarConfiguration['mizarAPIUrl']+'shaders/',
+                shadersPath: this.mizarConfiguration.mizarAPIUrl + 'shaders/',
                 publishEvent: function (message, object) {
                     self.publish(message, object);
                 }
@@ -145,7 +148,8 @@ define(["underscore-min", "../Utils/Utils",
             if (visible) {
                 this.compass = new Compass({
                     element: divName,
-                    ctx: this
+                    ctx: this,
+                    crs : Constants.CRS.Equatorial
                 });
             } else {
                 if (this.compass) {
@@ -155,6 +159,26 @@ define(["underscore-min", "../Utils/Utils",
             this.setComponentVisibility(divName, visible);
         };
 
+        /**************************************************************************************************************/
+
+        /**
+         * @function setTimeTravelVisible
+         * @memberOf SkyContext#
+         */
+        SkyContext.prototype.setTimeTravelVisible = function (divName, visible) {
+            if (visible) {
+                this.timeTravel = new TimeTravel({
+                    element: divName,
+                    ctx: this,
+                    crs : Constants.CRS.Equatorial
+                });
+            } else {
+                if (this.timeTravel) {
+                    this.timeTravel.remove();
+                }
+            }
+            this.setComponentVisibility(divName, visible);
+        };
 
         /**
          * @function setCoordinateSystem
@@ -175,6 +199,7 @@ define(["underscore-min", "../Utils/Utils",
          */
         SkyContext.prototype.destroy = function () {
             this.setCompassVisible(false);
+            this.setTimeTravelVisible(false);
             AbstractContext.prototype.destroy.call(this);
         };
 

@@ -16,111 +16,16 @@
  * You should have received a copy of the GNU General Public License
  * along with MIZAR. If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
-define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Layer/LayerFactory", "../Services/ServiceFactory", "../Utils/Constants", "../Registry/WMSServer","../Registry/WMTSServer",
+define(["jquery", "underscore-min", "../Utils/Event", "moment", "../Utils/Utils", "../Utils/UtilsIntersection", "../Layer/LayerFactory", "../Services/ServiceFactory", "../Utils/Constants",
+        "../Registry/WMSServerRegistryHandler", "../Registry/WMTSServerRegistryHandler", "../Registry/WCSServerRegistryHandler", "../Registry/PendingLayersRegistryHandler", "../Registry/LayerRegistryHandler",
         "../Gui/Tracker/PositionTracker", "../Gui/Tracker/ElevationTracker", "../Utils/AttributionHandler", "../Gui/dialog/ErrorDialog",
         "../Renderer/PointRenderer", "../Renderer/LineStringRenderable", "../Renderer/PolygonRenderer", "../Renderer/LineRenderer",
         "../Renderer/PointSpriteRenderer", "../Renderer/ConvexPolygonRenderer"],
-    function ($, _, Event, Utils, LayerFactory, ServiceFactory, Constants, WMSServer, WMTSServer,
+    function ($, _, Event, Moment, Utils, UtilsIntersection, LayerFactory, ServiceFactory, Constants,
+              WMSServerRegistryHandler, WMTSServerRegistryHandler, WCSServerRegistryHandler, PendingLayersRegistryHandler, LayerRegistryHandler,
               PositionTracker, ElevationTracker, AttributionHandler, ErrorDialog) {
 
         //TODO : attention de bien garder les ...Renderer dans le define
-
-        //Handler
-        var Handler = function(){
-            this.next = {
-                handleRequest: function(layerDescription, callback){
-                    console.log('All strategies exhausted.');
-                }
-            }
-        } ;
-        Handler.prototype.setNext = function(next){
-            this.next = next;
-            return next;
-        };
-        Handler.prototype.handleRequest = function(layerDescription, callback){};
-
-
-        var PendingAtmosphere = function(pendingLayers, layers){
-            this.layers = layers;
-            this.pendingLayers = pendingLayers;
-        };
-        PendingAtmosphere.prototype = new Handler();
-        PendingAtmosphere.prototype.hasLayerBackground = function() {
-            var hasBackground = false;
-            for(var i=0; i< this.layers.length; i++) {
-                var layer = this.layers[i];
-                if (layer.isBackground() && layer.isVisible()) {
-                    hasBackground = true;
-                    break;
-                }
-            }
-            return hasBackground;
-        };
-        PendingAtmosphere.prototype.handleRequest = function(layerDescription, callback) {
-            if(layerDescription.type === Constants.LAYER.Atmosphere && !this.hasLayerBackground()) {
-                this.pendingLayers.push(layerDescription);
-            } else {
-                this.next.handleRequest(layerDescription, callback);
-            }
-        };
-
-
-        //Wms server
-        var WmsServer = function(mizarConfiguration, pendingLayers){
-            this.pendingLayers = pendingLayers;
-            this.proxyUse = mizarConfiguration.proxyUse;
-            this.proxyUrl = mizarConfiguration.proxyUrl;
-        };
-        WmsServer.prototype = new Handler();
-        WmsServer.prototype.handleRequest = function(layerDescription, callback){
-            if(layerDescription.type === Constants.LAYER.WMS) {
-                var wmsServer = new WMSServer(this.proxyUse, this.proxyUrl, layerDescription);
-                var self = this;
-                wmsServer.createLayers(function(layers) {
-                    _handlePendingLayers(self.pendingLayers, layers);
-                    callback(layers);
-                });
-            } else {
-                this.next.handleRequest(layerDescription, callback);
-            }
-        };
-
-        // wmts server
-        var WmtsServer = function(mizarConfiguration, pendingLayers){
-            this.pendingLayers = pendingLayers;
-            this.proxyUse = mizarConfiguration.proxyUse;
-            this.proxyUrl = mizarConfiguration.proxyUrl;
-        };
-        WmtsServer.prototype = new Handler();
-        WmtsServer.prototype.handleRequest = function(layerDescription, callback){
-            if(layerDescription.type === Constants.LAYER.WMTS) {
-                var wmsServer = new WMTSServer(this.proxyUse, this.proxyUrl, layerDescription);
-                var self = this;
-                wmsServer.createLayers(function(layers) {
-                    _handlePendingLayers(self.pendingLayers, layers);
-                    callback(layers);
-                });
-            } else {
-                this.next.handleRequest(layerDescription, callback);
-            }
-        };
-
-        //Strategy2
-        var Layer = function(pendingLayers){
-            this.pendingLayers = pendingLayers;
-        };
-        Layer.prototype = new Handler();
-        Layer.prototype.handleRequest = function(layerDescription, callback){
-            var layers = [];
-            try {
-                var layer = LayerFactory.create(layerDescription);
-                layers.push(layer);
-                _handlePendingLayers(this.pendingLayers, layers);
-                callback(layers);
-            } catch(RangeError) {
-                this.next.handleRequest(layerDescription, callback);
-            }
-        };
 
         /**
          * @name AbstractContext
@@ -140,12 +45,14 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Laye
         var AbstractContext = function (mizarConfiguration, mode, ctxOptions) {
             Event.prototype.constructor.call(this);
             var self = this;
+            this.time = Moment().toISOString();
             this.globe = null;	// Sky or globe
             this.navigation = null;
             this.attributionHandler = null;
             this.components = {};
             this.dataProviders = {};
             this.canvas = mizarConfiguration.canvas;
+            this.timeTravelService = ctxOptions.timeTravelService;
             this.subscribe(Constants.EVENT_MSG.BASE_LAYERS_READY, function (imagery) {
                 // When the background takes time to load, the viewMatrix computed by "computeViewMatrix" is created but
                 // with empty values. Because of that, the globe cannot be displayed without moving the camera.
@@ -161,30 +68,48 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Laye
             this.pendingLayers = [];
             this.initCanvas(this.canvas);
 
-
-            if ( (this.mizarConfiguration.positionTracker != null) && (this.mizarConfiguration.positionTracker == true) ) {
+            if (this.mizarConfiguration.positionTracker != null) {
                 this.positionTracker = _createTrackerPosition.call(this, this.mizarConfiguration);
             }
-
-            if ( (this.mizarConfiguration.elevationTracker != null) && (this.mizarConfiguration.elevationTracker == true) ){
+            if (this.mizarConfiguration.elevationTracker != null) {
                 this.elevationTracker = _createTrackerElevation.call(this, this.mizarConfiguration, ctxOptions);
             }
-
-
         };
 
-        function _handlePendingLayers(pendingLayers, layers) {
-            for (var i=0; i<layers.length; i++) {
-                var layer = layers[i];
-                if(pendingLayers.length != 0 && layer.isBackground() && layer.isVisible()) {
-                    for(var j=0; j<pendingLayers.length; j++) {
-                        var pendingLayerDescription = pendingLayers[j];
-                        try {
-                            layers.push(LayerFactory.create(pendingLayerDescription));
-                            pendingLayers = _.without(pendingLayers, pendingLayerDescription)
-                        } catch(RangeError) {
+        /**
+         * Zoom to the selected layer.
+         * @param layer - selected layer
+         * @private
+         */
+        function _handleCameraWhenLayerAdded(layer) {
+            if (layer.isVisible() && layer.getProperties() && !layer.isBackground()
+                && layer.getProperties().hasOwnProperty("initialRa") && layer.getProperties().hasOwnProperty("initialDec")) {
+                var fov = (layer.getProperties().initialFov) ? layer.getProperties().initialFov : layer.getGlobe().getRenderContext().getFov();
+                var navigation = layer.callbackContext.getNavigation();
+                var center = navigation.getCenter();
+                var globeType = layer.globe.getType();
+                switch (globeType) {
+                    case Constants.GLOBE.Sky:
+                        navigation.zoomTo([layer.getProperties().initialRa, layer.getProperties().initialDec], {
+                            fov: fov,
+                            duration: 3000
+                        });
+                        break;
+                    case Constants.GLOBE.Planet:
+                        var bbox = layer.getProperties().bbox;
+                        if (UtilsIntersection.isValueBetween(center[0], bbox[0], bbox[2]) && UtilsIntersection.isValueBetween(center[1], bbox[1], bbox[3])) {
+                        } else {
+                            var crs = layer.globe.getCoordinateSystem();
+                            var planetRadius = crs.getGeoide().getRealPlanetRadius();
+                            var distanceCamera = Utils.computeDistanceCameraFromBbox(bbox, fov, planetRadius, crs.isFlat());
+                            navigation.zoomTo([layer.getProperties().initialRa, layer.getProperties().initialDec], {
+                                distance: distanceCamera,
+                                duration: 3000
+                            });
                         }
-                    }
+                        break;
+                    default:
+                        throw new Error("type " + globeType + " is not implemented", "AbstractContext.js");
                 }
             }
         }
@@ -236,6 +161,28 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Laye
         /**************************************************************************************************************/
         Utils.inherits(Event, AbstractContext);
         /**************************************************************************************************************/
+
+
+        /**
+         * @function getTime
+         * @memberOf AbstractContext#
+         */
+        AbstractContext.prototype.getTime = function () {
+            return this.time;
+        };
+
+        /**
+         * @function setTime
+         * @memberOf AbstractContext#
+         */
+        AbstractContext.prototype.setTime = function (time) {
+            this.time = time;
+            for (var i = 0; i < this.layers.length; i++) {
+                var layer = this.layers[i];
+                layer.setTime(time);
+            }
+        };
+
 
         /**
          * ShowUp message.<br/>
@@ -406,122 +353,70 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Laye
         };
 
         /**
-         * @function addLayers
-         * @memberOf AbstractContext#
-         */
-        AbstractContext.prototype.addLayers = function (layersDescription) {
-            var layers = [];
-            var layersID = [];
-            for (var i = 0; i < layersDescription.length; i++) {
-                var layer = this.addLayer(layersDescription[i]);
-                layers.push(layer);
-                layersID.push(layer.ID);
-            }
-            var layerEvent = (layer.category === "background") ? Constants.EVENT_MSG.LAYER_BACKGROUND_ADDED : Constants.EVENT_MSG.LAYER_ADDITIONAL_ADDED;
-            this.publish(Constants.EVENT_MSG.LAYER_ASYNCHRONE_LOADED, layersID);
-            return layersID;
-        };
-
-        /**
          * @function addLayer
          * @memberOf AbstractContext#
          */
-        AbstractContext.prototype.addLayer = function (layerDescription, callback) {
+        AbstractContext.prototype.addLayer = function (layerDescription, callback, fallback) {
             layerDescription.getCapabilitiesTileManager = this.globe.tileManager;
 
-            var pendingAtmos = new PendingAtmosphere(this.pendingLayers, this.layers);
-            var wmsServer = new WmsServer(this.getMizarConfiguration(), this.pendingLayers);
-            var wmtsServer = new WmtsServer(this.getMizarConfiguration(), this.pendingLayers);
-            var strategy2 = new Layer(this.pendingLayers);
+            var pendingLayersHandler = new PendingLayersRegistryHandler(this.pendingLayers, this.layers);
+            var wmsServerHandler = new WMSServerRegistryHandler(this.getMizarConfiguration(), this.pendingLayers);
+            var wmtsServerHandler = new WMTSServerRegistryHandler(this.getMizarConfiguration(), this.pendingLayers);
+            var wcsServerHandler = new WCSServerRegistryHandler(this.getMizarConfiguration(), this.pendingLayers);
+            var layerHandler = new LayerRegistryHandler(this.pendingLayers);
 
-
-            pendingAtmos.setNext(wmsServer);
-            wmsServer.setNext(wmtsServer);
-            wmtsServer.setNext(strategy2);
+            pendingLayersHandler.setNext(wmsServerHandler);
+            wmsServerHandler.setNext(wmtsServerHandler);
+            wmtsServerHandler.setNext(wcsServerHandler);
+            wcsServerHandler.setNext(layerHandler);
 
             var self = this;
-            pendingAtmos.handleRequest(layerDescription, function(layers) {
+            pendingLayersHandler.handleRequest(layerDescription,
+                function (layers) {
+                    for (var i = 0; i < layers.length; i++) {
+                        var layer = layers[i];
+                        layer.callbackContext = self;
 
-                for (var i=0; i<layers.length; i++) {
-                    var layer = layers[i];
-                    layer.callbackContext = self;
-                    self.layers.push(layer);
-                    _addToGlobe.call(self, layer);
+                        self.layers.push(layer);
 
-                    self._fillDataProvider(layer, layerDescription);
-
-                    if (layer.isPickable()) {
-                        ServiceFactory.create(Constants.SERVICE.PickingManager).addPickableLayer(layer);
-                    }
-
-                    layer.subscribe(Constants.EVENT_MSG.LAYER_VISIBILITY_CHANGED, function (layer) {
-                        if (layer.isVisible() && layer.getProperties() && !layer.isBackground()
-                            && layer.getProperties().hasOwnProperty("initialRa") && layer.getProperties().hasOwnProperty("initialDec") && layer.getProperties().hasOwnProperty("initialFov")) {
-
-                            if (layer.globe.getType() === Constants.GLOBE.Sky) {
-                                var fov = (layer.getProperties().initialFov) ? layer.getProperties().initialFov : layer.getGlobe().getRenderContext().fov;
-                                self.getNavigation().zoomTo([layer.getProperties().initialRa, layer.getProperties().initialDec], {
-                                    fov: fov,
-                                    duration: 3000
-                                });
-                            }
-                            else {
-                                var bbox = layer.getProperties().bbox;
-                                if(bbox[0] > 180) {
-                                    bbox[0] -= 360;
-                                }
-                                if(bbox[1] > 180) {
-                                    bbox[1] -= 360;
-                                }
-                                var long = self.getNavigation().getCenter()[0];
-                                var lat = self.getNavigation().getCenter()[1];
-                                if(bbox[0] <= long && long <= bbox[1] && bbox[2] <= lat && lat <= bbox[3]) {
-                                    // do nothing
-                                } else {
-                                    self.getNavigation().zoomTo([layer.getProperties().initialRa, layer.getProperties().initialDec], {
-                                        distance: layer.getProperties().initialFov,
-                                        duration: 3000
-                                    });
-                                }
-
+                        if (layer.autoFillTimeTravel === true) {
+                            if ( (self.timeTravelService) && (typeof self.timeTravelService !== "undefined"))
+                            {
+                                self.timeTravelService.update(layer.timeTravelValues);
                             }
                         }
-                    });
-                    var layerEvent = (layer.category === "background") ? Constants.EVENT_MSG.LAYER_BACKGROUND_ADDED : Constants.EVENT_MSG.LAYER_ADDITIONAL_ADDED;
-                    self.publish(layerEvent, layer);
-                    if(callback) {
-                        callback(layer.ID);
+
+                        _addToGlobe.call(self, layer);
+
+                        self._fillDataProvider(layer, layerDescription);
+
+                        if(layer.isVisible()) {
+                            layer.setTime(self.getTime());
+                        }
+
+                        if (layer.isPickable()) {
+                            ServiceFactory.create(Constants.SERVICE.PickingManager).addPickableLayer(layer);
+                        }
+
+                       layer.subscribe(Constants.EVENT_MSG.LAYER_VISIBILITY_CHANGED, _handleCameraWhenLayerAdded);
+                        var layerEvent = (layer.category === "background") ? Constants.EVENT_MSG.LAYER_BACKGROUND_ADDED : Constants.EVENT_MSG.LAYER_ADDITIONAL_ADDED;
+                        self.publish(layerEvent, layer);
+
+                        //if (layer.addEventTime) {
+                        //    layer.addEventTime();
+                        //}
+
+                        if (callback) {
+                            callback(layer.ID);
+                        }
                     }
-                }
-            });
-
+                },
+                function (e) {
+                    if(fallback) {
+                        fallback(e);
+                    }
+                });
         };
-
-        // /**
-        //  * Zoom to when the visibility is changed.
-        //  * @param layer
-        //  * @private
-        //  */
-        // function onVisibilityChange(layer) {
-        //
-        //     if (layer.isVisible() && layer.properties && !layer.background
-        //         && layer.properties.hasOwnProperty("initialRa") && layer.properties.hasOwnProperty("initialDec") && layer.properties.hasOwnProperty("initialFov")) {
-        //
-        //         if (layer.globe.getType() === Constants.GLOBE.Sky) {
-        //             var fov = (layer.properties.initialFov) ? layer.properties.initialFov : layer.globe.getRenderContext().fov;
-        //             self.getNavigation().zoomTo([layer.properties.initialRa, layer.properties.initialDec], {
-        //                 fov: fov,
-        //                 duration: 3000
-        //             });
-        //         }
-        //         else {
-        //             self.getNavigation().zoomTo([layer.properties.initialRa, layer.properties.initialDec], {
-        //                 distance: layer.properties.initialFov,
-        //                 duration: 3000
-        //             });
-        //         }
-        //     }
-        // }
 
         /**
          * @function getLinkedLayers
@@ -555,32 +450,36 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Laye
                     return index;
                 }
             });
+
             if (indexes.length > 0) {
+                // At least one layer to remove
                 var removedLayers = this.layers.splice(indexes[0], 1);
                 removedLayer = removedLayers[0];
-                var self = this;
-                removedLayer.unsubscribe(Constants.EVENT_MSG.LAYER_VISIBILITY_CHANGED, function (layer) {
-                    if (layer.isVisible() && layer.getProperties() && !layer.isBackground()
-                        && layer.getProperties().hasOwnProperty("initialRa") && layer.getProperties.hasOwnProperty("initialDec") && layer.getProperties.hasOwnProperty("initialFov")) {
-
-                        if (layer.getGlobe().getType() === Constants.GLOBE.Sky) {
-                            var fov = (layer.getProperties().initialFov) ? layer.getProperties().initialFov : layer.getGlobe().getRenderContext().fov;
-                            self.getNavigation().zoomTo([layer.getProperties().initialRa, layer.getProperties().initialDec], {
-                                fov: fov,
-                                duration: 3000
-                            });
-                        }
-                        else {
-                            self.getNavigation().zoomTo([layer.getProperties().initialRa, layer.getProperties().initialDec], {
-                                distance: layer.getProperties().initialFov,
-                                duration: 3000
-                            });
+                if (removedLayer.autoFillTimeTravel === true) {
+                    this.timeTravelService.update({
+                        "remove" :
+                             { "ID" : layerID }
+                   });
+                }
+                var tileManager = this.getTileManager();
+                for (var i = tileManager.visibleTiles.length; i--; ) {
+                    var tile = tileManager.visibleTiles[i];
+                    var extension = tile.extension;
+                    if (extension.renderer) {
+                        var renderables = extension.renderer.renderables;
+                        for (var renderableIdx = renderables.length; renderableIdx--;) {
+                            var renderable = renderables[renderableIdx];
+                            if (renderable.bucket.layer.ID === layerID) {
+                                tileManager.abortBucketRequests(renderable.bucket);
+                                break;
+                            }
                         }
                     }
-                });
+                }
+
+                removedLayer.unsubscribe(Constants.EVENT_MSG.LAYER_VISIBILITY_CHANGED, _handleCameraWhenLayerAdded);
                 ServiceFactory.create(Constants.SERVICE.PickingManager).removePickableLayer(removedLayer);
                 removedLayer._detach();
-
             }
             return removedLayer;
         };
@@ -734,7 +633,7 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Laye
                     this.elevationTracker.attachTo(this);
                 }
 
-                }
+            }
             //When base layer failed to load, open error dialog
             var self = this;
             this.subscribe(Constants.EVENT_MSG.BASE_LAYERS_ERROR, function (layer) {
@@ -937,8 +836,12 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Laye
          * @abstract
          */
         AbstractContext.prototype.disable = function () {
-            this.positionTracker.detach();
-            this.elevationTracker.detach();
+            if (this.positionTracker) {
+                this.positionTracker.detach();
+            }
+            if (this.elevationTracker) {
+                this.elevationTracker.detach();
+            }
             var i = 0;
             var layer = this.layers[i];
             while (layer) {
@@ -946,9 +849,9 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Laye
                 layer = this.layers[++i];
             }
             var renderers = this.getRenderContext().renderers;
-            for (var i = 0; i < renderers.length; i++) {
-                if (renderers[i].getType() === this.getMode()) {
-                    renderers[i].disable();
+            for (var j = 0; j < renderers.length; j++) {
+                if (renderers[j].getType() === this.getMode()) {
+                    renderers[j].disable();
                 }
             }
         };
@@ -959,8 +862,12 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Laye
          * @abstract
          */
         AbstractContext.prototype.enable = function () {
-            this.positionTracker.attachTo(this);
-            this.elevationTracker.attachTo(this);
+            if (this.positionTracker) {
+                this.positionTracker.detach();
+            }
+            if (this.elevationTracker) {
+                this.elevationTracker.detach();
+            }
             var i = 0;
             var layer = this.layers[i];
             while (layer) {
@@ -982,6 +889,15 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Laye
          */
         AbstractContext.prototype.setCompassVisible = function (divName, visible) {
             throw new SyntaxError("compass visible not implemented", "AbstractContext.js");
+        };
+
+        /**
+         * @function setTimeTravelVisible
+         * @memberOf AbstractContext#
+         * @abstract
+         */
+        AbstractContext.prototype.setTimeTravelVisible = function (divName, visible) {
+            throw new SyntaxError("time travel visible not implemented", "AbstractContext.js");
         };
 
 
@@ -1098,7 +1014,6 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Laye
             }
             this.canvas = null;
         };
-
 
 
         /**************************************************************************************************************/

@@ -35,7 +35,7 @@
  * along with GlobWeb. If not, see <http://www.gnu.org/licenses/>.
  ***************************************/
 
-define(function () {
+define(['../Utils/Constants'], function (Constants) {
 
 
 // Simple colors
@@ -223,7 +223,7 @@ define(function () {
         this.fill = false;
         this.pointMaxSize = 40;
         this.opacity = 1.0;
-        this.zIndex = 0;
+        this.zIndex = Constants.DISPLAY.DEFAULT_RASTER;
         this.extrusionScale = 1.0;
 
         if (style) {
@@ -308,10 +308,126 @@ define(function () {
         return hashColor;
     };
 
+    FeatureStyle.prototype.getStrokeColor = function() {
+        return this.strokeColor;
+    };
+
+    FeatureStyle.prototype.setStrokeColor = function(strokeColor) {
+        return this.strokeColor = strokeColor;
+    };
+
+    FeatureStyle.prototype.getFillColor = function() {
+        return this.fillColor;
+    };
+
+    FeatureStyle.prototype.setFillColor = function(fillColor) {
+        return this.fillColor = fillColor;
+    };
+
+    FeatureStyle.prototype.getFillTextureURL = function() {
+        return this.fillTextureUrl;
+    };
+
+    FeatureStyle.prototype.setFillTextureURL = function(fillTextureURL) {
+        return this.fillTextureUrl = fillTextureURL;
+    };
+
+    FeatureStyle.prototype.getFillTexture = function() {
+        return this.fillTexture;
+    };
+
+    FeatureStyle.prototype.setFillTexture = function(fillTexture) {
+        return this.fillShader = fillTexture;
+    };
+
+    FeatureStyle.prototype.getFillShader = function() {
+        return this.fillShader;
+    };
+
+    FeatureStyle.prototype.setFillShader = function(fillShader) {
+        return this.fillShader = fillShader;
+    };
+
+    FeatureStyle.prototype.getStrokeWidth = function() {
+        return this.strokeWidth;
+    };
+
+    FeatureStyle.prototype.setStrokeWidth = function(strokeWidth) {
+        return this.strokeWidth = strokeWidth;
+    };
+
+    FeatureStyle.prototype.getIconURL = function() {
+        return this.iconUrl;
+    };
+
+    FeatureStyle.prototype.setIconURL = function(iconURL) {
+        return this.iconUrl = iconURL;
+    };
+
+    FeatureStyle.prototype.getIcon = function() {
+        return this.icon;
+    };
+
+    FeatureStyle.prototype.setIcon = function(icon) {
+        this.icon = icon;
+    };
+
+    FeatureStyle.prototype.getLabel = function() {
+        return this.label;
+    };
+
+    FeatureStyle.prototype.setLabel = function(label) {
+        this.label = label;
+    };
+
+    FeatureStyle.prototype.getTextColor = function() {
+        return this.textColor;
+    };
+
+    FeatureStyle.prototype.setTextColor = function(textColor) {
+        return this.textColor = textColor;
+    };
+
+    FeatureStyle.prototype.isFill = function() {
+        return this.isFill;
+    };
+
+    FeatureStyle.prototype.setFill = function(isFill) {
+        return this.isFill = isFill;
+    };
+
+    FeatureStyle.prototype.getPointMaxSize = function () {
+        return this.pointMaxSize;
+    };
+
+    FeatureStyle.prototype.setPointMaxSize = function (pointMaxSize) {
+        this.pointMaxSize = pointMaxSize;
+    };
+
+    FeatureStyle.prototype.getOpacity = function () {
+        return this.opacity;
+    };
+
+    FeatureStyle.prototype.setOpacity = function (opacity) {
+        if (typeof opacity === "number" && opacity >= 0.0 && opacity <= 1.0) {
+            this.opacity = opacity;
+        } else {
+            throw new RangeError('opacity value should be a value in [0..1]', "AbstractLayer.js");
+        }
+    };
+
+    FeatureStyle.prototype.getZIndex = function() {
+        return this.zIndex;
+    };
+
+    FeatureStyle.prototype.setZIndex = function(zIndex) {
+        return this.zIndex = zIndex;
+    };
+
     /**
      * Get extrusion scale
      * @function getExtrusionScale
-     * @memberof FeatureStyle.prototype
+     * @memberOf FeatureStyle.prototype
      *
      * @return {float} Extrusion scale
      */
@@ -322,7 +438,7 @@ define(function () {
     /**
      * Set extrusion scale
      * @function setExtrusionScale
-     * @memberof FeatureStyle.prototype
+     * @memberOf FeatureStyle.prototype
      *
      * @param {float} value Extrusion scale
      */

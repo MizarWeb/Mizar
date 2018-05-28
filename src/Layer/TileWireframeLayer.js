@@ -54,13 +54,13 @@ define(['../Utils/Utils', './AbstractLayer', '../Utils/Constants', '../Renderer/
          * @constructor
          */
         var TileWireframeLayer = function (options) {
+            options.zIndex = Constants.DISPLAY.RENDERING;
             AbstractLayer.prototype.constructor.call(this, Constants.LAYER.TileWireframe, options);
             this.outline = (options && options.outline) ? options.outline : false;
             this.globe = null;
             this.program = null;
             this.indexBuffer = null;
             this.subIndexBuffer = [null, null, null, null];
-            this.zIndex = -1;
         };
 
         /**************************************************************************************************************/
@@ -200,6 +200,8 @@ define(['../Utils/Utils', './AbstractLayer', '../Utils/Constants', '../Renderer/
             var gl = rc.gl;
 
             gl.enable(gl.BLEND);
+            gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+            gl.depthFunc(gl.LEQUAL);
 
             // Setup program
             this.program.apply();
@@ -217,13 +219,13 @@ define(['../Utils/Utils', './AbstractLayer', '../Utils/Constants', '../Renderer/
                 // Update uniforms for modelview matrix
                 mat4.multiply(rc.viewMatrix, tile.matrix, rc.modelViewMatrix);
                 gl.uniformMatrix4fv(this.program.uniforms.modelViewMatrix, false, rc.modelViewMatrix);
-                gl.uniform3f(this.program.uniforms.color, this.color[0], this.color[1], this.color[2]);
+                var color = this.getStyle().getStrokeColor();
+                gl.uniform3f(this.program.uniforms.color, color[0], color[1], color[2]);
                 gl.uniform1f(this.program.uniforms.alpha, this.getOpacity());
 
                 // Bind the vertex buffer
                 gl.bindBuffer(gl.ARRAY_BUFFER, tile.vertexBuffer);
                 gl.vertexAttribPointer(vertexAttribute, 3, gl.FLOAT, false, 4 * tile.config.vertexSize, 0);
-
                 var indexBuffer = ( isLoaded || isLevelZero ) ? this.indexBuffer : this.subIndexBuffer[tile.parentIndex];
                 // Bind the index buffer only if different (index buffer is shared between tiles)
                 if (currentIB !== indexBuffer) {
@@ -237,6 +239,7 @@ define(['../Utils/Utils', './AbstractLayer', '../Utils/Constants', '../Renderer/
             }
 
             gl.disable(gl.BLEND);
+            gl.depthFunc(gl.LESS);
         };
 
         /**************************************************************************************************************/

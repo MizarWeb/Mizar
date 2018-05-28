@@ -87,12 +87,6 @@ define(['./AbstractCrs', '../Renderer/GeoBound', '../Utils/Utils', '../Utils/Con
             var astro = [];
             var azimuth = Numeric.roundNumber(geo[0], 3);
             var altitude = Numeric.roundNumber(geo[1], 3);
-            if(azimuth < 0) {
-                azimuth = -1*azimuth;
-            } else {
-                azimuth = 360 - azimuth;
-            }
-
             astro[0] = this.getLongitudeLabel()+" = "+azimuth;
             astro[0] += "&deg;";
             astro[1] = this.getLatitudeLabel()+" = "+altitude;
@@ -123,9 +117,11 @@ define(['./AbstractCrs', '../Renderer/GeoBound', '../Utils/Utils', '../Utils/Con
          * @private
          */
         HorizontalLocalCrs.prototype._setupPosAfterTrans = function(posWorld) {
-            //if (posWorld[0] < 0) {
-            //    posWorld[0] += 360.0;
-            //}
+            if(posWorld[0] < 0) {
+                posWorld[0] = -1*posWorld[0];
+            } else {
+                posWorld[0] = 360 - posWorld[0];
+            }
         };
 
         /**
@@ -135,9 +131,11 @@ define(['./AbstractCrs', '../Renderer/GeoBound', '../Utils/Utils', '../Utils/Con
          * @private
          */
         HorizontalLocalCrs.prototype._setupPosBeforeTrans = function(posWorld) {
-            //if (posWorld[0] > 180) {
-            //    posWorld[0] -= 360.0;
-            //}
+            if(posWorld[0] < 180) {
+                posWorld[0] = -1*posWorld[0];
+            } else {
+                posWorld[0] = 360 - posWorld[0];
+            }
         };
 
         /**

@@ -43,21 +43,72 @@ define(['../Utils/Utils', '../Utils/Constants', './AbstractNavigation', '../Anim
          * @typedef {AbstractNavigation.configuration} AbstractNavigation.flat_configuration
          * @property {float[]} [initTarget = [0, 0, 5.0 * RADIUS_PLANET]] - Target in decimal degree (longitude, latitude, distance in meter)
          * at initialisation. distance in meter is optional.
-         * @property {float} [minDistance = 60000] - The minimum distance in meters from the surface of the globe
+         * @property {float} [minDistance = DEFAULT_MIN_DISTANCE] - The minimum distance in meter from the surface of the globe
          * or options.initTarget[2] when this one is inferior to options.minDistance
-         * @property {float} [maxDistance = 5.0 * RADIUS_PLANET] - The maximum distance in meters or
+         * @property {float} [maxDistance = 5.0 * RADIUS_PLANET] - The maximum distance in meter or
          * options.initTarget[2] when this one is superior to options.maxDistance
          */
-        
+
+        /**
+         * Duration of animation in milliseconds to align the camera with the north.
+         * @type {number}
+         */
+        const DEFAULT_DURATION_NORTH = 1000.0;
+
+        /**
+         * Min heading value in decimal degree.
+         * @type {number}
+         */
+        const MIN_HEADING = 0.0;
+
+        /**
+         * Max heading value in decimal degree.
+         * @type {number}
+         */
+        const MAX_HEADING = 360.0;
+
+        /**
+         * Difference between two successive rotation (in degree) of the camera.
+         * @type {number}
+         */
+        const DELTA_HEADING = 0.05;
+
+        /**
+         * Rotation axis according to the center of the map (0,0).
+         * Long, lat, distance as vector length
+         * @type {number[]}
+         */
+        const ROTATION_AXIS = [0.0, 0.0, 1.0];
+
+        /**
+         * 3D cartesian of planet center.
+         * Long lat distance as vector ength.
+         * @type {number[]}
+         */
+        const CENTER = [0.0, 0.0, 0.0];
+
+        /**
+         * Default min distance in meter.
+         * @type {number}
+         */
+        const DEFAULT_MIN_DISTANCE = 60000;
+
+        /**
+         * Default duration in millisecond for zoom feature.
+         * @type {number}
+         */
+        const DEFAULT_DURATION_ZOOM = 5000;
+
         /**
          * @name FlatNavigation
          * @class
          * <table border="0">
          *     <tr>
          *         <td><img src="../doc/images/nav_flat.png" width="200px"/></td>
-         *         <td>Provides a camera to navigate on a 2D map - Only available in a Planet context</td>
+         *         <td>Provides a camera to navigate on a 2D map - Only available in a Planet context. A 2D navigation
+         *         provides a navigation for which there is no tilt and no roll <img src="https://developers.google.com/kml/documentation/kmlreference"/></td>
          *     </tr>
-         * </table>         
+         * </table>
          * @augments AbstractNavigation
          * @param {PlanetContext} ctx - Planet context
          * @param {AbstractNavigation.flat_configuration} options - Flat navigation configuration
@@ -69,7 +120,7 @@ define(['../Utils/Utils', '../Utils/Constants', './AbstractNavigation', '../Anim
             AbstractNavigation.prototype.constructor.call(this, Constants.NAVIGATION.FlatNavigation, ctx, options);
 
             // Default values for min and max distance (in meter)
-            this.minDistance = (this.options.minDistance) || 60000;
+            this.minDistance = (this.options.minDistance) || DEFAULT_MIN_DISTANCE;
             this.maxDistance = (this.options.maxDistance) || 5.0 * this.ctx.getCoordinateSystem().getGeoide().getRadius() / this.ctx.getCoordinateSystem().getGeoide().getHeightScale();
 
             // Scale min and max distance from meter to internal ratio
@@ -77,16 +128,17 @@ define(['../Utils/Utils', '../Utils/Constants', './AbstractNavigation', '../Anim
             this.maxDistance *= this.ctx.getCoordinateSystem().getGeoide().getHeightScale();
 
             // Initialize the navigation
-            this.center = [0.0, 0.0, 0.0];
+            this.center = CENTER;
             this.distance = this.maxDistance;
+            this.heading = 0;
             this.up = [0.0, 1.0, 0.0];
             _setInitTarget.call(this, this.options.initTarget);
 
             this.computeViewMatrix();
-
         };
+
         /**
-         * Defines the position where the camera looks at and the distance of the camera regarding to the planet's surface
+         * Defines the position where the camera looks at and the distance of the camera from the planet's surface.
          * @param {float[]|undefined} initTarget as [longitude, latitude[, distance in meter]]
          * @private
          */
@@ -95,14 +147,174 @@ define(['../Utils/Utils', '../Utils/Constants', './AbstractNavigation', '../Anim
                 var pos = this.ctx.getCoordinateSystem().get3DFromWorld(initTarget);
                 this.center[0] = pos[0];
                 this.center[1] = pos[1];
-                this.distance = (initTarget.length === 3) ? initTarget[2] * this.ctx.getCoordinateSystem().getGeoide().getHeightScale() : this.distance;
-                if(this.distance < this.minDistance) {
+                this.distance = (initTarget.length === 3)
+                    ? initTarget[2] * this.ctx.getCoordinateSystem().getGeoide().getHeightScale()
+                    : this.distance;
+                if (this.distance < this.minDistance) {
                     this.minDistance = this.distance;
                 }
-                if(this.distance > this.maxDistance) {
+                if (this.distance > this.maxDistance) {
                     this.maxDistance = this.distance;
                 }
             }
+        }
+
+        /**
+         * Init move up animation.
+         * @param {AbstractNavigation} navigation - navigation object
+         * @param {number} durationTime - duration of the animation in millisecond
+         * @return {AbstractAnimation} animation
+         * @private
+         */
+        function _initMoveUpAnimation(navigation, durationTime) {
+            return AnimationFactory.create(
+                Constants.ANIMATION.Segmented,
+                {
+                    "duration": durationTime,
+                    "valueSetter": function (value) {
+                        var angle = value - navigation.heading;
+                        navigation.heading = value;
+                        var rot = quat4.fromAngleAxis(Numeric.toRadian(angle), ROTATION_AXIS);
+                        quat4.multiplyVec3(rot, navigation.up);
+                        navigation.computeViewMatrix();
+                    }
+                }
+            );
+        }
+
+        /**
+         * Rotates from startHeading to North
+         * @param {AbstractAnimation} animation - animation on which the rotation is applied
+         * @param {float} startHeading - start heading
+         * @private
+         */
+        function _rotateAnimationToNorth(animation, startHeading) {
+            var endHeading;
+            if (startHeading > 180) {
+                endHeading = MAX_HEADING;
+            } else {
+                endHeading = MIN_HEADING;
+            }
+            animation.addSegment(
+                0.0, startHeading,
+                1.0, endHeading,
+                function (t, a, b) {
+                    return Numeric.lerp(t, a, b);
+                }
+            );
+        }
+
+        /**
+         * Init zoom animation
+         * @param {AbstractNavigation} navigation - navigation object
+         * @param {number} duration - duration of the animation in millisecond
+         * @return {AbstractAnimation} animation
+         * @private
+         */
+        function _initZoomAnimation(navigation, duration) {
+            return AnimationFactory.create(
+                Constants.ANIMATION.Segmented,
+                {
+                    "duration": duration,
+                    "valueSetter": function (value) {
+                        navigation.center[0] = value[0];
+                        navigation.center[1] = value[1];
+                        navigation.distance = value[2];
+                        navigation.computeViewMatrix();
+                    }
+                }
+            );
+        }
+
+        /**
+         * Adds two segments to the animation, which starts to startValue and stops to endValue
+         * by crossing the maxAltitude at middle value of [startValue, endValue]
+         * @param {AbstractAnimation} zoomToAnimation - animation where the segment is added
+         * @param {float[]} startValue - Starting position (longitude, latitude, distance as vector length)
+         * @param {float[]} endValue - Ending position (longitude, latitude, distance as vector length)
+         * @param {float} maxAltitude - altitude (as vector length) where the camera FOV contains the center and the target position
+         * @private
+         */
+        function _addZoomOutThenZoomIn(zoomToAnimation, startValue, endValue, maxAltitude) {
+            // Compute the middle value
+            var midValue = [startValue[0] * 0.5 + endValue[0] * 0.5,
+                startValue[1] * 0.5 + endValue[1] * 0.5,
+                maxAltitude];
+
+            // zoom out to max altitude
+            zoomToAnimation.addSegment(
+                0.0, startValue,
+                0.5, midValue,
+                function (t, a, b) {
+                    var pt = Numeric.easeInQuad(t);
+                    var dt = Numeric.easeOutQuad(t);
+                    return [Numeric.lerp(pt, a[0], b[0]), // geoPos.long
+                        Numeric.lerp(pt, a[1], b[1]), // geoPos.lat
+                        Numeric.lerp(dt, a[2], b[2])]; // distance
+                }
+            );
+
+            // zoom in
+            _addZoomIn.call(this, zoomToAnimation, midValue, endValue, 0.5);
+        }
+
+        /**
+         * Adds a segment to the animation, which starts to startValue and stops to endValue
+         * @param {AbstractAnimation} zoomToAnimation - animation where the segment is added
+         * @param {float[]} startValue - Starting position (longitude, latitude, distance as vector length)
+         * @param {float[]} endValue - Ending position (longitude, latitude, distance as vector length)
+         * @param {float} [startParameter=0.0] - start parameter
+         * @private
+         */
+        function _addZoomIn(zoomToAnimation, startValue, endValue, startParameter) {
+            var parameter = startParameter ? startParameter : 0.0;
+            zoomToAnimation.addSegment(
+                parameter, startValue,
+                1.0, endValue,
+                function (t, a, b) {
+                    var pt = Numeric.easeOutQuad(t);
+                    var dt = Numeric.easeInQuad(t);
+                    return [Numeric.lerp(pt, a[0], b[0]),  // geoPos.long
+                        Numeric.lerp(pt, a[1], b[1]),  // geoPos.lat
+                        Numeric.lerp(dt, a[2], b[2])];  // distance
+                }
+            );
+        }
+
+        /**
+         * Adds an event when the animation stops.
+         * @param {AbstractAnimation} zoomToAnimation - animation where the event is added
+         * @param {AbstractContext} ctx - context
+         * @param {number} destDistance - Final zooming distance in meter
+         * @param {Object} [options] - options
+         * @param {Object} [options.callback] - Callback function to call when it is defined.
+         * @private
+         */
+        function _addStop(zoomToAnimation, ctx, destDistance, options) {
+            zoomToAnimation.onstop = function () {
+                if (options && options.callback) {
+                    options.callback();
+                }
+                zoomToAnimation = null;
+                ctx.publish(Constants.EVENT_MSG.NAVIGATION_CHANGED_DISTANCE, destDistance);
+            };
+        }
+
+        /**
+         * Computes altitude (as vector length) for which the fov see the distance between worldStart-worldEnd
+         * @param {AbstractContext} ctx - context
+         * @param {float[]} worldStart - Starting position as [longitude, latitude, distance]
+         * @param {float[]} worldEnd - Ending position as [longitude, latitude, distance]
+         * @return {number} the altitude for which the fov see the distance worldStart-worldEnd
+         * @private
+         */
+        function _computeMaxAltitudeForZoomAnimation(ctx, worldStart, worldEnd) {
+            var vec = vec3.subtract(worldStart, worldEnd);
+            var len = vec3.length(vec);
+            var canvas = ctx.getRenderContext().getCanvas();
+            var fov = ctx.getRenderContext().getFov();
+            var minFov = Math.min(Numeric.toRadian(fov), Numeric.toRadian(fov * canvas.width / canvas.height));
+            return (len / 2.0) / Math.tan(minFov / 2.0);
         }
 
 
@@ -111,6 +323,19 @@ define(['../Utils/Utils', '../Utils/Constants', './AbstractNavigation', '../Anim
         Utils.inherits(AbstractNavigation, FlatNavigation);
 
         /**************************************************************************************************************/
+
+        /**
+         * @function getCenter
+         * @memberOf FlatNavigation#
+         * @return {float[]} Returns the central position of the camera
+         */
+        FlatNavigation.prototype.getCenter = function () {
+            var center = AbstractNavigation.prototype.getCenter.call(this);
+            if (center == null) {
+                center = this.center;
+            }
+            return center;
+        };
 
         /**
          * Saves the current navigation state.
@@ -128,7 +353,7 @@ define(['../Utils/Utils', '../Utils/Constants', './AbstractNavigation', '../Anim
 
         /**
          * Restores the navigation state.
-         * @function save
+         * @function restore
          * @memberOf FlatNavigation#
          * @param {Object} state a JS object containing the navigation state
          * @param {float[]} state.center - Center of the camera's field of view in decimal degree as [longitude, latitude]
@@ -140,121 +365,56 @@ define(['../Utils/Utils', '../Utils/Constants', './AbstractNavigation', '../Anim
             this.up = state.up;
             this.computeViewMatrix();
         };
-        
+
         /**
-         * Computes the view matrix
+         * Computes the view matrix.
          * @function computeViewMatrix
          * @memberOf FlatNavigation#
          */
         FlatNavigation.prototype.computeViewMatrix = function () {
-            var eye = [];
-            //vec3.normalize(this.geoCenter);
             var vm = this.renderContext.getViewMatrix();
-
-            eye = [this.center[0], this.center[1], this.distance];
-
+            var eye = [this.center[0], this.center[1], this.distance];
             mat4.lookAt(eye, this.center, this.up, vm);
             this.up = [vm[1], vm[5], vm[9]];
             this.ctx.publish(Constants.EVENT_MSG.NAVIGATION_MODIFIED);
             this.renderContext.requestFrame();
         };
-        
+
         /**
-         * Zooms to a geographic position
+         * Zooms to a geographic position by creating an animation.
+         *
          * @function zoomTo
          * @memberOf FlatNavigation#
          * @param {float[]} geoPos Array of two floats corresponding to final Longitude and Latitude(in this order) to zoom
          * @param {Object} options - options
          * @param {int} [options.distance] - Final zooming distance in meters. By default, the distance does not change
-         * @param {int} [options.duration = 5000] -  Duration of animation in milliseconds
+         * @param {int} [options.duration = DEFAULT_DURATION_ZOOM] -  Duration of animation in milliseconds
          * @param {navigationCallback} options.callback - Callback at the end of animation
          */
         FlatNavigation.prototype.zoomTo = function (geoPos, options) {
             this.ctx.publish(Constants.EVENT_MSG.NAVIGATION_CHANGED_DISTANCE);
             var navigation = this;
+            var duration = (options && options.duration) ? options.duration : DEFAULT_DURATION_ZOOM;
+            var zoomToAnimation = _initZoomAnimation.call(this, navigation, duration);
 
             var destDistance = (options && options.distance) ? options.distance : this.distance / this.ctx.getCoordinateSystem().getGeoide().getHeightScale();
-            var duration = (options && options.duration) ? options.duration : 5000;
-
             var pos = this.ctx.getCoordinateSystem().get3DFromWorld(geoPos);
-
-            // Create a single animation to animate geoCenter, distance and tilt
             var startValue = [this.center[0], this.center[1], this.distance];
             var endValue = [pos[0], pos[1], destDistance * this.ctx.getCoordinateSystem().getGeoide().getHeightScale()];
-            this.zoomToAnimation = AnimationFactory.create(
-                Constants.ANIMATION.Segmented,
-                {
-                    "duration": duration,
-                    "valueSetter": function (value) {
-                        navigation.center[0] = value[0];
-                        navigation.center[1] = value[1];
-                        navigation.distance = value[2];
-                        navigation.computeViewMatrix();
-                    }
-                });
 
-            // Compute a max altitude for the animation
-            var worldStart = this.center;
-            var worldEnd = pos;
-            var vec = vec3.subtract(worldStart, worldEnd);
-            var len = vec3.length(vec);
-            var canvas = this.ctx.getRenderContext().getCanvas();
-            var minFov = Math.min(Numeric.toRadian(45.0), Numeric.toRadian(45.0 * canvas.width / canvas.height));
-            var maxAltitude = 1.1 * ((len / 2.0) / Math.tan(minFov / 2.0));
+            var maxAltitude = _computeMaxAltitudeForZoomAnimation.call(this, this.ctx, this.center, pos);
+
             if (maxAltitude > this.distance) {
-                // Compute the middle value
-                var midValue = [startValue[0] * 0.5 + endValue[0] * 0.5,
-                    startValue[1] * 0.5 + endValue[1] * 0.5,
-                    maxAltitude];
-
-                // Add two segments
-                this.zoomToAnimation.addSegment(
-                    0.0, startValue,
-                    0.5, midValue,
-                    function (t, a, b) {
-                        var pt = Numeric.easeInQuad(t);
-                        var dt = Numeric.easeOutQuad(t);
-                        return [Numeric.lerp(pt, a[0], b[0]), // geoPos.long
-                            Numeric.lerp(pt, a[1], b[1]), // geoPos.lat
-                            Numeric.lerp(dt, a[2], b[2])]; // distance
-                    });
-
-                this.zoomToAnimation.addSegment(
-                    0.5, midValue,
-                    1.0, endValue,
-                    function (t, a, b) {
-                        var pt = Numeric.easeOutQuad(t);
-                        var dt = Numeric.easeInQuad(t);
-                        return [Numeric.lerp(pt, a[0], b[0]), // geoPos.long
-                            Numeric.lerp(pt, a[1], b[1]), // geoPos.lat
-                            Numeric.lerp(dt, a[2], b[2])]; // distance
-                    });
+                _addZoomOutThenZoomIn.call(this, zoomToAnimation, startValue, endValue, maxAltitude);
             }
             else {
-                // Add only one segments
-                this.zoomToAnimation.addSegment(
-                    0.0, startValue,
-                    1.0, endValue,
-                    function (t, a, b) {
-                        var pt = Numeric.easeOutQuad(t);
-                        var dt = Numeric.easeInQuad(t);
-                        return [Numeric.lerp(pt, a[0], b[0]),  // geoPos.long
-                            Numeric.lerp(pt, a[1], b[1]),  // geoPos.lat
-                            Numeric.lerp(dt, a[2], b[2])];  // distance
-                    });
+                _addZoomIn.call(this, zoomToAnimation, startValue, endValue);
             }
 
-            var self = this;
-            this.zoomToAnimation.onstop = function () {
-                if (options && options.callback) {
-                    options.callback();
-                }
-                self.zoomToAnimation = null;
-                self.ctx.publish(Constants.EVENT_MSG.NAVIGATION_CHANGED_DISTANCE, destDistance);
-            };
+            _addStop.call(this, zoomToAnimation, this.ctx, destDistance, options);
 
-            this.ctx.addAnimation(this.zoomToAnimation);
-            this.zoomToAnimation.start();
+            this.ctx.addAnimation(zoomToAnimation);
+            zoomToAnimation.start();
         };
 
         /**
@@ -280,7 +440,7 @@ define(['../Utils/Utils', '../Utils/Constants', './AbstractNavigation', '../Anim
             if (this.distance < this.minDistance) {
                 this.distance = previousDistance;
             }
-            
+
             //TODO : add the collision algorithm because of the elevation
 
             this.computeViewMatrix();
@@ -329,35 +489,71 @@ define(['../Utils/Utils', '../Utils/Constants', './AbstractNavigation', '../Anim
 
             var ray = Ray.createFromPixel(this.renderContext, x - dx, y - dy);
 
-            this.center = ray.computePoint(ray.planeIntersect([0, 0, 0], [0, 0, 1]));
+            this.center = ray.computePoint(ray.planeIntersect(CENTER, ROTATION_AXIS));
 
             this.computeViewMatrix();
         };
 
-        
+
         /**
-         * Rotates the camera
+         * Camera heading.
          * @function rotate
          * @memberOf FlatNavigation#
          * @param {int} dx Window delta x
-         * @param {int} dy Window delta y
          */
-        FlatNavigation.prototype.rotate = function (dx, dy) {
+        FlatNavigation.prototype.rotate = function (dx) {
             // Constant tiny angle
-            var angle = -dx * 0.1 * Math.PI / 180.0;
-
-            var rot = quat4.fromAngleAxis(angle, [0, 0, 1]);
+            var angle = dx * DELTA_HEADING;
+            this.heading += angle;
+            var rot = quat4.fromAngleAxis(Numeric.toRadian(angle), ROTATION_AXIS);
             quat4.multiplyVec3(rot, this.up);
-
             this.computeViewMatrix();
         };
 
         /**
          * Returns the distance in meters.
+         * @function getDistance
+         * @memberOf FlatNavigation#
          * @return {float} the distance in meters from the surface of the globe
          */
-        FlatNavigation.prototype.getDistance = function() {
-            return this.distance*this.ctx.getCoordinateSystem().getGeoide().getRealPlanetRadius();
+        FlatNavigation.prototype.getDistance = function () {
+            return this.distance * this.ctx.getCoordinateSystem().getGeoide().getRealPlanetRadius();
+        };
+
+        /**
+         * Returns the heading of the camera.
+         * @function getHeading
+         * @memberOf FlatNavigation#
+         * @return {number} the heading angle between [0, 360]
+         */
+        FlatNavigation.prototype.getHeading = function () {
+            return ((this.heading % MAX_HEADING) + MAX_HEADING) % MAX_HEADING;
+        };
+
+        /**
+         * Moves up vector.
+         * @function moveUpTo
+         * @memberOf FlatNavigation#
+         * @param {float[]} vec Vector
+         * @param {int} [duration = DEFAULT_DURATION_NORTH] - Duration of animation in milliseconds
+         */
+        FlatNavigation.prototype.moveUpTo = function (vec, duration) {
+            // Create a single animation to animate up
+            var startValue = [];
+            var endValue = this.up;
+            endValue[0] = Numeric.toDegree(endValue[0]);
+            endValue[1] = Numeric.toDegree(endValue[1]);
+            endValue[2] = endValue[2];
+
+            this.ctx.getCoordinateSystem().getWorldFrom3D(vec, startValue);
+
+            var durationTime = duration || DEFAULT_DURATION_NORTH;
+
+            var navigation = this;
+            var moveUpToAnimation = _initMoveUpAnimation.call(this, navigation, durationTime);
+            _rotateAnimationToNorth.call(this, moveUpToAnimation, this.getHeading());
+            this.ctx.addAnimation(moveUpToAnimation);
+            moveUpToAnimation.start();
         };
 
         /**
@@ -370,6 +566,7 @@ define(['../Utils/Utils', '../Utils/Constants', './AbstractNavigation', '../Anim
             this.up = null;
             this.minDistance = null;
             this.maxDistance = null;
+            this.heading = null;
             this.center = null;
             this.distance = null;
         };

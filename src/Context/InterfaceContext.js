@@ -146,10 +146,15 @@
  *         <td>{@link module:Context.PlanetContext PlanetContext}</td>
  *         <td>A context representing a planet</td>
  *     </tr>
+ *     <tr>
+ *         <td>&nbsp;</td>
+ *         <td>{@link module:Context.GroundContext GroundContext}</td>
+ *         <td>A context representing the ground</td>
+ *     </tr>
  * </table>
  * In addition to the two contexts, the client can define two sub-contexts :
  * <ul>
- *     <li>The planet without backgound</li>
+ *     <li>The planet without background</li>
  *     <li>The planet with the sky background</li>
  * </ul>
  * 
@@ -161,6 +166,10 @@
 function Context() {
 }
 
+
+/***********************************************************************************
+ *                        Methods to get Configuration                             *
+ ***********************************************************************************/
 /**
  * Returns the context Configuration
  * @return {Object} - see options.skyContext or options.planetContext for {@link {Mizar}}
@@ -175,6 +184,10 @@ Context.prototype.getContextConfiguration = function () {
 Context.prototype.getMizarConfiguration = function () {
 };
 
+
+/***********************************************************************************
+ *                        Methods for handling GUI                                 *
+ ***********************************************************************************/
 /**
  * Returns the position tracker.
  * @return {PositionTracker}
@@ -195,6 +208,14 @@ Context.prototype.getElevationTracker = function () {
  * @param {boolean} visible - Visible or not
  */
 Context.prototype.setCompassVisible = function (divName, visible) {
+};
+
+/**
+ * Sets the time travel to visible or not.
+ * @param {string} divName - Name of the time travel div
+ * @param {boolean} visible - Visible or not
+ */
+Context.prototype.setTimeTravelVisible = function (divName, visible) {
 };
 
 /**
@@ -220,11 +241,10 @@ Context.prototype.showComponents = function() {
 };
 
 /**
- * Start Navigation and "Show" sky or planet component.
+ * Start Navigation and "Show" sky or planet components.
  */
 Context.prototype.show = function () {
 };
-
 
 /**
  * Hide components
@@ -234,7 +254,7 @@ Context.prototype.hideComponents = function(uiArray) {
 };
 
 /**
- * Stop navigation and hide sky or planet components.
+ * Stops navigation and hide sky or planet components.
  */
 Context.prototype.hide = function () {
 };
@@ -251,6 +271,9 @@ Context.prototype.showAdditionalLayers = function () {
 Context.prototype.hideAdditionalLayers = function () {
 };
 
+/**************************************************************************************
+ *                      Methods for interacting with the map                          *
+ **************************************************************************************/
 /**
  * Returns the lon-lat from a pixel.
  * The pixel is expressed in the canvas frame, i.e. (0,0) corresponds to the lower-left corner of the pixel
@@ -280,6 +303,9 @@ Context.prototype.getPixelFromLonLat = function(longitude, latitude){
 Context.prototype.getElevation = function (lon, lat) {
 };
 
+/***************************************************************************************
+ *                          Methods for handling layers                                *
+ ***************************************************************************************/
 /**
  * Returns the layers of a specific context.
  * @return {Layer[]} an array of layers
@@ -344,7 +370,7 @@ Context.prototype.getAdditionalLayers = function () {
  * @fires Context#backgroundLayer:add
  * @fires Context#additionalLayer:add
  */
-Context.prototype.addLayer = function (mizarDescription) {
+Context.prototype.addLayer = function (mizarDescription, callback, fallback) {
 };
 
 /**
@@ -362,6 +388,9 @@ Context.prototype.removeAllLayers = function () {
 };
 
 
+/***************************************************************************************
+ *                  Methods for handling temporary draw on the map                     *
+ ***************************************************************************************/
 /**
  * Adds a temporary draw as a layer on the globe.<br/>
  * A temporary draw is used to create a subLayer or a simple draw. This added layer is not searchable and does not
@@ -378,11 +407,23 @@ Context.prototype.addDraw = function(layer) {
 Context.prototype.removeDraw = function(layer) {
 };
 
+/****************************************************************************************
+ *                  Methods for handling renderers                                      *
+ ****************************************************************************************/
 /**
  * Returns the rendering context.
  * @return {RenderContext} The rendering context
  */
 Context.prototype.getRenderContext = function () {
+};
+
+/**
+ * Renders the Planet.
+ * The pixel is expressed in the canvas frame, i.e. (0,0) corresponds to the lower-left corner of the pixel
+ * (private for now because it is automatically called in requestAnimationFrame)
+ * @private
+ */
+Context.prototype.render = function () {
 };
 
 /**
@@ -392,6 +433,15 @@ Context.prototype.getRenderContext = function () {
 Context.prototype.getMode = function () {
 };
 
+/**
+ * Refreshes rendering, must be called when canvas size is modified.
+ */
+Context.prototype.refresh = function () {
+};
+
+/***************************************************************************************
+ *                  Methods for handling coordinate systems                            *
+ ***************************************************************************************/
 /**
  * Sets the coordinate reference system.
  * @param cs - the coordinate reference system
@@ -408,6 +458,10 @@ Context.prototype.setCoordinateSystem = function (cs) {
 Context.prototype.getCoordinateSystem = function () {
 };
 
+
+/**************************************************************************************
+ *                      Methods for handling navigation                               *
+ **************************************************************************************/
 /**
  * Returns the navigation.
  * @returns {Navigation} navigation
@@ -415,6 +469,26 @@ Context.prototype.getCoordinateSystem = function () {
 Context.prototype.getNavigation = function () {
 };
 
+/**************************************************************************************
+ *                      Methods for handling time dimension                           *
+ **************************************************************************************/
+/**
+ * Returns the time dimension.
+ * @returns {string|null} the time dimension
+ */
+Context.prototype.getTime = function() {
+};
+
+/**
+ * Set the time dimension to all supported value.
+ * @param {date} time
+ */
+Context.prototype.setTime = function(time) {
+};
+
+/**************************************************************************************
+ *                      Methods for handling animations                               *
+ **************************************************************************************/
 /**
  * Adds an animation.
  * @param {Animation} anim - the animation to add
@@ -429,6 +503,10 @@ Context.prototype.addAnimation = function (anim) {
 Context.prototype.removeAnimation = function (anim) {
 };
 
+/***************************************************************************************
+ *                          Methods for handling tiles                                 *
+ ***************************************************************************************/
+
 /**
  * Returns the tile manager.
  * @returns {TileManager}
@@ -436,25 +514,16 @@ Context.prototype.removeAnimation = function (anim) {
 Context.prototype.getTileManager = function () {
 };
 
-/**
- * Renders the Planet.
- * The pixel is expressed in the canvas frame, i.e. (0,0) corresponds to the lower-left corner of the pixel
- * (private for now because it is automatically called in requestAnimationFrame)
- * @private
- */
-Context.prototype.render = function () {
-};
+
+
+/******************************************************************************************
+ *                          Methods for handling memory                                   *
+ ******************************************************************************************/
 
 /**
  * Cleans up every reference to gl objects and unloads all tiles of the current context.
  */
 Context.prototype.dispose = function () {
-};
-
-/**
- * Refreshes rendering, must be called when canvas size is modified.
- */
-Context.prototype.refresh = function () {
 };
 
 /**

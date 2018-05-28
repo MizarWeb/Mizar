@@ -35,8 +35,10 @@
  * along with GlobWeb. If not, see <http://www.gnu.org/licenses/>.
  ***************************************/
 
-define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Utils/Constants", "../Utils/UtilityFactory", "xmltojson"],
-    function ($, _, Event, Utils, Constants, UtilityFactory, XmlToJson) {
+define(["jquery", "underscore-min", "../Utils/Event", "moment", "../Utils/Utils", "../Utils/Constants", "../Utils/UtilityFactory", "xmltojson", "../Error/NetworkError"],
+    function ($, _, Event, Moment, Utils, Constants, UtilityFactory, XmlToJson, NetworkError) {
+
+        const DEFAULT_ICON = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAAXNSR0IArs4c6QAAAAZiS0dEAAAAAAAA+UO7fwAAAAlwSFlzAAALEwAACxMBAJqcGAAAAAd0SU1FB9wMBQkVBRMIQtMAAAAZdEVYdENvbW1lbnQAQ3JlYXRlZCB3aXRoIEdJTVBXgQ4XAAAAvklEQVQY012QMWpCURBFz3yfG7CIwSatpLGwsJJsQEHssr2UttapkkK0zRJEFPKLj5UYPGme8vgDt5l7uNwZKEYNdaZO1FR6VQkBT8AbMAGe1e7dTwXUB8bAFPgF9sBWPUXENbWgBTAELkCTw7bqMdR5kTQCehlogB/gE/iqcs9OVhT9I8v7EZU6UJfqh3pWa3WlvqsvakoRcVOPwCYnvQI1sM67Q0T8JYAWvAEOwDewj4jr4z0teJdf84AA/gF1uG92uhcfoAAAAABJRU5ErkJggg==";
 
         /**
          * AbstractLayer configuration
@@ -91,7 +93,6 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Util
             this.attribution = this.options.attribution || "";
             this.copyrightUrl = this.options.copyrightUrl || "";
             this.ack = this.options.ack || "";
-            this.icon = this.options.icon || "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAAXNSR0IArs4c6QAAAAZiS0dEAAAAAAAA+UO7fwAAAAlwSFlzAAALEwAACxMBAJqcGAAAAAd0SU1FB9wMBQkVBRMIQtMAAAAZdEVYdENvbW1lbnQAQ3JlYXRlZCB3aXRoIEdJTVBXgQ4XAAAAvklEQVQY012QMWpCURBFz3yfG7CIwSatpLGwsJJsQEHssr2UttapkkK0zRJEFPKLj5UYPGme8vgDt5l7uNwZKEYNdaZO1FR6VQkBT8AbMAGe1e7dTwXUB8bAFPgF9sBWPUXENbWgBTAELkCTw7bqMdR5kTQCehlogB/gE/iqcs9OVhT9I8v7EZU6UJfqh3pWa3WlvqsvakoRcVOPwCYnvQI1sM67Q0T8JYAWvAEOwDewj4jr4z0teJdf84AA/gF1uG92uhcfoAAAAABJRU5ErkJggg==";
             this.description = this.options.description || "";
             this.visible = this.options.visible || false;
             this.properties = this.options.properties || {};
@@ -106,6 +107,7 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Util
             this.format = this.options.format || "";
             this.baseUrl = this.options.baseUrl || "";
             this.deletable = this.options.deletable || false;
+            this.dimension = this.options.dimension;
             this.getCapabilitiesEnabled = false;
             this.getCapabilitiesTileManager = null;
             this.callbackContext = null;
@@ -113,15 +115,16 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Util
             this.servicesRunningOnCollection = [];
             this.servicesRunningOnRecords = {};
             this.vectorLayer = false;
+            this.metadataAPI = (this.options.metadataAPI) ? this.options.metadataAPI : null;
+            this.time = null;
+            // Do we take DEM into account with this layer ?
+            this.pickingNoDEM = this.options.pickingNoDEM ? this.options.pickingNoDEM : false;
 
-            // Update layer color
-            this.color = _createColor.call(this, this.options);
-
-            // Layer opacity must be in range [0, 1]
-            this.opacity = _createOpacity.call(this, this.options);
+            // Set if we need to auto fill the time travel range/step with auto discovered time values
+            this.autoFillTimeTravel = (this.options.autoFillTimeTravel) ? this.options.autoFillTimeTravel : false;
 
             // Create style if needed
-            this.style = _createStyle.call(this, this.options, this.opacity, this.icon, this.color, this.visible);
+            this.style = _createStyle.call(this, this.options, this.icon);
 
             // Ensure that the attribution link will be opened in new tab
             if (this.attribution && this.attribution.search('<a') >= 0 && this.attribution.search('target=') < 0) {
@@ -131,11 +134,6 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Util
             //this.services = _createAvailableServices(this.options);
             this.multiLayers = [];
 
-            // Time management properties
-            // Specify if the layer can manage the time parameter (default to false)
-            this.isTimeResponsive = false;
-            // Save the previous time value (to check if time has changed)
-            this.previousTimeValue = null;
 
         };
 
@@ -143,7 +141,7 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Util
         function _createAvailableServices(options) {
             var availableServices;
             if (options.hasOwnProperty('availableServices')) {
-                availableServices = options.availableServices; 
+                availableServices = options.availableServices;
             } else {
                 availableServices = [];
             }
@@ -153,30 +151,61 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Util
         /**
          *
          * @param options
-         * @param opacity
-         * @param icon
-         * @param color
-         * @param visible
          * @returns {*}
          * @private
          */
-        function _createStyle(options, opacity, icon, color, visible) {
+        function _createStyle(options) {
             var style;
-            if (!options.hasOwnProperty('style')) {
+            if (options.hasOwnProperty('style')) {
+                // we use style from layerDescription.
+                style = UtilityFactory.create(Constants.UTILITY.CreateStyle, options.style);
+            } else if (options.style === "FeatureStyle") {
+                // use a previous definition
+                style = options.style;
+            } else {
+                // Update layer color
+                var color = _createColor.call(this, options);
+
+                // Layer opacity must be in range [0, 1]
+                var opacity = _createOpacity.call(this, options);
+
+                // Create a default icon if needed.
+                var icon = _createIcon.call(this, options);
+
+                // Create a default zIndex if needed
+                var zIndex = _createZIndex.call(this, options);
+
+                // create default style
                 style = UtilityFactory.create(Constants.UTILITY.CreateStyle, {
                     rendererHint: "Basic",
                     opacity: opacity,
                     iconUrl: icon,
                     fillColor: color,
                     strokeColor: color,
-                    visible: visible
+                    zIndex: zIndex
                 });
-            } else if (options.style === "FeatureStyle") {
-                style = options.style;
-            } else {
-                style = UtilityFactory.create(Constants.UTILITY.CreateStyle, options.style);
             }
             return style;
+        }
+
+        function _createZIndex(options) {
+            var zIndex;
+            if (options.hasOwnProperty('zIndex')) {
+                zIndex = options.zIndex;
+            } else {
+                zIndex = Constants.DISPLAY.DEFAULT_RASTER;
+            }
+            return zIndex;
+        }
+
+        function _createIcon(options) {
+            var icon;
+            if (options.hasOwnProperty('icon')) {
+                icon = options.icon;
+            } else {
+                icon = DEFAULT_ICON;
+            }
+            return icon;
         }
 
         /**
@@ -211,7 +240,86 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Util
                 var rgb = Utils.generateColor();
                 color = rgb.concat([1]);
             }
-            return color
+            return color;
+        }
+
+        function _unitWithoutTime(unit) {
+            var unitTime;
+            switch (unit) {
+                case 'Y':
+                    unitTime = 'years';
+                    break;
+                case 'M':
+                    unitTime = 'months';
+                    break;
+                case 'D':
+                    unitTime = 'days';
+                    break;
+                default:
+                    throw new Error();
+            }
+            return unitTime;
+        }
+
+        function _unitWithTime(unit) {
+            var unitTime;
+            switch (unit) {
+                case 'H':
+                    unitTime = 'hours';
+                    break;
+                case 'M':
+                    unitTime = 'minutes';
+                    break;
+                case 'S':
+                    unitTime = 'seconds';
+                    break;
+                default:
+                    throw new Error();
+            }
+            return unitTime;
+        }
+
+        function _timeResolution(resolution) {
+            var stepTime, unitTime;
+            var unit = resolution.slice(-1);
+            if (resolution.startsWith("PT")) {
+                //time => hour, min, sec
+                stepTime = resolution.substring(2, resolution.length - 1);
+                unitTime = _unitWithTime(unit);
+            } else if (resolution.startsWith('P')) {
+                //day, month year
+                stepTime = resolution.substring(1, resolution.length - 1);
+                unitTime = _unitWithoutTime(unit);
+            } else {
+                throw new Error();
+            }
+
+            return {
+                step: stepTime,
+                unit: unitTime
+            };
+        }
+
+        function _closestDate(startDate, stopDate, stepTime, myTime) {
+            var startMoment = Moment.utc(startDate);
+            var stopMoment = Moment.utc(stopDate);
+            var myTimeMoment = Moment.utc(myTime);
+            var myDate;
+            if (myTimeMoment.isBetween(startMoment, stopMoment)) {
+                var duration1 = Moment.duration(myTimeMoment.diff(startMoment));
+                var duration2 = Moment.duration(stopMoment.diff(myTimeMoment));
+                if (duration1 > duration2) {
+                    var entier = Math.round(duration2.asHours() / stepTime);
+                    myDate = stopMoment.subtract({hours: entier * stepTime});
+                } else {
+                    var entier = Math.round(duration1.asHours() / stepTime);
+                    myDate = startMoment.add({hours: entier * stepTime})
+                }
+                myDate = myDate.toISOString();
+            } else {
+                myDate = null;
+            }
+            return myDate
         }
 
 
@@ -220,6 +328,148 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Util
         Utils.inherits(Event, AbstractLayer);
 
         /**************************************************************************************************************/
+
+        /**
+         * Checks if Mizar must query the WMS server to refresh data.
+         * When the camera does not move but that the time change, we have two cases :
+         * - the requested time is included in the time frame of the image => no query
+         * - the requested time is outside of the time frame of the image => this is a new image, need to query
+         * @param paramName
+         * @param value
+         * @return {*}
+         * @protected
+         */
+        AbstractLayer.prototype._hasToBeRefreshed = function(paramName, value) {
+            var hasToBeRefreshed;
+            if(paramName==="time") {
+                var timeRequest = AbstractLayer.createTimeRequest(value);
+                var allowedTime = this.getDimensions().time;
+                var selectedDate = AbstractLayer.selectedTime(allowedTime.value, timeRequest)
+                if(this.imageLoadedAtTime != null && selectedDate == null) {
+                    // we query because the state has changed
+                    hasToBeRefreshed = true;
+                    this.imageLoadedAtTime = selectedDate;
+                } else if(selectedDate == null) {
+                    // No image found on the server related to the requested time, no need to query => we save network
+                    hasToBeRefreshed = false;
+                } else if (this.imageLoadedAtTime === selectedDate) {
+                    // Same state, no need to query
+                    hasToBeRefreshed = false;
+                } else {
+                    // At the requested time, there is an image on the server and this is not the current one => query
+                    hasToBeRefreshed = true;
+                    this.imageLoadedAtTime = selectedDate;
+                }
+            } else {
+                hasToBeRefreshed = true;
+            }
+            return hasToBeRefreshed;
+        };
+
+        AbstractLayer.createTimeRequest = function (timeRequest) {
+            var myRequest;
+            if (timeRequest.period) {
+                myRequest = timeRequest.period;
+            } else if (timeRequest.from && timeRequest.to) {
+                myRequest = timeRequest;
+            } else if (timeRequest.from) {
+                myRequest = {
+                    from: timeRequest.from,
+                    to: Moment().toISOString()
+                }
+            } else if (timeRequest.to) {
+                timeRequest.from = Moment.utc("2000/01/01").format();
+                myRequest = {
+                    from: Moment.utc("2000/01/01").format(),
+                    to: timeRequest.to
+                }
+            } else if (Utils.aContainsB.call(this, timeRequest, '/')) {
+                var times = timeRequest.split("/");
+                myRequest = {
+                    from: Moment.utc(times[0]).toISOString(),
+                    to: Moment.utc(times[1]).toISOString()
+                }
+            } else {
+                var time = null;
+                if (timeRequest.date) {
+                    time = Moment(timeRequest.date);
+                } else if (isNaN(timeRequest)) {
+                    time = Moment.utc(timeRequest);
+                } else {
+                    time = Moment.utc([parseInt(timeRequest)]);
+                }
+                var format = time.creationData().format ? time.creationData().format : "YYYY";
+                var timeResolution = Utils.formatResolution.call(this, format);
+                myRequest = {
+                    from: time.startOf(timeResolution).toISOString(),
+                    to: time.endOf(timeResolution).toISOString()
+                }
+            }
+
+            return myRequest;
+        };
+
+        AbstractLayer.selectedTime = function (temporalRanges, timeRequest) {
+            var startDate = Moment.utc(timeRequest.from);
+            var stopDate = Moment.utc(timeRequest.to);
+            var times = temporalRanges.trim().split(",");
+            var selectedDate, selectedDateFormatted = null;
+            for (var timeIdx = 0; timeIdx < times.length && selectedDate == null; timeIdx++) {
+                var time = times[timeIdx];
+                var timeDefinition = time.trim().split("/");
+                if (timeDefinition.length == 1) {
+                    timeDefinition[0] = isNaN(timeDefinition[0]) ? timeDefinition[0] : [parseInt(timeDefinition[0])];
+                    var dateTime = Moment.utc(timeDefinition[0]);
+                    var format = dateTime.creationData().format ? dateTime.creationData().format : "YYYY";
+                    var timeResolution = Utils.formatResolution.call(this, format);
+                    if (dateTime.isBetween(startDate, stopDate) || dateTime.isSame(startDate) || dateTime.isSame(stopDate)
+                        || startDate.isBetween(dateTime.startOf(timeResolution).toISOString(), dateTime.endOf(timeResolution).toISOString())
+                        || stopDate.isBetween(dateTime.startOf(timeResolution).toISOString(), dateTime.endOf(timeResolution).toISOString())) {
+                        selectedDate = dateTime;
+                        if (selectedDate == null) {
+                            selectedDateFormatted = null;
+                        } else if (selectedDate.creationData().format == null) {
+                            selectedDateFormatted = selectedDate.format("YYYY");
+                        } else {
+                            selectedDateFormatted = selectedDate.format(selectedDate.creationData().format);
+                        }
+                        break;
+                    }
+                } else {
+                    var startTime = Moment.utc(timeDefinition[0]);
+                    var stopTime = Moment.utc(timeDefinition[1]);
+                    var frequencyTime = timeDefinition[2];
+                    var timeObjDefinition = _timeResolution(frequencyTime);
+                    var nbValues = Math.floor(stopTime.diff(startTime, timeObjDefinition.unit) / parseInt(timeObjDefinition.step));
+                    for (var i = 0; i <= nbValues; i++) {
+                        var currentDate = Moment.utc(startDate);
+                        currentDate.add(i * timeObjDefinition.step, timeObjDefinition.unit);
+                        var format = currentDate.creationData().format ? currentDate.creationData().format : "YYYY";
+                        var timeResolution = Utils.formatResolution.call(this, format);
+                        if (currentDate.isBetween(startDate, stopDate) || currentDate.isSame(startDate) || currentDate.isSame(stopDate)
+                            || startDate.isBetween(currentDate.startOf(timeResolution).toISOString(), currentDate.endOf(timeResolution).toISOString())
+                            || stopDate.isBetween(currentDate.startOf(timeResolution).toISOString(), currentDate.endOf(timeResolution).toISOString())) {
+                            selectedDateFormatted = _closestDate.call(this, startTime, stopTime, 6, currentDate.toISOString());
+                            break;
+                        }
+                    }
+                }
+            }
+
+            return selectedDateFormatted;
+        };
+
+        AbstractLayer.prototype.hasDimension = function () {
+            return this.dimension != null;
+        };
+
+        AbstractLayer.prototype.getDimensions = function () {
+            return this.dimension == null ? {} : this.dimension;
+        };
+
+        AbstractLayer.prototype.containsDimension = function (variable) {
+            return this.hasDimension() && this.dimension[variable] != null;
+        };
 
         /**
          * return short name
@@ -246,13 +496,44 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Util
             return this.servicesRunningOnCollection.length > 0;
         };
 
+        /**************************************************************************************************************/
+
+        /**
+         * @function postProcessDateTime
+         * @memberOf AbstractLayer#
+         */
+        /*        AbstractLayer.prototype.postProcessTime = function (time) {
+         return time;
+         };
+         */
+        /**************************************************************************************************************/
+
+        /**
+         * @function setDateTime
+         * @memberOf AbstractLayer#
+         * @param time Json object
+         *  {
+         *     "date" : current date,
+         *     "display" : current date as text for display
+         *     "period" : {
+         *          "from" : ,
+         *          "to" : }
+         *  }
+         */
+        AbstractLayer.prototype.setTime = function (time) {
+            this.time = time;
+        };
+
+        /**************************************************************************************************************/
 
         /**
          * @function forceRefresh
          * @memberOf AbstractLayer#
          */
         AbstractLayer.prototype.forceRefresh = function () {
-            throw new Error("forceRefresh not implemented");
+            var tileManager = this.getGlobe().getTileManager();
+            tileManager.updateVisibleTiles(this);
+            this.getGlobe().refresh();
         };
 
         /**
@@ -450,7 +731,7 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Util
                     callback(result, sourceObject);
                 },
                 error: function (xhr, ajaxOptions, thrownError) {
-                    console.error("Unknow server " + urlRaw);
+                    throw new NetworkError(thrownError.message, "AbstractLayer.js", thrownError.code);
                 }
             });
         };
@@ -467,6 +748,14 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Util
          */
         AbstractLayer.prototype.proxify = function (url) {
             return Utils.proxify(url, this.options.proxy);
+        };
+
+        /**
+         * @function getMetadataAPI
+         * @memberOf AbstractLayer#
+         */
+        AbstractLayer.prototype.getMetadataAPI = function () {
+            return this.metadataAPI;
         };
 
         /**
@@ -520,14 +809,6 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Util
         };
 
         /**
-         * @function getIcon
-         * @memberOf AbstractLayer#
-         */
-        AbstractLayer.prototype.getIcon = function () {
-            return this.icon;
-        };
-
-        /**
          * @function getDescription
          * @memberOf AbstractLayer#
          */
@@ -543,6 +824,16 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Util
             return this.visible;
         };
 
+
+        /**
+         * @function setOnTheTop
+         * @memberOf AbstractLayer#
+         */
+        AbstractLayer.prototype.setOnTheTop = function () {
+            var manager = this.getGlobe().getVectorRendererManager();
+            manager.setSelectedRasterBucket(this);
+        };
+
         /**
          * @function setVisible
          * @memberOf AbstractLayer#
@@ -554,10 +845,20 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Util
                     this.getGlobe().attributionHandler.toggleAttribution(this);
                 }
                 this.visible = arg;
+
+                if (!this.isBackground() && this.visible) {
+                    this.setOnTheTop();
+                }
+
+                var ctxTime = this.callbackContext.getTime();
+                if (ctxTime !== this.time) {
+                    this.setTime(ctxTime);
+                }
+
                 this.getGlobe().getRenderContext().requestFrame();
                 this.publish(Constants.EVENT_MSG.LAYER_VISIBILITY_CHANGED, this);
             } else {
-                throw new TypeError("the parameter of setVisible should be a boolean", "AbstractLayer.js");
+                throw new TypeError("the parameter of visible should be a boolean", "AbstractLayer.js");
             }
         };
 
@@ -566,7 +867,7 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Util
          * @memberOf AbstractLayer#
          */
         AbstractLayer.prototype.getOpacity = function () {
-            return this.opacity;
+            return this.getStyle().getOpacity();
         };
 
         /**
@@ -575,13 +876,10 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Util
          * @throws {RangeError} opacity - opacity value should be a value in [0..1]
          */
         AbstractLayer.prototype.setOpacity = function (arg) {
-            if (typeof arg === "number" && arg >= 0.0 && arg <= 1.0) {
-                this.opacity = arg;
-                this.getGlobe().getRenderContext().requestFrame();
-                this.publish(Constants.EVENT_MSG.LAYER_OPACITY_CHANGED, this);
-            } else {
-                throw new RangeError('opacity value should be a value in [0..1]', "AbstractLayer.js");
-            }
+            var style = this.getStyle();
+            style.setOpacity(arg);
+            this.getGlobe().getRenderContext().requestFrame();
+            this.publish(Constants.EVENT_MSG.LAYER_OPACITY_CHANGED, this);
         };
 
         /**
@@ -687,14 +985,6 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Util
         };
 
         /**
-         * @function getColor
-         * @memberOf AbstractLayer#
-         */
-        AbstractLayer.prototype.getColor = function () {
-            return this.color;
-        };
-
-        /**
          * @function getStyle
          * @memberOf AbstractLayer#
          */
@@ -724,7 +1014,7 @@ define(["jquery", "underscore-min", "../Utils/Event", "../Utils/Utils", "../Util
          * @function isVectorLayer
          * @memberOf AbstractLayer#
          */
-        AbstractLayer.prototype.isVectorLayer = function() {
+        AbstractLayer.prototype.isVectorLayer = function () {
             return this.vectorLayer;
         };
 

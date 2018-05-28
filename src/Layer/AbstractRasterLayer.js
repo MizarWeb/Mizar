@@ -35,8 +35,8 @@
  * along with GlobWeb. If not, see <http://www.gnu.org/licenses/>.
  ***************************************/
 
-define(['../Utils/Utils', './AbstractLayer', '../Renderer/RasterOverlayRenderer', '../Utils/Cache'],
-    function (Utils, AbstractLayer, RasterOverlayRenderer, Cache) {
+define(['../Utils/Utils', '../Utils/Constants', './AbstractLayer', '../Renderer/RasterOverlayRenderer', '../Utils/Cache'],
+    function (Utils, Constants, AbstractLayer, RasterOverlayRenderer, Cache) {
 
         /**
          * AbstractRasterLayer configuration
@@ -63,6 +63,7 @@ define(['../Utils/Utils', './AbstractLayer', '../Renderer/RasterOverlayRenderer'
          * @implements {RasterLayer}
          */
         var AbstractRasterLayer = function (type, options) {
+            options.zIndex = options.zIndex || Constants.DISPLAY.DEFAULT_RASTER;
             AbstractLayer.prototype.constructor.call(this, type, options);
 
             // Base properties
@@ -73,7 +74,6 @@ define(['../Utils/Utils', './AbstractLayer', '../Renderer/RasterOverlayRenderer'
             this.maxLevel = options.maxLevel;
             this.geoBound = options.geoBound || null;
             this.coordinates = options.coordinates || null;
-            this.zIndex = options.zIndex || 0;
             this.crossOrigin = options.crossOrigin || 'anonymous';
 
 
@@ -183,17 +183,6 @@ define(['../Utils/Utils', './AbstractLayer', '../Renderer/RasterOverlayRenderer'
             AbstractLayer.prototype._detach.call(this);
         };
 
-        /**
-         * @function forceRefresh
-         * @memberOf AbstractLayer#
-         */
-        AbstractLayer.prototype.forceRefresh = function () {
-            var tiles = this.getGlobe().tileManager.visibleTiles;
-            for (var i=0;i<tiles.length;i++) {
-                tiles[i].state = 0;
-            }
-            this.getGlobe().refresh();
-        };
 
         /**************************************************************************************************************/
 

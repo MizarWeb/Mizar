@@ -255,6 +255,48 @@ define(function () {
         else { if (v > 0) return 1; else return 0; }
     };
 
+    Numeric.equals = function(a, b) {
+        return Math.abs(a - b) < Number.EPSILON;
+    };
+
+    Numeric.shortestPath360 = function(startLongitude, endLongitude) {
+        var startLongValue, endLongValue;
+        if (Math.abs(endLongitude - startLongitude) < 180.0) {
+            startLongValue =  startLongitude;
+            endLongValue = endLongitude;
+        } else {
+            if (startLongitude < endLongitude) {
+                startLongValue =  startLongitude + 360;
+                endLongValue = endLongitude;
+            } else {
+                startLongValue = startLongitude;
+                endLongValue = endLongitude + 360;
+            }
+        }
+        return [startLongValue, endLongValue];
+    };
+
+    Numeric.shortestPath180 = function(startLongitude, endLongitude) {
+        var startLongValue, endLongValue;
+        if(Math.sign(startLongitude) * Math.sign(endLongitude) > 0 || Numeric.equals(startLongitude, 0) || Numeric.equals(endLongitude, 0)) {
+            // 1st case:
+            // Nothing to do because :
+            // - the two values have the same sign
+            // - and max(angle) <= 180 (longitude included in [-180,180]
+            // so we have the shortest path
+            startLongValue = startLongitude;
+            endLongValue = endLongitude;
+        } else {
+            // we convert everything from [0 to 360]
+            var longGeoCenter = (startLongitude+360)%360;
+            var longGeoPos = (endLongitude+360)%360;
+            var path = Numeric.shortestPath360(longGeoCenter, longGeoPos);
+            startLongValue = path[0];
+            endLongValue = path[1];
+        }
+        return [startLongValue, endLongValue];
+    };
+
     /**************************************************************************************************************/
 
     return Numeric;

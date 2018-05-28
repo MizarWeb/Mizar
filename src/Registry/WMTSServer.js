@@ -32,10 +32,10 @@ define(["underscore-min", "../Utils/Utils", "xmltojson", "./WMTSMetadata", "../L
                     var metadata = new WMTSMetadata(result);
                     callback(self.options, metadata);
                 },
-                function (request, status, error, options) {
-                    console.error("Unknow server " + options.baseUrl);
+                function (e) {
                     if (fallback) {
-                        fallback(request, status, error, options);
+                        e.setLayerDescription(self.options);
+                        fallback(e);
                     }
                 }
             );
@@ -44,7 +44,7 @@ define(["underscore-min", "../Utils/Utils", "xmltojson", "./WMTSMetadata", "../L
 
         WMTSServer.prototype.createLayers = function (callback, fallback) {
             this.getMetadata(function (layerDescription, metadata) {
-                var layersFromConf = layerDescription.hasOwnProperty('layers') ? layerDescription.layers.split(',') : [];
+                var layersFromConf = layerDescription.hasOwnProperty('layers') ? layerDescription.layers.trim().split(/\s*,\s*/) : [];
                 var jsonLayers = metadata.contents;
                 var layers = [];
                 for (var i = 0; i < jsonLayers.layers.length; i++) {
@@ -64,7 +64,7 @@ define(["underscore-min", "../Utils/Utils", "xmltojson", "./WMTSMetadata", "../L
                     var layerDesc = Object.assign({}, layerDescription, {});
                     layerDesc.name = layerDescription.name || jsonLayer.identifier;
                     layerDesc.format = layerDescription.format || "image/png";
-                    layerDesc.layers = layerDescription.layers || jsonLayer.title;
+                    layerDesc.layers =  jsonLayer.title;
                     layerDesc.description = layerDescription.description || (jsonLayer.abstract != null) ? jsonLayer.abstract : jsonLayers.abstract;
                     layerDesc.attribution = attribution;
                     layerDesc.copyrightUrl = copyrightURL;

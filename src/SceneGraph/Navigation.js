@@ -17,7 +17,7 @@
  * along with GlobWeb. If not, see <http://www.gnu.org/licenses/>.
  ***************************************/
 
-define(['../Utils/Utils', '../Navigation/AbstractNavigation', '../Renderer/Ray', 'glMatrix'], function (Utils, BaseNavigation, Ray) {
+define(['../Utils/Utils', '../Navigation/AbstractNavigation', '../Renderer/Ray', '../Renderer/glMatrix'], function (Utils, BaseNavigation, Ray) {
 
     /**************************************************************************************************************/
 

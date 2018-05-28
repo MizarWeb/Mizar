@@ -28,6 +28,19 @@
  */
 function Layer() {}
 
+
+Layer.prototype.hasDimension = function() {};
+
+Layer.prototype.getDimensions = function() {};
+
+Layer.prototype.setTime = function() {};
+
+/**
+ * Returns the metadata form the API.
+ * @return {Object} metadata
+ */
+Layer.prototype.getMetadataAPI = function() {};
+
 /**
  * Returns the globe.
  * @return {Globe}
@@ -65,13 +78,6 @@ Layer.prototype.getCopyrightUrl = function() {};
 Layer.prototype.getAck = function() {};
 
 /**
- * Returns the icon's url.<br/>
- * By default, a default image is returned.
- * @return {string}
- */
-Layer.prototype.getIcon = function() {};
-
-/**
  * Returns the layer description.
  * @return {string}
  */
@@ -82,6 +88,11 @@ Layer.prototype.getDescription = function() {};
  * @return {boolean}
  */
 Layer.prototype.isVisible = function() {};
+
+/**
+ * Sets the layer on the top.
+ */
+Layer.prototype.setOnTheTop = function() {};
 
 /**
  * Sets visible the layer.
@@ -168,12 +179,6 @@ Layer.prototype.getBaseUrl = function() {};
 Layer.prototype.isDeletable = function() {};
 
 /**
- * Returns the layer's color
- * @returns {int[]} color in rgba
- */
-Layer.prototype.getColor = function() {};
-
-/**
  * Returns the style.
  * @returns {FeatureStyle} the style 
  */
@@ -185,7 +190,6 @@ Layer.prototype.getStyle = function() {};
  * @param {FeatureStyle} arg Feature style
  */
 Layer.prototype.setStyle = function (arg) {};
-
 
 /**
  * Returns true when the layer is set as background otherwise false.

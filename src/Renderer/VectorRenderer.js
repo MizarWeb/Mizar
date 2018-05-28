@@ -35,8 +35,8 @@
  * along with GlobWeb. If not, see <http://www.gnu.org/licenses/>.
  ***************************************/
 
-define(['./RendererTileData','../Tiling/Tile','../Utils/Utils'],
-	function(RendererTileData, Tile,Utils) {
+define(['./RendererTileData','../Tiling/Tile','../Utils/Utils', '../Utils/UtilsIntersection'],
+	function(RendererTileData, Tile, Utils, UtilsIntersection) {
 
 /**************************************************************************************************************/
 
@@ -318,7 +318,7 @@ VectorRenderer.prototype._addGeometryToTile = function(bucket, geometry, tile)
 VectorRenderer.prototype._removeGeometryFromTile = function(geometry,bbox,tile,level)
 {
 	var maxLevel = 0;
-	if ((bbox !== null) && (Utils.boundsIntersects(bbox,tile.bound) === false)) {
+	if ((bbox !== null) && (UtilsIntersection.boundsIntersects(bbox,tile.bound) === false)) {
 		return maxLevel;
 	}
 

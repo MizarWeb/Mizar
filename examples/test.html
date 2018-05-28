@@ -4,8 +4,10 @@
 <head>
     <title>Getting started with navigation</title>
     <meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
+    <link rel="stylesheet" href="css/test.css">
 
     <!-- mode dev -->
+    <script type="text/javascript" src="test.js"></script>
     <script type="text/javascript" data-main="../src/rconfig.js" src="../node_modules/requirejs/require.js"></script>
 
     <!-- mode prod -->
@@ -20,122 +22,62 @@
             document.getElementById("sl").value=seaLevel[currentSeaLevel];
             if (typeof this.palavasLayer !== "undefined") {
                 this.palavasLayer.setParameter("styles",seaLevel[currentSeaLevel]);
-                this.palavasLayer.forceRefresh();
+                this.palavasLayer.options.styles = seaLevel[currentSeaLevel];
+                this.mizar.reloadLayer(palavasLayer);
             }
-            
         }
         function init() {
             document.getElementById("sl").value=seaLevel[currentSeaLevel];
         }
-        function previous() {
+        
+        function previousSeaLevel() {
             if (currentSeaLevel>0) {
                 currentSeaLevel --;
                 updateSeaLevel();
             }
         }
-        function next() {
+
+        function nextSeaLevel() {
             if (currentSeaLevel<(seaLevel.length-1)) {
                 currentSeaLevel ++;
                 updateSeaLevel();
             }
         }
     
+        function loadDEMMontBlanc() {
+            mizar.addLayer(demMontBlanc,function (id) {
+                    var cbLayer = mizar.getLayerByID(id);
+                    if (cbLayer.type === Mizar.LAYER.WCSElevation) {
+                        mizar.setBaseElevation(cbLayer.name);
+                    }
+                    
+                });
+        }
+        function unloadDEMMontBlanc() {
+            mizar.setBaseElevation("Elevation");
+        }
+        function setTime() {
+            mizar.setTime("2003-08-21T00:00:00.000Z");
+        }
 
         // mode dev
         require(['Mizar'], function (Mizar) {
 
             div = "MizarCanvas";
             mizarDiv = (typeof div === "string") ? document.getElementById(div) : div;
-
-            var context = {
-                "layers": [
-                    {
-                        "type": "WCSElevation",
-                        "name": "Elevation",
-                        "baseUrl": "http://demonstrator.telespazio.com/wcspub",
-                        "coverage": "GTOPO",
-                        "version": "1.0.0",
-                        "minElevation": -32000,
-                        "scale": 15
-                    },
-                    {
-                        "name": "Blue Marble",
-                        "type": "WMS",
-                        "baseUrl": "http://80.158.6.138/mapserv?map=WMS_BLUEMARBLE",
-                        "visible": true,
-                        "background": true
-                    },
-                    /*{
-                        "name": "Niger",
-                        "type": "WMS",
-                        "baseUrl": "http://80.158.6.138/mapserv?map=WMS_NIGER",
-                        "layers": "NIGER_SCENE",
-                        "visible": true,
-                        "background": false,
-                        "transparent":true,
-                        "format":"image/png"
-                    },*/
-                    {
-                        "name": "Palavas",
-                        "type": "WMS",
-                        "baseUrl": "http://80.158.6.138/mapserv?map=WMS_PALAVAS",
-                        "layers": "PALAVAS",
-                        "visible": true,
-                        "background": false,
-                        "transparent":true,
-                        "format":"image/png"
-                    },
-                   {
-                        "category": "Other",
-                        "type": "Atmosphere",
-                        "exposure": 1.4,
-                        "wavelength": [ 0.56, 0.66, 0.78 ],
-                        "name": "Atmosphere",
-                        "lightDir": [ 0, 1, 0 ],
-                        "visible": false
-                    },
-                    {
-                        "category": "Other",
-                        "type": "TileWireframe",
-                        "name": "Coordinates Grid",
-                        "outline": true,
-                        "visible": true
-                    }
-                ]};
+            mizarConf.canvas = $(mizarDiv)[0];
+            mizarConf.planetContext.coordinateSystem.geoideName = Mizar.CRS.WGS84;
 
 
             // Create Mizar
-            var mizar =  new Mizar({
-                        canvas: $(mizarDiv)[0],
-                        configuration: {
-                            "mizarBaseUrl":"localhost/js/MizarWidget/external/Mizar/examples",
-                            "debug":false,
-                            "isMobile":false,
-                            "positionTracker":true,
-                            "elevationTracker":false,
-                            "registry":false,
-                            "proxyUse":false,
-                            "proxyUrl":""
-                        },
-                        planetContext : {
-                            "category": "Planets",
-                            "type": "Planet",
-                            "name": "Earth",
-                            "coordinateSystem": {
-                                "geoideName": "EPSG:4326"
-                            },
-                            "visible": true
-                        }
-                    });
+            var mizar =  new Mizar(mizarConf);
             this.mizar = mizar;
-            
             // Layers load
             for (var i = 0; i < context.layers.length; i++) {
                 var layer = context.layers[i];
 
                 mizar.addLayer(layer,function (id) {
                     var cbLayer = mizar.getLayerByID(id);
-                    console.log(cbLayer);
                     if (cbLayer.type === Mizar.LAYER.WCSElevation) {
                         mizar.setBaseElevation(cbLayer.name);
                     }
@@ -144,81 +86,17 @@
                     }
 
                     if (cbLayer.isBackground() === true) {
-                        setTimeout(function go() {
-                            mizar.activatedContext.navigation.zoomTo([4.025,43.54],
-                            //116.217,29.15
-                            { "distance" : 45000,
-                              "duration" : 100 });
-                        },4000);
+                        //mizar.addLayer(osLayer,function (id) {});
+                        /*setTimeout(function go() {
+                            mizar.activatedContext.navigation.zoomTo(
+                                //[4.025,43.54],
+                                [116.217,29.15],
+                            { "distance" : 500000,
+                              "duration" : 2000 });
+                        },4000);*/
                     }
                 });
             }
-            
-            
-            var options = {
-                "category": "SCO",
-                "type": "GeoJSON",
-                "pointMaxSize": 40,
-                "visible": true,
-                "opacity": 100,
-                "pickable": true,
-            };
-            var thematics = [
-                { "id" : "CLIMATE", "name" : "Climate", "color" : "#008777", "logo" : "images/thematics/CLIMATE.png" },
-                { "id" : "WATER", "name" : "Water", "color" : "#0082C2", "logo" : "images/thematics/WATER.png" },
-                { "id" : "OCEAN", "name" : "Ocean", "color" : "#004D7E", "logo" : "images/thematics/OCEAN.png" },
-                { "id" : "AIR", "name" : "Air", "color" : "#8BB7E2", "logo" : "images/thematics/AIR.png" },
-                { "id" : "LAND", "name" : "Land", "color" : "#94C11F", "logo" : "images/thematics/LAND.png" },
-                { "id" : "HEALTH", "name" : "Health", "color" : "#009D45", "logo" : "images/thematics/HEALTH.png" },
-                { "id" : "DISASTER", "name" : "Natural Disasters", "color" : "#E9483F", "logo" : "images/thematics/DISASTER.png" }
-            ];
-            var climateData = [
-                    {
-                        "thematicId": "WATER",
-                        "type": "FeatureCollection",
-                        "features": [
-                            {
-                                "geometry": { "type": "Point", "coordinates": [116.217 , 29.15] },
-                                "type": "Feature",
-                                "properties": { "name": "Poyang lake", "title": "Poyang lake", "description": "Poyang lake" }
-                            }
-                        ]
-                    },
-                    {
-                        "thematicId": "HEALTH",
-                        "type": "FeatureCollection",
-                        "features": [
-                            {
-                                "geometry": { "type": "Point", "coordinates": [114.217 , 28.15] },
-                                "type": "Feature",
-                                "properties": { "name": "Poyang lake", "title": "Poyang lake", "description": "Poyang lake" }
-                            }
-                        ]
-                    },
-                    {
-                        "thematicId": "LAND",
-                        "type": "FeatureCollection",
-                        "features": [
-                            {
-                                "geometry": { "type": "Point", "coordinates": [112.217 , 30.15] },
-                                "type": "Feature",
-                                "properties": { "name": "Poyang lake", "title": "Poyang lake", "description": "Poyang lake" }
-                            }
-                        ]
-                    },
-                    {
-                        "thematicId": "DISASTER",
-                        "type": "FeatureCollection",
-                        "features": [
-                            {
-                                "geometry": { "type": "Point", "coordinates": [117.217 , 28.15] },
-                                "type": "Feature",
-                                "properties": { "name": "Poyang lake", "title": "Poyang lake", "description": "Poyang lake" }
-                            }
-                        ]
-                    }
-                    
-                ];
 
             for (var i=0;i<climateData.length;i++) {
                 var currentThematicId = climateData[i].thematicId;
@@ -230,6 +108,7 @@
                 }
                 options.name = currentThematic.name;
                 options.color = currentThematic.color;
+                options.pickingNoDEM = true;
 
                 var climateId = mizar.addLayer(options,function(id) {
                     var climateLayer = mizar.getLayerByID(id);
@@ -238,25 +117,58 @@
             }
 
 
-            //console.log("SERVICE",mizar.getServiceByName(Mizar.SERVICE.PickingManager));
+            var picking = mizar.getServiceByName(Mizar.SERVICE.PickingManager);
+            mizarDiv.addEventListener('click', (e) => {
+                var pickPoint = mizar.getActivatedContext().getLonLatFromPixel(e.clientX, e.clientY);
+                if (pickPoint !== null) {
+                    var selection = picking.computeFilterPickSelection(pickPoint);
+                    if (selection.length>0) {
+                        // Go on first point
+                        var coord = selection[0].feature.geometry.coordinates;
+                        mizar.activatedContext.navigation.zoomTo(
+                                coord,
+                            { "distance" : 500000,
+                              "duration" : 2000 });
+                        
+                    }
+                }
+            });
+
+             var picking = mizar.getServiceByName(Mizar.SERVICE.PickingManager);
+            mizarDiv.addEventListener('click', (e) => {
+                var pickPoint = mizar.getActivatedContext().getLonLatFromPixel(e.clientX, e.clientY);
+                if (pickPoint !== null) {
+                    var selection = picking.computeFilterPickSelection(pickPoint);
+                    console.log(selection);
+                }
+            });
         });
-
     </script>
-
 </head>
 
-
 <body style="margin: 0; padding: 0;" onload="init();">
-    <div>
-        <input type="button" value="<" onclick="previous()"/>
+    <div style="position:absolute; z-index: 10; width:100%;">
+        <input type="button" value="<" onclick="previousSeaLevel()"/>
         <input id="sl" type="text" value=""/>
-        <input type="button" value=">" onclick="next()"/>
-        
+        <input type="button" value=">" onclick="nextSeaLevel()"/>
+        <div id="tracker">
+            <div id="posTracker" style="background-color:white;float:left;"></div>
+        </div>
+        <input type="button" value="load DEM MontBlanc" onclick="loadDEMMontBlanc()"/>
+        <input type="button" value="unload DEM MontBlanc" onclick="unloadDEMMontBlanc()"/>
+        <input type="button" value="setTime" onclick="setTime()"/>
     </div>
-    <div id="tracker">
-        <div id="posTracker" style="position: relative; float:left;">ICI !</div>
+    <div style="position: absolute; right:8px; z-index: 11; width:116px;">
+        <div id="compassDiv"></div>
     </div>
-    <canvas id="MizarCanvas" style="border: none; margin: 0; padding: 0;"></canvas>
+    <div style="position: absolute; right:8px; bottom:50px; z-index: 11; width:116px;">
+        <div id="timeTravelDiv"></div>
+    </div>
+    <div style="position: absolute; right:8px; bottom:10px; z-index: 11; width:116px;">
+        <div id="textTimeTravelDiv"></div>
+    </div>
+    <canvas id="MizarCanvas" onclick="click" style="border: none; margin: 0; padding: 0;">
+    </canvas>
 
 </body>
 </html>

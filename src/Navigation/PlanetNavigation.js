@@ -51,10 +51,72 @@ define(['../Utils/Utils', '../Utils/Constants', './AbstractNavigation', '../Anim
          */
 
         /**
-         * 1km epsilon error for elevation
+         * 1km epsilon error for elevation.
          * @type {number}
          */
         const OFFSET_ELEVATION = 1000.0;
+
+        /**
+         * Duration of animation in milliseconds for the zoom_to function.
+         * @type {number}
+         */
+        const DEFAULT_DURATION_ZOOM_TO = 5000.0;
+
+        /**
+         * Duration of animation in milliseconds to align the camera with the north.
+         * @type {number}
+         */
+        const DEFAULT_DURATION_NORTH = 1000.0;
+
+        /**
+		 * Min tilt in decimal degree.
+		 * @type {number}
+		 */
+		const MIN_TILT = 10.0;
+  
+		/**
+		 * Max tilt in decimal degree.
+		 * @type {number}
+		 */
+		const MAX_TILT = 90.0;
+  
+        /**
+         * Default tilt in decimal degree.
+         * @type {number}
+         */
+        const DEFAULT_TILT = 90.0;
+
+        /**
+         * Min heading value in decimal degree.
+         * @type {number}
+         */
+        const MIN_HEADING = 0.0;
+
+        /**
+         * Max heading value in decimal degee.
+         * @type {number}
+         */
+        const MAX_HEADING = 360.0;
+
+        /**
+         * Default heading in decimal degree.
+         * @type {number}
+         */
+        const DEFAULT_HEADING = MIN_HEADING;
+
+        /**
+         * Heading difference between two successive rotation (in degree) of the camera
+         * @type {number}
+         */
+        const DELTA_HEADING = 0.05;
+
+        /**
+         * Tilt difference between two successive rotation (in degree) of the camera
+         * @type {number}
+         */
+        const DELTA_TILT = 0.05;
+
+
 
         /**
          * @name PlanetNavigation
@@ -135,10 +197,14 @@ define(['../Utils/Utils', '../Utils/Constants', './AbstractNavigation', '../Anim
 
             // Initialize the navigation
             this.geoCenter = [0.0, 0.0, 0.0];
-            this.heading = 0.0;
-            this.tilt = 90.0;
+
+            this.heading = DEFAULT_HEADING;
+            this.tilt = DEFAULT_TILT;
             this._distance = Number.NaN;
             this.offset = 0.0;
+
+            // Coordinate of the North in XYZ frame
+            this.up = [0.0, 0.0, 1.0];
 
             this.inverseViewMatrix = mat4.create();
 
@@ -176,6 +242,20 @@ define(['../Utils/Utils', '../Utils/Constants', './AbstractNavigation', '../Anim
         Utils.inherits(AbstractNavigation, PlanetNavigation);
 
         /**************************************************************************************************************/
+
+        /**
+         * Returns the center of the navigation.
+         * @function getCenter
+         * @memberOf PlanetNavigation#
+         * @return {float[]}
+         */
+        PlanetNavigation.prototype.getCenter = function () {
+            var center = AbstractNavigation.prototype.getCenter.call(this);
+            if (center == null) {
+                center = this.geoCenter;
+            }
+            return center;
+        };
 
         /**
          * Saves the current navigation state.
@@ -226,18 +306,21 @@ define(['../Utils/Utils', '../Utils/Constants', './AbstractNavigation', '../Anim
             var navigation = this;
 
             var destDistance = (options && options.distance) ? options.distance : this.distance / this.ctx.getCoordinateSystem().getGeoide().getHeightScale();
-            var duration = (options && options.duration) ? options.duration : 5000;
-            var destTilt = (options && options.tilt) ? options.tilt :  90;
+            var duration = (options && options.duration) ? options.duration : DEFAULT_DURATION_ZOOM_TO;
+            var destTilt = (options && options.tilt) ? options.tilt : DEFAULT_TILT;
+
+            var shortestPath = Numeric.shortestPath180(this.geoCenter[0], geoPos[0]);
 
             // Create a single animation to animate geoCenter, distance and tilt
-            var startValue = [this.geoCenter[0], this.geoCenter[1], this.distance, this.tilt];
-            var endValue = [geoPos[0], geoPos[1], destDistance * this.ctx.getCoordinateSystem().getGeoide().getHeightScale(), destTilt];
+            var startValue = [shortestPath[0], this.geoCenter[1], this.distance, this.tilt];
+            var endValue = [shortestPath[1], geoPos[1], destDistance * this.ctx.getCoordinateSystem().getGeoide().getHeightScale(), destTilt];
+
             this.zoomToAnimation = new AnimationFactory.create(
                 Constants.ANIMATION.Segmented,
                 {
                     "duration": duration,
                     "valueSetter": function (value) {
-                        navigation.geoCenter[0] = value[0];
+                        navigation.geoCenter[0] = (value[0] > 180 ) ? (value[0] - 360) : value[0];
                         navigation.geoCenter[1] = value[1];
                         navigation.distance = value[2];
                         navigation.tilt = value[3];
@@ -251,9 +334,8 @@ define(['../Utils/Utils', '../Utils/Constants', './AbstractNavigation', '../Anim
             var vec = vec3.subtract(worldStart, worldEnd);
             var len = vec3.length(vec);
             var canvas = this.ctx.getRenderContext().canvas;
-            var minFov = Math.min(Numeric.toRadian(45.0),
-                Numeric.toRadian(45.0 * canvas.width / canvas.height));
-            var maxAltitude = 1.1 * ((len / 2.0) / Math.tan(minFov / 2.0));
+            var minFov = Math.min(Numeric.toRadian(45.0),  Numeric.toRadian(45.0 * canvas.width / canvas.height));
+            var maxAltitude = (len * 0.5) / Math.tan(minFov * 0.5);
             if (maxAltitude > this.distance) {
                 // Compute the middle value
                 var midValue = [startValue[0] * 0.5 + endValue[0] * 0.5,
@@ -320,8 +402,8 @@ define(['../Utils/Utils', '../Utils/Constants', './AbstractNavigation', '../Anim
          * @memberOf Navigation#
          */
         PlanetNavigation.prototype.applyLocalRotation = function (matrix) {
-            mat4.rotate(matrix, (this.heading) * Math.PI / 180.0, [0.0, 0.0, 1.0]);
-            mat4.rotate(matrix, (90 - this.tilt) * Math.PI / 180.0, [1.0, 0.0, 0.0]);
+            mat4.rotate(matrix, Numeric.toRadian(this.heading), [0.0, 0.0, 1.0]);
+            mat4.rotate(matrix, Numeric.toRadian(90 - this.tilt), [1.0, 0.0, 0.0]);
         };
 
         /**
@@ -430,7 +512,7 @@ define(['../Utils/Utils', '../Utils/Constants', './AbstractNavigation', '../Anim
 
             // Take care if we traverse the pole, ie the north is inverted
             if (vec3.dot(previousNorth, newNorth) < 0) {
-                this.heading = (this.heading + 180.0) % 360.0;
+                this.heading = (this.heading + 180.0) % MAX_HEADING;
             }
 
             this.computeViewMatrix();
@@ -447,8 +529,8 @@ define(['../Utils/Utils', '../Utils/Constants', './AbstractNavigation', '../Anim
             var previousHeading = this.heading;
             var previousTilt = this.tilt;
 
-            this.heading += dx * 0.1;
-            this.tilt += dy * 0.1;
+            this.heading += dx * DELTA_HEADING;
+            this.tilt += dy * DELTA_TILT;
 
             this.clampTilt();
 
@@ -500,6 +582,14 @@ define(['../Utils/Utils', '../Utils/Constants', './AbstractNavigation', '../Anim
          */
         PlanetNavigation.prototype.getDistance = function() {
             return this._distance;
+        };
+
+        /**
+         * Returns a Heading where the values are included in [0,360]
+         * @return {number}
+         */
+        PlanetNavigation.prototype.getHeading = function() {
+            return ((this.heading % MAX_HEADING) + MAX_HEADING) % MAX_HEADING;
         };
 
         /**
@@ -564,7 +654,7 @@ define(['../Utils/Utils', '../Utils/Constants', './AbstractNavigation', '../Anim
          * @memberOf PlanetNavigation#
          */
         PlanetNavigation.prototype.clampTilt = function() {
-            this.tilt = Math.min(Math.max(this.tilt, 10), 90);
+            this.tilt = Math.min(Math.max(this.tilt, MAX_TILT), MAX_TILT);
         }
 
         PlanetNavigation.prototype.donePanning = function() {
@@ -573,6 +663,53 @@ define(['../Utils/Utils', '../Utils/Constants', './AbstractNavigation', '../Anim
 
         PlanetNavigation.prototype.doneRotating = function() {
             this.updateGeoCenter();
+        };
+
+        /**
+         * Moves up vector.
+         * @function moveUpTo
+         * @memberOf PlanetNavigation#
+         * @param {float[]} vec Vector
+         * @param {int} [duration = 1000] - Duration of animation in milliseconds
+         */
+        PlanetNavigation.prototype.moveUpTo = function (vec, duration) {
+            // Create a single animation to animate up
+            var startValue = [];
+            var endValue = [];
+            this.ctx.getCoordinateSystem().getWorldFrom3D(this.up, endValue);
+            this.ctx.getCoordinateSystem().getWorldFrom3D(vec, startValue);
+
+            this.startHeading = this.getHeading();
+            if (this.startHeading > 180) {
+                this.endHeading = MAX_HEADING;
+            } else {
+                this.endHeading = MIN_HEADING;
+            }
+
+            var durationTime = duration || DEFAULT_DURATION_NORTH;
+
+            var navigation = this;
+            var animation = AnimationFactory.create(
+                Constants.ANIMATION.Segmented,
+                {
+                    "duration": durationTime,
+                    "valueSetter": function (value) {
+                        navigation.heading = value;
+                        navigation.computeViewMatrix();
+                    }
+                });
+
+            
+            animation.addSegment(
+                0.0, this.startHeading,
+                1.0, this.endHeading,
+                function (t, a, b) {
+                    return Numeric.lerp(t,a,b);
+                }
+            );
+
+            this.ctx.addAnimation(animation);
+            animation.start();
         };
 
         /**************************************************************************************************************/

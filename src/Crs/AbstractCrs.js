@@ -131,24 +131,6 @@ define(
                 position3d[2] * position3d[2]);
             var lon = Math.atan2(position3d[1] / r, position3d[0] / r);
             var lat = Math.asin(position3d[2] / r);
-
-            dest[0] = Numeric.toDegree(lon);
-            dest[1] = Numeric.toDegree(lat);
-            dest[2] = this.geoide.getRealPlanetRadius() * (r - this.geoide.getRadius());
-            return dest;
-        };
-
-        AbstractCrs.prototype.from3DToGeoNoElevation = function (position3d, dest) {
-            if (!dest) {
-                dest = new Array(3);
-            }
-
-            var r = Math.sqrt(position3d[0] * position3d[0] +
-                position3d[1] * position3d[1] +
-                position3d[2] * position3d[2]);
-            var lon = Math.atan2(position3d[1] / r, position3d[0] / r);
-            var lat = Math.asin(position3d[2] / r);
-
             dest[0] = Numeric.toDegree(lon);
             dest[1] = Numeric.toDegree(lat);
             dest[2] = this.geoide.getRealPlanetRadius() * (r - this.geoide.getRadius());

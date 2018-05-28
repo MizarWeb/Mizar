@@ -38,6 +38,7 @@ define(['../Utils/Utils', './AbstractLayer', '../Utils/Constants', '../Renderer/
          * @implements {VectorLayer}
          */
         var AbstractVectorLayer = function (type, options) {
+            options.zIndex = options.zIndex || Constants.DISPLAY.DEFAULT_VECTOR;
             AbstractLayer.prototype.constructor.call(this, type, options);
 
             this.vectorLayer = true;

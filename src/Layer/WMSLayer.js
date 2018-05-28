@@ -35,8 +35,8 @@
  * along with GlobWeb. If not, see <http://www.gnu.org/licenses/>.
  ***************************************/
 
-define(['../Utils/Utils', './AbstractRasterLayer', '../Utils/Constants', '../Registry/WMSMetadata', '../Tiling/GeoTiling'],
-    function (Utils, AbstractRasterLayer, Constants, WMSMetadata, GeoTiling) {
+define(["jquery", '../Utils/Utils', './AbstractLayer', './AbstractRasterLayer', '../Utils/Constants', '../Tiling/GeoTiling', '../Utils/UtilsIntersection'],
+    function ($, Utils, AbstractLayer, AbstractRasterLayer, Constants, GeoTiling, UtilsIntersection) {
 
 
         /**
@@ -62,8 +62,8 @@ define(['../Utils/Utils', './AbstractRasterLayer', '../Utils/Constants', '../Reg
          *    <br/><br/>
          *    Example of a WMS request<br/>
          *    <code>
-         *        http://example.com/wms?request=GetMap&service=WMS&version=1.1.1&layers=MyLayer
-         *        &styles=population&srs=EPSG:4326&bbox=-145.15104058007,21.731919794922,-57.154894212888,58.961058642578&
+         *        http://example.com/wms?request=GetMap&service=WMS&version=1.3.0&layers=MyLayer
+         *        &styles=population&crs=CRS:84&bbox=-145.15104058007,21.731919794922,-57.154894212888,58.961058642578&
          *        &width=780&height=330&format=image/png
          *    </code>
          *
@@ -81,13 +81,29 @@ define(['../Utils/Utils', './AbstractRasterLayer', '../Utils/Constants', '../Reg
             options.transparent = options.transparent || false;
 
             this.restrictTo = options.restrictTo;
+            this.autoFillTimeTravel = options.autoFillTimeTravel;
 
             //this._computeBaseUrlAndCapabilities(options);
 
-            AbstractRasterLayer.prototype.constructor.call(this, Constants.LAYER.WMS, options);
+            AbstractRasterLayer.prototype.constructor.call(this, options.type, options);
+
+            this.timeTravelValues = null;
+            if (this.autoFillTimeTravel === true) {
+                if ( (options.dimension) && (options.dimension.time)) {
+                    if (options.dimension.time.value) {
+                        this.timeTravelValues = {
+                            "add" : {
+                                "enumeratedValues" : options.dimension.time.value.split(","),
+                                "ID" : this.ID
+                            }
+                        };
+                    }
+                }
+            }
 
             this.getMapBaseUrl = _queryImage.call(this, this.getBaseUrl(), this.tilePixelSize, this.tilePixelSize, options);
             this.layers = options.layers;
+            this.imageLoadedAtTime = null;
 
         };
 
@@ -101,7 +117,7 @@ define(['../Utils/Utils', './AbstractRasterLayer', '../Utils/Constants', '../Reg
             // Build the base GetMap URL
             var url = baseUrl;
             url = Utils.addParameterTo(url, "service", "wms");
-            url = Utils.addParameterTo(url, "version", options.hasOwnProperty('version') ? options.version : '1.1.1');
+            url = Utils.addParameterTo(url, "version", options.hasOwnProperty('version') ? options.version : '1.3.0');
             url = Utils.addParameterTo(url, "request", "getMap");
             url = Utils.addParameterTo(url, "layers", options.layers);
             url = Utils.addParameterTo(url, "styles", options.hasOwnProperty('styles') ? options.styles : "");
@@ -114,7 +130,9 @@ define(['../Utils/Utils', './AbstractRasterLayer', '../Utils/Constants', '../Reg
             url = Utils.addParameterTo(url, "height", yTilePixelSize);
 
             if (options.hasOwnProperty('time')) {
-                url = Utils.addParameterTo(url, "time", options.time);
+                url = Utils.addParameterTo(url, "time", this.imageLoadedAtTime == null ? options.time:this.imageLoadedAtTime);
+            } else {
+                this.imageLoadedAtTime = null;
             }
 
             return url;
@@ -124,12 +142,107 @@ define(['../Utils/Utils', './AbstractRasterLayer', '../Utils/Constants', '../Reg
             var isIntersect;
             if (footprint != null) {
                 // check if tile is inside restrict zone
-                isIntersect = Utils.boundsIntersects(tile, footprint);
+                isIntersect = UtilsIntersection.boundsIntersects(tile, footprint);
             } else {
                 isIntersect = true;
             }
             return isIntersect;
         }
+
+        WMSLayer.prototype.setTime = function(time) {
+            AbstractLayer.prototype.setTime(time);
+            this.setParameter("time", time);
+        };
+
+
+        WMSLayer.prototype.getLegend = function() {
+            var metadata = this.metadataAPI;
+            var legend;
+            if(metadata.Style) {
+                var defaultStyle = metadata.Style[0];
+                var title = defaultStyle.Title;
+                var format = defaultStyle.LegendURL[0].Format;
+                var url = defaultStyle.LegendURL[0].OnlineResource;
+                var size = defaultStyle.LegendURL[0].size;
+                if(title === undefined || title === "default") {
+                    legend = {};
+                } else {
+                    legend = {
+                        title:title,
+                        format:format,
+                        url:url,
+                        size:size
+                    }
+                }
+            } else {
+                legend = {};
+            }
+            return legend;
+        };
+
+        //WMSLayer.prototype.getFeatureInfo = function(position, resolution, callback, fallback) {
+        //    var positionResolution;
+        //    if (resolution) {
+        //        positionResolution = resolution;
+        //    } else {
+        //        positionResolution = {
+        //            longitude:0.0001,
+        //            latitude:0.0001
+        //        }
+        //    }
+        //    var url = this.getMapBaseUrl;
+        //    var baseURL = Utils.parseBaseURL(url);
+        //    var params = Utils.parseQueryString(url);
+        //    params['crs'] = "CRS:84";
+        //    params['query_layers'] = this.options.layers;
+        //    params['request'] = "GetFeatureInfo";
+        //    params['width'] = 2;
+        //    params['height'] = 2;
+        //    params['x'] = 1;
+        //    params['y'] = 1;
+        //    params['bbox'] = position.longitude+","+position.latitude+","+(position.longitude+positionResolution.longitude)+","+(position.latitude+positionResolution.latitude)
+        //
+        //    url = baseURL;
+        //    for(var param in params) {
+        //        url = Utils.addParameterTo(url, param, params[param]);
+        //    }
+        //
+        //    Utils.requestUrl(url, "text", null,
+        //        function(response, options) {
+        //            var lines = response.trim().split('\n');
+        //            var featuresInfo = {};
+        //            for (var i = 0; i < lines.length; ++i) {
+        //                var layerName;
+        //
+        //                if (lines[i].substring(0, 5) === "Layer") {
+        //                    layerName  = lines[i].match(/'(.*?)'/)[1];
+        //                } else if(lines[i].substring(0, 9) === "  Feature") {
+        //                    featuresInfo[layerName] = [];
+        //                } else if(lines[i].substring(0, 11) === "    value_0") {
+        //                    featuresInfo[layerName].push(parseFloat(lines[i].match(/'(.*?)'/)[1]));
+        //                }
+        //            }
+        //            if(callback) {
+        //                callback(featuresInfo);
+        //            }
+        //        },
+        //        fallback);
+        //
+        //};
+
+        WMSLayer.prototype.setVisible = function (arg) {
+            AbstractRasterLayer.prototype.setVisible.call(this, arg);
+            if (document.getElementById("legendDiv")) {
+                var $crsInfo = $("#legendDiv");
+                var legend = this.getLegend();
+                if(Object.keys(legend).length > 0) {
+                    document.getElementById("legendDiv").innerHTML ="";
+                    if (arg === true) {
+                        document.getElementById("legendDiv").innerHTML ="<div id='legendTxt' class='column'>"+legend.title+"</div><div id='legendUrl' class='column'><img src='"+legend.url+"'/></div>";
+                    }
+                }
+            }
+       };
 
         /**
          * Returns the url for the given tile
@@ -141,7 +254,6 @@ define(['../Utils/Utils', './AbstractRasterLayer', '../Utils/Constants', '../Reg
         WMSLayer.prototype.getUrl = function (tile) {
             // Just add the bounding box to the GetMap URL
             var bound = tile.bound;
-
             var url;
             // we cannot reject the request to the server when the layer is defined as background otherwise there is
             // no image to show and Mizar is waiting for an image
@@ -149,18 +261,22 @@ define(['../Utils/Utils', './AbstractRasterLayer', '../Utils/Constants', '../Reg
                 var bbox = bound.west + "," + bound.south + "," + bound.east + "," + bound.north;
                 url = this.getMapBaseUrl;
                 url = Utils.addParameterTo(url, "transparent", this.options.transparent);
-                url = Utils.addParameterTo(url, "srs", tile.config.srs);
+                url = Utils.addParameterTo(url, "crs", tile.config.srs);
                 url = Utils.addParameterTo(url, "bbox", bbox);
             } else {
                 url = null;
             }
-
             return this.proxify(url, tile.level);
         };
 
         WMSLayer.prototype.setParameter = function (paramName,value) {
-            this.options[paramName] = value;
-            this.getMapBaseUrl = _queryImage.call(this, this.getBaseUrl(), this.tilePixelSize, this.tilePixelSize, this.options);
+            if (paramName === "styles" || this.containsDimension(paramName)) {
+                if(this._hasToBeRefreshed(paramName, value)) {
+                    this.options[paramName] = value;
+                    this.getMapBaseUrl = _queryImage.call(this, this.getBaseUrl(), this.tilePixelSize, this.tilePixelSize, this.options);
+                    this.forceRefresh();
+                }
+            }
         };
 
         /**************************************************************************************************************/

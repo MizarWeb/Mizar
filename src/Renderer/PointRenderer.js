@@ -455,7 +455,7 @@ define(['../Utils/Utils', '../Utils/Constants', './VectorRenderer', './VectorRen
 
                         gl.uniform3f(this.program.uniforms.poiPosition, x, y, z);
                         gl.uniform1f(this.program.uniforms.alpha, bucket.layer.getOpacity());
-                        var color = bucket.style.fillColor;
+                        var color = bucket.style.getFillColor();
                         gl.uniform3f(this.program.uniforms.color, color[0], color[1], color[2]);
 
                         gl.drawArrays(gl.TRIANGLE_FAN, 0, 4);

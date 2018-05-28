@@ -35,7 +35,7 @@
  * along with GlobWeb. If not, see <http://www.gnu.org/licenses/>.
  ***************************************/
 
-define(['../Utils/Constants', '../Utils/Utils', './FeatureStyle', './VectorRendererManager', '../Tiling/TiledVectorRenderable', '../Tiling/TiledVectorRenderer', '../Utils/Numeric', './Tiling/Triangulator', './PolygonCutter'],
+define(['../Utils/Constants', '../Utils/Utils', './FeatureStyle', './VectorRendererManager', '../Tiling/TiledVectorRenderable', '../Tiling/TiledVectorRenderer', '../Utils/Numeric', '../Tiling/Triangulator', './PolygonCutter'],
     function (Constants, Utils, FeatureStyle, VectorRendererManager, TiledVectorRenderable, TiledVectorRenderer, Numeric, Triangulator, PolygonCutter) {
 
         var dividePolygon = function (polygons, pointSet, bounds, level, res) {

@@ -28,6 +28,7 @@ define(["jquery","../Utils/Constants"], function ($, Constants) {
      */
     var parentElement = null;
     var ctx = null;
+    var crs = null;
     var svgDoc;
 
     /**************************************************************************************************************/
@@ -38,25 +39,51 @@ define(["jquery","../Utils/Constants"], function ($, Constants) {
      * @private
      */
     function _alignWithNorth(event) {
-        var up = [0, 0, 1];
         var coordinateSystem = ctx.getCoordinateSystem();
+        var radius = coordinateSystem.getGeoide().getRadius();
+
+        // scale the up direction to the sphere's surface in order to have the right value after projection.
+        var up = [0, 0, radius];
+
         var temp = [];
-        coordinateSystem.from3DToGeo(up, temp, false);
-        temp = coordinateSystem.convert(temp, coordinateSystem.getGeoideName(), Constants.CRS.Equatorial);
-        coordinateSystem.fromGeoTo3D(temp, up, false);
+        coordinateSystem.from3DToGeo(up, temp);
+        temp = coordinateSystem.convert(temp, coordinateSystem.getGeoideName(), crs);
+        coordinateSystem.fromGeoTo3D(temp, up);
         ctx.getNavigation().moveUpTo(up);
     }
 
     /**************************************************************************************************************/
 
-    /**
-     * Function updating the north position on compass
-     */
-    function updateNorth() {
+    function updateNorthPlanet() {
+        var navigation = ctx.getNavigation();
+        var currentHeading = navigation.getHeading();
+
+        var upHeading = 0;
+        var degNorth = currentHeading-upHeading;
+
+        var northText = svgDoc.getElementById("NorthText");
+        northText.setAttribute("transform", "rotate(" + degNorth + " 40 40)");
+
+    }
+
+    function updateNorthAzimuth() {
+        var navigation = ctx.getNavigation();
+        var currentHeading = navigation.getHeading();
+
+        var upHeading = 0;
+        var degNorth = upHeading-currentHeading;
+
+        var northText = svgDoc.getElementById("NorthText");
+        northText.setAttribute("transform", "rotate(" + degNorth + " 40 40)");
+
+    }
+
+    function updateNorthSky() {
         var geo = [];
         var coordinateSystem = ctx.getCoordinateSystem();
-        coordinateSystem.from3DToGeo(ctx.getNavigation().center3d, geo, false);
-        geo = coordinateSystem.convert(geo, Constants.CRS.Equatorial, coordinateSystem.getGeoideName());
+        var center = ctx.getNavigation().center3d ? ctx.getNavigation().center3d : center = ctx.getNavigation().geoCenter;
+        coordinateSystem.from3DToGeo(center, geo);
+        geo = coordinateSystem.convert(geo, crs, coordinateSystem.getGeoideName());
 
         var LHV = [];
         coordinateSystem.getLHVTransform(geo, LHV);
@@ -66,14 +93,16 @@ define(["jquery","../Utils/Constants"], function ($, Constants) {
         var vertical = [LHV[8], LHV[9], LHV[10]];
 
         var up = vec3.create(ctx.getNavigation().up);
-        coordinateSystem.from3DToGeo(up, temp, false);
-        temp = coordinateSystem.convert(temp, Constants.CRS.Equatorial, coordinateSystem.getGeoideName());
-        coordinateSystem.fromGeoTo3D(temp, up, false);
-        vec3.normalize(up);
+        vec3.scale(up, coordinateSystem.getGeoide().getRadius());
 
+        coordinateSystem.from3DToGeo(up, temp);
+        temp = coordinateSystem.convert(temp, crs, coordinateSystem.getGeoideName());
+        coordinateSystem.fromGeoTo3D(temp, up);
+        vec3.normalize(up);
         // Find angle between up and north
         var cosNorth = vec3.dot(up, north) / (vec3.length(up) * vec3.length(north));
         var radNorth = Math.acos(cosNorth);
+
         if (isNaN(radNorth)) {
             return;
         }
@@ -89,6 +118,25 @@ define(["jquery","../Utils/Constants"], function ($, Constants) {
 
         var northText = svgDoc.getElementById("NorthText");
         northText.setAttribute("transform", "rotate(" + degNorth + " 40 40)");
+    }
+    /**
+     * Function updating the north position on compass
+     */
+    function updateNorth() {
+        var mode = ctx.getMode();
+        switch (mode) {
+            case Constants.CONTEXT.Sky:
+                updateNorthSky();
+                break;
+            case Constants.CONTEXT.Planet:
+                updateNorthPlanet();
+                break;
+            case Constants.CONTEXT.Ground:
+                updateNorthAzimuth();
+                break;
+            default:
+                throw new RangeError("CompassCore is not supported for this context", "CompassCore.js");
+        }
     }
 
     /**************************************************************************************************************/
@@ -108,6 +156,7 @@ define(["jquery","../Utils/Constants"], function ($, Constants) {
         init: function (options) {
             parentElement = options.element;
             ctx = options.ctx;
+            crs = options.crs;
             svgDoc = options.svgDoc;
         },
         updateNorth: updateNorth,

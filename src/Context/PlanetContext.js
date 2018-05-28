@@ -53,9 +53,11 @@
  * @implements {Context}
  */
 define(["jquery", "underscore-min", "../Utils/Utils", "./AbstractContext", "../Utils/Constants",
-        "../Globe/GlobeFactory", "../Navigation/NavigationFactory", "../Services/ServiceFactory","../Gui/Compass"],
+        "../Globe/GlobeFactory", "../Navigation/NavigationFactory", "../Services/ServiceFactory",
+        "../Gui/Compass","../Gui/TimeTravel"],
     function ($, _, Utils, AbstractContext, Constants,
-              GlobeFactory, NavigationFactory, ServiceFactory,Compass) {
+              GlobeFactory, NavigationFactory, ServiceFactory,
+              Compass,TimeTravel) {
 
         /**
          * Planet context configuration
@@ -85,8 +87,9 @@ define(["jquery", "underscore-min", "../Utils/Utils", "./AbstractContext", "../U
             this.components = {
                 "posTrackerInfo": true,
                 "posTracker": true,
-                "elevTracker": true//,
-                //"compassDiv": true
+                "elevTracker": true,
+                "compassDiv": true,
+                "timeTravelDiv": true
             };
 
             var planetOptions = _createPlanetConfiguration.call(this, options);
@@ -97,8 +100,11 @@ define(["jquery", "underscore-min", "../Utils/Utils", "./AbstractContext", "../U
                 this.globe = GlobeFactory.create(Constants.GLOBE.Planet, planetOptions);
                 this.navigation = _createNavigation.call(this, this.getCoordinateSystem().isFlat(), options.navigation);
                 this.initGlobeEvents(this.globe);
+
                 ServiceFactory.create(Constants.SERVICE.PickingManager).init(this);
 
+                this.setCompassVisible(options.compass && this.components.compassDiv ? options.compass : "compassDiv", true);
+                this.setTimeTravelVisible(options.timeTravel && this.components.timeTravelDiv ? options.timeTravel : "timeTravelDiv", true);
             }
             catch (err) {
                 this._showUpError(this, err);
@@ -126,7 +132,7 @@ define(["jquery", "underscore-min", "../Utils/Utils", "./AbstractContext", "../U
         /**
          * Create the navigation according to the isFlat parameter.
          * @param {boolean} isFlat - The globe is projected or in 3D
-         * @param {{AbstractNavigation.planet_configuration|AbstractNavigation.flat_configuration} navigationOpts - Options for navigation
+         * @param {AbstractNavigation.planet_configuration|AbstractNavigation.flat_configuration} navigationOpts - Options for navigation
          * @returns {FlatNavigation|PlanetNavigation} navigation
          * @private
          */
@@ -239,7 +245,8 @@ define(["jquery", "underscore-min", "../Utils/Utils", "./AbstractContext", "../U
             if (visible) {
                 this.compass = new Compass({
                     element: divName,
-                    ctx: this
+                    ctx: this,
+                    crs : this.getCoordinateSystem().getGeoideName()
                 });
             } else {
                 if (this.compass) {
@@ -249,11 +256,45 @@ define(["jquery", "underscore-min", "../Utils/Utils", "./AbstractContext", "../U
             this.setComponentVisibility(divName, visible);
         };
 
+        /**************************************************************************************************************/
+
+        /**
+         * @function setTimeTravelVisible
+         * @memberOf PlanetContext#
+         */
+        PlanetContext.prototype.setTimeTravelVisible = function (divName, visible) {
+            if (visible) {
+                this.timeTravel = new TimeTravel({
+                    element: divName,
+                    ctx: this,
+                    crs : this.getCoordinateSystem().getGeoideName()
+                });
+            } else {
+                if (this.timeTravel) {
+                    this.timeTravel.remove();
+                }
+            }
+            /*if (visible === true) {
+                this.subscribe(Constants.EVENT_MSG.GLOBAL_TIME_REWIND,this.timeTravel.goRewind);
+                this.subscribe(Constants.EVENT_MSG.GLOBAL_TIME_FORWARD,this.timeTravel.goForward);
+                this.subscribe(Constants.EVENT_MSG.GLOBAL_TIME_SET,this.timeTravel.chooseTime);
+            } else {
+                this.unsubscribe(Constants.EVENT_MSG.GLOBAL_TIME_REWIND);
+                this.unsubscribe(Constants.EVENT_MSG.GLOBAL_TIME_FORWARD);
+                this.unsubscribe(Constants.EVENT_MSG.GLOBAL_TIME_SET);
+            }*/
+            this.setComponentVisibility(divName, visible);
+        };
+
         /**
          * @function setBaseElevation
          * @memberOf PlanetContext#
+         * @throws TypeError : The provided error is not a WCSElevation or a WMSElevation
          */
         PlanetContext.prototype.setBaseElevation = function (layer) {
+            if(layer.getType() !== Constants.LAYER.WCSElevation && layer.getType() !== Constants.LAYER.WMSElevation ) {
+                throw new TypeError("The provided layer ID="+layer.getID()+" has a type +"+layer.getType()+" instead of WCSElevation or WMSElevation", "PlanetContext.js");
+            }
             this.globe.setBaseElevation(layer);
             if (this.elevationTracker != null) {
                 this.elevationTracker.setScaleLayer(layer);
@@ -323,6 +364,7 @@ define(["jquery", "underscore-min", "../Utils/Utils", "./AbstractContext", "../U
          */
         PlanetContext.prototype.destroy = function () {
             this.setCompassVisible(false);
+            this.setTimeTravelVisible(false);
             AbstractContext.prototype.destroy.call(this);
         };
 

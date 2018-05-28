@@ -55,7 +55,6 @@ define(['../Utils/Event', '../Utils/Utils',
          * @implements {Globe}
          */
         var AbstractGlobe = function (type, options) {
-
             _checkOptions(options);
 
             this.type = type;
@@ -89,6 +88,7 @@ define(['../Utils/Event', '../Utils/Utils',
 
         /**
          * Check required options
+         * @function _checkOptions
          * @param options
          * @throws {ReferenceError} Will throw an error when the options.coordinateSystem is not defined.
          * @private
@@ -117,7 +117,7 @@ define(['../Utils/Event', '../Utils/Utils',
         }
 
         /**
-         * Computes the position
+         * Computes the position.
          * @param ray
          * @param intersection
          * @param {Crs} crs

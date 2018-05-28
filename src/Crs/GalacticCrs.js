@@ -129,7 +129,7 @@ define(['./AbstractCrs', '../Renderer/GeoBound', '../Utils/Utils', '../Utils/Con
             if (posWorld[0] < 0) {
                 posWorld[0] += 360.0;
             }
-            [posWorld[0], posWorld[1]] = this.convert(posWorld, Constants.CRS.Equatorial, Constants.CRS.Galactic);
+            posWorld = this.convert(posWorld, Constants.CRS.Equatorial, Constants.CRS.Galactic);
         };
 
         /**
@@ -138,7 +138,7 @@ define(['./AbstractCrs', '../Renderer/GeoBound', '../Utils/Utils', '../Utils/Con
          * @rpivate
          */
         GalacticCrs.prototype._setupPosBeforeTrans = function (posWorld) {
-            [posWorld[0], posWorld[1]] = this.convert(posWorld, Constants.CRS.Galactic, Constants.CRS.Equatorial);
+            posWorld = this.convert(posWorld, Constants.CRS.Galactic, Constants.CRS.Equatorial);
             if (posWorld[0] > 180) {
                 posWorld[0] -= 360.0;
             }

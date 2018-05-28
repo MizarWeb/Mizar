@@ -35,8 +35,8 @@
  * along with GlobWeb. If not, see <http://www.gnu.org/licenses/>.
  ***************************************/
 
-define(['../Utils/Utils', './AbstractRasterLayer', '../Utils/Constants', '../Registry/WMTSMetadata'],
-    function (Utils, AbstractRasterLayer, Constants, WMTSMetadata) {
+define(['../Utils/Utils', './AbstractLayer', './AbstractRasterLayer', '../Utils/Constants', '../Registry/WMTSMetadata'],
+    function (Utils, AbstractLayer, AbstractRasterLayer, Constants, WMTSMetadata) {
         /**
          * Configuration parameters to query a Web Map Tile Service (WMTS)
          * @typedef {AbstractRasterLayer} AbstractRasterLayer.wmts_configuration
@@ -89,6 +89,7 @@ define(['../Utils/Utils', './AbstractRasterLayer', '../Utils/Constants', '../Reg
 
             AbstractRasterLayer.prototype.constructor.call(this, Constants.LAYER.WMTS, options);
             this.getTileBaseUrl = _queryImage.call(this, this.getBaseUrl(), options);
+            this.imageLoadedAtTime = null;
         };
 
         /**************************************************************************************************************/
@@ -102,7 +103,7 @@ define(['../Utils/Utils', './AbstractRasterLayer', '../Utils/Constants', '../Reg
             url = Utils.addParameterTo(url, "service","wmts");
             url = Utils.addParameterTo(url, "version",options.version || "1.0.0");
             url = Utils.addParameterTo(url,"request", "GetTile");
-            url = Utils.addParameterTo(url,"layer", options.layer);
+            url = Utils.addParameterTo(url,"layer", options.layers);
             url = Utils.addParameterTo(url, "tilematrixset", "WGS84");
 //            url = Utils.addParameterTo(url, "tilematrixset", options.tilematrixset);
 
@@ -110,11 +111,18 @@ define(['../Utils/Utils', './AbstractRasterLayer', '../Utils/Constants', '../Reg
                 url = Utils.addParameterTo(url, "style",options.style);
             }
             url = Utils.addParameterTo(url, "format", options.hasOwnProperty('format') ? options.format : 'image/png');
-            if (options.time) {
-                url = Utils.addParameterTo(url, "time", options.time);
+            if (options.hasOwnProperty('time')) {
+                url = Utils.addParameterTo(url, "time", this.imageLoadedAtTime == null ? options.time:this.imageLoadedAtTime);
+            } else {
+                this.imageLoadedAtTime = null;
             }
             return url;
         }
+
+        WMTSLayer.prototype.setTime = function(time) {
+            AbstractLayer.prototype.setTime(time);
+            this.setParameter("time", time);
+        };
 
         WMTSLayer.getCapabilitiesFromBaseURl = function(baseUrl, options) {
             var getCapabilitiesUrl = baseUrl;
@@ -122,10 +130,6 @@ define(['../Utils/Utils', './AbstractRasterLayer', '../Utils/Constants', '../Reg
             getCapabilitiesUrl = Utils.addParameterTo(getCapabilitiesUrl, "request", "getCapabilities");
             getCapabilitiesUrl = Utils.addParameterTo(getCapabilitiesUrl, "version", options.hasOwnProperty('version') ? options.version : '1.0.0');
             return getCapabilitiesUrl;
-        };
-
-        WMTSLayer.parseCapabilities = function(json) {
-            return new WMTSMetadata(json);
         };
 
         /**************************************************************************************************************/
@@ -139,11 +143,59 @@ define(['../Utils/Utils', './AbstractRasterLayer', '../Utils/Constants', '../Reg
          */
         WMTSLayer.prototype.getUrl = function (tile) {
             var url = this.getTileBaseUrl;
-            url = Utils.addParameterTo(url, "tilematrix", tile.level+1);
+            url = Utils.addParameterTo(url, "tilematrix", tile.level + 1);
             url = Utils.addParameterTo(url, "tilecol", tile.x);
             url = Utils.addParameterTo(url, "tilerow", tile.y);
             return this.proxify(url, tile.level);
         };
+
+        WMTSLayer.prototype.setParameter = function (paramName,value) {
+            if (this.containsDimension(paramName)) {
+                if(this._hasToBeRefreshed.call(paramName, value)) {
+                    this.options[paramName] = value;
+                    this.getCoverageBaseUrl = _queryImage.call(this, this.getBaseUrl(), this.options);
+                    this.forceRefresh();
+                }
+            }
+        };
+
+        ///**
+        // * Checks if Mizar must query the WMS server to refresh data.
+        // * When the camera does not move but that the time change, we have two cases :
+        // * - the requested time is included in the time frame of the image => no query
+        // * - the requested time is outside of the time frame of the image => this is a new image, need to query
+        // * @param paramName
+        // * @param value
+        // * @return {*}
+        // * @private
+        // */
+        //WMTSLayer.prototype._hasToBeRefreshed = function(paramName, value) {
+        //    var hasToBeRefreshed;
+        //    if(paramName==="time") {
+        //        var timeRequest = AbstractLayer.createTimeRequest(value);
+        //        var allowedTime = this.getDimensions().time;
+        //        var selectedDate = AbstractLayer.selectedTime(allowedTime.value, timeRequest);
+        //        if(this.imageLoadedAtTime != null && selectedDate == null) {
+        //            // we query because the state has changed
+        //            hasToBeRefreshed = true;
+        //            this.imageLoadedAtTime = null;
+        //        } else if(selectedDate == null) {
+        //            // No image found on the server related to the requested time, no need to query => we save network
+        //            hasToBeRefreshed = false;
+        //        } else if (this.imageLoadedAtTime === selectedDate) {
+        //            // Same state, no need to query
+        //            hasToBeRefreshed = false;
+        //        } else {
+        //            // At the requested time, there is an image on the server and this is not the current one => query
+        //            hasToBeRefreshed = true;
+        //            this.imageLoadedAtTime = selectedDate;
+        //        }
+        //    } else {
+        //        hasToBeRefreshed = true;
+        //    }
+        //    this.mustbeSkipped = !hasToBeRefreshed;
+        //    return hasToBeRefreshed;
+        //};
 
 
         /**************************************************************************************************************/

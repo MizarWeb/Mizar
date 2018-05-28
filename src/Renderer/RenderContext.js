@@ -336,7 +336,7 @@ define(['./Frustum', './glMatrix'],
         /**
          * Compute the pixel size vector
          * @function computePixelSizeVector
-         * @memberof RenderContext.prototype
+         * @memberOf RenderContext.prototype
          * @param mv
          * @return pixelSizeVector
          */

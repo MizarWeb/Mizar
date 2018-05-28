@@ -250,7 +250,7 @@ define(["jquery", "underscore-min", "../Utils/Numeric", "../Utils/Constants",
                 },
                 properties: {
                     style: new FeatureStyle({
-                        zIndex: 2,
+                        zIndex: Constants.DISPLAY.SERVICE_VECTOR,
                         fillColor: [1, 0, 0, 1]
                     })
                 },
@@ -275,7 +275,7 @@ define(["jquery", "underscore-min", "../Utils/Numeric", "../Utils/Constants",
                     style: new FeatureStyle({
                         label: mizarAPI.getCrs().fromDegreesToDMS(self.geoDistance),
                         fillColor: [1, 1, 1, 1],
-                        zIndex: 2
+                        zIndex: Constants.DISPLAY.SERVICE_VECTOR
                     })
                 }
             };

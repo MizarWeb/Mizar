@@ -24,8 +24,9 @@
  */
 define(["jquery", "underscore-min", "../Utils/Constants",
         "../Renderer/FeatureStyle", "../Layer/VectorLayer", "../Tiling/HEALPixBase",
-        "jquery.ui", "./CDSNameResolver", "./DictionaryNameResolver", "./IMCCENameResolver", "./DefaultNameResolver"],
-    function ($, _, Constants, FeatureStyle, VectorLayer, HEALPixBase) {
+        "./DefaultNameResolver",
+        "jquery.ui", "./CDSNameResolver", "./DictionaryNameResolver", "./IMCCENameResolver"],
+    function ($, _, Constants, FeatureStyle, VectorLayer, HEALPixBase, DefaultNameResolver) {
 
         // Name resolver globals
         var mizarAPI;
@@ -242,9 +243,9 @@ define(["jquery", "underscore-min", "../Utils/Constants",
                     callback.call(this, args);
                 }
             };
-            [lon, lat] = mizarAPI.getCrs().convert([lon, lat], crs, mizarAPI.getCrs().getGeoideName());
+            var position = mizarAPI.getCrs().convert([lon, lat], crs, mizarAPI.getCrs().getGeoideName());
             if (mizarAPI.getActivatedContext().getMode() === Constants.CONTEXT.Sky) {
-                mizarAPI.getActivatedContext().getNavigation().zoomTo([lon, lat], {
+                mizarAPI.getActivatedContext().getNavigation().zoomTo(position, {
                     fov: zoomFov,
                     duration: duration,
                     callback: addTargetCallback
@@ -347,14 +348,13 @@ define(["jquery", "underscore-min", "../Utils/Constants",
                 if (typeof context.getContextConfiguration().nameResolver !== 'undefined') {
                     nameResolverClass = require(context.getContextConfiguration().nameResolver.jsObject);
                     isDefaultNameResolver = false;
+                    nameResolverImplementation = new nameResolverClass(context);
                 }
                 else {
                     //Use default name resolver if none defined...
-                    nameResolverClass = require("gw/NameResolver/DefaultNameResolver");
                     isDefaultNameResolver = true;
+                    nameResolverImplementation = new DefaultNameResolver(context);
                 }
-
-                nameResolverImplementation = new nameResolverClass(context);
 
                 var style = new FeatureStyle({
                     iconUrl: ctx.getMizarConfiguration().mizarBaseUrl + "css/images/target.png",

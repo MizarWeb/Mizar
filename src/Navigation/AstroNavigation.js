@@ -91,6 +91,48 @@ define(['../Utils/Utils', '../Utils/Constants',
          */
 
         /**
+         * Duration of animation in milliseconds to align the camera with the north.
+         * @type {number}
+         */
+        const DEFAULT_DURATION_NORTH = 1000;
+
+        /**
+         * Default duration in millisecond for zoom feature.
+         * @type {number}
+         */
+        const DEFAULT_DURATION_ZOOM = 5000;
+
+        /**
+         * Difference between two successive rotation (in degree) of the camera.
+         * @type {number}
+         */
+        const DELTA_HEADING = 0.05;
+
+        /**
+         * Default min FOV.
+         * @type {number}
+         */
+        const DEFAULT_MIN_FOV = 0.001;
+
+        /**
+         * Default max FOV.
+         * @type {number}
+         */
+        const DEFAULT_MAX_FOV = 100;
+
+        /**
+         * Arbitrary middle fov value which determines if the animation needs two segments
+         * @type {number}
+         */
+        const DEFAULT_MIDDLE_FOV = 25;
+
+        /**
+         * Final FOV.
+         * @type {number}
+         */
+        const DEFAULT_FINAL_FOV = 2.0;
+
+        /**
          * @name AstroNavigation
          * @class
          * <table border="0">
@@ -112,8 +154,8 @@ define(['../Utils/Utils', '../Utils/Constants',
             AbstractNavigation.prototype.constructor.call(this, Constants.NAVIGATION.AstroNavigation, ctx, options);
 
             // Default values for fov (in degrees)
-            this.minFov = (this.options.minFov) || 0.001;
-            this.maxFov = (this.options.maxFov) || 100;
+            this.minFov = (this.options.minFov) || DEFAULT_MIN_FOV;
+            this.maxFov = (this.options.maxFov) || DEFAULT_MAX_FOV;
 
             // Initialize the navigation
             this.center3d = [1.0, 0.0, 0.0];
@@ -166,50 +208,38 @@ define(['../Utils/Utils', '../Utils/Constants',
             }
         }
 
-
-        /**************************************************************************************************************/
-
-        Utils.inherits(AbstractNavigation, AstroNavigation);
-
-        /**************************************************************************************************************/
-
+        /**
+         * Init move up animation.
+         * @param {AbstractNavigation} navigation - navigation object
+         * @param {number} durationTime - duration of the animation in millisecond
+         * @return {AbstractAnimation} animation
+         * @private
+         */
+        function _initMoveUpAnimation(navigation, durationTime) {
+            return AnimationFactory.create(
+                Constants.ANIMATION.Segmented,
+                {
+                    "duration": durationTime,
+                    "valueSetter": function (value) {
+                        var position3d = navigation.ctx.getCoordinateSystem().get3DFromWorld([value[0], value[1]]);
+                        navigation.up[0] = position3d[0];
+                        navigation.up[1] = position3d[1];
+                        navigation.up[2] = position3d[2];
+                        navigation.computeViewMatrix();
+                    }
+                }
+            );
+        }
 
         /**
-         * ZoomTo a position
-         * @function zoomTo
-         * @param {float[]} geoPos - target of the camera
-         * @param {Object} options - options
-         * @param {float} [options.fov = 2.0] - field of view in degree
-         * @param {int} [options.duration = 2000] - duration of the animation in milliseconds
-         * @param {navigationCallback} [options.callback] - Called at the end of navigation
-         * @memberOf AstroNavigation#
+         * Init zoom animation
+         * @param {AbstractNavigation} navigation - navigation object
+         * @param {number} duration - duration of the animation in millisecond
+         * @return {AbstractAnimation} animation
+         * @private
          */
-        AstroNavigation.prototype.zoomTo = function (geoPos, options) {
-            console.log("AstroNavigation.zoomTo : options",options);
-            var navigation = this;
-
-            // default values
-            var destFov = (options && options.fov) ? options.fov : 2.0;
-            var duration = (options && options.duration) ? options.duration : 2000;
-
-            // Create a single animation to animate center3d and fov
-            var geoStart = [];
-            var middleFov = 25.0;	// arbitrary middle fov value which determines if the animation needs two segments
-
-            this.ctx.getCoordinateSystem().getWorldFrom3D(this.center3d, geoStart);
-            var startValue = [geoStart[0], geoStart[1], this.renderContext.getFov()];
-            var endValue = [geoPos[0], geoPos[1], destFov];
-
-            // Compute the shortest path if needed
-            //TODO : not sure it is work for all cases, better to use scalar product
-            if (Math.abs(geoPos[0] - geoStart[0]) > 180.0) {
-                if (geoStart[0] < geoPos[0]) {
-                    startValue[0] += 360;
-                } else {
-                    endValue[0] += 360;
-                }
-            }
-            var animation = AnimationFactory.create(
+        function _initZoomAnimation(navigation, duration) {
+            return AnimationFactory.create(
                 Constants.ANIMATION.Segmented,
                 {
                     "duration": duration,
@@ -221,134 +251,165 @@ define(['../Utils/Utils', '../Utils/Constants',
                         navigation.ctx.getRenderContext().setFov(value[2]);
                         navigation.computeViewMatrix();
                     }
-                });
+                }
+            );
+        }
 
-            // TODO : maybe improve it ?
-            // End point which is out of frustum invokes two steps animation, one step otherwise
-            var end3DValue = this.ctx.getCoordinateSystem().get3DFromWorld(geoPos);
-            if (middleFov > this.renderContext.getFov() && this.renderContext.getWorldFrustum().containsSphere(end3DValue, 0.005) < 0) {
-                // Two steps animation, 'rising' & 'falling'
+        /**
+         * Adds two segments to the animation, which starts to startValue and stops to endValue
+         * by crossing the middleFov at middle value of [startValue, endValue]
+         * @param {AbstractAnimation} zoomToAnimation - animation where the segment is added
+         * @param {float[]} startValue - Starting position (longitude, latitude, distance as vector length)
+         * @param {float[]} endValue - Ending position (longitude, latitude, distance as vector length)
+         * @param {float} middleFov - FOV
+         * @private
+         */
+        function _addZoomOutThenZoomIn(zoomToAnimation, startValue, endValue, middleFov) {
+            // Compute the middle value
+            var midValue = [
+                startValue[0] * 0.5 + endValue[0] * 0.5,
+                startValue[1] * 0.5 + endValue[1] * 0.5,
+                middleFov
+            ];
 
-                // Compute the middle value
-                var midValue = [
-                    startValue[0] * 0.5 + endValue[0] * 0.5,
-                    startValue[1] * 0.5 + endValue[1] * 0.5,
-                    middleFov
-                ];
+            // zoom out to max altitude
+            zoomToAnimation.addSegment(
+                0.0, startValue,
+                0.5, midValue,
+                function (t, a, b) {
+                    var pt = Numeric.easeInQuad(t);
+                    var dt = Numeric.easeOutQuad(t);
+                    return [Numeric.lerp(pt, a[0], b[0]), // geoPos.long
+                        Numeric.lerp(pt, a[1], b[1]), // geoPos.lat
+                        Numeric.lerp(dt, a[2], b[2])]; // distance
+                }
+            );
 
-                // Add two segments
-                animation.addSegment(
-                    0.0, startValue,
-                    0.5, midValue,
-                    function (t, a, b) {
-                        var pt = Numeric.easeInQuad(t);
-                        var dt = Numeric.easeOutQuad(t);
-                        return [Numeric.lerp(pt, a[0], b[0]), // geoPos.long
-                            Numeric.lerp(pt, a[1], b[1]), // geoPos.lat
-                            Numeric.lerp(dt, a[2], b[2])]; // fov
-                    });
+            // zoom in
+            _addZoomIn.call(this, zoomToAnimation, midValue, endValue, 0.5);
+        }
 
-                animation.addSegment(
-                    0.5, midValue,
-                    1.0, endValue,
-                    function (t, a, b) {
-                        var pt = Numeric.easeOutQuad(t);
-                        var dt = Numeric.easeInQuad(t);
-                        return [Numeric.lerp(pt, a[0], b[0]), // geoPos.long
-                            Numeric.lerp(pt, a[1], b[1]), // geoPos.lat
-                            Numeric.lerp(dt, a[2], b[2])]; // fov
-                    });
-            }
-            else {
-                // One step animation, 'falling' only
+        /**
+         * Adds a segment to the animation, which starts to startValue and stops to endValue
+         * @param {AbstractAnimation} animation - animation where the segment is added
+         * @param {float[]} startValue - Starting position (longitude, latitude, distance as vector length)
+         * @param {float[]} endValue - Ending position (longitude, latitude, distance as vector length)
+         * @param {float} [startParameter=0.0] - start parameter
+         * @private
+         */
+        function _addZoomIn(animation, startValue, endValue, startParameter) {
+            var parameter = startParameter ? startParameter : 0.0;
+            animation.addSegment(
+                parameter, startValue,
+                1.0, endValue,
+                function (t, a, b) {
+                    var pt = Numeric.easeOutQuad(t);
+                    var dt = Numeric.easeInQuad(t);
+                    return [Numeric.lerp(pt, a[0], b[0]),  // geoPos.long
+                        Numeric.lerp(pt, a[1], b[1]),  // geoPos.lat
+                        Numeric.lerp(dt, a[2], b[2])];  // distance
+                }
+            );
+        }
 
-                // Add only one segment
-                animation.addSegment(
-                    0.0, startValue,
-                    1.0, endValue,
-                    function (t, a, b) {
-                        var pt = Numeric.easeOutQuad(t);
-                        var dt = Numeric.easeInQuad(t);
-                        return [Numeric.lerp(pt, a[0], b[0]),  // geoPos.long
-                            Numeric.lerp(pt, a[1], b[1]),  // geoPos.lat
-                            Numeric.lerp(dt, a[2], b[2])];  // fov
-                    });
-            }
-
+        /**
+         * Adds an event when the animation stops.
+         * @param {AbstractAnimation} animation - animation where the event is added
+         * @param {AbstractContext} ctx - context
+         * @param {number} destDistance - Final zooming distance in meter
+         * @param {Object} [options] - options
+         * @param {Object} [options.callback] - Callback function to call when it is defined.
+         * @private
+         */
+        function _addStop(animation, ctx, destDistance, options) {
             animation.onstop = function () {
                 if (options && options.callback) {
                     options.callback();
                 }
-                navigation.zoomToAnimation = null;
+                animation = null;
+                ctx.publish(Constants.EVENT_MSG.NAVIGATION_CHANGED_DISTANCE, destDistance);
             };
+        }
 
-            this.ctx.addAnimation(animation);
-            animation.start();
-            this.zoomToAnimation = animation;
+        /**
+         * Computes parameters for animation
+         * @param {AbstractContext} ctx - context
+         * @param {[]} center3D - start position in 3D
+         * @param {[]} geoPos - stop position
+         * @param {float} startFov - start FOV
+         * @param {float} destFov - stop FOV
+         * @return {*[]} Returns [startValue, endValue]
+         * @private
+         */
+        function _computeParametersAnimation(ctx, center3D, geoPos, startFov, destFov) {
+            var geoStart = [];
+            ctx.getCoordinateSystem().getWorldFrom3D(center3D, geoStart);
+            var path = Numeric.shortestPath360(geoStart[0], geoPos[0]);
+            var startValue = [path[0], geoStart[1], startFov];
+            var endValue = [path[1], geoPos[1], destFov];
+            return [startValue, endValue];
+        }
+
+        /**************************************************************************************************************/
+
+        Utils.inherits(AbstractNavigation, AstroNavigation);
+
+        /**************************************************************************************************************/
+
+        /**
+         * Returns the center of the navigation.
+         * @function getCenter
+         * @memberOf AstroNavigation#
+         * @return {float[]}
+         */
+        AstroNavigation.prototype.getCenter = function () {
+            var center = AbstractNavigation.prototype.getCenter.call(this);
+            if (center == null) {
+                center = [];
+                this.ctx.getCoordinateSystem().getWorldFrom3D(this.center3d, center);
+            }
+            return center;
         };
 
         /**
-         * Moves to a 3d position
-         * @function moveTo
-         * @memberof AstroNavigation#
-         * @param {float[]} geoPos - Array of two floats corresponding to final Longitude and Latitude(in this order) to zoom
-         * @param {int} [duration = 5000] - Duration of animation in milliseconds
-         * @param {Function} [callback] - Callback on the end of animation
+         * ZoomTo a 3D position
+         * @function zoomTo
+         * @param {float[]} geoPos - target of the camera
+         * @param {Object} options - options
+         * @param {float} [options.fov = DEFAULT_FINAL_FOV] - field of view in degree
+         * @param {int} [options.duration = DEFAULT_DURATION_ZOOM] - duration of the animation in milliseconds
+         * @param {navigationCallback} [options.callback] - Called at the end of navigation
+         * @memberOf AstroNavigation#
          */
-        AstroNavigation.prototype.moveTo = function (geoPos, duration, callback) {
+        AstroNavigation.prototype.zoomTo = function (geoPos, options) {
             var navigation = this;
 
-            var durationTime = duration || 5000;
+            // default values
+            var destFov = (options && options.fov) ? options.fov : DEFAULT_FINAL_FOV;
+            var duration = (options && options.duration) ? options.duration : DEFAULT_DURATION_ZOOM;
 
-            // Create a single animation to animate center3d
-            var geoStart = [];
-            this.ctx.getCoordinateSystem().getWorldFrom3D(this.center3d, geoStart);
+            // Create a single animation to animate center3d and fov
+            var parameters = _computeParametersAnimation.call(this, this.ctx, this.center3d, geoPos, this.renderContext.getFov(), destFov);
+            var startValue = parameters[0];
+            var endValue = parameters[1];
 
-            var startValue = [geoStart[0], geoStart[1]];
-            var endValue = [geoPos[0], geoPos[1]];
+            var zoomToAnimation = _initZoomAnimation.call(this, navigation, duration);
 
-            // Compute the shortest path if needed
-            if (Math.abs(geoPos[0] - geoStart[0]) > 180.0) {
-                if (geoStart[0] < geoPos[0]) {
-                    startValue[0] += 360;
-                } else {
-                    endValue[0] += 360;
-                }
+            // End point which is out of frustum invokes two steps animation, one step otherwise
+            var end3DValue = this.ctx.getCoordinateSystem().get3DFromWorld(geoPos);
+            if (DEFAULT_MIDDLE_FOV > this.renderContext.getFov() && this.renderContext.getWorldFrustum().containsSphere(end3DValue, 0.005) < 0) {
+                // Two steps animation, 'rising' & 'falling'
+                _addZoomOutThenZoomIn.call(this, zoomToAnimation, startValue, endValue, DEFAULT_MIDDLE_FOV);
+            }
+            else {
+                // One step animation, 'falling' only
+                _addZoomIn.call(this, zoomToAnimation, startValue, endValue);
             }
 
-            var animation = AnimationFactory.create(
-                Constants.ANIMATION.Segmented,
-                {
-                    "duration": durationTime,
-                    "valueSetter": function (value) {
-                        var position3d = navigation.ctx.getCoordinateSystem().get3DFromWorld([value[0], value[1]]);
-                        navigation.center3d[0] = position3d[0];
-                        navigation.center3d[1] = position3d[1];
-                        navigation.center3d[2] = position3d[2];
-                        navigation.computeViewMatrix();
-                    }
-                });
+            _addStop.call(this, zoomToAnimation, this.ctx, destFov, options);
 
-            animation.addSegment(
-                0.0, startValue,
-                1.0, endValue,
-                function (t, a, b) {
-                    var pt = Numeric.easeOutQuad(t);
-                    return [
-                        Numeric.lerp(pt, a[0], b[0]),  // geoPos.long
-                        Numeric.lerp(pt, a[1], b[1])   // geoPos.lat
-                    ];
-                }
-            );
-
-            animation.onstop = function () {
-                if (callback) {
-                    callback();
-                }
-            };
-
-            this.ctx.addAnimation(animation);
-            animation.start();
+            this.ctx.addAnimation(zoomToAnimation);
+            zoomToAnimation.start();
         };
 
         /**
@@ -356,7 +417,7 @@ define(['../Utils/Utils', '../Utils/Constants',
          * @function moveUpTo
          * @memberOf AstroNavigation#
          * @param {float[]} vec Vector
-         * @param {int} [duration = 1000] - Duration of animation in milliseconds
+         * @param {int} [duration = DEFAULT_DURATION_NORTH] - Duration of animation in milliseconds
          */
         AstroNavigation.prototype.moveUpTo = function (vec, duration) {
             // Create a single animation to animate up
@@ -364,36 +425,13 @@ define(['../Utils/Utils', '../Utils/Constants',
             var endValue = [];
             this.ctx.getCoordinateSystem().getWorldFrom3D(this.up, startValue);
             this.ctx.getCoordinateSystem().getWorldFrom3D(vec, endValue);
-            var durationTime = duration || 1000;
+            var durationTime = duration || DEFAULT_DURATION_NORTH;
 
             var navigation = this;
-            var animation = AnimationFactory.create(
-                Constants.ANIMATION.Segmented,
-                {
-                    "duration": durationTime,
-                    "valueSetter": function (value) {
-                        var position3d = navigation.ctx.getCoordinateSystem().get3DFromWorld([value[0], value[1]]);
-                        navigation.up[0] = position3d[0];
-                        navigation.up[1] = position3d[1];
-                        navigation.up[2] = position3d[2];
-                        navigation.computeViewMatrix();
-                    }
-                });
-
-            animation.addSegment(
-                0.0, startValue,
-                1.0, endValue,
-                function (t, a, b) {
-                    var pt = Numeric.easeOutQuad(t);
-                    return [
-                        Numeric.lerp(pt, a[0], b[0]),  // geoPos.long
-                        Numeric.lerp(pt, a[1], b[1])   // geoPos.lat
-                    ];
-                }
-            );
-
-            this.ctx.addAnimation(animation);
-            animation.start();
+            var moveUpToAnimation = _initMoveUpAnimation.call(this, navigation, durationTime);
+            _addZoomIn.call(this, moveUpToAnimation, startValue, endValue);
+            this.ctx.addAnimation(moveUpToAnimation);
+            moveUpToAnimation.start();
         };
 
         /**
@@ -403,14 +441,8 @@ define(['../Utils/Utils', '../Utils/Constants',
          */
         AstroNavigation.prototype.computeViewMatrix = function () {
             vec3.normalize(this.center3d);
-
             var vm = this.renderContext.getViewMatrix();
-
             mat4.lookAt([0.0, 0.0, 0.0], this.center3d, this.up, vm);
-            // mat4.inverse( vm );
-            // mat4.rotate(vm, this.heading * Math.PI/180., [1., 0., 0.])
-            // mat4.inverse( vm );
-
             this.up = [vm[1], vm[5], vm[9]];
             this.ctx.publish(Constants.EVENT_MSG.NAVIGATION_MODIFIED);
             this.renderContext.requestFrame();
@@ -419,7 +451,7 @@ define(['../Utils/Utils', '../Utils/Constants',
         /**
          * Event handler for mouse wheel
          * @function zoom
-         * @memberof AstroNavigation#
+         * @memberOf AstroNavigation#
          * @param {float} delta Delta zoom
          * @param {float} scale Scale
          */
@@ -458,15 +490,12 @@ define(['../Utils/Utils', '../Utils/Constants',
          * @function rotate
          * @memberOf AstroNavigation#
          * @param {float} dx Window delta x
-         * @param {float} dy Window delta y
          */
-        AstroNavigation.prototype.rotate = function (dx, dy) {
+        AstroNavigation.prototype.rotate = function (dx) {
             // constant tiny angle
-            var angle = dx * 0.1 * Math.PI / 180.0;
-
+            var angle = Numeric.toRadian(dx * DELTA_HEADING);
             var rot = quat4.fromAngleAxis(angle, this.center3d);
             quat4.multiplyVec3(rot, this.up);
-
             this.computeViewMatrix();
         };
 

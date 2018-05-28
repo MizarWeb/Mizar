@@ -151,7 +151,7 @@ define(function () {
      * CRS
      * @property {String} Equatorial - Equatorial coordinate reference system
      * @property {String} Galactic - Galactic coordinate reference system
-     * @property {String} WGS84 - EPSG:4326 coordinate reference system
+     * @property {String} WGS84 - CRS:84 coordinate reference system
      * @property {String} Mars_2000 - IAU2000:49901 coordinate reference system
      * @property {String} Mars_2000_old - IAU2000:49900 coordinate reference system
      * @property {String} Moon_2000 - IAU2000:30101 coordinate reference system
@@ -161,7 +161,7 @@ define(function () {
     Constants.CRS = {
         "Equatorial": "Equatorial",
         "Galactic": "Galactic",
-        "WGS84": "EPSG:4326",
+        "WGS84": "CRS:84",
         "Mars_2000": "IAU2000:49901",
         "Mars_2000_old": "IAU2000:49900",
         "Moon_2000": "IAU2000:30101",
@@ -216,7 +216,8 @@ define(function () {
         "SelectionTool" : "SelectionTool",
         "NameResolver" : "NameResolver",
         "ReverseNameResolver" : "ReverseNameResolver",
-        "ExportTool" : "ExportTool"
+        "ExportTool" : "ExportTool",
+        "TimeTravel" : "TimeTravel"
     };
 
     /**
@@ -312,8 +313,8 @@ define(function () {
      * @property {String} LAYER_END_LOAD - Overlay rasters  or vectors finish to load
      * @property {String} LAYER_START_BACKGROUND_LOAD - Background rasters start to load
      * @property {String} LAYER_FORCE_REFRESH - Force refresh of a layer
-     * @property {String} LAYER_TIME_CHANGED" - Time layer changer
-     * @property {String} LAYERS_TIME_CHANGED" - Time changed for ALL layers
+     * @property {String} LAYER_TIME_CHANGED - Time layer changer
+     * @property {String} LAYERS_TIME_CHANGED - Time changed for ALL layers
      * @property {String} LAYER_END_BACKGROUND_LOAD - Background rasters finish to load
      * @property {String} BASE_LAYERS_ERROR - Error at the initialisation of layer to render
      * @property {String} BASE_LAYERS_READY - Initialisation of the rendering is fine
@@ -333,7 +334,6 @@ define(function () {
         "LAYER_BACKGROUND_ADDED" : "backgroundLayer:add",
         "LAYER_BACKGROUND_CHANGED" : "backgroundLayer:change",
         "LAYER_ADDITIONAL_ADDED" : "additionalLayer:add",
-        "LAYER_ASYNCHRONE_LOADED" : "asynchroneLayerLoaded",
         "LAYER_REMOVED" : "layer:remove",
         "LAYER_VISIBILITY_CHANGED" : "visibility:changed",
         "LAYER_OPACITY_CHANGED" : "opacity:changed",
@@ -346,6 +346,13 @@ define(function () {
         "LAYER_FORCE_REFRESH" : "layer:forceRefresh",
         "LAYER_TIME_CHANGED" : "layer:time:changed",
         "LAYERS_TIME_CHANGED" : "layers:time:changed",
+        "TIME_TRAVEL_UPDATED" : "timeTravel:updated",
+        /** json object like : 
+         { "date" : the current time,
+           "display" : the current date as string for display,
+           "period" : { "from" : , "to" : } <-- if null , no period managed
+         }
+        */
         "BASE_LAYERS_ERROR" : "baseLayersError",
         "BASE_LAYERS_READY" : "baseLayersReady",
         "CRS_MODIFIED" : "modifiedCrs",
@@ -356,7 +363,44 @@ define(function () {
         "IMAGE_DOWNLOADED" : "image:download",
         "IMAGE_REMOVED" : "image:remove",
         "IMAGE_ADDED" : "image:add",
-        "FEATURED_ADDED" : "features:added"
+        "FEATURED_ADDED" : "features:added",
+        "GLOBAL_TIME_REWIND"    : "globalTime:rewind",
+        "GLOBAL_TIME_FORWARD"   : "globalTime:forward",
+        "GLOBAL_TIME_SET"       : "globalTime:set",
+        "GLOBAL_TIME_CHANGED"   : "globalTime:changed", // temporary, need to be link to LAYERS_TIME_CHANGED after dev
+        "GLOBAL_TIME_INIT"   : "globalTime:init" 
+    };
+
+    /**
+     * @namespace
+     * DISPLAY_ORDER
+     * @property {String} RENDERING - Special rendering index
+     * @property {String} DEFAULT_RASTER - Default layer index (specially images)
+     * @property {String} SELECTED_RASTER - Selected layer index (specially images)
+     * @property {String} DEFAULT_VECTOR - Default vector index
+     * @property {String} SELECTED_VECTOR - Selected vector index
+     * @property {String} SERVICE_VECTOR - Service index
+     */
+    Constants.DISPLAY = {
+        "RENDERING" : -1,
+        "DEFAULT_RASTER" : 0,
+        "SELECTED_RASTER" : 10,
+        "DEFAULT_VECTOR" : 20,
+        "SELECTED_VECTOR" : 30,
+        "SERVICE_VECTOR" : 40
+    };
+
+    Constants.TIME_STEP = {
+        YEAR        : "years",
+        QUARTER     : "quarters",
+        MONTH       : "months",
+        WEEK        : "weeks",
+        DAY         : "days",
+        HOUR        : "hours",
+        MINUTE      : "minutes",
+        SECOND      : "seconds",
+        MILLISECOND : "milliseconds",
+        ENUMERATED  : null
     };
 
     /**************************************************************************************************************/
