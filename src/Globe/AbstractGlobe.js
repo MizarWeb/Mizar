@@ -218,7 +218,7 @@ define(['../Utils/Event', '../Utils/Utils',
         };
 
         /**
-         * @function getBaseElevation
+         * @function setBaseElevation
          * @memberOf AbstractGlobe#
          * @abstract
          */
