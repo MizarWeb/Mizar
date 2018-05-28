@@ -344,21 +344,21 @@ define(["jquery", "underscore-min", "../Utils/Event", "moment", "../Utils/Utils"
             if(paramName==="time") {
                 var timeRequest = AbstractLayer.createTimeRequest(value);
                 var allowedTime = this.getDimensions().time;
-                var selectedDate = AbstractLayer.selectedTime(allowedTime.value, timeRequest);
-                if(this.timeID != null && selectedDate == null) {
+                var selectedDate = AbstractLayer.selectedTime(allowedTime.value, timeRequest)
+                if(this.imageLoadedAtTime != null && selectedDate == null) {
                     // we query because the state has changed
                     hasToBeRefreshed = true;
-                    this.timeID = null;
+                    this.imageLoadedAtTime = selectedDate;
                 } else if(selectedDate == null) {
                     // No image found on the server related to the requested time, no need to query => we save network
                     hasToBeRefreshed = false;
-                } else if (this.timeID === selectedDate) {
+                } else if (this.imageLoadedAtTime === selectedDate) {
                     // Same state, no need to query
                     hasToBeRefreshed = false;
                 } else {
                     // At the requested time, there is an image on the server and this is not the current one => query
                     hasToBeRefreshed = true;
-                    this.timeID = selectedDate;
+                    this.imageLoadedAtTime = selectedDate;
                 }
             } else {
                 hasToBeRefreshed = true;

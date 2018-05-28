@@ -89,8 +89,7 @@ define(['../Utils/Utils', './AbstractLayer', './AbstractRasterLayer', '../Utils/
 
             AbstractRasterLayer.prototype.constructor.call(this, Constants.LAYER.WMTS, options);
             this.getTileBaseUrl = _queryImage.call(this, this.getBaseUrl(), options);
-            this.timeID = null;
-            this.mustbeSkipped = false;
+            this.imageLoadedAtTime = null;
         };
 
         /**************************************************************************************************************/
@@ -113,11 +112,9 @@ define(['../Utils/Utils', './AbstractLayer', './AbstractRasterLayer', '../Utils/
             }
             url = Utils.addParameterTo(url, "format", options.hasOwnProperty('format') ? options.format : 'image/png');
             if (options.hasOwnProperty('time')) {
-                this.mustbeSkipped = (this.timeID == null);
-                url = Utils.addParameterTo(url, "time", this.timeID);
+                url = Utils.addParameterTo(url, "time", this.imageLoadedAtTime == null ? options.time:this.imageLoadedAtTime);
             } else {
-                this.mustbeSkipped = false;
-                this.timeID = null;
+                this.imageLoadedAtTime = null;
             }
             return url;
         }
@@ -145,15 +142,10 @@ define(['../Utils/Utils', './AbstractLayer', './AbstractRasterLayer', '../Utils/
          * @return {String} Url
          */
         WMTSLayer.prototype.getUrl = function (tile) {
-            var url;
-            if(this.mustbeSkipped) {
-                url = null;
-            } else {
-                url = this.getTileBaseUrl;
-                url = Utils.addParameterTo(url, "tilematrix", tile.level + 1);
-                url = Utils.addParameterTo(url, "tilecol", tile.x);
-                url = Utils.addParameterTo(url, "tilerow", tile.y);
-            }
+            var url = this.getTileBaseUrl;
+            url = Utils.addParameterTo(url, "tilematrix", tile.level + 1);
+            url = Utils.addParameterTo(url, "tilecol", tile.x);
+            url = Utils.addParameterTo(url, "tilerow", tile.y);
             return this.proxify(url, tile.level);
         };
 
@@ -163,9 +155,6 @@ define(['../Utils/Utils', './AbstractLayer', './AbstractRasterLayer', '../Utils/
                     this.options[paramName] = value;
                     this.getCoverageBaseUrl = _queryImage.call(this, this.getBaseUrl(), this.options);
                     this.forceRefresh();
-                    this.mustbeSkipped = false;
-                } else {
-                    this.mustbeSkipped = true;
                 }
             }
         };
@@ -186,20 +175,20 @@ define(['../Utils/Utils', './AbstractLayer', './AbstractRasterLayer', '../Utils/
         //        var timeRequest = AbstractLayer.createTimeRequest(value);
         //        var allowedTime = this.getDimensions().time;
         //        var selectedDate = AbstractLayer.selectedTime(allowedTime.value, timeRequest);
-        //        if(this.timeID != null && selectedDate == null) {
+        //        if(this.imageLoadedAtTime != null && selectedDate == null) {
         //            // we query because the state has changed
         //            hasToBeRefreshed = true;
-        //            this.timeID = null;
+        //            this.imageLoadedAtTime = null;
         //        } else if(selectedDate == null) {
         //            // No image found on the server related to the requested time, no need to query => we save network
         //            hasToBeRefreshed = false;
-        //        } else if (this.timeID === selectedDate) {
+        //        } else if (this.imageLoadedAtTime === selectedDate) {
         //            // Same state, no need to query
         //            hasToBeRefreshed = false;
         //        } else {
         //            // At the requested time, there is an image on the server and this is not the current one => query
         //            hasToBeRefreshed = true;
-        //            this.timeID = selectedDate;
+        //            this.imageLoadedAtTime = selectedDate;
         //        }
         //    } else {
         //        hasToBeRefreshed = true;

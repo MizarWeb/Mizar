@@ -141,6 +141,20 @@ define(['./Tile', './GeoTiling', './TilePool', './TileRequest', './TileIndexBuff
             this.program.createFromSource(this.vertexShader, this.fragmentShader);
         };
 
+
+        /**
+         /**
+         * Updates overlay of the layer with the updated layer
+         * @param renderable renderer related to the current layer
+         * @param layer updated layer
+         * @private
+         */
+        function _updateOverlay(renderable, layer) {
+            var bucket = renderable.bucket;
+            bucket.renderer.removeOverlay(bucket.layer);
+            bucket.renderer.addOverlay(layer);
+        }
+
         /**************************************************************************************************************/
 
         /**
@@ -162,6 +176,8 @@ define(['./Tile', './GeoTiling', './TilePool', './TileRequest', './TileIndexBuff
                 });
             }
         };
+
+
 
         /**************************************************************************************************************/
 
@@ -274,6 +290,25 @@ define(['./Tile', './GeoTiling', './TilePool', './TileRequest', './TileIndexBuff
             }
         };
 
+        TileManager.prototype.abortLayerRequests = function(layer, callback) {
+            for (var i = this.visibleTiles.length; i--; ) {
+                var tile = this.visibleTiles[i];
+                var extension = tile.extension;
+                if (extension.renderer) {
+                    var renderables = extension.renderer.renderables;
+                    for (var renderableIdx = renderables.length; renderableIdx--;) {
+                        var renderable = renderables[renderableIdx];
+                        if (renderable.bucket.layer.ID === layer.getID()) {
+                            this.abortBucketRequests(renderable.bucket);
+                            if(callback) {
+                                callback(renderable, layer);
+                            }
+                            break;
+                        }
+                    }
+                }
+            }
+        };
 
         /**
          * Aborts requests of a layer.
@@ -289,36 +324,14 @@ define(['./Tile', './GeoTiling', './TilePool', './TileRequest', './TileIndexBuff
             }
         };
 
-        /**
-         * Updates overlay of the layer with the updated layer
-         * @param bucket bucket related to the current layer
-         * @param layer updated layer
-         */
-        TileManager.prototype.updateOverlay = function (bucket, layer) {
-            bucket.renderer.removeOverlay(bucket.layer);
-            bucket.renderer.addOverlay(layer);
-        };
+
 
         /**
          * Updates the visible tiles of the layer.
          * @param layer the layer where the tiles must be updated
          */
-        TileManager.prototype.updateVisibleTiles = function (layer) {
-            for (var i = this.visibleTiles.length; i--; ) {
-                var tile = this.visibleTiles[i];
-                var extension = tile.extension;
-                if (extension.renderer) {
-                    var renderables = extension.renderer.renderables;
-                    for (var renderableIdx = renderables.length; renderableIdx--;) {
-                        var renderable = renderables[renderableIdx];
-                        if (renderable.bucket.layer.ID === layer.ID) {
-                            this.abortBucketRequests(renderable.bucket);
-                            this.updateOverlay(renderable.bucket, layer);
-                            break;
-                        }
-                    }
-                }
-            }
+        TileManager.prototype.updateVisibleTiles = function (layer, callback) {
+            this.abortLayerRequests(layer,_updateOverlay);
         };
 
         /**************************************************************************************************************/

@@ -163,6 +163,7 @@ define(['./Program', '../Tiling/Tile', '../Utils/ImageRequest', './RendererTileD
             this.requestFinished = false;
             var layer = this.bucket.layer;
             if (layer._numRequests === 0) {
+                console.log("EVENT: START LOAD LAYER "+layer.name);
                 layer.globe.publishEvent(Constants.EVENT_MSG.LAYER_START_LOAD, layer);
             }
             layer._numRequests++;
@@ -183,6 +184,7 @@ define(['./Program', '../Tiling/Tile', '../Utils/ImageRequest', './RendererTileD
             var layer = this.bucket.layer;
             layer._numRequests--;
             if (layer.getGlobe() && layer._numRequests === 0) {
+                console.log("EVENT: END LOAD LAYER "+layer.name);
                 layer.getGlobe().publishEvent(Constants.EVENT_MSG.LAYER_END_LOAD, layer);
             }
         };
