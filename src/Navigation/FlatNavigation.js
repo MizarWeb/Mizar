@@ -147,9 +147,7 @@ define(['../Utils/Utils', '../Utils/Constants', './AbstractNavigation', '../Anim
                 var pos = this.ctx.getCoordinateSystem().get3DFromWorld(initTarget);
                 this.center[0] = pos[0];
                 this.center[1] = pos[1];
-                this.distance = (initTarget.length === 3)
-                    ? initTarget[2] * this.ctx.getCoordinateSystem().getGeoide().getHeightScale()
-                    : this.distance;
+                this.distance = (initTarget.length === 3) ? initTarget[2] * this.ctx.getCoordinateSystem().getGeoide().getHeightScale() : this.distance;
                 if (this.distance < this.minDistance) {
                     this.minDistance = this.distance;
                 }

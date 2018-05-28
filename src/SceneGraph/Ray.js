@@ -21,7 +21,7 @@ define(['../Renderer/Ray','../Utils/Utils'], function (RayParent,Utils) {
 
   var Ray = function (orig,dir) {
       RayParent.prototype.constructor.call(this,orig,dir);
-  }
+  };
 
   Utils.inherits(RayParent, Ray);
 

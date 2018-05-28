@@ -62,7 +62,7 @@ define(["./utils","./abstractNode"], function(Utils, AbstractNode) {
      * @returns {?String} the encoding value or null when no encoding attribute.
      */
     Td.prototype.encoding = function() {
-        return this.attributes["encoding"];
+        return this.attributes.encoding;
     };
 
     /**
@@ -71,7 +71,7 @@ define(["./utils","./abstractNode"], function(Utils, AbstractNode) {
      */
     Td.prototype.getContent = function() {
         return this.value;
-    }
+    };
 
     return Td;
 });

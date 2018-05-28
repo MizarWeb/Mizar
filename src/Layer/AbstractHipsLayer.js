@@ -140,16 +140,16 @@ define(["underscore-min", "./AbstractRasterLayer", "../Utils/Utils", "../Utils/C
          */
         function _overloadHipsMetataByConfiguration(options, hipsMetadata) {
             options.coordinateSystem = options.hasOwnProperty('coordinateSystem') ? CoordinateSystemFactory.create(options.coordinateSystem) : CoordinateSystemFactory.create({geoideName: Constants.MappingCrsHips2Mizar[hipsMetadata.hips_frame]});
-            options.tilePixelSize = options.hasOwnProperty('tilePixelSize') ? options.tilePixelSize : hipsMetadata['hips_tile_width'];
+            options.tilePixelSize = options.hasOwnProperty('tilePixelSize') ? options.tilePixelSize : hipsMetadata.hips_tile_width;
             options.baseLevel = options.hasOwnProperty('baseLevel') ? options.baseLevel : (hipsMetadata.hasOwnProperty('hips_order_min') ? hipsMetadata.hips_order_min : 2);
-            options.numberOfLevels = options.hasOwnProperty('numberOfLevels') ? options.numberOfLevels : hipsMetadata['hips_order'];
-            options.name = options.hasOwnProperty('name') ? options.name : hipsMetadata['obs_title'];
-            options.attribution = options.hasOwnProperty('attribution') ? options.attribution : "<a href=\"" + hipsMetadata['obs_copyright_url'] + "\" target=\"_blank\">" + hipsMetadata['obs_copyright'] + "</a>";
-            options.copyrightUrl = options.hasOwnProperty('copyrightUrl') ? options.copyrightUrl : hipsMetadata['obs_copyright_url'];
-            options.ack = options.hasOwnProperty('ack') ? options.ack : hipsMetadata['obs_ack'];
-            options.description = options.hasOwnProperty('description') ? options.description : hipsMetadata['obs_description'];
-            options.format = options.hasOwnProperty('format') ? options.format : hipsMetadata['hips_tile_format'];
-            options.baseUrl = options.hasOwnProperty('baseUrl') ? options.baseUrl : hipsMetadata['hips_service_url'];
+            options.numberOfLevels = options.hasOwnProperty('numberOfLevels') ? options.numberOfLevels : hipsMetadata.hips_order;
+            options.name = options.hasOwnProperty('name') ? options.name : hipsMetadata.obs_title;
+            options.attribution = options.hasOwnProperty('attribution') ? options.attribution : "<a href=\"" + hipsMetadata.obs_copyright_url + "\" target=\"_blank\">" + hipsMetadata.obs_copyright + "</a>";
+            options.copyrightUrl = options.hasOwnProperty('copyrightUrl') ? options.copyrightUrl : hipsMetadata.obs_copyright_url;
+            options.ack = options.hasOwnProperty('ack') ? options.ack : hipsMetadata.obs_ack;
+            options.description = options.hasOwnProperty('description') ? options.description : hipsMetadata.obs_description;
+            options.format = options.hasOwnProperty('format') ? options.format : hipsMetadata.hips_tile_format;
+            options.baseUrl = options.hasOwnProperty('baseUrl') ? options.baseUrl : hipsMetadata.hips_service_url;
             options.properties = options.hasOwnProperty('properties') ? options.properties : {};
             if(hipsMetadata.hasOwnProperty("obs_initial_ra")) {
                 options.properties.initialRa = parseFloat(hipsMetadata.obs_initial_ra);

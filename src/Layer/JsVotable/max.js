@@ -45,7 +45,7 @@ define(["./utils","./abstractNode"], function(Utils, AbstractNode) {
      * @returns {!String} the value value.
      */
     Max.prototype.value = function() {
-        return this.attributes["value"];
+        return this.attributes.value;
     };
 
     /**
@@ -53,7 +53,7 @@ define(["./utils","./abstractNode"], function(Utils, AbstractNode) {
      * @returns {?String} the inclusive value or null when no inclusive attribute.
      */
     Max.prototype.inclusive = function() {
-        return this.attributes["inclusive"];
+        return this.attributes.inclusive;
     };
 
     return Max;

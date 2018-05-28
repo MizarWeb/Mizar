@@ -207,7 +207,7 @@ define(["jquery", "underscore-min", "../Utils/Constants",
                             background: layer.category === "background"
                         }
                     }
-                )
+                );
             });
 
             onSuccess(results);

@@ -106,7 +106,7 @@ define(["./utils","./abstractNode","./description","./fieldref","./paramref","./
      * @returns {?String} the ID value or null when no ID attribute.
      */
     Group.prototype.ID = function() {
-        return this.attributes["ID"];
+        return this.attributes.ID;
     };
 
     /**
@@ -114,7 +114,7 @@ define(["./utils","./abstractNode","./description","./fieldref","./paramref","./
      * @returns {?String} the name value or null when no name attribute.
      */
     Group.prototype.name = function() {
-        return this.attributes["name"];
+        return this.attributes.name;
     };
 
     /**
@@ -122,7 +122,7 @@ define(["./utils","./abstractNode","./description","./fieldref","./paramref","./
      * @returns {?String} the ref value or null when no ref attribute.
      */
     Group.prototype.ref = function() {
-        return this.attributes["ref"];
+        return this.attributes.ref;
     };
 
     /**
@@ -130,7 +130,7 @@ define(["./utils","./abstractNode","./description","./fieldref","./paramref","./
      * @returns {?String} the ucd value or null when no ucd attribute.
      */
     Group.prototype.ucd = function() {
-        return this.attributes["ucd"];
+        return this.attributes.ucd;
     };
 
     /**
@@ -138,7 +138,7 @@ define(["./utils","./abstractNode","./description","./fieldref","./paramref","./
      * @returns {?String} the utype value or null when no utype attribute.
      */
     Group.prototype.utype = function() {
-        return this.attributes["utype"];
+        return this.attributes.utype;
     };
 
     /**

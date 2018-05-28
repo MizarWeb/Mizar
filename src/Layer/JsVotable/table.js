@@ -118,7 +118,7 @@ define(["./utils", "./abstractNode", "./description", "./field", "./param", "./g
      * @returns {?String} the ID value or null when no ID attribute.
      */
     Table.prototype.ID = function() {
-        return this.attributes["ID"];
+        return this.attributes.ID;
     };
 
     /**
@@ -126,7 +126,7 @@ define(["./utils", "./abstractNode", "./description", "./field", "./param", "./g
      * @returns {?String} the name value or null when no name attribute.
      */
     Table.prototype.name = function() {
-        return this.attributes["name"];
+        return this.attributes.name;
     };
 
     /**
@@ -134,7 +134,7 @@ define(["./utils", "./abstractNode", "./description", "./field", "./param", "./g
      * @returns {?String} the ref value or null when no ref attribute.
      */
     Table.prototype.ref = function() {
-        return this.attributes["ref"];
+        return this.attributes.ref;
     };
 
     /**
@@ -142,7 +142,7 @@ define(["./utils", "./abstractNode", "./description", "./field", "./param", "./g
      * @returns {?String} the ucd value or null when no ucd attribute.
      */
     Table.prototype.ucd = function() {
-        return this.attributes["ucd"];
+        return this.attributes.ucd;
     };
 
     /**
@@ -150,7 +150,7 @@ define(["./utils", "./abstractNode", "./description", "./field", "./param", "./g
      * @returns {?String} the utype value or null when no utype attribute.
      */
     Table.prototype.utype = function() {
-        return this.attributes["utype"];
+        return this.attributes.utype;
     };
 
     /**
@@ -158,7 +158,7 @@ define(["./utils", "./abstractNode", "./description", "./field", "./param", "./g
      * @returns {?String} the nrows value or null when no nrows attribute.
      */
     Table.prototype.nrows = function() {
-        return this.attributes["nrows"];
+        return this.attributes.nrows;
     };
 
     /**
@@ -169,7 +169,7 @@ define(["./utils", "./abstractNode", "./description", "./field", "./param", "./g
      * @returns {!Field[]} the list of Field objects or 0 length when no Field node.
      */
     Table.prototype.getFields = function() {
-        return this.fields
+        return this.fields;
     };
 
     /**

@@ -86,7 +86,7 @@ define(["./utils","./abstractNode"], function(Utils, AbstractNode) {
      * @returns {!String} the ID value
      */
     Coosys.prototype.ID = function() {
-        return this.attributes["ID"];
+        return this.attributes.ID;
     };
 
     /**
@@ -94,7 +94,7 @@ define(["./utils","./abstractNode"], function(Utils, AbstractNode) {
      * @returns {?String} the equinox value or null when no equinox attribute.
      */
     Coosys.prototype.equinox = function() {
-        return this.attributes["equinox"];
+        return this.attributes.equinox;
     };
 
     /**
@@ -102,7 +102,7 @@ define(["./utils","./abstractNode"], function(Utils, AbstractNode) {
      * @returns {?String} the epoch value or null when no epoch attribute.
      */
     Coosys.prototype.epoch = function() {
-        return this.attributes["epoch"];
+        return this.attributes.epoch;
     };
 
     /**
@@ -110,7 +110,7 @@ define(["./utils","./abstractNode"], function(Utils, AbstractNode) {
      * @returns {?String} the system value or null when no system attribute.
      */
     Coosys.prototype.system = function() {
-        return this.attributes["system"];
+        return this.attributes.system;
     };
 
     /**

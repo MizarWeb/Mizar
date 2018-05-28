@@ -134,7 +134,7 @@
                 }
             });
 
-             var picking = mizar.getServiceByName(Mizar.SERVICE.PickingManager);
+            var picking = mizar.getServiceByName(Mizar.SERVICE.PickingManager);
             mizarDiv.addEventListener('click', (e) => {
                 var pickPoint = mizar.getActivatedContext().getLonLatFromPixel(e.clientX, e.clientY);
                 if (pickPoint !== null) {

@@ -81,7 +81,7 @@ define(["./utils","./abstractNode","./td"], function(Utils, AbstractNode, Td) {
      * @returns {?String} the ID value or null when no ID attribute.
      */
     Tr.prototype.ID = function() {
-        return this.attributes["ID"];
+        return this.attributes.ID;
     };
 
     /**

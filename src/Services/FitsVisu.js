@@ -244,19 +244,19 @@ define(["jquery", "../Utils/Constants",
                 var feature = featureData.feature;
                 // Set fill to true while loading
                 var style = new FeatureStyle(feature.properties.style);
+                var url = null;
                 style.fill = true;
 
                 // Publish event that the image for the given feature will be loaded
                 mizarAPI.publish(Constants.EVENT_MSG.IMAGE_ADDED, featureData);
 
                 if (featureData.isFits) {
-                    var url = mizarAPI._getUrl(feature.services.download.url);
+                    url = mizarAPI._getUrl(feature.services.download.url);
                     this.computeFits(featureData, url);
                     $('#quicklookFits').addClass('selected');
                 }
                 else {
                     style.fill = true;
-                    var url;
                     if (featureData.isWms) {
                         url = mizarAPI._getUrl(feature.properties.services.browse.layer.getUrl());
                     } else {

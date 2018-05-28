@@ -61,9 +61,9 @@ define(["jquery"],
             this.currentPage = Math.floor((this.startIndex-1) / this.nbItemsPerPage)+1;
 
             return this.nbFound;
-        }
+    };
+       
+    /*************************************************************************************************************/
         
-        /*************************************************************************************************************/
-        
-        return OpenSearchResult;
-    });
+    return OpenSearchResult;
+});

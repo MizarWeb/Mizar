@@ -152,6 +152,6 @@ define(["jquery", "../Renderer/FeatureStyle", "../Layer/MocLayer", "../Utils/Con
             //getSkyCoverage: getSkyCoverage,
             //requestSkyCoverage: requestSkyCoverage,
             intersectLayers: intersectLayers
-        }
+        };
 
     });

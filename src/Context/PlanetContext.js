@@ -165,7 +165,7 @@ define(["jquery", "underscore-min", "../Utils/Utils", "./AbstractContext", "../U
                 renderContext: options.renderContext,
                 canvas: this.canvas,
                 coordinateSystem: options.coordinateSystem,
-                shadersPath: this.mizarConfiguration['mizarAPIUrl']+'shaders/',
+                shadersPath: this.mizarConfiguration.mizarAPIUrl+'shaders/',
                 lighting: false,
                 backgroundColor: [0.0, 0.0, 0.0, 1.0],
                 minFar: 0,
@@ -274,15 +274,6 @@ define(["jquery", "underscore-min", "../Utils/Utils", "./AbstractContext", "../U
                     this.timeTravel.remove();
                 }
             }
-            /*if (visible === true) {
-                this.subscribe(Constants.EVENT_MSG.GLOBAL_TIME_REWIND,this.timeTravel.goRewind);
-                this.subscribe(Constants.EVENT_MSG.GLOBAL_TIME_FORWARD,this.timeTravel.goForward);
-                this.subscribe(Constants.EVENT_MSG.GLOBAL_TIME_SET,this.timeTravel.chooseTime);
-            } else {
-                this.unsubscribe(Constants.EVENT_MSG.GLOBAL_TIME_REWIND);
-                this.unsubscribe(Constants.EVENT_MSG.GLOBAL_TIME_FORWARD);
-                this.unsubscribe(Constants.EVENT_MSG.GLOBAL_TIME_SET);
-            }*/
             this.setComponentVisibility(divName, visible);
         };
 

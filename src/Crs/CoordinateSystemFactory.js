@@ -102,7 +102,7 @@ define(["../Utils/Constants", "./WGS84Crs", "./Mars2000Crs", "./Moon2000Crs","./
                 }
                 return cs;
             }
-        }
+        };
     });
 
 

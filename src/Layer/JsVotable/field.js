@@ -107,7 +107,7 @@ define(["./utils","./abstractNode","./description","./values","./link"],
      * @returns {?String} the ID value or null when no ID attribute.
      */
     Field.prototype.ID = function() {
-        return this.attributes["ID"];
+        return this.attributes.ID;
     };
 
     /**
@@ -115,7 +115,7 @@ define(["./utils","./abstractNode","./description","./values","./link"],
      * @returns {?String} the unit value or null when no unit attribute.
      */
     Field.prototype.unit = function() {
-        return this.attributes["unit"];
+        return this.attributes.unit;
     };
 
     /**
@@ -123,7 +123,7 @@ define(["./utils","./abstractNode","./description","./values","./link"],
      * @returns {!String} the datatype value
      */
     Field.prototype.datatype = function() {
-        return this.attributes["datatype"];
+        return this.attributes.datatype;
     };
 
     /**
@@ -131,7 +131,7 @@ define(["./utils","./abstractNode","./description","./values","./link"],
      * @returns {?String} the precision value or null when no precision attribute.
      */
     Field.prototype.precision = function() {
-        return this.attributes["precision"];
+        return this.attributes.precision;
     };
 
     /**
@@ -139,7 +139,7 @@ define(["./utils","./abstractNode","./description","./values","./link"],
      * @returns {?String} the width value or null when no width attribute.
      */
     Field.prototype.width = function() {
-        return this.attributes["width"];
+        return this.attributes.width;
     };
 
     /**
@@ -147,7 +147,7 @@ define(["./utils","./abstractNode","./description","./values","./link"],
      * @returns {?String} the xtype value or null when no xtype attribute.
      */
     Field.prototype.xtype = function() {
-        return this.attributes["xtype"];
+        return this.attributes.xtype;
     };
 
     /**
@@ -155,7 +155,7 @@ define(["./utils","./abstractNode","./description","./values","./link"],
      * @returns {?String} the ref value or null when no ref attribute.
      */
     Field.prototype.ref = function() {
-        return this.attributes["ref"];
+        return this.attributes.ref;
     };
 
     /**
@@ -163,7 +163,7 @@ define(["./utils","./abstractNode","./description","./values","./link"],
      * @returns {!String} the name value.
      */
     Field.prototype.name = function() {
-        return this.attributes["name"];
+        return this.attributes.name;
     };
 
     /**
@@ -171,7 +171,7 @@ define(["./utils","./abstractNode","./description","./values","./link"],
      * @returns {?String} the ucd value or null when no ucd attribute.
      */
     Field.prototype.ucd = function() {
-        return this.attributes["ucd"];
+        return this.attributes.ucd;
     };
 
     /**
@@ -179,7 +179,7 @@ define(["./utils","./abstractNode","./description","./values","./link"],
      * @returns {?String} the utype value or null when no utype attribute.
      */
     Field.prototype.utype = function() {
-        return this.attributes["utype"];
+        return this.attributes.utype;
     };
 
     /**
@@ -187,7 +187,7 @@ define(["./utils","./abstractNode","./description","./values","./link"],
      * @returns {?String} the arraysize value or null when no arraysize attribute.
      */
     Field.prototype.arraysize = function() {
-        return this.attributes["arraysize"];
+        return this.attributes.arraysize;
     };
 
     /**
@@ -195,7 +195,7 @@ define(["./utils","./abstractNode","./description","./values","./link"],
      * @returns {?String} the type value or null when no type attribute.
      */
     Field.prototype.type = function() {
-        return this.attributes["type"];
+        return this.attributes.type;
     };
 
     /**

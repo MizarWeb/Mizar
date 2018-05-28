@@ -378,7 +378,7 @@ define(["jquery", "underscore-min", "../Utils/Constants",
         function _scaleElevation(mizarAPI) {
             var scaleElavation;
             var elevationLayer = _.find(mizarAPI.getActivatedContext().getLayers(), function (obj) {
-                return obj.type === Constants.LAYER.WCSElevation || obj.type === Constants.LAYER.WMSElevation
+                return obj.type === Constants.LAYER.WCSElevation || obj.type === Constants.LAYER.WMSElevation;
             });
             if (elevationLayer !== undefined) {
                 scaleElavation = elevationLayer.getScale();

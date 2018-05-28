@@ -76,9 +76,9 @@ define(['jquery', './AbstractProvider', '../Utils/Utils', '../Renderer/FeatureSt
             var strokeColor = layer.getStyle().getStrokeColor() ? layer.getStyle().getStrokeColor() : DEFAULT_STROKE_COLOR;
             for (var i = 0; i < features.length; i++) {
                 var currentFeature = features[i];
-                currentFeature.geometry['crs'] = crs;
+                currentFeature.geometry.crs = crs;
                 var craterName = currentFeature.properties.name;
-                currentFeature.properties['style'] =  new FeatureStyle(
+                currentFeature.properties.style =  new FeatureStyle(
                     {
                         label: craterName,
                         strokeColor: strokeColor,

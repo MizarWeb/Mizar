@@ -273,32 +273,32 @@ define(["jquery", "../Utils/Constants", "../Gui/dialog/ErrorDialog"], function (
     function _checkRequiredParameters(hipsMetadata, mandatory, key, description, requiredKeywordNotFound) {
         if (mandatory === "R" && !hipsMetadata.hasOwnProperty(key)) {
             //Fix for version=1.2
-            if (key === "creator_did" && hipsMetadata['hips_version'] === "1.2") {
-                hipsMetadata['creator_did'] = hipsMetadata['publisher_did'];
+            if (key === "creator_did" && hipsMetadata.hips_version === "1.2") {
+                hipsMetadata.creator_did = hipsMetadata.publisher_did;
                 ErrorDialog.open("<font style='color:orange'>Warning :</font> Deprecated Hips version <b>1.2</b> for <font style='color:orange'><b>"+hipsMetadata.obs_title+"</b></font>, please update it - <font style='color:orange'>use creator_did=publisher_did</font>");
             }
             //Fix for version=1.3
-            else if(key === "creator_did" && hipsMetadata['hips_version'] === "1.3") {
-                hipsMetadata['creator_did'] = hipsMetadata['publisher_did'];
+            else if(key === "creator_did" && hipsMetadata.hips_version === "1.3") {
+                hipsMetadata.creator_did = hipsMetadata.publisher_did;
                 ErrorDialog.open("<font style='color:orange'>Warning :</font> Deprecated Hips version <b>1.3</b> for <font style='color:orange'><b>"+hipsMetadata.obs_title+"</b></font>, please update it - <font style='color:orange'>use creator_did=publisher_did</font>");
-            } else if(key === "obs_title" && hipsMetadata['hips_version'] === "1.3") {
-                hipsMetadata['obs_title'] = hipsMetadata['obs_collection'];
+            } else if(key === "obs_title" && hipsMetadata.hips_version === "1.3") {
+                hipsMetadata.obs_title = hipsMetadata.obs_collection;
                 ErrorDialog.open("<font style='color:orange'>Warning :</font> Deprecated Hips version <b>1.3</b> for <font style='color:orange'><b>"+hipsMetadata.obs_title+"</b></font>, please update it - <font style='color:orange'>use obs_title=obs_collection</font>");
             }
             //Fox for version 1.4
-            else if(key === "obs_title" && hipsMetadata['hips_version'] === "1.4") {
-                hipsMetadata['obs_title'] = hipsMetadata['obs_collection'];
+            else if(key === "obs_title" && hipsMetadata.hips_version === "1.4") {
+                hipsMetadata.obs_title = hipsMetadata.obs_collection;
                 ErrorDialog.open("<font style='color:yellow'>Warning :</font> obs_title not found in v1.4 for <font style='color:yellow'><b>"+hipsMetadata.obs_title+"</b></font>, use obs_title, please fix it");
-            } else if(key === "creator_did" && hipsMetadata['hips_version'] === "1.4") {
-                hipsMetadata['creator_did'] = hipsMetadata['publisher_did'];
+            } else if(key === "creator_did" && hipsMetadata.hips_version === "1.4") {
+                hipsMetadata.creator_did = hipsMetadata.publisher_did;
                 ErrorDialog.open("<font style='color:yellow'>Warning :</font> creator_did not found in v1.4 for <font style='color:yellow'><b>"+hipsMetadata.obs_title+"</b></font>, use creator_did, please fix it");
             }
             /// very old version
             else if(key === "hips_version" && !hipsMetadata.hasOwnProperty('hips_version')) {
-                hipsMetadata['hips_version'] = "very old one";
+                hipsMetadata.hips_version = "very old one";
                 ErrorDialog.open("<font style='color:orange'>Warning :</font> Deprecated Hips version <b>unknown</b> for <font style='color:orange'><b>"+hipsMetadata.obs_title+"</b></font>, please update it - <font style='color:orange'>use a version in your metadata</font>");
             } else if(key === "creator_did" && !hipsMetadata.hasOwnProperty('hips_version')) {
-                hipsMetadata['creator_did'] = hipsMetadata['publisher_did'];
+                hipsMetadata.creator_did = hipsMetadata.publisher_did;
                 ErrorDialog.open("<font style='color:orange'>Warning : </font> Deprecated Hips version <b>unknown</b> for <font style='color:orange'><b>"+hipsMetadata.obs_title+"</b></font>, please update it - <font style='color:orange'>use creator_did = pulisher_did</font>");
             }
             //Error

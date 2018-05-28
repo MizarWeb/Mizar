@@ -250,7 +250,7 @@ define(["./Triangle"], function (Triangle) {
             }
 
             if (!this.image.inverse) {
-                scaledValue = originY - scaledValue
+                scaledValue = originY - scaledValue;
             }
             this.ctx.fillRect(posX, scaledValue, 1, 1);
         }

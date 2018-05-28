@@ -60,7 +60,7 @@ define(["./utils","./abstractData","./stream"], function(Utils, AbstractData, St
             }
         }
         return stream;
-    }
+    };
 
     Utils.inherits(AbstractData , Fits );
 
@@ -77,7 +77,7 @@ define(["./utils","./abstractData","./stream"], function(Utils, AbstractData, St
      * @returns {!String} the extnum value.
      */
     Fits.prototype.extnum = function(){
-        return this.attributes['extnum'];
+        return this.attributes.extnum;
     };
 
     return Fits;

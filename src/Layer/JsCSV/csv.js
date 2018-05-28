@@ -100,7 +100,7 @@ define([], function () {
           delete newStore[RA];
           delete newStore[DEC];
           delete newStore[ID];
-          feature["properties"] = newStore;
+          feature.properties = newStore;
 
           features.push(feature);
       }

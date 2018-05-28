@@ -81,10 +81,9 @@ define(["../Utils/Constants", "../Services/FitsVisu", "../Services/FitsHips", ".
                         break;
                     default:
                         throw new RangeError("Cannot retrieve service " + serviceType, "ServiceFactory.js");
-
                 }
                 return obj;
             }
-        }
+        };
     });
 

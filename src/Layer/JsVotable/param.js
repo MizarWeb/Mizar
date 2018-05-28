@@ -48,7 +48,7 @@ define(["./utils","./field"], function(Utils, Field) {
      * @returns {!String} the value value or null when no value attribute.
      */
     Param.prototype.value = function() {
-        return this.attributes["value"];
+        return this.attributes.value;
     };
 
     return Param;

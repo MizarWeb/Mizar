@@ -168,7 +168,7 @@ define(['../Utils/Constants', '../Utils/Utils', './VectorRenderer', './VectorRen
             c = clipPolygonToSide(0, -1, bound.east, c);
             c = clipPolygonToSide(1, 1, bound.south, c);
             c = clipPolygonToSide(1, -1, bound.north, c);
-            return c
+            return c;
         };
 
         /**************************************************************************************************************/

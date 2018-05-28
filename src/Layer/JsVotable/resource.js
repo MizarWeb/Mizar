@@ -96,10 +96,13 @@ define(["./utils","./abstractNode","./description","./info","./table","./link","
         var params = [];
         var abstractSequences = [];
         var end = 0;
+        var element = null;
+        var nodeName = null;
+
         for(var i = 0; childNode!=null && i< childNode.childNodes.length; i++) {
-            var element = childNode.childNodes[i];
+            element = childNode.childNodes[i];
             if (element.nodeType == 1) {
-                var nodeName = element.localName;
+                nodeName = element.localName;
                 switch (nodeName) {
                     case "DESCRIPTION":
                         description = new Description(element);
@@ -108,13 +111,13 @@ define(["./utils","./abstractNode","./description","./info","./table","./link","
                         infos.push(new Info(element));
                         break;
                     case "COOSYS":
-                        coosyss.push(new Coosys);
+                        coosyss.push(new Coosys());
                         break;
                     case "GROUP":
-                        groups.push(new Group);
+                        groups.push(new Group());
                         break;
                     case "PARAM":
-                        params.push(new Param);
+                        params.push(new Param());
                         break;
                     default:
                         end = i;
@@ -127,15 +130,15 @@ define(["./utils","./abstractNode","./description","./info","./table","./link","
         var seqElts = {};
         var seqLinks = [];
         var seqInfos = [];
-        for(var i = end; childNode!=null && i< childNode.childNodes.length; i++) {
-            var element = childNode.childNodes[i];
+        for(i = end; childNode!=null && i< childNode.childNodes.length; i++) {
+            element = childNode.childNodes[i];
             if (element.nodeType == 1) {
-                var nodeName = element.localName;
+                nodeName = element.localName;
                 switch (nodeName) {
                     case "LINK":
                         if (seqElts.hasOwnProperty("TABLE") || seqElts.hasOwnProperty("RESOURCE")) {
-                            seqElts["LINKS"] = seqLinks;
-                            seqElts["INFOS"] = seqInfos;
+                            seqElts.LINKS = seqLinks;
+                            seqElts.INFOS = seqInfos;
                             abstractSequences.push(seqElts);
                             seqElts = {};
                             seqLinks = [];
@@ -145,10 +148,10 @@ define(["./utils","./abstractNode","./description","./info","./table","./link","
                         }
                         break;
                     case "TABLE":
-                        seqElts["TABLE"] = new Table(element);
+                        seqElts.TABLE = new Table(element);
                         break;
                     case "RESOURCE":
-                        seqElts["RESOURCE"] = new Resource(element);
+                        seqElts.RESOURCE = new Resource(element);
                         break;
                     case "INFO":
                         seqInfos.push(new Info(element));
@@ -171,7 +174,7 @@ define(["./utils","./abstractNode","./description","./info","./table","./link","
      * @returns {?String} the ID value or null when no ID attribute.
      */
     Resource.prototype.ID = function() {
-        return this.attributes["ID"];
+        return this.attributes.ID;
     };
 
     /**
@@ -179,7 +182,7 @@ define(["./utils","./abstractNode","./description","./info","./table","./link","
      * @returns {?String} the name value or null when no name attribute.
      */
     Resource.prototype.name = function() {
-        return this.attributes["name"];
+        return this.attributes.name;
     };
 
     /**
@@ -187,7 +190,7 @@ define(["./utils","./abstractNode","./description","./info","./table","./link","
      * @returns {?String} the utype value or null when no utype attribute.
      */
     Resource.prototype.utype = function() {
-        return this.attributes["utype"];
+        return this.attributes.utype;
     };
 
     /**
@@ -195,7 +198,7 @@ define(["./utils","./abstractNode","./description","./info","./table","./link","
      * @returns {?String} the type value or null when no type attribute.
      */
     Resource.prototype.type = function() {
-        return this.attributes["type"];
+        return this.attributes.type;
     };
 
     /**

@@ -115,6 +115,9 @@ define(["jquery", "underscore-min", "../Utils/Utils", "./AbstractNameResolver","
             var coordinates = geometry.coordinates;
             var center;
             var distance;
+            var nbPts = null;
+            var tmpCenter = null;
+            var newDistance = null;
             switch(type) {
                 case "Point":
                     center = coordinates;
@@ -138,9 +141,9 @@ define(["jquery", "underscore-min", "../Utils/Utils", "./AbstractNameResolver","
                     center = _computeLineStringBarycenter.call(this, lineStringArray[0]);
                     center[0] = center[0]*lineStringArray[0].length;
                     center[1] = center[1]*lineStringArray[0].length;
-                    var nbPts = 0;
+                    nbPts = 0;
                     for (var i=1; i<lineStringArray.length;i++) {
-                        var tmpCenter = _computeLineStringBarycenter.call(this, lineStringArray[i]);
+                        tmpCenter = _computeLineStringBarycenter.call(this, lineStringArray[i]);
                         tmpCenter[0] = tmpCenter[0]*lineStringArray[i].length;
                         tmpCenter[1] = tmpCenter[1]*lineStringArray[i].length;
                         nbPts = nbPts + lineStringArray[i].length;
@@ -150,8 +153,8 @@ define(["jquery", "underscore-min", "../Utils/Utils", "./AbstractNameResolver","
                     center[1] = center[1] / nbPts;
 
                     distance = 0;
-                    for (var i=0; i<lineStringArray.length;i++) {
-                        var newDistance = _farestDistance.call(this, center, lineStringArray[i]);
+                    for (i=0; i<lineStringArray.length;i++) {
+                        newDistance = _farestDistance.call(this, center, lineStringArray[i]);
                         if (newDistance > distance) {
                             distance = newDistance;
                         }
@@ -162,9 +165,9 @@ define(["jquery", "underscore-min", "../Utils/Utils", "./AbstractNameResolver","
                     center = _computeLineStringBarycenter.call(this, polygonArray[0][0]);
                     center[0] = center[0]*polygonArray[0][0].length;
                     center[1] = center[1]*polygonArray[0][0].length;
-                    var nbPts = 0;
+                    nbPts = 0;
                     for (i=1; i<polygonArray.length;i++) {
-                        var tmpCenter = _computeLineStringBarycenter.call(this, lineStringArray[i][0]);
+                        tmpCenter = _computeLineStringBarycenter.call(this, lineStringArray[i][0]);
                         tmpCenter[0] = tmpCenter[0]*lineStringArray[i][0].length;
                         tmpCenter[1] = tmpCenter[1]*lineStringArray[i][0].length;
                         nbPts = nbPts + lineStringArray[i][0].length;
@@ -173,15 +176,15 @@ define(["jquery", "underscore-min", "../Utils/Utils", "./AbstractNameResolver","
                     center[0] = center[0] / nbPts;
                     center[1] = center[1] / nbPts;
                     distance = 0;
-                    for (var i=0; i<polygonArray.length;i++) {
-                        var newDistance = _farestDistance.call(this, center, polygonArray[i][0]);
+                    for (i=0; i<polygonArray.length;i++) {
+                        newDistance = _farestDistance.call(this, center, polygonArray[i][0]);
                         if (newDistance > distance) {
                             distance = newDistance;
                         }
                     }
                     break;
                 default:
-                    throw "geometry "+type+" is not supported"
+                    throw "geometry "+type+" is not supported";
             }
             return [center, distance];
         }
@@ -209,7 +212,7 @@ define(["jquery", "underscore-min", "../Utils/Utils", "./AbstractNameResolver","
                 if (name == null) {
                     isFound = false;
                 } else {
-                    isFound = name.toLowerCase() === objectName.toLowerCase()
+                    isFound = ( name.toLowerCase() === objectName.toLowerCase() );
                 }
                 return isFound;
             });
@@ -222,7 +225,7 @@ define(["jquery", "underscore-min", "../Utils/Utils", "./AbstractNameResolver","
                     var centerAndDistance = _computeBarycenterAndDistance.call(this, feature.geometry);
                     lon = parseFloat(centerAndDistance[0][0]);
                     lat = parseFloat(centerAndDistance[0][1]);
-                    distance = centerAndDistance[1]
+                    distance = centerAndDistance[1];
                 } else {
                     lon = parseFloat(feature.properties.center_lon);
                     lat = parseFloat(feature.properties.center_lat);
@@ -248,7 +251,7 @@ define(["jquery", "underscore-min", "../Utils/Utils", "./AbstractNameResolver","
                     distance = distance > 180.0 ? 180.0 : distance;
                     // aproximation of the distance in meters
                     distance = 2 * Math.PI * crs.getGeoide().getRealPlanetRadius()  * distance / 360;
-                    distanceCamera = distance / Math.tan(0.5 * fov * Math.PI / 180)
+                    distanceCamera = distance / Math.tan(0.5 * fov * Math.PI / 180);
                 }
 
 

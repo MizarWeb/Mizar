@@ -88,7 +88,7 @@ define(["jquery", '../Utils/Utils', './AbstractLayer', './AbstractRasterLayer', 
             AbstractRasterLayer.prototype.constructor.call(this, options.type, options);
 
             this.timeTravelValues = null;
-            if (this.autoFillTimeTravel === true) {
+            if (this.autoFillTimeTravel === true)  {
                 if ( (options.dimension) && (options.dimension.time)) {
                     if (options.dimension.time.value) {
                         this.timeTravelValues = {
@@ -172,7 +172,7 @@ define(["jquery", '../Utils/Utils', './AbstractLayer', './AbstractRasterLayer', 
                         format:format,
                         url:url,
                         size:size
-                    }
+                    };
                 }
             } else {
                 legend = {};

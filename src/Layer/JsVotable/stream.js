@@ -72,7 +72,7 @@ define(["./utils", "./abstractNode","./converter/base64","./tabledata"], functio
      * @returns {?String} the type value or null when no type attribute.
      */
     Stream.prototype.type = function () {
-        return this.attributes["type"];
+        return this.attributes.type;
     };
 
     /**
@@ -80,7 +80,7 @@ define(["./utils", "./abstractNode","./converter/base64","./tabledata"], functio
      * @returns {?String} the href value or null when no href attribute.
      */
     Stream.prototype.href = function () {
-        return this.attributes["href"];
+        return this.attributes.href;
     };
 
     /**
@@ -88,7 +88,7 @@ define(["./utils", "./abstractNode","./converter/base64","./tabledata"], functio
      * @returns {?String} the actuate value or null when no actuate attribute.
      */
     Stream.prototype.actuate = function () {
-        return this.attributes["actuate"];
+        return this.attributes.actuate;
     };
 
     /**
@@ -96,7 +96,7 @@ define(["./utils", "./abstractNode","./converter/base64","./tabledata"], functio
      * @returns {!String} the encoding value or null when no encoding attribute.
      */
     Stream.prototype.encoding = function () {
-        return this.attributes["encoding"];
+        return this.attributes.encoding;
     };
 
     /**
@@ -104,7 +104,7 @@ define(["./utils", "./abstractNode","./converter/base64","./tabledata"], functio
      * @returns {?String} the expires value or null when no expires attribute.
      */
     Stream.prototype.expires = function () {
-        return this.attributes["expires"];
+        return this.attributes.expires;
     };
 
     /**
@@ -112,7 +112,7 @@ define(["./utils", "./abstractNode","./converter/base64","./tabledata"], functio
      * @returns {?String} the rights value or null when no rights attribute.
      */
     Stream.prototype.rights = function () {
-        return this.attributes["rights"];
+        return this.attributes.rights;
     };
 
     /**

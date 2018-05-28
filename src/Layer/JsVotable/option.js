@@ -70,7 +70,7 @@ define(["./utils","./abstractNode"], function(Utils, AbstractNode) {
      * @returns {?String} the name value or null when no name attribute.
      */
     Option.prototype.name = function() {
-        return this.attributes["name"];
+        return this.attributes.name;
     };
 
     /**
@@ -78,7 +78,7 @@ define(["./utils","./abstractNode"], function(Utils, AbstractNode) {
      * @returns {!String} the value value.
      */
     Option.prototype.value = function() {
-        return this.attributes["value"];
+        return this.attributes.value;
     };
 
     /**

@@ -78,7 +78,7 @@ define(["jquery", "jquery.ui"], function ($) {
                 _recordError(html);
             } else if (!debug && $displayWarning === true) {
                 //user mode : user needs to known when a problem happens with data
-                _recordError(html)
+                _recordError(html);
             }
         },
         view: function () {

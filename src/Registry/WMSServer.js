@@ -162,7 +162,7 @@ define(["jquery","underscore-min", "../Utils/Utils", "xmltojson", "../Layer/Laye
                 var jsonLayers = metadata.Capability.Layer;
                 var layers = _createLayers(layerDescription, layersFromConf, jsonLayers);
                 callback(layers);
-            }, fallback)
+            }, fallback);
         };
 
 

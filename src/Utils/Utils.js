@@ -354,8 +354,8 @@ define(["jquery", "./Numeric", "./UtilsIntersection", "../Error/NetworkError"], 
         var day = date.getUTCDate();
         var UT = _UT(date);
         //TODO check 1721013.5 should be -730531.5 !!!
-        return 367*year - Math.floor(7/4*(year + Math.floor((month+9)/12)))
-            + Math.floor(275*month/9) + day + 1721013.5;
+        return 367*year - Math.floor(7/4*(year + Math.floor((month+9)/12))) +
+            Math.floor(275*month/9) + day + 1721013.5;
     }
 
     /**
@@ -380,9 +380,9 @@ define(["jquery", "./Numeric", "./UtilsIntersection", "../Error/NetworkError"], 
     function _GST0(date) {
         //JC is Julian centuries between the Julian day J0 and J2000(2,451,545.0)
         var julianCentury = (_J0(date) - 2451545.0)/36525;
-        var GST0 = 100.4606184 + 36000.77004*julianCentury
-            + 0.000387933*julianCentury*julianCentury
-            - 2.583e-8*julianCentury*julianCentury*julianCentury;
+        var GST0 = 100.4606184 + 36000.77004*julianCentury + 
+            0.000387933*julianCentury*julianCentury - 
+            2.583e-8*julianCentury*julianCentury*julianCentury;
         return GST0%360;
     }
 
@@ -482,7 +482,7 @@ define(["jquery", "./Numeric", "./UtilsIntersection", "../Error/NetworkError"], 
         var times = temporalRanges.split(",");
         if(times.length == 1) {
             // no range
-            var time = times[0]
+            var time = times[0];
 
         } else {
             // temporalRange

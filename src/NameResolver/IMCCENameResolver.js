@@ -143,7 +143,7 @@ define(["jquery", "underscore-min", "../Utils/Utils", "./AbstractNameResolver","
                                     name:feature.name,
                                     credits: feature.credits
                                 }
-                            })
+                            });
                         });
                         if (response.type === "FeatureCollection" && response.features.length > 0) {
                             var firstFeature = response.features[0];

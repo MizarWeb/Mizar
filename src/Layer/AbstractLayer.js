@@ -305,21 +305,22 @@ define(["jquery", "underscore-min", "../Utils/Event", "moment", "../Utils/Utils"
             var stopMoment = Moment.utc(stopDate);
             var myTimeMoment = Moment.utc(myTime);
             var myDate;
+            var entier = null;
             if (myTimeMoment.isBetween(startMoment, stopMoment)) {
                 var duration1 = Moment.duration(myTimeMoment.diff(startMoment));
                 var duration2 = Moment.duration(stopMoment.diff(myTimeMoment));
                 if (duration1 > duration2) {
-                    var entier = Math.round(duration2.asHours() / stepTime);
+                    entier = Math.round(duration2.asHours() / stepTime);
                     myDate = stopMoment.subtract({hours: entier * stepTime});
                 } else {
-                    var entier = Math.round(duration1.asHours() / stepTime);
-                    myDate = startMoment.add({hours: entier * stepTime})
+                    entier = Math.round(duration1.asHours() / stepTime);
+                    myDate = startMoment.add({hours: entier * stepTime});
                 }
                 myDate = myDate.toISOString();
             } else {
                 myDate = null;
             }
-            return myDate
+            return myDate;
         }
 
 
@@ -344,7 +345,7 @@ define(["jquery", "underscore-min", "../Utils/Event", "moment", "../Utils/Utils"
             if(paramName==="time") {
                 var timeRequest = AbstractLayer.createTimeRequest(value);
                 var allowedTime = this.getDimensions().time;
-                var selectedDate = AbstractLayer.selectedTime(allowedTime.value, timeRequest)
+                var selectedDate = AbstractLayer.selectedTime(allowedTime.value, timeRequest);
                 if(this.imageLoadedAtTime != null && selectedDate == null) {
                     // we query because the state has changed
                     hasToBeRefreshed = true;
@@ -376,19 +377,19 @@ define(["jquery", "underscore-min", "../Utils/Event", "moment", "../Utils/Utils"
                 myRequest = {
                     from: timeRequest.from,
                     to: Moment().toISOString()
-                }
+                };
             } else if (timeRequest.to) {
                 timeRequest.from = Moment.utc("2000/01/01").format();
                 myRequest = {
                     from: Moment.utc("2000/01/01").format(),
                     to: timeRequest.to
-                }
+                };
             } else if (Utils.aContainsB.call(this, timeRequest, '/')) {
                 var times = timeRequest.split("/");
                 myRequest = {
                     from: Moment.utc(times[0]).toISOString(),
                     to: Moment.utc(times[1]).toISOString()
-                }
+                };
             } else {
                 var time = null;
                 if (timeRequest.date) {
@@ -403,7 +404,7 @@ define(["jquery", "underscore-min", "../Utils/Event", "moment", "../Utils/Utils"
                 myRequest = {
                     from: time.startOf(timeResolution).toISOString(),
                     to: time.endOf(timeResolution).toISOString()
-                }
+                };
             }
 
             return myRequest;
@@ -414,17 +415,19 @@ define(["jquery", "underscore-min", "../Utils/Event", "moment", "../Utils/Utils"
             var stopDate = Moment.utc(timeRequest.to);
             var times = temporalRanges.trim().split(",");
             var selectedDate, selectedDateFormatted = null;
+            var format = null;
+            var timeResolution = null;
             for (var timeIdx = 0; timeIdx < times.length && selectedDate == null; timeIdx++) {
                 var time = times[timeIdx];
                 var timeDefinition = time.trim().split("/");
                 if (timeDefinition.length == 1) {
                     timeDefinition[0] = isNaN(timeDefinition[0]) ? timeDefinition[0] : [parseInt(timeDefinition[0])];
                     var dateTime = Moment.utc(timeDefinition[0]);
-                    var format = dateTime.creationData().format ? dateTime.creationData().format : "YYYY";
-                    var timeResolution = Utils.formatResolution.call(this, format);
-                    if (dateTime.isBetween(startDate, stopDate) || dateTime.isSame(startDate) || dateTime.isSame(stopDate)
-                        || startDate.isBetween(dateTime.startOf(timeResolution).toISOString(), dateTime.endOf(timeResolution).toISOString())
-                        || stopDate.isBetween(dateTime.startOf(timeResolution).toISOString(), dateTime.endOf(timeResolution).toISOString())) {
+                    format = dateTime.creationData().format ? dateTime.creationData().format : "YYYY";
+                    timeResolution = Utils.formatResolution.call(this, format);
+                    if (dateTime.isBetween(startDate, stopDate) || dateTime.isSame(startDate) || dateTime.isSame(stopDate) || 
+                        startDate.isBetween(dateTime.startOf(timeResolution).toISOString(), dateTime.endOf(timeResolution).toISOString()) || 
+                        stopDate.isBetween(dateTime.startOf(timeResolution).toISOString(), dateTime.endOf(timeResolution).toISOString())) {
                         selectedDate = dateTime;
                         if (selectedDate == null) {
                             selectedDateFormatted = null;
@@ -444,11 +447,11 @@ define(["jquery", "underscore-min", "../Utils/Event", "moment", "../Utils/Utils"
                     for (var i = 0; i <= nbValues; i++) {
                         var currentDate = Moment.utc(startDate);
                         currentDate.add(i * timeObjDefinition.step, timeObjDefinition.unit);
-                        var format = currentDate.creationData().format ? currentDate.creationData().format : "YYYY";
-                        var timeResolution = Utils.formatResolution.call(this, format);
-                        if (currentDate.isBetween(startDate, stopDate) || currentDate.isSame(startDate) || currentDate.isSame(stopDate)
-                            || startDate.isBetween(currentDate.startOf(timeResolution).toISOString(), currentDate.endOf(timeResolution).toISOString())
-                            || stopDate.isBetween(currentDate.startOf(timeResolution).toISOString(), currentDate.endOf(timeResolution).toISOString())) {
+                        format = currentDate.creationData().format ? currentDate.creationData().format : "YYYY";
+                        timeResolution = Utils.formatResolution.call(this, format);
+                        if (currentDate.isBetween(startDate, stopDate) || currentDate.isSame(startDate) || currentDate.isSame(stopDate) || 
+                            startDate.isBetween(currentDate.startOf(timeResolution).toISOString(), currentDate.endOf(timeResolution).toISOString()) || 
+                            stopDate.isBetween(currentDate.startOf(timeResolution).toISOString(), currentDate.endOf(timeResolution).toISOString())) {
                             selectedDateFormatted = _closestDate.call(this, startTime, stopTime, 6, currentDate.toISOString());
                             break;
                         }
@@ -676,7 +679,7 @@ define(["jquery", "underscore-min", "../Utils/Event", "moment", "../Utils/Utils"
             } else {
                 isAdded = false;
             }
-            return isAdded
+            return isAdded;
         };
 
 
@@ -853,6 +856,23 @@ define(["jquery", "underscore-min", "../Utils/Event", "moment", "../Utils/Utils"
                 var ctxTime = this.callbackContext.getTime();
                 if (ctxTime !== this.time) {
                     this.setTime(ctxTime);
+                }
+
+                // Manage autoFillTimeTravel
+                if (this.autoFillTimeTravel === true) {
+                    if (this.visible === true) {
+                        //add !
+                        if (this.callbackContext.timeTravelService) {
+                            this.callbackContext.timeTravelService.update(this.timeTravelValues);
+                        }
+                    } else {
+                        // Remove
+                        if (this.callbackContext.timeTravelService) {
+                            this.callbackContext.timeTravelService.update({
+                                    "remove" : { "ID" : this.ID }
+                                });  
+                        }
+                    }
                 }
 
                 this.getGlobe().getRenderContext().requestFrame();

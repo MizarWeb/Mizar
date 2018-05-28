@@ -58,5 +58,6 @@ define(["../Utils/Constants","./GoogleMouseNavigationHandler","./KeyboardNavigat
                 }
                 return obj;
             }
-    }});
+    };
+});
  

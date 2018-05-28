@@ -170,7 +170,7 @@ define(["jquery","underscore-min", "../Utils/Utils", "xmltojson", "../Layer/Laye
                     layers.push(layer);
                 }
                 callback(layers);
-            }, fallback)
+            }, fallback);
         };
 
 

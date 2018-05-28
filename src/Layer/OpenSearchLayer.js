@@ -353,6 +353,7 @@ define(['../Renderer/FeatureStyle', '../Renderer/VectorRendererManager', '../Uti
             if (typeof tile.associatedFeaturesId === "undefined") {
                 tile.associatedFeaturesId = [];
             }
+            var index = null;
             // For each feature of the tile
             for (var i=0;i<tile.associatedFeaturesId.length;i++) {
                 var featureId = tile.associatedFeaturesId[i];
@@ -361,7 +362,6 @@ define(['../Renderer/FeatureStyle', '../Renderer/VectorRendererManager', '../Uti
                 for (var j=0;j<this.tilesLoaded.length;j++) {
                     var aTile = this.tilesLoaded[j].tile;
                     if (tile.key !== aTile.key) {
-                        var index;
                         if (typeof aTile.associatedFeaturesId !== "undefined") {
                             index = aTile.associatedFeaturesId.indexOf(featureId);
                         } else {
@@ -380,8 +380,9 @@ define(['../Renderer/FeatureStyle', '../Renderer/VectorRendererManager', '../Uti
             }
 
             tile.associatedFeaturesId = [];
+            
             // Remove the tile
-            var index = -1;
+            index = -1;
             for (i=0;i<this.tilesLoaded.length;i++) {
                 if (this.tilesLoaded[i].tile.key === tile.key) {
                     index = i;
@@ -1119,7 +1120,7 @@ define(['../Renderer/FeatureStyle', '../Renderer/VectorRendererManager', '../Uti
                         }
                     );
                 }
-            })
+            });
         };
         
         /**************************************************************************************************************/

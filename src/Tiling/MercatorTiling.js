@@ -76,7 +76,7 @@ define(['./Tile', '../Renderer/GeoBound', './GeoTiling'], function (Tile, GeoBou
       /**************************************************************************************************************/
 
       /** Inhertis from tile */
-      MercatorTile.prototype = new Tile;
+      MercatorTile.prototype = new Tile();
 
       /**************************************************************************************************************/
 
@@ -243,7 +243,7 @@ define(['./Tile', '../Renderer/GeoBound', './GeoTiling'], function (Tile, GeoBou
     };
 
     /** inherits from geotiling */
-    MercatorTiling.prototype = new GeoTiling;
+    MercatorTiling.prototype = new GeoTiling();
 
     /**************************************************************************************************************/
 
