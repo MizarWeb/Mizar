@@ -35,8 +35,8 @@ define(["jquery", "underscore-min", "jszip", "saveAs","../Gui/dialog/ErrorDialog
         function filterServicesAvailableOnLayers() {
             availableLayers = [];
             _.each(layers, function (layer) {
-                if (layer.isVisible() && layer.category !== "Other" && layer.category !== "Solar System"
-                    && layer.getName() !== "SAMP" && layer.getName() !== "Planets") {
+                if (layer.isVisible() && layer.category !== "Other" && layer.category !== "Solar System" &&
+                    layer.getName() !== "SAMP" && layer.getName() !== "Planets") {
                     layer.layerId = _.uniqueId('layer_');
                     availableLayers.push(layer);
                 }
@@ -251,9 +251,9 @@ define(["jquery", "underscore-min", "jszip", "saveAs","../Gui/dialog/ErrorDialog
          * @returns {boolean}
          */
         function checkIfPointInBbox(point, bbox) {
-            if((point[1] >= bbox[0][1] && point[1] <= bbox[1][1])
-                && (point[0] <= bbox[0][0]
-                && point[0] >= bbox[3][0])) {
+            if((point[1] >= bbox[0][1] && point[1] <= bbox[1][1]) && 
+                (point[0] <= bbox[0][0] && 
+                point[0] >= bbox[3][0])) {
                 return true;
             } else {
                 return false;

@@ -52,7 +52,10 @@ define(["jquery", "underscore-min", "../Utils/Event", "moment", "../Utils/Utils"
             this.components = {};
             this.dataProviders = {};
             this.canvas = mizarConfiguration.canvas;
+            
+            // Link to time travel service
             this.timeTravelService = ctxOptions.timeTravelService;
+            
             this.subscribe(Constants.EVENT_MSG.BASE_LAYERS_READY, function (imagery) {
                 // When the background takes time to load, the viewMatrix computed by "computeViewMatrix" is created but
                 // with empty values. Because of that, the globe cannot be displayed without moving the camera.
@@ -82,8 +85,8 @@ define(["jquery", "underscore-min", "../Utils/Event", "moment", "../Utils/Utils"
          * @private
          */
         function _handleCameraWhenLayerAdded(layer) {
-            if (layer.isVisible() && layer.getProperties() && !layer.isBackground()
-                && layer.getProperties().hasOwnProperty("initialRa") && layer.getProperties().hasOwnProperty("initialDec")) {
+            if (layer.isVisible() && layer.getProperties() && !layer.isBackground() &&
+                layer.getProperties().hasOwnProperty("initialRa") && layer.getProperties().hasOwnProperty("initialDec")) {
                 var fov = (layer.getProperties().initialFov) ? layer.getProperties().initialFov : layer.getGlobe().getRenderContext().getFov();
                 var navigation = layer.callbackContext.getNavigation();
                 var center = navigation.getCenter();
@@ -379,9 +382,10 @@ define(["jquery", "underscore-min", "../Utils/Event", "moment", "../Utils/Utils"
 
                         self.layers.push(layer);
 
+                        // Take autoFillTimeTravel into account
                         if (layer.autoFillTimeTravel === true) {
-                            if ( (self.timeTravelService) && (typeof self.timeTravelService !== "undefined"))
-                            {
+                            // Only when visible & time travel service activated and available
+                            if ( (self.visible === true) && (self.timeTravelService) && (typeof self.timeTravelService !== "undefined") ) {
                                 self.timeTravelService.update(layer.timeTravelValues);
                             }
                         }
@@ -749,35 +753,9 @@ define(["jquery", "underscore-min", "../Utils/Event", "moment", "../Utils/Utils"
             // Find the layer by name among all the layers
             var gwLayer = this.getLayerByName(survey);
             if (gwLayer) {
-                // Check if is not already set
-                //if (gwLayer !== globe.baseImagery) {
-                // Change visibility's of previous layer, because visibility is used to know the active background layer in the layers list (layers can be shared)
-                //if (globe.baseImagery) {
-                //    globe.baseImagery.setVisible(false);
-                //}
                 this.globe.setBaseImagery(gwLayer);
                 this.publish(Constants.EVENT_MSG.LAYER_BACKGROUND_CHANGED, gwLayer);
-                //gwLayer.setVisible(true);
 
-                // // Clear selection
-                // PickingManagerCore.getSelection().length = 0;
-                //
-                // for (var i = 0; i < gwLayers.length; i++) {
-                //     var currentLayer = gwLayers[i];
-                //     if (currentLayer.subLayers) {
-                //         var len = currentLayer.subLayers.length;
-                //         for (var j = 0; j < len; j++) {
-                //             var subLayer = currentLayer.subLayers[j];
-                //             if (subLayer.name === "SolarObjectsSublayer") {
-                //                 PickingManagerCore.removePickableLayer(subLayer);
-                //                 globe.removeLayer(subLayer);
-                //                 currentLayer.subLayers.splice(j, 1);
-                //             }
-                //         }
-                //     }
-                // }
-
-                //}
             } else {
                 this.publish(Constants.EVENT_MSG.LAYER_BACKGROUND_ERROR, "Survey " + layerName + " hasn't been found");
             }

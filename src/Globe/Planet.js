@@ -150,7 +150,7 @@ define(['../Tiling/Tile',
 
         Planet.prototype.addManualRendererLayer = function (layer) {
             this.manualRendererlayers.push(layer);
-        }
+        };
 
         Planet.prototype.removeManualRendererLayer = function (layer) {
             var newArray = [];
@@ -160,7 +160,7 @@ define(['../Tiling/Tile',
                 }
             }
             this.manualRendererlayers = newArray;
-        }
+        };
         
         /**
          * @private

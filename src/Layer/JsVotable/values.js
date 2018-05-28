@@ -98,7 +98,7 @@ define(["./utils","./abstractNode","./min","./max","./option"], function(Utils, 
      * @returns {?String} ID value or null when no ID attribute.
      */
     Values.prototype.ID = function() {
-        return this.attributes["ID"];
+        return this.attributes.ID;
     };
 
     /**
@@ -111,7 +111,7 @@ define(["./utils","./abstractNode","./min","./max","./option"], function(Utils, 
      * @returns {!String} the type value.
      */
     Values.prototype.type = function() {
-        return this.attributes["type"];
+        return this.attributes.type;
     };
 
     /**
@@ -127,7 +127,7 @@ define(["./utils","./abstractNode","./min","./max","./option"], function(Utils, 
      * @returns {?String} the ref value or null when no ref attribute.
      */
     Values.prototype.ref = function() {
-        return this.attributes["ref"];
+        return this.attributes.ref;
     };
 
     /**

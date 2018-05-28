@@ -24,7 +24,6 @@
  */
 define([ "./PlanetNavigation","./AstroNavigation","./FlatNavigation", "./GroundNavigation", "../Utils/Constants"],
     function (PlanetNavigation,AstroNavigation,FlatNavigation, GroundNavigation, Constants) {
-
         return {
             /**
              * Mizar owns different types of navigation to control the camera on the WebGL scene.
@@ -80,4 +79,5 @@ define([ "./PlanetNavigation","./AstroNavigation","./FlatNavigation", "./GroundN
                 return obj;
             }
 
-    }});
+    };
+});

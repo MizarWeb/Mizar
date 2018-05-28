@@ -389,11 +389,10 @@ define(['../Utils/Utils', '../Utils/Constants',
 
             var vm = this.renderContext.viewMatrix;
 
-            mat4.lookAt([0., 0., 0.], this.center3d, this.up, vm);
+            mat4.lookAt([0.0, 0.0, 0.0], this.center3d, this.up, vm);
 
             var geo=[];
             this.ctx.getCoordinateSystem().getWorldFrom3D(this.center3d, geo);
-            console.log("heading="+geo[0]);
             this.heading = geo[0];
             this.up = [0, 0, vm[9]];
             this.ctx.publish(Constants.EVENT_MSG.NAVIGATION_MODIFIED);
@@ -433,8 +432,8 @@ define(['../Utils/Utils', '../Utils/Constants',
          @memberOf GroundNavigation#
          */
         GroundNavigation.prototype.pan = function (dx, dy) {
-            var x = this.renderContext.canvas.width / 2.;
-            var y = this.renderContext.canvas.height / 2.;
+            var x = this.renderContext.canvas.width / 2.0;
+            var y = this.renderContext.canvas.height / 2.0;
             var ray = Ray.createFromPixel(this.renderContext, x - dx, y - dy);
             this.center3d = ray.computePoint(ray.sphereIntersect([0, 0, 0], this.ctx.getCoordinateSystem().getGeoide().getRadius()));
             this.computeViewMatrix();

@@ -176,7 +176,7 @@ define(["./utils","./abstractNode", "./definitions","./info","./resource", "./de
      * @returns {?String} the ID value
      */
     Votable.prototype.ID = function() {
-        return this.attributes["ID"];
+        return this.attributes.ID;
     };
 
     /**
@@ -184,7 +184,7 @@ define(["./utils","./abstractNode", "./definitions","./info","./resource", "./de
      * @returns {?String} the version value
      */
     Votable.prototype.version = function() {
-        return this.attributes["version"];
+        return this.attributes.version;
     };
 
     /**

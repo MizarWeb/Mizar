@@ -171,39 +171,39 @@ define([], function() {
         } else {
             this.identifier = WMTSMetadata.getValueTag(json.Identifier);
             this.format = WMTSMetadata.parseFormat(json.Format);
-            this.infoFormat;
-            this.style;
+            this.infoFormat = null;
+            this.style = null;
             this.tileMatrixSetLink = WMTSMetadata.parseTileMatrixSetLink(json.TileMatrixSetLink);
             this.title = WMTSMetadata.getValueTag(json.Title);
             this.abstract = WMTSMetadata.getValueTag(json.Abstract);
             this.wgs84BoundingBox = WMTSMetadata.parseWGS84BoundingBox(json.WGS84BoundingBox);
             this.boundingBox = WMTSMetadata.parseBoundingBox(json.BoundingBox);
             this.keywords = WMTSMetadata.parseKeywordList(json.Keywords);
-            this.metadata;
-            this.datasetDescriptionSummary;
-            this.otherSource;
-            this.dimension;
-            this.resourceURL;
+            this.metadata = null;
+            this.datasetDescriptionSummary = null;
+            this.otherSource = null;
+            this.dimension = null;
+            this.resourceURL = null;
         }
     };
 
 
     var TileMatrixSet = function(json) {
-        this.identifier;
-        this.supportedCRS;
-        this.wellKnownScaleSet;
-        this.tileMatrix;
+        this.identifier = null;
+        this.supportedCRS = null;
+        this.wellKnownScaleSet = null;
+        this.tileMatrix = null;
     };
 
 
     var TileMatrix = function(json) {
-        this.identifier;
-        this.scaleDenominator;
-        this.topLeftCorner;
-        this.tileWidth;
-        this.tileHeight;
-        this.matrixWidth;
-        this.matrixHeight;
+        this.identifier = null;
+        this.scaleDenominator = null;
+        this.topLeftCorner = null;
+        this.tileWidth = null;
+        this.tileHeight = null;
+        this.matrixWidth = null;
+        this.matrixHeight = null;
     };
 
     WMTSMetadata.getValueTag = function(json) {
@@ -226,7 +226,7 @@ define([], function() {
 
     WMTSMetadata.parseKeywordList = function(keywordsJson) {
         var keywords = [];
-        if(keywordsJson !== undefined && keywordsJson.hasOwnProperty['Keyword']) {
+        if(keywordsJson !== undefined && keywordsJson.hasOwnProperty('Keyword') ) {
             if(Array.isArray(keywordsJson.Keyword)) {
                 for (var keyword in keywordsJson.Keyword) {
                     keywords.push(WMTSMetadata.getValueTag(keywordsJson.Keyword[keyword]));
@@ -240,7 +240,7 @@ define([], function() {
 
     WMTSMetadata.parseVoice = function(json) {
         var voices = [];
-        if(json !== undefined && json.hasOwnProperty['Voice']) {
+        if(json !== undefined && json.hasOwnProperty('Voice') ) {
             if(Array.isArray(json.Voice)) {
                 for (var voice in json.Voice) {
                     voices.push(WMTSMetadata.getValueTag(json.Voice[voice]));
@@ -254,7 +254,7 @@ define([], function() {
 
     WMTSMetadata.parseFacsimile = function(json) {
         var phones = [];
-        if(json !== undefined && json.hasOwnProperty['Facsimile']) {
+        if(json !== undefined && json.hasOwnProperty('Facsimile') ) {
             if(Array.isArray(json.Facsimile)) {
                 for (var facs in json.Facsimile) {
                     phones.push(WMTSMetadata.getValueTag(json.Facsimile[facs]));
@@ -268,7 +268,7 @@ define([], function() {
 
     WMTSMetadata.parseAccessConstraints = function(json) {
         var acccessConstraints = [];
-        if(json !== undefined && json.hasOwnProperty['AccessConstraints']) {
+        if(json !== undefined && json.hasOwnProperty('AccessConstraints')) {
             if(Array.isArray(json.AccessConstraints)) {
                 for (var access in json.AccessConstraints) {
                     acccessConstraints.push(WMTSMetadata.getValueTag(json.AccessConstraints[access]));

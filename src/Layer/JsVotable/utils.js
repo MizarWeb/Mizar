@@ -64,7 +64,7 @@ define(function () {
     };
 
     Utils.findValueByKeyword = function(listKeywords, keyword) {
-        var result = undefined;
+        var result;
         for(i=0 ; i<listKeywords.length;i++) {
             var currentKeyword = listKeywords[i];
             if (currentKeyword[0] === keyword) {

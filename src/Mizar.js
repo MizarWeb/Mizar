@@ -355,19 +355,19 @@ define(["jquery", "underscore-min",
                 canvas: typeof options.canvas === "string" ? document.getElementById(options.canvas) : options.canvas
             };
             if (options.hasOwnProperty('configuration')) {
-                mizarOptions['configuration'] = options.configuration;
+                mizarOptions.configuration = options.configuration;
             } else {
-                mizarOptions['configuration'] = {};
+                mizarOptions.configuration = {};
             }
-            mizarOptions['configuration']['mizarAPIUrl'] = mizarAPIUrl;
+            mizarOptions.configuration.mizarAPIUrl = mizarAPIUrl;
             if (options.hasOwnProperty('skyContext')) {
-                mizarOptions['skyContext'] = options.skyContext;
+                mizarOptions.skyContext = options.skyContext;
             }
             if (options.hasOwnProperty('planetContext')) {
-                mizarOptions['planetContext'] = options.planetContext;
+                mizarOptions.planetContext = options.planetContext;
             }
             if (options.hasOwnProperty('groundContext')) {
-                mizarOptions['groundContext'] = options.groundContext;
+                mizarOptions.groundContext = options.groundContext;
             }
             return mizarOptions;
         }

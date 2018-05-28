@@ -46,6 +46,6 @@ define(["./Constants","./UtilsFits", "./Numeric", "./UtilsIntersection", "../Ren
             return obj;
         }
         
-    }
+    };
     
 });

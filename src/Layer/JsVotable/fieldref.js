@@ -47,7 +47,7 @@ define(["./utils", "./abstractNode"], function(Utils, AbstractNode) {
      * @returns {!String} the ref value
      */
     Fieldref.prototype.ref = function() {
-        return this.attributes["ref"];
+        return this.attributes.ref;
     };
 
     /**
@@ -55,7 +55,7 @@ define(["./utils", "./abstractNode"], function(Utils, AbstractNode) {
      * @returns {?String} the ucd value or null when no ucd attribute.
      */
     Fieldref.prototype.ucd = function() {
-        return this.attributes["ucd"];
+        return this.attributes.ucd;
     };
 
     /**
@@ -63,7 +63,7 @@ define(["./utils", "./abstractNode"], function(Utils, AbstractNode) {
      * @returns {?String} the utype value or null when no utype attribute.
      */
     Fieldref.prototype.utype = function() {
-        return this.attributes["utype"];
+        return this.attributes.utype;
     };
 
     return Fieldref;

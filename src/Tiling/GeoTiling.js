@@ -370,23 +370,17 @@ define(['../Utils/Utils', '../Utils/Constants', '../Utils/UtilsIntersection',
          Return tile of given longitude/latitude from tiles array if exists, null otherwise
          */
         GeoTiling.prototype.findInsideTile = function (lon, lat, tiles) {
-            //var coordinateSystem = mizar.getCrs();
-            //var geo = coordinateSystem.convert([lon, lat], Constants.CRS.Equatorial, coordinateSystem.getGeoideName);
-            //lon = geo[0];
-            //lat = geo[1];
+            var tile = null;
             for (var i = 0; i < tiles.length; i++) {
-                var tile = tiles[i];
-                //console.log("check tile "+i+" : ",tile);
+                tile = tiles[i];
                 var index = HEALPixBase.lonLat2pix(tile.order, lon, lat);
-                //console.log("index=",index);
                 if (index === tile.pixelIndex) {
                     return tile;
                 }
             }
-            // TODOFL : make a specific function for OpenSearchLayer 
             // index not found, check with lon lat
-            for (var i= 0; i < tiles.length; i++) {
-                var tile = tiles[i];
+            for (i= 0; i < tiles.length; i++) {
+                tile = tiles[i];
                 var found = ((lat<=tile.bound.north) && (lat>=tile.bound.south) && (lon<=tile.bound.east) && (lon>=tile.bound.west));
                 if (found === true) {
                     return tile;

@@ -313,7 +313,8 @@ define(['../Utils/Constants'], function (Constants) {
     };
 
     FeatureStyle.prototype.setStrokeColor = function(strokeColor) {
-        return this.strokeColor = strokeColor;
+        this.strokeColor = strokeColor;
+        return this.strokeColor;
     };
 
     FeatureStyle.prototype.getFillColor = function() {
@@ -321,7 +322,8 @@ define(['../Utils/Constants'], function (Constants) {
     };
 
     FeatureStyle.prototype.setFillColor = function(fillColor) {
-        return this.fillColor = fillColor;
+        this.fillColor = fillColor;
+        return this.fillColor;
     };
 
     FeatureStyle.prototype.getFillTextureURL = function() {
@@ -329,7 +331,8 @@ define(['../Utils/Constants'], function (Constants) {
     };
 
     FeatureStyle.prototype.setFillTextureURL = function(fillTextureURL) {
-        return this.fillTextureUrl = fillTextureURL;
+        this.fillTextureUrl = fillTextureURL;
+        return this.fillTextureUrl;
     };
 
     FeatureStyle.prototype.getFillTexture = function() {
@@ -337,7 +340,8 @@ define(['../Utils/Constants'], function (Constants) {
     };
 
     FeatureStyle.prototype.setFillTexture = function(fillTexture) {
-        return this.fillShader = fillTexture;
+        this.fillShader = fillTexture;
+        return this.fillShader;
     };
 
     FeatureStyle.prototype.getFillShader = function() {
@@ -345,7 +349,8 @@ define(['../Utils/Constants'], function (Constants) {
     };
 
     FeatureStyle.prototype.setFillShader = function(fillShader) {
-        return this.fillShader = fillShader;
+        this.fillShader = fillShader;
+        return this.fillShader;
     };
 
     FeatureStyle.prototype.getStrokeWidth = function() {
@@ -353,7 +358,8 @@ define(['../Utils/Constants'], function (Constants) {
     };
 
     FeatureStyle.prototype.setStrokeWidth = function(strokeWidth) {
-        return this.strokeWidth = strokeWidth;
+        this.strokeWidth = strokeWidth;
+        return this.strokeWidth;
     };
 
     FeatureStyle.prototype.getIconURL = function() {
@@ -361,7 +367,8 @@ define(['../Utils/Constants'], function (Constants) {
     };
 
     FeatureStyle.prototype.setIconURL = function(iconURL) {
-        return this.iconUrl = iconURL;
+        this.iconUrl = iconURL;
+        return this.iconUrl;
     };
 
     FeatureStyle.prototype.getIcon = function() {
@@ -385,7 +392,8 @@ define(['../Utils/Constants'], function (Constants) {
     };
 
     FeatureStyle.prototype.setTextColor = function(textColor) {
-        return this.textColor = textColor;
+        this.textColor = textColor;
+        return this.textColor;
     };
 
     FeatureStyle.prototype.isFill = function() {
@@ -393,7 +401,8 @@ define(['../Utils/Constants'], function (Constants) {
     };
 
     FeatureStyle.prototype.setFill = function(isFill) {
-        return this.isFill = isFill;
+        this.isFill = isFill;
+        return this.isFill;
     };
 
     FeatureStyle.prototype.getPointMaxSize = function () {
@@ -421,7 +430,8 @@ define(['../Utils/Constants'], function (Constants) {
     };
 
     FeatureStyle.prototype.setZIndex = function(zIndex) {
-        return this.zIndex = zIndex;
+        this.zIndex = zIndex;
+        return this.zIndex;
     };
 
     /**

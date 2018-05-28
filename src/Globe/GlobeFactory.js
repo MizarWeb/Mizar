@@ -51,6 +51,6 @@ define(["./Planet", "./Sky", "../Utils/Constants"], function(Planet, Sky, Consta
             return obj;
         }
         
-    }
+    };
     
 });

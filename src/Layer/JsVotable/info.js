@@ -56,7 +56,7 @@ define(["./utils","./abstractNode"], function(Utils, AbstractNode) {
      * @returns {!String} the name value
      */
     Info.prototype.name = function() {
-        return this.attributes["name"];
+        return this.attributes.name;
     };
 
     /**
@@ -64,7 +64,7 @@ define(["./utils","./abstractNode"], function(Utils, AbstractNode) {
      * @returns {!String} the value value
      */
     Info.prototype.value = function() {
-        return this.attributes["value"];
+        return this.attributes.value;
     };
 
     /**
@@ -72,7 +72,7 @@ define(["./utils","./abstractNode"], function(Utils, AbstractNode) {
      * @returns {?String} the ID value or null when no ID attribute.
      */
     Info.prototype.ID = function() {
-        return this.attributes["ID"];
+        return this.attributes.ID;
     };
 
     /**
@@ -80,7 +80,7 @@ define(["./utils","./abstractNode"], function(Utils, AbstractNode) {
      * @returns {?String} the unit value or null when no unit attribute.
      */
     Info.prototype.unit = function() {
-        return this.attributes["unit"];
+        return this.attributes.unit;
     };
 
     /**
@@ -88,7 +88,7 @@ define(["./utils","./abstractNode"], function(Utils, AbstractNode) {
      * @returns {?String} the xtype value or null when no xtype attribute.
      */
     Info.prototype.xtype = function() {
-        return this.attributes["xtype"];
+        return this.attributes.xtype;
     };
 
     /**
@@ -96,7 +96,7 @@ define(["./utils","./abstractNode"], function(Utils, AbstractNode) {
      * @returns {?String} the ref value or null when no ref attribute.
      */
     Info.prototype.ref = function() {
-        return this.attributes["ref"];
+        return this.attributes.ref;
     };
 
     /**
@@ -104,7 +104,7 @@ define(["./utils","./abstractNode"], function(Utils, AbstractNode) {
      * @returns {?String} the ucd value or null when no ucd attribute.
      */
     Info.prototype.ucd = function() {
-        return this.attributes["ucd"];
+        return this.attributes.ucd;
     };
 
     /**
@@ -112,7 +112,7 @@ define(["./utils","./abstractNode"], function(Utils, AbstractNode) {
      * @returns {?String} the utype value or null when no utype attribute.
      */
     Info.prototype.utype = function() {
-        return this.attributes["utype"];
+        return this.attributes.utype;
     };
 
     /**

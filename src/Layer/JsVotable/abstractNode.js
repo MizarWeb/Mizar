@@ -32,17 +32,18 @@ define(["./utils", "./cache"], function(Utils, Cache) {
     var AbstractNode = function(childNode) {
         this.attributes = {};
         if (childNode!=null && childNode.nodeType == 1) {
+            var cache = null;
             for(var i = 0, l = childNode.attributes.length; i < l; i++) {
                 var attribute = childNode.attributes[i];
                 this.attributes[attribute.name] = attribute.value;
             }
             if (this.attributes.hasOwnProperty("ID")) {
-                var cache = Singleton.getInstance();
-                cache.addEntryID(this.attributes["ID"], this);
+                cache = Singleton.getInstance();
+                cache.addEntryID(this.attributes.ID, this);
             }
             if (this.attributes.hasOwnProperty("name")) {
-                var cache = Singleton.getInstance();
-                cache.addEntryName(this.attributes["name"], this);
+                cache = Singleton.getInstance();
+                cache.addEntryName(this.attributes.name, this);
             }
         }
     };

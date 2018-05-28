@@ -72,7 +72,7 @@ define(['../Utils/Utils', '../Utils/Event', '../Navigation/NavigationHandlerFact
             this.ctx = ctx;
             this.renderContext = this.ctx.getRenderContext();
             this.options = options || {};
-            this.options['isMobile'] = ctx.getMizarConfiguration().isMobile;
+            this.options.isMobile = ctx.getMizarConfiguration().isMobile;
             if (this.options.isMobile === true) {
                 this.initTouchNavigation();
             }
@@ -128,7 +128,7 @@ define(['../Utils/Utils', '../Utils/Event', '../Navigation/NavigationHandlerFact
                 // Use mouse & keyboard as default handlers
                 handlers = _addDefaultHandlers.call(this, options);
             }
-            return handlers
+            return handlers;
         }
 
         /**
@@ -150,7 +150,7 @@ define(['../Utils/Utils', '../Utils/Event', '../Navigation/NavigationHandlerFact
             if (options.isMobile) {
                 defaultHandlers.push(NavigationHandlerFactory.create(Constants.HANDLER.Touch, options ? options.touch : null));
             }
-            return defaultHandlers
+            return defaultHandlers;
         }
 
         /**************************************************************************************************************/
@@ -167,7 +167,7 @@ define(['../Utils/Utils', '../Utils/Event', '../Navigation/NavigationHandlerFact
          * @memberOf AbstractContext#
          */
         AbstractNavigation.prototype.initTouchNavigation = function () {
-            this.options['touch'] = {
+            this.options.touch = {
                 inversed: this.ctx.globe.isSky(),
                 zoomOnDblClick: true
             };

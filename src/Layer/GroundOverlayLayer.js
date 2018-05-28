@@ -89,7 +89,7 @@ define(['../Utils/Utils', './AbstractLayer', '../Utils/Constants', '../Renderer/
 
             this.image.onload = function() {
                 this.layer.getGlobe().refresh();
-            }
+            };
         };
 
         /**************************************************************************************************************/
@@ -148,7 +148,7 @@ define(['../Utils/Utils', './AbstractLayer', '../Utils/Constants', '../Renderer/
 
             this.image.onload = function() {
                 this.layer.getGlobe().refresh();
-            }
+            };
         };
     
 

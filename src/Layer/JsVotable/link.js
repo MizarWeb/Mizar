@@ -52,7 +52,7 @@ define(["./utils","./abstractNode"], function(Utils, AbstractNode) {
      * @returns {?String} the ID value or null when no ID attribute.
      */
     Link.prototype.ID = function() {
-        return this.attributes["ID"];
+        return this.attributes.ID;
     };
 
     /**
@@ -60,7 +60,7 @@ define(["./utils","./abstractNode"], function(Utils, AbstractNode) {
      * @returns {?String} the content-role value or null when no content-role attribute.
      */
     Link.prototype.content_role = function() {
-        return this.attributes["content-role"];
+        return this.attributes.content-role;
     };
 
     /**
@@ -68,7 +68,7 @@ define(["./utils","./abstractNode"], function(Utils, AbstractNode) {
      * @returns {?String} the content-type value or null when no content-type attribute.
      */
     Link.prototype.content_type = function() {
-        return this.attributes["content-type"];
+        return this.attributes.content-type;
     };
 
     /**
@@ -76,7 +76,7 @@ define(["./utils","./abstractNode"], function(Utils, AbstractNode) {
      * @returns {?String} the title value or null when no title attribute.
      */
     Link.prototype.title = function() {
-        return this.attributes["title"];
+        return this.attributes.title;
     };
 
     /**
@@ -84,7 +84,7 @@ define(["./utils","./abstractNode"], function(Utils, AbstractNode) {
      * @returns {?String} the value value or null when no value attribute.
      */
     Link.prototype.value = function() {
-        return this.attributes["value"];
+        return this.attributes.value;
     };
 
     /**
@@ -92,7 +92,7 @@ define(["./utils","./abstractNode"], function(Utils, AbstractNode) {
      * @returns {?String} the href value or null when no href attribute.
      */
     Link.prototype.href = function() {
-        return this.attributes["href"];
+        return this.attributes.href;
     };
 
     /**
@@ -100,7 +100,7 @@ define(["./utils","./abstractNode"], function(Utils, AbstractNode) {
      * @returns {?String} the gref value or null when no gref attribute.
      */
     Link.prototype.gref = function() {
-        return this.attributes["gref"];
+        return this.attributes.gref;
     };
 
     /**
@@ -108,7 +108,7 @@ define(["./utils","./abstractNode"], function(Utils, AbstractNode) {
      * @returns {?String} the action value or null when no action attribute.
      */
     Link.prototype.action = function() {
-        return this.attributes["action"];
+        return this.attributes.action;
     };
 
     return Link;

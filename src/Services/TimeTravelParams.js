@@ -156,7 +156,15 @@ define(["jquery", "moment", "../Utils/Constants"], function ($, Moment, Constant
        
 
         if (this.stepKind === Constants.TIME_STEP.ENUMERATED) {
-            return this.enumeratedValues[this.currentIndex].period;
+            if (this.enumeratedValues.length>0) {
+                return this.enumeratedValues[this.currentIndex].period;
+            } else {
+                return {
+                    "from" : new Date(), 
+                    "to" : new Date()
+                };
+                        
+            }
         }
         
         fromDate = this.currentDate;
@@ -353,9 +361,12 @@ define(["jquery", "moment", "../Utils/Constants"], function ($, Moment, Constant
         if (!parameters) {
             return;
         }
+        var saveCurrentValue = this.currentDate;
+
         if (parameters.enumeratedValues) {
             this.addEnumeratedValuesForID(parameters.enumeratedValues,parameters.ID);
         }
+        this.setToNearestValue(saveCurrentValue);
     };
 
     /**************************************************************************************************************/
@@ -370,9 +381,44 @@ define(["jquery", "moment", "../Utils/Constants"], function ($, Moment, Constant
         if (!parameters) {
             return;
         }
+        var saveCurrentValue = this.currentDate;
+
         if (parameters.ID) {
             this.removeEnumeratedValuesForID(parameters.ID);
         }
+        this.setToNearestValue(saveCurrentValue);
+    };
+
+    /**************************************************************************************************************/
+
+    /**
+     * Set to nearest value (call only for enumerated)
+     * @function setToNearestValue
+     * @param Date date date
+     * @memberOf TimeTravelParams#
+     */
+    TimeTravelParams.prototype.setToNearestValue = function (date) {
+        var minDeltaIndex = null;
+        var minDelta = null;        
+        var delta = null;
+
+        for (var i=0;i<this.enumeratedValues.length;i++) {
+            delta = Math.abs(date-this.enumeratedValues[i].date);
+            if ( (minDelta === null) || (delta<minDelta) ) {
+                // found value more near
+                minDeltaIndex = i;
+                minDelta = delta;
+            }
+        }
+        if (minDeltaIndex !== null)  {
+            // go to this value
+            this.currentIndex = minDeltaIndex;
+            this.currentDate = this.enumeratedValues[this.currentIndex].date;
+        } else {
+            this.currentDate = new Date();
+            this.currentIndex = null;
+        }
+        this.apply();
     };
 
     /**************************************************************************************************************/
@@ -553,7 +599,7 @@ define(["jquery", "moment", "../Utils/Constants"], function ($, Moment, Constant
                 formatPattern = "Y";
             } else if ( (this.stepKind === Constants.TIME_STEP.QUARTER) || (this.stepKind === Constants.TIME_STEP.MONTH) ) {
                 formatPattern = "MMM Y";
-            } else if ( (this.stepKind === Constants.TIME_STEP.WEEK) || (this.stepKind === Constants.TIME_STEP.DAY) ) {
+            } else if ( (this.stepKind === Constants.TIME_STEP.WEEK) || (this.stepKind === Constants.TIME_STEP.DAY) || (this.stepKind === Constants.TIME_STEP.ENUMERATED)) {
                 formatPattern = "Do MMM Y";
             } else if ( (this.stepKind === Constants.TIME_STEP.HOUR) || (this.stepKind === Constants.TIME_STEP.MINUTE) ) {
                 formatPattern = "Do MMM Y HH:mm";
@@ -575,7 +621,11 @@ define(["jquery", "moment", "../Utils/Constants"], function ($, Moment, Constant
      */
     TimeTravelParams.prototype.getCurrentDisplayDate = function() {
         if (this.stepKind === Constants.TIME_STEP.ENUMERATED) {
-            return this.enumeratedValues[this.currentIndex].display;
+            if (this.enumeratedValues.length>0) {
+                return this.enumeratedValues[this.currentIndex].display;
+            } else {
+                return this.getDateFormated(new Date());
+            }
         } else {
             return this.getDateFormated(this.currentDate);
         }
@@ -611,6 +661,7 @@ define(["jquery", "moment", "../Utils/Constants"], function ($, Moment, Constant
         }
     };
 
+    // Constant when no layer ID associated
     TimeTravelParams.NO_ID = "NO_ID";
 
     return TimeTravelParams;

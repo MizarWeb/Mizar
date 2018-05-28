@@ -56,7 +56,7 @@ define(["../utils"], function (Utils) {
         };
         var coosys = findAndGetGlobalCoosys(votable);
         if(coosys != null) {
-            featureCollection["crs"] = {
+            featureCollection.crs = {
                     "type": "name",
                     "properties": {
                         "name": coosys
@@ -68,7 +68,7 @@ define(["../utils"], function (Utils) {
         for(var i=0; i<resources.length;i++) {
             processResource(resources[i], features);
         }
-        featureCollection["features"] = features;
+        featureCollection.features = features;
 
         /**
          * Finds and get the Coosys if this one is set global to the Votable.
@@ -100,9 +100,9 @@ define(["../utils"], function (Utils) {
         for (var i=0;i<resourcesOrTables.length;i++) {
             var resourceOrTable = resourcesOrTables[i];
             if (resourceOrTable.hasOwnProperty("RESOURCE")) {
-                processResource(resourceOrTable["RESOURCE"], features);
+                processResource(resourceOrTable.RESOURCE, features);
             } else if (resourceOrTable.hasOwnProperty("TABLE")) {
-                processTable(resourceOrTable["TABLE"], features);
+                processTable(resourceOrTable.TABLE, features);
             }
         }
     }
@@ -117,24 +117,23 @@ define(["../utils"], function (Utils) {
         var data = table.getData();
         var trs;
         var infos = table.getInfos();
+        var tableData = null;
         switch (data.getDataImplementationName()) {
             case "TableData":
-                var tableData = data.getData();
+                tableData = data.getData();
                 trs = tableData.getTrs();
                 break;
             case "Binary":
                 var binary = data.getData();
-                var tableData = binary.getStream().getContent(true, fields);
+                tableData = binary.getStream().getContent(true, fields);
                 trs = tableData.getTrs();
                 break;
             case "Binary2":
                 var binary2 = data.getData();
                 throw new Error("Binary2 not implemented");
-                break;
             case "Fits":
                 var fits = data.getData();
                 throw new Error("Fits not implemented");
-                break;
             default:
                 throw new Error("Type of data not implemented");
         }
@@ -170,6 +169,7 @@ define(["../utils"], function (Utils) {
             "properties":{}
         };
         var coreMetadata = {};
+        var properties = null;
         for (var i=0;i<tds.length;i++) {
             var td = tds[i];
             var field = fields[i];
@@ -180,23 +180,23 @@ define(["../utils"], function (Utils) {
             var value = td.getContent();
             var name = field.name();
             if (filter(UCD_RA,ucd)) {
-                coreMetadata["RA"] = Number.parseFloat(value);
-                coreMetadata["COOSYS"] = field.ref();
+                coreMetadata.RA = Number.parseFloat(value);
+                coreMetadata.COOSYS = field.ref();
             } else if(filter(UCD_DEC,ucd)) {
-                coreMetadata["DEC"] = Number.parseFloat(value);
+                coreMetadata.DEC = Number.parseFloat(value);
             } else if(filter(UCD_ID,ucd)) {
-                coreMetadata["ID"] = value;
+                coreMetadata.ID = value;
             } else {
-                var properties = feature.properties;
+                properties = feature.properties;
                 if(value != nullValue) {
                     properties[name] = parseDatatype(value, datatype);
                 }
             }
         }
         if(!coreMetadata.hasOwnProperty("ID")) {
-            coreMetadata["ID"] = Utils.guid();
+            coreMetadata.ID = Utils.guid();
         }
-        for(var i=0 ;i<infos.length; i++) {
+        for(i=0 ;i<infos.length; i++) {
             var info = infos[i];
             properties[info.name()] = info.value();
         }
@@ -211,15 +211,15 @@ define(["../utils"], function (Utils) {
                 }
             }
         };
-        feature["geometry"] = geometry;
+        feature.geometry = geometry;
 
         /**
          * Checks if the core metadata is filled.
          * @param coreMetadata
          */
         function checkCoreMetadata(coreMetadata) {
-            if (!(coreMetadata.hasOwnProperty("RA") && coreMetadata.hasOwnProperty("DEC")
-            && coreMetadata.hasOwnProperty("COOSYS") && coreMetadata.hasOwnProperty("ID"))) {
+            if (!(coreMetadata.hasOwnProperty("RA") && coreMetadata.hasOwnProperty("DEC") &&
+               coreMetadata.hasOwnProperty("COOSYS") && coreMetadata.hasOwnProperty("ID"))) {
                 throw new Error("core metadata missing "+JSON.stringify(coreMetadata));
             }
         }

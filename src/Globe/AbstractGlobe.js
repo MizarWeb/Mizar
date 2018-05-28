@@ -113,7 +113,7 @@ define(['../Utils/Event', '../Utils/Utils',
             } else {
                 intersection = ray.sphereIntersect([0, 0, 0], crs.getGeoide().getRadius());
             }
-            return intersection
+            return intersection;
         }
 
         /**

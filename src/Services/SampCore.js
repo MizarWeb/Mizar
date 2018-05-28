@@ -290,6 +290,6 @@ define(["jquery", "underscore-min", "../Parser/JsonProcessor", "../Gui/dialog/Er
             isConnected: function () {
                 return connector.connection;
             }
-        }
+        };
 
     });

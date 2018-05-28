@@ -46,7 +46,7 @@ define(["./utils","./abstractNode"], function(Utils, AbstractNode) {
      * @returns {!String} the ref value
      */
     Paramref.prototype.ref = function() {
-        return this.attributes["ref"];
+        return this.attributes.ref;
     };
 
     /**
@@ -54,7 +54,7 @@ define(["./utils","./abstractNode"], function(Utils, AbstractNode) {
      * @returns {?String} the ucd value or null when no ucd attribute.
      */
     Paramref.prototype.ucd = function() {
-        return this.attributes["ucd"];
+        return this.attributes.ucd;
     };
 
     /**
@@ -62,7 +62,7 @@ define(["./utils","./abstractNode"], function(Utils, AbstractNode) {
      * @returns {?String} the utype value or null when no value attribute.
      */
     Paramref.prototype.utype = function() {
-        return this.attributes["utype"];
+        return this.attributes.utype;
     };
 
     return Paramref;

@@ -54,7 +54,7 @@ define(['./AbstractHipsLayer', '../Renderer/FeatureStyle', '../Renderer/VectorRe
             var i;
             var propertiesObj = new Properties(this.proxify(options.baseUrl) + '/properties');
             var properties = propertiesObj.getProperties();
-            var hips_order = properties['hips_order'];
+            var hips_order = properties.hips_order;
             this.serviceUrl = this.proxify(options.baseUrl);
             this.minOrder = options.minOrder || 2;
             this.maxOrder = Number.parseInt(hips_order, 10);
@@ -65,7 +65,7 @@ define(['./AbstractHipsLayer', '../Renderer/FeatureStyle', '../Renderer/VectorRe
             xhr.send(null);
             var jsVotable = new JsVotable.Votable(xhr.responseXML);
             var resource = jsVotable.getResources()[0];
-            var table = resource.getResourcesOrTables()[0]["TABLE"];
+            var table = resource.getResourcesOrTables()[0].TABLE;
             this.fields = table.getFields();
             this.raColNumber = null;
             this.decColNumber = null;
@@ -207,8 +207,8 @@ define(['./AbstractHipsLayer', '../Renderer/FeatureStyle', '../Renderer/VectorRe
                         var csv = new CSV(xhr.response,"\t",headerInfo);
                         var geoJson = csv.getGeoJSon({"RA":self.raColNumber,"DEC":self.decColNumber,"ID":self.sourceId}, "Equatorial");
                         var features = geoJson.features;
-                        response["features"] = features;
-                        response["totalResults"] = features.length;
+                        response.features = features;
+                        response.totalResults = features.length;
 
                         //var response = JSON.parse(xhr.response);
 
@@ -417,8 +417,8 @@ define(['./AbstractHipsLayer', '../Renderer/FeatureStyle', '../Renderer/VectorRe
             }
 
             // Create children if needed
-            if (this.state === HipsCatLayer.TileState.LOADED && !this.complete
-                && tile.state === Tile.State.LOADED && tile.children && !this.childrenCreated) {
+            if (this.state === HipsCatLayer.TileState.LOADED && !this.complete && 
+                tile.state === Tile.State.LOADED && tile.children && !this.childrenCreated) {
                 for (i = 0; i < 4; i++) {
                     if (!tile.children[i].extension[this.layer.extId])
                         tile.children[i].extension[this.layer.extId] = new OSData(this.layer, tile.children[i], this);

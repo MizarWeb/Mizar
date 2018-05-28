@@ -131,8 +131,8 @@ define(['../Tiling/TileManager', '../Tiling/TilePool',
          */
         Sky.prototype.destroy = function () {
             AbstractGlobe.prototype.destroy.call(this);
-            this.tileManagers['Galactic'].tilePool.disposeAll();
-            this.tileManagers['Galactic'].reset();
+            this.tileManagers.Galactic.tilePool.disposeAll();
+            this.tileManagers.Galactic.reset();
             this.tileManagers = null;
         };
         

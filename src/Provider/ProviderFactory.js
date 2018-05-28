@@ -46,6 +46,6 @@ define(["./ConstellationProvider","./PlanetProvider","./StarProvider","./CraterP
             return obj;
         }
         
-    }
+    };
     
 });

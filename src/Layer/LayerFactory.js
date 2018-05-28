@@ -74,7 +74,6 @@ define(["jquery","../Utils/Constants", "./WMSLayer", "./WMTSLayer", "./WCSElevat
                     break;
                 case hipsProperties.DataProductType.cube:
                     throw new RangeError("Hips : cannot handle cube dataproduct", "LayerFactor.js");
-                    break;
                 case hipsProperties.DataProductType.image:
                     options.category = options.hasOwnProperty('category') ? options.category : "Image";
                     var hasPNG = ($.inArray(hipsProperties.HipsTileFormat.png, formats) !== -1);
@@ -267,5 +266,5 @@ define(["jquery","../Utils/Constants", "./WMSLayer", "./WMTSLayer", "./WCSElevat
                 return layer;
             }
 
-        }
+        };
     });
