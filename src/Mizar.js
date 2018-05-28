@@ -1331,21 +1331,13 @@ define(["jquery", "underscore-min",
          * When no context is specified, then the function is applied on the selected context.
          * @function getBaseElevation
          * @param {CONTEXT|undefined} mode - Context on which the function is applied
-         * @returns {boolean} True when the base elevation is set otherwise false
+         * @returns {WCSElevationLayer|null} True when the base elevation is set otherwise false
          * @memberOf Mizar#
          * @see {@link Mizar#setActivatedContext}
          * @see {@link Mizar#createContext}
          */
         Mizar.prototype.getBaseElevation = function (mode) {
-            var result;
-            try {
-                var gwLayer = _getContext.call(this, mode).getBaseElevation();
-                result = typeof gwLayer !== 'undefined';
-            } catch(e) {
-                result = false;
-                ErrorDialog.open("Cannot get the base elevation : <font style='color:orange'><b>" + e.message + "</b></font>", true);
-            }
-            return result;
+            return _getContext.call(this, mode).getBaseElevation();
         };
 
         /**

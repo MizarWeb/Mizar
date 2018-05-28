@@ -86,7 +86,7 @@ Globe.prototype.setBaseElevation = function (layer) {};
 
 /**
  * Returns the elevation layer.
- * @returns {WMSElevationLayer|WCSElevationLayer} the layer used
+ * @returns {WMSElevationLayer|WCSElevationLayer|null} the layer used
  */
 Globe.prototype.getBaseElevation = function () {};
 
