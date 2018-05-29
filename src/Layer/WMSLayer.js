@@ -150,6 +150,7 @@ define(["jquery", '../Utils/Utils', './AbstractLayer', './AbstractRasterLayer', 
         }
 
         WMSLayer.prototype.setTime = function(time) {
+            console.log("TIME WMS:"+(time.display ? time.display : time)+" "+this.name);
             AbstractLayer.prototype.setTime(time);
             this.setParameter("time", time);
         };
@@ -254,25 +255,52 @@ define(["jquery", '../Utils/Utils', './AbstractLayer', './AbstractRasterLayer', 
         WMSLayer.prototype.getUrl = function (tile) {
             // Just add the bounding box to the GetMap URL
             var bound = tile.bound;
-            var url;
+            var url, bbox;
             // we cannot reject the request to the server when the layer is defined as background otherwise there is
             // no image to show and Mizar is waiting for an image
-            if(this.isBackground() || _tileIsIntersectedFootprint(bound, this.restrictTo)) {
-                var bbox = bound.west + "," + bound.south + "," + bound.east + "," + bound.north;
+            if(this.isBackground()) {
+                bbox = bound.west + "," + bound.south + "," + bound.east + "," + bound.north;
                 url = this.getMapBaseUrl;
                 url = Utils.addParameterTo(url, "transparent", this.options.transparent);
                 url = Utils.addParameterTo(url, "crs", tile.config.srs);
                 url = Utils.addParameterTo(url, "bbox", bbox);
+            } else if (_tileIsIntersectedFootprint(bound, this.restrictTo)) {
+
+                if(this.containsDimension("time") && this.imageLoadedAtTime != null) {
+                    bbox = bound.west + "," + bound.south + "," + bound.east + "," + bound.north;
+                    url = this.getMapBaseUrl;
+                    url = Utils.addParameterTo(url, "transparent", this.options.transparent);
+                    url = Utils.addParameterTo(url, "crs", tile.config.srs);
+                    url = Utils.addParameterTo(url, "bbox", bbox);
+                } else if(!this.containsDimension("time")) {
+                    bbox = bound.west + "," + bound.south + "," + bound.east + "," + bound.north;
+                    url = this.getMapBaseUrl;
+                    url = Utils.addParameterTo(url, "transparent", this.options.transparent);
+                    url = Utils.addParameterTo(url, "crs", tile.config.srs);
+                    url = Utils.addParameterTo(url, "bbox", bbox);
+                } else {
+                    url = null;
+                }
+
             } else {
                 url = null;
             }
+
             return this.proxify(url, tile.level);
         };
 
         WMSLayer.prototype.setParameter = function (paramName,value) {
             if (paramName === "styles" || this.containsDimension(paramName)) {
-                if(this._hasToBeRefreshed(paramName, value)) {
-                    this.options[paramName] = value;
+                //TO DO
+                var currentValue;
+                if (paramName === "time") {
+                    currentValue = value.from ? value.from : value;
+                } else {
+                    currentValue = value;
+                }
+                console.log("TIME WMS parameter:"+(value.display ? value.display : value)+" "+this.name);
+                if(this._hasToBeRefreshed(paramName, currentValue)) {
+                    this.options[paramName] = currentValue;
                     this.getMapBaseUrl = _queryImage.call(this, this.getBaseUrl(), this.tilePixelSize, this.tilePixelSize, this.options);
                     this.forceRefresh();
                 }

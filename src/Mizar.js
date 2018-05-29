@@ -915,6 +915,7 @@ define(["jquery", "underscore-min",
          * @memberOf Mizar#
          */
         Mizar.prototype.setTime = function(time) {
+            console.log("TIME MIZAR:"+(time.display?time.display:time));
             this.activatedContext.setTime(time);
         };
 
@@ -1552,9 +1553,12 @@ define(["jquery", "underscore-min",
          * @memberOf Mizar#
          */
         Mizar.prototype.reloadLayer = function (layer) {
-            if (this.getActivatedContext() && this.getActivatedContext().globe) {
-                layer._detach(this.getActivatedContext().globe);
-                layer._attach(this.getActivatedContext().globe);
+            var ctx = this.getActivatedContext();
+            if (ctx) {
+                var tileManager = ctx.getTileManager();
+                tileManager.abortLayerRequests(layer);
+                layer._detach(ctx.globe);
+                layer._attach(ctx.globe);
             } else {
                console.log("Context not yet available");
             }

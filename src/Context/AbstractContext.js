@@ -466,20 +466,7 @@ define(["jquery", "underscore-min", "../Utils/Event", "moment", "../Utils/Utils"
                    });
                 }
                 var tileManager = this.getTileManager();
-                for (var i = tileManager.visibleTiles.length; i--; ) {
-                    var tile = tileManager.visibleTiles[i];
-                    var extension = tile.extension;
-                    if (extension.renderer) {
-                        var renderables = extension.renderer.renderables;
-                        for (var renderableIdx = renderables.length; renderableIdx--;) {
-                            var renderable = renderables[renderableIdx];
-                            if (renderable.bucket.layer.ID === layerID) {
-                                tileManager.abortBucketRequests(renderable.bucket);
-                                break;
-                            }
-                        }
-                    }
-                }
+                tileManager.abortLayerRequests(removedLayer);
 
                 removedLayer.unsubscribe(Constants.EVENT_MSG.LAYER_VISIBILITY_CHANGED, _handleCameraWhenLayerAdded);
                 ServiceFactory.create(Constants.SERVICE.PickingManager).removePickableLayer(removedLayer);

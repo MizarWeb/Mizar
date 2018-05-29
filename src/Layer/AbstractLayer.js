@@ -300,7 +300,34 @@ define(["jquery", "underscore-min", "../Utils/Event", "moment", "../Utils/Utils"
             };
         }
 
-        function _closestDate(startDate, stopDate, stepTime, myTime) {
+        function _convertTime(duration, timeObjDefinition) {
+            var convertedDuration;
+            switch (timeObjDefinition.unit) {
+                case "years":
+                    convertedDuration = duration.asYears();
+                    break;
+                case "months":
+                    convertedDuration = duration.asMonths();
+                    break;
+                case "days":
+                    convertedDuration = duration.asDays();
+                    break;
+                case "hours":
+                    convertedDuration = duration.asHours();
+                    break;
+                case "minutes":
+                    convertedDuration = duration.asMinutes();
+                    break;
+                case "seconds":
+                    convertedDuration = duration.asSeconds();
+                    break;
+                default :
+                    throw new Error();
+            }
+            return convertedDuration;
+        }
+
+        function _closestDate(startDate, stopDate, timeObjDefinition, myTime) {
             var startMoment = Moment.utc(startDate);
             var stopMoment = Moment.utc(stopDate);
             var myTimeMoment = Moment.utc(myTime);
@@ -310,11 +337,11 @@ define(["jquery", "underscore-min", "../Utils/Event", "moment", "../Utils/Utils"
                 var duration1 = Moment.duration(myTimeMoment.diff(startMoment));
                 var duration2 = Moment.duration(stopMoment.diff(myTimeMoment));
                 if (duration1 > duration2) {
-                    entier = Math.round(duration2.asHours() / stepTime);
-                    myDate = stopMoment.subtract({hours: entier * stepTime});
+                    entier = Math.round(_convertTime.call(this, duration2) / timeObjDefinition.step);
+                    myDate = stopMoment.subtract({hours: entier * timeObjDefinition.step});
                 } else {
-                    entier = Math.round(duration1.asHours() / stepTime);
-                    myDate = startMoment.add({hours: entier * stepTime});
+                    entier = Math.round(_convertTime.call(this, duration1) / timeObjDefinition.step);
+                    myDate = startMoment.add({hours: entier * timeObjDefinition.step});
                 }
                 myDate = myDate.toISOString();
             } else {
@@ -445,14 +472,14 @@ define(["jquery", "underscore-min", "../Utils/Event", "moment", "../Utils/Utils"
                     var timeObjDefinition = _timeResolution(frequencyTime);
                     var nbValues = Math.floor(stopTime.diff(startTime, timeObjDefinition.unit) / parseInt(timeObjDefinition.step));
                     for (var i = 0; i <= nbValues; i++) {
-                        var currentDate = Moment.utc(startDate);
+                        var currentDate = Moment.utc(startTime);
                         currentDate.add(i * timeObjDefinition.step, timeObjDefinition.unit);
                         format = currentDate.creationData().format ? currentDate.creationData().format : "YYYY";
                         timeResolution = Utils.formatResolution.call(this, format);
                         if (currentDate.isBetween(startDate, stopDate) || currentDate.isSame(startDate) || currentDate.isSame(stopDate) || 
                             startDate.isBetween(currentDate.startOf(timeResolution).toISOString(), currentDate.endOf(timeResolution).toISOString()) || 
                             stopDate.isBetween(currentDate.startOf(timeResolution).toISOString(), currentDate.endOf(timeResolution).toISOString())) {
-                            selectedDateFormatted = _closestDate.call(this, startTime, stopTime, 6, currentDate.toISOString());
+                            selectedDateFormatted = _closestDate.call(this, startTime, stopTime, timeObjDefinition, currentDate.toISOString());
                             break;
                         }
                     }
