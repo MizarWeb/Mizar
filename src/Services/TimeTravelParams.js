@@ -151,10 +151,6 @@ define(["jquery", "moment", "../Utils/Constants"], function ($, Moment, Constant
      * @memberOf TimeTravelParams#
      */
     TimeTravelParams.prototype.getCurrentPeriod = function() {
-        var fromDate = null;
-        var toDate = null;
-       
-
         if (this.stepKind === Constants.TIME_STEP.ENUMERATED) {
             if (this.enumeratedValues.length>0) {
                 return this.enumeratedValues[this.currentIndex].period;
@@ -167,14 +163,13 @@ define(["jquery", "moment", "../Utils/Constants"], function ($, Moment, Constant
             }
         }
         
-        fromDate = this.currentDate;
-        toDate = Moment(this.currentDate).add(this.stepValue,this.stepKind).subtract(1,Constants.TIME_STEP.MILLISECOND);
+        var fromDate = this.currentDate;
+        var toDate = Moment(this.currentDate).add(this.stepValue,this.stepKind).subtract(1,Constants.TIME_STEP.MILLISECOND);
 
-        var result = {
-            "from" : fromDate, 
-            "to" : toDate
+        return {
+            "from": fromDate,
+            "to": toDate
         };
-        return result;
     };
 
     /**************************************************************************************************************/
@@ -182,8 +177,8 @@ define(["jquery", "moment", "../Utils/Constants"], function ($, Moment, Constant
     /**
      * Set step
      * @function setStep
-     * @param String kind Constant for time step kind
-     * @param Integer value Number a step to do
+     * @param {String} kind Constant for time step kind
+     * @param {Integer} value Number a step to do
      * @memberOf TimeTravelParams#
      */
     TimeTravelParams.prototype.setStep = function (kind,value) {
@@ -196,7 +191,7 @@ define(["jquery", "moment", "../Utils/Constants"], function ($, Moment, Constant
     /**
      * Parse date
      * @function parseDate
-     * @param String value Date to parse
+     * @param {String} value Date to parse
      * @return {Json} date { "date", "display", "period" { "from", "to" } }
      * @memberOf TimeTravelParams#
      */
@@ -248,8 +243,8 @@ define(["jquery", "moment", "../Utils/Constants"], function ($, Moment, Constant
     /**
      * Sort enumerated values by date
      * @function sortTime
-     * @param Date a First date
-     * @param Date b Second date
+     * @param {Date} a First date
+     * @param {Date} b Second date
      */
     function sortTime(a,b){ 
         return a.date>b.date?1:-1;
@@ -260,8 +255,8 @@ define(["jquery", "moment", "../Utils/Constants"], function ($, Moment, Constant
     /**
      * Add date to enumerated values (check if still present)
      * @function addDateToEnumeratedValues
-     * @param Json date Date
-     * @param String ID Id
+     * @param {Json} date Date
+     * @param {String} ID Id
      * @memberOf TimeTravelParams#
      * @private
      */
@@ -290,7 +285,7 @@ define(["jquery", "moment", "../Utils/Constants"], function ($, Moment, Constant
     /**
      * Remove enumerated values for ID
      * @function removeEnumeratedValuesForID
-     * @param String ID Id
+     * @param {String} ID Id
      * @memberOf TimeTravelParams#
      * @private
      */
@@ -316,8 +311,8 @@ define(["jquery", "moment", "../Utils/Constants"], function ($, Moment, Constant
     /**
      * Add enumerated values for ID
      * @function addEnumeratedValuesForID
-     * @param Array(String) values Array of enumerated values
-     * @param String ID Id
+     * @param {Array<String>} values Array of enumerated values
+     * @param {String} ID Id
      * @memberOf TimeTravelParams#
      * @private
      */
@@ -395,7 +390,7 @@ define(["jquery", "moment", "../Utils/Constants"], function ($, Moment, Constant
     /**
      * Set to nearest value (call only for enumerated)
      * @function setToNearestValue
-     * @param Date date date
+     * @param {Date} date date
      * @memberOf TimeTravelParams#
      */
     TimeTravelParams.prototype.setToNearestValue = function (date) {
@@ -466,7 +461,7 @@ define(["jquery", "moment", "../Utils/Constants"], function ($, Moment, Constant
      * Add values for ID
      * @function addValuesForID
      * @param {JSON} values Values 
-     * @param String ID Id of layer
+     * @param {String} ID Id of layer
      * @memberOf TimeTravelParams#
      * @private
      */
@@ -493,7 +488,7 @@ define(["jquery", "moment", "../Utils/Constants"], function ($, Moment, Constant
     /**
      * Remove values for ID
      * @function resetValues
-     * @param String ID Id of layer
+     * @param {String} ID Id of layer
      * @memberOf TimeTravelParams#
      */
     TimeTravelParams.prototype.removeValuesForID = function(ID) {
@@ -589,7 +584,7 @@ define(["jquery", "moment", "../Utils/Constants"], function ($, Moment, Constant
     /**
      * Get date formated (when there is no enumerated values)
      * @function getDateFormated
-     * @param Date date Date
+     * @param {Date} date Date
      * @return String Date formated
      * @memberOf TimeTravelParams#
      */
@@ -644,7 +639,6 @@ define(["jquery", "moment", "../Utils/Constants"], function ($, Moment, Constant
         } else {
             return this.currentDate === this.startDate;
         }
-        return false;
     };
 
     /**
