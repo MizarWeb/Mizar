@@ -1327,6 +1327,20 @@ define(["jquery", "underscore-min",
         };
 
         /**
+         * Gets the base elevation to the {@link CONTEXT context}.<br/>
+         * When no context is specified, then the function is applied on the selected context.
+         * @function getBaseElevation
+         * @param {CONTEXT|undefined} mode - Context on which the function is applied
+         * @returns {WCSElevationLayer|null} True when the base elevation is set otherwise false
+         * @memberOf Mizar#
+         * @see {@link Mizar#setActivatedContext}
+         * @see {@link Mizar#createContext}
+         */
+        Mizar.prototype.getBaseElevation = function (mode) {
+            return _getContext.call(this, mode).getBaseElevation();
+        };
+
+        /**
          * Sets the base elevation by its layer's ID according to the {@link CONTEXT context}.<br/>
          * When no context is specified, then the function is applied on the selected context.
          * <b>Note:</b> The layer must be {@link Mizar#addLayer added} before

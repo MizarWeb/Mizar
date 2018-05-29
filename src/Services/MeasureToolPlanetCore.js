@@ -27,7 +27,7 @@ define(["jquery", "underscore-min", "../Utils/Constants",
     function ($, _, Constants,
               VectorLayer, Ray, Numeric, FeatureStyle) {
 
-        var navigation, mizarAPI, onselect, scale, measureLayer, self, dragging;
+        var navigation, mizarAPI, onselect, measureLayer, self, dragging;
 
         /**********************************************************************************************/
 
@@ -294,30 +294,30 @@ define(["jquery", "underscore-min", "../Utils/Constants",
          *
          * @param {Object} options
          *              <ul>
-         *                  <li>scale : number of intermediary points to compute</li>
+         *                  <li>nbPoints : number of intermediary points to compute</li>
          *              </ul>
          * @param {Array} firstPoint
          * @param {Array} secondPoint
          * @return {Array} intermediatePoints
          */
         function calculateIntermediateElevationPoint(options, firstPoint, secondPoint) {
-            var scale = options.scale | 50;
+            var nbPoints = options.nbPoints | 50;
             var deltaX = firstPoint[0] - secondPoint[0];
             var intervalX;
             if (deltaX > 180.0) {
                 deltaX = 360.0 - deltaX;
-                intervalX = -deltaX / scale;
+                intervalX = -deltaX / nbPoints;
             } else if (deltaX < -180.0) {
                 deltaX = 360.0 + deltaX;
-                intervalX = deltaX / scale;
+                intervalX = deltaX / nbPoints;
             } else {
-                intervalX = deltaX / scale;
+                intervalX = deltaX / nbPoints;
             }
-            var intervalY = (firstPoint[1] - secondPoint[1]) / scale;
+            var intervalY = (firstPoint[1] - secondPoint[1]) / nbPoints;
 
             var intermediatePoints = [];
             intermediatePoints[0] = firstPoint;
-            for (var i = 1; i < scale; i++) {
+            for (var i = 1; i < nbPoints; i++) {
 
                 var x = (intermediatePoints[i - 1][0] - intervalX);
                 if (x > 180.0) {
@@ -328,7 +328,7 @@ define(["jquery", "underscore-min", "../Utils/Constants",
                 var y = (intermediatePoints[i - 1][1] - intervalY);
                 intermediatePoints[i] = [x, y];
             }
-            intermediatePoints[scale] = secondPoint;
+            intermediatePoints[nbPoints] = secondPoint;
             return intermediatePoints;
         }
 
@@ -369,29 +369,16 @@ define(["jquery", "underscore-min", "../Utils/Constants",
             distance = Numeric.roundNumber(distance.toFixed(3), 2);
 
             var elevation = mizarAPI.getActivatedContext().getElevation(secondPoint[0], secondPoint[1]);
+            var scale = mizarAPI.getActivatedContext().getBaseElevation().getScale();
             elevation = Numeric.roundNumber(elevation / scale, 0);
             var pointElevation = [distance, elevation];
 
             self.elevations.push(pointElevation);
         }
 
-        function _scaleElevation(mizarAPI) {
-            var scaleElavation;
-            var elevationLayer = _.find(mizarAPI.getActivatedContext().getLayers(), function (obj) {
-                return obj.type === Constants.LAYER.WCSElevation || obj.type === Constants.LAYER.WMSElevation;
-            });
-            if (elevationLayer !== undefined) {
-                scaleElavation = elevationLayer.getScale();
-            } else {
-                scaleElavation = 1;
-            }
-            return scaleElavation;
-        }
-
         function updateContext(mizar) {
             mizarAPI = mizar;
             navigation = mizarAPI.getActivatedContext().getNavigation();
-            scale = _scaleElevation(mizarAPI);
             dragging = false;
 
             // Layer containing measure feature
@@ -413,7 +400,6 @@ define(["jquery", "underscore-min", "../Utils/Constants",
                 mizarAPI = options.mizar;
                 navigation = mizarAPI.getActivatedContext().getNavigation();
                 onselect = options.onselect;
-                scale = _scaleElevation(mizarAPI);
                 self = this;
                 dragging = false;
 

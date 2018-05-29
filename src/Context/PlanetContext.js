@@ -306,6 +306,14 @@ define(["jquery", "underscore-min", "../Utils/Utils", "./AbstractContext", "../U
         };
 
         /**
+         * @function getBaseElevation
+         * @memberOf PlanetContext#
+         */
+        PlanetContext.prototype.getBaseElevation = function () {
+            return this.globe.getBaseElevation();
+        };
+
+        /**
          * @function setCoordinateSystem
          * @memberOf PlanetContext#
          */
