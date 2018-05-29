@@ -88,16 +88,11 @@ define(["jquery", '../Utils/Utils', './AbstractLayer', './AbstractRasterLayer', 
             AbstractRasterLayer.prototype.constructor.call(this, options.type, options);
 
             this.timeTravelValues = null;
+
+            // If needed, try to fill time travel parameters
             if (this.autoFillTimeTravel === true)  {
                 if ( (options.dimension) && (options.dimension.time)) {
-                    if (options.dimension.time.value) {
-                        this.timeTravelValues = {
-                            "add" : {
-                                "enumeratedValues" : options.dimension.time.value.split(","),
-                                "ID" : this.ID
-                            }
-                        };
-                    }
+                    this.generateTimeTravel(options.dimension.time);
                 }
             }
 
