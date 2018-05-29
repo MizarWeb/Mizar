@@ -1065,6 +1065,106 @@ define(["jquery", "underscore-min", "../Utils/Event", "moment", "../Utils/Utils"
             return this.vectorLayer;
         };
 
+        /**
+         * Parse step string
+         * @function parseStepString
+         * @param {String} step Step string to parse
+         * @memberOf AbstractLayer#
+         */
+        AbstractLayer.prototype.parseStep = function(step) {
+            step = step;
+            if (step) {
+                var regexpWellFormed =  /^PT(\d*[Y|M|D|H|M|S])*$/;
+                var regexpStepCode = RegExp(/\d*[Y|M|D|H|M|S]/,"g");
+                var arrayStep = [];
+                
+                var match = regexpStepCode.exec(step);
+                while (match !== null) {
+                    arrayStep.push(match[0]);
+                    match = regexpStepCode.exec(step);
+                }
+                
+                // Get only first step (TODO: change if needed)
+                var regexpStepKind = RegExp(/[Y|M|D|H|M|S]/);
+                var regexpStepValue = RegExp(/\d*/);
+
+                match = regexpStepKind.exec(arrayStep[0]);
+                var stepKind = null;
+                var stepValue = null;
+                if (match) {
+                    stepKind = match[0];
+                }
+                match = regexpStepValue.exec(arrayStep[0]);                
+                if (match) {
+                    stepValue = match[0];
+                }
+                switch (stepKind) {
+                    case "Y" :
+                        stepKind = Constants.TIME_STEP.YEAR;
+                        break;
+                    case "M" :
+                        stepKind = Constants.TIME_STEP.MONTH;
+                        break;
+                    case "D" :
+                        stepKind = Constants.TIME_STEP.DAY;
+                        break;
+                    case "H" :
+                        stepKind = Constants.TIME_STEP.HOUR;
+                        break;
+                    case "M" :
+                        stepKind = Constants.TIME_STEP.MINUTE;
+                        break;
+                    case "S" :
+                        stepKind = Constants.TIME_STEP.SECOND;
+                        break;
+                }
+                return {
+                    "kind" : stepKind,
+                    "value" : stepValue
+                };
+            } else {
+                return null;
+            }
+        };
+
+        /**
+         * Decrypt time range to generate time travel informations
+         * @function generateTimeTravel
+         * @param {String} timeDetails Details of time range
+         * @memberOf AbstractLayer#
+         */
+        AbstractLayer.prototype.generateTimeTravel = function(timeDetails) {
+            if (timeDetails) {
+                // At least a comma ==> enumerated values
+                if (timeDetails.value.indexOf(",")>=0) {
+                    this.timeTravelValues = {
+                        "add" : {
+                            "enumeratedValues" : timeDetails.value.split(","),
+                            "ID" : this.ID
+                        }
+                    };
+                } else if (timeDetails.value.indexOf("/")>=0) {
+                    // Else at least one slash ==> interval
+                    var tmpArray = timeDetails.value.split("/");
+                    var start,end,step;
+                    if (tmpArray.length === 3) {
+                        start = Moment(tmpArray[0]);
+                        end = Moment(tmpArray[1]);
+                        step = this.parseStep(tmpArray[2]);
+                        this.timeTravelValues = {
+                            "add" : {
+                                "start" : start,
+                                "end"   : end,
+                                "stepKind " : step.kind,
+                                "stepValue" : step.value,
+                                "ID" : this.ID
+                            }
+                        };
+                    }
+                }
+            }
+        };
+
         return AbstractLayer;
 
     });

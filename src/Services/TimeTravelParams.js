@@ -332,6 +332,7 @@ define(["jquery", "moment", "../Utils/Constants"], function ($, Moment, Constant
 
         
         // TODO soon : check format, need conversion ?
+        var date = null;
         for (var i=0;i<values.length;i++) {
             date = this.parseDate(values[i]);
             this.addDateToEnumeratedValues(date,ID);
