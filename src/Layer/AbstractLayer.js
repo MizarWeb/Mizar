@@ -337,10 +337,10 @@ define(["jquery", "underscore-min", "../Utils/Event", "moment", "../Utils/Utils"
                 var duration1 = Moment.duration(myTimeMoment.diff(startMoment));
                 var duration2 = Moment.duration(stopMoment.diff(myTimeMoment));
                 if (duration1 > duration2) {
-                    entier = Math.round(_convertTime.call(this, duration2) / timeObjDefinition.step);
+                    entier = Math.round(_convertTime.call(this, duration2, timeObjDefinition) / timeObjDefinition.step);
                     myDate = stopMoment.subtract({hours: entier * timeObjDefinition.step});
                 } else {
-                    entier = Math.round(_convertTime.call(this, duration1) / timeObjDefinition.step);
+                    entier = Math.round(_convertTime.call(this, duration1, timeObjDefinition) / timeObjDefinition.step);
                     myDate = startMoment.add({hours: entier * timeObjDefinition.step});
                 }
                 myDate = myDate.toISOString();

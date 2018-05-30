@@ -90,10 +90,8 @@ define(["jquery", '../Utils/Utils', './AbstractLayer', './AbstractRasterLayer', 
             this.timeTravelValues = null;
 
             // If needed, try to fill time travel parameters
-            if (this.autoFillTimeTravel === true)  {
-                if ( (options.dimension) && (options.dimension.time)) {
-                    this.generateTimeTravel(options.dimension.time);
-                }
+            if (this.autoFillTimeTravel === true && this.containsDimension('time'))  {
+                this.generateTimeTravel(options.dimension.time);
             }
 
             this.getMapBaseUrl = _queryImage.call(this, this.getBaseUrl(), this.tilePixelSize, this.tilePixelSize, options);
