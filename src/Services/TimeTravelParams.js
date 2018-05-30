@@ -537,7 +537,7 @@ define(["jquery", "moment", "../Utils/Constants"], function ($, Moment, Constant
             }
         }
          
-        oldCurrentDate = this.currentDate;
+        var oldCurrentDate = this.currentDate;
 
         this.currentDate = Moment(this.currentDate).subtract(this.stepValue,this.stepKind);
 
@@ -568,7 +568,7 @@ define(["jquery", "moment", "../Utils/Constants"], function ($, Moment, Constant
 
 
 
-        oldCurrentDate = this.currentDate;
+        var oldCurrentDate = this.currentDate;
 
         this.currentDate = Moment(this.currentDate).add(this.stepValue,this.stepKind);
 
@@ -651,7 +651,7 @@ define(["jquery", "moment", "../Utils/Constants"], function ($, Moment, Constant
         if (this.stepKind === Constants.TIME_STEP.ENUMERATED) {
             return (this.currentIndex === (this.enumeratedValues.length-1));
         } else {
-            nextDate = Moment(this.currentDate).add(this.stepValue,this.stepKind);
+            var nextDate = Moment(this.currentDate).add(this.stepValue,this.stepKind);
             return (nextDate > this.endDate);
         }
     };
