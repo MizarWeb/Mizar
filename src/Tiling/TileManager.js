@@ -159,7 +159,7 @@ define(['./Tile', './GeoTiling', './TilePool', './TileRequest', './TileIndexBuff
             for (var i = tiles.length; i--; ) {
                 var tile = tiles[i];
                 var extension = tile.extension;
-                if (extension.renderer) {
+                if (extension && extension.renderer) {
                     var renderables = extension.renderer.renderables;
                     for (var renderableIdx = renderables.length; renderableIdx--;) {
                         var renderable = renderables[renderableIdx];
@@ -321,7 +321,9 @@ define(['./Tile', './GeoTiling', './TilePool', './TileRequest', './TileIndexBuff
         };
 
         TileManager.prototype.abortLayerRequests = function(layer, callback) {
-            _abortTilesForLayer.call(this, this.pendingRequests, layer);
+            //TODO Ce n'est pas sur pendingRequest mais sur les tiles de pending request
+            //_abortTilesForLayer.call(this, this.pendingRequests, layer);
+            this.abortRequests();
             _abortTilesForLayer.call(this, this.visibleTiles, layer, callback);
         };
 
