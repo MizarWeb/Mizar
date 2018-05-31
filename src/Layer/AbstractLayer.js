@@ -866,68 +866,6 @@ define(["jquery", "underscore-min", "../Utils/Event", "moment", "../Time/Time", 
         };
 
         /**
-         * Parse step string
-         * @function parseStepString
-         * @param {String} step Step string to parse
-         * @memberOf AbstractLayer#
-         */
-        AbstractLayer.prototype.parseStep = function (step) {
-            step = step;
-            if (step) {
-                var regexpWellFormed = /^PT(\d*[Y|M|D|H|M|S])*$/;
-                var regexpStepCode = RegExp(/\d*[Y|M|D|H|M|S]/, "g");
-                var arrayStep = [];
-
-                var match = regexpStepCode.exec(step);
-                while (match !== null) {
-                    arrayStep.push(match[0]);
-                    match = regexpStepCode.exec(step);
-                }
-
-                // Get only first step (TODO: change if needed)
-                var regexpStepKind = RegExp(/[Y|M|D|H|M|S]/);
-                var regexpStepValue = RegExp(/\d*/);
-
-                match = regexpStepKind.exec(arrayStep[0]);
-                var stepKind = null;
-                var stepValue = null;
-                if (match) {
-                    stepKind = match[0];
-                }
-                match = regexpStepValue.exec(arrayStep[0]);
-                if (match) {
-                    stepValue = match[0];
-                }
-                switch (stepKind) {
-                    case "Y" :
-                        stepKind = Constants.TIME_STEP.YEAR;
-                        break;
-                    case "M" :
-                        stepKind = Constants.TIME_STEP.MONTH;
-                        break;
-                    case "D" :
-                        stepKind = Constants.TIME_STEP.DAY;
-                        break;
-                    case "H" :
-                        stepKind = Constants.TIME_STEP.HOUR;
-                        break;
-                    case "M" :
-                        stepKind = Constants.TIME_STEP.MINUTE;
-                        break;
-                    case "S" :
-                        stepKind = Constants.TIME_STEP.SECOND;
-                        break;
-                }
-                return {
-                    "kind": stepKind,
-                    "value": stepValue
-                };
-            } else {
-                return null;
-            }
-        };
-
-        /**
          * Decrypt time range to generate time travel informations
          * @function generateTimeTravel
          * @param {String} timeDetails Details of time range
@@ -935,28 +873,49 @@ define(["jquery", "underscore-min", "../Utils/Event", "moment", "../Time/Time", 
          */
         AbstractLayer.prototype.generateTimeTravel = function (timeDetails) {
             if (timeDetails) {
-                // At least a comma ==> enumerated values
-                if (timeDetails.value.indexOf(",") >= 0) {
+                // In a general case, timeDetails.value could have this shape:
+                //  val1,val2,min1/max1/step1,val3,min2/max2/step2
+                var timesDefinition = timeDetails.value.split(",");
+                var distinctValues = []; // records the distinct values : val1,val2,val3
+                var sampleValues = []; // records the samples values : min1/max1/step1,min2/max2/step2
+                var timeDefinition;
+
+                // We need to iter because it is possible that we have a mix of distinct values and sample values
+                for (var i=0;i<timesDefinition.length;i++) {
+                    timeDefinition = timesDefinition[i].trim();
+                    if(Time.isDistinctValue(timeDefinition)) {
+                        distinctValues.push(timeDefinition);
+                    } else if(Time.isSampling(timeDefinition)) {
+                        sampleValues.push(timeDefinition);
+                    } else {
+                        console.log("This should be refactored if we handle an interval min/max at the server level")
+                    }
+                }
+                // Add distinct values in time travel
+                if (distinctValues.length > 0) {
                     this.timeTravelValues = {
                         "add": {
-                            "enumeratedValues": timeDetails.value.split(","),
+                            "enumeratedValues": distinctValues,
                             "ID": this.ID
                         }
                     };
-                } else if (timeDetails.value.indexOf("/") >= 0) {
-                    // Else at least one slash ==> interval
-                    var tmpArray = timeDetails.value.split("/");
-                    var start, end, step;
-                    if (tmpArray.length === 3) {
+                }
+
+                // Add sample values in time travel
+                if(sampleValues.length > 0) {
+                    var start,end, step, tmpArray, sampleDefinition;
+                    for (var j=0; i<sampleValues.length; j++) {
+                        sampleDefinition = sampleValues[j];
+                        tmpArray = sampleDefinition.split("/");
                         start = Moment(tmpArray[0]);
                         end = Moment(tmpArray[1]);
-                        step = this.parseStep(tmpArray[2]);
+                        step = Time.timeResolution(tmpArray[2]);
                         this.timeTravelValues = {
                             "add": {
                                 "start": start,
                                 "end": end,
-                                "stepKind ": step.kind,
-                                "stepValue": step.value,
+                                "stepKind ": step.unit,
+                                "stepValue": step.step,
                                 "ID": this.ID
                             }
                         };

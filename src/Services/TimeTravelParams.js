@@ -67,7 +67,7 @@ define(["jquery", "moment", "../Utils/Constants"], function ($, Moment, Constant
      * @memberOf TimeTravelParams#
      */
     TimeTravelParams.prototype.setStartDate = function (date) {
-        this.startDate = Moment(date);
+        this.startDate = Moment.utc(date);
     };
 
     /**************************************************************************************************************/
@@ -79,7 +79,7 @@ define(["jquery", "moment", "../Utils/Constants"], function ($, Moment, Constant
      * @memberOf TimeTravelParams#
      */
     TimeTravelParams.prototype.setEndDate = function (date) {
-        this.endDate = Moment(date);
+        this.endDate = Moment.utc(date);
     };
 
     /**************************************************************************************************************/
@@ -91,7 +91,7 @@ define(["jquery", "moment", "../Utils/Constants"], function ($, Moment, Constant
      * @memberOf TimeTravelParams#
      */
     TimeTravelParams.prototype.setCurrentDate = function (date) {
-        this.currentDate = Moment(date);
+        this.currentDate = Moment.utc(date);
     };
 
     /**************************************************************************************************************/
@@ -164,7 +164,7 @@ define(["jquery", "moment", "../Utils/Constants"], function ($, Moment, Constant
         }
         
         var fromDate = this.currentDate;
-        var toDate = Moment(this.currentDate).add(this.stepValue,this.stepKind).subtract(1,Constants.TIME_STEP.MILLISECOND);
+        var toDate = Moment.utc(this.currentDate).add(this.stepValue,this.stepKind).subtract(1,Constants.TIME_STEP.MILLISECOND);
 
         return {
             "from": fromDate,
@@ -206,30 +206,30 @@ define(["jquery", "moment", "../Utils/Constants"], function ($, Moment, Constant
         if (typeof value === "string") {
             // Year management
             if (regExpYear.test(value)) {
-                date = Moment(value,"YYYY");
+                date = Moment.utc(value,"YYYY");
                 period = {};
                 period.from = date;
-                period.to = Moment(period.from).add(1,Constants.TIME_STEP.YEAR).subtract(1,Constants.TIME_STEP.MILLISECOND);
+                period.to = Moment.utc(period.from).endOf(Constants.TIME_STEP.YEAR);
             }
             // Month management
             if (regExpMonth.test(value)) {
-                date = Moment(value,"YYYY-MM");
+                date = Moment.utc(value,"YYYY-MM");
                 period = {};
                 period.from = date;
-                period.to = Moment(period.from).add(1,Constants.TIME_STEP.MONTH).subtract(1,Constants.TIME_STEP.MILLISECOND);
+                period.to = Moment.utc(period.from).endOf(Constants.TIME_STEP.MONTH);
             }
             // Day management
             if (regExpDay.test(value)) {
-                date = Moment(value,"YYYY-MM-DD");
+                date = Moment.utc(value,"YYYY-MM-DD");
                 period = {};
                 period.from = date;
-                period.to = Moment(period.from).add(1,Constants.TIME_STEP.DAY).subtract(1,Constants.TIME_STEP.MILLISECOND);
+                period.to = Moment.utc(period.from).endOf(Constants.TIME_STEP.DAY);
             }
             if (date === null) {
-                date = Moment(value);
+                date = Moment.utc(value);
             }
         } else {
-            date = Moment(value);
+            date = Moment.utc(value);
         }
         return {
                     "date" : date,
@@ -473,8 +473,8 @@ define(["jquery", "moment", "../Utils/Constants"], function ($, Moment, Constant
             this.addEnumeratedValuesForID(values.enumeratedValues,ID);
             // add enumerated values
         } else {
-            this.startDate = Moment(values.start);
-            this.endDate = Moment(values.end);
+            this.startDate = Moment.utc(values.start);
+            this.endDate = Moment.utc(values.end);
             this.stepKind = values.stepKind;
             this.stepValue = values.stepValue;
             // compile data with previous, manage ID
@@ -531,7 +531,7 @@ define(["jquery", "moment", "../Utils/Constants"], function ($, Moment, Constant
         if (this.stepKind === Constants.TIME_STEP.ENUMERATED) {
             if (this.currentIndex>0) {
                 this.currentIndex--;
-                this.currentDate = this.enumeratedValues[this.currentIndex];
+                this.currentDate = this.enumeratedValues[this.currentIndex].date;
                 this.apply();
                 return;
             }
@@ -539,7 +539,7 @@ define(["jquery", "moment", "../Utils/Constants"], function ($, Moment, Constant
          
         var oldCurrentDate = this.currentDate;
 
-        this.currentDate = Moment(this.currentDate).subtract(this.stepValue,this.stepKind);
+        this.currentDate = Moment.utc(this.currentDate).subtract(this.stepValue,this.stepKind);
 
         if (this.currentDate < this.startDate) {
             this.currentDate = oldCurrentDate;
@@ -560,7 +560,7 @@ define(["jquery", "moment", "../Utils/Constants"], function ($, Moment, Constant
         if (this.stepKind === Constants.TIME_STEP.ENUMERATED) {
             if (this.currentIndex<(this.enumeratedValues.length-1)) {
                 this.currentIndex++;
-                this.currentDate = this.enumeratedValues[this.currentIndex];
+                this.currentDate = this.enumeratedValues[this.currentIndex].date;
                 this.apply();
                 return;
             }
@@ -570,7 +570,7 @@ define(["jquery", "moment", "../Utils/Constants"], function ($, Moment, Constant
 
         var oldCurrentDate = this.currentDate;
 
-        this.currentDate = Moment(this.currentDate).add(this.stepValue,this.stepKind);
+        this.currentDate = Moment.utc(this.currentDate).add(this.stepValue,this.stepKind);
 
         if (this.currentDate > this.endDate) {
             this.currentDate = oldCurrentDate;
@@ -604,7 +604,7 @@ define(["jquery", "moment", "../Utils/Constants"], function ($, Moment, Constant
             } else {
                 formatPattern = "Do MMM Y   HH:mm:ss.SSS";
             }    
-            return Moment(this.currentDate).format(formatPattern);
+            return Moment.utc(this.currentDate).format(formatPattern);
     };
 
     /**************************************************************************************************************/
@@ -651,7 +651,7 @@ define(["jquery", "moment", "../Utils/Constants"], function ($, Moment, Constant
         if (this.stepKind === Constants.TIME_STEP.ENUMERATED) {
             return (this.currentIndex === (this.enumeratedValues.length-1));
         } else {
-            var nextDate = Moment(this.currentDate).add(this.stepValue,this.stepKind);
+            var nextDate = Moment.utc(this.currentDate).add(this.stepValue,this.stepKind);
             return (nextDate > this.endDate);
         }
     };

@@ -168,7 +168,7 @@ define(["jquery", "moment", "../Utils/Constants", "../Utils/Utils"], function ($
      * @private
      */
     function _isDistinctValue(timeDefinition) {
-        return !_isSampling(timeDefinition);
+        return !_isSampling(timeDefinition) && timeDefinition.indexOf(",") === -1;
     }
 
     /**
