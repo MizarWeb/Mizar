@@ -96,7 +96,6 @@ define(["jquery", '../Utils/Utils', './AbstractLayer', './AbstractRasterLayer', 
 
             this.getMapBaseUrl = _queryImage.call(this, this.getBaseUrl(), this.tilePixelSize, this.tilePixelSize, options);
             this.layers = options.layers;
-            this.imageLoadedAtTime = null;
 
         };
 
@@ -116,6 +115,7 @@ define(["jquery", '../Utils/Utils', './AbstractLayer', './AbstractRasterLayer', 
             url = Utils.addParameterTo(url, "styles", options.hasOwnProperty('styles') ? options.styles : "");
             url = Utils.addParameterTo(url, "format", options.hasOwnProperty('format') ? options.format : 'image/jpeg');
 
+            // transparent option
             if (options.hasOwnProperty('transparent')) {
                 url = Utils.addParameterTo(url, "transparent", options.transparent);
             }
@@ -123,9 +123,14 @@ define(["jquery", '../Utils/Utils', './AbstractLayer', './AbstractRasterLayer', 
             url = Utils.addParameterTo(url, "height", yTilePixelSize);
 
             if (options.hasOwnProperty('time')) {
-                url = Utils.addParameterTo(url, "time", this.imageLoadedAtTime == null ? options.time:this.imageLoadedAtTime);
-            } else {
-                this.imageLoadedAtTime = null;
+                url = Utils.addParameterTo(url, "time", options.time);
+            }
+
+            // custom params
+            for (var param in this.imageLoadedAtTime) {
+                if(param !== "time" && this.imageLoadedAtTime[param] !== null) {
+                    url = Utils.addParameterTo(url, param, this.imageLoadedAtTime[param]);
+                }
             }
 
             return url;
@@ -251,21 +256,8 @@ define(["jquery", '../Utils/Utils', './AbstractLayer', './AbstractRasterLayer', 
             var url, bbox;
             // we cannot reject the request to the server when the layer is defined as background otherwise there is
             // no image to show and Mizar is waiting for an image
-            if(this.isBackground()) {
-                bbox = bound.west + "," + bound.south + "," + bound.east + "," + bound.north;
-                url = this.getMapBaseUrl;
-                url = Utils.addParameterTo(url, "transparent", this.options.transparent);
-                url = Utils.addParameterTo(url, "crs", tile.config.srs);
-                url = Utils.addParameterTo(url, "bbox", bbox);
-            } else if (_tileIsIntersectedFootprint(bound, this.restrictTo)) {
-
-                if(this.containsDimension("time") && this.imageLoadedAtTime != null) {
-                    bbox = bound.west + "," + bound.south + "," + bound.east + "," + bound.north;
-                    url = this.getMapBaseUrl;
-                    url = Utils.addParameterTo(url, "transparent", this.options.transparent);
-                    url = Utils.addParameterTo(url, "crs", tile.config.srs);
-                    url = Utils.addParameterTo(url, "bbox", bbox);
-                } else if(!this.containsDimension("time")) {
+            if(this.allowedHTTPRequest) {
+                if(this.isBackground() || _tileIsIntersectedFootprint(bound, this.restrictTo)) {
                     bbox = bound.west + "," + bound.south + "," + bound.east + "," + bound.north;
                     url = this.getMapBaseUrl;
                     url = Utils.addParameterTo(url, "transparent", this.options.transparent);
@@ -274,29 +266,46 @@ define(["jquery", '../Utils/Utils', './AbstractLayer', './AbstractRasterLayer', 
                 } else {
                     url = null;
                 }
-
             } else {
                 url = null;
             }
+
+            //if(this.isBackground()) {
+            //    bbox = bound.west + "," + bound.south + "," + bound.east + "," + bound.north;
+            //    url = this.getMapBaseUrl;
+            //    url = Utils.addParameterTo(url, "transparent", this.options.transparent);
+            //    url = Utils.addParameterTo(url, "crs", tile.config.srs);
+            //    url = Utils.addParameterTo(url, "bbox", bbox);
+            //} else if (_tileIsIntersectedFootprint(bound, this.restrictTo)) {
+            //
+            //    if(this.containsDimension("time") && this.imageLoadedAtTime != null) {
+            //        bbox = bound.west + "," + bound.south + "," + bound.east + "," + bound.north;
+            //        url = this.getMapBaseUrl;
+            //        url = Utils.addParameterTo(url, "transparent", this.options.transparent);
+            //        url = Utils.addParameterTo(url, "crs", tile.config.srs);
+            //        url = Utils.addParameterTo(url, "bbox", bbox);
+            //    } else if(!this.containsDimension("time")) {
+            //        bbox = bound.west + "," + bound.south + "," + bound.east + "," + bound.north;
+            //        url = this.getMapBaseUrl;
+            //        url = Utils.addParameterTo(url, "transparent", this.options.transparent);
+            //        url = Utils.addParameterTo(url, "crs", tile.config.srs);
+            //        url = Utils.addParameterTo(url, "bbox", bbox);
+            //    } else {
+            //        url = null;
+            //    }
+            //
+            //} else {
+            //    url = null;
+            //}
 
             return this.proxify(url, tile.level);
         };
 
         WMSLayer.prototype.setParameter = function (paramName,value) {
-            if (paramName === "styles" || this.containsDimension(paramName)) {
-                //TO DO
-                var currentValue;
-                if (paramName === "time") {
-                    currentValue = value.from ? value.from : value;
-                } else {
-                    currentValue = value;
-                }
-                console.log("TIME WMS parameter:"+(value.display ? value.display : value)+" "+this.name);
-                if(this._hasToBeRefreshed(paramName, currentValue)) {
-                    this.options[paramName] = currentValue;
-                    this.getMapBaseUrl = _queryImage.call(this, this.getBaseUrl(), this.tilePixelSize, this.tilePixelSize, this.options);
-                    this.forceRefresh();
-                }
+            if (this._hasToBeRefreshed(paramName, value)) {
+                this.options[paramName] = this.imageLoadedAtTime[paramName];
+                this.getMapBaseUrl = _queryImage.call(this, this.getBaseUrl(), this.tilePixelSize, this.tilePixelSize, this.options);
+                this.forceRefresh();
             }
         };
 

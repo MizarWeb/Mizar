@@ -16,12 +16,12 @@
  * You should have received a copy of the GNU General Public License
  * along with MIZAR. If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
-define(["jquery", "underscore-min", "../Utils/Event", "moment", "../Utils/Utils", "../Utils/UtilsIntersection", "../Layer/LayerFactory", "../Services/ServiceFactory", "../Utils/Constants",
+define(["jquery", "underscore-min", "../Utils/Event", "moment", "../Utils/Utils", "../Time/Time", "../Utils/UtilsIntersection", "../Layer/LayerFactory", "../Services/ServiceFactory", "../Utils/Constants",
         "../Registry/WMSServerRegistryHandler", "../Registry/WMTSServerRegistryHandler", "../Registry/WCSServerRegistryHandler", "../Registry/PendingLayersRegistryHandler", "../Registry/LayerRegistryHandler",
         "../Gui/Tracker/PositionTracker", "../Gui/Tracker/ElevationTracker", "../Utils/AttributionHandler", "../Gui/dialog/ErrorDialog",
         "../Renderer/PointRenderer", "../Renderer/LineStringRenderable", "../Renderer/PolygonRenderer", "../Renderer/LineRenderer",
         "../Renderer/PointSpriteRenderer", "../Renderer/ConvexPolygonRenderer"],
-    function ($, _, Event, Moment, Utils, UtilsIntersection, LayerFactory, ServiceFactory, Constants,
+    function ($, _, Event, Moment, Utils, Time, UtilsIntersection, LayerFactory, ServiceFactory, Constants,
               WMSServerRegistryHandler, WMTSServerRegistryHandler, WCSServerRegistryHandler, PendingLayersRegistryHandler, LayerRegistryHandler,
               PositionTracker, ElevationTracker, AttributionHandler, ErrorDialog) {
 
@@ -45,7 +45,7 @@ define(["jquery", "underscore-min", "../Utils/Event", "moment", "../Utils/Utils"
         var AbstractContext = function (mizarConfiguration, mode, ctxOptions) {
             Event.prototype.constructor.call(this);
             var self = this;
-            this.time = Moment().toISOString();
+            this.time = Time.parse(Moment().toISOString());
             this.globe = null;	// Sky or globe
             this.navigation = null;
             this.attributionHandler = null;

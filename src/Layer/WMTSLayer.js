@@ -107,15 +107,23 @@ define(['../Utils/Utils', './AbstractLayer', './AbstractRasterLayer', '../Utils/
             url = Utils.addParameterTo(url, "tilematrixset", "WGS84");
 //            url = Utils.addParameterTo(url, "tilematrixset", options.tilematrixset);
 
-            if (options.style) {
+            if (options.hasOwnProperty('style')) {
                 url = Utils.addParameterTo(url, "style",options.style);
             }
+
             url = Utils.addParameterTo(url, "format", options.hasOwnProperty('format') ? options.format : 'image/png');
+
             if (options.hasOwnProperty('time')) {
-                url = Utils.addParameterTo(url, "time", this.imageLoadedAtTime == null ? options.time:this.imageLoadedAtTime);
-            } else {
-                this.imageLoadedAtTime = null;
+                url = Utils.addParameterTo(url, "time", options.time);
             }
+
+            //custom params
+            for (var param in this.imageLoadedAtTime) {
+                if(param !== "time" && this.imageLoadedAtTime[param] !== null) {
+                    url = Utils.addParameterTo(url, param, this.imageLoadedAtTime[param]);
+                }
+            }
+
             return url;
         }
 
@@ -142,20 +150,23 @@ define(['../Utils/Utils', './AbstractLayer', './AbstractRasterLayer', '../Utils/
          * @return {String} Url
          */
         WMTSLayer.prototype.getUrl = function (tile) {
-            var url = this.getTileBaseUrl;
-            url = Utils.addParameterTo(url, "tilematrix", tile.level + 1);
-            url = Utils.addParameterTo(url, "tilecol", tile.x);
-            url = Utils.addParameterTo(url, "tilerow", tile.y);
+            var url;
+            if(this.allowedHTTPRequest) {
+                url = this.getTileBaseUrl;
+                url = Utils.addParameterTo(url, "tilematrix", tile.level + 1);
+                url = Utils.addParameterTo(url, "tilecol", tile.x);
+                url = Utils.addParameterTo(url, "tilerow", tile.y);
+            } else {
+                url = null;
+            }
             return this.proxify(url, tile.level);
         };
 
         WMTSLayer.prototype.setParameter = function (paramName,value) {
-            if (this.containsDimension(paramName)) {
-                if(this._hasToBeRefreshed.call(paramName, value)) {
-                    this.options[paramName] = value;
-                    this.getCoverageBaseUrl = _queryImage.call(this, this.getBaseUrl(), this.options);
-                    this.forceRefresh();
-                }
+            if (this._hasToBeRefreshed(paramName, value)) {
+                this.options[paramName] = this.imageLoadedAtTime[paramName];
+                this.getCoverageBaseUrl = _queryImage.call(this, this.getBaseUrl(), this.options);
+                this.forceRefresh();
             }
         };
 

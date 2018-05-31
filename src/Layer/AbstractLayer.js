@@ -35,8 +35,8 @@
  * along with GlobWeb. If not, see <http://www.gnu.org/licenses/>.
  ***************************************/
 
-define(["jquery", "underscore-min", "../Utils/Event", "moment", "../Utils/Utils", "../Utils/Constants", "../Utils/UtilityFactory", "xmltojson", "../Error/NetworkError"],
-    function ($, _, Event, Moment, Utils, Constants, UtilityFactory, XmlToJson, NetworkError) {
+define(["jquery", "underscore-min", "../Utils/Event", "moment", "../Time/Time", "../Utils/Utils", "../Utils/Constants", "../Utils/UtilityFactory", "xmltojson", "../Error/NetworkError"],
+    function ($, _, Event, Moment, Time, Utils, Constants, UtilityFactory, XmlToJson, NetworkError) {
 
         const DEFAULT_ICON = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAAXNSR0IArs4c6QAAAAZiS0dEAAAAAAAA+UO7fwAAAAlwSFlzAAALEwAACxMBAJqcGAAAAAd0SU1FB9wMBQkVBRMIQtMAAAAZdEVYdENvbW1lbnQAQ3JlYXRlZCB3aXRoIEdJTVBXgQ4XAAAAvklEQVQY012QMWpCURBFz3yfG7CIwSatpLGwsJJsQEHssr2UttapkkK0zRJEFPKLj5UYPGme8vgDt5l7uNwZKEYNdaZO1FR6VQkBT8AbMAGe1e7dTwXUB8bAFPgF9sBWPUXENbWgBTAELkCTw7bqMdR5kTQCehlogB/gE/iqcs9OVhT9I8v7EZU6UJfqh3pWa3WlvqsvakoRcVOPwCYnvQI1sM67Q0T8JYAWvAEOwDewj4jr4z0teJdf84AA/gF1uG92uhcfoAAAAABJRU5ErkJggg==";
 
@@ -134,6 +134,8 @@ define(["jquery", "underscore-min", "../Utils/Event", "moment", "../Utils/Utils"
             //this.services = _createAvailableServices(this.options);
             this.multiLayers = [];
 
+            this.imageLoadedAtTime = {};
+            this.allowedHTTPRequest = true;
 
         };
 
@@ -243,112 +245,56 @@ define(["jquery", "underscore-min", "../Utils/Event", "moment", "../Utils/Utils"
             return color;
         }
 
-        function _unitWithoutTime(unit) {
-            var unitTime;
-            switch (unit) {
-                case 'Y':
-                    unitTime = 'years';
-                    break;
-                case 'M':
-                    unitTime = 'months';
-                    break;
-                case 'D':
-                    unitTime = 'days';
-                    break;
-                default:
-                    throw new Error();
-            }
-            return unitTime;
-        }
 
-        function _unitWithTime(unit) {
-            var unitTime;
-            switch (unit) {
-                case 'H':
-                    unitTime = 'hours';
-                    break;
-                case 'M':
-                    unitTime = 'minutes';
-                    break;
-                case 'S':
-                    unitTime = 'seconds';
-                    break;
-                default:
-                    throw new Error();
-            }
-            return unitTime;
-        }
-
-        function _timeResolution(resolution) {
-            var stepTime, unitTime;
-            var unit = resolution.slice(-1);
-            if (resolution.startsWith("PT")) {
-                //time => hour, min, sec
-                stepTime = resolution.substring(2, resolution.length - 1);
-                unitTime = _unitWithTime(unit);
-            } else if (resolution.startsWith('P')) {
-                //day, month year
-                stepTime = resolution.substring(1, resolution.length - 1);
-                unitTime = _unitWithoutTime(unit);
-            } else {
-                throw new Error();
-            }
-
-            return {
-                step: stepTime,
-                unit: unitTime
-            };
-        }
-
-        function _convertTime(duration, timeObjDefinition) {
-            var convertedDuration;
-            switch (timeObjDefinition.unit) {
-                case "years":
-                    convertedDuration = duration.asYears();
-                    break;
-                case "months":
-                    convertedDuration = duration.asMonths();
-                    break;
-                case "days":
-                    convertedDuration = duration.asDays();
-                    break;
-                case "hours":
-                    convertedDuration = duration.asHours();
-                    break;
-                case "minutes":
-                    convertedDuration = duration.asMinutes();
-                    break;
-                case "seconds":
-                    convertedDuration = duration.asSeconds();
-                    break;
-                default :
-                    throw new Error();
-            }
-            return convertedDuration;
-        }
-
-        function _closestDate(startDate, stopDate, timeObjDefinition, myTime) {
-            var startMoment = Moment.utc(startDate);
-            var stopMoment = Moment.utc(stopDate);
-            var myTimeMoment = Moment.utc(myTime);
-            var myDate;
-            var entier = null;
-            if (myTimeMoment.isBetween(startMoment, stopMoment)) {
-                var duration1 = Moment.duration(myTimeMoment.diff(startMoment));
-                var duration2 = Moment.duration(stopMoment.diff(myTimeMoment));
-                if (duration1 > duration2) {
-                    entier = Math.round(_convertTime.call(this, duration2, timeObjDefinition) / timeObjDefinition.step);
-                    myDate = stopMoment.subtract({hours: entier * timeObjDefinition.step});
-                } else {
-                    entier = Math.round(_convertTime.call(this, duration1, timeObjDefinition) / timeObjDefinition.step);
-                    myDate = startMoment.add({hours: entier * timeObjDefinition.step});
-                }
-                myDate = myDate.toISOString();
-            } else {
-                myDate = null;
-            }
-            return myDate;
-        }
+        //function _convertTime(duration, timeObjDefinition) {
+        //    var convertedDuration;
+        //    switch (timeObjDefinition.unit) {
+        //        case "years":
+        //            convertedDuration = duration.asYears();
+        //            break;
+        //        case "months":
+        //            convertedDuration = duration.asMonths();
+        //            break;
+        //        case "days":
+        //            convertedDuration = duration.asDays();
+        //            break;
+        //        case "hours":
+        //            convertedDuration = duration.asHours();
+        //            break;
+        //        case "minutes":
+        //            convertedDuration = duration.asMinutes();
+        //            break;
+        //        case "seconds":
+        //            convertedDuration = duration.asSeconds();
+        //            break;
+        //        default :
+        //            throw new Error();
+        //    }
+        //    return convertedDuration;
+        //}
+        //
+        //function _closestDate(startDate, stopDate, timeObjDefinition, myTime) {
+        //    var startMoment = Moment.utc(startDate);
+        //    var stopMoment = Moment.utc(stopDate);
+        //    var myTimeMoment = Moment.utc(myTime);
+        //    var myDate;
+        //    var entier = null;
+        //    if (myTimeMoment.isBetween(startMoment, stopMoment)) {
+        //        var duration1 = Moment.duration(myTimeMoment.diff(startMoment));
+        //        var duration2 = Moment.duration(stopMoment.diff(myTimeMoment));
+        //        if (duration1 > duration2) {
+        //            entier = Math.round(_convertTime.call(this, duration2, timeObjDefinition) / timeObjDefinition.step);
+        //            myDate = stopMoment.subtract({hours: entier * timeObjDefinition.step});
+        //        } else {
+        //            entier = Math.round(_convertTime.call(this, duration1, timeObjDefinition) / timeObjDefinition.step);
+        //            myDate = startMoment.add({hours: entier * timeObjDefinition.step});
+        //        }
+        //        myDate = myDate.toISOString();
+        //    } else {
+        //        myDate = null;
+        //    }
+        //    return myDate;
+        //}
 
 
         /**************************************************************************************************************/
@@ -357,136 +303,28 @@ define(["jquery", "underscore-min", "../Utils/Event", "moment", "../Utils/Utils"
 
         /**************************************************************************************************************/
 
-        /**
-         * Checks if Mizar must query the WMS server to refresh data.
-         * When the camera does not move but that the time change, we have two cases :
-         * - the requested time is included in the time frame of the image => no query
-         * - the requested time is outside of the time frame of the image => this is a new image, need to query
-         * @param paramName
-         * @param value
-         * @return {*}
-         * @protected
-         */
-        AbstractLayer.prototype._hasToBeRefreshed = function(paramName, value) {
-            var hasToBeRefreshed;
-            if(paramName==="time") {
-                var timeRequest = AbstractLayer.createTimeRequest(value);
-                var allowedTime = this.getDimensions().time;
-                var selectedDate = AbstractLayer.selectedTime(allowedTime.value, timeRequest);
-                if(this.imageLoadedAtTime != null && selectedDate == null) {
-                    // we query because the state has changed
-                    hasToBeRefreshed = true;
-                    this.imageLoadedAtTime = selectedDate;
-                } else if(selectedDate == null) {
-                    // No image found on the server related to the requested time, no need to query => we save network
-                    hasToBeRefreshed = false;
-                } else if (this.imageLoadedAtTime === selectedDate) {
-                    // Same state, no need to query
-                    hasToBeRefreshed = false;
-                } else {
-                    // At the requested time, there is an image on the server and this is not the current one => query
-                    hasToBeRefreshed = true;
-                    this.imageLoadedAtTime = selectedDate;
-                }
+        AbstractLayer.prototype._hasToBeRefreshed = function (param, value) {
+            var mustBeRefreshed = false;
+            if (param === "time" && this.containsDimension(param)) {
+                var time = Time.parse(value);
+                var isInTimeDimension = time.isInTimeDefinition(this.getDimensions().time.value);
+                value = isInTimeDimension ? time.getDisplayValue() : null;
+                this.allowedHTTPRequest = (value !== null);
+            } else if(param === "time") {
+                //ignore it
+                mustBeRefreshed = false;
+                return mustBeRefreshed;
+            }
+            if (this.imageLoadedAtTime[param] === undefined) {
+                mustBeRefreshed = false;
+                this.imageLoadedAtTime[param] = value;
+            } else if (this.imageLoadedAtTime[param] === value) {
+                mustBeRefreshed = false;
             } else {
-                hasToBeRefreshed = true;
+                mustBeRefreshed = true;
+                this.imageLoadedAtTime[param] = value;
             }
-            return hasToBeRefreshed;
-        };
-
-        AbstractLayer.createTimeRequest = function (timeRequest) {
-            var myRequest;
-            if (timeRequest.period) {
-                myRequest = timeRequest.period;
-            } else if (timeRequest.from && timeRequest.to) {
-                myRequest = timeRequest;
-            } else if (timeRequest.from) {
-                myRequest = {
-                    from: timeRequest.from,
-                    to: Moment().toISOString()
-                };
-            } else if (timeRequest.to) {
-                timeRequest.from = Moment.utc("2000/01/01").format();
-                myRequest = {
-                    from: Moment.utc("2000/01/01").format(),
-                    to: timeRequest.to
-                };
-            } else if (Utils.aContainsB.call(this, timeRequest, '/')) {
-                var times = timeRequest.split("/");
-                myRequest = {
-                    from: Moment.utc(times[0]).toISOString(),
-                    to: Moment.utc(times[1]).toISOString()
-                };
-            } else {
-                var time = null;
-                if (timeRequest.date) {
-                    time = Moment(timeRequest.date);
-                } else if (isNaN(timeRequest)) {
-                    time = Moment.utc(timeRequest);
-                } else {
-                    time = Moment.utc([parseInt(timeRequest)]);
-                }
-                var format = time.creationData().format ? time.creationData().format : "YYYY";
-                var timeResolution = Utils.formatResolution.call(this, format);
-                myRequest = {
-                    from: time.startOf(timeResolution).toISOString(),
-                    to: time.endOf(timeResolution).toISOString()
-                };
-            }
-
-            return myRequest;
-        };
-
-        AbstractLayer.selectedTime = function (temporalRanges, timeRequest) {
-            var startDate = Moment.utc(timeRequest.from);
-            var stopDate = Moment.utc(timeRequest.to);
-            var times = temporalRanges.trim().split(",");
-            var selectedDate, selectedDateFormatted = null;
-            var format = null;
-            var timeResolution = null;
-            for (var timeIdx = 0; timeIdx < times.length && selectedDate == null; timeIdx++) {
-                var time = times[timeIdx];
-                var timeDefinition = time.trim().split("/");
-                if (timeDefinition.length == 1) {
-                    timeDefinition[0] = isNaN(timeDefinition[0]) ? timeDefinition[0] : [parseInt(timeDefinition[0])];
-                    var dateTime = Moment.utc(timeDefinition[0]);
-                    format = dateTime.creationData().format ? dateTime.creationData().format : "YYYY";
-                    timeResolution = Utils.formatResolution.call(this, format);
-                    if (dateTime.isBetween(startDate, stopDate) || dateTime.isSame(startDate) || dateTime.isSame(stopDate) || 
-                        startDate.isBetween(dateTime.startOf(timeResolution).toISOString(), dateTime.endOf(timeResolution).toISOString()) || 
-                        stopDate.isBetween(dateTime.startOf(timeResolution).toISOString(), dateTime.endOf(timeResolution).toISOString())) {
-                        selectedDate = dateTime;
-                        if (selectedDate == null) {
-                            selectedDateFormatted = null;
-                        } else if (selectedDate.creationData().format == null) {
-                            selectedDateFormatted = selectedDate.format("YYYY");
-                        } else {
-                            selectedDateFormatted = selectedDate.format(selectedDate.creationData().format);
-                        }
-                        break;
-                    }
-                } else {
-                    var startTime = Moment.utc(timeDefinition[0]);
-                    var stopTime = Moment.utc(timeDefinition[1]);
-                    var frequencyTime = timeDefinition[2];
-                    var timeObjDefinition = _timeResolution(frequencyTime);
-                    var nbValues = Math.floor(stopTime.diff(startTime, timeObjDefinition.unit) / parseInt(timeObjDefinition.step));
-                    for (var i = 0; i <= nbValues; i++) {
-                        var currentDate = Moment.utc(startTime);
-                        currentDate.add(i * timeObjDefinition.step, timeObjDefinition.unit);
-                        format = currentDate.creationData().format ? currentDate.creationData().format : "YYYY";
-                        timeResolution = Utils.formatResolution.call(this, format);
-                        if (currentDate.isBetween(startDate, stopDate) || currentDate.isSame(startDate) || currentDate.isSame(stopDate) || 
-                            startDate.isBetween(currentDate.startOf(timeResolution).toISOString(), currentDate.endOf(timeResolution).toISOString()) || 
-                            stopDate.isBetween(currentDate.startOf(timeResolution).toISOString(), currentDate.endOf(timeResolution).toISOString())) {
-                            selectedDateFormatted = _closestDate.call(this, startTime, stopTime, timeObjDefinition, currentDate.toISOString());
-                            break;
-                        }
-                    }
-                }
-            }
-
-            return selectedDateFormatted;
+            return mustBeRefreshed;
         };
 
         AbstractLayer.prototype.hasDimension = function () {
@@ -896,8 +734,8 @@ define(["jquery", "underscore-min", "../Utils/Event", "moment", "../Utils/Utils"
                         // Remove
                         if (this.callbackContext.timeTravelService) {
                             this.callbackContext.timeTravelService.update({
-                                    "remove" : { "ID" : this.ID }
-                                });  
+                                "remove": {"ID": this.ID}
+                            });
                         }
                     }
                 }
@@ -1071,19 +909,19 @@ define(["jquery", "underscore-min", "../Utils/Event", "moment", "../Utils/Utils"
          * @param {String} step Step string to parse
          * @memberOf AbstractLayer#
          */
-        AbstractLayer.prototype.parseStep = function(step) {
+        AbstractLayer.prototype.parseStep = function (step) {
             step = step;
             if (step) {
-                var regexpWellFormed =  /^PT(\d*[Y|M|D|H|M|S])*$/;
-                var regexpStepCode = RegExp(/\d*[Y|M|D|H|M|S]/,"g");
+                var regexpWellFormed = /^PT(\d*[Y|M|D|H|M|S])*$/;
+                var regexpStepCode = RegExp(/\d*[Y|M|D|H|M|S]/, "g");
                 var arrayStep = [];
-                
+
                 var match = regexpStepCode.exec(step);
                 while (match !== null) {
                     arrayStep.push(match[0]);
                     match = regexpStepCode.exec(step);
                 }
-                
+
                 // Get only first step (TODO: change if needed)
                 var regexpStepKind = RegExp(/[Y|M|D|H|M|S]/);
                 var regexpStepValue = RegExp(/\d*/);
@@ -1094,7 +932,7 @@ define(["jquery", "underscore-min", "../Utils/Event", "moment", "../Utils/Utils"
                 if (match) {
                     stepKind = match[0];
                 }
-                match = regexpStepValue.exec(arrayStep[0]);                
+                match = regexpStepValue.exec(arrayStep[0]);
                 if (match) {
                     stepValue = match[0];
                 }
@@ -1119,8 +957,8 @@ define(["jquery", "underscore-min", "../Utils/Event", "moment", "../Utils/Utils"
                         break;
                 }
                 return {
-                    "kind" : stepKind,
-                    "value" : stepValue
+                    "kind": stepKind,
+                    "value": stepValue
                 };
             } else {
                 return null;
@@ -1133,31 +971,31 @@ define(["jquery", "underscore-min", "../Utils/Event", "moment", "../Utils/Utils"
          * @param {String} timeDetails Details of time range
          * @memberOf AbstractLayer#
          */
-        AbstractLayer.prototype.generateTimeTravel = function(timeDetails) {
+        AbstractLayer.prototype.generateTimeTravel = function (timeDetails) {
             if (timeDetails) {
                 // At least a comma ==> enumerated values
-                if (timeDetails.value.indexOf(",")>=0) {
+                if (timeDetails.value.indexOf(",") >= 0) {
                     this.timeTravelValues = {
-                        "add" : {
-                            "enumeratedValues" : timeDetails.value.split(","),
-                            "ID" : this.ID
+                        "add": {
+                            "enumeratedValues": timeDetails.value.split(","),
+                            "ID": this.ID
                         }
                     };
-                } else if (timeDetails.value.indexOf("/")>=0) {
+                } else if (timeDetails.value.indexOf("/") >= 0) {
                     // Else at least one slash ==> interval
                     var tmpArray = timeDetails.value.split("/");
-                    var start,end,step;
+                    var start, end, step;
                     if (tmpArray.length === 3) {
                         start = Moment(tmpArray[0]);
                         end = Moment(tmpArray[1]);
                         step = this.parseStep(tmpArray[2]);
                         this.timeTravelValues = {
-                            "add" : {
-                                "start" : start,
-                                "end"   : end,
-                                "stepKind " : step.kind,
-                                "stepValue" : step.value,
-                                "ID" : this.ID
+                            "add": {
+                                "start": start,
+                                "end": end,
+                                "stepKind ": step.kind,
+                                "stepValue": step.value,
+                                "ID": this.ID
                             }
                         };
                     }
