@@ -25,11 +25,11 @@
 define(["jquery", "underscore-min",
         "./Context/ContextFactory", "./Navigation/NavigationFactory", "./Layer/LayerFactory","./Crs/CoordinateSystemFactory",
         "./Animation/AnimationFactory", "./Utils/UtilityFactory", "./Services/ServiceFactory", "./Provider/ProviderFactory",
-        "./Utils/Utils", "./Utils/Event", "./Utils/Stats", "./Utils/Constants", "./Gui/dialog/ErrorDialog", "./Layer/HipsMetadata"],
+        "./Utils/Utils", "./Utils/Event", "./Utils/Stats", "./Utils/Constants", "./Gui/dialog/ErrorDialog", "./Layer/HipsMetadata", "./Time/Time"],
     function ($, _,
               ContextFactory, NavigationFactory, LayerFactory, CoordinateSystemFactory,
               AnimationFactory, UtilityFactory, ServiceFactory, ProviderFactory,
-              Utils, Event, Stats, Constants, ErrorDialog, HipsMetadata) {
+              Utils, Event, Stats, Constants, ErrorDialog, HipsMetadata, Time) {
 
         //TODO bug : shortest path
         //TODO : charger cratere Mars et l'afficher à un certain niveau de zoom => fonctionne par FeatureStyle
@@ -169,6 +169,14 @@ define(["jquery", "underscore-min",
              * @memberOf Mizar#
              */
             this.ProviderFactory = ProviderFactory;
+
+            /**
+             * Access to time.
+             * @name TimeUtility
+             * @memberOf Mizar#
+             * @private
+             */
+            this.TimeUtility = Time;
 
             this.skyContext = null;
             this.planetContext = null;

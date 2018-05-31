@@ -134,7 +134,13 @@ define(["jquery", "underscore-min", "../Utils/Event", "moment", "../Time/Time", 
             //this.services = _createAvailableServices(this.options);
             this.multiLayers = [];
 
+            //cache to know which custom (e;g time, style, ...) Raster parameters are send
             this.imageLoadedAtTime = {};
+
+            /**
+             * Used to allow/deny http request
+             * @type {boolean}
+             */
             this.allowedHTTPRequest = true;
 
         };
@@ -151,7 +157,7 @@ define(["jquery", "underscore-min", "../Utils/Event", "moment", "../Time/Time", 
         }
 
         /**
-         *
+         * Create style
          * @param options
          * @returns {*}
          * @private
@@ -211,7 +217,7 @@ define(["jquery", "underscore-min", "../Utils/Event", "moment", "../Time/Time", 
         }
 
         /**
-         *
+         * Creates opacity
          * @param options
          * @returns {*}
          * @private
@@ -246,63 +252,19 @@ define(["jquery", "underscore-min", "../Utils/Event", "moment", "../Time/Time", 
         }
 
 
-        //function _convertTime(duration, timeObjDefinition) {
-        //    var convertedDuration;
-        //    switch (timeObjDefinition.unit) {
-        //        case "years":
-        //            convertedDuration = duration.asYears();
-        //            break;
-        //        case "months":
-        //            convertedDuration = duration.asMonths();
-        //            break;
-        //        case "days":
-        //            convertedDuration = duration.asDays();
-        //            break;
-        //        case "hours":
-        //            convertedDuration = duration.asHours();
-        //            break;
-        //        case "minutes":
-        //            convertedDuration = duration.asMinutes();
-        //            break;
-        //        case "seconds":
-        //            convertedDuration = duration.asSeconds();
-        //            break;
-        //        default :
-        //            throw new Error();
-        //    }
-        //    return convertedDuration;
-        //}
-        //
-        //function _closestDate(startDate, stopDate, timeObjDefinition, myTime) {
-        //    var startMoment = Moment.utc(startDate);
-        //    var stopMoment = Moment.utc(stopDate);
-        //    var myTimeMoment = Moment.utc(myTime);
-        //    var myDate;
-        //    var entier = null;
-        //    if (myTimeMoment.isBetween(startMoment, stopMoment)) {
-        //        var duration1 = Moment.duration(myTimeMoment.diff(startMoment));
-        //        var duration2 = Moment.duration(stopMoment.diff(myTimeMoment));
-        //        if (duration1 > duration2) {
-        //            entier = Math.round(_convertTime.call(this, duration2, timeObjDefinition) / timeObjDefinition.step);
-        //            myDate = stopMoment.subtract({hours: entier * timeObjDefinition.step});
-        //        } else {
-        //            entier = Math.round(_convertTime.call(this, duration1, timeObjDefinition) / timeObjDefinition.step);
-        //            myDate = startMoment.add({hours: entier * timeObjDefinition.step});
-        //        }
-        //        myDate = myDate.toISOString();
-        //    } else {
-        //        myDate = null;
-        //    }
-        //    return myDate;
-        //}
-
-
         /**************************************************************************************************************/
 
         Utils.inherits(Event, AbstractLayer);
 
         /**************************************************************************************************************/
 
+        /**
+         * Tests if the layer must be refreshed.
+         * @param {string} param parameter
+         * @param value value
+         * @return {boolean} True when the layer must be refreshed otherwise False
+         * @private
+         */
         AbstractLayer.prototype._hasToBeRefreshed = function (param, value) {
             var mustBeRefreshed = false;
             if (param === "time" && this.containsDimension(param)) {
