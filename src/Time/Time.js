@@ -172,21 +172,23 @@ define(["jquery", "moment", "../Utils/Constants", "../Utils/Utils"], function ($
     }
 
     /**
-     * Tests if singleTimeDefinition is closed to startTime/stopTime
-     * @param {moment} startTime
-     * @param {moment} stopTime
-     * @param {moment} singleTimeDefinition
+     * Tests if two dates are equals
+     * @param {moment} date1
+     * @param {moment} date2
      * @return {boolean} True when dates are equals otherwise False
      * @private
      */
-    function _isEqual(startTime, stopTime, singleTimeDefinition) {
-        var format = singleTimeDefinition.creationData().format ? singleTimeDefinition.creationData().format : "YYYY";
-        var timeResolution = _lowestFormatResolution(format);
-        var minTimeDefinition = Moment(singleTimeDefinition).startOf(timeResolution);
-        var maxTimeDefinition = Moment(singleTimeDefinition).endOf(timeResolution);
-        return startTime <= singleTimeDefinition && singleTimeDefinition <= stopTime ||
-            minTimeDefinition <= startTime && startTime <= maxTimeDefinition ||
-            minTimeDefinition <= stopTime && stopTime <= maxTimeDefinition;
+    function _isEqual(date1, date2) {
+        var format1 = date1.creationData().format ? date1.creationData().format : "YYYY";
+        var format2 = date2.creationData().format ? date2.creationData().format : "YYYY";
+        var timeResolution1 = _lowestFormatResolution(format1);
+        var timeResolution2 = _lowestFormatResolution(format2);
+        var min1 = Moment(date1).startOf(timeResolution1);
+        var max1 = Moment(date1).endOf(timeResolution1);
+        var min2 = Moment(date2).startOf(timeResolution2);
+        var max2 = Moment(date2).endOf(timeResolution2);
+        return min2 <= min1 && min1 <= max2 || min2 <= max1 && max1 <= max2 ||
+               min1 <= min2 && min2 <= max1 || min1 <= max2 && max2 <= max1
     }
 
     /**
@@ -206,11 +208,11 @@ define(["jquery", "moment", "../Utils/Constants", "../Utils/Utils"], function ($
 
         while (min <= max) {
             guess = Math.floor((min + max) / 2);
-            currentDate = Moment(requestedTime);
+            currentDate = Moment(startTime);
             currentDate.add(guess * stepTime, unitTime);
-            if (_isEqual(startTime, stopTime, currentDate))
+            if (_isEqual(requestedTime, currentDate))
                 return guess;
-            else if (startTime < currentDate)
+            else if (requestedTime > currentDate)
                 min = guess + 1;
             else
                 max = guess - 1;
@@ -276,6 +278,33 @@ define(["jquery", "moment", "../Utils/Constants", "../Utils/Utils"], function ($
     };
 
     /**
+     * Parses the resolution returned by the server side.
+     * @param resolution
+     * @return {{step: *, unit: *}} The resolution of the temporal step
+     */
+    Time.timeResolution = function(resolution) {
+        return _timeResolution(resolution);
+    };
+
+    /**
+     * Tests if the time definition is a sampling (min/max/step)
+     * @param {string} timeDefinition
+     * @return {boolean} True when timeDefinition is a sampling
+     */
+    Time.isSampling = function(timeDefinition) {
+        return _isSampling(timeDefinition);
+    };
+
+    /**
+     * Tests if the time definition is a single value
+     * @param {string} timeDefinition
+     * @return {boolean} True when timeDefinition is a discrete value
+     */
+    Time.isDistinctValue = function(timeDefinition) {
+        return _isDistinctValue(timeDefinition);
+    };
+
+    /**
      * Parses the date and returns Time.
      * @param {Time.time|Time.period|string} time
      * @return {Time} time object
@@ -309,7 +338,7 @@ define(["jquery", "moment", "../Utils/Constants", "../Utils/Utils"], function ($
      * @return {boolean} True when the singleDefinition is equal to the time object otherwise False
      */
     Time.prototype.isEqual = function (singleTimeDefinition) {
-        var isEqual = _isEqual(this.period.from, this.period.to, singleTimeDefinition);
+        var isEqual = _isEqual(Moment.utc(this.date), singleTimeDefinition);
         if (isEqual) {
             this.display = singleTimeDefinition._i;
         }
@@ -329,7 +358,7 @@ define(["jquery", "moment", "../Utils/Constants", "../Utils/Utils"], function ($
         var stepDateTimeDef = minMaxStepTimeDef[2];
         var timeResolutionDef = _timeResolution(stepDateTimeDef);
         var nbValues = Math.floor(stopDateTimeDef.diff(startDateTimeDef, timeResolutionDef.unit) / parseInt(timeResolutionDef.step));
-        var idx = _binarySearch(this.date, startDateTimeDef, stopDateTimeDef, nbValues, timeResolutionDef.step, timeResolutionDef.unit);
+        var idx = _binarySearch(Moment.utc(this.date), startDateTimeDef, stopDateTimeDef, nbValues, timeResolutionDef.step, timeResolutionDef.unit);
         var isFound;
         if (idx === -1) {
             isFound = false;
