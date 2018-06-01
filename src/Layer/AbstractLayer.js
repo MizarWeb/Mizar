@@ -273,12 +273,12 @@ define(["jquery", "underscore-min", "../Utils/Event", "moment", "../Time/Time", 
                 value = isInTimeDimension ? time.getDisplayValue() : null;
                 this.allowedHTTPRequest = (value !== null);
             } else if(param === "time") {
-                //ignore it
                 mustBeRefreshed = false;
                 return mustBeRefreshed;
             }
             if (this.imageLoadedAtTime[param] === undefined) {
-                mustBeRefreshed = false;
+                // this a new parameter, then we refresh
+                mustBeRefreshed = true;
                 this.imageLoadedAtTime[param] = value;
             } else if (this.imageLoadedAtTime[param] === value) {
                 mustBeRefreshed = false;
