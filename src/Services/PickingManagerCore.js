@@ -422,7 +422,7 @@ define(["../Renderer/FeatureStyle", "../Layer/OpenSearchLayer", "../Utils/Utils"
                             for (j = 0; j < pickableLayer.features.length; j++) {
                                 //feature = pickableLayer.features[pickableLayer.featuresSet[tileData.featureIds[j]].index];
                                 feature = pickableLayer.features[j];
-                                if (this.featureIsPicked(feature, pickPoint,pickableLayer.pickingNoDEM)) {
+                                if (this.featureIsPicked(feature, pickPoint,pickableLayer.pickingNoDEM, options)) {
                                     newSelection.push({feature: feature, layer: pickableLayer});
                                 }
                             }
