@@ -321,7 +321,10 @@ define(["../Renderer/FeatureStyle", "../Layer/OpenSearchLayer", "../Utils/Utils"
          */
         function featureIsPicked(feature, pickPoint,pickingNoDEM) {
             var i,j,p;
-            var feat,featNext,ring;
+            var feat,featNext,ring, isMobile;
+            var options = ctx.navigation.options;
+            isMobile = options && options.isMobile ? options.isMobile : false;
+            var cst = isMobile ? 3:1;
             switch (feature.geometry.type) {
                 case Constants.GEOMETRY.LineString:
                     for (i = 0; i < feature.geometry.coordinates.length - 1; i++) {
@@ -363,7 +366,7 @@ define(["../Renderer/FeatureStyle", "../Layer/OpenSearchLayer", "../Utils/Utils"
                     if (pickingNoDEM === true) {
                         pt[2] = 0;
                     }
-                    return UtilsIntersection.pointInSphere(ctx, pt, point, feature.geometry._bucket.textureHeight) && !isLabel;
+                    return UtilsIntersection.pointInSphere(ctx, pt, point, feature.geometry._bucket.textureHeight * cst) && !isLabel;
                 default:
                     console.log("Picking for " + feature.geometry.type + " is not yet");
                     return false;
