@@ -37,7 +37,7 @@ define(['underscore-min','../Utils/Utils', './AbstractRegistryHandler', '../Util
         var isFound = false;
         for(i=0; i<layers.length; i++) {
             var layer = layers[i];
-            if (layer.geName() === Constants.LAYER.TileWireframe) {
+            if (layer.getName() === Constants.LAYER.TileWireframe) {
                 isFound = true;
                 break;
             }
