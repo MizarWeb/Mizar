@@ -364,7 +364,8 @@ define(["jquery", "moment", "../Utils/Constants", "../Utils/Utils"], function ($
             isFound = false;
         } else {
             isFound = true;
-            this.display = Moment.utc(this.date).add(idx * timeResolutionDef.step, timeResolutionDef.unit)._i;
+            var format = startDateTimeDef.creationData().format ? startDateTimeDef.creationData().format : "YYYY";
+            this.display = Moment.utc(startDateTimeDef).add(idx * timeResolutionDef.step, timeResolutionDef.unit).format(format);
         }
         return isFound;
     };
