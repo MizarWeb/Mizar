@@ -15,6 +15,8 @@ define(["jquery", "moment", "../Utils/Constants", "../Utils/Utils"], function ($
      * @property {moment} to - Stop date
      */
 
+    const REGEXP_YEAR = /^\d{4}$/;
+
     /**
      * Handles time.
      * @param {Time.time} time
@@ -179,29 +181,48 @@ define(["jquery", "moment", "../Utils/Constants", "../Utils/Utils"], function ($
      * @private
      */
     function _isEqual(date1, date2) {
-        var format1 = date1.creationData().format ? date1.creationData().format : "YYYY";
-        var format2 = date2.creationData().format ? date2.creationData().format : "YYYY";
-        var timeResolution1 = _lowestFormatResolution(format1);
-        var timeResolution2 = _lowestFormatResolution(format2);
-        var min1 = Moment(date1).startOf(timeResolution1);
-        var max1 = Moment(date1).endOf(timeResolution1);
-        var min2 = Moment(date2).startOf(timeResolution2);
-        var max2 = Moment(date2).endOf(timeResolution2);
-        return min2 <= min1 && min1 <= max2 || min2 <= max1 && max1 <= max2 ||
-               min1 <= min2 && min2 <= max1 || min1 <= max2 && max2 <= max1
+        var interval1 = _createPeriod(date1);
+        var interval2 = _createPeriod(date2);
+        return interval2.from <= interval1.from && interval1.from <= interval2.to ||
+               interval2.from <= interval1.to && interval1.to <= interval2.to ||
+               interval1.from <= interval2.from && interval2.from <= interval1.to ||
+               interval1.from <= interval2.to && interval2.to <= interval1.to
+    }
+
+    /**
+     * Create a period from a given date
+     * @param {moment} date
+     * @return {{from, to}} the period
+     * @private
+     */
+    function _createPeriod(date) {
+        var format = date.creationData().format;
+        var timeResolution = _lowestFormatResolution(format);
+        return {
+            from: Moment(date).startOf(timeResolution),
+            to: Moment(date).endOf(timeResolution)
+        }
+    }
+
+    function _isIntersect(period1, date2) {
+        var interval2 = _createPeriod(date2);
+        return interval2.from <= period1.from && period1.from <= interval2.to ||
+            interval2.from <= period1.to && period1.to <= interval2.to ||
+            period1.from <= interval2.from && interval2.from <= period1.to ||
+            period1.from <= interval2.to && interval2.to <= period1.to
+
     }
 
     /**
      * Binary Search to find the date in min/max/resolution for which the date is equal to requestedTime
      * @param {moment} requestedTime requested time
+     * @param {{from,to}} requestedPeriodTime requested period time
      * @param {moment} startTime start date
-     * @param {moment} stopTime stop date
      * @param {int} nbValues number of value between startDate/stopDate
-     * @param {number} stepTime Step time
-     * @param {Constants.UNIT_TIME_WMS} unitTime
+     * @param {{step,unit}} timeResolution time resolution
      * @return {number} -1 when the requestedTime is not find in the binarySearch otherwise False
      */
-    function _binarySearch(requestedTime, startTime, stopTime, nbValues, stepTime, unitTime) {
+    function _binarySearch(requestedTime, requestedPeriodTime, startTime, nbValues, timeResolution) {
         var guess, start, currentDate,
             min = 0,
             max = nbValues;
@@ -209,8 +230,8 @@ define(["jquery", "moment", "../Utils/Constants", "../Utils/Utils"], function ($
         while (min <= max) {
             guess = Math.floor((min + max) / 2);
             currentDate = Moment(startTime);
-            currentDate.add(guess * stepTime, unitTime);
-            if (_isEqual(requestedTime, currentDate))
+            currentDate.add(guess * timeResolution.step, timeResolution.unit);
+            if (_isEqual(requestedTime, currentDate) || _isIntersect(requestedPeriodTime, currentDate))
                 return guess;
             else if (requestedTime > currentDate)
                 min = guess + 1;
@@ -258,14 +279,26 @@ define(["jquery", "moment", "../Utils/Constants", "../Utils/Utils"], function ($
      */
     function _templateTimeTravel (date, display, from, to, computed) {
         return {
-            date: Moment.utc(date),
+            date: _convertMoment(date),
             display: display,
             period: {
-                from: Moment.utc(from),
-                to: Moment.utc(to)
+                from: _convertMoment(from),
+                to: _convertMoment(to)
             },
             computed: computed
         }
+    }
+
+    function _convertMoment(date) {
+        var time;
+        if(REGEXP_YEAR.test(date)) {
+            time = Moment.utc(date,'YYYY');
+        } else if(date instanceof Date) {
+            time = Moment.utc(date.toISOString());
+        } else {
+            time = Moment.utc(date);
+        }
+        return time;
     }
 
     /**
@@ -312,18 +345,17 @@ define(["jquery", "moment", "../Utils/Constants", "../Utils/Utils"], function ($
     Time.parse = function (time) {
         var result;
         if (_isTimeTravel(time)) {
-            result = time;
-            result.computed = true;
+            result = _templateTimeTravel(time.date, time.display, time.period.from, time.period.to, true);
         } else if (_isPeriod(time)) {
             result = _templateTimeTravel(time.from, time.from, time.from, time.to, false);
         } else if (_isOpenedInterval(time)) {
             result = _templateTimeTravel(time.from, time.from, time.from, Moment(), false)
         } else if (_isDateString(time)) {
-            var timeRequested = _isNumeric(time) ? Moment.utc(parseInt([time])) : Moment.utc(time);
-            var format = timeRequested.creationData().format ? timeRequested.creationData().format : "YYYY";
+            var timeRequested = _convertMoment(time);
+            var format = timeRequested.creationData().format;
             var timeResolution = _lowestFormatResolution(format);
-            var from = Moment.utc(time).startOf(timeResolution);
-            var to = Moment.utc(time).endOf(timeResolution);
+            var from = Moment.utc(timeRequested).startOf(timeResolution);
+            var to = Moment.utc(timeRequested).endOf(timeResolution);
             result = _templateTimeTravel(time, time, from, to, false)
         } else {
             throw new Error("Unsupported time format");
@@ -334,13 +366,15 @@ define(["jquery", "moment", "../Utils/Constants", "../Utils/Utils"], function ($
 
     /**
      * Tests if the singleDefinition is equal to the time object.
-     * @param {moment} singleTimeDefinition
+     * @param {string} singleTimeDefinition
      * @return {boolean} True when the singleDefinition is equal to the time object otherwise False
      */
     Time.prototype.isEqual = function (singleTimeDefinition) {
-        var isEqual = _isEqual(Moment.utc(this.date), singleTimeDefinition);
+        var singleTimeMoment = _convertMoment(singleTimeDefinition);
+        var isEqual = _isEqual(this.date, singleTimeMoment);
         if (isEqual) {
-            this.display = singleTimeDefinition._i;
+            var format = singleTimeMoment.creationData().format;
+            this.display = singleTimeMoment.format(format);
         }
         return isEqual;
     };
@@ -353,18 +387,18 @@ define(["jquery", "moment", "../Utils/Constants", "../Utils/Utils"], function ($
     Time.prototype.isInSampling = function (samplingTimeDefinition) {
         samplingTimeDefinition = samplingTimeDefinition.trim();
         var minMaxStepTimeDef = samplingTimeDefinition.split("/");
-        var startDateTimeDef = Moment.utc(minMaxStepTimeDef[0]);
-        var stopDateTimeDef = Moment.utc(minMaxStepTimeDef[1]);
+        var startDateTimeDef = _convertMoment(minMaxStepTimeDef[0]);
+        var stopDateTimeDef = _convertMoment(minMaxStepTimeDef[1]);
         var stepDateTimeDef = minMaxStepTimeDef[2];
         var timeResolutionDef = _timeResolution(stepDateTimeDef);
         var nbValues = Math.floor(stopDateTimeDef.diff(startDateTimeDef, timeResolutionDef.unit) / parseInt(timeResolutionDef.step));
-        var idx = _binarySearch(Moment.utc(this.date), startDateTimeDef, stopDateTimeDef, nbValues, timeResolutionDef.step, timeResolutionDef.unit);
+        var idx = _binarySearch(this.date, this.period, startDateTimeDef, nbValues, timeResolutionDef);
         var isFound;
         if (idx === -1) {
             isFound = false;
         } else {
             isFound = true;
-            var format = startDateTimeDef.creationData().format ? startDateTimeDef.creationData().format : "YYYY";
+            var format = startDateTimeDef.creationData().format;
             this.display = Moment.utc(startDateTimeDef).add(idx * timeResolutionDef.step, timeResolutionDef.unit).format(format);
         }
         return isFound;
@@ -384,8 +418,7 @@ define(["jquery", "moment", "../Utils/Constants", "../Utils/Utils"], function ($
         for (timeIdx = 0; timeIdx < times.length && !isInside; timeIdx++) {
             dataTime = times[timeIdx].trim();
             if (_isDistinctValue(dataTime)) {
-                momentDataTime = Moment.utc(dataTime);
-                isInside = this.isEqual(momentDataTime);
+                isInside = this.isEqual(dataTime);
             } else if (_isSampling(dataTime)) {
                 isInside = this.isInSampling(dataTime);
             } else {
