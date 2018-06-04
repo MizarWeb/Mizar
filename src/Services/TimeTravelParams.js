@@ -589,7 +589,6 @@ define(["jquery", "moment", "../Utils/Constants"], function ($, Moment, Constant
     /**
      * Get date formated (when there is no enumerated values)
      * @function getDateFormated
-     * @param Date date Date
      * @return String Date formated
      * @memberOf TimeTravelParams#
      */
@@ -609,7 +608,7 @@ define(["jquery", "moment", "../Utils/Constants"], function ($, Moment, Constant
             } else {
                 formatPattern = "Do MMM Y   HH:mm:ss.SSS";
             }    
-            return Moment(this.currentDate).format(formatPattern);
+            return Moment(date).format(formatPattern);
     };
 
     /**************************************************************************************************************/
@@ -621,15 +620,17 @@ define(["jquery", "moment", "../Utils/Constants"], function ($, Moment, Constant
      * @memberOf TimeTravelParams#
      */
     TimeTravelParams.prototype.getCurrentDisplayDate = function() {
+        var result = null;
         if (this.stepKind === Constants.TIME_STEP.ENUMERATED) {
             if (this.enumeratedValues.length>0) {
-                return this.enumeratedValues[this.currentIndex].display;
+                result = this.enumeratedValues[this.currentIndex].display;
             } else {
-                return this.getDateFormated(new Date());
+                result = this.getDateFormated(new Date());
             }
         } else {
-            return this.getDateFormated(this.currentDate);
+            result = this.getDateFormated(this.currentDate);
         }
+        return result;
     };
 
     /**
