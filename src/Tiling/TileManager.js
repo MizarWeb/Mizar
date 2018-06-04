@@ -155,6 +155,36 @@ define(['./Tile', './GeoTiling', './TilePool', './TileRequest', './TileIndexBuff
             bucket.renderer.addOverlay(layer);
         }
 
+        function _abortTilesForLayer(tiles, layer, callback) {
+            for (var i = tiles.length; i--; ) {
+                var tile = tiles[i];
+                var extension = tile.extension;
+                if (extension && extension.renderer) {
+                    var renderables = extension.renderer.renderables;
+                    for (var renderableIdx = renderables.length; renderableIdx--;) {
+                        var renderable = renderables[renderableIdx];
+                        if (renderable.bucket.layer.ID === layer.getID()) {
+                            _abortBucketRequests.call(this, renderable.bucket);
+                            if (callback) {
+                                callback(renderable, layer);
+                            }
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+
+        function _abortBucketRequests(bucket) {
+            var imageRequests = bucket.renderer.imageRequests;
+            for (var i = imageRequests.length; i--;) {
+                var request = imageRequests[i];
+                if(request.renderable) {
+                    request.abort();
+                }
+            }
+        }
+
         /**************************************************************************************************************/
 
         /**
@@ -291,46 +321,18 @@ define(['./Tile', './GeoTiling', './TilePool', './TileRequest', './TileIndexBuff
         };
 
         TileManager.prototype.abortLayerRequests = function(layer, callback) {
-            for (var i = this.visibleTiles.length; i--; ) {
-                var tile = this.visibleTiles[i];
-                var extension = tile.extension;
-                if (extension.renderer) {
-                    var renderables = extension.renderer.renderables;
-                    for (var renderableIdx = renderables.length; renderableIdx--;) {
-                        var renderable = renderables[renderableIdx];
-                        if (renderable.bucket.layer.ID === layer.getID()) {
-                            this.abortBucketRequests(renderable.bucket);
-                            if(callback) {
-                                callback(renderable, layer);
-                            }
-                            break;
-                        }
-                    }
-                }
-            }
+            //TODO Ce n'est pas sur pendingRequest mais sur les tiles de pending request
+            //_abortTilesForLayer.call(this, this.pendingRequests, layer);
+            this.abortRequests();
+            _abortTilesForLayer.call(this, this.visibleTiles, layer, callback);
         };
-
-        /**
-         * Aborts requests of a layer.
-         * @param bucket bucket related to a layer
-         */
-        TileManager.prototype.abortBucketRequests = function (bucket) {
-            var imageRequests = bucket.renderer.imageRequests;
-            for (var i = imageRequests.length; i--;) {
-                var request = imageRequests[i];
-                if(request.renderable) {
-                    request.abort();
-                }
-            }
-        };
-
 
 
         /**
          * Updates the visible tiles of the layer.
          * @param layer the layer where the tiles must be updated
          */
-        TileManager.prototype.updateVisibleTiles = function (layer, callback) {
+        TileManager.prototype.updateVisibleTiles = function (layer) {
             this.abortLayerRequests(layer,_updateOverlay);
         };
 

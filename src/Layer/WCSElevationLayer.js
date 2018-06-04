@@ -107,12 +107,18 @@ define(['../Utils/Utils', './AbstractLayer', './AbstractRasterLayer', '../Utils/
                     break;
             }
             url = Utils.addParameterTo(url, "format",  options.format);
-            if (options.hasOwnProperty('time')) {
-                var timeRequest = AbstractLayer.createTimeRequest(options.time);
-                var allowedTime = this.getDimensions().time;
-                var selectedDate = AbstractLayer.selectedTime(allowedTime.value, timeRequest);
-                url = Utils.addParameterTo(url, "time", selectedDate);
+
+            if(options.hasOwnProperty('time')) {
+                url = Utils.addParameterTo(url, "time",  options.time);
             }
+
+            // time constraints and custom params
+            for (var param in this.imageLoadedAtTime) {
+                if(param !== "time" && this.imageLoadedAtTime[param] !== null) {
+                    url = Utils.addParameterTo(url, param, this.imageLoadedAtTime[param]);
+                }
+            }
+
             return url;
         }
 
@@ -206,21 +212,27 @@ define(['../Utils/Utils', './AbstractLayer', './AbstractRasterLayer', '../Utils/
          */
         WCSElevationLayer.prototype.getUrl = function (tile) {
             var geoBound = tile.geoBound;
-            var url = this.getCoverageBaseUrl;
 
-            if (this.options.version.substring(0, 3) === '2.0') {
-                url = Utils.addParameterTo(url, "subset", "x"+this.options.crs + "(" + geoBound.west + "," + geoBound.east + ")");
-                url = Utils.addParameterTo(url, "subset", "y"+this.options.crs + "(" + geoBound.south + "," + geoBound.north + ")");
-            }
-            else if (this.options.version.substring(0, 3) === '1.0') {
-                url = Utils.addParameterTo(url, "bbox",geoBound.west+","+geoBound.south+","+geoBound.east+","+geoBound.north);
+            var url;
+            if(this.allowedHTTPRequest) {
+                url = this.getCoverageBaseUrl;
+
+                if (this.options.version.substring(0, 3) === '2.0') {
+                    url = Utils.addParameterTo(url, "subset", "x"+this.options.crs + "(" + geoBound.west + "," + geoBound.east + ")");
+                    url = Utils.addParameterTo(url, "subset", "y"+this.options.crs + "(" + geoBound.south + "," + geoBound.north + ")");
+                }
+                else if (this.options.version.substring(0, 3) === '1.0') {
+                    url = Utils.addParameterTo(url, "bbox",geoBound.west+","+geoBound.south+","+geoBound.east+","+geoBound.north);
+                }
+            } else {
+                url = null;
             }
             return this.proxify(url, tile.level);
         };
 
         WCSElevationLayer.prototype.setParameter = function (paramName,value) {
-            if (this.hasDimension() && this.getDimensions()[paramName]) {
-                this.options[paramName] = value;
+            if (this._hasToBeRefreshed(paramName, value)) {
+                this.options[paramName] = this.imageLoadedAtTime[paramName];
                 this.getCoverageBaseUrl = _queryImage.call(this, this.getBaseUrl(), this.options);
                 this.forceRefresh();
             }

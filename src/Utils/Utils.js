@@ -35,7 +35,7 @@
  * along with GlobWeb. If not, see <http://www.gnu.org/licenses/>.
  ***************************************/
 
-define(["jquery", "./Numeric", "./UtilsIntersection", "../Error/NetworkError"], function ($, Numeric, UtilsIntersection, NetworkError) {
+define(["jquery", "moment", "./Numeric", "./UtilsIntersection", "../Error/NetworkError"], function ($, Moment, Numeric, UtilsIntersection, NetworkError) {
 
     var Utils = {};
 
@@ -514,6 +514,10 @@ define(["jquery", "./Numeric", "./UtilsIntersection", "../Error/NetworkError"], 
 
     Utils.aContainsB = function(a, b) {
         return a.indexOf(b) >= 0;
+    };
+
+    Utils.convertToMoment = function(time) {
+        return (time instanceof Moment()) ? time : Moment().utc(time);
     };
 
 

@@ -76,7 +76,9 @@ define(["jquery","underscore-min", "../Utils/Utils", "xmltojson", "../Layer/Laye
             if(bbox == null) {
                 result = [-180, -90, 180, 90];
             } else {
-                result = bbox;
+                var long1 = bbox[0] > 180 ? bbox[0] - 360 : bbox[0];
+                var long2 = bbox[2] > 180 ? bbox[2] - 360 : bbox[2];
+                result = [long1, bbox[1], long2, bbox[3]];
             }
             return result;
         }

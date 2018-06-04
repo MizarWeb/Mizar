@@ -31,10 +31,10 @@ define(function () {
      * @property {String} Segmented - Segmented animation
      */
     Constants.ANIMATION = {
-        "Inertia": "Inertia",
-        "Interpolated": "Interpolated",
-        "Path": "Path",
-        "Segmented": "Segmented"
+        Inertia: "Inertia",
+        Interpolated: "Interpolated",
+        Path: "Path",
+        Segmented: "Segmented"
     };
 
 
@@ -46,9 +46,9 @@ define(function () {
      * @property {String} Ground - Ground context
      */
     Constants.CONTEXT = {
-        "Planet": "Planet",
-        "Sky": "Sky",
-        "Ground": "Ground"
+        Planet: "Planet",
+        Sky: "Sky",
+        Ground: "Ground"
     };
 
     /**
@@ -58,8 +58,8 @@ define(function () {
      * @property {String} Sky - Sky
      */
     Constants.GLOBE = {
-        "Planet": "Planet",
-        "Sky": "Sky"
+        Planet: "Planet",
+        Sky: "Sky"
     };
 
     /**
@@ -85,25 +85,25 @@ define(function () {
      * @property {String} OpenSearch - Open Search
      */
     Constants.LAYER = {
-        "AsynchroneWMS": "AsynchroneWMS",
-        "WMS": "WMS",
-        "WMTS": "WMTS",
-        "WMSElevation": "WMSElevation",
-        "WCSElevation": "WCSElevation",
-        "GeoJSON": "GeoJSON",
-        "Vector": "Vector",
-        "Atmosphere": "Atmosphere",
-        "Bing": "Bing",
-        "GroundOverlay": "GroundOverlay",
-        "OSM": "OSM",
-        "TileWireframe": "TileWireframe",
-        "HipsGrid": "HipsGrid",
-        "CoordinateGrid": "CoordinateGrid",
-        "HipsFits": "HipsFits",
-        "Hips": "Hips",
-        "HipsCat": "HipsCat",
-        "Moc": "Moc",
-        "OpenSearch": "OpenSearch"
+        AsynchroneWMS: "AsynchroneWMS",
+        WMS: "WMS",
+        WMTS: "WMTS",
+        WMSElevation: "WMSElevation",
+        WCSElevation: "WCSElevation",
+        GeoJSON: "GeoJSON",
+        Vector: "Vector",
+        Atmosphere: "Atmosphere",
+        Bing: "Bing",
+        GroundOverlay: "GroundOverlay",
+        OSM: "OSM",
+        TileWireframe: "TileWireframe",
+        HipsGrid: "HipsGrid",
+        CoordinateGrid: "CoordinateGrid",
+        HipsFits: "HipsFits",
+        Hips: "Hips",
+        HipsCat: "HipsCat",
+        Moc: "Moc",
+        OpenSearch: "OpenSearch"
     };
 
     /**
@@ -118,13 +118,13 @@ define(function () {
      * @property {String} GeometryCollection - GeometryCollection
      */
     Constants.GEOMETRY = {
-        "Point": "Point",
-        "MultiPoint": "MultiPoint",
-        "LineString": "LineString",
-        "MultiLineString": "MultiLineString",
-        "Polygon": "Polygon",
-        "MultiPolygon": "MultiPolygon",
-        "GeometryCollection": "GeometryCollection"
+        Point: "Point",
+        MultiPoint: "MultiPoint",
+        LineString: "LineString",
+        MultiLineString: "MultiLineString",
+        Polygon: "Polygon",
+        MultiPolygon: "MultiPolygon",
+        GeometryCollection: "GeometryCollection"
     };
 
     /**
@@ -138,12 +138,12 @@ define(function () {
      * @property {String} Azimuth - Azimuthal projection
      */
     Constants.PROJECTION = {
-        "Aitoff": "Aitoff",
-        "August": "August",
-        "Mercator": "Mercator",
-        "Mollweide": "Mollweide",
-        "Plate": "Plate Carrée",
-        "Azimuth": "Azimuth"
+        Aitoff: "Aitoff",
+        August: "August",
+        Mercator: "Mercator",
+        Mollweide: "Mollweide",
+        Plate: "Plate Carrée",
+        Azimuth: "Azimuth"
     };
 
     /**
@@ -159,15 +159,15 @@ define(function () {
      * @property {String} HorizontalLocal - Local reference system based on horizontal coordinates
      */
     Constants.CRS = {
-        "Equatorial": "Equatorial",
-        "Galactic": "Galactic",
-        "WGS84": "CRS:84",
-        "Mars_2000": "IAU2000:49901",
-        "Mars_2000_old": "IAU2000:49900",
-        "Moon_2000": "IAU2000:30101",
-        "Moon_2000_old": "IAU2000:30100",
-        "HorizontalLocal": "HorizontalLocal",
-        "Sun": "IAU:Sun"
+        Equatorial: "Equatorial",
+        Galactic: "Galactic",
+        WGS84: "CRS:84",
+        Mars_2000: "IAU2000:49901",
+        Mars_2000_old: "IAU2000:49900",
+        Moon_2000: "IAU2000:30101",
+        Moon_2000_old: "IAU2000:30100",
+        HorizontalLocal: "HorizontalLocal",
+        Sun: "IAU:Sun"
     };
 
     /**
@@ -179,10 +179,10 @@ define(function () {
      * @property {String} GroundNavigation - 3D Navigation for ground visualization
      */
     Constants.NAVIGATION = {
-        "AstroNavigation": "AstroNavigation",
-        "PlanetNavigation": "PlanetNavigation",
-        "FlatNavigation": "FlatNavigation",
-        "GroundNavigation": "GroundNavigation"
+        AstroNavigation: "AstroNavigation",
+        PlanetNavigation: "PlanetNavigation",
+        FlatNavigation: "FlatNavigation",
+        GroundNavigation: "GroundNavigation"
     };
 
     /**
@@ -203,21 +203,21 @@ define(function () {
      * @property {String} ExportTool - ExportTool
      */
     Constants.SERVICE = {
-        "FitsHips": "FitsHips",
-        "FitsVisu": "FitsVisu",
-        "Histogram": "Histogram",
-        "ImageProcessing" : "ImageProcessing",
-        "MeasureToolSky" : "MeasureToolSky",
-        "MeasureToolPlanet" : "MeasureToolPlanet",
-        "MocBase" : "MocBase",
-        "MollweideViewer" : "MollweideViewer",
-        "PickingManager" : "PickingManager",
-        "Samp" : "Samp",
-        "SelectionTool" : "SelectionTool",
-        "NameResolver" : "NameResolver",
-        "ReverseNameResolver" : "ReverseNameResolver",
-        "ExportTool" : "ExportTool",
-        "TimeTravel" : "TimeTravel"
+        FitsHips: "FitsHips",
+        FitsVisu: "FitsVisu",
+        Histogram: "Histogram",
+        ImageProcessing : "ImageProcessing",
+        MeasureToolSky : "MeasureToolSky",
+        MeasureToolPlanet : "MeasureToolPlanet",
+        MocBase : "MocBase",
+        MollweideViewer : "MollweideViewer",
+        PickingManager : "PickingManager",
+        Samp : "Samp",
+        SelectionTool : "SelectionTool",
+        NameResolver : "NameResolver",
+        ReverseNameResolver : "ReverseNameResolver",
+        ExportTool : "ExportTool",
+        TimeTravel : "TimeTravel"
     };
 
     /**
@@ -229,10 +229,10 @@ define(function () {
      * @property {String} GoogleMouse - GoogleMouse device
      */
     Constants.HANDLER = {
-        "Touch" : "Touch",
-        "Keyboard" : "Keyboard",
-        "Mouse" : "Mouse",
-        "GoogleMouse" : "GoogleMouse"
+        Touch : "Touch",
+        Keyboard : "Keyboard",
+        Mouse : "Mouse",
+        GoogleMouse : "GoogleMouse"
     };
 
     /**
@@ -245,11 +245,11 @@ define(function () {
      * @property {String} Trajectory - Trajectory
      */
     Constants.PROVIDER = {
-        "Constellation" : "Constellation",
-        "Planet" : "Planet",
-        "Star" : "Star",
-        "Crater" : "Crater",
-        "Trajectory" : "Trajectory"
+        Constellation : "Constellation",
+        Planet : "Planet",
+        Star : "Star",
+        Crater : "Crater",
+        Trajectory : "Trajectory"
     };
 
     /**
@@ -261,11 +261,11 @@ define(function () {
      * @property {String} horizontalLocal - Equatorial
      */
     Constants.MappingCrsHips2Mizar = {
-        "equatorial": "Equatorial",
-        "galactic": "Galactic",
-        "ecliptic": "Ecliptic",
+        equatorial: "Equatorial",
+        galactic: "Galactic",
+        ecliptic: "Ecliptic",
         "mars-panstimson": "Equatorial",
-        "horizontalLocal": "Equatorial"
+        horizontalLocal: "Equatorial"
     };
 
     /**
@@ -277,11 +277,11 @@ define(function () {
      * @property {String} FeatureStyle - FeatureStyle utility
      */
     Constants.UTILITY = {
-        "Fits" : "Fits",
-        "Intersection" : "Intersection",
-        "Numeric" : "Numeric",
-        "CreateStyle" : "CreateStyle",
-        "FeatureStyle" : "FeatureStyle"
+        Fits : "Fits",
+        Intersection : "Intersection",
+        Numeric : "Numeric",
+        CreateStyle : "CreateStyle",
+        FeatureStyle : "FeatureStyle"
     };
 
     /**
@@ -292,9 +292,9 @@ define(function () {
      * @property {String} PAUSED - animation is paused
      */
     Constants.ANIMATION_STATUS = {
-        "STOPPED" : "STOPPED",
-        "RUNNING" : "RUNNING",
-        "PAUSED" : "PAUSED"
+        STOPPED : "STOPPED",
+        RUNNING : "RUNNING",
+        PAUSED : "PAUSED"
     };
 
     /**
@@ -329,46 +329,46 @@ define(function () {
      * @property {String} FEATURED_ADDED - Feature added
      */
     Constants.EVENT_MSG = {
-        "PLUGIN_NOT_FOUND" : "plugin:not_found",
-        "MIZAR_MODE_TOGGLE" : "mizarMode:toggle",
-        "LAYER_BACKGROUND_ADDED" : "backgroundLayer:add",
-        "LAYER_BACKGROUND_CHANGED" : "backgroundLayer:change",
-        "LAYER_ADDITIONAL_ADDED" : "additionalLayer:add",
-        "LAYER_REMOVED" : "layer:remove",
-        "LAYER_VISIBILITY_CHANGED" : "visibility:changed",
-        "LAYER_OPACITY_CHANGED" : "opacity:changed",
-        "LAYER_START_LOAD" : "startLoad",
-        "LAYER_END_LOAD" : "endLoad",
-        "LAYER_START_BACKGROUND_LOAD" : "startBackgroundLoad",
-        "LAYER_END_BACKGROUND_LOAD" : "endBackgroundLoad",
-        "LAYER_UPDATE_STATS_ATTRIBUTES" : "updateStatsAttribute",
-        "LAYER_TOGGLE_WMS" : "toggleWMS",
-        "LAYER_FORCE_REFRESH" : "layer:forceRefresh",
-        "LAYER_TIME_CHANGED" : "layer:time:changed",
-        "LAYERS_TIME_CHANGED" : "layers:time:changed",
-        "TIME_TRAVEL_UPDATED" : "timeTravel:updated",
+        PLUGIN_NOT_FOUND : "plugin:not_found",
+        MIZAR_MODE_TOGGLE : "mizarMode:toggle",
+        LAYER_BACKGROUND_ADDED : "backgroundLayer:add",
+        LAYER_BACKGROUND_CHANGED : "backgroundLayer:change",
+        LAYER_ADDITIONAL_ADDED : "additionalLayer:add",
+        LAYER_REMOVED : "layer:remove",
+        LAYER_VISIBILITY_CHANGED : "visibility:changed",
+        LAYER_OPACITY_CHANGED : "opacity:changed",
+        LAYER_START_LOAD : "startLoad",
+        LAYER_END_LOAD : "endLoad",
+        LAYER_START_BACKGROUND_LOAD : "startBackgroundLoad",
+        LAYER_END_BACKGROUND_LOAD : "endBackgroundLoad",
+        LAYER_UPDATE_STATS_ATTRIBUTES : "updateStatsAttribute",
+        LAYER_TOGGLE_WMS : "toggleWMS",
+        LAYER_FORCE_REFRESH : "layer:forceRefresh",
+        LAYER_TIME_CHANGED : "layer:time:changed",
+        LAYERS_TIME_CHANGED : "layers:time:changed",
+        TIME_TRAVEL_UPDATED : "timeTravel:updated",
         /** json object like : 
          { "date" : the current time,
            "display" : the current date as string for display,
            "period" : { "from" : , "to" : } <-- if null , no period managed
          }
         */
-        "BASE_LAYERS_ERROR" : "baseLayersError",
-        "BASE_LAYERS_READY" : "baseLayersReady",
-        "CRS_MODIFIED" : "modifiedCrs",
-        "NAVIGATION_STARTED" : "startNavigation",
-        "NAVIGATION_ENDED" : "endNavigation",
-        "NAVIGATION_MODIFIED" : "modifiedNavigation",
-        "NAVIGATION_CHANGED_DISTANCE" : "navigation:changedDistance",
-        "IMAGE_DOWNLOADED" : "image:download",
-        "IMAGE_REMOVED" : "image:remove",
-        "IMAGE_ADDED" : "image:add",
-        "FEATURED_ADDED" : "features:added",
-        "GLOBAL_TIME_REWIND"    : "globalTime:rewind",
-        "GLOBAL_TIME_FORWARD"   : "globalTime:forward",
-        "GLOBAL_TIME_SET"       : "globalTime:set",
-        "GLOBAL_TIME_CHANGED"   : "globalTime:changed", // temporary, need to be link to LAYERS_TIME_CHANGED after dev
-        "GLOBAL_TIME_INIT"   : "globalTime:init" 
+        BASE_LAYERS_ERROR : "baseLayersError",
+        BASE_LAYERS_READY : "baseLayersReady",
+        CRS_MODIFIED : "modifiedCrs",
+        NAVIGATION_STARTED : "startNavigation",
+        NAVIGATION_ENDED : "endNavigation",
+        NAVIGATION_MODIFIED : "modifiedNavigation",
+        NAVIGATION_CHANGED_DISTANCE : "navigation:changedDistance",
+        IMAGE_DOWNLOADED : "image:download",
+        IMAGE_REMOVED : "image:remove",
+        IMAGE_ADDED : "image:add",
+        FEATURED_ADDED : "features:added",
+        GLOBAL_TIME_REWIND    : "globalTime:rewind",
+        GLOBAL_TIME_FORWARD   : "globalTime:forward",
+        GLOBAL_TIME_SET       : "globalTime:set",
+        GLOBAL_TIME_CHANGED   : "globalTime:changed", // temporary, need to be link to LAYERS_TIME_CHANGED after dev
+        GLOBAL_TIME_INIT   : "globalTime:init"
     };
 
     /**
@@ -382,12 +382,12 @@ define(function () {
      * @property {String} SERVICE_VECTOR - Service index
      */
     Constants.DISPLAY = {
-        "RENDERING" : -1,
-        "DEFAULT_RASTER" : 0,
-        "SELECTED_RASTER" : 10,
-        "DEFAULT_VECTOR" : 20,
-        "SELECTED_VECTOR" : 30,
-        "SERVICE_VECTOR" : 40
+        RENDERING : -1,
+        DEFAULT_RASTER : 0,
+        SELECTED_RASTER : 10,
+        DEFAULT_VECTOR : 20,
+        SELECTED_VECTOR : 30,
+        SERVICE_VECTOR : 40
     };
 
     Constants.TIME_STEP = {
@@ -401,6 +401,29 @@ define(function () {
         SECOND      : "seconds",
         MILLISECOND : "milliseconds",
         ENUMERATED  : null
+    };
+
+    Constants.TIME_MOMENT_STEP = {
+        YEAR        : "year",
+        MONTH       : "month",
+        DAY         : "day",
+        HOUR        : "hour",
+        MINUTE      : "minute",
+        SECOND      : "second"
+    };
+
+    Constants.UNIT_TIME_WMS = {
+        YEAR        : "Y",
+        MONTH       : "M",
+        DAY         : "D",
+        HOUR        : "H",
+        MINUTE      : "M",
+        SECONDE     : "S"
+    };
+
+    Constants.UNIT_RESOLUTION_WMS = {
+        TIME        : "PT",
+        NOT_TIME    : "P"
     };
 
     /**************************************************************************************************************/

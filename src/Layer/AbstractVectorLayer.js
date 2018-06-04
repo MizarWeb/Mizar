@@ -38,7 +38,7 @@ define(['../Utils/Utils', './AbstractLayer', '../Utils/Constants', '../Renderer/
          * @implements {VectorLayer}
          */
         var AbstractVectorLayer = function (type, options) {
-            options.zIndex = options.zIndex || Constants.DISPLAY.DEFAULT_VECTOR;
+            this.zIndex = options.zIndex || Constants.DISPLAY.DEFAULT_VECTOR;
             AbstractLayer.prototype.constructor.call(this, type, options);
 
             this.vectorLayer = true;
@@ -134,7 +134,7 @@ define(['../Utils/Utils', './AbstractLayer', '../Utils/Constants', '../Renderer/
             var features = featureCollection.features;
             if (features) {
                 for (var i = 0; i < features.length; i++) {
-                    this.addFeature(features[i]);
+                    this.addFeature(feature[i]);
                 }
             }
         };
@@ -167,11 +167,14 @@ define(['../Utils/Utils', './AbstractLayer', '../Utils/Constants', '../Renderer/
             var geometry = feature.geometry;
 
             // Manage style, if undefined try with properties, otherwise use defaultStyle
-            var style = this.style;
+            var style;
             var props = feature.properties;
             if (props && props.style) {
                 style = props.style;
+            } else {
+                style = this.style;
             }
+            style.zIndex = this.zIndex;
 
             // Manage geometry collection
             if (geometry.type === "GeometryCollection") {

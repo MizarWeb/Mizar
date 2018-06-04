@@ -19,6 +19,8 @@
 define(["../Renderer/FeatureStyle", "../Layer/OpenSearchLayer", "../Utils/Utils","../Utils/UtilsIntersection","../Utils/Constants"],
     function (FeatureStyle, OpenSearchLayer, Utils, UtilsIntersection, Constants) {
 
+        const DEFAULT_SIZE_MULTIPLICATOR = 1;
+
         var ctx;
         var globe;
 
@@ -31,6 +33,7 @@ define(["../Renderer/FeatureStyle", "../Layer/OpenSearchLayer", "../Utils/Utils"
             fillColor: [1.0, 1.0, 0.0, 1.0],
             zIndex: Constants.DISPLAY.SELECTED_VECTOR
         });
+
 
         /**************************************************************************************************************/
 
@@ -319,9 +322,10 @@ define(["../Renderer/FeatureStyle", "../Layer/OpenSearchLayer", "../Utils/Utils"
          * @param {Array} pickPoint
          * @returns {Boolean} isPicked
          */
-        function featureIsPicked(feature, pickPoint,pickingNoDEM) {
+        function featureIsPicked(feature, pickPoint,pickingNoDEM, options) {
             var i,j,p;
-            var feat,featNext,ring;
+            var feat,featNext,ring, isMobile;
+            var sizeMultiplicator = options && options.sizeMultiplicator ? options.sizeMultiplicator : DEFAULT_SIZE_MULTIPLICATOR;
             switch (feature.geometry.type) {
                 case Constants.GEOMETRY.LineString:
                     for (i = 0; i < feature.geometry.coordinates.length - 1; i++) {
@@ -363,7 +367,7 @@ define(["../Renderer/FeatureStyle", "../Layer/OpenSearchLayer", "../Utils/Utils"
                     if (pickingNoDEM === true) {
                         pt[2] = 0;
                     }
-                    return UtilsIntersection.pointInSphere(ctx, pt, point, feature.geometry._bucket.textureHeight) && !isLabel;
+                    return UtilsIntersection.pointInSphere(ctx, pt, point, feature.geometry._bucket.textureHeight * sizeMultiplicator) && !isLabel;
                 default:
                     console.log("Picking for " + feature.geometry.type + " is not yet");
                     return false;
@@ -372,8 +376,8 @@ define(["../Renderer/FeatureStyle", "../Layer/OpenSearchLayer", "../Utils/Utils"
 
         /**************************************************************************************************************/
 
-        function computeFilterPickSelection(pickPoint) {
-            var selection = this.computePickSelection(pickPoint);
+        function computeFilterPickSelection(pickPoint, options) {
+            var selection = this.computePickSelection(pickPoint, options);
             var returnedSelection = [];
             for (var i=0;i<selection.length;i++) {
                 returnedSelection.push(selection[i]);
@@ -386,7 +390,7 @@ define(["../Renderer/FeatureStyle", "../Layer/OpenSearchLayer", "../Utils/Utils"
          * @param {Array} pickPoint
          * @return {Array} newSelection
          */
-        function computePickSelection(pickPoint) {
+        function computePickSelection(pickPoint, options) {
             if (!pickPoint) {
                 return [];
             }
@@ -418,7 +422,7 @@ define(["../Renderer/FeatureStyle", "../Layer/OpenSearchLayer", "../Utils/Utils"
                             for (j = 0; j < pickableLayer.features.length; j++) {
                                 //feature = pickableLayer.features[pickableLayer.featuresSet[tileData.featureIds[j]].index];
                                 feature = pickableLayer.features[j];
-                                if (this.featureIsPicked(feature, pickPoint,pickableLayer.pickingNoDEM)) {
+                                if (this.featureIsPicked(feature, pickPoint,pickableLayer.pickingNoDEM, options)) {
                                     newSelection.push({feature: feature, layer: pickableLayer});
                                 }
                             }
@@ -429,7 +433,7 @@ define(["../Renderer/FeatureStyle", "../Layer/OpenSearchLayer", "../Utils/Utils"
                         // Search for picked features
                         for (j = 0; j < pickableLayer.features.length; j++) {
                             feature = pickableLayer.features[j];
-                            if (this.featureIsPicked(feature, pickPoint,pickableLayer.pickingNoDEM)) {
+                            if (this.featureIsPicked(feature, pickPoint,pickableLayer.pickingNoDEM, options)) {
                                 newSelection.push({feature: feature, layer: pickableLayer});
                             }
                         }
