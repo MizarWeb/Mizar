@@ -1,10 +1,11 @@
 define(['underscore-min','../Utils/Utils', './AbstractRegistryHandler', '../Utils/Constants', "./WCSServer"], function(_,Utils, AbstractRegistryHandler, Constants, WCSServer){
 
-    var WCSServerRegistryHandler = function(mizarConfiguration, pendingLayers){
+    var WCSServerRegistryHandler = function(layers, mizarConfiguration, pendingLayers){
         AbstractRegistryHandler.prototype.constructor.call();
         this.pendingLayers = pendingLayers;
         this.proxyUse = mizarConfiguration.proxyUse;
         this.proxyUrl = mizarConfiguration.proxyUrl;
+        this.layers = layers;
     };
 
     /**************************************************************************************************************/
@@ -53,7 +54,7 @@ define(['underscore-min','../Utils/Utils', './AbstractRegistryHandler', '../Util
                 var wcsServer = new WCSServer(this.proxyUse, this.proxyUrl, layerDescription);
                 var self = this;
                 wcsServer.createLayers(function(layers) {
-                    _moveTileWireFrameAfterWCS(layers);
+                    _moveTileWireFrameAfterWCS(self.layers);
                     self._handlePendingLayers(self.pendingLayers, layers);
                     callback(layers);
                 }, fallback);
