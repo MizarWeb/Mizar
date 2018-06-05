@@ -145,7 +145,8 @@ define(["jquery", "underscore-min", "../Utils/Utils", "./AbstractContext", "../U
                 this.compass = new Compass({
                     element: divName,
                     ctx: this,
-                    crs : this.getCoordinateSystem().getGeoideName()
+                    crs : this.getCoordinateSystem().getGeoideName(),
+                    isMobile : this.isMobile
                 });
             } else {
                 if (this.compass) {

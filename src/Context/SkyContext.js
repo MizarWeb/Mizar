@@ -149,7 +149,8 @@ define(["underscore-min", "../Utils/Utils",
                 this.compass = new Compass({
                     element: divName,
                     ctx: this,
-                    crs : Constants.CRS.Equatorial
+                    crs : Constants.CRS.Equatorial,
+                    isMobile : this.isMobile
                 });
             } else {
                 if (this.compass) {

@@ -30,6 +30,7 @@ define(["jquery", "../Utils/Constants","../Services/CompassCore"],
     var parentElement = null;
     var ctx = null;
     var svgDoc;
+    var isMobile = false;
 
     /**
      * Create a compass Widget
@@ -41,6 +42,7 @@ define(["jquery", "../Utils/Constants","../Services/CompassCore"],
 
         parentElement = options.element;
         ctx = options.ctx;
+        isMobile = options.isMobile;
 
         // Add compass object to parent element
         // Don't use <object> HTML tag due to cross-origin nature of svg
@@ -163,7 +165,7 @@ define(["jquery", "../Utils/Constants","../Services/CompassCore"],
 
             northText.addEventListener("click", CompassCore._alignWithNorth);
 
-            if (options.isMobile) {
+            if (isMobile) {
                 svgDoc.addEventListener('touchstart', _handleMouseDown);
                 svgDoc.addEventListener('touchup', _handleMouseUp);
                 svgDoc.addEventListener('touchmove', _handleMouseMove);

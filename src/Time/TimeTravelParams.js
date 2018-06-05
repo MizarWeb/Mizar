@@ -21,7 +21,7 @@
 /**
  * Time travel module : time control 
  */
-define(["jquery", "moment", "../Utils/Constants"], function ($, Moment, Constants) {
+define(["jquery", "moment", "./TimeSample","../Utils/Constants"], function ($, Moment, TimeSample, Constants) {
 
     /**
      * @name TimeTravelParams
@@ -29,16 +29,19 @@ define(["jquery", "moment", "../Utils/Constants"], function ($, Moment, Constant
      * Management of time travel
      */
     var TimeTravelParams = function () {
-        this.startDate = new Date();
-        this.endDate = new Date();
+        //this.startDate = new Date();
+        //this.endDate = new Date();
 
         this.currentDate = new Date();
 
-        this.stepKind = Constants.TIME_STEP.DAY;
-        this.stepValue = 1;
+        //this.stepKind = Constants.TIME_STEP.DAY;
+        //this.stepValue = 1;
 
         this.ctx = null;
 
+        // Array of samples
+        this.samples = null;
+        // Array of enumerated values
         this.enumeratedValues = null;
 
         // TODO: internationalized
@@ -58,29 +61,7 @@ define(["jquery", "moment", "../Utils/Constants"], function ($, Moment, Constant
         this.apply();
     };
 
-    /**************************************************************************************************************/
-
-    /**
-     * Set the start date
-     * @function setStartDate
-     * @param date Date start date
-     * @memberOf TimeTravelParams#
-     */
-    TimeTravelParams.prototype.setStartDate = function (date) {
-        this.startDate = Moment.utc(date);
-    };
-
-    /**************************************************************************************************************/
-    
-    /**
-     * Set the end date
-     * @function setEndDate
-     * @param date Date end date
-     * @memberOf TimeTravelParams#
-     */
-    TimeTravelParams.prototype.setEndDate = function (date) {
-        this.endDate = Moment.utc(date);
-    };
+   
 
     /**************************************************************************************************************/
 
@@ -94,29 +75,6 @@ define(["jquery", "moment", "../Utils/Constants"], function ($, Moment, Constant
         this.currentDate = Moment.utc(date);
     };
 
-    /**************************************************************************************************************/
-
-    /**
-     * Get the start date
-     * @function getStartDate
-     * @return Date start date
-     * @memberOf TimeTravelParams#
-     */
-    TimeTravelParams.prototype.getStartDate = function () {
-        return this.startDate;
-    };
-
-    /**************************************************************************************************************/
-
-    /**
-     * Get the end date
-     * @function getEndDate
-     * @return Date end date
-     * @memberOf TimeTravelParams#
-     */
-    TimeTravelParams.prototype.getEndDate = function () {
-        return this.endDate;
-    };
 
     /**************************************************************************************************************/
 

@@ -503,7 +503,7 @@ define(["jquery", "moment", "./Numeric", "./UtilsIntersection", "../Error/Networ
         } else if (Utils.aContainsB.call(this, format, 'DD')) {
             timeResolution = "days";
         } else if (Utils.aContainsB.call(this, format, "MM")) {
-            timeResolution = "months"
+            timeResolution = "months";
         } else if (Utils.aContainsB.call(this, format, "YYYY")) {
             timeResolution = "years";
         } else {

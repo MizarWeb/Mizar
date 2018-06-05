@@ -186,17 +186,20 @@ define(["jquery", "underscore-min",
             this.dataProviders = {};
 
             if (options.skyContext) {
+                options.skyContext.isMobile = options.isMobile;
                 this.createContext(Mizar.CONTEXT.Sky, options.skyContext);
                 this.setActivatedContext(Mizar.CONTEXT.Sky);
             }
 
             if (options.planetContext) {
+                options.planetContext.isMobile = options.isMobile;
                 this.createContext(Mizar.CONTEXT.Planet, options.planetContext);
                 this.setActivatedContext(Mizar.CONTEXT.Planet);
             }
 
             if (options.groundContext) {
-                this.createContext(Mizar.CONTEXT.Ground, options.planetContext);
+                options.groundContext.isMobile = options.isMobile;
+                this.createContext(Mizar.CONTEXT.Ground, options.groundContext);
                 this.setActivatedContext(Mizar.CONTEXT.Ground);
             }
 
