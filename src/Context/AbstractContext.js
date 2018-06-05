@@ -386,7 +386,7 @@ define(["jquery", "underscore-min", "../Utils/Event", "moment", "../Utils/Utils"
                         // Take autoFillTimeTravel into account
                         if (layer.autoFillTimeTravel === true) {
                             // Only when visible & time travel service activated and available
-                            if ( (self.visible === true) && (self.timeTravelService) && (typeof self.timeTravelService !== "undefined") ) {
+                            if ( (layer.visible === true) && (self.timeTravelService) && (typeof self.timeTravelService !== "undefined") ) {
                                 self.timeTravelService.update(layer.timeTravelValues);
                             }
                         }
@@ -394,7 +394,6 @@ define(["jquery", "underscore-min", "../Utils/Event", "moment", "../Utils/Utils"
                         _addToGlobe.call(self, layer);
 
                         self._fillDataProvider(layer, layerDescription);
-
                         if(layer.isVisible()) {
                             layer.setTime(self.getTime());
                         }

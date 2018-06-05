@@ -83,7 +83,6 @@ define(["jquery", "underscore-min", "../Utils/Utils", "./AbstractContext", "../U
         var PlanetContext = function (mizarConfiguration, options) {
             AbstractContext.prototype.constructor.call(this, mizarConfiguration, Constants.CONTEXT.Planet, options);
             var self = this;
-
             this.components = {
                 "posTrackerInfo": true,
                 "posTracker": true,
@@ -164,6 +163,7 @@ define(["jquery", "underscore-min", "../Utils/Utils", "./AbstractContext", "../U
                 continuousRendering: options.continuousRendering || false,
                 renderContext: options.renderContext,
                 canvas: this.canvas,
+                isMobile : options.isMobile || false,
                 coordinateSystem: options.coordinateSystem,
                 shadersPath: this.mizarConfiguration.mizarAPIUrl+'shaders/',
                 lighting: false,

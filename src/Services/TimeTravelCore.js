@@ -90,23 +90,6 @@ define(["jquery","../Time/TimeTravelParams","../Utils/Constants"], function ($, 
     }
 
     /**
-     *    get start value (return 0 if isEnumerated)
-     *    
-     */
-    function getStart() {
-        return params.getStartDate();
-    }
-
-    /**
-     *    get end value (return length-1 if isEnumerated)
-     *    
-     */
-
-    function getEnd() {
-        return params.getStartDate();
-    }
-
-    /**
      *    get current date
      *    
      */
@@ -114,21 +97,6 @@ define(["jquery","../Time/TimeTravelParams","../Utils/Constants"], function ($, 
         return params.getCurrentDate();
     }
 
-    /**
-     *    get current index
-     *    
-     */
-    function getCurrentIndex() {
-        return params.getCurrentIndex();
-    }
-
-    /**
-     *    return if dates are enumerated
-     *    
-     */
-    function isEnumerated() {
-        return (params.stepKind === Constants.TIME_STEP.ENUMERATED);
-    }
 
     function isCurrentDateTheFirst() {
         return params.isCurrentDateTheFirst();
@@ -144,7 +112,6 @@ define(["jquery","../Time/TimeTravelParams","../Utils/Constants"], function ($, 
         init: function (options) {
             parentElement = options.element;
             ctx = options.ctx;
-
             params.setContext(ctx);
             
             // subscribe
@@ -162,10 +129,6 @@ define(["jquery","../Time/TimeTravelParams","../Utils/Constants"], function ($, 
         isCurrentDateTheLast  : isCurrentDateTheLast,
         chooseTime            : chooseTime,
         remove                : remove,
-        getStart              : getStart,
-        getEnd                : getEnd,
         getCurrentDate        : getCurrentDate,
-        getCurrentIndex       : getCurrentIndex,
-        isEnumerated          : isEnumerated
     };
 });
