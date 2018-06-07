@@ -147,10 +147,11 @@ define(["jquery", "moment", "../Utils/Constants", "../Utils/Utils"], function ($
             throw new Error("Unknown resolution");
         }
 
-        return {
+        var res = {
             step: stepTime,
             unit: unitTime
         };
+        return res;
     }
 
     /**

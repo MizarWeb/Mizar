@@ -267,5 +267,15 @@ define(["jquery", "moment", "../Utils/Constants", "../Utils/Utils"], function ($
         return foundDate;
     }; 
 
+    /**
+     * Get string representation
+     * @function toString
+     * @return {String} String representation
+     * @memberOf TimeSample#
+     */
+    TimeSample.prototype.toString = function () {
+        return Moment(this.start)+" / "+Moment(this.end)+" / "+this.stepValue + this.stepKind + " / ID="+this.layerID;
+    };
+
     return TimeSample;
 });

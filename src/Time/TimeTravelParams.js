@@ -30,6 +30,14 @@ define(["jquery", "moment", "./TimeSample","./TimeEnumerated","../Utils/Constant
      */
     var TimeTravelParams = function () {
         this.currentDate = new Date();
+        
+        this.currentPeriod = {
+            "from" : null,
+            "to" : null
+        };
+
+        this.currentDisplayDate = "<=>";
+
         this.ctx = null;
         // List of samples
         this.samples = [];
@@ -90,25 +98,7 @@ define(["jquery", "moment", "./TimeSample","./TimeEnumerated","../Utils/Constant
      * @memberOf TimeTravelParams#
      */
     TimeTravelParams.prototype.getCurrentPeriod = function() {
-/*        if (this.stepKind === Constants.TIME_STEP.ENUMERATED) {
-            if (this.enumeratedValues.length>0) {
-                return this.enumeratedValues[this.currentIndex].period;
-            } else {
-                return {
-                    "from" : new Date(), 
-                    "to" : new Date()
-                };
-                        
-            }
-        }
-        
-        var fromDate = this.currentDate;
-        var toDate = Moment.utc(this.currentDate).add(this.stepValue,this.stepKind).subtract(1,Constants.TIME_STEP.MILLISECOND);
-*/
-        return {
-            "from": fromDate,
-            "to": toDate
-        };
+        return this.currentPeriod;
     };
 
     /**************************************************************************************************************/
@@ -175,7 +165,17 @@ define(["jquery", "moment", "./TimeSample","./TimeEnumerated","../Utils/Constant
         var saveCurrentValue = this.currentDate;
 
         if (parameters.ID) {
+            // Remove values into enumerated values
             this.removeEnumeratedValuesForID(parameters.ID);
+
+            // Remove samples with ID
+            var newSamples = [];
+            for (var i=0;i<this.samples.length;i++) {
+                if (this.samples[i].getLayerID() !== paramters.ID) {
+                    newSamples.push(samples[i]);
+                }
+            }
+            this.samples = newsamples;
         }
         this.setToNearestValue(saveCurrentValue);
     };
@@ -232,54 +232,8 @@ define(["jquery", "moment", "./TimeSample","./TimeEnumerated","../Utils/Constant
             this.removeValues(parameters.remove);
         }
         this.apply();
-    };
 
-    /**************************************************************************************************************/
-
-    /**
-     * Add values for ID
-     * @function addValuesForID
-     * @param {JSON} values Values 
-     * @param {String} ID Id of layer
-     * @memberOf TimeTravelParams#
-     * @private
-     */
-    TimeTravelParams.prototype.addValuesForID = function(values,ID) {
-        if (ID === null) {
-            ID = TimeTravelParams.NO_ID;
-        }
-        if (values.enumeratedValues) {
-            this.addEnumeratedValuesForID(values.enumeratedValues,ID);
-            // add enumerated values
-        } else {
-            this.startDate = Moment.utc(values.start);
-            this.endDate = Moment.utc(values.end);
-            this.stepKind = values.stepKind;
-            this.stepValue = values.stepValue;
-            // compile data with previous, manage ID
-            // TODO FL
-
-        }
-    };
-
-    /**************************************************************************************************************/
-
-    /**
-     * Remove values for ID
-     * @function removeValuesForID
-     * @param {String} ID Id of layer
-     * @memberOf TimeTravelParams#
-     */
-    TimeTravelParams.prototype.removeValuesForID = function(ID) {
-        if (ID === null) {
-            ID = TimeTravelParams.NO_ID;
-        }
-        if ( (this.enumeratedValues) && (this.enumeratedValues.length>0) ) {
-            this.removeEnumeratedValuesForID(ID);
-            // add enumerated values
-        } else {
-            // nothing to do
-        }
+        console.log("toString ! "+this.toString());
     };
 
     /**************************************************************************************************************/
@@ -291,9 +245,9 @@ define(["jquery", "moment", "./TimeSample","./TimeEnumerated","../Utils/Constant
      */
     TimeTravelParams.prototype.apply = function () {
         var details = {
-            date:this.currentDate/*,
+            date:this.currentDate,
             display:this.getCurrentDisplayDate(),
-            period : this.getCurrentPeriod()*/
+            period : this.getCurrentPeriod()
         };
         this.ctx.publish(Constants.EVENT_MSG.GLOBAL_TIME_CHANGED,details);
     };
@@ -395,6 +349,8 @@ define(["jquery", "moment", "./TimeSample","./TimeEnumerated","../Utils/Constant
      * @memberOf TimeTravelParams#
      */
     TimeTravelParams.prototype.getCurrentDisplayDate = function() {
+        return this.currentDisplayDate;
+        /*
         var result = null;
         if (this.stepKind === Constants.TIME_STEP.ENUMERATED) {
             if (this.enumeratedValues.length>0) {
@@ -406,6 +362,7 @@ define(["jquery", "moment", "./TimeSample","./TimeEnumerated","../Utils/Constant
             result = this.getDateFormated(this.currentDate);
         }
         return result;
+        */
     };
 
     /**
@@ -415,11 +372,12 @@ define(["jquery", "moment", "./TimeSample","./TimeEnumerated","../Utils/Constant
      * @memberOf TimeTravelParams#
      */
     TimeTravelParams.prototype.isCurrentDateTheFirst = function() {
-        if (this.stepKind === Constants.TIME_STEP.ENUMERATED) {
+        return false;
+        /*if (this.stepKind === Constants.TIME_STEP.ENUMERATED) {
             return (this.currentIndex === 0);
         } else {
             return this.currentDate === this.startDate;
-        }
+        }*/
     };
 
     /**
@@ -429,16 +387,39 @@ define(["jquery", "moment", "./TimeSample","./TimeEnumerated","../Utils/Constant
      * @memberOf TimeTravelParams#
      */
     TimeTravelParams.prototype.isCurrentDateTheLast = function() {
+        return false;
+        /*
         if (this.stepKind === Constants.TIME_STEP.ENUMERATED) {
             return (this.currentIndex === (this.enumeratedValues.length-1));
         } else {
             var nextDate = Moment.utc(this.currentDate).add(this.stepValue,this.stepKind);
             return (nextDate > this.endDate);
         }
+        */
     };
 
-    // Constant when no layer ID associated
-    TimeTravelParams.NO_ID = "NO_ID";
+    /**
+     * Get string representation
+     * @function toString
+     * @return {String} String representation
+     * @memberOf TimeTravelParams#
+     */
+    TimeTravelParams.prototype.toString = function() {
+        var res = "";
+        
+        if (this.samples) {
+            for (var i=0;i<this.samples.length;i++) {
+                res += "Sample : "+this.samples[i].toString()+"\n";
+            }
+        }
+
+        if (this.enumeratedValues) {
+            res += "Enumerated : "+this.enumeratedValues.toString()+"\n";
+        }
+
+        return res;
+    };
+    
 
     return TimeTravelParams;
 });

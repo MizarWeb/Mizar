@@ -203,5 +203,23 @@ define(["jquery", "moment", "../Utils/Constants", "../Utils/Utils"], function ($
         return foundDate;
     }; 
 
+    /**************************************************************************************************************/
+
+    /**
+     * Get string representation
+     * @function toString
+     * @return {String} String representation
+     * @memberOf TimeEnumerated#
+     */
+    TimeEnumerated.prototype.toString = function () {
+        var res = "";
+        if (this.enumeratedValues) {
+            for (var i=0;i<this.enumeratedValues.length;i++) {
+                res += this.enumeratedValues[i].display + " / ";
+            }
+        }
+        return res;
+    };
+
     return TimeEnumerated;
 });

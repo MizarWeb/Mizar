@@ -900,12 +900,12 @@ define(["jquery", "underscore-min", "../Utils/Event", "moment", "../Time/Time", 
                         }
                     };
                 }
-
+                
                 // Add sample values in time travel
                 if(sampleValues.length > 0) {
                     var start,end, step, tmpArray, sampleDefinition;
-                    for (var j=0; i<sampleValues.length; j++) {
-                        sampleDefinition = sampleValues[j];
+                    for (i=0; i<sampleValues.length; i++) {
+                        sampleDefinition = sampleValues[i];
                         tmpArray = sampleDefinition.split("/");
                         start = Moment(tmpArray[0]);
                         end = Moment(tmpArray[1]);
@@ -914,7 +914,7 @@ define(["jquery", "underscore-min", "../Utils/Event", "moment", "../Time/Time", 
                             "add": {
                                 "start": start,
                                 "end": end,
-                                "stepKind ": step.unit,
+                                "stepKind": step.unit,
                                 "stepValue": step.step,
                                 "ID": this.ID
                             }
