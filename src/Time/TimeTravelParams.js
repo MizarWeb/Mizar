@@ -221,7 +221,7 @@ define(["jquery", "moment", "./TimeSample","./TimeEnumerated","../Utils/Constant
      * @memberOf TimeTravelParams#
      */
     TimeTravelParams.prototype.update = function (parameters) {
-        console.log("update",update);
+        console.log("update",parameters);
         if (!parameters) {
             return;
         }
