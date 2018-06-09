@@ -18,6 +18,10 @@ define(["jquery","underscore-min", "../Utils/Utils", "xmltojson", "../Layer/Laye
             return layersFromConf.length !== 0 && !_.contains(layersFromConf, currentLayerName);
         }
 
+        function _hasGroup(jsonLayer) {
+            return Array.isArray(jsonLayer.Layer);
+        }
+
 
         function _computeAttribution(layerDescription, jsonLayers, jsonLayer) {
             var attribution, logo, title;
@@ -121,7 +125,15 @@ define(["jquery","underscore-min", "../Utils/Utils", "xmltojson", "../Layer/Laye
         }
 
         function _createLayer(layerDescription, jsonLayers, jsonLayer) {
-            var attribution = _computeAttribution.call(this, layerDescription, jsonLayers, jsonLayer);
+            var attribution = [];
+            if (_hasGroup.call(this, jsonLayer)) {
+                for (var i=0;i<jsonLayer.Layer.length; i++) {
+                    var layer = jsonLayer.Layer[i];
+                    attribution.push(_computeAttribution.call(this, layerDescription, jsonLayers, layer));
+                }
+            } else {
+                attribution.push(_computeAttribution.call(this, layerDescription, jsonLayers, jsonLayer));
+            }
             var copyrightURL = _computeCopyrightURL.call(this, layerDescription, jsonLayers, jsonLayer);
             var center = _computeCenterBbox.call(this, jsonLayer);
             var layerDesc = Object.assign({}, layerDescription, {});
@@ -129,7 +141,7 @@ define(["jquery","underscore-min", "../Utils/Utils", "xmltojson", "../Layer/Laye
             layerDesc.format = layerDescription.format || "image/png";
             layerDesc.layers =  jsonLayer.Name;
             layerDesc.description = layerDescription.description || (jsonLayer.Abstract != null) ? jsonLayer.Abstract : jsonLayers.Abstract;
-            layerDesc.attribution = attribution;
+            layerDesc.attribution = attribution.join('<br/>');
             layerDesc.copyrightUrl = copyrightURL;
             layerDesc.autoFillTimeTravel = layerDescription.autoFillTimeTravel;
             layerDesc.properties = {
