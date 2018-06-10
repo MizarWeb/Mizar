@@ -234,7 +234,8 @@ define(['../Utils/Utils', '../Utils/Constants', './AbstractNavigation', '../Anim
          * @param {Object} options - Options
          * @param {int} [options.distance] - Final zooming distance in meters - if not set, this is the current distance
          * @param {int} [options.duration = 5000] - Duration of animation in milliseconds
-         * @param {int} [options.tilt = 90] - Defines the tilt in the end of animation
+         * @param {int} [options.tilt = 90] - Defines the tilt at the end of animation
+         * @param {int} [options.heading] - Defines the heading at the end of animation. By default, the current heading is conserved
          * @param {navigationCallback} [options.callback] - Callback at the end of animation
          */
         PlanetNavigation.prototype.zoomTo = function (geoPos, options) {
@@ -244,6 +245,7 @@ define(['../Utils/Utils', '../Utils/Constants', './AbstractNavigation', '../Anim
             var destDistance = (options && options.distance) ? options.distance : this.distance / this.ctx.getCoordinateSystem().getGeoide().getHeightScale();
             var duration = (options && options.duration) ? options.duration : DEFAULT_DURATION_ZOOM_TO;
             var destTilt = (options && options.tilt) ? options.tilt : DEFAULT_TILT;
+            var destHeading = (options && options.heading) ? options.heading : navigation.heading;
 
             var shortestPath = Numeric.shortestPath180(this.geoCenter[0], geoPos[0]);
 
@@ -328,7 +330,29 @@ define(['../Utils/Utils', '../Utils/Constants', './AbstractNavigation', '../Anim
             };
 
             this.ctx.addAnimation(this.zoomToAnimation);
+
+
             this.zoomToAnimation.start();
+
+            var headingAnimation = AnimationFactory.create(
+                Constants.ANIMATION.Segmented,
+                {
+                    "duration": duration,
+                    "valueSetter": function (value) {
+                        navigation.heading = value;
+                        navigation.computeViewMatrix();
+                    }
+                });
+
+            headingAnimation.addSegment(
+                0.0, navigation.heading,
+                1.0, destHeading,
+                function (t, a, b) {
+                    return Numeric.lerp(t, a, b);
+                }
+            );
+            this.ctx.addAnimation(headingAnimation);
+            headingAnimation.start();
         };
         
         /**

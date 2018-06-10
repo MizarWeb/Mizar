@@ -1,12 +1,11 @@
 define(['underscore-min','../Utils/Utils', './AbstractRegistryHandler', '../Utils/Constants', "./WCSServer"], function(_,Utils, AbstractRegistryHandler, Constants, WCSServer){
 
-    var WCSServerRegistryHandler = function(globe, layers, mizarConfiguration, pendingLayers){
+    var WCSServerRegistryHandler = function(layers, mizarConfiguration, pendingLayers){
         AbstractRegistryHandler.prototype.constructor.call();
+        this.layers = layers;
         this.pendingLayers = pendingLayers;
         this.proxyUse = mizarConfiguration.proxyUse;
         this.proxyUrl = mizarConfiguration.proxyUrl;
-        this.layers = layers;
-        this.globe = globe;
     };
 
     /**************************************************************************************************************/
@@ -16,29 +15,37 @@ define(['underscore-min','../Utils/Utils', './AbstractRegistryHandler', '../Util
     /**************************************************************************************************************/
 
     /**
-     * Detach and attach the TileWireFrame after WCS.
-     * The TileWireFrame must be loaded after the WCS because the WCS is part of the 3D model.
+     * Moves an elements of the array to another index
+     * @param {[]} array array
+     * @param {number} from index where the element to move is located
+     * @param {number} to index where the element must be gone.
+     * @private
+     */
+    function _moveArrayEltFromTo(array, from, to) {
+        var extracted = array.splice(from, 1)[0];
+        array.splice(to, 0, extracted);
+    }
+
+    /**
+     * Moves the TileWireFrame after WCS.
+     * The TileWireFrame must be loaded after the WCS because the WCS is part of the 3D model. When the 3D
+     * model is created, the TileWireFrame is placed on it
      * @param layers list of layers to load
      * @private
      */
-    function _updateTileWireFrame(globe, layers) {
+    function _moveTileWireFrameAfterWCS(layers) {
         var i;
         var isFound = false;
-        var layer;
         for(i=0; i<layers.length; i++) {
-            layer = layers[i];
+            var layer = layers[i];
             if (layer.getType() === Constants.LAYER.TileWireframe) {
                 isFound = true;
+                console.log("DEBUG:TileWireframing created before WCS => move it");
                 break;
             }
         }
         if(isFound) {
-            layer._detach();
-            layer.program = null;
-            layer.indexBuffer = null;
-            layer.globe = null;
-            layer.subIndexBuffer = [null, null, null, null];
-            layer._attach(globe);
+            _moveArrayEltFromTo(layers, i, layers.length-1);
         }
     }
 
@@ -47,8 +54,9 @@ define(['underscore-min','../Utils/Utils', './AbstractRegistryHandler', '../Util
             if(layerDescription.type === Constants.LAYER.WCSElevation) {
                 var wcsServer = new WCSServer(this.proxyUse, this.proxyUrl, layerDescription);
                 var self = this;
+                console.log("DEBUG:WCS created");
                 wcsServer.createLayers(function(layers) {
-                    _updateTileWireFrame(self.globe, self.layers);
+                    _moveTileWireFrameAfterWCS(self.layers);
                     self._handlePendingLayers(self.pendingLayers, layers);
                     callback(layers);
                 }, fallback);

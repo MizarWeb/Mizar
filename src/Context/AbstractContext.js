@@ -366,7 +366,7 @@ define(["jquery", "underscore-min", "../Utils/Event", "moment", "../Utils/Utils"
             var pendingLayersHandler = new PendingLayersRegistryHandler(this.pendingLayers, this.layers);
             var wmsServerHandler = new WMSServerRegistryHandler(this.getMizarConfiguration(), this.pendingLayers);
             var wmtsServerHandler = new WMTSServerRegistryHandler(this.getMizarConfiguration(), this.pendingLayers);
-            var wcsServerHandler = new WCSServerRegistryHandler(this.globe, this.layers, this.getMizarConfiguration(), this.pendingLayers);
+            var wcsServerHandler = new WCSServerRegistryHandler(this.layers, this.getMizarConfiguration(), this.pendingLayers);
             var layerHandler = new LayerRegistryHandler(this.pendingLayers);
 
             pendingLayersHandler.setNext(wmsServerHandler);

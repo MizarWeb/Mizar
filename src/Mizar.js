@@ -267,6 +267,13 @@ define(["jquery", "underscore-min",
         Mizar.CRS = Constants.CRS;
 
         /**
+         * Static variable, supported {@link DISPLAY display} order
+         * @name DISPLAY
+         * @memberOf Mizar#
+         */
+        Mizar.DISPLAY = Constants.DISPLAY;
+
+        /**
          * Static variable, supported {@link SERVICE service} type
          * @name SERVICE
          * @memberOf Mizar#
