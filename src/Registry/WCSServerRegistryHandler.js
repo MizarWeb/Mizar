@@ -48,7 +48,7 @@ define(['underscore-min','../Utils/Utils', './AbstractRegistryHandler', '../Util
                 var wcsServer = new WCSServer(this.proxyUse, this.proxyUrl, layerDescription);
                 var self = this;
                 wcsServer.createLayers(function(layers) {
-                    _updateTileWireFrame(this.globe, self.layers);
+                    _updateTileWireFrame(self.globe, self.layers);
                     self._handlePendingLayers(self.pendingLayers, layers);
                     callback(layers);
                 }, fallback);
