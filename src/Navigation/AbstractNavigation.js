@@ -161,8 +161,6 @@ define(['../Utils/Utils', '../Utils/Event', '../Navigation/NavigationHandlerFact
 
         /**
          * Initializes the touch navigation handler.
-         * @param {Object} options to add touch navigation
-         * @param {Navigation} options.navigation Navigation object
          * @function initTouchNavigation
          * @memberOf AbstractContext#
          */
