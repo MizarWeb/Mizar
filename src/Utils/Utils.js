@@ -520,6 +520,23 @@ define(["jquery", "moment", "./Numeric", "./UtilsIntersection", "../Error/Networ
         return (time instanceof Moment()) ? time : Moment().utc(time);
     };
 
+    Utils.isPassiveSupported = function() {
+        var passiveSupported = false;
+
+        try {
+            var options = Object.defineProperty({}, "passive", {
+                get: function() {
+                    passiveSupported = true;
+                }
+            });
+
+            window.addEventListener("test", options, options);
+            window.removeEventListener("test", options, options);
+        } catch(err) {
+            passiveSupported = false;
+        }
+        return passiveSupported;
+    };
 
     return Utils;
 
