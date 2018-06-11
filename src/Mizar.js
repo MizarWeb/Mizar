@@ -387,6 +387,7 @@ define(["jquery", "underscore-min",
             if (options.hasOwnProperty('groundContext')) {
                 mizarOptions.groundContext = options.groundContext;
             }
+            console.log("option",mizarOptions);
             return mizarOptions;
         }
 
@@ -963,7 +964,8 @@ define(["jquery", "underscore-min",
             try {
                 options.renderContext = this.renderContext;
                 options.timeTravelService = this.getServiceByName(Mizar.SERVICE.TimeTravel);
-                
+                options.isMobile = this.getOptions().configuration.isMobile;                
+
                 var ctx = this.ContextFactory.create(contextMode, this.getOptions(), options);
             
                 switch (contextMode) {
