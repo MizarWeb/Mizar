@@ -114,11 +114,6 @@ define(["../Utils/Utils"], function (Utils) {
                 _navigation.inertia.launch("zoom", factor < 0 ? -1 : 1);
             }
 
-            // Stop mouse wheel to be propagated, because default is to scroll the page
-            // This is need when using Firefox event listener on DOMMouseScroll
-            if (event.preventDefault) {
-                event.preventDefault();
-            }
             event.returnValue = false;
 
             // Return false to stop mouse wheel to be propagated when using onmousewheel

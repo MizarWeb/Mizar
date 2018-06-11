@@ -144,9 +144,6 @@ define(["../Utils/Utils"],function (Utils) {
                 _lastAngle = _getRotation(_startTouches, event.touches);
             }
 
-            if (event.preventDefault) {
-                event.preventDefault();
-            }
             event.returnValue = false;
 
             // Return false to stop event to be propagated
@@ -217,9 +214,6 @@ define(["../Utils/Utils"],function (Utils) {
             // Update _lastTouches
             _lastTouches = event.touches;
 
-            if (event.preventDefault) {
-                event.preventDefault();
-            }
             event.returnValue = false;
 
             return false;
