@@ -159,33 +159,11 @@ define(["jquery", "moment", "../Utils/Constants", "../Utils/Utils"], function ($
      */
     TimeSample.prototype.getPreviousDate = function (date) {
         var previousDate = null;
-        previousDate = Moment.utc(date).substract(this.stepValue,this.stepKind);
+        previousDate = Moment.utc(date).subtract(this.stepValue,this.stepKind);
         if (previousDate<this.start) {
             previousDate = null;
         }
         return previousDate;
-    };
-
-
-    /**************************************************************************************************************/
-
-    /**
-     * Convert date in json object
-     * @function convertDate
-     * @return {JSon} date
-     * @private
-     * @memberOf TimeSample#
-     */
-    TimeSample.prototype.convertDate = function (date) {
-        var result = {
-            "date" : date,
-            "period" :
-                { 
-                  "from" : date ,
-                  "to" : date
-                }
-        };
-        return result;
     };
 
     /**************************************************************************************************************/
@@ -198,9 +176,13 @@ define(["jquery", "moment", "../Utils/Constants", "../Utils/Utils"], function ($
      */
     TimeSample.prototype.getFirstDateAfter = function (date) {
         var foundDate = null;
+        var foundPeriod = { "from": null, "to" : null};
+        var foundDisplay = null;
+        
         if (date<this.start) {
             // trivial case, first date is after !
-            foundDate = this.convertDate(this.start);
+            foundDate = this.start;
+            foundDisplay = Moment(foundDate).format(Constants.TIME.DEFAULT_FORMAT);
         } else if (date>this.end) {
             // trivial case, date is after the last date
             foundDate = null;
@@ -218,12 +200,22 @@ define(["jquery", "moment", "../Utils/Constants", "../Utils/Utils"], function ($
                 }
                 if (currentDate>date) {
                     isDone = true;
-                    foundDate = this.convertDate(currentDate);
+                    foundDate = currentDate;
                 }
             }
         }
 
-        return foundDate;
+        if (foundDate !== null) {
+            foundPeriod.from = foundDate;
+            foundPeriod.to = foundDate;
+            foundDisplay = Moment(foundDate).format(Constants.TIME.DEFAULT_FORMAT);
+        }
+
+        return {
+            "date" : foundDate,
+            "period" : foundPeriod,
+            "display" : foundDisplay
+        };
     }; 
 
     /**************************************************************************************************************/
@@ -236,9 +228,13 @@ define(["jquery", "moment", "../Utils/Constants", "../Utils/Utils"], function ($
      */
     TimeSample.prototype.getFirstDateBefore = function (date) {
         var foundDate = null;
+        var foundPeriod = { "from": null, "to" : null};
+        var foundDisplay = null;
+
         if (date>this.end) {
             // trivial case, end date is before !
-            foundDate = this.convertDate(this.end);
+            foundDate = this.end;
+            foundDisplay = Moment(foundDate).format(Constants.TIME.DEFAULT_FORMAT);
         } else if (date<this.start) {
             // trivial case, date is before the first date
             foundDate = null;
@@ -259,12 +255,20 @@ define(["jquery", "moment", "../Utils/Constants", "../Utils/Utils"], function ($
                 }
                 if (currentDate>date) {
                     isDone = true;
-                    foundDate = this.convertDate(previousDate);
+                    foundDate = previousDate;
                 }
             }
         }
-
-        return foundDate;
+        if (foundDate !== null) {
+            foundDisplay = Moment(foundDate).format(Constants.TIME.DEFAULT_FORMAT);
+            foundPeriod.from = foundDate;
+            foundPeriod.to = foundDate;
+        }
+        return {
+            "date" : foundDate,
+            "period" : foundPeriod,
+            "display" : foundDisplay
+        };
     }; 
 
     /**

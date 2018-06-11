@@ -426,6 +426,10 @@ define(function () {
         NOT_TIME    : "P"
     };
 
+    Constants.TIME = {
+        DEFAULT_FORMAT : "Do MMM Y HH:mm"
+    };
+
     /**************************************************************************************************************/
 
     return Constants;

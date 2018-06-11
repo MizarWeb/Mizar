@@ -143,7 +143,7 @@ define(["jquery", "../Utils/Constants","../Services/TimeTravelCore"],
     };
 
     /**************************************************************************************************************/
-    
+
     /**
      * Update display date and send current date to contexte
      * @function updateDisplayDate
@@ -155,7 +155,7 @@ define(["jquery", "../Utils/Constants","../Services/TimeTravelCore"],
             document.getElementById("textTimeTravelDiv").innerHTML = date.display;
         }
         ctx.setTime(date);
-
+        
         $('#objectRewind svg').css({
             "float": "right",
             "fill" : (TimeTravelCore.isCurrentDateTheFirst() === true) ? "#333333" : "white"
@@ -164,6 +164,7 @@ define(["jquery", "../Utils/Constants","../Services/TimeTravelCore"],
             "float": "right",
             "fill" : (TimeTravelCore.isCurrentDateTheLast() === true) ? "#333333" : "white"
         });
+
     };
 
     /**

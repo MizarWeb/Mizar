@@ -129,14 +129,16 @@ define(["jquery", "moment", "../Utils/Constants", "../Utils/Utils"], function ($
         if (ID === null) {
             ID = TimeTravelParams.NO_ID;
         }
-        for (var i=this.enumeratedValues.length-1;i>=0;i--) {
-            if ( (this.enumeratedValues[i].ids) && (this.enumeratedValues[i].ids.length) ) {
-                var index = this.enumeratedValues[i].ids.indexOf(ID);
-                if (index !== -1) {
-                    this.enumeratedValues[i].ids.splice(index, 1);
-                }
-                if (this.enumeratedValues[i].ids.length === 0) {
-                    this.enumeratedValues.splice(i,1);
+        if (this.enumeratedValues) {
+            for (var i=this.enumeratedValues.length-1;i>=0;i--) {
+                if ( (this.enumeratedValues[i].ids) && (this.enumeratedValues[i].ids.length) ) {
+                    var index = this.enumeratedValues[i].ids.indexOf(ID);
+                    if (index !== -1) {
+                        this.enumeratedValues[i].ids.splice(index, 1);
+                    }
+                    if (this.enumeratedValues[i].ids.length === 0) {
+                        this.enumeratedValues.splice(i,1);
+                    }
                 }
             }
         }
@@ -219,6 +221,18 @@ define(["jquery", "moment", "../Utils/Constants", "../Utils/Utils"], function ($
             }
         }
         return res;
+    };
+
+    /**************************************************************************************************************/
+
+    /**
+     * Is empty ?
+     * @function isEmpty
+     * @return {Boolean} is empty ?
+     * @memberOf TimeEnumerated#
+     */
+    TimeEnumerated.prototype.isEmpty = function () {
+        return !((this.enumeratedValues) && (this.enumeratedValues.length>0));
     };
 
     return TimeEnumerated;

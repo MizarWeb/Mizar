@@ -36,7 +36,7 @@ define(["jquery", "moment", "./TimeSample","./TimeEnumerated","../Utils/Constant
             "to" : null
         };
 
-        this.currentDisplayDate = "<=>";
+        this.currentDisplayDate = Moment(this.currentDate).format(Constants.TIME.DEFAULT_FORMAT);
 
         this.ctx = null;
         // List of samples
@@ -119,7 +119,8 @@ define(["jquery", "moment", "./TimeSample","./TimeEnumerated","../Utils/Constant
         sample.setEnd(end);
         sample.setStepKind(stepKind);
         sample.setStepValue(stepValue);
-        sample.setID(ID);
+        sample.setLayerID(ID);
+        this.samples.push(sample);
     };
 
 
@@ -166,19 +167,85 @@ define(["jquery", "moment", "./TimeSample","./TimeEnumerated","../Utils/Constant
 
         if (parameters.ID) {
             // Remove values into enumerated values
-            this.removeEnumeratedValuesForID(parameters.ID);
+            this.enumeratedValues.removeEnumeratedValuesForID(parameters.ID);
 
             // Remove samples with ID
             var newSamples = [];
             for (var i=0;i<this.samples.length;i++) {
-                if (this.samples[i].getLayerID() !== paramters.ID) {
+                if (this.samples[i].getLayerID() !== parameters.ID) {
                     newSamples.push(samples[i]);
                 }
             }
-            this.samples = newsamples;
+            this.samples = newSamples;
         }
         this.setToNearestValue(saveCurrentValue);
     };
+
+    /**************************************************************************************************************/
+
+    /**
+     * Get next date 
+     * @function getNextDate
+     * @return {Date} Date
+     * @memberOf TimeTravelParams#
+     */
+    TimeTravelParams.prototype.getNextDate = function (date) {
+        var minDate = {
+            "date" : null
+        };
+
+        var allDates = [];
+        for (var i=0;i<this.samples.length;i++) {
+            allDates.push(this.samples[i].getFirstDateAfter(date));
+        }
+        //allDates.push(this.enumeratedValues.getFirstDateAfter(date));
+
+        for (i=0;i<allDates.length;i++) {
+            var currentNextDate = allDates[i];
+            if (minDate.date === null) {
+                minDate = currentNextDate;
+            } else {
+                if (Math.abs((currentNextDate-date)<(minDate-date))) {
+                    minDate = currentNextDate;
+                }
+            }
+        }
+        return minDate;
+    };
+
+    /**************************************************************************************************************/
+
+    /**
+     * Get previous date 
+     * @function getNextDate
+     * @return {Date} Date
+     * @memberOf TimeTravelParams#
+     */
+    TimeTravelParams.prototype.getPreviousDate = function (date) {
+        var minDate = {
+            "date" : null
+        };
+
+        var allDates = [];
+        for (var i=0;i<this.samples.length;i++) {
+            allDates.push(this.samples[i].getFirstDateBefore(date));
+        }
+        //allDates.push(this.enumeratedValues.getFirstDateBefore(date));
+
+        for (i=0;i<allDates.length;i++) {
+            var currentPreviousDate = allDates[i];
+            if (minDate.date === null) {
+                minDate = currentPreviousDate;
+            } else {
+                if (Math.abs((currentPreviousDate.date-date)<(minDate.date-date))) {
+                    minDate = currentPreviousDate;
+                }
+            }
+        }
+
+        return minDate;
+    };
+
 
     /**************************************************************************************************************/
 
@@ -189,25 +256,43 @@ define(["jquery", "moment", "./TimeSample","./TimeEnumerated","../Utils/Constant
      * @memberOf TimeTravelParams#
      */
     TimeTravelParams.prototype.setToNearestValue = function (date) {
-        var minDeltaIndex = null;
-        var minDelta = null;        
-        var delta = null;
+        var previousExistingDate = this.getPreviousDate(date);
+        var nextExistingDate = this.getNextDate(date);
 
-        for (var i=0;i<this.enumeratedValues.length;i++) {
-            delta = Math.abs(date-this.enumeratedValues[i].date);
-            if ( (minDelta === null) || (delta<minDelta) ) {
-                // found value more near
-                minDeltaIndex = i;
-                minDelta = delta;
-            }
-        }
-        if (minDeltaIndex !== null)  {
-            // go to this value
-            this.currentIndex = minDeltaIndex;
-            this.currentDate = this.enumeratedValues[this.currentIndex].date;
-        } else {
+        console.log("previous",previousExistingDate);
+        console.log("next",nextExistingDate);
+        if ( (previousExistingDate.date === null) && (nextExistingDate.date === null) ) {
+            console.log("no date");
+            // No date found
             this.currentDate = new Date();
-            this.currentIndex = null;
+            this.currentDisplayDate = Moment(this.currentDate).format("Do MMM Y");
+            this.currentPeriod = {"from" : this.currentDate,"to":this.currentDate};
+        } else if (previousExistingDate.date === null) {
+            console.log("only after");
+            // Only before
+            this.currentDate = nextExistingDate.date;
+            this.currentDisplayDate = nextExistingDate.display;
+            this.currentPeriod = nextExistingDate.period;
+        } else if (nextExistingDate.date === null) {
+            console.log("only before");
+            // Only after
+            this.currentDate = previousExistingDate.date;
+            this.currentDisplayDate = previousExistingDate.display;
+            this.currentPeriod = previousExistingDate.period;
+        } else {
+            console.log("search nearest");
+            // Search nearest
+            deltaPrevious = Math.abs(date-previousExistingDate.date);
+            deltaNext = Math.abs(nextExistingDate.date-date);
+            if (deltaPrevious < deltaNext) {
+                this.currentDate = previousExistingDate.date;
+                this.currentDisplayDate = previousExistingDate.display;
+                this.currentPeriod = previousExistingDate.period;
+            } else {
+                this.currentDate = nextExistingDate.date;
+                this.currentDisplayDate = nextExistingDate.display;
+                this.currentPeriod = nextExistingDate.period;
+            }
         }
         this.apply();
     };
@@ -245,9 +330,9 @@ define(["jquery", "moment", "./TimeSample","./TimeEnumerated","../Utils/Constant
      */
     TimeTravelParams.prototype.apply = function () {
         var details = {
-            date:this.currentDate,
-            display:this.getCurrentDisplayDate(),
-            period : this.getCurrentPeriod()
+            date :   this.currentDate,
+            display: this.currentDisplayDate,
+            period : this.currentPeriod
         };
         this.ctx.publish(Constants.EVENT_MSG.GLOBAL_TIME_CHANGED,details);
     };
@@ -260,24 +345,14 @@ define(["jquery", "moment", "./TimeSample","./TimeEnumerated","../Utils/Constant
      * @memberOf TimeTravelParams#
      */
     TimeTravelParams.prototype.rewind = function () {
-        // Special : enumerated values
-        if (this.stepKind === Constants.TIME_STEP.ENUMERATED) {
-            if (this.currentIndex>0) {
-                this.currentIndex--;
-                this.currentDate = this.enumeratedValues[this.currentIndex].date;
+        if (!this.isEmpty()) {
+            var previousDate = this.getPreviousDate(Moment(this.currentDate).subtract(1,Constants.TIME_STEP.MILLISECOND));
+            if (previousDate.date !== null) {
+                this.currentDate = previousDate.date;
+                this.currentPeriod = previousDate.period;
+                this.currentDisplayDate = previousDate.display;
                 this.apply();
-                return;
             }
-        }
-         
-        var oldCurrentDate = this.currentDate;
-
-        this.currentDate = Moment.utc(this.currentDate).subtract(this.stepValue,this.stepKind);
-
-        if (this.currentDate < this.startDate) {
-            this.currentDate = oldCurrentDate;
-        } else {
-            this.apply();
         }
     };
 
@@ -289,26 +364,14 @@ define(["jquery", "moment", "./TimeSample","./TimeEnumerated","../Utils/Constant
      * @memberOf TimeTravelParams#
      */
     TimeTravelParams.prototype.forward = function () {
-        // Special : enumerated values
-        if (this.stepKind === Constants.TIME_STEP.ENUMERATED) {
-            if (this.currentIndex<(this.enumeratedValues.length-1)) {
-                this.currentIndex++;
-                this.currentDate = this.enumeratedValues[this.currentIndex].date;
+        if (!this.isEmpty()) {
+            var nextDate = this.getNextDate(Moment(this.currentDate).add(1,Constants.TIME_STEP.MILLISECOND));
+            if (nextDate.date !== null) {
+                this.currentDate = nextDate.date;
+                this.currentPeriod = nextDate.period;
+                this.currentDisplayDate = nextDate.display;
                 this.apply();
-                return;
-            }
-        }
-
-
-
-        var oldCurrentDate = this.currentDate;
-
-        this.currentDate = Moment.utc(this.currentDate).add(this.stepValue,this.stepKind);
-
-        if (this.currentDate > this.endDate) {
-            this.currentDate = oldCurrentDate;
-        } else {
-            this.apply();
+            } 
         }
     };
 
@@ -365,6 +428,8 @@ define(["jquery", "moment", "./TimeSample","./TimeEnumerated","../Utils/Constant
         */
     };
 
+    /**************************************************************************************************************/
+
     /**
      * Is current date the first ?
      * @function isCurrentDateTheFirst
@@ -372,13 +437,16 @@ define(["jquery", "moment", "./TimeSample","./TimeEnumerated","../Utils/Constant
      * @memberOf TimeTravelParams#
      */
     TimeTravelParams.prototype.isCurrentDateTheFirst = function() {
-        return false;
-        /*if (this.stepKind === Constants.TIME_STEP.ENUMERATED) {
-            return (this.currentIndex === 0);
+        if (this.isEmpty() === true) {
+            this.isFirstDate = true;
         } else {
-            return this.currentDate === this.startDate;
-        }*/
+            var previousDate = this.getPreviousDate(Moment(this.currentDate).subtract(1,Constants.TIME_STEP.MILLISECOND));
+            this.isFirstDate = (previousDate.date === null);
+        }
+        return this.isFirstDate;
     };
+
+    /**************************************************************************************************************/
 
     /**
      * Is current date the last ?
@@ -387,16 +455,29 @@ define(["jquery", "moment", "./TimeSample","./TimeEnumerated","../Utils/Constant
      * @memberOf TimeTravelParams#
      */
     TimeTravelParams.prototype.isCurrentDateTheLast = function() {
-        return false;
-        /*
-        if (this.stepKind === Constants.TIME_STEP.ENUMERATED) {
-            return (this.currentIndex === (this.enumeratedValues.length-1));
+        if (this.isEmpty() === true) {
+            this.isLastDate = true;
         } else {
-            var nextDate = Moment.utc(this.currentDate).add(this.stepValue,this.stepKind);
-            return (nextDate > this.endDate);
+            var nextDate = this.getNextDate(Moment(this.currentDate).add(1,Constants.TIME_STEP.MILLISECOND));
+            this.isLastDate = (nextDate.date === null);
         }
-        */
+        return this.isLastDate;
     };
+
+    /**************************************************************************************************************/
+
+    /**
+     * Is time travel empty ?
+     * @function toString
+     * @return {Boolean} Is time travel empty
+     * @memberOf TimeTravelParams#
+     */
+    TimeTravelParams.prototype.isEmpty = function() {
+        var hasSamples = ( (this.samples) && (this.samples.length>0) );
+        return ( (!hasSamples) && (this.enumeratedValues.isEmpty()) );
+    };
+
+    /**************************************************************************************************************/
 
     /**
      * Get string representation
@@ -413,7 +494,7 @@ define(["jquery", "moment", "./TimeSample","./TimeEnumerated","../Utils/Constant
             }
         }
 
-        if (this.enumeratedValues) {
+        if (!this.enumeratedValues.isEmpty()) {
             res += "Enumerated : "+this.enumeratedValues.toString()+"\n";
         }
 
