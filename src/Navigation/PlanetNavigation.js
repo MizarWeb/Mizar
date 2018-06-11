@@ -245,13 +245,13 @@ define(['../Utils/Utils', '../Utils/Constants', './AbstractNavigation', '../Anim
             var destDistance = (options && options.distance) ? options.distance : this.distance / this.ctx.getCoordinateSystem().getGeoide().getHeightScale();
             var duration = (options && options.duration) ? options.duration : DEFAULT_DURATION_ZOOM_TO;
             var destTilt = (options && options.tilt) ? options.tilt : DEFAULT_TILT;
-            var destHeading = (options && options.heading) ? options.heading : navigation.heading;
+            var destHeading = (options && options.heading) ? options.heading : this.heading;
 
             var shortestPath = Numeric.shortestPath180(this.geoCenter[0], geoPos[0]);
 
             // Create a single animation to animate geoCenter, distance and tilt
-            var startValue = [shortestPath[0], this.geoCenter[1], this.distance, this.tilt];
-            var endValue = [shortestPath[1], geoPos[1], destDistance * this.ctx.getCoordinateSystem().getGeoide().getHeightScale(), destTilt];
+            var startValue = [shortestPath[0], this.geoCenter[1], this.distance, this.tilt, this.heading];
+            var endValue = [shortestPath[1], geoPos[1], destDistance * this.ctx.getCoordinateSystem().getGeoide().getHeightScale(), destTilt, destHeading];
 
             this.zoomToAnimation = new AnimationFactory.create(
                 Constants.ANIMATION.Segmented,
@@ -262,6 +262,7 @@ define(['../Utils/Utils', '../Utils/Constants', './AbstractNavigation', '../Anim
                         navigation.geoCenter[1] = value[1];
                         navigation.distance = value[2];
                         navigation.tilt = value[3];
+                        navigation.heading = value[4];
                         navigation.computeViewMatrix();
                     }
                 });
@@ -278,7 +279,7 @@ define(['../Utils/Utils', '../Utils/Constants', './AbstractNavigation', '../Anim
                 // Compute the middle value
                 var midValue = [startValue[0] * 0.5 + endValue[0] * 0.5,
                     startValue[1] * 0.5 + endValue[1] * 0.5,
-                    maxAltitude, destTilt];
+                    maxAltitude, destTilt * 0.5, destHeading * 0.5];
 
                 // Add two segments
                 this.zoomToAnimation.addSegment(
@@ -287,10 +288,14 @@ define(['../Utils/Utils', '../Utils/Constants', './AbstractNavigation', '../Anim
                     function (t, a, b) {
                         var pt = Numeric.easeInQuad(t);
                         var dt = Numeric.easeOutQuad(t);
-                        return [Numeric.lerp(pt, a[0], b[0]), // geoPos.long
+                        var ht = Numeric.easeOutQuad(t);
+                        return [
+                            Numeric.lerp(pt, a[0], b[0]), // geoPos.long
                             Numeric.lerp(pt, a[1], b[1]), // geoPos.lat
                             Numeric.lerp(dt, a[2], b[2]), // distance
-                            Numeric.lerp(t, a[3], b[3])]; // tilt
+                            Numeric.lerp(t, a[3], b[3]), // tilt
+                            Numeric.lerp(ht, a[4], b[4]) // heading
+                        ];
                     });
 
                 this.zoomToAnimation.addSegment(
@@ -299,10 +304,14 @@ define(['../Utils/Utils', '../Utils/Constants', './AbstractNavigation', '../Anim
                     function (t, a, b) {
                         var pt = Numeric.easeOutQuad(t);
                         var dt = Numeric.easeInQuad(t);
-                        return [Numeric.lerp(pt, a[0], b[0]), // geoPos.long
+                        var ht = Numeric.easeInQuad(t);
+                        return [
+                            Numeric.lerp(pt, a[0], b[0]), // geoPos.long
                             Numeric.lerp(pt, a[1], b[1]), // geoPos.lat
                             Numeric.lerp(dt, a[2], b[2]), // distance
-                            Numeric.lerp(t, a[3], b[3])]; // tilt
+                            Numeric.lerp(t, a[3], b[3]), // tilt
+                            Numeric.lerp(ht, a[4], b[4]) // heading
+                        ];
                     });
             }
             else {
@@ -313,10 +322,14 @@ define(['../Utils/Utils', '../Utils/Constants', './AbstractNavigation', '../Anim
                     function (t, a, b) {
                         var pt = Numeric.easeOutQuad(t);
                         var dt = Numeric.easeInQuad(t);
-                        return [Numeric.lerp(pt, a[0], b[0]),  // geoPos.long
+                        var ht = Numeric.easeInQuad(t);
+                        return [
+                            Numeric.lerp(pt, a[0], b[0]),  // geoPos.long
                             Numeric.lerp(pt, a[1], b[1]),  // geoPos.lat
                             Numeric.lerp(dt, a[2], b[2]),  // distance
-                            Numeric.lerp(t, a[3], b[3])]; // tilt
+                            Numeric.lerp(t, a[3], b[3]),   // tilt
+                            Numeric.lerp(ht, a[4], b[4])   // heading
+                        ];
                     });
             }
 
@@ -333,26 +346,6 @@ define(['../Utils/Utils', '../Utils/Constants', './AbstractNavigation', '../Anim
 
 
             this.zoomToAnimation.start();
-
-            var headingAnimation = AnimationFactory.create(
-                Constants.ANIMATION.Segmented,
-                {
-                    "duration": duration,
-                    "valueSetter": function (value) {
-                        navigation.heading = value;
-                        navigation.computeViewMatrix();
-                    }
-                });
-
-            headingAnimation.addSegment(
-                0.0, navigation.heading,
-                1.0, destHeading,
-                function (t, a, b) {
-                    return Numeric.lerp(t, a, b);
-                }
-            );
-            this.ctx.addAnimation(headingAnimation);
-            headingAnimation.start();
         };
         
         /**
