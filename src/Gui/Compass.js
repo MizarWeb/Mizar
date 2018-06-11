@@ -99,7 +99,6 @@ define(["jquery", "../Utils/Constants","../Services/CompassCore", "../Utils/Util
             var _outerCircleRadius = outerCircle.ownerSVGElement.clientWidth / 2;
 
             var _handleMouseDown = function (event) {
-                event.preventDefault();
                 if (event.type.search("touch") >= 0) {
                     event.layerX = event.changedTouches[0].clientX;
                     event.layerY = event.changedTouches[0].clientY;
@@ -121,7 +120,6 @@ define(["jquery", "../Utils/Constants","../Services/CompassCore", "../Utils/Util
 
 
             var _handleMouseMove = function (event) {
-                event.preventDefault();
                 if (event.type.search("touch") >= 0) {
                     event.layerX = event.changedTouches[0].clientX-_balanceX;
                     event.layerY = event.changedTouches[0].clientY-_balanceY;
