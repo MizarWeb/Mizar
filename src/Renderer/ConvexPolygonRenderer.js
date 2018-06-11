@@ -507,7 +507,7 @@ define(['../Utils/Utils', '../Utils/Constants','./VectorRenderer', './Program', 
                     };
 
                     image.onerror = function (event) {
-                        console.log("Cannot load " + image.src);
+                        console.error("Cannot load " + image.src);
                     };
 
                     image.src = style.fillTextureUrl;

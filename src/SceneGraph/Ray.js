@@ -76,8 +76,6 @@ define(['../Renderer/Ray','../Utils/Utils'], function (RayParent,Utils) {
             }
         }
     };
-    console.log(Ray);
-
 
     return Ray;
 

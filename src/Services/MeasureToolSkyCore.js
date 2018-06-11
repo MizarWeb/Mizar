@@ -280,7 +280,6 @@ define(["jquery", "underscore-min", "../Utils/Numeric", "../Utils/Constants",
                 }
             };
             var msg = "Distance :"+self.geoDistance+" at "+coordinates[0][0]+","+coordinates[0][1]+","+coordinates[0][2];
-            console.log("MSG:"+msg);
             measureLayer.addFeature(self.measureFeature);
             measureLayer.addFeature(self.measureLabel);
         }

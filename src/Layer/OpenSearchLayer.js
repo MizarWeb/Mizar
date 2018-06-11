@@ -237,7 +237,7 @@ define(['../Renderer/FeatureStyle', '../Renderer/VectorRendererManager', '../Uti
             sourceObject.getServices().queryForm = new OpenSearchForm(dataForm,"application/json");
             OpenSearchUtils.initNavigationValues(sourceObject.getServices().queryForm);
           } else {
-            console.log("Form not correct");
+            console.error("Form not correct");
           }
 
           if ((sourceObject.callbackContext !== null) && (typeof sourceObject.callbackContext !== "undefined")) {
@@ -800,7 +800,6 @@ define(['../Renderer/FeatureStyle', '../Renderer/VectorRendererManager', '../Uti
                     this.previousDistance = this.distance;
                 } 
                 if (this.isZoomLevelChanged) {
-                    console.log("Changement of zoom level, go to page 1");
                     // Go to page 1
                     OpenSearchUtils.setCurrentValueToParam(this.getServices().queryForm,"page",1);
 

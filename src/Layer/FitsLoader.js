@@ -72,7 +72,7 @@ define(["fits"], function () {
                     }
                 }
                 else {
-                    console.log("Error while loading " + url);
+                    console.error("Error while loading " + url);
                     if (failCallback) {
                         failCallback();
                     }

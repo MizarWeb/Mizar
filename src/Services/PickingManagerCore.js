@@ -369,7 +369,7 @@ define(["../Renderer/FeatureStyle", "../Layer/OpenSearchLayer", "../Utils/Utils"
                     }
                     return UtilsIntersection.pointInSphere(ctx, pt, point, feature.geometry._bucket.textureHeight * sizeMultiplicator) && !isLabel;
                 default:
-                    console.log("Picking for " + feature.geometry.type + " is not yet");
+                    console.log("WARN: Picking for " + feature.geometry.type + " is not yet");
                     return false;
             }
         }
@@ -406,7 +406,7 @@ define(["../Renderer/FeatureStyle", "../Layer/OpenSearchLayer", "../Utils/Utils"
                         var tile = selectedTile;
                         
                         if ((tile === null) || (typeof tile === "undefined")) {
-                            console.log("no tile found");
+                            console.error("no tile found");
                             continue;
                         }
                         var tileData = tile.extension.renderer;

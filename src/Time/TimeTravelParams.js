@@ -154,7 +154,7 @@ define(["jquery", "moment", "./TimeSample","./TimeEnumerated","../Utils/Constant
             // Add a new sample
             this.addSample(parameters.start,parameters.end,parameters.stepKind,parameters.stepValue,parameters.ID);
         } else {
-            console.log("Can't understand add values for time travel with parameters",parameters);
+            console.error("Can't understand add values for time travel with parameters",parameters);
         }
 
         this.setToNearestValue(saveCurrentValue);
@@ -221,7 +221,6 @@ define(["jquery", "moment", "./TimeSample","./TimeEnumerated","../Utils/Constant
      * @memberOf TimeTravelParams#
      */
     TimeTravelParams.prototype.update = function (parameters) {
-        console.log("update",update);
         if (!parameters) {
             return;
         }

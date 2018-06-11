@@ -256,12 +256,12 @@ define(function () {
                     _navigation.inertia.launch("pan", _dx, _dy);
                 }
                 else if (hitIndex === Type.ROTATE) {
-                    console.log("Rotate not implemented in navigation");
+                    console.error("Rotate not implemented in navigation");
                     // Rotate
                     //_navigation.inertia.launch("rotate", _rotation, 0);
                 }
                 else if (hitIndex === Type.TILT) {
-                    console.log("Tilt not implemented in navigation");
+                    console.error("Tilt not implemented in navigation");
                     // No inertia for tilt
                 }
             }

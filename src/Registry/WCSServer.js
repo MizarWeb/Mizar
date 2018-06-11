@@ -165,8 +165,6 @@ define(["jquery","underscore-min", "../Utils/Utils", "xmltojson", "../Layer/Laye
                     if(layerDesc.dimension.time && layerDesc.dimension.time.value != null) {
                         layerDesc.time = layerDesc.dimension.time.value.split(",")[0];
                     }
-
-                    console.log("DEBUG:Factory WCS");
                     var layer = LayerFactory.create(layerDesc);
                     layers.push(layer);
                 }

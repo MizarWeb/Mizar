@@ -318,7 +318,7 @@ define(['./AbstractHipsLayer', '../Renderer/FeatureStyle', '../Renderer/VectorRe
                 featureIt.tiles.splice(tileIndex, 1);
             }
             else {
-                console.log('HipsCatLayer internal error : tile not found when removing feature');
+                console.error('HipsCatLayer internal error : tile not found when removing feature');
             }
 
             if (featureIt.tiles.length === 0) {

@@ -50,7 +50,7 @@ define(['../Utils/ImageRequest'], function (ImageRequest) {
                     else {
                         if (xhr.status !== 0) {
                             // Fail
-                            console.log("Error while loading " + url);
+                            console.error("Error while loading " + url);
                             if (self.failCallback) {
                                 self.failCallback(self);
                             }

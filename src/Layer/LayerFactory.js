@@ -243,7 +243,6 @@ define(["jquery","../Utils/Constants", "./WMSLayer", "./WMTSLayer", "./WCSElevat
                         break;
                     case Constants.LAYER.HipsGrid:
                     case Constants.LAYER.TileWireframe :
-                        console.log("DEBUG:TileWireframe created");
                         layer = new TileWireframeLayer(options);
                         break;
                     case Constants.LAYER.HipsCat:

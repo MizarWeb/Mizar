@@ -122,7 +122,6 @@ define(function () {
                 elevations: tileRequest.elevations,
                 lastAccess: Date.now()
             };
-            console.log("Stored for " + tileRequest.image.src);
 
             // Update local storage with new cache
             localStorage.setItem(this.layer.getName(), JSON.stringify(this._cacheMap));

@@ -387,7 +387,6 @@ define(["jquery", "underscore-min",
             if (options.hasOwnProperty('groundContext')) {
                 mizarOptions.groundContext = options.groundContext;
             }
-            console.log("option",mizarOptions);
             return mizarOptions;
         }
 
@@ -923,7 +922,6 @@ define(["jquery", "underscore-min",
          * @memberOf Mizar#
          */
         Mizar.prototype.updateTimeTravel = function(parameters) {
-            console.log(this);
             this.getServiceByName(Mizar.SERVICE.TimeTravel).update(parameters);
         };
 
@@ -934,7 +932,6 @@ define(["jquery", "underscore-min",
          * @memberOf Mizar#
          */
         Mizar.prototype.setTime = function(time) {
-            console.log("TIME MIZAR:"+(time.display?time.display:time));
             this.activatedContext.setTime(time);
         };
 
@@ -985,7 +982,7 @@ define(["jquery", "underscore-min",
                 this.renderContext = ctx.getRenderContext();
                 result = true;
             } catch (e) {
-                console.log("Error",e);
+                console.error("Error",e);
                 result = false;
                 ErrorDialog.open("Cannot create the context : <font style='color:orange'><b>" + e.message + "</b></font>", true);
             }
@@ -1580,7 +1577,7 @@ define(["jquery", "underscore-min",
                 layer._detach(ctx.globe);
                 layer._attach(ctx.globe);
             } else {
-               console.log("Context not yet available");
+               console.error("Context not yet available");
             }
         };
 

@@ -84,7 +84,7 @@ define(['../Utils/Utils', '../Tiling/HEALPixTiling', './AbstractHipsLayer', '../
                 self.globe.publishEvent(Constants.EVENT_MSG.BASE_LAYERS_ERROR, error);
                 self._ready = false;
 
-                console.log("Cannot load " + self.levelZeroImage.src);
+                console.error("Cannot load " + self.levelZeroImage.src);
             };
 
             this._ready = false;

@@ -201,7 +201,6 @@ define(['./Tile', './GeoTiling', './TilePool', './TileRequest', './TileIndexBuff
 
             if (renderer.generate) {
                 this.visitTiles(function (tile) {
-
                     renderer.generate(tile);
                 });
             }

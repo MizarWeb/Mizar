@@ -27,25 +27,41 @@ define(['underscore-min','../Utils/Utils', './AbstractRegistryHandler', '../Util
     }
 
     /**
-     * Moves the TileWireFrame after WCS.
-     * The TileWireFrame must be loaded after the WCS because the WCS is part of the 3D model. When the 3D
-     * model is created, the TileWireFrame is placed on it
+     * Destroys the TileWireFrame if it exists and returns its layer description.
      * @param layers list of layers to load
      * @private
      */
-    function _moveTileWireFrameAfterWCS(layers) {
-        var i;
+    function _destroyTileWireFrame(layers) {
+        var i, layerDescription;
         var isFound = false;
         for(i=0; i<layers.length; i++) {
             var layer = layers[i];
             if (layer.getType() === Constants.LAYER.TileWireframe) {
                 isFound = true;
-                console.log("DEBUG:TileWireframing created before WCS => move it");
                 break;
             }
         }
         if(isFound) {
-            _moveArrayEltFromTo(layers, i, layers.length-1);
+            var layerToRemove = layers[i];
+            layerDescription = layerToRemove.options;
+            layerToRemove._detach();
+            layers.splice(i, 1);
+        }
+        return layerDescription;
+    }
+
+    /**
+     * Moves the TileWireFrameLayer to render at this end.
+     * @param layers layers to render
+     * @param AbstractRegistryHandler Registry
+     * @param callback callback
+     * @param fallback fallback
+     * @private
+     */
+    function _moveTileWireFrameLayer(layers, AbstractRegistryHandler, callback, fallback) {
+        var layerDescription = _destroyTileWireFrame(layers);
+        if(layerDescription) {
+            AbstractRegistryHandler.next.handleRequest(layerDescription, callback, fallback);
         }
     }
 
@@ -54,11 +70,10 @@ define(['underscore-min','../Utils/Utils', './AbstractRegistryHandler', '../Util
             if(layerDescription.type === Constants.LAYER.WCSElevation) {
                 var wcsServer = new WCSServer(this.proxyUse, this.proxyUrl, layerDescription);
                 var self = this;
-                console.log("DEBUG:WCS created");
                 wcsServer.createLayers(function(layers) {
-                    _moveTileWireFrameAfterWCS(self.layers);
                     self._handlePendingLayers(self.pendingLayers, layers);
                     callback(layers);
+                    _moveTileWireFrameLayer(self.layers, self, callback, fallback);
                 }, fallback);
             } else {
                 this.next.handleRequest(layerDescription, callback, fallback);

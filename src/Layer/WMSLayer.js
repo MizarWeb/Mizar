@@ -148,7 +148,6 @@ define(["jquery", '../Utils/Utils', './AbstractLayer', './AbstractRasterLayer', 
         }
 
         WMSLayer.prototype.setTime = function(time) {
-            console.log("TIME WMS:"+(time.display ? time.display : time)+" "+this.name);
             AbstractLayer.prototype.setTime(time);
             this.setParameter("time", time);
         };
