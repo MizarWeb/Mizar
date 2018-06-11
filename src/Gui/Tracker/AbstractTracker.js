@@ -120,7 +120,7 @@ define(["jquery"],
             this._setNavigation(context.getNavigation());
             this._getGlobe().getRenderContext().canvas.addEventListener('mousemove', this.update);
             if (this.options.isMobile) {
-                this._getGlobe().getRenderContext().canvas.addEventListener('touchmove', this.update);
+                this._getGlobe().getRenderContext().canvas.addEventListener('touchmove', this.update, {passive: true});
             }
         };
 

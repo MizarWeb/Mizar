@@ -289,9 +289,9 @@ define(function () {
             // Setup the touch event handlers
             var canvas = _navigation.renderContext.canvas;
 
-            canvas.addEventListener("touchstart", _handleTouchStart, false);
+            canvas.addEventListener("touchstart", _handleTouchStart, {passive: true});
             canvas.addEventListener("touchend", _handleTouchEnd, false);
-            canvas.addEventListener("touchmove", _handleTouchMove, false);
+            canvas.addEventListener("touchmove", _handleTouchMove, {passive: true});
         };
 
         /**

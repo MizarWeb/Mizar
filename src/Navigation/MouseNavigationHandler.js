@@ -248,7 +248,7 @@ define(function () {
 
             // For Firefox
             canvas.addEventListener("DOMMouseScroll", _handleMouseWheel);
-            canvas.addEventListener("mousewheel", _handleMouseWheel);
+            canvas.addEventListener("mousewheel", _handleMouseWheel, {passive: true});
 
             // Fix for Google Chrome : avoid dragging
             // TODO : a hack, should be more robust (restore on uninstall?)

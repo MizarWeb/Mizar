@@ -166,10 +166,10 @@ define(["jquery", "../Utils/Constants","../Services/CompassCore"],
             northText.addEventListener("click", CompassCore._alignWithNorth);
 
             if (isMobile) {
-                svgDoc.addEventListener('touchstart', _handleMouseDown);
+                svgDoc.addEventListener('touchstart', _handleMouseDown, {passive: true});
                 svgDoc.addEventListener('touchup', _handleMouseUp);
-                svgDoc.addEventListener('touchmove', _handleMouseMove);
-                northText.addEventListener("touchstart", CompassCore._alignWithNorth);
+                svgDoc.addEventListener('touchmove', _handleMouseMove, {passive: true});
+                northText.addEventListener("touchstart", CompassCore._alignWithNorth, {passive: true});
             }
 
             // Update fov when moving
