@@ -91,6 +91,8 @@ define(["jquery", "../Utils/Constants","../Services/CompassCore"],
 
             var _lastMouseX = -1;
             var _lastMouseY = -1;
+            var _balanceX = -1;
+            var _balanceY = -1;
             var _dx = 0;
             var _dy = 0;
             var dragging = false;
@@ -101,11 +103,16 @@ define(["jquery", "../Utils/Constants","../Services/CompassCore"],
                 if (event.type.search("touch") >= 0) {
                     event.layerX = event.changedTouches[0].clientX;
                     event.layerY = event.changedTouches[0].clientY;
+                    _balanceX = event.layerX;
+                    _balanceY = event.layerY;
+                } else {
+                    _balanceX = 0;
+                    _balanceY = 0;
                 }
 
                 dragging = true;
-                _lastMouseX = event.layerX - _outerCircleRadius;
-                _lastMouseY = event.layerY - _outerCircleRadius;
+                _lastMouseX = (event.layerX-_balanceX) - _outerCircleRadius;
+                _lastMouseY = (event.layerY-_balanceY) - _outerCircleRadius;
                 _dx = 0;
                 _dy = 0;
             };
@@ -116,15 +123,17 @@ define(["jquery", "../Utils/Constants","../Services/CompassCore"],
             var _handleMouseMove = function (event) {
                 event.preventDefault();
                 if (event.type.search("touch") >= 0) {
-                    event.layerX = event.changedTouches[0].clientX;
-                    event.layerY = event.changedTouches[0].clientY;
+                    event.layerX = event.changedTouches[0].clientX-_balanceX;
+                    event.layerY = event.changedTouches[0].clientY-_balanceY;
                 }
 
                 if (!dragging) {
                     return;
                 }
 
-                var c = _lastMouseX * (event.layerY - _outerCircleRadius) - _lastMouseY * (event.layerX - _outerCircleRadius); // c>0 -> clockwise, counterclockwise otherwise
+                var c = _lastMouseX * (event.layerY - _outerCircleRadius) - _lastMouseY * (event.layerX - 
+                _outerCircleRadius); // c>0 -> clockwise, counterclockwise otherwise
+                
                 ctx.getNavigation().rotate(c, 0);
 
                 _lastMouseX = event.layerX - _outerCircleRadius;
