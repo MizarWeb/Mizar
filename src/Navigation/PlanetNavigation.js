@@ -242,11 +242,10 @@ define(['../Utils/Utils', '../Utils/Constants', './AbstractNavigation', '../Anim
             this.ctx.publish(Constants.EVENT_MSG.NAVIGATION_CHANGED_DISTANCE);
             var navigation = this;
 
-            var destDistance = (options && options.distance) ? options.distance : this.distance / this.ctx.getCoordinateSystem().getGeoide().getHeightScale();
-            var duration = (options && options.duration) ? options.duration : DEFAULT_DURATION_ZOOM_TO;
-            var destTilt = (options && options.tilt) ? options.tilt : DEFAULT_TILT;
-            var destHeading = (options && options.heading) ? options.heading : this.heading;
-
+            var destDistance = (options && options.hasOwnProperty("distance")) ? options.distance : this.distance / this.ctx.getCoordinateSystem().getGeoide().getHeightScale();
+            var duration = (options && options.hasOwnProperty("duration")) ? options.duration : DEFAULT_DURATION_ZOOM_TO;
+            var destTilt = (options && options.hasOwnProperty("tilt")) ? options.tilt : this.tilt;
+            var destHeading = (options && options.hasOwnProperty("heading")) ? options.heading : this.heading;
             var shortestPath = Numeric.shortestPath180(this.geoCenter[0], geoPos[0]);
 
             // Create a single animation to animate geoCenter, distance and tilt
