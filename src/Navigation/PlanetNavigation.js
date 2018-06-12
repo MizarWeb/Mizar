@@ -231,7 +231,7 @@ define(['../Utils/Utils', '../Utils/Constants', './AbstractNavigation', '../Anim
          * @function zoomTo
          * @memberOf PlanetNavigation#
          * @param {float[]} geoPos Array of two floats corresponding to final Longitude and Latitude(in this order) to zoom
-         * @param {Object} options - Options
+         * @param {Object} [options] - Options
          * @param {int} [options.distance] - Final zooming distance in meters - if not set, this is the current distance
          * @param {int} [options.duration = 5000] - Duration of animation in milliseconds
          * @param {int} [options.tilt = 90] - Defines the tilt at the end of animation
@@ -247,10 +247,22 @@ define(['../Utils/Utils', '../Utils/Constants', './AbstractNavigation', '../Anim
             var destTilt = (options && options.hasOwnProperty("tilt")) ? options.tilt : this.tilt;
             var destHeading = (options && options.hasOwnProperty("heading")) ? options.heading : this.heading;
             var shortestPath = Numeric.shortestPath180(this.geoCenter[0], geoPos[0]);
-
+            var shortestHeading = Numeric.shortestPath180(this.heading, destHeading);
             // Create a single animation to animate geoCenter, distance and tilt
-            var startValue = [shortestPath[0], this.geoCenter[1], this.distance, this.tilt, this.heading];
-            var endValue = [shortestPath[1], geoPos[1], destDistance * this.ctx.getCoordinateSystem().getGeoide().getHeightScale(), destTilt, destHeading];
+            var startValue = [
+                shortestPath[0],    // longitude
+                this.geoCenter[1],  // latitude
+                this.distance,      // distance from ground
+                this.tilt,          // tilt
+                shortestHeading[0]  // heading
+            ];
+            var endValue = [
+               shortestPath[1],     // longitude
+                geoPos[1],          // latitude
+                destDistance * this.ctx.getCoordinateSystem().getGeoide().getHeightScale(), // distance from ground
+                destTilt,           // tilt
+                shortestHeading[1]  // heading
+            ];
 
             this.zoomToAnimation = new AnimationFactory.create(
                 Constants.ANIMATION.Segmented,
@@ -261,7 +273,7 @@ define(['../Utils/Utils', '../Utils/Constants', './AbstractNavigation', '../Anim
                         navigation.geoCenter[1] = value[1];
                         navigation.distance = value[2];
                         navigation.tilt = value[3];
-                        navigation.heading = value[4];
+                        navigation.heading = (value[4] > 180) ? (value[4] - 360) : value[4];
                         navigation.computeViewMatrix();
                     }
                 });
@@ -276,9 +288,13 @@ define(['../Utils/Utils', '../Utils/Constants', './AbstractNavigation', '../Anim
             var maxAltitude = (len * 0.5) / Math.tan(minFov * 0.5);
             if (maxAltitude > this.distance) {
                 // Compute the middle value
-                var midValue = [startValue[0] * 0.5 + endValue[0] * 0.5,
-                    startValue[1] * 0.5 + endValue[1] * 0.5,
-                    maxAltitude, destTilt * 0.5, destHeading * 0.5];
+                var midValue = [
+                    (startValue[0] + endValue[0]) * 0.5,
+                    (startValue[1] + endValue[1]) * 0.5,
+                    maxAltitude,
+                    (startValue[3] + startValue[3]) * 0.5,
+                    (startValue[4] + startValue[4]) * 0.5
+                ];
 
                 // Add two segments
                 this.zoomToAnimation.addSegment(
