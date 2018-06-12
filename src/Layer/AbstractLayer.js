@@ -670,7 +670,6 @@ define(["jquery", "underscore-min", "../Utils/Event", "moment", "../Time/Time", 
          * @throws {TypeError} - The parameter of setVisible should be a boolean
          */
         AbstractLayer.prototype.setVisible = function (arg) {
-            console.log("Layer",this);
             if (typeof arg === "boolean") {
                 if (this.visible !== arg && this.getGlobe().attributionHandler) {
                     this.getGlobe().attributionHandler.toggleAttribution(this);
@@ -873,7 +872,6 @@ define(["jquery", "underscore-min", "../Utils/Event", "moment", "../Time/Time", 
          * @memberOf AbstractLayer#
          */
         AbstractLayer.prototype.generateTimeTravel = function (timeDetails) {
-            console.log("generateTimeTravel",this,timeDetails)
             if (timeDetails) {
                 // In a general case, timeDetails.value could have this shape:
                 //  val1,val2,min1/max1/step1,val3,min2/max2/step2

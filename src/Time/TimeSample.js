@@ -271,6 +271,33 @@ define(["jquery", "moment", "../Utils/Constants", "../Utils/Utils"], function ($
         };
     }; 
 
+
+    /**************************************************************************************************************/
+
+    /**
+     * Get min date
+     * @function getMinDate
+     * @return {Date} Min date or null
+     * @memberOf TimeSample#
+     */
+    TimeSample.prototype.getMinDate = function () {
+        return this.getStart();
+    };
+
+    /**************************************************************************************************************/
+
+    /**
+     * Get max date
+     * @function getMaxDate
+     * @return {Date} Max date or null
+     * @memberOf TimeSample#
+     */
+    TimeSample.prototype.getMaxDate = function () {
+        return this.getEnd();
+    };
+
+    /**************************************************************************************************************/
+
     /**
      * Get string representation
      * @function toString

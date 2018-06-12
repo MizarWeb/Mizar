@@ -37,6 +37,8 @@ define(["jquery", "moment", "./TimeSample","./TimeEnumerated","../Utils/Constant
         };
 
         this.currentDisplayDate = Moment(this.currentDate).format(Constants.TIME.DEFAULT_FORMAT);
+        this.minDate = null;
+        this.maxDate = null;
 
         this.ctx = null;
         // List of samples
@@ -195,10 +197,17 @@ define(["jquery", "moment", "./TimeSample","./TimeEnumerated","../Utils/Constant
         };
 
         var allDates = [];
+        var aDate = null;
         for (var i=0;i<this.samples.length;i++) {
-            allDates.push(this.samples[i].getFirstDateAfter(date));
+            aDate = this.samples[i].getFirstDateAfter(date);
+            if (aDate.date !== null) {
+                allDates.push(aDate);
+            }
         }
-        //allDates.push(this.enumeratedValues.getFirstDateAfter(date));
+        aDate = this.enumeratedValues.getFirstDateAfter(date);
+        if (aDate.date !== null) {
+            allDates.push(aDate);
+        }
 
         for (i=0;i<allDates.length;i++) {
             var currentNextDate = allDates[i];
@@ -227,10 +236,17 @@ define(["jquery", "moment", "./TimeSample","./TimeEnumerated","../Utils/Constant
         };
 
         var allDates = [];
+        var aDate = null;
         for (var i=0;i<this.samples.length;i++) {
-            allDates.push(this.samples[i].getFirstDateBefore(date));
+            aDate = this.samples[i].getFirstDateBefore(date);
+            if (aDate.date !== null) {
+                allDates.push(aDate);
+            }
         }
-        //allDates.push(this.enumeratedValues.getFirstDateBefore(date));
+        aDate = this.enumeratedValues.getFirstDateBefore(date);
+        if (aDate.date !== null) {
+            allDates.push(aDate);
+        }
 
         for (i=0;i<allDates.length;i++) {
             var currentPreviousDate = allDates[i];
@@ -259,28 +275,22 @@ define(["jquery", "moment", "./TimeSample","./TimeEnumerated","../Utils/Constant
         var previousExistingDate = this.getPreviousDate(date);
         var nextExistingDate = this.getNextDate(date);
 
-        console.log("previous",previousExistingDate);
-        console.log("next",nextExistingDate);
         if ( (previousExistingDate.date === null) && (nextExistingDate.date === null) ) {
-            console.log("no date");
             // No date found
             this.currentDate = new Date();
             this.currentDisplayDate = Moment(this.currentDate).format("Do MMM Y");
             this.currentPeriod = {"from" : this.currentDate,"to":this.currentDate};
         } else if (previousExistingDate.date === null) {
-            console.log("only after");
             // Only before
             this.currentDate = nextExistingDate.date;
             this.currentDisplayDate = nextExistingDate.display;
             this.currentPeriod = nextExistingDate.period;
         } else if (nextExistingDate.date === null) {
-            console.log("only before");
             // Only after
             this.currentDate = previousExistingDate.date;
             this.currentDisplayDate = previousExistingDate.display;
             this.currentPeriod = previousExistingDate.period;
         } else {
-            console.log("search nearest");
             // Search nearest
             deltaPrevious = Math.abs(date-previousExistingDate.date);
             deltaNext = Math.abs(nextExistingDate.date-date);
@@ -306,7 +316,6 @@ define(["jquery", "moment", "./TimeSample","./TimeEnumerated","../Utils/Constant
      * @memberOf TimeTravelParams#
      */
     TimeTravelParams.prototype.update = function (parameters) {
-        console.log("update",parameters);
         if (!parameters) {
             return;
         }
@@ -316,9 +325,15 @@ define(["jquery", "moment", "./TimeSample","./TimeEnumerated","../Utils/Constant
         if (parameters.remove) {
             this.removeValues(parameters.remove);
         }
+
+        // update metadata
+        this.minDate = this.getMinDate();
+        this.maxDate = this.getMaxDate();
+
+        // apply !
         this.apply();
 
-        console.log("toString ! "+this.toString());
+        console.log("all dates availables :\n"+this.toString());
     };
 
     /**************************************************************************************************************/
@@ -464,6 +479,61 @@ define(["jquery", "moment", "./TimeSample","./TimeEnumerated","../Utils/Constant
         return this.isLastDate;
     };
 
+
+    /**************************************************************************************************************/
+
+    /**
+     * Get min date
+     * @function getMinDate
+     * @return {Date} Min date or null
+     * @memberOf TimeTravelParams#
+     */
+    TimeTravelParams.prototype.getMinDate = function () {
+        var result = null;
+        
+        var allDates = [];
+        for (var i=0;i<this.samples.length;i++) {
+            allDates.push(this.samples[i].getMinDate());
+        }
+        allDates.push(this.enumeratedValues.getMinDate());
+
+        for (i=0;i<allDates.length;i++) {
+            if (result === null) {
+                result = allDates[i];
+            } else if ( (allDates[i]<result) && (allDates[i] !== null) ) {
+                    result = allDates[i];
+            }
+        }
+        return result;
+    };
+
+    /**************************************************************************************************************/
+
+    /**
+     * Get max date
+     * @function getMaxDate
+     * @return {Date} Max date or null
+     * @memberOf TimeTravelParams#
+     */
+    TimeTravelParams.prototype.getMaxDate = function () {
+        var result = null;
+        
+        var allDates = [];
+        for (var i=0;i<this.samples.length;i++) {
+            allDates.push(this.samples[i].getMaxDate());
+        }
+        allDates.push(this.enumeratedValues.getMaxDate());
+
+        for (i=0;i<allDates.length;i++) {
+            if (result === null) {
+                result = allDates[i];
+            } else if ( (allDates[i]>result) && (allDates[i] !== null) ){
+                    result = allDates[i];
+            }
+        }
+        return result;
+    };
+    
     /**************************************************************************************************************/
 
     /**
@@ -480,6 +550,35 @@ define(["jquery", "moment", "./TimeSample","./TimeEnumerated","../Utils/Constant
     /**************************************************************************************************************/
 
     /**
+     * Get all steps
+     * @function toString
+     * @return {String} String representation
+     * @memberOf TimeTravelParams#
+     */
+    TimeTravelParams.prototype.getAllSteps = function() {
+        throw "TimeTravelParams.getAllSteps : deactivated because too long to execute";
+
+        var res = [];
+        var aDate = this.minDate;
+        res.push(aDate);
+        var nextDate = this.getNextDate(Moment(aDate).add(1,Constants.TIME_STEP.MILLISECOND));
+
+        while (nextDate.date !== null) {
+            aDate = nextDate.date;
+            res.push(aDate);
+            if (res.length % 500 === 0) {
+                console.log(res.length);
+            }
+            nextDate = this.getNextDate(Moment(aDate).add(1,Constants.TIME_STEP.MILLISECOND));
+        }
+        
+        return res;
+    };
+
+
+    /**************************************************************************************************************/
+
+    /**
      * Get string representation
      * @function toString
      * @return {String} String representation
@@ -488,6 +587,10 @@ define(["jquery", "moment", "./TimeSample","./TimeEnumerated","../Utils/Constant
     TimeTravelParams.prototype.toString = function() {
         var res = "";
         
+        res+= "Metadata : \n";
+        res+= "  Start date : "+Moment(this.minDate).format(Constants.TIME.DEFAULT_FORMAT)+" : "+this.minDate+"\n";
+        res+= "  End date   : "+Moment(this.maxDate).format(Constants.TIME.DEFAULT_FORMAT)+" : "+this.maxDate+"\n";
+
         if (this.samples) {
             for (var i=0;i<this.samples.length;i++) {
                 res += "Sample : "+this.samples[i].toString()+"\n";
