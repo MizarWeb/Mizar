@@ -91,6 +91,7 @@ define(["jquery", '../Utils/Utils', './AbstractLayer', './AbstractRasterLayer', 
 
             // If needed, try to fill time travel parameters
             if (this.autoFillTimeTravel === true && this.containsDimension('time'))  {
+                console.log("Time travel for "+this.name);
                 this.generateTimeTravel(options.dimension.time);
             }
 

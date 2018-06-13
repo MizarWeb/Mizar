@@ -143,7 +143,7 @@ define(["jquery", "../Utils/Constants","../Services/TimeTravelCore"],
     };
 
     /**************************************************************************************************************/
-    
+
     /**
      * Update display date and send current date to contexte
      * @function updateDisplayDate
@@ -154,6 +154,8 @@ define(["jquery", "../Utils/Constants","../Services/TimeTravelCore"],
         if (document.getElementById("textTimeTravelDiv") !== null) {
             document.getElementById("textTimeTravelDiv").innerHTML = date.display;
         }
+
+        //TODO : check if it is ok (it was previoulsy written ctx.setTime(date) before the resolve
         ctx.setTime(date.date);
 
         $('#objectRewind svg').css({
@@ -164,6 +166,7 @@ define(["jquery", "../Utils/Constants","../Services/TimeTravelCore"],
             "float": "right",
             "fill" : (TimeTravelCore.isCurrentDateTheLast() === true) ? "#333333" : "white"
         });
+
     };
 
     /**
