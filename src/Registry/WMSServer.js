@@ -55,23 +55,16 @@ define(["jquery","underscore-min", "../Utils/Utils", "xmltojson", "../Layer/Laye
             return copyrightURL;
         }
 
-        function _computeCenterBbox(jsonLayer) {
-            var bbox = jsonLayer.EX_GeographicBoundingBox;
-            var center;
-            if(bbox == null) {
-                center = [0,0];
-            } else {
-                var centerLong = 0.5 * (bbox[0]+bbox[2]);
-                var centerLat = 0.5 * (bbox[1]+bbox[3]);
-                var deltaLong = bbox[2]-bbox[0];
-                if(deltaLong > 180) {
-                    deltaLong = 180;
-                }
-                var deltaLat = bbox[3]-bbox[1];
-                var delta = (deltaLong > deltaLat) ? deltaLat : deltaLong;
-                center = [centerLong, centerLat];
+        function _computeCenterBbox(bbox) {
+            var centerLong = 0.5 * (bbox[0]+bbox[2]);
+            var centerLat = 0.5 * (bbox[1]+bbox[3]);
+            var deltaLong = bbox[2]-bbox[0];
+            if(deltaLong > 180) {
+                deltaLong = 180;
             }
-            return center;
+            var deltaLat = bbox[3]-bbox[1];
+            var delta = (deltaLong > deltaLat) ? deltaLat : deltaLong;
+            return [centerLong, centerLat];
         }
 
         function _bbox(jsonLayer) {
@@ -83,6 +76,26 @@ define(["jquery","underscore-min", "../Utils/Utils", "xmltojson", "../Layer/Laye
                 var long1 = bbox[0] > 180 ? bbox[0] - 360 : bbox[0];
                 var long2 = bbox[2] > 180 ? bbox[2] - 360 : bbox[2];
                 result = [long1, bbox[1], long2, bbox[3]];
+            }
+            return result;
+        }
+
+        function _bboxGroup(jsonLayer) {
+            var result;
+            if (_hasGroup.call(this, jsonLayer)) {
+                var layer, layerBbox;
+                var minLong = 180, maxLong=-180, minLat=90, maxLat=-90;
+                for (var i=0;i<jsonLayer.Layer.length; i++) {
+                    layer = jsonLayer.Layer[i];
+                    layerBbox = _bbox.call(this, layer);
+                    minLong = Math.min(minLong, layerBbox[0]);
+                    minLat = Math.min(minLat, layerBbox[1]);
+                    maxLong = Math.max(maxLong, layerBbox[2]);
+                    maxLat = Math.max(maxLat, layerBbox[3]);
+                }
+                result = [ minLong, minLat, maxLong, maxLat ];
+            } else {
+                result = _bbox.call(this, jsonLayer);
             }
             return result;
         }
@@ -135,7 +148,8 @@ define(["jquery","underscore-min", "../Utils/Utils", "xmltojson", "../Layer/Laye
                 attribution.push(_computeAttribution.call(this, layerDescription, jsonLayers, jsonLayer));
             }
             var copyrightURL = _computeCopyrightURL.call(this, layerDescription, jsonLayers, jsonLayer);
-            var center = _computeCenterBbox.call(this, jsonLayer);
+            var bbox = _bboxGroup.call(this, jsonLayer);
+            var center = _computeCenterBbox.call(this, bbox);
             var layerDesc = Object.assign({}, layerDescription, {});
             layerDesc.name = layerDescription.name || jsonLayer.Title;
             layerDesc.format = layerDescription.format || "image/png";
@@ -147,7 +161,7 @@ define(["jquery","underscore-min", "../Utils/Utils", "xmltojson", "../Layer/Laye
             layerDesc.properties = {
                 "initialRa":center[0],
                 "initialDec":center[1],
-                "bbox":_bbox.call(this, jsonLayer)
+                "bbox":bbox
             };
             layerDesc.dimension = _parseDimension.call(this, jsonLayer.Dimension);
             layerDesc.metadataAPI = jsonLayer;
