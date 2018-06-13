@@ -155,8 +155,7 @@ define(["jquery", "../Utils/Constants","../Services/TimeTravelCore"],
             document.getElementById("textTimeTravelDiv").innerHTML = date.display;
         }
 
-        //TODO : check if it is ok (it was previoulsy written ctx.setTime(date) before the resolve
-        ctx.setTime(date.date);
+        ctx.setTime(date);
 
         $('#objectRewind svg').css({
             "float": "right",
