@@ -492,8 +492,8 @@ define(['../Utils/Utils', '../Utils/Constants', './AbstractNavigation', '../Anim
             var position = vec3.create();
             coordinateSystem.get3DFromWorld(this.geoCenter, position);
             // FIXME: Might be interesting to be able to control minimum camera speed
-            vec3.scale(x, dx * Math.max(this.distance, 250 * this.scale), x);
-            vec3.scale(y, dy * Math.max(this.distance, 250 * this.scale), y);
+            vec3.scale(x, dx * Math.max(this.distance, 500 * this.scale), x);
+            vec3.scale(y, dy * Math.max(this.distance, 500 * this.scale), y);
             vec3.subtract(position, x, position);
             vec3.add(position, y, position);
 
@@ -569,11 +569,26 @@ define(['../Utils/Utils', '../Utils/Constants', './AbstractNavigation', '../Anim
             const canvas = this.renderContext.canvas;
             const width = canvas.width;
             const height = canvas.height;
-
-            const center = this.ctx.globe.getLonLatFromPixel(width / 2, height / 2);
+			
+			// Recompute the geo position, trace a new ray to check intersection with the terrain
+			this.computeInverseViewMatrix();
+            const eye = [this.inverseViewMatrix[12], this.inverseViewMatrix[13], this.inverseViewMatrix[14]];
+			const pos = vec3.create();
+			this.ctx.getCoordinateSystem().fromGeoTo3D(this.geoCenter, pos);
+			const dir = vec3.create();
+			vec3.subtract(pos,eye,dir);
+			vec3.normalize(dir);
+			var r = new Ray(eye,dir);
+			
+            //const center = this.ctx.globe.getLonLatFromPixel(width / 2, height / 2);
+			const center = this.ctx.globe.computeIntersection(r);
             if (center != null && center != undefined) {
                 this.geoCenter = center;
-            }
+				// Update distance
+				const center3D = vec3.create();
+				this.ctx.getCoordinateSystem().fromGeoTo3D(this.geoCenter, center3D);
+				this.distance = vec3.dist(center3D,eye);
+			}
         };
 
         /**
