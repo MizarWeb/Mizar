@@ -35,8 +35,8 @@
  * along with GlobWeb. If not, see <http://www.gnu.org/licenses/>.
  ***************************************/
 
-define(['../Utils/Utils', '../Utils/Constants', './AbstractNavigation', '../Animation/AnimationFactory', '../Utils/Numeric', '../Renderer/glMatrix'],
-    function (Utils, Constants, AbstractNavigation, AnimationFactory, Numeric) {
+define(['../Utils/Utils', '../Utils/Constants', './AbstractNavigation', '../Animation/AnimationFactory', '../Utils/Numeric', '../Renderer/Ray', '../Renderer/glMatrix'],
+    function (Utils, Constants, AbstractNavigation, AnimationFactory, Numeric, Ray) {
 
         /**
          * Flat navigation configuration
@@ -654,7 +654,7 @@ define(['../Utils/Utils', '../Utils/Constants', './AbstractNavigation', '../Anim
          * @memberOf PlanetNavigation#
          */
         PlanetNavigation.prototype.clampTilt = function() {
-            this.tilt = Math.min(Math.max(this.tilt, MAX_TILT), MAX_TILT);
+            this.tilt = Math.min(Math.max(this.tilt, MIN_TILT), MAX_TILT);
         }
 
         PlanetNavigation.prototype.donePanning = function() {
