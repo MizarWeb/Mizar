@@ -267,6 +267,13 @@ define(["jquery", "underscore-min",
         Mizar.CRS = Constants.CRS;
 
         /**
+         * Static variable, supported {@link DISPLAY display} order
+         * @name DISPLAY
+         * @memberOf Mizar#
+         */
+        Mizar.DISPLAY = Constants.DISPLAY;
+
+        /**
          * Static variable, supported {@link SERVICE service} type
          * @name SERVICE
          * @memberOf Mizar#
@@ -915,7 +922,6 @@ define(["jquery", "underscore-min",
          * @memberOf Mizar#
          */
         Mizar.prototype.updateTimeTravel = function(parameters) {
-            console.log(this);
             this.getServiceByName(Mizar.SERVICE.TimeTravel).update(parameters);
         };
 
@@ -926,7 +932,6 @@ define(["jquery", "underscore-min",
          * @memberOf Mizar#
          */
         Mizar.prototype.setTime = function(time) {
-            console.log("TIME MIZAR:"+(time.display?time.display:time));
             this.activatedContext.setTime(time);
         };
 
@@ -956,7 +961,8 @@ define(["jquery", "underscore-min",
             try {
                 options.renderContext = this.renderContext;
                 options.timeTravelService = this.getServiceByName(Mizar.SERVICE.TimeTravel);
-                
+                options.isMobile = this.getOptions().configuration.isMobile;                
+
                 var ctx = this.ContextFactory.create(contextMode, this.getOptions(), options);
             
                 switch (contextMode) {
@@ -976,7 +982,7 @@ define(["jquery", "underscore-min",
                 this.renderContext = ctx.getRenderContext();
                 result = true;
             } catch (e) {
-                console.log("Error",e);
+                console.error("Error",e);
                 result = false;
                 ErrorDialog.open("Cannot create the context : <font style='color:orange'><b>" + e.message + "</b></font>", true);
             }
@@ -1571,7 +1577,7 @@ define(["jquery", "underscore-min",
                 layer._detach(ctx.globe);
                 layer._attach(ctx.globe);
             } else {
-               console.log("Context not yet available");
+               console.error("Context not yet available");
             }
         };
 

@@ -45,7 +45,7 @@ define(["jquery", "../Utils/Constants","../Services/TimeTravelCore"],
         // Add compass object to parent element
         // Don't use <object> HTML tag due to cross-origin nature of svg
         if (document.getElementById(parentElement) === null) {
-            console.log("Warning, the div specified (" + parentElement + ") do not exist");
+            console.log("WARN: the div specified (" + parentElement + ") do not exist");
             return;
         }
         var svgRewind = "data:image/svg+xml;base64,PHN2ZyBmaWxsPSIjMDAwMDAwIiBoZWlnaHQ9IjI0IiB2aWV3Qm94PSIwIDAgMjQgMjQiIHdpZHRoPSIyNCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4gICAgPHBhdGggZD0iTTExIDE4VjZsLTguNSA2IDguNSA2em0uNS02bDguNSA2VjZsLTguNSA2eiIvPiAgICA8cGF0aCBkPSJNMCAwaDI0djI0SDB6IiBmaWxsPSJub25lIi8+PC9zdmc+";
@@ -154,8 +154,10 @@ define(["jquery", "../Utils/Constants","../Services/TimeTravelCore"],
         if (document.getElementById("textTimeTravelDiv") !== null) {
             document.getElementById("textTimeTravelDiv").innerHTML = date.display;
         }
-        ctx.setTime(date);
-        
+
+        //TODO : check if it is ok (it was previoulsy written ctx.setTime(date) before the resolve
+        ctx.setTime(date.date);
+
         $('#objectRewind svg').css({
             "float": "right",
             "fill" : (TimeTravelCore.isCurrentDateTheFirst() === true) ? "#333333" : "white"

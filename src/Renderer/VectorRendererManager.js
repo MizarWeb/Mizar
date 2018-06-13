@@ -162,7 +162,7 @@ define(["../Utils/Constants", "./RasterOverlayRenderer"], function (Constants, R
         if (renderer) {
             renderer.addGeometry(layer, geometry, style);
         } else {
-            console.log("No renderer for VectorRendererManager");
+            console.error("No renderer for VectorRendererManager");
         }
     };
 

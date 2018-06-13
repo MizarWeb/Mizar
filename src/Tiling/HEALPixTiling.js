@@ -321,7 +321,7 @@ define(['./Tile', './HEALPixBase', '../Renderer/GeoBound', '../Utils/Numeric', '
 
             var coords = _getGeometryCoordinates(geometry);
             if (!coords) {
-                console.log("Invalid geometry type or not supported.");
+                console.error("Invalid geometry type or not supported.");
                 return tileIndices;
             }
 

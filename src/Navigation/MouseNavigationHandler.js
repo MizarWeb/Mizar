@@ -35,7 +35,7 @@
  * along with GlobWeb. If not, see <http://www.gnu.org/licenses/>.
  ***************************************/
 
-define(function () {
+define(["../Utils/Utils"], function (Utils) {
 
     /**
      * Mouse navigation handler configuration
@@ -114,11 +114,6 @@ define(function () {
                 _navigation.inertia.launch("zoom", factor < 0 ? -1 : 1);
             }
 
-            // Stop mouse wheel to be propagated, because default is to scroll the page
-            // This is need when using Firefox event listener on DOMMouseScroll
-            if (event.preventDefault) {
-                event.preventDefault();
-            }
             event.returnValue = false;
 
             // Return false to stop mouse wheel to be propagated when using onmousewheel
@@ -238,6 +233,8 @@ define(function () {
             _navigation = nav;
             var canvas = _navigation.renderContext.canvas;
 
+            var passiveSupported = Utils.isPassiveSupported();
+
             // Setup the mouse event handlers
             canvas.addEventListener("mousedown", _handleMouseDown);
             canvas.addEventListener("mousemove", _handleMouseMove);
@@ -247,8 +244,8 @@ define(function () {
             }
 
             // For Firefox
-            canvas.addEventListener("DOMMouseScroll", _handleMouseWheel);
-            canvas.addEventListener("mousewheel", _handleMouseWheel);
+            canvas.addEventListener("DOMMouseScroll", _handleMouseWheel, passiveSupported ? { passive: true } : false);
+            canvas.addEventListener("mousewheel", _handleMouseWheel, passiveSupported ? { passive: true } : false);
 
             // Fix for Google Chrome : avoid dragging
             // TODO : a hack, should be more robust (restore on uninstall?)

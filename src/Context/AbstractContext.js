@@ -180,10 +180,10 @@ define(["jquery", "underscore-min", "../Utils/Event", "moment", "../Utils/Utils"
          * @memberOf AbstractContext#
          */
         AbstractContext.prototype.setTime = function (time) {
-            this.time = time;
+            this.time = Time.parse(time);
             for (var i = 0; i < this.layers.length; i++) {
                 var layer = this.layers[i];
-                layer.setTime(time);
+                layer.setTime(this.time);
             }
         };
 

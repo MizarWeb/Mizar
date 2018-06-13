@@ -152,7 +152,7 @@ PolygonCutter.cut = function( polygon, pointSet, a, b, result )
 	}
 	//intersections.length = intersections.length & (~1);
 	if ( intersections.length & 1 ) {
-		console.log('error!');
+		console.error('error!');
 		intersections.length = intersections.length & (~1);
 	}
 

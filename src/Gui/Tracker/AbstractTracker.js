@@ -16,8 +16,8 @@
  * You should have received a copy of the GNU General Public License
  * along with SITools2. If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
-define(["jquery"],
-    function ($) {
+define(["jquery", "../../Utils/Utils"],
+    function ($, Utils) {
 
         /**
          * @name AbstractTracker
@@ -120,7 +120,8 @@ define(["jquery"],
             this._setNavigation(context.getNavigation());
             this._getGlobe().getRenderContext().canvas.addEventListener('mousemove', this.update);
             if (this.options.isMobile) {
-                this._getGlobe().getRenderContext().canvas.addEventListener('touchmove', this.update);
+                var passiveSupported = Utils.isPassiveSupported();
+                this._getGlobe().getRenderContext().canvas.addEventListener('touchmove', this.update, passiveSupported ? { passive: true } : false);
             }
         };
 

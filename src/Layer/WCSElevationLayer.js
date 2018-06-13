@@ -137,7 +137,7 @@ define(['../Utils/Utils', './AbstractLayer', './AbstractRasterLayer', '../Utils/
                 case "image/x-aaigrid":
                     return this._parseAAIGrid(text);
                 default:
-                    console.log("Format '" + this.format + "' could not be parsed.");
+                    console.log("WARN: Format '" + this.format + "' could not be parsed.");
                     return this._returnZeroElevations();
             }
         };

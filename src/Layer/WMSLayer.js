@@ -149,7 +149,6 @@ define(["jquery", '../Utils/Utils', './AbstractLayer', './AbstractRasterLayer', 
         }
 
         WMSLayer.prototype.setTime = function(time) {
-            //console.log("TIME WMS:"+(time.display ? time.display : time)+" "+this.name);
             AbstractLayer.prototype.setTime(time);
             this.setParameter("time", time);
         };
@@ -270,34 +269,6 @@ define(["jquery", '../Utils/Utils', './AbstractLayer', './AbstractRasterLayer', 
             } else {
                 url = null;
             }
-
-            //if(this.isBackground()) {
-            //    bbox = bound.west + "," + bound.south + "," + bound.east + "," + bound.north;
-            //    url = this.getMapBaseUrl;
-            //    url = Utils.addParameterTo(url, "transparent", this.options.transparent);
-            //    url = Utils.addParameterTo(url, "crs", tile.config.srs);
-            //    url = Utils.addParameterTo(url, "bbox", bbox);
-            //} else if (_tileIsIntersectedFootprint(bound, this.restrictTo)) {
-            //
-            //    if(this.containsDimension("time") && this.imageLoadedAtTime != null) {
-            //        bbox = bound.west + "," + bound.south + "," + bound.east + "," + bound.north;
-            //        url = this.getMapBaseUrl;
-            //        url = Utils.addParameterTo(url, "transparent", this.options.transparent);
-            //        url = Utils.addParameterTo(url, "crs", tile.config.srs);
-            //        url = Utils.addParameterTo(url, "bbox", bbox);
-            //    } else if(!this.containsDimension("time")) {
-            //        bbox = bound.west + "," + bound.south + "," + bound.east + "," + bound.north;
-            //        url = this.getMapBaseUrl;
-            //        url = Utils.addParameterTo(url, "transparent", this.options.transparent);
-            //        url = Utils.addParameterTo(url, "crs", tile.config.srs);
-            //        url = Utils.addParameterTo(url, "bbox", bbox);
-            //    } else {
-            //        url = null;
-            //    }
-            //
-            //} else {
-            //    url = null;
-            //}
 
             return this.proxify(url, tile.level);
         };

@@ -65,8 +65,8 @@
  * @implements {Layer}
  * @module Layer
  */
-define(['../Utils/Utils', './AbstractLayer', '../Utils/Constants', '../Provider/PlanetProvider', '../Renderer/Program'],
-        function (Utils, AbstractLayer, Constants, PlanetProvider, Program) {
+define(['../Utils/Utils', './AbstractLayer', '../Utils/Constants', '../Provider/PlanetProvider', '../Renderer/Program', '../Time/Time'],
+        function (Utils, AbstractLayer, Constants, PlanetProvider, Program, Time) {
 
     /**
      * Atmosphere layer configuration
@@ -381,25 +381,23 @@ define(['../Utils/Utils', './AbstractLayer', '../Utils/Constants', '../Provider/
 
     AtmosphereLayer.prototype.setTime = function(time) {
         AbstractLayer.prototype.setTime(time);
-        var timeRequest = AbstractLayer.createTimeRequest(time);
-        var allowedTime = this.getDimensions().time;
-        var selectedDate = AbstractLayer.selectedTime(allowedTime.value, timeRequest);
-        var date = new Date(selectedDate);
-        this.lightDir = _computeLightDir.call(this, date);
-        this._skyFromSpaceProgram.apply();
-        this._initUniforms(this._skyFromSpaceProgram.uniforms);
-        this._skyFromAtmosphereProgram.apply();
-        this._initUniforms(this._skyFromAtmosphereProgram.uniforms);
-        this._groundFromSpaceProgram.apply();
-        this._initUniforms(this._groundFromSpaceProgram.uniforms);
-        this._groundFromAtmosphereProgram.apply();
-        this._initUniforms(this._groundFromAtmosphereProgram.uniforms);
-        this.forceRefresh();
+        this.setParameter("time", time);
     };
 
     AtmosphereLayer.prototype.setParameter = function(param, value) {
         if (param === "time") {
-            this.setTime(value);
+            var time = Time.parse(value);
+            var date = new Date(time.date);
+            this.lightDir = _computeLightDir.call(this, date);
+            this._skyFromSpaceProgram.apply();
+            this._initUniforms(this._skyFromSpaceProgram.uniforms);
+            this._skyFromAtmosphereProgram.apply();
+            this._initUniforms(this._skyFromAtmosphereProgram.uniforms);
+            this._groundFromSpaceProgram.apply();
+            this._initUniforms(this._groundFromSpaceProgram.uniforms);
+            this._groundFromAtmosphereProgram.apply();
+            this._initUniforms(this._groundFromAtmosphereProgram.uniforms);
+            this.forceRefresh();
         }
     };
 

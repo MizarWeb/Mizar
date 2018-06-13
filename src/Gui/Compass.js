@@ -21,8 +21,8 @@
 /**
  * Compass module : map control with "north" composant
  */
-define(["jquery", "../Utils/Constants","../Services/CompassCore"],
-    function ($, Constants, CompassCore) {
+define(["jquery", "../Utils/Constants","../Services/CompassCore", "../Utils/Utils"],
+    function ($, Constants, CompassCore, Utils) {
 
     /**
      *    Private variables
@@ -47,7 +47,7 @@ define(["jquery", "../Utils/Constants","../Services/CompassCore"],
         // Add compass object to parent element
         // Don't use <object> HTML tag due to cross-origin nature of svg
         if (document.getElementById(parentElement) === null) {
-            console.log("Warning, the div specified (" + parentElement + ") do not exist");
+            console.log("WARN; the div specified (" + parentElement + ") do not exist");
             return;
         }
 
@@ -91,21 +91,27 @@ define(["jquery", "../Utils/Constants","../Services/CompassCore"],
 
             var _lastMouseX = -1;
             var _lastMouseY = -1;
+            var _balanceX = -1;
+            var _balanceY = -1;
             var _dx = 0;
             var _dy = 0;
             var dragging = false;
             var _outerCircleRadius = outerCircle.ownerSVGElement.clientWidth / 2;
 
             var _handleMouseDown = function (event) {
-                event.preventDefault();
                 if (event.type.search("touch") >= 0) {
                     event.layerX = event.changedTouches[0].clientX;
                     event.layerY = event.changedTouches[0].clientY;
+                    _balanceX = event.layerX;
+                    _balanceY = event.layerY;
+                } else {
+                    _balanceX = 0;
+                    _balanceY = 0;
                 }
 
                 dragging = true;
-                _lastMouseX = event.layerX - _outerCircleRadius;
-                _lastMouseY = event.layerY - _outerCircleRadius;
+                _lastMouseX = (event.layerX-_balanceX) - _outerCircleRadius;
+                _lastMouseY = (event.layerY-_balanceY) - _outerCircleRadius;
                 _dx = 0;
                 _dy = 0;
             };
@@ -114,17 +120,18 @@ define(["jquery", "../Utils/Constants","../Services/CompassCore"],
 
 
             var _handleMouseMove = function (event) {
-                event.preventDefault();
                 if (event.type.search("touch") >= 0) {
-                    event.layerX = event.changedTouches[0].clientX;
-                    event.layerY = event.changedTouches[0].clientY;
+                    event.layerX = event.changedTouches[0].clientX-_balanceX;
+                    event.layerY = event.changedTouches[0].clientY-_balanceY;
                 }
 
                 if (!dragging) {
                     return;
                 }
 
-                var c = _lastMouseX * (event.layerY - _outerCircleRadius) - _lastMouseY * (event.layerX - _outerCircleRadius); // c>0 -> clockwise, counterclockwise otherwise
+                var c = _lastMouseX * (event.layerY - _outerCircleRadius) - _lastMouseY * (event.layerX - 
+                _outerCircleRadius); // c>0 -> clockwise, counterclockwise otherwise
+                
                 ctx.getNavigation().rotate(c, 0);
 
                 _lastMouseX = event.layerX - _outerCircleRadius;
@@ -166,10 +173,11 @@ define(["jquery", "../Utils/Constants","../Services/CompassCore"],
             northText.addEventListener("click", CompassCore._alignWithNorth);
 
             if (isMobile) {
-                svgDoc.addEventListener('touchstart', _handleMouseDown);
+                var passiveSupported = Utils.isPassiveSupported();
+                svgDoc.addEventListener('touchstart', _handleMouseDown, passiveSupported ? { passive: true } : false);
                 svgDoc.addEventListener('touchup', _handleMouseUp);
-                svgDoc.addEventListener('touchmove', _handleMouseMove);
-                northText.addEventListener("touchstart", CompassCore._alignWithNorth);
+                svgDoc.addEventListener('touchmove', _handleMouseMove, passiveSupported ? { passive: true } : false);
+                northText.addEventListener("touchstart", CompassCore._alignWithNorth, passiveSupported ? { passive: true } : false);
             }
 
             // Update fov when moving

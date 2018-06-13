@@ -61,11 +61,21 @@ define(["jquery", "moment", "../Utils/Constants", "../Utils/Utils"], function ($
     /**
      * Tests if the time input parameter is based on a string
      * @param {string} value time
-     * @return {boolean} True when a string used to define the date
+     * @return {boolean} True when a string is used to define the date
      * @private
      */
     function _isDateString(value) {
         return typeof value === "string";
+    }
+
+    /**
+     * Tests if the time input parameter is based on a Date object
+     * @param {Date} value time
+     * @return {boolean} True when a Date object is used to define the date
+     * @private
+     */
+    function _isDate(value) {
+        return value instanceof Date;
     }
 
     /**
@@ -303,6 +313,21 @@ define(["jquery", "moment", "../Utils/Constants", "../Utils/Utils"], function ($
     }
 
     /**
+     * Converts a string date to a Time object
+     * @param {string} time
+     * @return {{date, display, period, computed}|{date: *, display: *, period: {from: *, to: *}, computed: *}}
+     * @private
+     */
+    function _convertStringDateToTime(time) {
+        var timeRequested = _convertMoment(time);
+        var format = timeRequested.creationData().format;
+        var timeResolution = _lowestFormatResolution(format);
+        var from = Moment.utc(timeRequested).startOf(timeResolution);
+        var to = Moment.utc(timeRequested).endOf(timeResolution);
+        return _templateTimeTravel(time, time, from, to, false);
+    }
+
+    /**
      * Lowest format resolution.
      * @param {string} format
      * @return The time moment unit
@@ -340,7 +365,7 @@ define(["jquery", "moment", "../Utils/Constants", "../Utils/Utils"], function ($
 
     /**
      * Parses the date and returns Time.
-     * @param {Time.time|Time.period|string} time
+     * @param {Time.time|Time.period|string|Date} time
      * @return {Time} time object
      */
     Time.parse = function (time) {
@@ -352,12 +377,9 @@ define(["jquery", "moment", "../Utils/Constants", "../Utils/Utils"], function ($
         } else if (_isOpenedInterval(time)) {
             result = _templateTimeTravel(time.from, time.from, time.from, Moment(), false)
         } else if (_isDateString(time)) {
-            var timeRequested = _convertMoment(time);
-            var format = timeRequested.creationData().format;
-            var timeResolution = _lowestFormatResolution(format);
-            var from = Moment.utc(timeRequested).startOf(timeResolution);
-            var to = Moment.utc(timeRequested).endOf(timeResolution);
-            result = _templateTimeTravel(time, time, from, to, false)
+            result = _convertStringDateToTime(time);
+        } else if (_isDate(time)) {
+            result = _convertStringDateToTime(time.toISOString());
         } else {
             throw new Error("Unsupported time format");
         }

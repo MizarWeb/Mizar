@@ -32,7 +32,6 @@ define(["../Layer/HipsGraphicLayer", "../Utils/Constants", "../Crs/CoordinateSys
      *    Handle services of feature
      */
     function handleServices(gwLayer, feature) {
-        console.log("hop", gwLayer);
         for (var x in feature.services) {
             var service = feature.services[x];
             if (!gwLayer.subLayers) {
@@ -90,7 +89,7 @@ define(["../Layer/HipsGraphicLayer", "../Utils/Constants", "../Crs/CoordinateSys
 
             var features = featureCollection.features;
             if ((features === null) || (features === undefined)) {
-                console.log("Error, no feature in featureCollection : ", featureCollection);
+                console.error("Error, no feature in featureCollection : ", featureCollection);
                 return;
             }
             var i, j, r;

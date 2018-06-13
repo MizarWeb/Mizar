@@ -182,7 +182,7 @@ define(["../Renderer/BoundingBox"], function (BoundingBox) {
         this.wrap = [WebGLRenderingContext.REPEAT, WebGLRenderingContext.REPEAT];
         this.image = new Image();
         this.image.onerror = function () {
-            console.log("Cannot load texture " + url);
+            console.error("Cannot load texture " + url);
         };
         this.image.src = url;
     };

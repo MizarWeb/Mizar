@@ -35,7 +35,7 @@
  * along with GlobWeb. If not, see <http://www.gnu.org/licenses/>.
  ***************************************/
 
-define(function () {
+define(["../Utils/Utils"],function (Utils) {
 
     /**************************************************************************************************************/
 
@@ -144,9 +144,6 @@ define(function () {
                 _lastAngle = _getRotation(_startTouches, event.touches);
             }
 
-            if (event.preventDefault) {
-                event.preventDefault();
-            }
             event.returnValue = false;
 
             // Return false to stop event to be propagated
@@ -217,9 +214,6 @@ define(function () {
             // Update _lastTouches
             _lastTouches = event.touches;
 
-            if (event.preventDefault) {
-                event.preventDefault();
-            }
             event.returnValue = false;
 
             return false;
@@ -256,12 +250,12 @@ define(function () {
                     _navigation.inertia.launch("pan", _dx, _dy);
                 }
                 else if (hitIndex === Type.ROTATE) {
-                    console.log("Rotate not implemented in navigation");
+                    console.error("Rotate not implemented in navigation");
                     // Rotate
                     //_navigation.inertia.launch("rotate", _rotation, 0);
                 }
                 else if (hitIndex === Type.TILT) {
-                    console.log("Tilt not implemented in navigation");
+                    console.error("Tilt not implemented in navigation");
                     // No inertia for tilt
                 }
             }
@@ -289,9 +283,11 @@ define(function () {
             // Setup the touch event handlers
             var canvas = _navigation.renderContext.canvas;
 
-            canvas.addEventListener("touchstart", _handleTouchStart, false);
+            var passiveSupported = Utils.isPassiveSupported();
+
+            canvas.addEventListener("touchstart", _handleTouchStart, passiveSupported ? { passive: true } : false);
             canvas.addEventListener("touchend", _handleTouchEnd, false);
-            canvas.addEventListener("touchmove", _handleTouchMove, false);
+            canvas.addEventListener("touchmove", _handleTouchMove, passiveSupported ? { passive: true } : false);
         };
 
         /**
