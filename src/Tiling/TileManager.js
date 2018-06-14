@@ -176,11 +176,14 @@ define(['./Tile', './GeoTiling', './TilePool', './TileRequest', './TileIndexBuff
         }
 
         function _abortBucketRequests(bucket) {
-            var imageRequests = bucket.renderer.imageRequests;
-            for (var i = imageRequests.length; i--;) {
-                var request = imageRequests[i];
-                if(request.renderable) {
-                    request.abort();
+            var renderer = bucket.renderer;
+            var imageRequests = renderer.imageRequests;
+            if(imageRequests) {
+                for (var i = imageRequests.length; i--;) {
+                    var request = imageRequests[i];
+                    if(request.renderable) {
+                        request.abort();
+                    }
                 }
             }
         }

@@ -365,8 +365,13 @@ define(["jquery", "underscore-min", "../Utils/Constants",
                 mizarAPI.getActivatedContext().addDraw(targetLayer);
 
                 // Update name resolver properties
-                duration = isDefaultNameResolver ? 3000 : context.getContextConfiguration().nameResolver.duration;
-                zoomFov = isDefaultNameResolver ? 15 : context.getContextConfiguration().nameResolver.zoomFov;
+                if(isDefaultNameResolver) {
+                    duration = 3000;
+                    zoomFov = 15
+                } else {
+                    duration = context.getContextConfiguration().nameResolver.duration || 3000;
+                    zoomFov = context.getContextConfiguration().nameResolver.zoomFov || 15;
+                }
 
                 ctx.subscribe(Constants.EVENT_MSG.NAVIGATION_MODIFIED, removeTarget);
             }
