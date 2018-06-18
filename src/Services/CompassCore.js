@@ -23,6 +23,8 @@
  */
 define(["jquery","../Utils/Constants"], function ($, Constants) {
 
+    const MAX_ROTATION = 360;
+
     /**
      *    Private variables
      */
@@ -59,7 +61,7 @@ define(["jquery","../Utils/Constants"], function ($, Constants) {
         var currentHeading = navigation.getHeading();
 
         var upHeading = 0;
-        var degNorth = currentHeading-upHeading;
+        var degNorth = (currentHeading-upHeading+MAX_ROTATION)%MAX_ROTATION;
 
         var northText = svgDoc.getElementById("NorthText");
         northText.setAttribute("transform", "rotate(" + degNorth + " 40 40)");
@@ -71,7 +73,7 @@ define(["jquery","../Utils/Constants"], function ($, Constants) {
         var currentHeading = navigation.getHeading();
 
         var upHeading = 0;
-        var degNorth = upHeading-currentHeading;
+        var degNorth = (upHeading-currentHeading+MAX_ROTATION)%MAX_ROTATION;
 
         var northText = svgDoc.getElementById("NorthText");
         northText.setAttribute("transform", "rotate(" + degNorth + " 40 40)");
