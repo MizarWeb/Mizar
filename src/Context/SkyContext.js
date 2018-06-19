@@ -146,15 +146,18 @@ define(["underscore-min", "../Utils/Utils",
          */
         SkyContext.prototype.setCompassVisible = function (divName, visible) {
             if (visible) {
-                this.compass = new Compass({
-                    element: divName,
-                    ctx: this,
-                    crs : Constants.CRS.Equatorial,
-                    isMobile : this.isMobile
-                });
+                if (this.compass === null) {
+                    this.compass = new Compass({
+                        element: divName,
+                        ctx: this,
+                        crs : Constants.CRS.Equatorial,
+                        isMobile : this.isMobile
+                    });
+                }
             } else {
                 if (this.compass) {
-                    this.compass.remove();
+                    this.compass.destroy();
+                    this.compass = null;
                 }
             }
             this.setComponentVisibility(divName, visible);

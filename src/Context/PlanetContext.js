@@ -243,15 +243,18 @@ define(["jquery", "underscore-min", "../Utils/Utils", "./AbstractContext", "../U
          */
         PlanetContext.prototype.setCompassVisible = function (divName, visible) {
             if (visible) {
-                this.compass = new Compass({
-                    element: divName,
-                    ctx: this,
-                    crs : this.getCoordinateSystem().getGeoideName(),
-                    isMobile : this.isMobile
-                });
+                if (this.compass === null) {
+                    this.compass = new Compass({
+                        element: divName,
+                        ctx: this,
+                        crs : this.getCoordinateSystem().getGeoideName(),
+                        isMobile : this.isMobile
+                    });
+                }
             } else {
                 if (this.compass) {
-                    this.compass.remove();
+                    this.compass.destroy();
+                    this.compass = null;
                 }
             }
             this.setComponentVisibility(divName, visible);

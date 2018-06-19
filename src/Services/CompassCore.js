@@ -164,6 +164,5 @@ define(["jquery","../Utils/Constants"], function ($, Constants) {
         updateNorth: updateNorth,
         _alignWithNorth: _alignWithNorth,
         remove: remove
-
     };
 });

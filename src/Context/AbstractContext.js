@@ -53,6 +53,8 @@ define(["jquery", "underscore-min", "../Utils/Event", "moment", "../Utils/Utils"
             this.dataProviders = {};
             this.canvas = mizarConfiguration.canvas;
             this.isMobile = ctxOptions.isMobile;
+
+            this.compass = null;
             
             // Link to time travel service
             this.timeTravelService = ctxOptions.timeTravelService;
