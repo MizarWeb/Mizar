@@ -400,9 +400,6 @@ define(["jquery", "underscore-min",
          * @private
          */
         function _switchToContext(context, options) {
-            console.log("_switchToContext");
-            console.log("FROM",this.getActivatedContext());
-            console.log("TO",context);
 
             var self = this;
             var mustBeDestroyed = options.hasOwnProperty("mustBeDestroyed") ? options.mustBeDestroyed : false;
@@ -413,7 +410,6 @@ define(["jquery", "underscore-min",
 
             var compass = this.getActivatedContext().compass;
             if (compass) {
-                console.log("Compass",compass);
                 compass.detach(this.getActivatedContext());
                 compass.attachTo(context);
             }

@@ -96,6 +96,8 @@ define(["jquery", "../Utils/Constants","../Services/CompassCore", "../Utils/Util
      *    Remove compass element
      */
     Compass.prototype.remove = CompassCore.remove;
+    Compass.prototype.setContext = CompassCore.setContext;
+    Compass.prototype.setCrs = CompassCore.setCrs;
 
     /**************************************************************************************************************/
 
@@ -106,8 +108,6 @@ define(["jquery", "../Utils/Constants","../Services/CompassCore", "../Utils/Util
          * @memberOf Compass#
          */
         Compass.prototype.attachTo = function (context) {
-            console.log("<attachTo>");
-
             this.ctx = context;
 
             var _lastMouseX = -1;
@@ -205,10 +205,17 @@ define(["jquery", "../Utils/Constants","../Services/CompassCore", "../Utils/Util
             this.ctx.subscribe(Constants.EVENT_MSG.CRS_MODIFIED, CompassCore.updateNorth);
 
 
+
             // Publish modified event to update compass north
             this.ctx.publish(Constants.EVENT_MSG.NAVIGATION_MODIFIED);
             $('#' + this.parentElement).css("display", "block");
-            console.log("</attachTo>");
+
+            this.setContext(context);
+            if (context.mode === Constants.CONTEXT.Sky) {
+                this.setCrs(Constants.CRS.Equatorial);
+            } else if (context.mode === Constants.CONTEXT.Planet) {
+                this.setCrs(context.getCoordinateSystem().getGeoideName());
+            }
         };
 
         /**
@@ -217,29 +224,9 @@ define(["jquery", "../Utils/Constants","../Services/CompassCore", "../Utils/Util
          * @memberOf Compass#
          */
         Compass.prototype.detach = function () {
-            console.log("<detach>");
             // Update fov when moving
-            this.ctx.unsubscribe(Constants.EVENT_MSG.NAVIGATION_MODIFIED);
-            this.ctx.unsubscribe(Constants.EVENT_MSG.CRS_MODIFIED);
-
-            /*this.svgDoc.removeEventListener('mousedown');
-            this.svgDoc.removeEventListener('mousemove');
-            this.svgDoc.removeEventListener('mouseup');
-
-            this.east.removeEventListener("click");
-            this.west.removeEventListener("click");
-            this.north.removeEventListener("click");
-            this.south.removeEventListener("click");
-            this.northText.removeEventListener("click");
-            */
-            if (this.isMobile) {
-                /*this.svgDoc.removeEventListener('touchstart');
-                this.svgDoc.removeEventListener('touchup');
-                this.svgDoc.removeEventListener('touchmove');
-                this.northText.removeEventListener("touchstart");
-                */
-            }
-            console.log("</detach>");
+            this.ctx.unsubscribe(Constants.EVENT_MSG.NAVIGATION_MODIFIED, CompassCore.updateNorth);
+            this.ctx.unsubscribe(Constants.EVENT_MSG.CRS_MODIFIED, CompassCore.updateNorth);
         };
 
         /**
@@ -248,15 +235,16 @@ define(["jquery", "../Utils/Constants","../Services/CompassCore", "../Utils/Util
          * @memberOf Compass#
          */
         Compass.prototype.destroy = function () {
-            console.log("DESTROY !");
-            /*CompassCore.remove();
-            document.getElementById(this.parentElement).innerHTML = "";
-            this.svgDoc = null;
+            this.detach();
+            //CompassCore.remove();
+            //document.getElementById(this.parentElement).innerHTML = "";
+            /*this.svgDoc = null;
             this.east = null;
             this.west = null;
             this.north = null;
             this.south = null;
-            this.northText = null;*/
+            this.northText = null;
+            */
         };
 
     return Compass;

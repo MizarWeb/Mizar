@@ -367,7 +367,7 @@ define(["jquery", "underscore-min", "../Utils/Utils", "./AbstractContext", "../U
          */
         PlanetContext.prototype.destroy = function () {
             this.setCompassVisible(false);
-            this.setTimeTravelVisible(false);
+            //this.setTimeTravelVisible(false);
             AbstractContext.prototype.destroy.call(this);
         };
 

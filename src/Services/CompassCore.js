@@ -161,6 +161,12 @@ define(["jquery","../Utils/Constants"], function ($, Constants) {
             crs = options.crs;
             svgDoc = options.svgDoc;
         },
+        setContext : function(paramContext) {
+            ctx = paramContext;
+        },
+        setCrs : function(paramCrs) {
+            crs = paramCrs;
+        },
         updateNorth: updateNorth,
         _alignWithNorth: _alignWithNorth,
         remove: remove

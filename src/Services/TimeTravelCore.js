@@ -64,10 +64,9 @@ define(["jquery","../Time/TimeTravelParams","../Utils/Constants"], function ($, 
      *    
      */
     function remove() {
-        ctx.unsubscribe(Constants.EVENT_MSG.GLOBAL_TIME_FORWARD);
-        ctx.unsubscribe(Constants.EVENT_MSG.GLOBAL_TIME_REWIND);
-        ctx.unsubscribe(Constants.EVENT_MSG.GLOBAL_TIME_SET);
-        ctx.unsubscribe(Constants.EVENT_MSG.GLOBAL_TIME_INIT);
+        ctx.unsubscribe(Constants.EVENT_MSG.GLOBAL_TIME_FORWARD,goForward);
+        ctx.unsubscribe(Constants.EVENT_MSG.GLOBAL_TIME_REWIND,goRewind);
+        ctx.unsubscribe(Constants.EVENT_MSG.GLOBAL_TIME_SET,chooseTime);
         document.getElementById(parentElement).innerHTML = '';
     }
 
