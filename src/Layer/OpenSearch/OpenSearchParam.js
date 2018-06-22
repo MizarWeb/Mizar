@@ -52,6 +52,7 @@
      */ 
     OpenSearchParam.prototype.parseJson = function (paramJson) {
       this.name = OpenSearchUtils.getAttributeValue(paramJson,"name");
+      this.name = this.name.replace(/\./g,"_");
       this.value = OpenSearchUtils.getAttributeValue(paramJson,"value");
       this.title = OpenSearchUtils.getAttributeValue(paramJson,"title");
       this.minInclusive = OpenSearchUtils.getAttributeValue(paramJson,"minInclusive");
@@ -72,6 +73,16 @@
           }
         } else {
           this.options.push(OpenSearchUtils.getAttributeValue(paramJson.Options,"value"));
+        }
+      }
+      if (paramJson.Option !== undefined) {
+        this.options = [];
+        if (paramJson.Option.length !== undefined) {
+          for (var i=0;i<paramJson.Option.length;i++) {
+            this.options.push(OpenSearchUtils.getAttributeValue(paramJson.Option[i],"value"));
+          }
+        } else {
+          this.options.push(OpenSearchUtils.getAttributeValue(paramJson.Option,"value"));
         }
       }
 

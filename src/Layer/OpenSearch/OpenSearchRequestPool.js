@@ -148,7 +148,7 @@ function () {
             var response;
             var alreadyAdded;
             if (xhr.readyState === 4) {
-                if (xhr.status === 200) {
+                if ( (xhr.status === 200) && (xhr.response !== null) ) {
                     response = JSON.parse(xhr.response);
                     nbFound = xhr.layer.result.parseResponse(response);
                     //self.layer.cache.addTile(bound,response.features,nbFound);

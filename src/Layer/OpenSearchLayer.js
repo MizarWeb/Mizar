@@ -235,6 +235,7 @@ define(['../Renderer/FeatureStyle', '../Renderer/VectorRendererManager', '../Uti
           if (dataForm != null) {
             // Load form description
             sourceObject.getServices().queryForm = new OpenSearchForm(dataForm,"application/json");
+            console.log("FORM !",sourceObject.getServices().queryForm);
             OpenSearchUtils.initNavigationValues(sourceObject.getServices().queryForm);
           } else {
             console.error("Form not correct");
@@ -944,6 +945,7 @@ define(['../Renderer/FeatureStyle', '../Renderer/VectorRendererManager', '../Uti
          * @throws {TypeError} - The parameter of setVisible should be a boolean
          */
         OpenSearchLayer.prototype.setVisible = function (arg) {
+            console.log("setVisible");
             if (typeof arg === "boolean") {
                 // Change for current layer
                 if (this.visible !== arg && this.getGlobe().attributionHandler) {
@@ -972,6 +974,7 @@ define(['../Renderer/FeatureStyle', '../Renderer/VectorRendererManager', '../Uti
             } else {
                 throw new TypeError("the parameter of setVisible should be a boolean", "AbstractLayer.js");
             }
+            console.log("/setVisible");
 
         };
         
@@ -1291,27 +1294,30 @@ define(['../Renderer/FeatureStyle', '../Renderer/VectorRendererManager', '../Uti
          * @private
          */
         OpenSearchLayer.prototype.updateFeatures = function (features) {
+
             for (var i = 0; i < features.length; i++) {
                 var currentFeature = features[i];
 
-                switch (currentFeature.geometry.type) {
-                    case Constants.GEOMETRY.Point:
-                        // Convert to geographic to simplify picking
-                        if (currentFeature.geometry.coordinates[0] > 180) {
-                            currentFeature.geometry.coordinates[0] -= 360;
-                        }
-                        break;
-                    case Constants.GEOMETRY.Polygon:
-                        var ring = currentFeature.geometry.coordinates[0];
-                        for (var j = 0; j < ring.length; j++) {
+                if (currentFeature.geometry) {
+                    switch (currentFeature.geometry.type) {
+                        case Constants.GEOMETRY.Point:
                             // Convert to geographic to simplify picking
-                            if (ring[j][0] > 180) {
-                                ring[j][0] -= 360;
+                            if (currentFeature.geometry.coordinates[0] > 180) {
+                                currentFeature.geometry.coordinates[0] -= 360;
                             }
-                        }
-                        break;
-                    default:
-                        break;
+                            break;
+                        case Constants.GEOMETRY.Polygon:
+                            var ring = currentFeature.geometry.coordinates[0];
+                            for (var j = 0; j < ring.length; j++) {
+                                // Convert to geographic to simplify picking
+                                if (ring[j][0] > 180) {
+                                    ring[j][0] -= 360;
+                                }
+                            }
+                            break;
+                        default:
+                            break;
+                    }
                 }
             }
         };
