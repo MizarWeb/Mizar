@@ -65,14 +65,14 @@
         this.patternAttribute = "pattern=\""+this.pattern+"\" ";
       }
 
-      if (paramJson.Options !== undefined) {
+      if (paramJson.Option !== undefined) {
         this.options = [];
-        if (paramJson.Options.length !== undefined) {
-          for (var i=0;i<paramJson.Options.length;i++) {
-            this.options.push(OpenSearchUtils.getAttributeValue(paramJson.Options[i],"value"));
+        if (paramJson.Option.length !== undefined) {
+          for (var i=0;i<paramJson.Option.length;i++) {
+            this.options.push(OpenSearchUtils.getAttributeValue(paramJson.Option[i],"value"));
           }
         } else {
-          this.options.push(OpenSearchUtils.getAttributeValue(paramJson.Options,"value"));
+          this.options.push(OpenSearchUtils.getAttributeValue(paramJson.Option,"value"));
         }
       }
       if (paramJson.Option !== undefined) {
