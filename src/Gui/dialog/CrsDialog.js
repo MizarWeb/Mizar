@@ -49,7 +49,7 @@ define(["jquery", "jquery.ui"], function ($) {
          *    @param html HTML text
          */
         open: function (crs) {
-            if(this.isActive) {
+            if(this.isActive()) {
                 this.destroy();
             }
             var geoBound = crs.getGeoBound();

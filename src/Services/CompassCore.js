@@ -21,7 +21,7 @@
 /**
  * Compass module : map control with "north" component
  */
-define(["jquery","../Utils/Constants"], function ($, Constants) {
+define(["jquery", "../Utils/Constants"], function ($, Constants) {
 
     const MAX_ROTATION = 360;
 
@@ -31,7 +31,7 @@ define(["jquery","../Utils/Constants"], function ($, Constants) {
     var parentElement = null;
     var ctx = null;
     var crs = null;
-    var svgDoc;
+    var svgDoc = null;
 
     /**************************************************************************************************************/
 
@@ -61,7 +61,7 @@ define(["jquery","../Utils/Constants"], function ($, Constants) {
         var currentHeading = navigation.getHeading();
 
         var upHeading = 0;
-        var degNorth = (currentHeading-upHeading+MAX_ROTATION)%MAX_ROTATION;
+        var degNorth = (currentHeading - upHeading + MAX_ROTATION) % MAX_ROTATION;
 
         var northText = svgDoc.getElementById("NorthText");
         northText.setAttribute("transform", "rotate(" + degNorth + " 40 40)");
@@ -73,7 +73,7 @@ define(["jquery","../Utils/Constants"], function ($, Constants) {
         var currentHeading = navigation.getHeading();
 
         var upHeading = 0;
-        var degNorth = (upHeading-currentHeading+MAX_ROTATION)%MAX_ROTATION;
+        var degNorth = (upHeading - currentHeading + MAX_ROTATION) % MAX_ROTATION;
 
         var northText = svgDoc.getElementById("NorthText");
         northText.setAttribute("transform", "rotate(" + degNorth + " 40 40)");
@@ -120,7 +120,10 @@ define(["jquery","../Utils/Constants"], function ($, Constants) {
 
         var northText = svgDoc.getElementById("NorthText");
         northText.setAttribute("transform", "rotate(" + degNorth + " 40 40)");
+
+
     }
+
     /**
      * Function updating the north position on compass
      */
@@ -145,10 +148,9 @@ define(["jquery","../Utils/Constants"], function ($, Constants) {
 
     /**
      *    Remove compass element
-     *    
+     *
      */
     function remove() {
-        ctx.unsubscribe(Constants.EVENT_MSG.NAVIGATION_MODIFIED, updateNorth);
         document.getElementById(parentElement).innerHTML = '';
     }
 
@@ -157,13 +159,19 @@ define(["jquery","../Utils/Constants"], function ($, Constants) {
     return {
         init: function (options) {
             parentElement = options.element;
-            ctx = options.ctx;
-            crs = options.crs;
-            svgDoc = options.svgDoc;
+            //ctx = options.ctx;
+            //crs = ctx.getCoordinateSystem().getGeoideName();
+            //svgDoc = options.svgDoc;
+        },
+        setSvg: function (svg) {
+            svgDoc = svg;
+        },
+        setCtx: function (context) {
+            ctx = context;
+            crs = context.getCoordinateSystem().getGeoideName();
         },
         updateNorth: updateNorth,
         _alignWithNorth: _alignWithNorth,
         remove: remove
-
     };
 });

@@ -36,7 +36,7 @@ define(["jquery", "moment", "./TimeSample","./TimeEnumerated","../Utils/Constant
             "to" : null
         };
 
-        this.currentDisplayDate = Moment(this.currentDate).format(Constants.TIME.DEFAULT_FORMAT);
+        this.currentDisplayDate = Moment(this.currentDate).format(Moment(this.currentDate).creationData().format);
         this.minDate = null;
         this.maxDate = null;
 

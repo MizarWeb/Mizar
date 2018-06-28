@@ -1,5 +1,4 @@
 /*******************************************************************************
-/*******************************************************************************
  * Copyright 2017 CNES - CENTRE NATIONAL d'ETUDES SPATIALES
  *
  * This file is part of MIZAR.
@@ -400,6 +399,7 @@ define(["jquery", "underscore-min",
          * @private
          */
         function _switchToContext(context, options) {
+
             var self = this;
             var mustBeDestroyed = options.hasOwnProperty("mustBeDestroyed") ? options.mustBeDestroyed : false;
             var mustBeHidden = options.hasOwnProperty("mustBeHidden") ? options.mustBeHidden : false;
@@ -452,6 +452,7 @@ define(["jquery", "underscore-min",
                     self.getActivatedContext().getNavigation().computeViewMatrix();
                 }
             });
+
         }
 
         /**

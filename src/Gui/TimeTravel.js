@@ -21,163 +21,230 @@
 /**
  * Compass module : map control with "north" composant
  */
-define(["jquery", "../Utils/Constants","../Services/TimeTravelCore"],
+define(["jquery", "../Utils/Constants", "../Services/TimeTravelCore"],
     function ($, Constants, TimeTravelCore) {
 
-    /**
-     *    Private variables
-     */
-    var parentElement = null;
-    var ctx = null;
-    var svgDoc;
+        /**
+         *    Private variables
+         */
+        var parentElement = null;
+        var ctx = null;
+        var svgDoc;
 
-    /**
-     * Create a time travel Widget
-     * @param options
-     * @constructor
-     * @fires AbstractContext#GLOBAL_TIME_CHANGED
-     */
-    var TimeTravel = function (options) {
+        const REWIND_SVG = "data:image/svg+xml;base64,PHN2ZyBmaWxsPSIjMDAwMDAwIiBoZWlnaHQ9IjI0IiB2aWV3Qm94PSIwIDAgMjQgMjQiIHdpZHRoPSIyNCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4gICAgPHBhdGggZD0iTTExIDE4VjZsLTguNSA2IDguNSA2em0uNS02bDguNSA2VjZsLTguNSA2eiIvPiAgICA8cGF0aCBkPSJNMCAwaDI0djI0SDB6IiBmaWxsPSJub25lIi8+PC9zdmc+";
+        const FORWARD_SVG = "data:image/svg+xml;base64,PHN2ZyBmaWxsPSIjMDAwMDAwIiBoZWlnaHQ9IjI0IiB2aWV3Qm94PSIwIDAgMjQgMjQiIHdpZHRoPSIyNCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4gICAgPHBhdGggZD0iTTQgMThsOC41LTZMNCA2djEyem05LTEydjEybDguNS02TDEzIDZ6Ii8+ICAgIDxwYXRoIGQ9Ik0wIDBoMjR2MjRIMHoiIGZpbGw9Im5vbmUiLz48L3N2Zz4=";
+        const HOUR_GLASS_SVG = "data:image/svg+xml;base64,PHN2ZyBmaWxsPSIjMDAwMDAwIiBoZWlnaHQ9IjI0IiB2aWV3Qm94PSIwIDAgMjQgMjQiIHdpZHRoPSIyNCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4gICAgPHBhdGggZD0iTTYgMnY2aC4wMUw2IDguMDEgMTAgMTJsLTQgNCAuMDEuMDFINlYyMmgxMnYtNS45OWgtLjAxTDE4IDE2bC00LTQgNC0zLjk5LS4wMS0uMDFIMThWMkg2em0xMCAxNC41VjIwSDh2LTMuNWw0LTQgNCA0em0tNC01bC00LTRWNGg4djMuNWwtNCA0eiIvPiAgICA8cGF0aCBkPSJNMCAwaDI0djI0SDBWMHoiIGZpbGw9Im5vbmUiLz48L3N2Zz4=";
 
-        parentElement = options.element;
-        ctx = options.ctx;
 
-        // Add compass object to parent element
-        // Don't use <object> HTML tag due to cross-origin nature of svg
-        if (document.getElementById(parentElement) === null) {
-            console.log("WARN: the div specified (" + parentElement + ") do not exist");
-            return;
-        }
-        var svgRewind = "data:image/svg+xml;base64,PHN2ZyBmaWxsPSIjMDAwMDAwIiBoZWlnaHQ9IjI0IiB2aWV3Qm94PSIwIDAgMjQgMjQiIHdpZHRoPSIyNCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4gICAgPHBhdGggZD0iTTExIDE4VjZsLTguNSA2IDguNSA2em0uNS02bDguNSA2VjZsLTguNSA2eiIvPiAgICA8cGF0aCBkPSJNMCAwaDI0djI0SDB6IiBmaWxsPSJub25lIi8+PC9zdmc+";
-        var svgForward = "data:image/svg+xml;base64,PHN2ZyBmaWxsPSIjMDAwMDAwIiBoZWlnaHQ9IjI0IiB2aWV3Qm94PSIwIDAgMjQgMjQiIHdpZHRoPSIyNCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4gICAgPHBhdGggZD0iTTQgMThsOC41LTZMNCA2djEyem05LTEydjEybDguNS02TDEzIDZ6Ii8+ICAgIDxwYXRoIGQ9Ik0wIDBoMjR2MjRIMHoiIGZpbGw9Im5vbmUiLz48L3N2Zz4=";
-        var svgHourGlass = "data:image/svg+xml;base64,PHN2ZyBmaWxsPSIjMDAwMDAwIiBoZWlnaHQ9IjI0IiB2aWV3Qm94PSIwIDAgMjQgMjQiIHdpZHRoPSIyNCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4gICAgPHBhdGggZD0iTTYgMnY2aC4wMUw2IDguMDEgMTAgMTJsLTQgNCAuMDEuMDFINlYyMmgxMnYtNS45OWgtLjAxTDE4IDE2bC00LTQgNC0zLjk5LS4wMS0uMDFIMThWMkg2em0xMCAxNC41VjIwSDh2LTMuNWw0LTQgNCA0em0tNC01bC00LTRWNGg4djMuNWwtNCA0eiIvPiAgICA8cGF0aCBkPSJNMCAwaDI0djI0SDBWMHoiIGZpbGw9Im5vbmUiLz48L3N2Zz4=";
+        /**
+         * Create a time travel Widget
+         * @param options
+         * @constructor
+         * @fires AbstractContext#GLOBAL_TIME_CHANGED
+         */
+        var TimeTravel = function (options) {
 
-        svgRewindDoc = null;
-        svgForwardDoc = null;
-        svgHourGlassDoc = null;
+            parentElement = options.element;
+            ctx = options.ctx;
 
-        document.getElementById(parentElement).innerHTML = '<div id="objectForward"></div><div id="objectHourGlass"></div><div id="objectRewind"></div>';
+            // Add compass object to parent element
+            // Don't use <object> HTML tag due to cross-origin nature of svg
+            if (document.getElementById(parentElement) === null) {
+                console.log("WARN: the div specified (" + parentElement + ") do not exist");
+                return;
+            }
 
-        var _handleMouseUp = function (name) {
-            ctx.publish(name,ctx);
-        };
+            var svgRewindDoc = null;
+            var svgForwardDoc = null;
+            var svgHourGlassDoc = null;
 
-        var _handleMouseUpSet = function (event) {
-            _handleMouseUp(Constants.EVENT_MSG.GLOBAL_TIME_SET);
-        };
+            document.getElementById(parentElement).innerHTML = '<div id="objectForward"></div><div id="objectHourGlass"></div><div id="objectRewind"></div>';
 
-        var _handleMouseUpForward = function (event) {
-            _handleMouseUp(Constants.EVENT_MSG.GLOBAL_TIME_FORWARD);
-        };
-        
-        var _handleMouseUpRewind = function (event) {
-            _handleMouseUp(Constants.EVENT_MSG.GLOBAL_TIME_REWIND);
-        };
+            var _handleMouseUp = function (name) {
+                ctx.publish(name, ctx);
+            };
 
-        ctx.subscribe(Constants.EVENT_MSG.GLOBAL_TIME_CHANGED,this.updateDisplayDate);
+            var _handleMouseUpSet = function (event) {
+                _handleMouseUp(Constants.EVENT_MSG.GLOBAL_TIME_SET);
+            };
 
-        TimeTravelCore.init(options);
+            var _handleMouseUpForward = function (event) {
+                _handleMouseUp(Constants.EVENT_MSG.GLOBAL_TIME_FORWARD);
+            };
 
-        $.get(svgHourGlass,
-            function (response) {
-                // Import contents of the svg document into this document
-                svgHourGlassDoc = document.importNode(response.documentElement, true);
+            var _handleMouseUpRewind = function (event) {
+                _handleMouseUp(Constants.EVENT_MSG.GLOBAL_TIME_REWIND);
+            };
 
-                // Update width/height
-                svgHourGlassDoc.height.baseVal.value = 32;
-                svgHourGlassDoc.width.baseVal.value = 32;
+            ctx.subscribe(Constants.EVENT_MSG.GLOBAL_TIME_CHANGED, this.updateDisplayDate);
 
-                // Append the imported SVG root element to the appropriate HTML element
-                $("#objectHourGlass").append(svgHourGlassDoc);
+            TimeTravelCore.init(options);
 
-                options.svgHourGlassDoc = svgHourGlassDoc;
+            $.get(HOUR_GLASS_SVG,
+                function (response) {
+                    // Import contents of the svg document into this document
+                    svgHourGlassDoc = document.importNode(response.documentElement, true);
 
-                svgHourGlassDoc.addEventListener('mouseup', _handleMouseUpSet);
+                    // Update width/height
+                    svgHourGlassDoc.height.baseVal.value = 32;
+                    svgHourGlassDoc.width.baseVal.value = 32;
 
-                if (svgRewindDoc && svgForwardDoc && svgHourGlassDoc) {
-                    $('#' + parentElement).css("display", "block");
-                }
-            },
-            "xml");
-            $.get(svgRewind,
+                    // Append the imported SVG root element to the appropriate HTML element
+                    $("#objectHourGlass").append(svgHourGlassDoc);
+
+                    options.svgHourGlassDoc = svgHourGlassDoc;
+                    $('#objectHourGlass svg').css({
+                        "float": "right",
+                        "fill": (TimeTravelCore.isCurrentDateTheFirst() && TimeTravelCore.isCurrentDateTheLast()) ? "#333333" : "white"
+                    });
+
+                    svgHourGlassDoc.addEventListener('mouseup', _handleMouseUpSet);
+
+                    if (svgRewindDoc && svgForwardDoc && svgHourGlassDoc) {
+                        $('#' + parentElement).css("display", "block");
+                    }
+                },
+                "xml");
+            $.get(REWIND_SVG,
                 function (response) {
                     // Import contents of the svg document into this document
                     svgRewindDoc = document.importNode(response.documentElement, true);
-    
+
                     // Update width/height
                     svgRewindDoc.height.baseVal.value = 32;
                     svgRewindDoc.width.baseVal.value = 32;
 
                     // Append the imported SVG root element to the appropriate HTML element
                     $("#objectRewind").append(svgRewindDoc);
-    
+                    $('#objectRewind svg').css({
+                        "float": "right",
+                        "fill": TimeTravelCore.isCurrentDateTheFirst() ? "#333333" : "white"
+                    });
+
                     options.svgRewindDoc = svgRewindDoc;
                     svgRewindDoc.addEventListener('mouseup', _handleMouseUpRewind);
-    
+
                     if (svgRewindDoc && svgForwardDoc && svgHourGlassDoc) {
                         $('#' + parentElement).css("display", "block");
                     }
                 },
                 "xml");
-            $.get(svgForward,
+            $.get(FORWARD_SVG,
                 function (response) {
                     // Import contents of the svg document into this document
                     svgForwardDoc = document.importNode(response.documentElement, true);
-    
+
                     // Update width/height
                     svgForwardDoc.height.baseVal.value = 32;
                     svgForwardDoc.width.baseVal.value = 32;
 
                     // Append the imported SVG root element to the appropriate HTML element
                     $("#objectForward").append(svgForwardDoc);
-    
+                    $('#objectForward svg').css({
+                        "float": "right",
+                        "fill": TimeTravelCore.isCurrentDateTheLast() ? "#333333" : "white"
+                    });
+
                     options.svgForwardDoc = svgForwardDoc;
                     svgForwardDoc.addEventListener('mouseup', _handleMouseUpForward);
-    
+
                     if (svgRewindDoc && svgForwardDoc && svgHourGlassDoc) {
                         $('#' + parentElement).css("display", "block");
                     }
                 },
                 "xml");
-    
-    };
 
-    /**************************************************************************************************************/
+        };
 
-    /**
-     * Update display date and send current date to contexte
-     * @function updateDisplayDate
-     * @param Json date { "date" , "display", "period" { "from","to" } }
-     * @memberOf TimeTravel#
-     */
-    TimeTravel.prototype.updateDisplayDate = function (date) {
-        if (document.getElementById("textTimeTravelDiv") !== null) {
-            document.getElementById("textTimeTravelDiv").innerHTML = date.display;
-        }
+        /**************************************************************************************************************/
 
-        ctx.setTime(date);
+        /**
+         * Update display date and send current date to contexte
+         * @function updateDisplayDate
+         * @param Json date { "date" , "display", "period" { "from","to" } }
+         * @memberOf TimeTravel#
+         */
+        TimeTravel.prototype.updateDisplayDate = function (date) {
+            if (document.getElementById("textTimeTravelDiv") !== null) {
+                if (TimeTravelCore.isCurrentDateTheFirst() && TimeTravelCore.isCurrentDateTheLast()) {
+                    document.getElementById("textTimeTravelDiv").innerHTML = "";
+                } else {
+                    document.getElementById("textTimeTravelDiv").innerHTML = date.display;
+                }
+            }
 
-        $('#objectRewind svg').css({
-            "float": "right",
-            "fill" : (TimeTravelCore.isCurrentDateTheFirst() === true) ? "#333333" : "white"
-        });
-        $('#objectForward svg').css({
-            "float": "right",
-            "fill" : (TimeTravelCore.isCurrentDateTheLast() === true) ? "#333333" : "white"
-        });
+            ctx.setTime(date);
 
-    };
+            var theColorRewind = ($('#objectRewind:hover svg').css("fill") === "rgb(255, 0, 0)") ? "red" : "white";
+            var theColorForward = ($('#objectForward:hover svg').css("fill") === "rgb(255, 0, 0)") ? "red" : "white";
 
-    /**
-     *    functions
-     */
-    TimeTravel.prototype.remove = TimeTravelCore.remove;
-    TimeTravel.prototype.goRewind = TimeTravelCore.goRewind;
-    TimeTravel.prototype.goForward = TimeTravelCore.goForward;
-    TimeTravel.prototype.chooseTime = TimeTravelCore.chooseTime;
+            $('#objectRewind svg').css({
+                "float": "right",
+                "fill": (TimeTravelCore.isCurrentDateTheFirst()) ? "#333333" : theColorRewind
+            });
+            $('#objectForward svg').css({
+                "float": "right",
+                "fill": (TimeTravelCore.isCurrentDateTheLast()) ? "#333333" : theColorForward
+            });
+            $('#objectHourGlass svg').css({
+                "float": "right",
+                "fill": (TimeTravelCore.isCurrentDateTheFirst() && TimeTravelCore.isCurrentDateTheLast()) ? "#333333" : "white"
+            });
 
-    /**************************************************************************************************************/
+            $('#objectRewind svg').mouseover(function(){
+                if(TimeTravelCore.isCurrentDateTheFirst()) {
+                    $(this).css("fill", "#333333");
+                } else {
+                    $(this).css("fill", "red");
+                }
+            }).mouseout(function(){
+                if(TimeTravelCore.isCurrentDateTheFirst()) {
+                    $(this).css("fill", "#333333");
+                } else {
+                    $(this).css("fill", "white");
+                }
+            });
 
-    return TimeTravel;
+            $('#objectForward svg').mouseover(function(){
+                if(TimeTravelCore.isCurrentDateTheLast()) {
+                    $(this).css("fill", "#333333");
+                } else {
+                    $(this).css("fill", "red");
+                }
+            }).mouseout(function(){
+                if(TimeTravelCore.isCurrentDateTheLast()) {
+                    $(this).css("fill", "#333333");
+                } else {
+                    $(this).css("fill", "white");
+                }
+            });
 
-});
+            $('#objectHourGlass svg').mouseover(function(){
+                if(TimeTravelCore.isCurrentDateTheFirst() && TimeTravelCore.isCurrentDateTheLast()) {
+                    $(this).css("fill", "#333333");
+                } else {
+                    $(this).css("fill", "red");
+                }
+            }).mouseout(function(){
+                if(TimeTravelCore.isCurrentDateTheFirst() && TimeTravelCore.isCurrentDateTheLast()) {
+                    $(this).css("fill", "#333333");
+                } else {
+                    $(this).css("fill", "white");
+                }
+            });
+
+        };
+
+        /**
+         *    functions
+         */
+        TimeTravel.prototype.remove = TimeTravelCore.remove;
+        TimeTravel.prototype.goRewind = TimeTravelCore.goRewind;
+        TimeTravel.prototype.goForward = TimeTravelCore.goForward;
+        TimeTravel.prototype.chooseTime = TimeTravelCore.chooseTime;
+
+        /**************************************************************************************************************/
+
+        return TimeTravel;
+
+    });

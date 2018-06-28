@@ -18,12 +18,12 @@
  ******************************************************************************/
 define(["jquery", "underscore-min", "../Utils/Event", "moment", "../Utils/Utils", "../Time/Time", "../Utils/UtilsIntersection", "../Layer/LayerFactory", "../Services/ServiceFactory", "../Utils/Constants",
         "../Registry/WMSServerRegistryHandler", "../Registry/WMTSServerRegistryHandler", "../Registry/WCSServerRegistryHandler", "../Registry/PendingLayersRegistryHandler", "../Registry/LayerRegistryHandler",
-        "../Gui/Tracker/PositionTracker", "../Gui/Tracker/ElevationTracker", "../Utils/AttributionHandler", "../Gui/dialog/ErrorDialog",
+        "../Gui/Compass", "../Gui/Tracker/PositionTracker", "../Gui/Tracker/ElevationTracker", "../Utils/AttributionHandler", "../Gui/dialog/ErrorDialog",
         "../Renderer/PointRenderer", "../Renderer/LineStringRenderable", "../Renderer/PolygonRenderer", "../Renderer/LineRenderer",
         "../Renderer/PointSpriteRenderer", "../Renderer/ConvexPolygonRenderer"],
     function ($, _, Event, Moment, Utils, Time, UtilsIntersection, LayerFactory, ServiceFactory, Constants,
               WMSServerRegistryHandler, WMTSServerRegistryHandler, WCSServerRegistryHandler, PendingLayersRegistryHandler, LayerRegistryHandler,
-              PositionTracker, ElevationTracker, AttributionHandler, ErrorDialog) {
+              Compass, PositionTracker, ElevationTracker, AttributionHandler, ErrorDialog) {
 
         //TODO : attention de bien garder les ...Renderer dans le define
 
@@ -53,7 +53,7 @@ define(["jquery", "underscore-min", "../Utils/Event", "moment", "../Utils/Utils"
             this.dataProviders = {};
             this.canvas = mizarConfiguration.canvas;
             this.isMobile = ctxOptions.isMobile;
-            
+
             // Link to time travel service
             this.timeTravelService = ctxOptions.timeTravelService;
             
@@ -78,7 +78,28 @@ define(["jquery", "underscore-min", "../Utils/Event", "moment", "../Utils/Utils"
             if (this.mizarConfiguration.elevationTracker != null) {
                 this.elevationTracker = _createTrackerElevation.call(this, this.mizarConfiguration, ctxOptions);
             }
+
+            this.compass = _createCompass.call(this, this.mizarConfiguration);
+
         };
+
+        function _initComponentsVisibility(components) {
+            // Show UI components depending on its state
+            for (var componentId in components) {
+                if(_isDivExist(componentId)) {
+                    if (components[componentId]) {
+                        $("#" + componentId).fadeIn(1000);
+                    } else {
+                        console.log("init: fadeout "+componentId);
+                        $("#" + componentId).fadeOut();
+                    }
+                }
+            }
+        }
+
+        function _isDivExist(divID) {
+            return  $("#" + divID).length;
+        }
 
         /**
          * Zoom to the selected layer.
@@ -145,6 +166,20 @@ define(["jquery", "underscore-min", "../Utils/Event", "moment", "../Utils/Utils"
                 isMobile: mizarConfiguration.isMobile,
                 position: (mizarConfiguration.elevationTracker && mizarConfiguration.elevationTracker.elevation) ? mizarConfiguration.elevationTracker.position : "bottom",
                 elevationLayer: (ctxOptions.planetLayer !== undefined) ? ctxOptions.planetLayer.elevationLayer : undefined
+            });
+        }
+
+        /**
+         * Creates compass
+         * @param {Mizar.configuration} mizarConfiguration - Mizar configuration
+         * @returns {Compass}
+         * @private
+         */
+        function _createCompass(mizarConfiguration) {
+            return new Compass({
+                element: (mizarConfiguration.compass ? mizarConfiguration.compass : "compassDiv"),
+                ctx: this,
+                isMobile : this.isMobile
             });
         }
 
@@ -614,17 +649,24 @@ define(["jquery", "underscore-min", "../Utils/Event", "moment", "../Utils/Utils"
                     }
                 );
 
-                if (typeof this.positionTracker !== "undefined") {
+                if (this.positionTracker != null) {
                     this.positionTracker.attachTo(this);
                     // it will be updated by the position tracker
                     this.setComponentVisibility("posTrackerInfo", false);
                 }
 
-                if (typeof this.elevationTracker !== "undefined") {
+                if (this.elevationTracker != null) {
                     this.elevationTracker.attachTo(this);
                 }
 
+                if (this.compass != null) {
+                    this.compass.attachTo(this);
+                }
+
             }
+
+            _initComponentsVisibility(this.components);
+
             //When base layer failed to load, open error dialog
             var self = this;
             this.subscribe(Constants.EVENT_MSG.BASE_LAYERS_ERROR, function (layer) {
@@ -653,7 +695,7 @@ define(["jquery", "underscore-min", "../Utils/Event", "moment", "../Utils/Utils"
         AbstractContext.prototype.showComponents = function () {
             // Show UI components depending on its state
             for (var componentId in this.components) {
-                if (this.components.hasOwnProperty(componentId) && this.components[componentId]) {
+                if (_isDivExist(componentId) && this.components[componentId]) {
                     $("#" + componentId).fadeIn(1000);
                 }
             }
@@ -666,7 +708,8 @@ define(["jquery", "underscore-min", "../Utils/Event", "moment", "../Utils/Utils"
         AbstractContext.prototype.hideComponents = function (uiArray) {
             // Hide all the UI components
             for (var componentId in this.components) {
-                if (this.components.hasOwnProperty(componentId) && $.inArray(componentId, uiArray) === -1) {
+                if (_isDivExist(componentId) && $.inArray(componentId, uiArray) === -1) {
+                    console.log("hideComp : fadeout "+componentId);
                     $("#" + componentId).fadeOut();
                 }
             }
@@ -682,7 +725,8 @@ define(["jquery", "underscore-min", "../Utils/Event", "moment", "../Utils/Utils"
 
             // Hide all the UI components
             for (var componentId in this.components) {
-                if (this.components.hasOwnProperty(componentId)) {
+                if (_isDivExist(componentId)) {
+                    console.log("hideComp : fadeout "+componentId);
                     $("#" + componentId).fadeOut();
                 }
             }
@@ -807,6 +851,9 @@ define(["jquery", "underscore-min", "../Utils/Event", "moment", "../Utils/Utils"
             if (this.elevationTracker) {
                 this.elevationTracker.detach();
             }
+            if (this.compass) {
+                this.compass.detach();
+            }
             var i = 0;
             var layer = this.layers[i];
             while (layer) {
@@ -827,15 +874,15 @@ define(["jquery", "underscore-min", "../Utils/Event", "moment", "../Utils/Utils"
          * @abstract
          */
         AbstractContext.prototype.enable = function () {
-            if (this.positionTracker) {
-                this.positionTracker.detach();
-            }
-            if (this.elevationTracker) {
-                this.elevationTracker.detach();
-            }
+            this.positionTracker.attachTo(this);
+            this.elevationTracker.attachTo(this);
+            this.compass.attachTo(this);
             var i = 0;
             var layer = this.layers[i];
             while (layer) {
+                if (layer.isPickable()) {
+                    ServiceFactory.create(Constants.SERVICE.PickingManager).addPickableLayer(layer);
+                }
                 this.attributionHandler.enable(layer);
                 layer = this.layers[++i];
             }
@@ -942,7 +989,7 @@ define(["jquery", "underscore-min", "../Utils/Event", "moment", "../Utils/Utils"
             }
         };
 
-        /**
+        /**i
          * @function destroy
          * @memberOf AbstractContext#
          * @abstract
@@ -950,6 +997,10 @@ define(["jquery", "underscore-min", "../Utils/Event", "moment", "../Utils/Utils"
         AbstractContext.prototype.destroy = function () {
             this.hide();
             this.trackerDestroy();
+            if(this.compass) {
+                this.compass.destroy();
+                this.compass = null;
+            }
             this.removeAllLayers();
             this.components = null;
             this.attributionHandler = null;
