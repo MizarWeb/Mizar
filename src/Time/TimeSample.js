@@ -182,7 +182,7 @@ define(["jquery", "moment", "../Utils/Constants", "../Utils/Utils"], function ($
         if (date<this.start) {
             // trivial case, first date is after !
             foundDate = this.start;
-            foundDisplay = Moment(foundDate).format(Constants.TIME.DEFAULT_FORMAT);
+            foundDisplay = Moment(foundDate.toISOString()).format(Moment(foundDate).creationData().format);
         } else if (date>this.end) {
             // trivial case, date is after the last date
             foundDate = null;
@@ -208,7 +208,7 @@ define(["jquery", "moment", "../Utils/Constants", "../Utils/Utils"], function ($
         if (foundDate !== null) {
             foundPeriod.from = foundDate;
             foundPeriod.to = foundDate;
-            foundDisplay = Moment(foundDate).format(Constants.TIME.DEFAULT_FORMAT);
+            foundDisplay = Moment(foundDate.toISOString()).format(Moment(foundDate).creationData().format);
         }
 
         return {
@@ -234,7 +234,7 @@ define(["jquery", "moment", "../Utils/Constants", "../Utils/Utils"], function ($
         if (date>this.end) {
             // trivial case, end date is before !
             foundDate = this.end;
-            foundDisplay = Moment(foundDate).format(Constants.TIME.DEFAULT_FORMAT);
+            foundDisplay = Moment(foundDate.toISOString()).format(Moment(foundDate).creationData().format);
         } else if (date<this.start) {
             // trivial case, date is before the first date
             foundDate = null;
@@ -260,7 +260,7 @@ define(["jquery", "moment", "../Utils/Constants", "../Utils/Utils"], function ($
             }
         }
         if (foundDate !== null) {
-            foundDisplay = Moment(foundDate).format(Constants.TIME.DEFAULT_FORMAT);
+            foundDisplay = Moment(foundDate.toISOString()).format(Moment(foundDate).creationData().format);
             foundPeriod.from = foundDate;
             foundPeriod.to = foundDate;
         }

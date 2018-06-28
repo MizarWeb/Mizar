@@ -18,10 +18,10 @@
  ******************************************************************************/
 define(["underscore-min", "../Utils/Utils",
         "./AbstractContext", "../Globe/GlobeFactory", "../Navigation/NavigationFactory", "../Services/ServiceFactory",
-        "../Gui/Compass","../Gui/TimeTravel","../Utils/Constants"],
+        "../Gui/TimeTravel","../Utils/Constants"],
     function (_, Utils,
               AbstractContext, GlobeFactory, NavigationFactory, ServiceFactory,
-              Compass, TimeTravel,Constants) {
+              TimeTravel,Constants) {
 
         /**
          * sky context configuration
@@ -57,7 +57,8 @@ define(["underscore-min", "../Utils/Utils",
                 "posTracker": true,
                 "elevTracker": false,
                 "compassDiv": true,
-                "timeTravelDiv": true
+                "timeTravelDiv": true,
+                "posTrackerInfoButton": true
             };
             var skyOptions = _createSkyConfiguration.call(this, options);
 
@@ -70,7 +71,6 @@ define(["underscore-min", "../Utils/Utils",
 
                 ServiceFactory.create(Constants.SERVICE.PickingManager).init(this);
 
-                this.setCompassVisible(options.compass && this.components.compassDiv ? options.compass : "compassDiv", true);
                 this.setTimeTravelVisible(options.timeTravel && this.components.timeTravelDiv ? options.timeTravel : "timeTravelDiv", true);
 
             }
@@ -141,31 +141,6 @@ define(["underscore-min", "../Utils/Utils",
         /**************************************************************************************************************/
 
         /**
-         * @function setCompassVisible
-         * @memberOf SkyContext#
-         */
-        SkyContext.prototype.setCompassVisible = function (divName, visible) {
-            if (visible) {
-                if (this.compass === null) {
-                    this.compass = new Compass({
-                        element: divName,
-                        ctx: this,
-                        crs : Constants.CRS.Equatorial,
-                        isMobile : this.isMobile
-                    });
-                }
-            } else {
-                if (this.compass) {
-                    this.compass.destroy();
-                    this.compass = null;
-                }
-            }
-            this.setComponentVisibility(divName, visible);
-        };
-
-        /**************************************************************************************************************/
-
-        /**
          * @function setTimeTravelVisible
          * @memberOf SkyContext#
          */
@@ -202,8 +177,10 @@ define(["underscore-min", "../Utils/Utils",
          * @memberOf SkyContext#
          */
         SkyContext.prototype.destroy = function () {
-            this.setCompassVisible(false);
-            this.setTimeTravelVisible(false);
+            //this.setTimeTravelVisible(false);
+            if (this.timeTravel) {
+                this.timeTravel.remove();
+            }
             AbstractContext.prototype.destroy.call(this);
         };
 

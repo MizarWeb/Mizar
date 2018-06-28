@@ -19,10 +19,10 @@
 
 define(["jquery", "underscore-min", "../Utils/Utils", "./AbstractContext", "../Utils/Constants",
         "../Globe/GlobeFactory", "../Navigation/NavigationFactory", "../Services/ServiceFactory",
-        "../Gui/Compass", "../Gui/TimeTravel"],
+        "../Gui/TimeTravel"],
     function ($, _, Utils, AbstractContext, Constants,
               GlobeFactory, NavigationFactory, ServiceFactory,
-              Compass,TimeTravel) {
+              TimeTravel) {
 
         /**
          * ground context configuration
@@ -54,11 +54,12 @@ define(["jquery", "underscore-min", "../Utils/Utils", "./AbstractContext", "../U
             var self = this;
 
             this.components = {
-                "posTrackerInfo": true,
-                "posTracker": true,
+                "posTrackerInfo": false,
+                "posTracker": false,
                 "elevTracker": false,
-                "compassDiv": true,
-                "timeTravel": false
+                "compassDiv": false,
+                "timeTravelDiv": false,
+                "posTrackerInfoButton": true
             };
 
             var groundOptions = _createGroundConfiguration.call(this, options);
@@ -70,8 +71,6 @@ define(["jquery", "underscore-min", "../Utils/Utils", "./AbstractContext", "../U
                 this.navigation = NavigationFactory.create(Constants.NAVIGATION.GroundNavigation, this, options.navigation ? options.navigation : options);
                 this.initGlobeEvents(this.globe);
                 ServiceFactory.create(Constants.SERVICE.PickingManager).init(this);
-
-                this.setCompassVisible(options.compass && this.components.compassDiv ? options.compass : "compassDiv", true);
                 this.setTimeTravelVisible(options.timeTravel && this.components.timeTravelDiv ? options.timeTravel : "timeTravelDiv", true);
 
             }
@@ -137,28 +136,6 @@ define(["jquery", "underscore-min", "../Utils/Utils", "./AbstractContext", "../U
         /**************************************************************************************************************/
 
         /**
-         * @function setCompassVisible
-         * @memberOf GroundContext#
-         */
-        GroundContext.prototype.setCompassVisible = function (divName, visible) {
-            if (visible) {
-                this.compass = new Compass({
-                    element: divName,
-                    ctx: this,
-                    crs : this.getCoordinateSystem().getGeoideName(),
-                    isMobile : this.isMobile
-                });
-            } else {
-                if (this.compass) {
-                    this.compass.remove();
-                }
-            }
-            this.setComponentVisibility(divName, visible);
-        };
-
-        /**************************************************************************************************************/
-
-        /**
          * @function setTimeTravelVisible
          * @memberOf GroundContext#
          */
@@ -195,8 +172,10 @@ define(["jquery", "underscore-min", "../Utils/Utils", "./AbstractContext", "../U
          * @memberOf GroundContext#
          */
         GroundContext.prototype.destroy = function () {
-            //this.setCompassVisible(false);
-            this.setTimeTravelVisible(false);
+            //this.setTimeTravelVisible(false);
+            if (this.timeTravel) {
+                this.timeTravel.remove();
+            }
             AbstractContext.prototype.destroy.call(this);
         };
 

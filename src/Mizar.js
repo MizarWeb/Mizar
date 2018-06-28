@@ -1,5 +1,4 @@
 /*******************************************************************************
-/*******************************************************************************
  * Copyright 2017 CNES - CENTRE NATIONAL d'ETUDES SPATIALES
  *
  * This file is part of MIZAR.
@@ -408,12 +407,6 @@ define(["jquery", "underscore-min",
             // Hide sky
             this.getActivatedContext().hide();
 
-            var compass = this.getActivatedContext().compass;
-            if (compass) {
-                compass.detach(this.getActivatedContext());
-                compass.attachTo(context);
-            }
-
             // Hide all additional layers
             this.getActivatedContext().hideAdditionalLayers();
 
@@ -459,6 +452,7 @@ define(["jquery", "underscore-min",
                     self.getActivatedContext().getNavigation().computeViewMatrix();
                 }
             });
+
         }
 
         /**

@@ -88,7 +88,8 @@ define(["jquery", "underscore-min", "../Utils/Utils", "./AbstractContext", "../U
                 "posTracker": true,
                 "elevTracker": true,
                 "compassDiv": true,
-                "timeTravelDiv": true
+                "timeTravelDiv": true,
+                "posTrackerInfoButton": true
             };
 
             var planetOptions = _createPlanetConfiguration.call(this, options);
@@ -102,7 +103,6 @@ define(["jquery", "underscore-min", "../Utils/Utils", "./AbstractContext", "../U
 
                 ServiceFactory.create(Constants.SERVICE.PickingManager).init(this);
 
-                this.setCompassVisible(options.compass && this.components.compassDiv ? options.compass : "compassDiv", true);
                 this.setTimeTravelVisible(options.timeTravel && this.components.timeTravelDiv ? options.timeTravel : "timeTravelDiv", true);
             }
             catch (err) {
@@ -238,31 +238,6 @@ define(["jquery", "underscore-min", "../Utils/Utils", "./AbstractContext", "../U
         /**************************************************************************************************************/
 
         /**
-         * @function setCompassVisible
-         * @memberOf PlanetContext#
-         */
-        PlanetContext.prototype.setCompassVisible = function (divName, visible) {
-            if (visible) {
-                if (this.compass === null) {
-                    this.compass = new Compass({
-                        element: divName,
-                        ctx: this,
-                        crs : this.getCoordinateSystem().getGeoideName(),
-                        isMobile : this.isMobile
-                    });
-                }
-            } else {
-                if (this.compass) {
-                    this.compass.destroy();
-                    this.compass = null;
-                }
-            }
-            this.setComponentVisibility(divName, visible);
-        };
-
-        /**************************************************************************************************************/
-
-        /**
          * @function setTimeTravelVisible
          * @memberOf PlanetContext#
          */
@@ -366,7 +341,6 @@ define(["jquery", "underscore-min", "../Utils/Utils", "./AbstractContext", "../U
          * @memberOf PlanetContext#
          */
         PlanetContext.prototype.destroy = function () {
-            this.setCompassVisible(false);
             //this.setTimeTravelVisible(false);
             AbstractContext.prototype.destroy.call(this);
         };

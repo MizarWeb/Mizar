@@ -260,7 +260,12 @@ define(['../Utils/Event', '../Utils/Utils',
                     this.renderContext.requestFrame();
                     this.nbCreatedLayers++;
             }
-            this.publishEvent(Constants.EVENT_MSG.LAYER_ADDED, layer);
+            if (layer.isBackground()) {
+                this.publishEvent(Constants.EVENT_MSG.LAYER_BACKGROUND_CHANGED, layer);
+            } else {
+                this.publishEvent(Constants.EVENT_MSG.LAYER_ADDED, layer);
+            }
+
         };
 
         /**
