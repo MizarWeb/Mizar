@@ -443,6 +443,7 @@ define(['../Utils/Utils', '../Utils/Event', '../Navigation/NavigationHandlerFact
          * @memberOf AbstractNavigation#
          */
         AbstractNavigation.prototype.destroy = function () {
+            this.renderContext.cameraUpdateFunction = null;
             this.type = null;
             this.options = null;
             this.zoomToAnimation = null;

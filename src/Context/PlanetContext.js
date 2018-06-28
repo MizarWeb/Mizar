@@ -88,8 +88,7 @@ define(["jquery", "underscore-min", "../Utils/Utils", "./AbstractContext", "../U
                 "posTracker": true,
                 "elevTracker": true,
                 "compassDiv": true,
-                "timeTravelDiv": true,
-                "posTrackerInfoButton": true
+                "timeTravelDiv": true
             };
 
             var planetOptions = _createPlanetConfiguration.call(this, options);

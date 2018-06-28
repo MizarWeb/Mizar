@@ -524,8 +524,8 @@ define(['../Utils/Utils', '../Utils/Constants', './AbstractNavigation', '../Anim
             var position = vec3.create();
             coordinateSystem.get3DFromWorld(this.geoCenter, position);
             // FIXME: Might be interesting to be able to control minimum camera speed
-            vec3.scale(x, dx * Math.max(this.distance, 500 * this.scale), x);
-            vec3.scale(y, dy * Math.max(this.distance, 500 * this.scale), y);
+            vec3.scale(x, dx * Math.max(this.distance, 1000 * this.scale), x);
+            vec3.scale(y, dy * Math.max(this.distance, 1000 * this.scale), y);
             vec3.subtract(position, x, position);
             vec3.add(position, y, position);
 
@@ -702,7 +702,7 @@ define(['../Utils/Utils', '../Utils/Constants', './AbstractNavigation', '../Anim
          */
         PlanetNavigation.prototype.clampTilt = function() {
             this.tilt = Math.min(Math.max(this.tilt, MIN_TILT), MAX_TILT);
-        }
+        };
 
         PlanetNavigation.prototype.donePanning = function() {
             this.updateGeoCenter();

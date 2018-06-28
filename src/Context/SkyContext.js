@@ -57,8 +57,7 @@ define(["underscore-min", "../Utils/Utils",
                 "posTracker": true,
                 "elevTracker": false,
                 "compassDiv": true,
-                "timeTravelDiv": true,
-                "posTrackerInfoButton": true
+                "timeTravelDiv": true
             };
             var skyOptions = _createSkyConfiguration.call(this, options);
 

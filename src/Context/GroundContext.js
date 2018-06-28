@@ -58,8 +58,7 @@ define(["jquery", "underscore-min", "../Utils/Utils", "./AbstractContext", "../U
                 "posTracker": false,
                 "elevTracker": false,
                 "compassDiv": false,
-                "timeTravelDiv": false,
-                "posTrackerInfoButton": true
+                "timeTravelDiv": false
             };
 
             var groundOptions = _createGroundConfiguration.call(this, options);
