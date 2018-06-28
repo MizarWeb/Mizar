@@ -35,8 +35,8 @@
  * along with GlobWeb. If not, see <http://www.gnu.org/licenses/>.
  ***************************************/
 
-define(['../Utils/Utils', '../Utils/Constants', './AbstractNavigation', '../Animation/AnimationFactory', '../Utils/Numeric', '../Renderer/glMatrix'],
-    function (Utils, Constants, AbstractNavigation, AnimationFactory, Numeric) {
+define(['../Utils/Utils', '../Utils/Constants', './AbstractNavigation', '../Animation/AnimationFactory', '../Utils/Numeric', '../Renderer/Ray', '../Renderer/glMatrix'],
+    function (Utils, Constants, AbstractNavigation, AnimationFactory, Numeric, Ray) {
 
         /**
          * Flat navigation configuration
@@ -69,7 +69,19 @@ define(['../Utils/Utils', '../Utils/Constants', './AbstractNavigation', '../Anim
         const DEFAULT_DURATION_NORTH = 1000.0;
 
         /**
-         * Default title in decimal degree.
+		 * Min tilt in decimal degree.
+		 * @type {number}
+		 */
+		const MIN_TILT = 10.0;
+  
+		/**
+		 * Max tilt in decimal degree.
+		 * @type {number}
+		 */
+		const MAX_TILT = 90.0;
+  
+        /**
+         * Default tilt in decimal degree.
          * @type {number}
          */
         const DEFAULT_TILT = 90.0;
@@ -124,19 +136,72 @@ define(['../Utils/Utils', '../Utils/Constants', './AbstractNavigation', '../Anim
         var PlanetNavigation = function (ctx, options) {
             AbstractNavigation.prototype.constructor.call(this, Constants.NAVIGATION.PlanetNavigation, ctx, options);
 
+            Object.defineProperties(this, {
+                scale: {
+                    get: function() {
+                        return this.ctx.getCoordinateSystem().getGeoide().getHeightScale();
+                    }
+                },
+
+                distance: {
+                    get: function() {
+                        const value = this._distance * this.scale;
+                        return value;
+                    },
+                    set: function(v) {
+                        const value = v / this.scale;
+                        this._distance = value;
+                    }
+                },
+
+                targetHeight: {
+                    get: function() {
+                        return this.ctx.getElevation(this.geoCenter[0], this.geoCenter[1]);
+                    }
+                },
+
+                cameraHeight: {
+                    get: function() {
+                        const tilt = (90 - this.tilt) * Math.PI / 180;
+                        const c = Math.cos(tilt);
+                        const d = c * this._distance;
+                        return d + this.targetHeight;
+                    },
+                },
+
+                eye: {
+                    get: function() {
+                        return [
+                            this.inverseViewMatrix[12],
+                            this.inverseViewMatrix[13],
+                            this.inverseViewMatrix[14]
+                        ];
+                    },
+                },
+
+                geoEye: {
+                    get: function() {
+                        return this.ctx.getCoordinateSystem().from3DToGeo(this.eye);
+                    },
+                },
+            });
+
+            const geoide = this.ctx.getCoordinateSystem().getGeoide();
             // Default values for min and max distance (in meter)
-            this.minDistance = (this.options.minDistance) || 1;
-            this.maxDistance = (this.options.maxDistance) || 3.0 * this.ctx.getCoordinateSystem().getGeoide().getRadius() / this.ctx.getCoordinateSystem().getGeoide().getHeightScale();
-            
+            const minDistance = (this.options.minDistance) || 50;
+            const maxDistance = (this.options.maxDistance) || 3.0 * geoide.getRealPlanetRadius();
+
             // Scale min and max distance from meter to internal ratio
-            this.minDistance *= this.ctx.getCoordinateSystem().getGeoide().getHeightScale();
-            this.maxDistance *= this.ctx.getCoordinateSystem().getGeoide().getHeightScale();
+            this.minDistance = minDistance * geoide.getHeightScale();
+            this.maxDistance = maxDistance * geoide.getHeightScale();
 
             // Initialize the navigation
             this.geoCenter = [0.0, 0.0, 0.0];
+
             this.heading = DEFAULT_HEADING;
             this.tilt = DEFAULT_TILT;
-            this.distance = this.maxDistance;
+            this._distance = Number.NaN;
+            this.offset = 0.0;
 
             // Coordinate of the North in XYZ frame
             this.up = [0.0, 0.0, 1.0];
@@ -151,7 +216,6 @@ define(['../Utils/Utils', '../Utils/Constants', './AbstractNavigation', '../Anim
             if (updateViewMatrix) {
                 this.computeViewMatrix();
             }
-
         };
 
         /**
@@ -355,6 +419,7 @@ define(['../Utils/Utils', '../Utils/Constants', './AbstractNavigation', '../Anim
                 }
                 self.zoomToAnimation = null;
                 self.ctx.publish(Constants.EVENT_MSG.NAVIGATION_CHANGED_DISTANCE, destDistance);
+                self.updateGeoCenter();
             };
 
             this.ctx.addAnimation(this.zoomToAnimation);
@@ -362,7 +427,7 @@ define(['../Utils/Utils', '../Utils/Constants', './AbstractNavigation', '../Anim
 
             this.zoomToAnimation.start();
         };
-        
+
         /**
          * Applies to rotation matrix
          * @function applyLocalRotation
@@ -372,7 +437,7 @@ define(['../Utils/Utils', '../Utils/Constants', './AbstractNavigation', '../Anim
             mat4.rotate(matrix, Numeric.toRadian(this.heading), [0.0, 0.0, 1.0]);
             mat4.rotate(matrix, Numeric.toRadian(90 - this.tilt), [1.0, 0.0, 0.0]);
         };
-        
+
         /**
          * Computes the view matrix
          * @function computeViewMatrix
@@ -384,7 +449,6 @@ define(['../Utils/Utils', '../Utils/Constants', './AbstractNavigation', '../Anim
             this.ctx.publish(Constants.EVENT_MSG.NAVIGATION_MODIFIED);
             this.renderContext.requestFrame();
         };
-
 
         /**
          * Compute the inverse view matrix
@@ -405,46 +469,17 @@ define(['../Utils/Utils', '../Utils/Constants', './AbstractNavigation', '../Anim
          * @param {float} scale Scale
          */
         PlanetNavigation.prototype.zoom = function (delta, scale) {
-            var previousDistance = this.distance;
-
             // TODO : improve zoom, using scale or delta ? We should use scale always
             if (scale) {
                 this.distance *= scale;
             } else {
-                this.distance *= (1 + delta * 0.1);
+                this._distance *= (1 + delta * 0.1);
             }
 
-            if (this.distance > this.maxDistance) {
-                this.distance = this.maxDistance;
-            }
-            if (this.distance < this.minDistance) {
-                this.distance = this.minDistance;
-            }
+            this.distance = Math.max(Math.min(this.distance, this.maxDistance), this.minDistance);
 
             // compute the view matrix with new values
             this.computeViewMatrix();
-
-            if (this.hasCollision()) {
-                this.distance = previousDistance;
-                this.computeViewMatrix();
-            }
-
-            this.ctx.publish(Constants.EVENT_MSG.NAVIGATION_CHANGED_DISTANCE, this.getDistance());
-
-        };
-
-        /**
-         * Check for collision
-         * @function hasCollision
-         * @memberOf PlanetNavigation#
-         * @return {Boolean} collision detected ?
-         */
-        PlanetNavigation.prototype.hasCollision = function () {
-            var eye = [this.inverseViewMatrix[12], this.inverseViewMatrix[13], this.inverseViewMatrix[14]];
-            var geoEye = vec3.create();
-            this.ctx.getCoordinateSystem().getWorldFrom3D(eye, geoEye);
-            var elevation = this.ctx.getElevation(geoEye[0], geoEye[1]);
-            return geoEye[2] < elevation + OFFSET_ELEVATION;
         };
 
         /**
@@ -455,9 +490,6 @@ define(['../Utils/Utils', '../Utils/Constants', './AbstractNavigation', '../Anim
          * @param {int} dy Window delta y
          */
         PlanetNavigation.prototype.pan = function (dx, dy) {
-            var previousGeoCenter = vec3.create();
-            vec3.set(this.geoCenter, previousGeoCenter);
-
             // Get geographic frame
             var local2World = mat4.create();
             var coordinateSystem = this.ctx.getCoordinateSystem();
@@ -491,8 +523,9 @@ define(['../Utils/Utils', '../Utils/Constants', './AbstractNavigation', '../Anim
             // Move accordingly
             var position = vec3.create();
             coordinateSystem.get3DFromWorld(this.geoCenter, position);
-            vec3.scale(x, dx * this.distance, x);
-            vec3.scale(y, dy * this.distance, y);
+            // FIXME: Might be interesting to be able to control minimum camera speed
+            vec3.scale(x, dx * Math.max(this.distance, 500 * this.scale), x);
+            vec3.scale(y, dy * Math.max(this.distance, 500 * this.scale), y);
             vec3.subtract(position, x, position);
             vec3.add(position, y, position);
 
@@ -502,6 +535,7 @@ define(['../Utils/Utils', '../Utils/Constants', './AbstractNavigation', '../Anim
 
             // Update geographic center
             coordinateSystem.getWorldFrom3D(position, this.geoCenter);
+            this.geoCenter[2] = this.targetHeight;
 
             // Compute new north axis
             var newNorth = vec3.create([0.0, 1.0, 0.0]);
@@ -514,14 +548,6 @@ define(['../Utils/Utils', '../Utils/Constants', './AbstractNavigation', '../Anim
             }
 
             this.computeViewMatrix();
-
-            // Check for collision with terrain
-            if (this.hasCollision()) {
-                this.geoCenter = previousGeoCenter;
-                this.computeViewMatrix();
-            }
-
-
         };
 
         /**
@@ -538,13 +564,63 @@ define(['../Utils/Utils', '../Utils/Constants', './AbstractNavigation', '../Anim
             this.heading += dx * DELTA_HEADING;
             this.tilt += dy * DELTA_TILT;
 
-            this.computeViewMatrix();
+            this.clampTilt();
 
-            if (this.hasCollision()) {
-                this.heading = previousHeading;
-                this.tilt = previousTilt;
-                this.computeViewMatrix();
+            this.computeViewMatrix();
+        };
+
+        /**
+         * Check for collision
+         * @function hasCollision
+         * @memberOf PlanetNavigation#
+         * @return {Boolean} collision detected ?
+         */
+        PlanetNavigation.prototype.hasCollision = function () {
+            const eye = [this.inverseViewMatrix[12], this.inverseViewMatrix[13], this.inverseViewMatrix[14]];
+            const geoEye = vec3.create();
+            this.ctx.getCoordinateSystem().from3DToGeo(eye, geoEye);
+            const elevation = this.ctx.getElevation(geoEye[0], geoEye[1]);
+
+            const near = this.ctx.getRenderContext().near;
+
+            const dist = (geoEye[2] - elevation) - 25;
+            const collides = dist < 0;
+
+            if (collides) {
+                this.offset = (-dist) + 25;
             }
+
+            return collides;
+        };
+
+        /**
+         * Compute the new geocenter, being the intersection point
+         * with the center of the screen
+         */
+        PlanetNavigation.prototype.updateGeoCenter = function()  {
+            const canvas = this.renderContext.canvas;
+            const width = canvas.width;
+            const height = canvas.height;
+			
+			// Recompute the geo position, trace a new ray to check intersection with the terrain
+			this.computeInverseViewMatrix();
+            const eye = [this.inverseViewMatrix[12], this.inverseViewMatrix[13], this.inverseViewMatrix[14]];
+			const pos = vec3.create();
+			this.ctx.getCoordinateSystem().fromGeoTo3D(this.geoCenter, pos);
+			const dir = vec3.create();
+			vec3.subtract(pos,eye,dir);
+			vec3.normalize(dir);
+			var r = new Ray(eye,dir);
+			
+            //const center = this.ctx.globe.getLonLatFromPixel(width / 2, height / 2);
+			const center = this.ctx.globe.computeIntersection(r);
+            if (center != null && center != undefined) {
+                this.geoCenter = center;
+				// Update distance
+				const center3D = vec3.create();
+				this.ctx.getCoordinateSystem().fromGeoTo3D(this.geoCenter, center3D);
+				this.distance = vec3.dist(center3D,eye);
+			}
         };
 
         /**
@@ -552,7 +628,7 @@ define(['../Utils/Utils', '../Utils/Constants', './AbstractNavigation', '../Anim
          * @return {float} the distance in meters from the surface of the globe
          */
         PlanetNavigation.prototype.getDistance = function() {
-            return this.distance / this.ctx.getCoordinateSystem().getGeoide().getHeightScale();
+            return this._distance;
         };
 
         /**
@@ -573,12 +649,68 @@ define(['../Utils/Utils', '../Utils/Constants', './AbstractNavigation', '../Anim
             this.minDistance = null;
             this.maxDistance = null;
             this.geoCenter = null;
+            this._distance = null;
             this.heading = null;
             this.tilt = null;
-            this.distance = null;
             this.inverseViewMatrix = null;
         };
 
+        /**
+         * Update the navigator inner values
+         * @function update
+         * @memberOf PlanetNavigation#
+         */
+        PlanetNavigation.prototype.update = function() {
+            if (!this.ctx.globe.tileManager.level0TilesLoaded) {
+                return;
+            }
+
+            if (Number.isNaN(this.distance)) {
+                this.distance = this.maxDistance;
+                this._distance = this.cameraHeight;
+            }
+
+            const rc = this.ctx.getRenderContext();
+
+            // Update the near plane distance
+            rc.near = this.distance * 0.25;
+
+            this.computeViewMatrix();
+
+            if (this.hasCollision()) {
+                const hc = this.cameraHeight;
+                const ht = this.targetHeight;
+                const nh = (hc + this.offset - ht) / this._distance;
+                const as = Math.asin(nh); // New tilt value
+                if (Number.isNaN(as)) {
+                    console.log(`NaN ! ${hc}, ${ht}, ${this.offset}, ${this._distance}, ${nh}`);
+                    this._distance += this.offset;
+                } else {
+                    this.tilt = as * 180 / Math.PI;
+                    this.clampTilt();
+                }
+                this.computeViewMatrix();
+            }
+
+            this.ctx.publish(Constants.EVENT_MSG.NAVIGATION_CHANGED_DISTANCE, this.cameraHeight);
+        };
+
+        /**
+         * Clamp the tilt value between 5 and 90 degrees
+         * @function clampTilt
+         * @memberOf PlanetNavigation#
+         */
+        PlanetNavigation.prototype.clampTilt = function() {
+            this.tilt = Math.min(Math.max(this.tilt, MIN_TILT), MAX_TILT);
+        }
+
+        PlanetNavigation.prototype.donePanning = function() {
+            this.updateGeoCenter();
+        };
+
+        PlanetNavigation.prototype.doneRotating = function() {
+            this.updateGeoCenter();
+        };
 
         /**
          * Moves up vector.

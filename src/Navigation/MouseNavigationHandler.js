@@ -161,6 +161,14 @@ define(["../Utils/Utils"], function (Utils) {
                 }
             }
 
+            if (event.button === _panButton) {
+                _navigation.donePanning();
+            }
+
+            if (event.button === _rotateButton) {
+                _navigation.doneRotating();
+            }
+
             if (event.button === _panButton || event.button === _rotateButton) {
                 event.preventDefault();
 

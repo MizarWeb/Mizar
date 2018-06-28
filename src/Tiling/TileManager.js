@@ -286,8 +286,10 @@ define(['./Tile', './GeoTiling', './TilePool', './TileRequest', './TileIndexBuff
                 // Reset the shared buffers : texture coordinate and indices
                 var gl = this.renderContext.gl;
                 this.tileIndexBuffer.reset();
-                gl.deleteBuffer(this.tcoordBuffer);
-                this.tcoordBuffer = null;
+                if (this.tcoordBuffer) {
+                    gl.deleteBuffer(this.tcoordBuffer);
+                    this.tcoordBuffer = null;
+                }
             }
         };
 
@@ -547,21 +549,9 @@ define(['./Tile', './GeoTiling', './TilePool', './TileRequest', './TileIndexBuff
             if (this.tileConfig.cullSign < 0) {
                 // When in "Astro" mode, do not compute near/far from tiles not really needed
                 // And the code used for "Earth" does not works really well, when the earth is seen from inside...
-                nr = 0.2 * this.tileConfig.coordinateSystem.geoide.radius;
-                fr = 1.1 * this.tileConfig.coordinateSystem.geoide.radius;
+                rc.near = Math.max(rc.minNear, 0.2 * this.tileConfig.coordinateSystem.geoide.radius);
+                rc.far = Math.max(rc.minFar, 1.1 * this.tileConfig.coordinateSystem.geoide.radius);
             }
-            else {
-                nr = 1e9;
-                fr = 0.0;
-                for (i = this.visibleTiles.length; i--;) {
-                    tile = this.visibleTiles[i];
-                    // Update near/far to take into account the tile
-                    nr = Math.min(nr, tile.distance - 1.5 * tile.radius);
-                    fr = Math.max(fr, tile.distance + 1.5 * tile.radius);
-                }
-            }
-            rc.near = Math.max(rc.minNear, nr);
-            rc.far = Math.max(rc.minFar, fr);
 
             if (this.tilesToRender.length !== 0) {
                 // Set state (depends if geo or astro)
