@@ -357,7 +357,15 @@ define(['../Utils/Event', '../Utils/Utils',
         AbstractGlobe.prototype.getLonLatFromPixel = function (x, y) {
             //console.log("AbstractGlobe.getLonLatFromPixel");
             var ray = Ray.createFromPixel(this.renderContext, x, y);
+            return this.computeIntersection(ray);
+        };
 
+        /**
+         * @function computeIntersection
+         * @memberOf AbstractGlobe#
+         */
+        AbstractGlobe.prototype.computeIntersection = function (ray) {
+  
             var intersection;
 
             if (this.hasMesh()) {
@@ -383,7 +391,7 @@ define(['../Utils/Event', '../Utils/Utils',
             // console.log("=================================");
             return result;
         };
-
+		
         /**
          * @function getPixelFromLonLat
          * @memberOf AbstractGlobe#

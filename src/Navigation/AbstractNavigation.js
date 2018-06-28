@@ -71,6 +71,7 @@ define(['../Utils/Utils', '../Utils/Event', '../Navigation/NavigationHandlerFact
             this.type = type;
             this.ctx = ctx;
             this.renderContext = this.ctx.getRenderContext();
+            this.renderContext.cameraUpdateFunction = this.update.bind(this);
             this.options = options || {};
             this.options.isMobile = ctx.getMizarConfiguration().isMobile;
             if (this.options.isMobile === true) {
@@ -102,6 +103,11 @@ define(['../Utils/Utils', '../Utils/Event', '../Navigation/NavigationHandlerFact
                 var inertiaOptions = options.inertiaAnimation || {};
                 inertiaOptions.nav = this;
                 inertia = AnimationFactory.create(Constants.ANIMATION.Inertia, inertiaOptions);
+                const self = this;
+                inertia.onstop = function() {
+                    self.donePanning();
+                    self.doneRotating();
+                }
             } else {
                 inertia = null;
             }
@@ -437,6 +443,7 @@ define(['../Utils/Utils', '../Utils/Event', '../Navigation/NavigationHandlerFact
          * @memberOf AbstractNavigation#
          */
         AbstractNavigation.prototype.destroy = function () {
+            this.renderContext.cameraUpdateFunction = null;
             this.type = null;
             this.options = null;
             this.zoomToAnimation = null;
@@ -445,6 +452,34 @@ define(['../Utils/Utils', '../Utils/Event', '../Navigation/NavigationHandlerFact
             this.renderContext = null;
         };
 
+        /**
+         * Update the navigation values if computations are needed.
+         * @function update
+         * @memberOf AbstractNavigation#
+         */
+        AbstractNavigation.prototype.update = function() {
+            // Does nothing by default
+        };
+
+        /**
+         * Called by mouse and keyboard handler when pan interactions are finished.
+         * This is useful to, e.g.,  fetch the new focus point of the navigator.
+         * @function donePanning
+         * @memberOf AbstractNavigation#
+         */
+        AbstractNavigation.prototype.donePanning = function() {
+            // Does nothing by default
+        };
+
+        /**
+         * Called by mouse and keyboard handler when rotate interactions are finished.
+         * This is useful to, e.g.,  fetch the new focus point of the navigator.
+         * @function doneRotating
+         * @memberOf AbstractNavigation#
+         */
+        AbstractNavigation.prototype.doneRotating = function() {
+            // Does nothing by default
+        };
 
         /**************************************************************************************************************/
 
