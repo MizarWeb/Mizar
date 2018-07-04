@@ -90,7 +90,6 @@ define(["jquery", "underscore-min", "../Utils/Event", "moment", "../Utils/Utils"
                     if (components[componentId]) {
                         $("#" + componentId).fadeIn(1000);
                     } else {
-                        console.log("init: fadeout "+componentId);
                         $("#" + componentId).fadeOut();
                     }
                 }
@@ -709,7 +708,6 @@ define(["jquery", "underscore-min", "../Utils/Event", "moment", "../Utils/Utils"
             // Hide all the UI components
             for (var componentId in this.components) {
                 if (_isDivExist(componentId) && $.inArray(componentId, uiArray) === -1) {
-                    console.log("hideComp : fadeout "+componentId);
                     $("#" + componentId).fadeOut();
                 }
             }
@@ -726,7 +724,6 @@ define(["jquery", "underscore-min", "../Utils/Event", "moment", "../Utils/Utils"
             // Hide all the UI components
             for (var componentId in this.components) {
                 if (_isDivExist(componentId)) {
-                    console.log("hideComp : fadeout "+componentId);
                     $("#" + componentId).fadeOut();
                 }
             }
