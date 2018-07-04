@@ -437,6 +437,9 @@ define(["jquery", "underscore-min",
                 // display the two context in the same time
             }
             this.activatedContext = context;
+            if (!context.getNavigation().getRenderContext().cameraUpdateFunction) {
+                context.getNavigation().getRenderContext().cameraUpdateFunction = context.getNavigation().update.bind(context.getNavigation());
+            }
             context.getNavigation().toViewMatrix(viewMatrix, fov, 2000, function() {
                 if(context) {
                     context.enable();
@@ -962,10 +965,10 @@ define(["jquery", "underscore-min",
             try {
                 options.renderContext = this.renderContext;
                 options.timeTravelService = this.getServiceByName(Mizar.SERVICE.TimeTravel);
-                options.isMobile = this.getOptions().configuration.isMobile;                
+                options.isMobile = this.getOptions().configuration.isMobile;
 
                 var ctx = this.ContextFactory.create(contextMode, this.getOptions(), options);
-            
+
                 switch (contextMode) {
                     case Mizar.CONTEXT.Sky:
                         this.skyContext = ctx;

@@ -753,26 +753,26 @@ define([], function () {
      *
      * @returns {Boolean} True if a is equivalent to b
      */
-    /*    mat4.equal = function (a, b) {
-     return a === b || (
-     Math.abs(a[0] - b[0]) < FLOAT_EPSILON &&
-     Math.abs(a[1] - b[1]) < FLOAT_EPSILON &&
-     Math.abs(a[2] - b[2]) < FLOAT_EPSILON &&
-     Math.abs(a[3] - b[3]) < FLOAT_EPSILON &&
-     Math.abs(a[4] - b[4]) < FLOAT_EPSILON &&
-     Math.abs(a[5] - b[5]) < FLOAT_EPSILON &&
-     Math.abs(a[6] - b[6]) < FLOAT_EPSILON &&
-     Math.abs(a[7] - b[7]) < FLOAT_EPSILON &&
-     Math.abs(a[8] - b[8]) < FLOAT_EPSILON &&
-     Math.abs(a[9] - b[9]) < FLOAT_EPSILON &&
-     Math.abs(a[10] - b[10]) < FLOAT_EPSILON &&
-     Math.abs(a[11] - b[11]) < FLOAT_EPSILON &&
-     Math.abs(a[12] - b[12]) < FLOAT_EPSILON &&
-     Math.abs(a[13] - b[13]) < FLOAT_EPSILON &&
-     Math.abs(a[14] - b[14]) < FLOAT_EPSILON &&
-     Math.abs(a[15] - b[15]) < FLOAT_EPSILON
-     );
-     };*/
+    mat4.equal = function (a, b) {
+        return a === b || (
+            Math.abs(a[0] - b[0]) < FLOAT_EPSILON &&
+            Math.abs(a[1] - b[1]) < FLOAT_EPSILON &&
+            Math.abs(a[2] - b[2]) < FLOAT_EPSILON &&
+            Math.abs(a[3] - b[3]) < FLOAT_EPSILON &&
+            Math.abs(a[4] - b[4]) < FLOAT_EPSILON &&
+            Math.abs(a[5] - b[5]) < FLOAT_EPSILON &&
+            Math.abs(a[6] - b[6]) < FLOAT_EPSILON &&
+            Math.abs(a[7] - b[7]) < FLOAT_EPSILON &&
+            Math.abs(a[8] - b[8]) < FLOAT_EPSILON &&
+            Math.abs(a[9] - b[9]) < FLOAT_EPSILON &&
+            Math.abs(a[10] - b[10]) < FLOAT_EPSILON &&
+            Math.abs(a[11] - b[11]) < FLOAT_EPSILON &&
+            Math.abs(a[12] - b[12]) < FLOAT_EPSILON &&
+            Math.abs(a[13] - b[13]) < FLOAT_EPSILON &&
+            Math.abs(a[14] - b[14]) < FLOAT_EPSILON &&
+            Math.abs(a[15] - b[15]) < FLOAT_EPSILON
+        );
+    };
 
     /**
      * Sets a mat4 to an identity matrix

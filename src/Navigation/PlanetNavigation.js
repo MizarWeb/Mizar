@@ -73,13 +73,13 @@ define(['../Utils/Utils', '../Utils/Constants', './AbstractNavigation', '../Anim
 		 * @type {number}
 		 */
 		const MIN_TILT = 10.0;
-  
+
 		/**
 		 * Max tilt in decimal degree.
 		 * @type {number}
 		 */
 		const MAX_TILT = 90.0;
-  
+
         /**
          * Default tilt in decimal degree.
          * @type {number}
@@ -115,8 +115,6 @@ define(['../Utils/Utils', '../Utils/Constants', './AbstractNavigation', '../Anim
          * @type {number}
          */
         const DELTA_TILT = 0.05;
-
-
 
         /**
          * @name PlanetNavigation
@@ -444,9 +442,12 @@ define(['../Utils/Utils', '../Utils/Constants', './AbstractNavigation', '../Anim
          * @memberOf Navigation#
          */
         PlanetNavigation.prototype.computeViewMatrix = function () {
+            const oldMatrix = Array.from(this.renderContext.getViewMatrix());
             this.computeInverseViewMatrix();
             mat4.inverse(this.inverseViewMatrix, this.renderContext.getViewMatrix());
-            this.ctx.publish(Constants.EVENT_MSG.NAVIGATION_MODIFIED);
+            if (!mat4.equal(this.renderContext.getViewMatrix(), oldMatrix)) {
+                this.ctx.publish(Constants.EVENT_MSG.NAVIGATION_MODIFIED);
+            }
             this.renderContext.requestFrame();
         };
 
@@ -601,7 +602,7 @@ define(['../Utils/Utils', '../Utils/Constants', './AbstractNavigation', '../Anim
             const canvas = this.renderContext.canvas;
             const width = canvas.width;
             const height = canvas.height;
-			
+
 			// Recompute the geo position, trace a new ray to check intersection with the terrain
 			this.computeInverseViewMatrix();
             const eye = [this.inverseViewMatrix[12], this.inverseViewMatrix[13], this.inverseViewMatrix[14]];
@@ -611,7 +612,7 @@ define(['../Utils/Utils', '../Utils/Constants', './AbstractNavigation', '../Anim
 			vec3.subtract(pos,eye,dir);
 			vec3.normalize(dir);
 			var r = new Ray(eye,dir);
-			
+
             //const center = this.ctx.globe.getLonLatFromPixel(width / 2, height / 2);
 			const center = this.ctx.globe.computeIntersection(r);
             if (center != null && center != undefined) {
@@ -746,7 +747,6 @@ define(['../Utils/Utils', '../Utils/Constants', './AbstractNavigation', '../Anim
                     }
                 });
 
-            
             animation.addSegment(
                 0.0, this.startHeading,
                 1.0, this.endHeading,
