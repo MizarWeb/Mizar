@@ -550,6 +550,9 @@ define(["jquery", "underscore-min", "../Utils/Event", "moment", "../Time/Time", 
                 url: url,
                 dataType: 'text',
                 async: false,
+                beforeSend(xhr) {
+                    xhr.setRequestHeader("Accept", "application/xml");
+                },
                 success: function (response) {
                     var myOptions = {
                         mergeCDATA: true,
