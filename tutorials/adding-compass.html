@@ -76,14 +76,11 @@
 
                     mizar.createStats({element: 'fps', verbose: false});
 
-                    var dssLayerID = mizar.addLayer({
+                    mizar.addLayer({
                         type: Mizar.LAYER.Hips,
-                        baseUrl: "http://alasky.unistra.fr/DSS/DSSColor"
-                    });
-
-                    var layer = mizar.getLayerByID(dssLayerID);
-
-                    mizar.setBackgroundLayer(layer.name);
+                        baseUrl: "http://alasky.unistra.fr/DSS/DSSColor",
+                        background:true
+                    })
 
                 }//);
     </script>

@@ -80,14 +80,14 @@
                 }
             });
 
-            var layerID = mizar.addLayer({
-                type: Mizar.LAYER.WMS,
-                name: "Blue Marble",
-                baseUrl: "http://demonstrator.telespazio.com/wmspub",
-                layers: "BlueMarble"
+            mizar.addLayer({
+                "name": "Blue Marble",
+                "type": "WMS",
+                "baseUrl": "http://80.158.6.138/mapserv?map=WMS_BLUEMARBLE"
+            }, function(layerID) {
+                mizar.setBackgroundLayerByID(layerID);
             });
 
-            mizar.setBackgroundLayerByID(layerID);
         }//);
 
     </script>

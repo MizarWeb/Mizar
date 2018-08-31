@@ -54,10 +54,10 @@
  */
 define(["jquery", "underscore-min", "../Utils/Utils", "./AbstractContext", "../Utils/Constants",
         "../Globe/GlobeFactory", "../Navigation/NavigationFactory", "../Services/ServiceFactory",
-        "../Gui/Compass","../Gui/TimeTravel"],
+        "../Gui/Compass","../Gui/TimeTravel","../Gui/dialog/ErrorDialog"],
     function ($, _, Utils, AbstractContext, Constants,
               GlobeFactory, NavigationFactory, ServiceFactory,
-              Compass,TimeTravel) {
+              Compass,TimeTravel, ErrorDialog) {
 
         /**
          * Planet context configuration
@@ -102,7 +102,11 @@ define(["jquery", "underscore-min", "../Utils/Utils", "./AbstractContext", "../U
 
                 ServiceFactory.create(Constants.SERVICE.PickingManager).init(this);
 
-                this.setTimeTravelVisible(options.timeTravel && this.components.timeTravelDiv ? options.timeTravel : "timeTravelDiv", true);
+                try {
+                    this.setTimeTravelVisible(options.timeTravel && this.components.timeTravelDiv ? options.timeTravel : "timeTravelDiv", true);
+                } catch(err) {
+                    ErrorDialog.open("<font style='color:orange'>Warning : "+err+".");
+                }
             }
             catch (err) {
                 this._showUpError(this, err);

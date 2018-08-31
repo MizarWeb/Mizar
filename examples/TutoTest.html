@@ -12,9 +12,13 @@
         require(['Mizar'], function (Mizar) {
             // Create Mizar
             var mizar = new Mizar({
-                canvas: "MizarCanvas",
-                planetContext: {
-                    coordinateSystem: {geoideName: "EPSG:4326"}
+                canvas: "MizarCanvas"
+            });
+
+            // create context
+            mizar.createContext(Mizar.CONTEXT.Planet, {
+                coordinateSystem: {
+                    geoideName: Mizar.CRS.WGS84
                 }
             });
 

@@ -1,0 +1,66 @@
+<html>
+
+<head>
+    <title>Getting started with navigation</title>
+    <meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
+    <link rel="stylesheet" href="css/test.css">
+
+    <!-- mode dev -->
+    <!--<script type="text/javascript" data-main="../src/rconfig.js" src="../node_modules/requirejs/require.js"></script>-->
+
+    <!-- mode prod -->
+    <script type="text/javascript" src="../Mizar.min.js"></script>
+
+    <script type="text/javascript">
+
+        function start() {
+            // Create Mizar
+            var mizar = new Mizar({
+                canvas: "MizarCanvas"
+            });
+            mizar.createContext(Mizar.CONTEXT.Planet,{
+                coordinateSystem: {
+                    geoideName : Mizar.CRS.Mars_2000
+                }
+            });
+            mizar.createStats({element: 'fps', verbose: false});
+
+            mizar.addLayer({
+                type: Mizar.LAYER.WMS,
+                name: "viking",
+                baseUrl: "http://idoc-wmsmars.ias.u-psud.fr/cgi-bin/mapserv?map=/home/cnes/mars/mars.map",
+                layers: "viking"
+            }, function(layerID){
+                mizar.setBackgroundLayerByID(layerID);
+            });
+
+            mizar.addLayer({
+                type: Mizar.LAYER.WCSElevation,
+                name: "marsElevation",
+                baseUrl: "http://idoc-wcsmars.ias.u-psud.fr/wcsmap",
+                coverage: "MARSTOPO_16",
+                minElevation: -32000,
+                version: "1.0.0",
+                scale: 2
+            }, function(layerID) {
+                mizar.setBaseElevationByID(layerID);
+            });
+
+            mizar.addLayer({
+                type: Mizar.LAYER.GeoJSON,
+                name: "LandingSite",
+                url: "./data/landingSite.json",
+                icon: "./resources/images/star.png",
+                visible:true
+            });
+        }
+    </script>
+</head>
+
+<body style="margin: 0; padding: 0;" onload="start()">
+
+<canvas id="MizarCanvas" style="border: none; margin: 0; padding: 0;">
+</canvas>
+
+</body>
+</html>

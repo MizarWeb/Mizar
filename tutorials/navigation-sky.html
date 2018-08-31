@@ -66,12 +66,12 @@
                 }
             });
             
-            var dssLayerID = mizar.addLayer({
+            mizar.addLayer({
                 type: Mizar.LAYER.Hips,
                 baseUrl: "http://alasky.unistra.fr/DSS/DSSColor"
+            }, function(layerID) {
+                mizar.setBackgroundLayerByID(dssLayerID);
             });
-
-            mizar.setBackgroundLayerByID(dssLayerID);
 
             var nav = mizar.getActivatedContext().getNavigation();
             nav.zoomTo([-160, 80], {

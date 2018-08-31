@@ -19,10 +19,10 @@
 
 define(["jquery", "underscore-min", "../Utils/Utils", "./AbstractContext", "../Utils/Constants",
         "../Globe/GlobeFactory", "../Navigation/NavigationFactory", "../Services/ServiceFactory",
-        "../Gui/TimeTravel"],
+        "../Gui/TimeTravel","../Gui/dialog/ErrorDialog"],
     function ($, _, Utils, AbstractContext, Constants,
               GlobeFactory, NavigationFactory, ServiceFactory,
-              TimeTravel) {
+              TimeTravel, ErrorDialog) {
 
         /**
          * ground context configuration
@@ -70,7 +70,11 @@ define(["jquery", "underscore-min", "../Utils/Utils", "./AbstractContext", "../U
                 this.navigation = NavigationFactory.create(Constants.NAVIGATION.GroundNavigation, this, options.navigation ? options.navigation : options);
                 this.initGlobeEvents(this.globe);
                 ServiceFactory.create(Constants.SERVICE.PickingManager).init(this);
-                this.setTimeTravelVisible(options.timeTravel && this.components.timeTravelDiv ? options.timeTravel : "timeTravelDiv", true);
+                try {
+                    this.setTimeTravelVisible(options.timeTravel && this.components.timeTravelDiv ? options.timeTravel : "timeTravelDiv", true);
+                } catch(err) {
+                    ErrorDialog.open("<font style='color:orange'>Warning : "+err+".");
+                }
 
             }
             catch (err) {

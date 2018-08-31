@@ -147,7 +147,7 @@ define(["./Numeric", "../Tiling/HEALPixBase"], function (Numeric, HEALPixBase) {
      * Checks is two bounding boxes intersect
      * @function boundsIntersects
      * @param {{west:float, north:float, east:float, south:float}} a - bounding box
-     * @param {{west:float, north:float, east:float, south:float}}b - bounding box
+     * @param {{west:float, north:float, east:float, south:float}} b - bounding box
      * @return {boolean} True when the two bounding boxes intersect otherwise False
      */
     UtilsIntersection.boundsIntersects = function (a, b) {

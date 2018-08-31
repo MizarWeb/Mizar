@@ -71,6 +71,8 @@
                         name: "Blue Marble",
                         baseUrl: "http://demonstrator.telespazio.com/wmspub",
                         layers: "BlueMarble"
+                    }, function(layerID){
+                        mizar.setBackgroundLayerByID(layerID);
                     });
 
                     mizar.addLayer({
@@ -80,9 +82,10 @@
                         coverage: "GTOPO",
                         version: "1.0.0",
                         scale: 2
+                    }, function(layerID) {
+                        mizar.setBaseElevationByID(layerID);
                     });
-                    mizar.setBackgroundLayer("Blue Marble");
-                    mizar.setBaseElevation("earthElevation");
+
                     var vectorLayerID = mizar.addLayer({
                         type: Mizar.LAYER.GeoJSON,
                         visible: true

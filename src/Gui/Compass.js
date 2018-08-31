@@ -29,6 +29,8 @@ define(["jquery", "../Utils/Constants", "../Services/CompassCore", "../Utils/Uti
         /**
          * Create a compass Widget
          * @param options
+         * @throws {ReferenceError} can't get the div to insert the compass
+         * @throws {ReferenceError} Can't get the element name
          * @constructor
          * @fires AbstractContext#modifiedNavigation
          */
@@ -63,9 +65,12 @@ define(["jquery", "../Utils/Constants", "../Services/CompassCore", "../Utils/Uti
 
             // Add compass object to parent element
             // Don't use <object> HTML tag due to cross-origin nature of svg
-            if (document.getElementById(this.parentElement) === null) {
-                console.log("WARN; the div specified (" + parentElement + ") do not exist");
-                return;
+            if(this.parentElement == null) {
+                throw new ReferenceError("Can't get the element name from the options parameters")
+            } else if (document.getElementById(this.parentElement) === null) {
+                throw new ReferenceError("can't get the Div "+this.parentElement+" to insert the compass");
+            } else {
+                // OK
             }
 
             this.init();

@@ -18,10 +18,10 @@
  ******************************************************************************/
 define(["underscore-min", "../Utils/Utils",
         "./AbstractContext", "../Globe/GlobeFactory", "../Navigation/NavigationFactory", "../Services/ServiceFactory",
-        "../Gui/TimeTravel","../Utils/Constants"],
+        "../Gui/TimeTravel","../Utils/Constants", "../Gui/dialog/ErrorDialog"],
     function (_, Utils,
               AbstractContext, GlobeFactory, NavigationFactory, ServiceFactory,
-              TimeTravel,Constants) {
+              TimeTravel,Constants,ErrorDialog) {
 
         /**
          * sky context configuration
@@ -70,8 +70,11 @@ define(["underscore-min", "../Utils/Utils",
 
                 ServiceFactory.create(Constants.SERVICE.PickingManager).init(this);
 
-                this.setTimeTravelVisible(options.timeTravel && this.components.timeTravelDiv ? options.timeTravel : "timeTravelDiv", true);
-
+                try {
+                    this.setTimeTravelVisible(options.timeTravel && this.components.timeTravelDiv ? options.timeTravel : "timeTravelDiv", true);
+                } catch(err) {
+                    ErrorDialog.open("<font style='color:orange'>Warning : "+err+".");
+                }
             }
             catch (err) {
                 this._showUpError(this, err);

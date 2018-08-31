@@ -67,73 +67,51 @@
 
         //mode prod
         function start() {
-                    // Create Mizar instance
-                    var mizar = new Mizar({
-                        canvas: "MizarCanvas",
-                        configuration : {
-                            positionTracker: {
-                                position: "bottom"
-                            }
-                        },
-                        planetContext: {
-                            coordinateSystem: {geoideName: Mizar.CRS.WGS84}
-                        },
-                        skyContext : {
-                            coordinateSystem: {geoideName: Mizar.CRS.Mars_2000}
-                        }
-                    });
-            
 
-                    // switch to sky context and a Hips layer
-                    mizar.setActivatedContext("Sky");
-                    var dssLayerID = mizar.addLayer({
-                        type: Mizar.LAYER.Hips,
-                        baseUrl: "http://alasky.unistra.fr/DSS/DSSColor"
-                    });
+            // Create Mizar instance
+            var mizar = new Mizar({
+                canvas: "MizarCanvas",
+                configuration : {
+                    positionTracker: {
+                        position: "bottom"
+                    }
+                },
+                planetContext: {
+                    coordinateSystem: {geoideName: Mizar.CRS.WGS84}
+                },
+                skyContext : {
+                    coordinateSystem: {geoideName: Mizar.CRS.Equatorial}
+                }
+            });
 
-                    // hide the context
-                    mizar.getActivatedContext().hide();
+            mizar.setActivatedContext("Sky");
+            mizar.addLayer({
+                type: Mizar.LAYER.Hips,
+                baseUrl: "http://alasky.unistra.fr/DSS/DSSColor"
+            }, function(layerID){
+                mizar.setBackgroundLayerByID(layerID);
+            });
 
-                    // add the layer as background on sky
-                    mizar.setBackgroundLayerByID(dssLayerID);
-                    mizar.getActivatedContext().disable();
+            mizar.setActivatedContext("Planet");
+            mizar.addLayer({
+                "name": "Blue Marble",
+                "type": "WMS",
+                "baseUrl": "http://80.158.6.138/mapserv?map=WMS_BLUEMARBLE",
+                "visible": true,
+                "background": true
+            });
+            mizar.getActivatedContext().hide();
 
-                    // switch to planet context
-                    mizar.setActivatedContext("Planet");
+            // subscribe to baseLayersReady to show the context andn the animation.
+            mizar.getActivatedContext().subscribe("baseLayersReady", function() {
+                // Planet layers are ready, we can show the sky background
+                mizar.getPlanetContext().show();
+                // init the navigation
+                var nav = mizar.getActivatedContext().getNavigation();
+                nav.zoomTo([0, 0], {fov: nav.getFov()});
+            });
 
-                    // add a WMS layer
-                    mizar.addLayer({
-                        type: Mizar.LAYER.WMS,
-                        name: "Blue Marble",
-                        baseUrl: "http://demonstrator.telespazio.com/wmspub",
-                        layers: "BlueMarble"
-                    });
-
-                    // add an elevation layer
-                    mizar.addLayer({
-                        type: Mizar.LAYER.WCSElevation,
-                        name: "earthElevation",
-                        baseUrl: "http://demonstrator.telespazio.com/wcspub",
-                        coverage: "GTOPO",
-                        version: "1.0.0",
-                        scale: 4
-                    });
-
-                    // set the added WMS layer as background
-                    mizar.setBackgroundLayer("Blue Marble");
-
-                    //set the added alavation layer as background
-                    mizar.setBaseElevation("earthElevation");
-
-                    // subscribe to baseLayersReady to show the context andn the animation.
-                    mizar.getActivatedContext().subscribe("baseLayersReady", function() {
-                        // Planet layers are ready, we can enable the sky background
-                        mizar.getSkyContext().enable();
-                        // init the navigation
-                        var nav = mizar.getActivatedContext().getNavigation();
-                        nav.zoomTo([0, 0], {fov: nav.getFov()});
-                    });
-                }//);
+        }//);
     </script>
 
 </head>

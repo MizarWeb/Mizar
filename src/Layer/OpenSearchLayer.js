@@ -142,14 +142,7 @@ define(['../Renderer/FeatureStyle', '../Renderer/VectorRendererManager', '../Uti
         /**
          * @function setTime
          * @memberOf OpenSearchLayer#
-         * @param time Json object
-         *  {
-         *     "date" : current date,
-         *     "display" : current date as text for display
-         *     "period" : {
-         *          "from" : ,
-         *          "to" : }
-         *  }
+         * @param {Time.configuration} time Time configuration
          */
         OpenSearchLayer.prototype.setTime = function (time) {
             AbstractLayer.prototype.setTime(time);
@@ -159,15 +152,8 @@ define(['../Renderer/FeatureStyle', '../Renderer/VectorRendererManager', '../Uti
         /**
          * @function setParameter
          * @memberOf OpenSearchLayer#
-         * @param String paramName Name of parameter
-         * @param JSON value Value
-         *  {
-         *     "date" : current date,
-         *     "display" : current date as text for display
-         *     "period" : {
-         *          "from" : ,
-         *          "to" : }
-         *  }
+         * @param {String} paramName Name of parameter
+         * @param {Time.configuration} value Time configuration
          */
         OpenSearchLayer.prototype.setParameter = function (paramName,value) {
             if(paramName === 'mizar:time') {

@@ -68,28 +68,27 @@
 
         //mode prod
         function start() {
-            // Create Mizar and initialize the Coordinate reference system for the planet
+            // Create Mizar
             var mizar = new Mizar({
-                canvas: "MizarCanvas"
-            });
-
-            // create context
-            mizar.createContext(Mizar.CONTEXT.Planet, {
-                coordinateSystem: {
-                    geoideName: Mizar.CRS.WGS84
+                canvas: "MizarCanvas",
+                planetContext: {
+                    "type": "Planet",
+                    "name": "Earth",
+                    "coordinateSystem": {
+                        "geoideName": Mizar.CRS.WGS84
+                    }
                 }
             });
 
             // Add a WMS layer
-            var layerID = mizar.addLayer({
-                type: Mizar.LAYER.WMS,
-                name: "Blue Marble",
-                baseUrl: "http://demonstrator.telespazio.com/wmspub",
-                layers: "BlueMarble"
+            mizar.addLayer({
+                "name": "Blue Marble",
+                "type": "WMS",
+                "baseUrl": "http://80.158.6.138/mapserv?map=WMS_BLUEMARBLE",
+                "visible": true
+            },function(layerID) {
+                mizar.setBackgroundLayerByID(layerID);
             });
-
-            // Set this layer as background
-            mizar.setBackgroundLayerByID(layerID);
         }
         //);
 

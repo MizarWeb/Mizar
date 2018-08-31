@@ -285,11 +285,11 @@ define(['../Utils/Utils', '../Utils/Constants',
         /**
          * Computes parameters for animation
          * @param {AbstractContext} ctx - context
-         * @param {[]} center3D - start position in 3D
-         * @param {[]} geoPos - stop position
+         * @param {Array.<float>} center3D - start position in 3D
+         * @param {Array.<float>} geoPos - stop position
          * @param {float} startFov - start FOV
          * @param {float} destFov - stop FOV
-         * @return {*[]} Returns [startValue, endValue]
+         * @return {Array.<float>} Returns [startValue, endValue]
          * @private
          */
         function _computeParametersAnimation(ctx, center3D, geoPos, startFov, destFov) {

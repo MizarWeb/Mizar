@@ -16,14 +16,16 @@
  * You should have received a copy of the GNU General Public License
  * along with SITools2. If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
-define(["jquery", "../../Utils/Utils"],
-    function ($, Utils) {
+define(["jquery", "../../Utils/Utils","../dialog/ErrorDialog"],
+    function ($, Utils, ErrorDialog) {
 
         /**
          * @name AbstractTracker
          * @class
          *    Abstract class for tracker (position, elevation...)
-         * @param {object} options
+         * @param {Object} options
+         * @throws {ReferenceError} Can't get the Div to insert the tracker
+         * @throws {ReferenceError} Can't get the element name
          * @constructor
          * @implements {Tracker}
          */
@@ -32,17 +34,15 @@ define(["jquery", "../../Utils/Utils"],
             this.context = null;
             this.navigation = null;
             this.element = options.element;
-            //if (document.getElementById(this.element)) {
-                document.getElementById(this.element).innerHTML = "";
-            //} else {
-            //    console.log("Can't get div "+this.element);
-            //}
-            if (options.position) {
-                //if ($("#" + this.element)) {
-                    $("#" + this.element).css(options.position, "2px");
-                //} else {
-                //    console.log("Can't get div "+this.element);                    
-                //}
+            if(this.element == null) {
+                throw new ReferenceError("Can't get the element name from the options parameters")
+            } else if (document.getElementById(this.element) == null) {
+                throw new ReferenceError("Can' get the div "+this.element+" in the web page to insert "+this.constructor.name)
+            } else {
+                    document.getElementById(this.element).innerHTML = "";
+                    if (options.position) {
+                        $("#" + this.element).css(options.position, "2px");
+                    }
             }
         };
 

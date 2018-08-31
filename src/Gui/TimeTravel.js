@@ -39,6 +39,8 @@ define(["jquery", "../Utils/Constants", "../Services/TimeTravelCore"],
         /**
          * Create a time travel Widget
          * @param options
+         * @throws {ReferenceError} Can't get the Div to insert the time tracker
+         * @throws {ReferenceError} Can't get the element name
          * @constructor
          * @fires AbstractContext#GLOBAL_TIME_CHANGED
          */
@@ -49,9 +51,12 @@ define(["jquery", "../Utils/Constants", "../Services/TimeTravelCore"],
 
             // Add compass object to parent element
             // Don't use <object> HTML tag due to cross-origin nature of svg
-            if (document.getElementById(parentElement) === null) {
-                console.log("WARN: the div specified (" + parentElement + ") do not exist");
-                return;
+            if(parentElement == null) {
+                throw new ReferenceError("Can't get the element name from the options parameters")
+            } else if (document.getElementById(this.element) == null) {
+                throw new ReferenceError("Can' get the div "+parentElement+" in the web page to insert "+this.constructor.name)
+            } else {
+                // OK
             }
 
             var svgRewindDoc = null;
@@ -158,10 +163,11 @@ define(["jquery", "../Utils/Constants", "../Services/TimeTravelCore"],
 
         /**************************************************************************************************************/
 
+
         /**
-         * Update display date and send current date to contexte
+         * Update display date and send current date to context
          * @function updateDisplayDate
-         * @param Json date { "date" , "display", "period" { "from","to" } }
+         * @param {Time.configuration} date Time configuration
          * @memberOf TimeTravel#
          */
         TimeTravel.prototype.updateDisplayDate = function (date) {

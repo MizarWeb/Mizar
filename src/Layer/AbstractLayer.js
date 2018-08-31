@@ -68,6 +68,21 @@ define(["jquery", "underscore-min", "../Utils/Event", "moment", "../Time/Time", 
          */
 
         /**
+         * Time configuration
+         * @typedef {Object} Time.configuration
+         * @property {date} date - Current date
+         * @property {string} display - Current date as text for display
+         * @property {Time.period.configuration}  - Period
+         */
+
+        /**
+         * Time period configuration
+         * @typedef {Object} Time.period.configuration
+         * @property {date} from - start date
+         * @property {date} to - stop date
+         */
+
+        /**
          * This callback allows to transform FeatureCollection from a GeoJson.
          * @callback layerCallback
          * @param {data} FeatureCollection
@@ -98,7 +113,6 @@ define(["jquery", "underscore-min", "../Utils/Event", "moment", "../Time/Time", 
             this.properties = this.options.properties || {};
             this.services = this.options.services || [];
             this.type = type;
-            this.pickable = this.options.pickable || false;
             this.pickable = this.options.pickable || false;
             this.dataType = this.options.dataType || "";
             this.background = options.background || false;
@@ -341,14 +355,7 @@ define(["jquery", "underscore-min", "../Utils/Event", "moment", "../Time/Time", 
         /**
          * @function setDateTime
          * @memberOf AbstractLayer#
-         * @param time Json object
-         *  {
-         *     "date" : current date,
-         *     "display" : current date as text for display
-         *     "period" : {
-         *          "from" : ,
-         *          "to" : }
-         *  }
+         * @param {Time.configuration} time configuration
          */
         AbstractLayer.prototype.setTime = function (time) {
             this.time = time;

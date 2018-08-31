@@ -28,6 +28,37 @@ define(["jquery", "underscore-min", "../Utils/Event", "moment", "../Utils/Utils"
         //TODO : attention de bien garder les ...Renderer dans le define
 
         /**
+         * @constant
+         * @type {string}
+         * @default
+         */
+        const DEFAULT_POSITION_TRACKER_ELT = "posTracker";
+        /**
+         * @constant
+         * @type {string}
+         * @default
+         */
+        const DEFAULT_POSITION_TRACKER_ELT_POS = "bottom";
+        /**
+         * @constant
+         * @type {string}
+         * @default
+         */
+        const DEFAULT_ELEVATION_TRACKER_ELT = "elevTracker";
+        /**
+         * @constant
+         * @type {string}
+         * @default
+         */
+        const DEFAULT_ELEVATION_TRACKER_ELT_POS = "bottom";
+        /**
+         * @constant
+         * @type {string}
+         * @default
+         */
+        const DEFAULT_COMPASS_ELT = "compassDiv";
+
+        /**
          * @name AbstractContext
          * @class
          * The active context object can normally be obtained from the {@link module:Context.ContextManager ContextManager}
@@ -72,14 +103,23 @@ define(["jquery", "underscore-min", "../Utils/Event", "moment", "../Utils/Utils"
             this.pendingLayers = [];
             this.initCanvas(this.canvas);
 
-            if (this.mizarConfiguration.positionTracker != null) {
+            try {
                 this.positionTracker = _createTrackerPosition.call(this, this.mizarConfiguration);
-            }
-            if (this.mizarConfiguration.elevationTracker != null) {
-                this.elevationTracker = _createTrackerElevation.call(this, this.mizarConfiguration, ctxOptions);
+            } catch (err) {
+                ErrorDialog.open("<font style='color:orange'>Warning : "+err+".");
             }
 
-            this.compass = _createCompass.call(this, this.mizarConfiguration);
+            try {
+                this.elevationTracker = _createTrackerElevation.call(this, this.mizarConfiguration, ctxOptions);
+            } catch (err) {
+                ErrorDialog.open("<font style='color:orange'>Warning : "+err+".");
+            }
+
+            try {
+                this.compass = _createCompass.call(this, this.mizarConfiguration);
+            } catch (err) {
+                ErrorDialog.open("<font style='color:orange'>Warning : "+err+".");
+            }
 
         };
 
@@ -139,44 +179,59 @@ define(["jquery", "underscore-min", "../Utils/Event", "moment", "../Utils/Utils"
         }
 
         /**
-         * Creates tracker position
+         * Creates position tracker
+         *
+         * When no position tracker element is defined in the configuration,
+         * then {DEFAULT_POSITION_TRACKER_ELT} is the default element
          * @param {Mizar.configuration} mizarConfiguration
-         * @returns {PositionTracker} positionTracker object
+         * @returns {PositionTracker} positionTracker object or null when the tracker is not configured
+         * @throws {ReferenceError} Can't get the Div to insert the tracker
          * @private
          */
         function _createTrackerPosition(mizarConfiguration) {
-            return new PositionTracker({
-                element: (mizarConfiguration.positionTracker && mizarConfiguration.positionTracker.element) ? mizarConfiguration.positionTracker.element : "posTracker",
-                isMobile: mizarConfiguration.isMobile,
-                position: (mizarConfiguration.positionTracker && mizarConfiguration.positionTracker.position) ? mizarConfiguration.positionTracker.position : "bottom"
+            return  new PositionTracker({
+                    element: (mizarConfiguration.positionTracker && mizarConfiguration.positionTracker.element) ?
+                        mizarConfiguration.positionTracker.element : DEFAULT_POSITION_TRACKER_ELT,
+                    isMobile: mizarConfiguration.isMobile,
+                    position: (mizarConfiguration.positionTracker && mizarConfiguration.positionTracker.position) ?
+                        mizarConfiguration.positionTracker.position : DEFAULT_ELEVATION_TRACKER_ELT_POS
             });
         }
 
         /**
-         * Creates elevation tracker
+         * Creates elevation tracker.
+         * When no elevation tracker element is defined in the configuration,
+         * then {DEFAULT_ELEVATION_TRACKER_ELT} is the default element
          * @param {Mizar.configuration} mizarConfiguration - Mizar configuration
          * @param {AbstractContext.planetContext} ctxOptions - options
-         * @returns {ElevationTracker}
+         * @returns {ElevationTracker} elevationTracker object or null when the tracker is not configured
+         * @throws {ReferenceError} Can't get the Div to insert the tracker
          * @private
          */
         function _createTrackerElevation(mizarConfiguration, ctxOptions) {
             return new ElevationTracker({
-                element: (mizarConfiguration.elevationTracker && mizarConfiguration.elevationTracker.element) ? mizarConfiguration.elevationTracker.element : "elevTracker",
+                element: (mizarConfiguration.elevationTracker && mizarConfiguration.elevationTracker.element) ?
+                    mizarConfiguration.elevationTracker.element : DEFAULT_ELEVATION_TRACKER_ELT,
                 isMobile: mizarConfiguration.isMobile,
-                position: (mizarConfiguration.elevationTracker && mizarConfiguration.elevationTracker.elevation) ? mizarConfiguration.elevationTracker.position : "bottom",
-                elevationLayer: (ctxOptions.planetLayer !== undefined) ? ctxOptions.planetLayer.elevationLayer : undefined
+                position: (mizarConfiguration.elevationTracker && mizarConfiguration.elevationTracker.elevation) ?
+                    mizarConfiguration.elevationTracker.position : DEFAULT_ELEVATION_TRACKER_ELT_POS,
+                elevationLayer: (ctxOptions.planetLayer !== undefined) ?
+                    ctxOptions.planetLayer.elevationLayer : undefined
             });
         }
 
         /**
-         * Creates compass
+         * Creates compass.
+         * When no compass element is defined in the configuration,
+         * then {DEFAULT_COMPASS_ELT} is the default element
          * @param {Mizar.configuration} mizarConfiguration - Mizar configuration
          * @returns {Compass}
+         * @throws {ReferenceError} can't get the div to insert the compass
          * @private
          */
         function _createCompass(mizarConfiguration) {
             return new Compass({
-                element: (mizarConfiguration.compass ? mizarConfiguration.compass : "compassDiv"),
+                element: (mizarConfiguration.compass ? mizarConfiguration.compass : DEFAULT_COMPASS_ELT),
                 ctx: this,
                 isMobile : this.isMobile
             });
@@ -871,9 +926,15 @@ define(["jquery", "underscore-min", "../Utils/Event", "moment", "../Utils/Utils"
          * @abstract
          */
         AbstractContext.prototype.enable = function () {
-            this.positionTracker.attachTo(this);
-            this.elevationTracker.attachTo(this);
-            this.compass.attachTo(this);
+            if (this.positionTracker != null)
+                this.positionTracker.attachTo(this);
+
+            if (this.elevationTracker != null)
+                this.elevationTracker.attachTo(this);
+
+            if (this.compass != null)
+                this.compass.attachTo(this);
+
             var i = 0;
             var layer = this.layers[i];
             while (layer) {
