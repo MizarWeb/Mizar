@@ -261,6 +261,7 @@ define(['../Utils/Event', '../Utils/Utils',
                     this.nbCreatedLayers++;
             }
             if (layer.isBackground()) {
+                //this.tileManager.setImageryProvider(layer);
                 this.publishEvent(Constants.EVENT_MSG.LAYER_BACKGROUND_CHANGED, layer);
             } else {
                 this.publishEvent(Constants.EVENT_MSG.LAYER_ADDED, layer);
@@ -443,7 +444,7 @@ define(['../Utils/Event', '../Utils/Utils',
                     mustBeUpdated = true;
                 }
             } else if (oldCrs.isProjected() && oldCrs.getProjection().getName() === Constants.PROJECTION.Azimuth) {
-                if(crs.isProjected() && crs.getProjection().getName() === crs.PROJECTION.Azimuth) {
+                if(crs.isProjected() && crs.getProjection().getName() === Constants.PROJECTION.Azimuth) {
                     // nothing to update, same projection;
                     mustBeUpdated = false;
                 } else {
