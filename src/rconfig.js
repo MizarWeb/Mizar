@@ -23,14 +23,6 @@ require.config({
     insertRequire: ['Mizar'],
     out: "../build/generated/Mizar.min.js",
     optimize: "none",
-    onBuildWrite: function (name, path, contents) {
-        contents = contents
-            .replace(/define\s*\([^{]*?{/, "")
-            .replace(/\s*return\s+[^\}]+(\}\);[^\w\}]*)$/, "")
-            .replace(/\}\);[^}\w]*$/, "");
-
-        return contents;
-    },
     paths: {
         path: "../node_modules/path/path",
         fits: "../external/fits",
