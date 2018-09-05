@@ -267,8 +267,8 @@ define(['../Utils/Utils', './AbstractRasterLayer', '../Utils/Constants','../Tili
         // Need to provide a global callback for JSONP
         window._bingTileProviderCallback = function (result) {
 
-            self.baseUrl = this.proxify(result.resourceSets[0].resources[0].imageUrl);
-            self.baseUrlSubDomains = this.proxify(result.resourceSets[0].resources[0].imageUrlSubdomains);
+            self.baseUrl = self.proxify(result.resourceSets[0].resources[0].imageUrl);
+            self.baseUrlSubDomains = self.proxify(result.resourceSets[0].resources[0].imageUrlSubdomains);
             self._ready = true;
 
             // Call callback if set
