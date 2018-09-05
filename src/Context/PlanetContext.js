@@ -330,10 +330,15 @@ define(["jquery", "underscore-min", "../Utils/Utils", "./AbstractContext", "../U
                 this._showUpError(this, err);
             }
 
-            this.positionTracker.detach();
-            this.positionTracker.attachTo(this);
-            this.elevationTracker.detach();
-            this.elevationTracker.attachTo(this);
+            if (this.positionTracker) {
+                this.positionTracker.detach();
+                this.positionTracker.attachTo(this);
+            }
+
+            if (this.elevationTracker) {
+                this.elevationTracker.detach();
+                this.elevationTracker.attachTo(this);
+            }
 
             this.navigation.computeViewMatrix();
             this.publish(Constants.EVENT_MSG.CRS_MODIFIED, this);
