@@ -17,14 +17,13 @@
  * along with GlobWeb. If not, see <http://www.gnu.org/licenses/>.
  ***************************************/
 
-define(['./LODNode'], function (LODNode) {
-
+define(["./LODNode"], function(LODNode) {
     /**************************************************************************************************************/
 
     /**
      *    Parse a LOD node in the LODTree parser
      */
-    var parseLODNode = function (elt, baseURI) {
+    var parseLODNode = function(elt, baseURI) {
         var node = new LODNode();
 
         var child = elt.firstElementChild;
@@ -34,7 +33,11 @@ define(['./LODNode'], function (LODNode) {
                     node.modelPath = baseURI + child.textContent;
                     break;
                 case "Center":
-                    node.center = [parseFloat(child.getAttribute('x')), parseFloat(child.getAttribute('y')), parseFloat(child.getAttribute('z'))];
+                    node.center = [
+                        parseFloat(child.getAttribute("x")),
+                        parseFloat(child.getAttribute("y")),
+                        parseFloat(child.getAttribute("z"))
+                    ];
                     break;
                 case "Radius":
                     node.radius = parseFloat(child.textContent);
@@ -57,12 +60,15 @@ define(['./LODNode'], function (LODNode) {
     /**
      *    Parse a LODTree
      */
-    var parseLODTree = function (doc) {
+    var parseLODTree = function(doc) {
         var rootElement = doc.documentElement;
-        var baseURI = doc.documentURI.substr(0, doc.documentURI.lastIndexOf('/') + 1);
+        var baseURI = doc.documentURI.substr(
+            0,
+            doc.documentURI.lastIndexOf("/") + 1
+        );
 
         // First parse tile
-        var node = rootElement.getElementsByTagName('Node');
+        var node = rootElement.getElementsByTagName("Node");
         if (node) {
             return parseLODNode(node[0], baseURI);
         }
@@ -72,9 +78,9 @@ define(['./LODNode'], function (LODNode) {
 
     /**************************************************************************************************************/
 
-    var loadLODTree = function (path, callback) {
+    var loadLODTree = function(path, callback) {
         var xhr = new XMLHttpRequest();
-        xhr.onreadystatechange = function (e) {
+        xhr.onreadystatechange = function(e) {
             if (xhr.readyState === 4 && xhr.status === 200) {
                 var node = parseLODTree(xhr.responseXML);
 
@@ -91,5 +97,4 @@ define(['./LODNode'], function (LODNode) {
     /**************************************************************************************************************/
 
     return loadLODTree;
-
 });

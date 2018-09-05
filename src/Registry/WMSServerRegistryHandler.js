@@ -1,6 +1,10 @@
-define(['../Utils/Utils', './AbstractRegistryHandler', '../Utils/Constants', "./WMSServer"], function(Utils, AbstractRegistryHandler, Constants, WMSServer){
-
-    var WMSServerRegistryHandler = function(mizarConfiguration, pendingLayers){
+define([
+    "../Utils/Utils",
+    "./AbstractRegistryHandler",
+    "../Utils/Constants",
+    "./WMSServer"
+], function(Utils, AbstractRegistryHandler, Constants, WMSServer) {
+    var WMSServerRegistryHandler = function(mizarConfiguration, pendingLayers) {
         AbstractRegistryHandler.prototype.constructor.call();
         this.pendingLayers = pendingLayers;
         this.proxyUse = mizarConfiguration.proxyUse;
@@ -13,10 +17,18 @@ define(['../Utils/Utils', './AbstractRegistryHandler', '../Utils/Constants', "./
 
     /**************************************************************************************************************/
 
-    WMSServerRegistryHandler.prototype.handleRequest = function(layerDescription, callback, fallback){
+    WMSServerRegistryHandler.prototype.handleRequest = function(
+        layerDescription,
+        callback,
+        fallback
+    ) {
         try {
-            if(layerDescription.type === Constants.LAYER.WMS) {
-                var wmsServer = new WMSServer(this.proxyUse, this.proxyUrl, layerDescription);
+            if (layerDescription.type === Constants.LAYER.WMS) {
+                var wmsServer = new WMSServer(
+                    this.proxyUse,
+                    this.proxyUrl,
+                    layerDescription
+                );
                 var self = this;
                 wmsServer.createLayers(function(layers) {
                     self._handlePendingLayers(self.pendingLayers, layers);
@@ -25,7 +37,7 @@ define(['../Utils/Utils', './AbstractRegistryHandler', '../Utils/Constants', "./
             } else {
                 this.next.handleRequest(layerDescription, callback, fallback);
             }
-        } catch(e) {
+        } catch (e) {
             if (fallback) {
                 fallback(e);
             } else {

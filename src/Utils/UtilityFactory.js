@@ -17,12 +17,15 @@
  * along with MIZAR. If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
 
-define(["./Constants","./UtilsFits", "./Numeric", "./UtilsIntersection", "../Renderer/FeatureStyle"],
-    function(Constants, UtilsFits, Numeric, UtilsIntersection, FeatureStyle) {
-    
+define([
+    "./Constants",
+    "./UtilsFits",
+    "./Numeric",
+    "./UtilsIntersection",
+    "../Renderer/FeatureStyle"
+], function(Constants, UtilsFits, Numeric, UtilsIntersection, FeatureStyle) {
     return {
-        
-        create : function(type, options) {
+        create: function(type, options) {
             var obj;
             switch (type) {
                 case Constants.UTILITY.Fits:
@@ -41,11 +44,12 @@ define(["./Constants","./UtilsFits", "./Numeric", "./UtilsIntersection", "../Ren
                     obj = FeatureStyle;
                     break;
                 default:
-                    throw new RangeError("Cannot create the utility "+type, "UtilityFactory.js");
+                    throw new RangeError(
+                        "Cannot create the utility " + type,
+                        "UtilityFactory.js"
+                    );
             }
             return obj;
         }
-        
     };
-    
 });

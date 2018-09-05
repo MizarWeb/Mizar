@@ -16,9 +16,15 @@
  * You should have received a copy of the GNU General Public License
  * along with JVotable.  If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
-define(["./utils","./abstractNode","./tabledata","./binary","./binary2","./fits","./info"],
-    function(Utils, AbstractNode, TableData, Binary, Binary2, Fits, Info) {
-
+define([
+    "./utils",
+    "./abstractNode",
+    "./tabledata",
+    "./binary",
+    "./binary2",
+    "./fits",
+    "./info"
+], function(Utils, AbstractNode, TableData, Binary, Binary2, Fits, Info) {
     /**
      * Constructs a Data object.
      *
@@ -58,7 +64,11 @@ define(["./utils","./abstractNode","./tabledata","./binary","./binary2","./fits"
         var data;
         var infos = [];
 
-        for(var i = 0; childNode!=null && i< childNode.childNodes.length; i++){
+        for (
+            var i = 0;
+            childNode != null && i < childNode.childNodes.length;
+            i++
+        ) {
             var element = childNode.childNodes[i];
             if (element.nodeType == 1) {
                 var nodeName = element.localName;
@@ -79,14 +89,16 @@ define(["./utils","./abstractNode","./tabledata","./binary","./binary2","./fits"
                         infos.push(new Info(element));
                         break;
                     default:
-                        this.getCache().addWarning("unknown element " + nodeName + " in Data node");
+                        this.getCache().addWarning(
+                            "unknown element " + nodeName + " in Data node"
+                        );
                 }
             }
         }
         return [data, infos];
     };
-        
-    Utils.inherits(AbstractNode , Data );
+
+    Utils.inherits(AbstractNode, Data);
 
     /**
      * Returns the data.

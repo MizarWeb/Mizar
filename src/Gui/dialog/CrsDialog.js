@@ -21,23 +21,23 @@
 /**
  * Error dialog module
  */
-define(["jquery", "jquery.ui"], function ($) {
+define(["jquery", "jquery.ui"], function($) {
+    // The main div for error
+    var crsInfo =
+        '<div id="crsInfo" style="text-align: left" title="Coordinate Reference System information"></div>';
 
-// The main div for error
-    var crsInfo = '<div id="crsInfo" style="text-align: left" title="Coordinate Reference System information"></div>';
-
-// Create the div, use jQuery UI dialog
+    // Create the div, use jQuery UI dialog
 
     var $text = "";
 
     var $crsInfo = $(crsInfo)
-        .appendTo('body')
+        .appendTo("body")
         .dialog({
             autoOpen: false,
             width: 500,
             minHeight: 300,
             maxHeight: 500,
-            dialogClass: 'crsBox'
+            dialogClass: "crsBox"
             //beforeClose: function( event, ui ) { $text = ""; }
         });
     var $active = false;
@@ -48,46 +48,62 @@ define(["jquery", "jquery.ui"], function ($) {
          *
          *    @param html HTML text
          */
-        open: function (crs) {
-            if(this.isActive()) {
+        open: function(crs) {
+            if (this.isActive()) {
                 this.destroy();
             }
             var geoBound = crs.getGeoBound();
-            $text += "<p align='center'><u><i><b>" + crs.getName() + " CRS description </b></i></u></p>";
+            $text +=
+                "<p align='center'><u><i><b>" +
+                crs.getName() +
+                " CRS description </b></i></u></p>";
             $text += "<p align='justify'>" + crs.getDescription() + "</p>";
-            $text += "<table>" +
+            $text +=
+                "<table>" +
                 "<caption><i>Sphere parameters</i></caption>" +
                 "<tr><th>Parameter</th><th>Value</th></tr>" +
-                "<tr><td>Projection</td><td>"+(crs.isProjected() ? crs.getProjection().getName() : "3D") + "</td></tr>" +
-                "<tr><td>radius (meters)</td><td>"+crs.getGeoide().getRealPlanetRadius()+"</td></tr>" +
-                "<tr><td>"+crs.getLongitudeLabel()+"</td><td>["+geoBound.getWest()+"&deg; , "+geoBound.getEast() +"&deg;]</td></tr>" +
-                "<tr><td>"+crs.getLatitudeLabel()+"</td><td>["+geoBound.getSouth()+"&deg; , "+geoBound.getNorth() +"&deg;]</td></tr>" +
+                "<tr><td>Projection</td><td>" +
+                (crs.isProjected() ? crs.getProjection().getName() : "3D") +
+                "</td></tr>" +
+                "<tr><td>radius (meters)</td><td>" +
+                crs.getGeoide().getRealPlanetRadius() +
+                "</td></tr>" +
+                "<tr><td>" +
+                crs.getLongitudeLabel() +
+                "</td><td>[" +
+                geoBound.getWest() +
+                "&deg; , " +
+                geoBound.getEast() +
+                "&deg;]</td></tr>" +
+                "<tr><td>" +
+                crs.getLatitudeLabel() +
+                "</td><td>[" +
+                geoBound.getSouth() +
+                "&deg; , " +
+                geoBound.getNorth() +
+                "&deg;]</td></tr>" +
                 "</table>";
-            $crsInfo.on('dialogclose', function (event) {
+            $crsInfo.on("dialogclose", function(event) {
                 $active = false;
             });
         },
-        view: function () {
-            $crsInfo
-                .html($text)
-                .dialog("open");
+        view: function() {
+            $crsInfo.html($text).dialog("open");
 
             $crsInfo.scrollTop(5000);
             $active = true;
         },
-        hide: function () {
+        hide: function() {
             $crsInfo.dialog("close");
             $active = false;
         },
-        isActive: function () {
+        isActive: function() {
             return $active;
         },
-        destroy : function() {
+        destroy: function() {
             this.hide();
             $text = "";
             $active = false;
         }
-
     };
-
 });

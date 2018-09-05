@@ -35,8 +35,7 @@
  * along with GlobWeb. If not, see <http://www.gnu.org/licenses/>.
  ***************************************/
 
-define(function () {
-
+define(function() {
     /**
      * Keyboard navigation handler configuration
      * @typedef {Object} AbstractNavigation.keyboard_configuration
@@ -68,8 +67,7 @@ define(function () {
      * @constructor
      * @memberOf module:Navigation
      */
-    var KeyboardNavigationHandler = function (options) {
-
+    var KeyboardNavigationHandler = function(options) {
         /**************************************************************************************************************/
 
         /**
@@ -86,10 +84,10 @@ define(function () {
 
         // Setup options
         if (options) {
-            if (options.panFactor && typeof options.panFactor === 'number') {
+            if (options.panFactor && typeof options.panFactor === "number") {
                 this.panFactor = options.panFactor;
             }
-            if (options.zoomFactor && typeof options.zoomFactor === 'number') {
+            if (options.zoomFactor && typeof options.zoomFactor === "number") {
                 this.zoomFactor = options.zoomFactor;
             }
         }
@@ -103,7 +101,7 @@ define(function () {
         /**
          * Set focus
          */
-        var _setFocus = function (event) {
+        var _setFocus = function(event) {
             this.focus();
             return false;
         };
@@ -113,85 +111,81 @@ define(function () {
          * @param event
          * @private
          */
-        var _handleKeyDown = function (event) {
+        var _handleKeyDown = function(event) {
             switch (event.keyCode) {
-                case 32 :
+                case 32:
                     // space bar
                     // Stop all animations when an event is received
                     _navigation.stopAnimations();
                     break;
-                case 187 :
+                case 187:
                 // + on Safari
                 // falls through
-                case 61 :
+                case 61:
                 // +(=) on Firefox and Opera
                 // falls through
-                case 107 :
+                case 107:
                     // + on other
                     _navigation.zoom(-self.zoomFactor);
                     break;
-                case 189 :
+                case 189:
                 // - on Safari
                 // falls through
-                case 54 :
+                case 54:
                 // -(6) on Firefox and Opera
                 // falls through
-                case 109 :
+                case 109:
                     // - on other
                     _navigation.zoom(self.zoomFactor);
                     break;
-                case 81 :
+                case 81:
                 // q
                 // falls through
-                case 37 :
+                case 37:
                     // Left arrow
                     if (event.shiftKey) {
                         _navigation.rotate(self.panFactor, 0);
-                    }
-                    else {
+                    } else {
                         _navigation.pan(self.panFactor, 0);
                     }
                     break;
-                case 90 :
+                case 90:
                 // z
                 // falls through
-                case 38 :
+                case 38:
                     // Up arrow
                     if (event.shiftKey) {
                         _navigation.rotate(0, self.panFactor);
-                    }
-                    else {
+                    } else {
                         _navigation.pan(0, self.panFactor);
                     }
                     break;
-                case 68 :
+                case 68:
                 // d
                 // falls through
-                case 39 :
+                case 39:
                     // Right arrow
                     if (event.shiftKey) {
                         _navigation.rotate(-self.panFactor, 0);
-                    }
-                    else {
+                    } else {
                         _navigation.pan(-self.panFactor, 0);
                     }
                     break;
-                case 83 :
+                case 83:
                 // s
                 // falls through
-                case 40 :
+                case 40:
                     // Down arrow
                     if (event.shiftKey) {
                         _navigation.rotate(0, -self.panFactor);
-                    }
-                    else {
+                    } else {
                         _navigation.pan(0, -self.panFactor);
                     }
                     break;
             }
         };
 
-        var _handleKeyUp = function (event) {
+        var _handleKeyUp = function(event) {
             _navigation.donePanning();
             _navigation.doneRotating();
         };
@@ -205,15 +199,14 @@ define(function () {
         /**
          Setup the default event handlers for the navigation
          */
-        this.install = function (navigation) {
+        this.install = function(navigation) {
             // Setup the keyboard event handlers
             _navigation = navigation;
 
             if (options && options.installOnDocument) {
                 document.addEventListener("keydown", _handleKeyDown);
                 document.addEventListener("keyup", _handleKeyUp);
-            }
-            else {
+            } else {
                 var canvas = _navigation.renderContext.canvas;
                 canvas.addEventListener("keydown", _handleKeyDown);
                 canvas.addEventListener("keyup", _handleKeyUp);
@@ -226,21 +219,18 @@ define(function () {
         /**
          Remove the default event handlers for the navigation
          */
-        this.uninstall = function () {
+        this.uninstall = function() {
             if (options && options.installOnDocument) {
                 document.removeEventListener("keydown", _handleKeyDown);
                 document.removeEventListener("keyup", _handleKeyUp);
-            }
-            else {
+            } else {
                 var canvas = _navigation.renderContext.canvas;
                 canvas.removeEventListener("keydown", _handleKeyDown);
                 canvas.removeEventListener("keyup", _handleKeyUp);
                 canvas.removeEventListener("mousedown", _setFocus);
             }
         };
-
     };
 
     return KeyboardNavigationHandler;
-
 });

@@ -16,44 +16,48 @@
  * You should have received a copy of the GNU General Public License
  * along with MIZAR. If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
-define([],
-    function () {
+define([], function() {
+    /**************************************************************************************************************/
 
-        /**************************************************************************************************************/
+    /**
+     * @name AbstractNameResolverer
+     * @class
+     * Abstract Wrapper constructor
+     * @param {Context} options - Context
+     * @constructor
+     * @implements {NameResolver}
+     */
+    var AbstractNameResolver = function(options) {
+        this.ctx = options;
+    };
 
-        /**
-         * @name AbstractNameResolverer
-         * @class
-         * Abstract Wrapper constructor
-         * @param {Context} options - Context
-         * @constructor
-         * @implements {NameResolver}
-         */
-        var AbstractNameResolver = function (options) {
-            this.ctx = options;
-        };
+    /**************************************************************************************************************/
 
-        /**************************************************************************************************************/
+    /**
+     * @function handle
+     * @memberOf AbstractNameResolver#
+     * @abstract
+     */
+    AbstractNameResolver.prototype.handle = function(options) {
+        throw new SyntaxError(
+            "handle from NameResolver not implemented",
+            "AbstractNameResolver.js"
+        );
+    };
 
-        /**
-         * @function handle
-         * @memberOf AbstractNameResolver#
-         * @abstract
-         */
-        AbstractNameResolver.prototype.handle = function (options) {
-            throw new SyntaxError("handle from NameResolver not implemented", "AbstractNameResolver.js");
-        };
+    /**
+     * @function remove
+     * @memberOf AbstractNameResolver#
+     * @abstract
+     */
+    AbstractNameResolver.prototype.remove = function() {
+        throw new SyntaxError(
+            "remove from NameResolver not implemented",
+            "AbstractNameResolver.js"
+        );
+    };
 
-        /**
-         * @function remove
-         * @memberOf AbstractNameResolver#
-         * @abstract
-         */
-        AbstractNameResolver.prototype.remove = function () {
-            throw new SyntaxError("remove from NameResolver not implemented", "AbstractNameResolver.js");
-        };        
+    /**************************************************************************************************************/
 
-        /**************************************************************************************************************/
-
-        return AbstractNameResolver;
-    });
+    return AbstractNameResolver;
+});

@@ -60,7 +60,7 @@
  * baseLayersError.<br/>
  *
  * @event Context#baseLayersError
- * @type {Layer} 
+ * @type {Layer}
  */
 
 /**
@@ -102,7 +102,7 @@
  * @event Context#features:added
  * @type {Object}
  * @property {Layer} layer
- * @property {Object} features  
+ * @property {Object} features
  */
 
 /**
@@ -157,15 +157,13 @@
  *     <li>The planet without background</li>
  *     <li>The planet with the sky background</li>
  * </ul>
- * 
+ *
  * In addition to the classes, a {@link module:Context.ContextFactory factory} is available to help for creating
- * context. Once the context is created, the client can handle it by the use of its {@link Context interface}. 
+ * context. Once the context is created, the client can handle it by the use of its {@link Context interface}.
  * @see {@link module:Context the context package}
  * @interface
  */
-function Context() {
-}
-
+function Context() {}
 
 /***********************************************************************************
  *                        Methods to get Configuration                             *
@@ -174,16 +172,13 @@ function Context() {
  * Returns the context Configuration
  * @return {Object} - see options.skyContext or options.planetContext for {@link {Mizar}}
  */
-Context.prototype.getContextConfiguration = function () {
-};
+Context.prototype.getContextConfiguration = function() {};
 
 /**
  * Returns the mizar Configuration
  * @return {Object} - see options.configuration for {@link {Mizar}}
  */
-Context.prototype.getMizarConfiguration = function () {
-};
-
+Context.prototype.getMizarConfiguration = function() {};
 
 /***********************************************************************************
  *                        Methods for handling GUI                                 *
@@ -192,84 +187,72 @@ Context.prototype.getMizarConfiguration = function () {
  * Returns the position tracker.
  * @return {PositionTracker}
  */
-Context.prototype.getPositionTracker = function () {
-};
+Context.prototype.getPositionTracker = function() {};
 
 /**
  * Returns the elevation tracker.
  * @return {ElevationTracker}
  */
-Context.prototype.getElevationTracker = function () {
-};
+Context.prototype.getElevationTracker = function() {};
 
 /**
  * Sets the compass to visible or not.
  * @param {string} divName - Name of the compass div
  * @param {boolean} visible - Visible or not
  */
-Context.prototype.setCompassVisible = function (divName, visible) {
-};
+Context.prototype.setCompassVisible = function(divName, visible) {};
 
 /**
  * Sets the time travel to visible or not.
  * @param {string} divName - Name of the time travel div
  * @param {boolean} visible - Visible or not
  */
-Context.prototype.setTimeTravelVisible = function (divName, visible) {
-};
+Context.prototype.setTimeTravelVisible = function(divName, visible) {};
 
 /**
  * Sets the UI component visibility.
  * @param {string} componentId - Id of the component
  * @param {boolean} isVisible - Sets to True when the component must be visible
  */
-Context.prototype.setComponentVisibility = function (componentId, isVisible) {
-};
+Context.prototype.setComponentVisibility = function(componentId, isVisible) {};
 
 /**
  * Get the UI component visibility.
  * @param {string} componentId - Id of the component
  * @returns {boolean} - The visibility of the component
  */
-Context.prototype.getComponentVisibility = function (componentId) {
-};
+Context.prototype.getComponentVisibility = function(componentId) {};
 
 /**
  * Shows components in the current state given by this.components.
  */
-Context.prototype.showComponents = function() {
-};
+Context.prototype.showComponents = function() {};
 
 /**
  * Start Navigation and "Show" sky or planet components.
  */
-Context.prototype.show = function () {
-};
+Context.prototype.show = function() {};
 
 /**
  * Hide components
  * @param uiArray Array of components,which must not be hide.
  */
-Context.prototype.hideComponents = function(uiArray) {
-};
+Context.prototype.hideComponents = function(uiArray) {};
 
 /**
  * Stops navigation and hide sky or planet components.
  */
-Context.prototype.hide = function () {
-};
+Context.prototype.hide = function() {};
 
 /**
  * Shows the additional layers.
  */
-Context.prototype.showAdditionalLayers = function () {
-};
+Context.prototype.showAdditionalLayers = function() {};
 
 /**
  * Hides the additional layers.
  */
-Context.prototype.hideAdditionalLayers = function () {
-};
+Context.prototype.hideAdditionalLayers = function() {};
 
 /**************************************************************************************
  *                      Methods for interacting with the map                          *
@@ -281,9 +264,7 @@ Context.prototype.hideAdditionalLayers = function () {
  * @param    {int} y - the y pixel coordinate
  * @return   {float[]} an array of two numbers [lon,lat] or null if the pixel is not on the globe
  */
-Context.prototype.getLonLatFromPixel = function (x, y) {
-};
-
+Context.prototype.getLonLatFromPixel = function(x, y) {};
 
 /**
  * Returns the pixel coordinates from longitude/latitude in decimal degree.
@@ -291,8 +272,7 @@ Context.prototype.getLonLatFromPixel = function (x, y) {
  * @param {float} latitude - latitude in decimal degree in the current coordinate reference system
  * @returns {int[]} pixels coordinates in the canvas
  */
-Context.prototype.getPixelFromLonLat = function(longitude, latitude){
-};
+Context.prototype.getPixelFromLonLat = function(longitude, latitude) {};
 
 /**
  * Returns the elevation at a geo position.
@@ -300,8 +280,7 @@ Context.prototype.getPixelFromLonLat = function(longitude, latitude){
  * @param {float} lat - the latitude in degree
  * @return {float} the elevation in meter at the position [lon,lat]
  */
-Context.prototype.getElevation = function (lon, lat) {
-};
+Context.prototype.getElevation = function(lon, lat) {};
 
 /***************************************************************************************
  *                          Methods for handling layers                                *
@@ -310,8 +289,7 @@ Context.prototype.getElevation = function (lon, lat) {
  * Returns the layers of a specific context.
  * @return {Layer[]} an array of layers
  */
-Context.prototype.getLayers = function () {
-};
+Context.prototype.getLayers = function() {};
 
 /**
  * Returns the layer based on its ID.
@@ -321,8 +299,7 @@ Context.prototype.getLayers = function () {
  * @param {string} layerId - the layer identifier
  * @return {Layer|undefined} the layer
  */
-Context.prototype.getLayerByID = function (layerId) {
-};
+Context.prototype.getLayerByID = function(layerId) {};
 
 /**
  * Returns the layer based on its name.
@@ -331,8 +308,7 @@ Context.prototype.getLayerByID = function (layerId) {
  * @param {string} layerName - Name of the layer
  * @return {Layer|undefined} the layer
  */
-Context.prototype.getLayerByName = function (layerName) {
-};
+Context.prototype.getLayerByName = function(layerName) {};
 
 /**
  * Sets the background survey.
@@ -340,23 +316,20 @@ Context.prototype.getLayerByName = function (layerName) {
  * @return {Layer|undefined} the layer which has been added to the background
  * @fires Context#backgroundLayer:change
  */
-Context.prototype.setBackgroundLayer = function (survey) {
-};
+Context.prototype.setBackgroundLayer = function(survey) {};
 
 /**
  * Sets the background survey by layer ID.
  * @param {string} surveyID The name of the layer
  * @return {Layer|undefined} the layer which has been added to the background
  */
-Context.prototype.setBackgroundLayerByID = function (surveyID) {
-};
+Context.prototype.setBackgroundLayerByID = function(surveyID) {};
 
 /**
  * Returns the additional layers.
  * @return {Layer[]} the additional layers by opposition to the background layers
  */
-Context.prototype.getAdditionalLayers = function () {
-};
+Context.prototype.getAdditionalLayers = function() {};
 
 /**
  * Registers a new layer to globe to be visualized on the globe.
@@ -370,23 +343,19 @@ Context.prototype.getAdditionalLayers = function () {
  * @fires Context#backgroundLayer:add
  * @fires Context#additionalLayer:add
  */
-Context.prototype.addLayer = function (mizarDescription, callback, fallback) {
-};
+Context.prototype.addLayer = function(mizarDescription, callback, fallback) {};
 
 /**
  * Removes a layer based on its identifier
  * @param {string} layerID - the layer identifier
  * @return {Layer} the removed layer
  */
-Context.prototype.removeLayer = function (layerID) {
-};
+Context.prototype.removeLayer = function(layerID) {};
 
 /**
  * Removes all layers.
  */
-Context.prototype.removeAllLayers = function () {
-};
-
+Context.prototype.removeAllLayers = function() {};
 
 /***************************************************************************************
  *                  Methods for handling temporary draw on the map                     *
@@ -397,15 +366,13 @@ Context.prototype.removeAllLayers = function () {
  * subscribe to "visibility:changed" by configuration
  * @param {Layer} layer
  */
-Context.prototype.addDraw = function(layer) {
-};
+Context.prototype.addDraw = function(layer) {};
 
 /**
  * Removes the temporary draw on the globe.
  * @param {Layer} layer
  */
-Context.prototype.removeDraw = function(layer) {
-};
+Context.prototype.removeDraw = function(layer) {};
 
 /****************************************************************************************
  *                  Methods for handling renderers                                      *
@@ -414,8 +381,7 @@ Context.prototype.removeDraw = function(layer) {
  * Returns the rendering context.
  * @return {RenderContext} The rendering context
  */
-Context.prototype.getRenderContext = function () {
-};
+Context.prototype.getRenderContext = function() {};
 
 /**
  * Renders the Planet.
@@ -423,21 +389,18 @@ Context.prototype.getRenderContext = function () {
  * (private for now because it is automatically called in requestAnimationFrame)
  * @private
  */
-Context.prototype.render = function () {
-};
+Context.prototype.render = function() {};
 
 /**
  * Returns the mode of the globe
  * @return {CONTEXT} the mode of the globe
  */
-Context.prototype.getMode = function () {
-};
+Context.prototype.getMode = function() {};
 
 /**
  * Refreshes rendering, must be called when canvas size is modified.
  */
-Context.prototype.refresh = function () {
-};
+Context.prototype.refresh = function() {};
 
 /***************************************************************************************
  *                  Methods for handling coordinate systems                            *
@@ -448,16 +411,13 @@ Context.prototype.refresh = function () {
  * @throws RangeError - "incompatible coordinate reference system with globe context (e.g : sky, planet)"
  * @fires Context#modifiedCrs
  */
-Context.prototype.setCoordinateSystem = function (cs) {
-};
+Context.prototype.setCoordinateSystem = function(cs) {};
 
 /**
  * Returns the reference coordinate system.
  * @return {Crs} the coordinate reference system
  */
-Context.prototype.getCoordinateSystem = function () {
-};
-
+Context.prototype.getCoordinateSystem = function() {};
 
 /**************************************************************************************
  *                      Methods for handling navigation                               *
@@ -466,8 +426,7 @@ Context.prototype.getCoordinateSystem = function () {
  * Returns the navigation.
  * @returns {Navigation} navigation
  */
-Context.prototype.getNavigation = function () {
-};
+Context.prototype.getNavigation = function() {};
 
 /**************************************************************************************
  *                      Methods for handling time dimension                           *
@@ -476,15 +435,13 @@ Context.prototype.getNavigation = function () {
  * Returns the time dimension.
  * @returns {string|null} the time dimension
  */
-Context.prototype.getTime = function() {
-};
+Context.prototype.getTime = function() {};
 
 /**
  * Set the time dimension to all supported value.
  * @param {date} time
  */
-Context.prototype.setTime = function(time) {
-};
+Context.prototype.setTime = function(time) {};
 
 /**************************************************************************************
  *                      Methods for handling animations                               *
@@ -493,15 +450,13 @@ Context.prototype.setTime = function(time) {
  * Adds an animation.
  * @param {Animation} anim - the animation to add
  */
-Context.prototype.addAnimation = function (anim) {
-};
+Context.prototype.addAnimation = function(anim) {};
 
 /**
  * Removes an animation.
  * @param {Animation} anim - the animation to remove
  */
-Context.prototype.removeAnimation = function (anim) {
-};
+Context.prototype.removeAnimation = function(anim) {};
 
 /***************************************************************************************
  *                          Methods for handling tiles                                 *
@@ -511,10 +466,7 @@ Context.prototype.removeAnimation = function (anim) {
  * Returns the tile manager.
  * @returns {TileManager}
  */
-Context.prototype.getTileManager = function () {
-};
-
-
+Context.prototype.getTileManager = function() {};
 
 /******************************************************************************************
  *                          Methods for handling memory                                   *
@@ -523,8 +475,7 @@ Context.prototype.getTileManager = function () {
 /**
  * Cleans up every reference to gl objects and unloads all tiles of the current context.
  */
-Context.prototype.dispose = function () {
-};
+Context.prototype.dispose = function() {};
 
 /**
  * Destroys the globe of the current context.
@@ -534,17 +485,14 @@ Context.prototype.dispose = function () {
  *     <li>Removing the renderer from all the tiles</li>
  * </ul>
  */
-Context.prototype.destroy = function () {
-};
+Context.prototype.destroy = function() {};
 
 /**
  * Disables the globe of the current context.
  */
-Context.prototype.disable = function () {
-};
+Context.prototype.disable = function() {};
 
 /**
  * Enables the globe of the current context.
  */
-Context.prototype.enable = function () {
-};
+Context.prototype.enable = function() {};

@@ -17,71 +17,74 @@
  * along with MIZAR. If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
 
-define([],
-    function () {
+define([], function() {
+    /**************************************************************************************************************/
 
-        /**************************************************************************************************************/
+    /**
+     *   Abstract Wrapper constructor
+     *   @param {Context} options - context
+     *   @constructor
+     *   @implements {ReverseNameResolver}
+     */
+    var AbstractReverseNameResolver = function(options) {
+        this.ctx = options;
+    };
 
-        /**
-         *   Abstract Wrapper constructor
-         *   @param {Context} options - context
-         *   @constructor
-         *   @implements {ReverseNameResolver}
-         */
-        var AbstractReverseNameResolver = function (options) {
-            this.ctx = options;
-        };
+    /**************************************************************************************************************/
 
-        /**************************************************************************************************************/
+    /**
+     * @function handle
+     * @memberOf AbstractReverseNameResolver#
+     * @abstract
+     */
+    AbstractReverseNameResolver.prototype.handle = function() {
+        throw new SyntaxError(
+            "handle from AbstractReverseNameResolver not implemented",
+            "AbstractReverseNameResolver.js"
+        );
+    };
 
-        /**
-         * @function handle
-         * @memberOf AbstractReverseNameResolver#
-         * @abstract
-         */
-        AbstractReverseNameResolver.prototype.handle = function () {
-            throw new SyntaxError("handle from AbstractReverseNameResolver not implemented", "AbstractReverseNameResolver.js");
-        };
+    /**
+     * @function remove
+     * @memberOf AbstractReverseNameResolver#
+     * @abstract
+     */
+    AbstractReverseNameResolver.prototype.remove = function() {
+        throw new SyntaxError(
+            "remove from AbstractReverseNameResolver not implemented",
+            "AbstractReverseNameResolver.js"
+        );
+    };
 
+    /**************************************************************************************************************/
 
-        /**
-         * @function remove
-         * @memberOf AbstractReverseNameResolver#
-         * @abstract
-         */
-        AbstractReverseNameResolver.prototype.remove = function () {
-            throw new SyntaxError("remove from AbstractReverseNameResolver not implemented", "AbstractReverseNameResolver.js");
-        };
+    ///**
+    // *    Extract HealpixId, order from url
+    // */
+    //AbstractReverseNameResolver.prototype.extractFilters = function (url) {
+    //    var filtersUrl = url.substring(url.indexOf('?') + 1, url.length);
+    //
+    //    var filtersParts = filtersUrl.split('&');
+    //
+    //    var startOrder, startHealpixID;
+    //    var order, healpixID;
+    //    _.each(filtersParts, function (part) {
+    //
+    //        var keyAndValue = part.split('=');
+    //
+    //        if (keyAndValue[0] === "order") {
+    //            order = keyAndValue[1];
+    //        }
+    //        if (keyAndValue[0] === "healpix") {
+    //            healpixID = keyAndValue[1];
+    //        }
+    //    });
+    //
+    //    return this.filters = {
+    //        "healpixID": healpixID,
+    //        "order": order
+    //    };
+    //};
 
-        /**************************************************************************************************************/
-
-        ///**
-        // *    Extract HealpixId, order from url
-        // */
-        //AbstractReverseNameResolver.prototype.extractFilters = function (url) {
-        //    var filtersUrl = url.substring(url.indexOf('?') + 1, url.length);
-        //
-        //    var filtersParts = filtersUrl.split('&');
-        //
-        //    var startOrder, startHealpixID;
-        //    var order, healpixID;
-        //    _.each(filtersParts, function (part) {
-        //
-        //        var keyAndValue = part.split('=');
-        //
-        //        if (keyAndValue[0] === "order") {
-        //            order = keyAndValue[1];
-        //        }
-        //        if (keyAndValue[0] === "healpix") {
-        //            healpixID = keyAndValue[1];
-        //        }
-        //    });
-        //
-        //    return this.filters = {
-        //        "healpixID": healpixID,
-        //        "order": order
-        //    };
-        //};
-
-        return AbstractReverseNameResolver;
-    });
+    return AbstractReverseNameResolver;
+});

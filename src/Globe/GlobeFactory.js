@@ -22,8 +22,11 @@
  * Factory to create a globe.
  * @memberOf module:Globe
  */
-define(["./Planet", "./Sky", "../Utils/Constants"], function(Planet, Sky, Constants){
-
+define(["./Planet", "./Sky", "../Utils/Constants"], function(
+    Planet,
+    Sky,
+    Constants
+) {
     return {
         /**
          * Creates a specific globe based on its type (e.g sky, planet).
@@ -35,7 +38,7 @@ define(["./Planet", "./Sky", "../Utils/Constants"], function(Planet, Sky, Consta
          * @see {@link module:Globe.Planet Planet}
          * @see {@link module:Globe.Sky Sky}
          */
-        create : function(type, options) {
+        create: function(type, options) {
             var obj;
             switch (type) {
                 case Constants.GLOBE.Planet:
@@ -45,12 +48,15 @@ define(["./Planet", "./Sky", "../Utils/Constants"], function(Planet, Sky, Consta
                     obj = new Sky(options);
                     break;
                 default:
-                    throw RangeError("The type "+type+" is not allowed, A valid type is included in the list GLOBE", "GlobeFactory.js");
+                    throw RangeError(
+                        "The type " +
+                            type +
+                            " is not allowed, A valid type is included in the list GLOBE",
+                        "GlobeFactory.js"
+                    );
             }
-            
+
             return obj;
         }
-        
     };
-    
 });

@@ -17,68 +17,76 @@
  * along with MIZAR. If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
 
-define(["jquery", "underscore-min", "../Utils/Utils", "./AbstractReverseNameResolver"],
-    function ($, _, Utils, AbstractReverseNameResolver) {
+define([
+    "jquery",
+    "underscore-min",
+    "../Utils/Utils",
+    "./AbstractReverseNameResolver"
+], function($, _, Utils, AbstractReverseNameResolver) {
+    /**************************************************************************************************************/
 
-        /**************************************************************************************************************/
+    /**
+     * @name DefaultReverseNameResolver
+     * @class
+     *   Plugin to access to Default reverse name resolver
+     * @augments AbstractReverseNameResolver
+     * @param {Context} options - Context
+     * @memberOf module:ReverseNameResolver
+     */
+    var DefaultReverseNameResolver = function(options) {
+        AbstractReverseNameResolver.prototype.constructor.call(this, options);
+    };
 
-        /**
-         * @name DefaultReverseNameResolver
-         * @class
-         *   Plugin to access to Default reverse name resolver
-         * @augments AbstractReverseNameResolver
-         * @param {Context} options - Context
-         * @memberOf module:ReverseNameResolver
-         */
-        var DefaultReverseNameResolver = function (options) {
-            AbstractReverseNameResolver.prototype.constructor.call(this, options);
-        };
+    /**************************************************************************************************************/
 
-        /**************************************************************************************************************/
+    Utils.inherits(AbstractReverseNameResolver, DefaultReverseNameResolver);
 
-        Utils.inherits(AbstractReverseNameResolver, DefaultReverseNameResolver);
+    /**************************************************************************************************************/
 
-        /**************************************************************************************************************/
+    /**
+     * @function handle
+     * @memberOf DefaultReverseNameResolver#
+     * @param {Object} options
+     */
+    DefaultReverseNameResolver.prototype.handle = function(options) {
+        var self = this;
 
-        /**
-         * @function handle
-         * @memberOf DefaultReverseNameResolver#
-         * @param {Object} options
-         */
-        DefaultReverseNameResolver.prototype.handle = function (options) {
-            var self = this;
+        var maxOrder = options.maxOrder;
+        var equatorialCoordinates = options.equatorialCoordinates;
+        var context = options.context;
 
-            var maxOrder = options.maxOrder;
-            var equatorialCoordinates = options.equatorialCoordinates;
-            var context = options.context;
+        var requestUrl =
+            context.getMizarConfiguration().reverseNameResolver.baseUrl +
+            "/EQUATORIAL/" +
+            equatorialCoordinates[0] +
+            " " +
+            equatorialCoordinates[1] +
+            ";" +
+            maxOrder;
 
-            var requestUrl = context.getMizarConfiguration().reverseNameResolver.baseUrl + '/EQUATORIAL/' + equatorialCoordinates[0] + " " + equatorialCoordinates[1] + ";" + maxOrder;
-
-            $.ajax({
-                type: "GET",
-                url: requestUrl,
-                success: function (response) {
-                    if (options && options.success) {
-                        options.success(response);
-                    }
-                },
-                error: function (xhr, ajaxOptions, thrownError) {
-                    if (options && options.error) {
-                        options.error(xhr);
-                    }
+        $.ajax({
+            type: "GET",
+            url: requestUrl,
+            success: function(response) {
+                if (options && options.success) {
+                    options.success(response);
                 }
-            });
-        };
+            },
+            error: function(xhr, ajaxOptions, thrownError) {
+                if (options && options.error) {
+                    options.error(xhr);
+                }
+            }
+        });
+    };
 
-        /**
-         * @function remove
-         * @memberOf DefaultReverseNameResolver#
-         */
-        DefaultReverseNameResolver.prototype.remove = function (options) {
-        };
+    /**
+     * @function remove
+     * @memberOf DefaultReverseNameResolver#
+     */
+    DefaultReverseNameResolver.prototype.remove = function(options) {};
 
-        /**************************************************************************************************************/
+    /**************************************************************************************************************/
 
-        return DefaultReverseNameResolver;
-
-    });
+    return DefaultReverseNameResolver;
+});

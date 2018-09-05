@@ -16,8 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with JVotable.  If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
-define(["./utils","./abstractNode"], function(Utils, AbstractNode) {
-
+define(["./utils", "./abstractNode"], function(Utils, AbstractNode) {
     /**
      * Creates a Description object.
      * @param {NodeList} childNode
@@ -27,14 +26,15 @@ define(["./utils","./abstractNode"], function(Utils, AbstractNode) {
      * @author Jean-Christophe Malapert
      */
     var Description = function(childNode) {
-        AbstractNode.prototype.constructor.call(this, childNode);        
+        AbstractNode.prototype.constructor.call(this, childNode);
         var element = childNode.childNodes[0];
-        if (element!= null && element.nodeType == 3) {
-            this.value = (element.textContent == null) ? null : element.textContent.trim();
+        if (element != null && element.nodeType == 3) {
+            this.value =
+                element.textContent == null ? null : element.textContent.trim();
         }
     };
 
-    Utils.inherits(AbstractNode , Description);
+    Utils.inherits(AbstractNode, Description);
 
     /**
      * Returns the content.
@@ -43,7 +43,6 @@ define(["./utils","./abstractNode"], function(Utils, AbstractNode) {
     Description.prototype.getContent = function() {
         return this.value;
     };
-
 
     return Description;
 });

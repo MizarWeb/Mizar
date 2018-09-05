@@ -17,9 +17,29 @@
  * along with JVotable.  If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
 
-define(["./utils","./abstractNode", "./definitions","./info","./resource", "./description","./coosys","./group","./param","./converter/geojson"],
-    function(Utils, AbstractNode, Definitions, Info, Resource, Description, Coosys, Group, Param, GeoJson) {
-
+define([
+    "./utils",
+    "./abstractNode",
+    "./definitions",
+    "./info",
+    "./resource",
+    "./description",
+    "./coosys",
+    "./group",
+    "./param",
+    "./converter/geojson"
+], function(
+    Utils,
+    AbstractNode,
+    Definitions,
+    Info,
+    Resource,
+    Description,
+    Coosys,
+    Group,
+    Param,
+    GeoJson
+) {
     /**
      * Contructs a Votable object.
      *
@@ -90,7 +110,7 @@ define(["./utils","./abstractNode", "./definitions","./info","./resource", "./de
      * @throws {Error} can be one of the following errors : "xml cannot be null", "This object is not supported", "his input is not a VOTable"
      */
     function checkInputFormat(xml) {
-        if(xml == null) {
+        if (xml == null) {
             throw new Error("xml cannot be null");
         } else if (typeof xml === "string") {
             var parser = new DOMParser();
@@ -101,7 +121,7 @@ define(["./utils","./abstractNode", "./definitions","./info","./resource", "./de
             throw new Error("This object is not supported");
         }
         var tag = xml.documentElement.localName;
-        if(tag != 'VOTABLE') {
+        if (tag != "VOTABLE") {
             throw new Error("This input is not a VOTable");
         }
         return xml;
@@ -134,7 +154,7 @@ define(["./utils","./abstractNode", "./definitions","./info","./resource", "./de
         var groups = [];
         var params = [];
 
-        for(var i = 0; i< root.childNodes.length; i++){
+        for (var i = 0; i < root.childNodes.length; i++) {
             var element = root.childNodes[i];
             if (element.nodeType == 1) {
                 var nodeName = element.localName;
@@ -161,18 +181,27 @@ define(["./utils","./abstractNode", "./definitions","./info","./resource", "./de
                         params.push(new Param(element));
                         break;
                     default:
-                        this.getCache().addWarning("unknown element "+nodeName+" in Votable node");
+                        this.getCache().addWarning(
+                            "unknown element " + nodeName + " in Votable node"
+                        );
                 }
             }
         }
-        return [definitions, infos, resources, description, coosyss, groups, params];
-
+        return [
+            definitions,
+            infos,
+            resources,
+            description,
+            coosyss,
+            groups,
+            params
+        ];
     };
 
-    Utils.inherits(AbstractNode , Votable );
+    Utils.inherits(AbstractNode, Votable);
 
     /**
-      * Returns the ID value of the attribute.
+     * Returns the ID value of the attribute.
      * @returns {?String} the ID value
      */
     Votable.prototype.ID = function() {

@@ -1,16 +1,20 @@
-define(["jquery", "moment", "../Utils/Constants", "../Utils/Utils"], function ($, Moment, Constants, Utils) {
-
+define(["jquery", "moment", "../Utils/Constants", "../Utils/Utils"], function(
+    $,
+    Moment,
+    Constants,
+    Utils
+) {
     /**
      * Stock time sample
      * @constructor
      */
-    var TimeEnumerated = function () {
+    var TimeEnumerated = function() {
         // Array of enumerated values
         this.enumeratedValues = null;
         this.currentIndex = null;
     };
 
-   /**************************************************************************************************************/
+    /**************************************************************************************************************/
 
     /**
      * Sort enumerated values by date
@@ -18,8 +22,8 @@ define(["jquery", "moment", "../Utils/Constants", "../Utils/Utils"], function ($
      * @param {Date} a First date
      * @param {Date} b Second date
      */
-    function sortTime(a,b){ 
-        return a.date>b.date?1:-1;
+    function sortTime(a, b) {
+        return a.date > b.date ? 1 : -1;
     }
 
     /**************************************************************************************************************/
@@ -30,7 +34,7 @@ define(["jquery", "moment", "../Utils/Constants", "../Utils/Utils"], function ($
      * @return Integer Current index
      * @memberOf TimeEnumerated#
      */
-    TimeEnumerated.prototype.getCurrentIndex = function () {
+    TimeEnumerated.prototype.getCurrentIndex = function() {
         return this.currentIndex;
     };
 
@@ -43,7 +47,7 @@ define(["jquery", "moment", "../Utils/Constants", "../Utils/Utils"], function ($
      * @return {Json} date { "date", "display", "period" { "from", "to" } }
      * @memberOf TimeEnumerated#
      */
-    TimeEnumerated.prototype.parseDate = function (value) {
+    TimeEnumerated.prototype.parseDate = function(value) {
         value = value.trim();
         var date = null;
         var period = null;
@@ -54,24 +58,30 @@ define(["jquery", "moment", "../Utils/Constants", "../Utils/Utils"], function ($
         if (typeof value === "string") {
             // Year management
             if (regExpYear.test(value)) {
-                date = Moment.utc(value,"YYYY");
+                date = Moment.utc(value, "YYYY");
                 period = {};
                 period.from = date;
-                period.to = Moment.utc(period.from).endOf(Constants.TIME_STEP.YEAR);
+                period.to = Moment.utc(period.from).endOf(
+                    Constants.TIME_STEP.YEAR
+                );
             }
             // Month management
             if (regExpMonth.test(value)) {
-                date = Moment.utc(value,"YYYY-MM");
+                date = Moment.utc(value, "YYYY-MM");
                 period = {};
                 period.from = date;
-                period.to = Moment.utc(period.from).endOf(Constants.TIME_STEP.MONTH);
+                period.to = Moment.utc(period.from).endOf(
+                    Constants.TIME_STEP.MONTH
+                );
             }
             // Day management
             if (regExpDay.test(value)) {
-                date = Moment.utc(value,"YYYY-MM-DD");
+                date = Moment.utc(value, "YYYY-MM-DD");
                 period = {};
                 period.from = date;
-                period.to = Moment.utc(period.from).endOf(Constants.TIME_STEP.DAY);
+                period.to = Moment.utc(period.from).endOf(
+                    Constants.TIME_STEP.DAY
+                );
             }
             if (date === null) {
                 date = Moment.utc(value);
@@ -80,10 +90,10 @@ define(["jquery", "moment", "../Utils/Constants", "../Utils/Utils"], function ($
             date = Moment.utc(value);
         }
         return {
-                    "date" : date,
-                    "display" : value,
-                    "period" : period
-            };
+            date: date,
+            display: value,
+            period: period
+        };
     };
 
     /**************************************************************************************************************/
@@ -96,15 +106,18 @@ define(["jquery", "moment", "../Utils/Constants", "../Utils/Utils"], function ($
      * @memberOf TimeEnumerated#
      * @private
      */
-    TimeEnumerated.prototype.addDateToEnumeratedValues = function (date,ID) {
+    TimeEnumerated.prototype.addDateToEnumeratedValues = function(date, ID) {
         if (this.enumeratedValues === null) {
             this.enumeratedValues = [];
         }
 
-        for (var i=0;i<this.enumeratedValues.length;i++) {
+        for (var i = 0; i < this.enumeratedValues.length; i++) {
             if (this.enumeratedValues[i].display === date.display) {
                 // Still found : add only id
-                if ( (this.enumeratedValues[i].ids) && (this.enumeratedValues[i].ids.length) ) {
+                if (
+                    this.enumeratedValues[i].ids &&
+                    this.enumeratedValues[i].ids.length
+                ) {
                     this.enumeratedValues[i].ids.push(ID);
                     return;
                 }
@@ -125,19 +138,22 @@ define(["jquery", "moment", "../Utils/Constants", "../Utils/Utils"], function ($
      * @memberOf TimeEnumerated#
      * @private
      */
-    TimeEnumerated.prototype.removeEnumeratedValuesForID = function (ID) {
+    TimeEnumerated.prototype.removeEnumeratedValuesForID = function(ID) {
         if (ID === null) {
             ID = TimeTravelParams.NO_ID;
         }
         if (this.enumeratedValues) {
-            for (var i=this.enumeratedValues.length-1;i>=0;i--) {
-                if ( (this.enumeratedValues[i].ids) && (this.enumeratedValues[i].ids.length) ) {
+            for (var i = this.enumeratedValues.length - 1; i >= 0; i--) {
+                if (
+                    this.enumeratedValues[i].ids &&
+                    this.enumeratedValues[i].ids.length
+                ) {
                     var index = this.enumeratedValues[i].ids.indexOf(ID);
                     if (index !== -1) {
                         this.enumeratedValues[i].ids.splice(index, 1);
                     }
                     if (this.enumeratedValues[i].ids.length === 0) {
-                        this.enumeratedValues.splice(i,1);
+                        this.enumeratedValues.splice(i, 1);
                     }
                 }
             }
@@ -154,7 +170,7 @@ define(["jquery", "moment", "../Utils/Constants", "../Utils/Utils"], function ($
      * @memberOf TimeEnumerated#
      * @private
      */
-    TimeEnumerated.prototype.addEnumeratedValuesForID = function (values,ID) {
+    TimeEnumerated.prototype.addEnumeratedValuesForID = function(values, ID) {
         if (values === null) {
             // By pass
             return;
@@ -163,14 +179,13 @@ define(["jquery", "moment", "../Utils/Constants", "../Utils/Utils"], function ($
             ID = TimeTravelParams.NO_ID;
         }
 
-        
         // TODO soon : check format, need conversion ?
         var date = null;
-        for (var i=0;i<values.length;i++) {
+        for (var i = 0; i < values.length; i++) {
             date = this.parseDate(values[i]);
-            this.addDateToEnumeratedValues(date,ID);
+            this.addDateToEnumeratedValues(date, ID);
         }
-        
+
         // sort tab
         this.enumeratedValues.sort(sortTime);
 
@@ -178,53 +193,55 @@ define(["jquery", "moment", "../Utils/Constants", "../Utils/Utils"], function ($
         this.currentDate = this.enumeratedValues[this.currentIndex].date;
     };
 
-
     /**************************************************************************************************************/
-    
+
     /**
      * Get first date AFTER a specified date
      * @function getFirstDateAfter
      * @param Date date date
      * @memberOf TimeEnumerated#
      */
-    TimeEnumerated.prototype.getFirstDateAfter = function (date) {
+    TimeEnumerated.prototype.getFirstDateAfter = function(date) {
         var foundDate = null;
         return foundDate;
-    }; 
+    };
 
     /**************************************************************************************************************/
-    
+
     /**
      * Get first date BEFORE a specified date
      * @function getFirstDateBefore
      * @param Date date date
      * @memberOf TimeEnumerated#
      */
-    TimeEnumerated.prototype.getFirstDateBefore = function (date) {
+    TimeEnumerated.prototype.getFirstDateBefore = function(date) {
         var foundDate = null;
         return foundDate;
-    }; 
+    };
 
     /**************************************************************************************************************/
-    
+
     /**
      * Get first date AFTER a specified date
      * @function getFirstDateAfter
      * @param {Date} date Date
      * @memberOf TimeEnumerated#
      */
-    TimeEnumerated.prototype.getFirstDateAfter = function (date) {
+    TimeEnumerated.prototype.getFirstDateAfter = function(date) {
         var foundDate = null;
-        var foundPeriod = { "from": null, "to" : null};
+        var foundPeriod = { from: null, to: null };
         var foundDisplay = null;
 
-        if ((this.enumeratedValues) && (this.enumeratedValues.length>0)) {
-            if (date<this.enumeratedValues[0].date) {
+        if (this.enumeratedValues && this.enumeratedValues.length > 0) {
+            if (date < this.enumeratedValues[0].date) {
                 // trivial case, first date is before the first element
                 foundDate = this.enumeratedValues[0].date;
                 foundPeriod = this.enumeratedValues[0].period;
                 foundDisplay = this.enumeratedValues[0].display;
-            } else if (date>this.enumeratedValues[this.enumeratedValues.length-1].date) {
+            } else if (
+                date >
+                this.enumeratedValues[this.enumeratedValues.length - 1].date
+            ) {
                 // trivial case, date is after the last date
                 foundDate = null;
             } else {
@@ -233,75 +250,83 @@ define(["jquery", "moment", "../Utils/Constants", "../Utils/Utils"], function ($
                 var isDone = false;
                 while (!isDone) {
                     currentDate = this.enumeratedValues[cpt].date;
-                    if (currentDate>date) {
+                    if (currentDate > date) {
                         isDone = true;
                         foundDate = this.enumeratedValues[cpt].date;
                         foundPeriod = this.enumeratedValues[cpt].period;
                         foundDisplay = this.enumeratedValues[cpt].display;
                     }
                     cpt++;
-                    isDone = isDone || (cpt>=this.enumeratedValues.length);
+                    isDone = isDone || cpt >= this.enumeratedValues.length;
                 }
             }
         }
 
         return {
-            "date" : foundDate,
-            "period" : foundPeriod,
-            "display" : foundDisplay
+            date: foundDate,
+            period: foundPeriod,
+            display: foundDisplay
         };
-    }; 
+    };
 
     /**************************************************************************************************************/
-    
+
     /**
      * Get first date BEFORE a specified date
      * @function getFirstDateBefore
      * @param {Date} date Date
      * @memberOf TimeEnumerated#
      */
-    TimeEnumerated.prototype.getFirstDateBefore = function (date) {
+    TimeEnumerated.prototype.getFirstDateBefore = function(date) {
         var foundDate = null;
-        var foundPeriod = { "from": null, "to" : null};
+        var foundPeriod = { from: null, to: null };
         var foundDisplay = null;
 
-        if ((this.enumeratedValues) && (this.enumeratedValues.length>0)) {
-            if (date>this.enumeratedValues[this.enumeratedValues.length-1].date) {
+        if (this.enumeratedValues && this.enumeratedValues.length > 0) {
+            if (
+                date >
+                this.enumeratedValues[this.enumeratedValues.length - 1].date
+            ) {
                 // trivial case, end date is before !
-                foundDate = this.enumeratedValues[this.enumeratedValues.length-1].date;
-                foundPeriod = this.enumeratedValues[this.enumeratedValues.length-1].period;
-                foundDisplay = this.enumeratedValues[this.enumeratedValues.length-1].display;
-            } else if (date<this.enumeratedValues[0].date) {
+                foundDate = this.enumeratedValues[
+                    this.enumeratedValues.length - 1
+                ].date;
+                foundPeriod = this.enumeratedValues[
+                    this.enumeratedValues.length - 1
+                ].period;
+                foundDisplay = this.enumeratedValues[
+                    this.enumeratedValues.length - 1
+                ].display;
+            } else if (date < this.enumeratedValues[0].date) {
                 // trivial case, date is before the first date
                 foundDate = null;
             } else {
                 // go to search
-                var cpt = this.enumeratedValues.length-1;
+                var cpt = this.enumeratedValues.length - 1;
                 var isDone = false;
-                
+
                 while (!isDone) {
                     while (!isDone) {
                         currentDate = this.enumeratedValues[cpt].date;
-                        if (currentDate<date) {
+                        if (currentDate < date) {
                             isDone = true;
                             foundDate = this.enumeratedValues[cpt].date;
                             foundPeriod = this.enumeratedValues[cpt].period;
                             foundDisplay = this.enumeratedValues[cpt].display;
                         }
                         cpt--;
-                        isDone = isDone || (cpt<0);
+                        isDone = isDone || cpt < 0;
                     }
                 }
             }
         }
 
         return {
-            "date" : foundDate,
-            "period" : foundPeriod,
-            "display" : foundDisplay
+            date: foundDate,
+            period: foundPeriod,
+            display: foundDisplay
         };
-    }; 
-
+    };
 
     /**************************************************************************************************************/
 
@@ -311,10 +336,10 @@ define(["jquery", "moment", "../Utils/Constants", "../Utils/Utils"], function ($
      * @return {String} String representation
      * @memberOf TimeEnumerated#
      */
-    TimeEnumerated.prototype.toString = function () {
+    TimeEnumerated.prototype.toString = function() {
         var res = "";
         if (this.enumeratedValues) {
-            for (var i=0;i<this.enumeratedValues.length;i++) {
+            for (var i = 0; i < this.enumeratedValues.length; i++) {
                 res += this.enumeratedValues[i].display + " / ";
             }
         }
@@ -329,8 +354,8 @@ define(["jquery", "moment", "../Utils/Constants", "../Utils/Utils"], function ($
      * @return {Boolean} is empty ?
      * @memberOf TimeEnumerated#
      */
-    TimeEnumerated.prototype.isEmpty = function () {
-        return !((this.enumeratedValues) && (this.enumeratedValues.length>0));
+    TimeEnumerated.prototype.isEmpty = function() {
+        return !(this.enumeratedValues && this.enumeratedValues.length > 0);
     };
 
     /**************************************************************************************************************/
@@ -341,9 +366,9 @@ define(["jquery", "moment", "../Utils/Constants", "../Utils/Utils"], function ($
      * @return {Date} Min date or null
      * @memberOf TimeEnumerated#
      */
-    TimeEnumerated.prototype.getMinDate = function () {
+    TimeEnumerated.prototype.getMinDate = function() {
         var result = null;
-        if ( (this.enumeratedValues) && (this.enumeratedValues.length>0)) {
+        if (this.enumeratedValues && this.enumeratedValues.length > 0) {
             result = this.enumeratedValues[0].date;
         }
         return result;
@@ -357,10 +382,11 @@ define(["jquery", "moment", "../Utils/Constants", "../Utils/Utils"], function ($
      * @return {Date} Max date or null
      * @memberOf TimeEnumerated#
      */
-    TimeEnumerated.prototype.getMaxDate = function () {
+    TimeEnumerated.prototype.getMaxDate = function() {
         var result = null;
-        if ( (this.enumeratedValues) && (this.enumeratedValues.length>0)) {
-            result = this.enumeratedValues[this.enumeratedValues.length-1].date;
+        if (this.enumeratedValues && this.enumeratedValues.length > 0) {
+            result = this.enumeratedValues[this.enumeratedValues.length - 1]
+                .date;
         }
         return result;
     };

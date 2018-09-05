@@ -17,41 +17,52 @@
  * along with GlobWeb. If not, see <http://www.gnu.org/licenses/>.
  ***************************************/
 
-define(['../Renderer/Program', '../Renderer/glMatrix'], function (Program) {
-
+define(["../Renderer/Program", "../Renderer/glMatrix"], function(Program) {
     /**************************************************************************************************************/
 
     /**
      *    @constructor SceneGraph Renderer
      */
-    var SceneGraphRenderer = function (renderContext, node) {
+    var SceneGraphRenderer = function(renderContext, node) {
         var vertexShader = "attribute vec3 vertex;\n";
-    	  vertexShader    += "attribute vec2 tcoord;\n";
-    	  vertexShader    += "uniform mat4 modelViewMatrix;\n";
-    	  vertexShader    += "uniform mat4 projectionMatrix;\n";
-    	  vertexShader    += "varying vec2 texCoord;\n";
-    	  vertexShader    += "\n";
-    	  vertexShader    += "void main(void)\n";
-    	  vertexShader    += "{\n";
-    	  vertexShader    += "	gl_Position = projectionMatrix * modelViewMatrix * vec4(vertex.x, vertex.y, vertex.z, 1.0);\n";
-    	  vertexShader    += "	texCoord = tcoord;\n";
-    	  vertexShader    += "}\n";
+        vertexShader += "attribute vec2 tcoord;\n";
+        vertexShader += "uniform mat4 modelViewMatrix;\n";
+        vertexShader += "uniform mat4 projectionMatrix;\n";
+        vertexShader += "varying vec2 texCoord;\n";
+        vertexShader += "\n";
+        vertexShader += "void main(void)\n";
+        vertexShader += "{\n";
+        vertexShader +=
+            "	gl_Position = projectionMatrix * modelViewMatrix * vec4(vertex.x, vertex.y, vertex.z, 1.0);\n";
+        vertexShader += "	texCoord = tcoord;\n";
+        vertexShader += "}\n";
 
         var fragmentShader = "precision lowp float;\n";
-    	  fragmentShader    += "varying vec2 texCoord;\n";
-    	  fragmentShader    += "uniform vec4 diffuse;\n";
-    	  fragmentShader    += "uniform sampler2D texture;\n";
-    	  fragmentShader    += "\n";
-    	  fragmentShader    += "void main(void)\n";
-    	  fragmentShader    += "{\n";
-    	  fragmentShader    += "	gl_FragColor = diffuse * texture2D(texture, texCoord);\n";
-    	  fragmentShader    += "}\n";
+        fragmentShader += "varying vec2 texCoord;\n";
+        fragmentShader += "uniform vec4 diffuse;\n";
+        fragmentShader += "uniform sampler2D texture;\n";
+        fragmentShader += "\n";
+        fragmentShader += "void main(void)\n";
+        fragmentShader += "{\n";
+        fragmentShader +=
+            "	gl_FragColor = diffuse * texture2D(texture, texCoord);\n";
+        fragmentShader += "}\n";
 
         var gl = renderContext.gl;
         this.defaultTexture = gl.createTexture();
         gl.bindTexture(gl.TEXTURE_2D, this.defaultTexture);
         var whitePixel = new Uint8Array([255, 255, 255, 255]);
-        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, whitePixel);
+        gl.texImage2D(
+            gl.TEXTURE_2D,
+            0,
+            gl.RGBA,
+            1,
+            1,
+            0,
+            gl.RGBA,
+            gl.UNSIGNED_BYTE,
+            whitePixel
+        );
 
         this.renderContext = renderContext;
 
@@ -77,7 +88,7 @@ define(['../Renderer/Program', '../Renderer/glMatrix'], function (Program) {
     /**
      *    Recursive method to render node
      */
-    SceneGraphRenderer.prototype.renderNode = function (node, parent) {
+    SceneGraphRenderer.prototype.renderNode = function(node, parent) {
         var rc = this.renderContext;
         var gl = rc.gl;
 
@@ -100,7 +111,7 @@ define(['../Renderer/Program', '../Renderer/glMatrix'], function (Program) {
     /**
      *    Main render
      */
-    SceneGraphRenderer.prototype.render = function () {
+    SceneGraphRenderer.prototype.render = function() {
         var rc = this.renderContext;
         var gl = rc.gl;
 
@@ -112,7 +123,11 @@ define(['../Renderer/Program', '../Renderer/glMatrix'], function (Program) {
         // Setup program
         this.program.apply();
 
-        gl.uniformMatrix4fv(this.program.uniforms.projectionMatrix, false, rc.projectionMatrix);
+        gl.uniformMatrix4fv(
+            this.program.uniforms.projectionMatrix,
+            false,
+            rc.projectionMatrix
+        );
         gl.uniform1i(this.program.uniforms.texture, 0);
 
         this.matrixStack.length = 0;
@@ -126,5 +141,4 @@ define(['../Renderer/Program', '../Renderer/glMatrix'], function (Program) {
     /**************************************************************************************************************/
 
     return SceneGraphRenderer;
-
 });

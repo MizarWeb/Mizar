@@ -18,7 +18,6 @@
  ******************************************************************************/
 
 define(["./utils", "./cache"], function(Utils, Cache) {
-
     /**
      * Abstract node.
      *
@@ -31,9 +30,9 @@ define(["./utils", "./cache"], function(Utils, Cache) {
      */
     var AbstractNode = function(childNode) {
         this.attributes = {};
-        if (childNode!=null && childNode.nodeType == 1) {
+        if (childNode != null && childNode.nodeType == 1) {
             var cache = null;
-            for(var i = 0, l = childNode.attributes.length; i < l; i++) {
+            for (var i = 0, l = childNode.attributes.length; i < l; i++) {
                 var attribute = childNode.attributes[i];
                 this.attributes[attribute.name] = attribute.value;
             }
@@ -70,7 +69,7 @@ define(["./utils", "./cache"], function(Utils, Cache) {
      * @returns {boolean} true when the tag has at least one attribute otherwise false.
      */
     AbstractNode.prototype.hasAttributes = function() {
-        return (Object.keys(this.attributes).length == 0) ? false : true;
+        return Object.keys(this.attributes).length == 0 ? false : true;
     };
 
     /**
@@ -85,7 +84,7 @@ define(["./utils", "./cache"], function(Utils, Cache) {
      * Creates a singeton for the cache.
      * @type {{getInstance}}
      */
-    var Singleton = (function () {
+    var Singleton = (function() {
         var instance;
 
         function createInstance() {
@@ -94,7 +93,7 @@ define(["./utils", "./cache"], function(Utils, Cache) {
         }
 
         return {
-            getInstance: function () {
+            getInstance: function() {
                 if (!instance) {
                     instance = createInstance();
                 }

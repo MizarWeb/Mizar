@@ -16,8 +16,11 @@
  * You should have received a copy of the GNU General Public License
  * along with JVotable.  If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
-define(["./utils","./abstractData","./stream"], function(Utils, AbstractData, Stream) {
-
+define(["./utils", "./abstractData", "./stream"], function(
+    Utils,
+    AbstractData,
+    Stream
+) {
     /**
      * Constructs the Fits object.
      *
@@ -48,27 +51,33 @@ define(["./utils","./abstractData","./stream"], function(Utils, AbstractData, St
      */
     var parseFits = function(childNode) {
         var stream;
-        for(var i = 0; childNode!=null && i< childNode.childNodes.length; i++){
+        for (
+            var i = 0;
+            childNode != null && i < childNode.childNodes.length;
+            i++
+        ) {
             var element = childNode.childNodes[i];
             if (element.nodeType == 1) {
                 var nodeName = element.localName;
                 if (nodeName == "STREAM") {
                     stream = new Definitions(element);
                 } else {
-                    this.getCache().addWarning("unknown element "+nodeName+" in Fits node");
+                    this.getCache().addWarning(
+                        "unknown element " + nodeName + " in Fits node"
+                    );
                 }
             }
         }
         return stream;
     };
 
-    Utils.inherits(AbstractData , Fits );
+    Utils.inherits(AbstractData, Fits);
 
     /**
      * Returns the Stream object.
      * @returns {!Stream} the Stream object.
      */
-    Fits.prototype.getStream = function(){
+    Fits.prototype.getStream = function() {
         return this.stream;
     };
 
@@ -76,7 +85,7 @@ define(["./utils","./abstractData","./stream"], function(Utils, AbstractData, St
      * Returns te extnum value.
      * @returns {!String} the extnum value.
      */
-    Fits.prototype.extnum = function(){
+    Fits.prototype.extnum = function() {
         return this.attributes.extnum;
     };
 

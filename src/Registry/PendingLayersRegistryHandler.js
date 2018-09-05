@@ -1,6 +1,9 @@
-define(['../Utils/Utils', './AbstractRegistryHandler', '../Utils/Constants'], function(Utils, AbstractRegistryHandler, Constants) {
-
-    var PendingLayersRegistryHandler = function(pendingLayers, layers){
+define([
+    "../Utils/Utils",
+    "./AbstractRegistryHandler",
+    "../Utils/Constants"
+], function(Utils, AbstractRegistryHandler, Constants) {
+    var PendingLayersRegistryHandler = function(pendingLayers, layers) {
         AbstractRegistryHandler.prototype.constructor.call();
         this.layers = layers;
         this.pendingLayers = pendingLayers;
@@ -14,7 +17,7 @@ define(['../Utils/Utils', './AbstractRegistryHandler', '../Utils/Constants'], fu
 
     PendingLayersRegistryHandler.prototype.hasLayerBackground = function() {
         var hasBackground = false;
-        for(var i=0; i< this.layers.length; i++) {
+        for (var i = 0; i < this.layers.length; i++) {
             var layer = this.layers[i];
             if (layer.isBackground() && layer.isVisible()) {
                 hasBackground = true;
@@ -24,8 +27,16 @@ define(['../Utils/Utils', './AbstractRegistryHandler', '../Utils/Constants'], fu
         return hasBackground;
     };
 
-    PendingLayersRegistryHandler.prototype.handleRequest = function(layerDescription, callback, fallback) {
-        if((layerDescription.type === Constants.LAYER.Atmosphere || layerDescription.type === Constants.LAYER.TileWireframe) && !this.hasLayerBackground()) {
+    PendingLayersRegistryHandler.prototype.handleRequest = function(
+        layerDescription,
+        callback,
+        fallback
+    ) {
+        if (
+            (layerDescription.type === Constants.LAYER.Atmosphere ||
+                layerDescription.type === Constants.LAYER.TileWireframe) &&
+            !this.hasLayerBackground()
+        ) {
             this.pendingLayers.push(layerDescription);
         } else {
             this.next.handleRequest(layerDescription, callback, fallback);

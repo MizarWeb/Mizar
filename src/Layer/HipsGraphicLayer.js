@@ -35,164 +35,216 @@
  * along with GlobWeb. If not, see <http://www.gnu.org/licenses/>.
  ***************************************/
 
-define(['../Utils/Utils', '../Tiling/HEALPixTiling', './AbstractHipsLayer', '../Utils/Constants'],
-    function (Utils, HEALPixTiling, AbstractHipsLayer, Constants) {
+define([
+    "../Utils/Utils",
+    "../Tiling/HEALPixTiling",
+    "./AbstractHipsLayer",
+    "../Utils/Constants"
+], function(Utils, HEALPixTiling, AbstractHipsLayer, Constants) {
+    /**************************************************************************************************************/
 
-        /**************************************************************************************************************/
+    /**
+     * HipsFits configuration
+     * @typedef {AbstractHipsLayer.configuration} AbstractHipsLayer.graphic_configuration
+     * @property {Function} onready - Callback function
+     */
 
-        /**
-         * HipsFits configuration
-         * @typedef {AbstractHipsLayer.configuration} AbstractHipsLayer.graphic_configuration
-         * @property {Function} onready - Callback function
-         */
+    /**
+     * @name HipsGraphicLayer
+     * @class
+     * This layer draws an Hips Image
+     * @augments AbstractHipsLayer
+     * @param {HipsMetadata} hipsMetadata
+     * @param {AbstractHipsLayer.graphic_configuration} options - HipsGraphic configuration
+     * @memberOf module:Layer
+     * @see {@link http://www.ivoa.net/documents/HiPS/20170406/index.html Hips standard}
+     * @fires Context#baseLayersError
+     */
+    var HipsGraphicLayer = function(hipsMetadata, options) {
+        //options.format = options.format || "jpg";
+        AbstractHipsLayer.prototype.constructor.call(
+            this,
+            hipsMetadata,
+            options
+        );
 
-        /**
-         * @name HipsGraphicLayer
-         * @class
-         * This layer draws an Hips Image
-         * @augments AbstractHipsLayer
-         * @param {HipsMetadata} hipsMetadata
-         * @param {AbstractHipsLayer.graphic_configuration} options - HipsGraphic configuration
-         * @memberOf module:Layer
-         * @see {@link http://www.ivoa.net/documents/HiPS/20170406/index.html Hips standard}
-         * @fires Context#baseLayersError
-         */
-        var HipsGraphicLayer = function (hipsMetadata, options) {
-            //options.format = options.format || "jpg";
-            AbstractHipsLayer.prototype.constructor.call(this, hipsMetadata, options);
+        // allsky
+        this.levelZeroImage = new Image();
+        var self = this;
+        this.levelZeroImage.crossOrigin = "";
+        this.levelZeroImage.onload = function() {
+            self._ready = true;
 
-            // allsky
-            this.levelZeroImage = new Image();
-            var self = this;
-            this.levelZeroImage.crossOrigin = '';
-            this.levelZeroImage.onload = function () {
-                self._ready = true;
+            // Call callback if set
+            if (options.onready && options.onready instanceof Function) {
+                options.onready(self);
+            }
 
-                // Call callback if set
-                if (options.onready && options.onready instanceof Function) {
-                    options.onready(self);
-                }
-
-                // Request a frame
-                if (self.globe) {
-                    self.globe.getRenderContext().requestFrame();
-                }
-            };
-            this.levelZeroImage.onerror = function (event) {
-                var error = self.getHipsMetadata();
-                error.message = "Cannot load " + self.levelZeroImage.src;
-                self.globe.publishEvent(Constants.EVENT_MSG.BASE_LAYERS_ERROR, error);
-                self._ready = false;
-
-                console.error("Cannot load " + self.levelZeroImage.src);
-            };
-
-            this._ready = false;
-        };
-
-        /**************************************************************************************************************/
-
-        Utils.inherits(AbstractHipsLayer, HipsGraphicLayer);
-
-        /**************************************************************************************************************/
-
-        /**
-         * Attaches the raster layer to the planet.
-         * @function _attach
-         * @memberOf HipsGraphicLayer#
-         * @param g Globe
-         * @private
-         */
-        HipsGraphicLayer.prototype._attach = function (g) {
-            AbstractHipsLayer.prototype._attach.call(this, g);
-
-            // Load level zero image now, only for background
-            if (!this._overlay && this.isVisible()) {
-                this.levelZeroImage.src = this.proxify(this.baseUrl) + "/Norder3/Allsky." + this.format;
+            // Request a frame
+            if (self.globe) {
+                self.globe.getRenderContext().requestFrame();
             }
         };
+        this.levelZeroImage.onerror = function(event) {
+            var error = self.getHipsMetadata();
+            error.message = "Cannot load " + self.levelZeroImage.src;
+            self.globe.publishEvent(
+                Constants.EVENT_MSG.BASE_LAYERS_ERROR,
+                error
+            );
+            self._ready = false;
 
-        /**************************************************************************************************************/
-
-        /**
-         * Returns an url from a given tile.
-         * @function getUrl
-         * @memberOf HipsGraphicLayer#
-         * @param {Tile} tile Tile
-         * @return {String} Url
-         */
-        HipsGraphicLayer.prototype.getUrl = function (tile) {
-            var url = this.proxify(this.baseUrl);
-
-            url += "/Norder";
-            url += tile.order;
-
-            url += "/Dir";
-            var indexDirectory = Math.floor(tile.pixelIndex / 10000.0) * 10000.0;
-            url += indexDirectory;
-
-            url += "/Npix";
-            url += tile.pixelIndex;
-            url += "." + this.format;
-
-            return this.proxify(url);
+            console.error("Cannot load " + self.levelZeroImage.src);
         };
 
+        this._ready = false;
+    };
 
-        /**************************************************************************************************************/
+    /**************************************************************************************************************/
 
-        /**
-         * Generates the level0 texture for the tiles.
-         * @function generateLevel0Textures
-         * @memberOf HipsGraphicLayer
-         * @param {Tile} tiles
-         * @param {TilePool} tilePool
-         */
-        HipsGraphicLayer.prototype.generateLevel0Textures = function (tiles, tilePool) {
-            // Create a canvas to build the texture
-            var canvas = document.createElement("canvas");
-            canvas.width = 128;
-            canvas.height = 128;
-            var i,pi,sx,sy,tile;
-            var context = canvas.getContext("2d");
+    Utils.inherits(AbstractHipsLayer, HipsGraphicLayer);
 
-            for (i = 0; i < tiles.length; i++) {
-                tile = tiles[i];
+    /**************************************************************************************************************/
 
-                // Top left
-                pi = tile.pixelIndex * 4;
-                sx = ( pi % 27) * 64;
-                sy = ( Math.floor(pi / 27) ) * 64;
-                context.drawImage(this.levelZeroImage, sx, sy, 64, 64, 0, 0, 64, 64);
+    /**
+     * Attaches the raster layer to the planet.
+     * @function _attach
+     * @memberOf HipsGraphicLayer#
+     * @param g Globe
+     * @private
+     */
+    HipsGraphicLayer.prototype._attach = function(g) {
+        AbstractHipsLayer.prototype._attach.call(this, g);
 
-                // Top right
-                pi = tile.pixelIndex * 4 + 2;
-                sx = ( pi % 27) * 64;
-                sy = ( Math.floor(pi / 27) ) * 64;
-                context.drawImage(this.levelZeroImage, sx, sy, 64, 64, 64, 0, 64, 64);
+        // Load level zero image now, only for background
+        if (!this._overlay && this.isVisible()) {
+            this.levelZeroImage.src =
+                this.proxify(this.baseUrl) + "/Norder3/Allsky." + this.format;
+        }
+    };
 
-                // Bottom left
-                pi = tile.pixelIndex * 4 + 1;
-                sx = ( pi % 27) * 64;
-                sy = ( Math.floor(pi / 27) ) * 64;
-                context.drawImage(this.levelZeroImage, sx, sy, 64, 64, 0, 64, 64, 64);
+    /**************************************************************************************************************/
 
-                // Bottom right
-                pi = tile.pixelIndex * 4 + 3;
-                sx = ( pi % 27) * 64;
-                sy = ( Math.floor(pi / 27) ) * 64;
-                context.drawImage(this.levelZeroImage, sx, sy, 64, 64, 64, 64, 64, 64);
+    /**
+     * Returns an url from a given tile.
+     * @function getUrl
+     * @memberOf HipsGraphicLayer#
+     * @param {Tile} tile Tile
+     * @return {String} Url
+     */
+    HipsGraphicLayer.prototype.getUrl = function(tile) {
+        var url = this.proxify(this.baseUrl);
 
-                var imgData = context.getImageData(0, 0, 128, 128);
-                imgData.dataType = 'byte';
+        url += "/Norder";
+        url += tile.order;
 
-                tile.texture = tilePool.createGLTexture(imgData);
-                tile.imageSize = 128;
-            }
-        };
+        url += "/Dir";
+        var indexDirectory = Math.floor(tile.pixelIndex / 10000.0) * 10000.0;
+        url += indexDirectory;
 
-        /**************************************************************************************************************/
+        url += "/Npix";
+        url += tile.pixelIndex;
+        url += "." + this.format;
 
-        return HipsGraphicLayer;
+        return this.proxify(url);
+    };
 
-    });
+    /**************************************************************************************************************/
+
+    /**
+     * Generates the level0 texture for the tiles.
+     * @function generateLevel0Textures
+     * @memberOf HipsGraphicLayer
+     * @param {Tile} tiles
+     * @param {TilePool} tilePool
+     */
+    HipsGraphicLayer.prototype.generateLevel0Textures = function(
+        tiles,
+        tilePool
+    ) {
+        // Create a canvas to build the texture
+        var canvas = document.createElement("canvas");
+        canvas.width = 128;
+        canvas.height = 128;
+        var i, pi, sx, sy, tile;
+        var context = canvas.getContext("2d");
+
+        for (i = 0; i < tiles.length; i++) {
+            tile = tiles[i];
+
+            // Top left
+            pi = tile.pixelIndex * 4;
+            sx = (pi % 27) * 64;
+            sy = Math.floor(pi / 27) * 64;
+            context.drawImage(
+                this.levelZeroImage,
+                sx,
+                sy,
+                64,
+                64,
+                0,
+                0,
+                64,
+                64
+            );
+
+            // Top right
+            pi = tile.pixelIndex * 4 + 2;
+            sx = (pi % 27) * 64;
+            sy = Math.floor(pi / 27) * 64;
+            context.drawImage(
+                this.levelZeroImage,
+                sx,
+                sy,
+                64,
+                64,
+                64,
+                0,
+                64,
+                64
+            );
+
+            // Bottom left
+            pi = tile.pixelIndex * 4 + 1;
+            sx = (pi % 27) * 64;
+            sy = Math.floor(pi / 27) * 64;
+            context.drawImage(
+                this.levelZeroImage,
+                sx,
+                sy,
+                64,
+                64,
+                0,
+                64,
+                64,
+                64
+            );
+
+            // Bottom right
+            pi = tile.pixelIndex * 4 + 3;
+            sx = (pi % 27) * 64;
+            sy = Math.floor(pi / 27) * 64;
+            context.drawImage(
+                this.levelZeroImage,
+                sx,
+                sy,
+                64,
+                64,
+                64,
+                64,
+                64,
+                64
+            );
+
+            var imgData = context.getImageData(0, 0, 128, 128);
+            imgData.dataType = "byte";
+
+            tile.texture = tilePool.createGLTexture(imgData);
+            tile.imageSize = 128;
+        }
+    };
+
+    /**************************************************************************************************************/
+
+    return HipsGraphicLayer;
+});

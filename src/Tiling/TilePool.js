@@ -35,15 +35,14 @@
  * along with GlobWeb. If not, see <http://www.gnu.org/licenses/>.
  ***************************************/
 
-define(function () {
-
+define(function() {
     /**************************************************************************************************************/
 
     /**
      @constructor
      TilePool constructor
      */
-    var TilePool = function (rc) {
+    var TilePool = function(rc) {
         // Private properties
         var gl = rc.gl;
         var glTexturePools = {};
@@ -65,23 +64,63 @@ define(function () {
         /**
          Create a new GL texture
          */
-        var createNewGLTexture = function (image, texturePool) {
+        var createNewGLTexture = function(image, texturePool) {
             var glTexture = gl.createTexture();
             gl.bindTexture(gl.TEXTURE_2D, glTexture);
             if (image.dataType === "byte") {
-                gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
-                gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR);
-                gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+                gl.texImage2D(
+                    gl.TEXTURE_2D,
+                    0,
+                    gl.RGBA,
+                    gl.RGBA,
+                    gl.UNSIGNED_BYTE,
+                    image
+                );
+                gl.texParameteri(
+                    gl.TEXTURE_2D,
+                    gl.TEXTURE_MIN_FILTER,
+                    gl.LINEAR_MIPMAP_LINEAR
+                );
+                gl.texParameteri(
+                    gl.TEXTURE_2D,
+                    gl.TEXTURE_MAG_FILTER,
+                    gl.LINEAR
+                );
                 gl.generateMipmap(gl.TEXTURE_2D);
-            }
-            else {
-                gl.texImage2D(gl.TEXTURE_2D, 0, gl.LUMINANCE, image.width, image.height, 0, gl.LUMINANCE, gl.FLOAT, image.typedArray);
-                gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, float_filtering);
-                gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, float_filtering);
+            } else {
+                gl.texImage2D(
+                    gl.TEXTURE_2D,
+                    0,
+                    gl.LUMINANCE,
+                    image.width,
+                    image.height,
+                    0,
+                    gl.LUMINANCE,
+                    gl.FLOAT,
+                    image.typedArray
+                );
+                gl.texParameteri(
+                    gl.TEXTURE_2D,
+                    gl.TEXTURE_MIN_FILTER,
+                    float_filtering
+                );
+                gl.texParameteri(
+                    gl.TEXTURE_2D,
+                    gl.TEXTURE_MAG_FILTER,
+                    float_filtering
+                );
             }
 
-            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+            gl.texParameteri(
+                gl.TEXTURE_2D,
+                gl.TEXTURE_WRAP_S,
+                gl.CLAMP_TO_EDGE
+            );
+            gl.texParameteri(
+                gl.TEXTURE_2D,
+                gl.TEXTURE_WRAP_T,
+                gl.CLAMP_TO_EDGE
+            );
             glTexture.pool = texturePool;
             self.numCreatedTextures++;
 
@@ -93,17 +132,33 @@ define(function () {
         /**
          Reuse a GL texture
          */
-        var reuseGLTexture = function (image, texturePool) {
+        var reuseGLTexture = function(image, texturePool) {
             var glTexture = texturePool.pop();
             gl.bindTexture(gl.TEXTURE_2D, glTexture);
 
             if (image.dataType === "byte") {
                 //gl.texSubImage2D(gl.TEXTURE_2D, 0, 0, 0, gl.RGBA, gl.UNSIGNED_BYTE, image);
-                gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
+                gl.texImage2D(
+                    gl.TEXTURE_2D,
+                    0,
+                    gl.RGBA,
+                    gl.RGBA,
+                    gl.UNSIGNED_BYTE,
+                    image
+                );
                 gl.generateMipmap(gl.TEXTURE_2D);
-            }
-            else {
-                gl.texImage2D(gl.TEXTURE_2D, 0, gl.LUMINANCE, image.width, image.height, 0, gl.LUMINANCE, gl.FLOAT, image.typedArray);
+            } else {
+                gl.texImage2D(
+                    gl.TEXTURE_2D,
+                    0,
+                    gl.LUMINANCE,
+                    image.width,
+                    image.height,
+                    0,
+                    gl.LUMINANCE,
+                    gl.FLOAT,
+                    image.typedArray
+                );
             }
 
             self.numReusedTextures++;
@@ -114,7 +169,7 @@ define(function () {
         /**
          * Get or create a texture pool for the given image
          */
-        var getOrCreateTexturePool = function (image) {
+        var getOrCreateTexturePool = function(image) {
             var key = image.dataType + image.width;
             if (!glTexturePools[key]) {
                 glTexturePools[key] = [];
@@ -129,13 +184,12 @@ define(function () {
         /**
          Create a GL texture to be used by a tile
          */
-        this.createGLTexture = function (image) {
+        this.createGLTexture = function(image) {
             var texturePool = getOrCreateTexturePool(image);
 
             if (texturePool.length > 0) {
                 return reuseGLTexture(image, texturePool);
-            }
-            else {
+            } else {
                 return createNewGLTexture(image, texturePool);
             }
         };
@@ -145,12 +199,11 @@ define(function () {
         /**
          Create a GL texture to be used by a tile
          */
-        this.createGLBuffer = function (vertices) {
+        this.createGLBuffer = function(vertices) {
             var vb;
             if (glBuffers.length > 0) {
                 vb = glBuffers.pop();
-            }
-            else {
+            } else {
                 vb = gl.createBuffer();
             }
             gl.bindBuffer(gl.ARRAY_BUFFER, vb);
@@ -164,7 +217,7 @@ define(function () {
         /**
          Dispose a texture
          */
-        this.disposeGLTexture = function (texture) {
+        this.disposeGLTexture = function(texture) {
             texture.pool.push(texture);
         };
 
@@ -173,7 +226,7 @@ define(function () {
         /**
          Dispose a texture
          */
-        this.disposeGLBuffer = function (buffer) {
+        this.disposeGLBuffer = function(buffer) {
             glBuffers.push(buffer);
         };
 
@@ -183,7 +236,7 @@ define(function () {
          Dispose all
          */
 
-        this.disposeAll = function () {
+        this.disposeAll = function() {
             var i;
             for (var key in glTexturePools) {
                 if (glTexturePools.hasOwnProperty(key)) {
@@ -205,5 +258,4 @@ define(function () {
     };
 
     return TilePool;
-
 });

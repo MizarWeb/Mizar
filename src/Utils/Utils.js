@@ -35,16 +35,20 @@
  * along with GlobWeb. If not, see <http://www.gnu.org/licenses/>.
  ***************************************/
 
-define(["jquery", "moment", "./Numeric", "./UtilsIntersection", "../Error/NetworkError"], function ($, Moment, Numeric, UtilsIntersection, NetworkError) {
-
+define([
+    "jquery",
+    "moment",
+    "./Numeric",
+    "./UtilsIntersection",
+    "../Error/NetworkError"
+], function($, Moment, Numeric, UtilsIntersection, NetworkError) {
     var Utils = {};
 
     /**
      * Inherits from an object
      */
-    Utils.inherits = function (base, sub) {
-        function tempCtor() {
-        }
+    Utils.inherits = function(base, sub) {
+        function tempCtor() {}
 
         tempCtor.prototype = base.prototype;
         sub.prototype = new tempCtor();
@@ -107,7 +111,7 @@ define(["jquery", "moment", "./Numeric", "./UtilsIntersection", "../Error/Networ
      * Generates eye-friendly color based on hsv.
      * @return {int[]} rgb array
      */
-    Utils.generateColor = function () {
+    Utils.generateColor = function() {
         //use golden ratio
         var golden_ratio_conjugate = 0.618033988749895;
         var h = Math.random();
@@ -121,10 +125,13 @@ define(["jquery", "moment", "./Numeric", "./UtilsIntersection", "../Error/Networ
      * @param {string} id - identifier
      * @return {string} HTML identifier
      */
-    Utils.formatId = function (id) {
+    Utils.formatId = function(id) {
         var result;
-        if (typeof id === 'string') {
-            result = id.replace(/\s{1,}|\.{1,}|\[{1,}|\]{1,}|\({1,}|\){1,}|\~{1,}|\+{1,}|\°{1,}|\-{1,}|\'{1,}|\"{1,}/g, "");
+        if (typeof id === "string") {
+            result = id.replace(
+                /\s{1,}|\.{1,}|\[{1,}|\]{1,}|\({1,}|\){1,}|\~{1,}|\+{1,}|\°{1,}|\-{1,}|\'{1,}|\"{1,}/g,
+                ""
+            );
         } else {
             result = id;
         }
@@ -139,10 +146,9 @@ define(["jquery", "moment", "./Numeric", "./UtilsIntersection", "../Error/Networ
      * @param {float} max - max value
      * @return {boolean} True when v is between min and max otherwise False
      */
-    Utils.isValueBetween = function (v, min, max) {
-        return ((v >= min) && (v <= max));
+    Utils.isValueBetween = function(v, min, max) {
+        return v >= min && v <= max;
     };
-
 
     /**
      * Computes base URL from getCapabilities URL.
@@ -151,15 +157,24 @@ define(["jquery", "moment", "./Numeric", "./UtilsIntersection", "../Error/Networ
      * @param {string[]} parameters - parameters of the getCapabilities
      * @return {string} base URL
      */
-    Utils.computeBaseUrlFromCapabilities = function (capabilitiesUrl, parameters) {
-        if (typeof capabilitiesUrl != "string" || capabilitiesUrl.length == 0 || !Array.isArray(parameters)) return null;
+    Utils.computeBaseUrlFromCapabilities = function(
+        capabilitiesUrl,
+        parameters
+    ) {
+        if (
+            typeof capabilitiesUrl != "string" ||
+            capabilitiesUrl.length == 0 ||
+            !Array.isArray(parameters)
+        )
+            return null;
 
         var url = capabilitiesUrl;
         if (url.indexOf("?") > -1) {
             url = url.substr(0, url.indexOf("?"));
         }
         // url cannot be undefined because we need to query a getCapabilities or something else with a parameter
-        var queryString = capabilitiesUrl.replace(url + "?", "") || capabilitiesUrl;
+        var queryString =
+            capabilitiesUrl.replace(url + "?", "") || capabilitiesUrl;
         var query = Utils.parseQuery(queryString);
         // we delete all parameters required by a standard.
         for (var i = 0; i < parameters.length; i++) {
@@ -185,7 +200,10 @@ define(["jquery", "moment", "./Numeric", "./UtilsIntersection", "../Error/Networ
         if (typeof str != "string" || str.length == 0) return {};
         var s = str.split("&");
         var s_length = s.length;
-        var bit, query = {}, first, second;
+        var bit,
+            query = {},
+            first,
+            second;
         for (var i = 0; i < s_length; i++) {
             bit = s[i].split("=");
             first = decodeURIComponent(bit[0]);
@@ -206,9 +224,9 @@ define(["jquery", "moment", "./Numeric", "./UtilsIntersection", "../Error/Networ
      * @param {String} value - parameter value
      * @return {String} url updated
      */
-    Utils.addParameterTo = function (url, name, value) {
+    Utils.addParameterTo = function(url, name, value) {
         var separator = "&";
-        if ((typeof url !== "string") || (url.indexOf('?', 0) === -1)) {
+        if (typeof url !== "string" || url.indexOf("?", 0) === -1) {
             separator = "?";
         }
         return url + separator + name + "=" + value;
@@ -222,11 +240,11 @@ define(["jquery", "moment", "./Numeric", "./UtilsIntersection", "../Error/Networ
      */
     Utils.parseBaseURL = function(url) {
         var result;
-        var index = url.indexOf('?');
+        var index = url.indexOf("?");
         if (index == -1) {
             result = url;
         } else {
-            result = url.substring(0, url.indexOf('?')+1);
+            result = url.substring(0, url.indexOf("?") + 1);
         }
         return result;
     };
@@ -237,14 +255,16 @@ define(["jquery", "moment", "./Numeric", "./UtilsIntersection", "../Error/Networ
      * @param {string} url - query string
      * @return {{}} parameters of the query string
      */
-    Utils.parseQueryString = function (url) {
-        var queryString = url.substring(url.indexOf('?')+1).split('&');
+    Utils.parseQueryString = function(url) {
+        var queryString = url.substring(url.indexOf("?") + 1).split("&");
         var params = {};
         var pair;
         // march and parse
         for (var i = queryString.length - 1; i >= 0; i--) {
-            pair = queryString[i].split('=');
-            params[decodeURIComponent(pair[0])] = decodeURIComponent(pair[1] || '');
+            pair = queryString[i].split("=");
+            params[decodeURIComponent(pair[0])] = decodeURIComponent(
+                pair[1] || ""
+            );
         }
         return params;
     };
@@ -258,27 +278,29 @@ define(["jquery", "moment", "./Numeric", "./UtilsIntersection", "../Error/Networ
      * @param {Utils~requestCallback} callback - The callback that handles the response.
      * @param {Utils~requestFallback} fallBack - The fallback that handles the error.
      */
-    Utils.requestUrl = function (url, datatype, options, callback, fallBack) {
+    Utils.requestUrl = function(url, datatype, options, callback, fallBack) {
         $.ajax({
             type: "GET",
             url: url,
             dataType: datatype,
-            success: function (response) {
-                if(callback) {
+            success: function(response) {
+                if (callback) {
                     callback(response, options);
                 }
             },
-            error: function (xhr, ajaxOptions, thrownError) {
+            error: function(xhr, ajaxOptions, thrownError) {
                 var message;
                 var code;
                 if (xhr.status === 0) {
-                    message = "Unreachable URL or No 'Access-Control-Allow-Origin' header is present on the "+url;
+                    message =
+                        "Unreachable URL or No 'Access-Control-Allow-Origin' header is present on the " +
+                        url;
                     code = 0;
                 } else {
                     message = thrownError.message;
                     code = thrownError.code;
                 }
-                if(fallBack) {
+                if (fallBack) {
                     fallBack(new NetworkError(message, "Utils.js", code));
                 }
             }
@@ -308,8 +330,8 @@ define(["jquery", "moment", "./Numeric", "./UtilsIntersection", "../Error/Networ
      * @param {{use:boolean, url:string}} proxy - proxy configuration
      * @return {*}
      */
-    Utils.proxify = function (url, proxy) {
-        if (typeof url !== 'string') {
+    Utils.proxify = function(url, proxy) {
+        if (typeof url !== "string") {
             return url;
         }
         var proxifiedUrl = url;
@@ -338,7 +360,7 @@ define(["jquery", "moment", "./Numeric", "./UtilsIntersection", "../Error/Networ
         var hour = date.getUTCHours();
         var min = date.getUTCMinutes();
         var sec = date.getUTCSeconds();
-        return hour + min/60 + sec/3600;
+        return hour + min / 60 + sec / 3600;
     }
 
     /**
@@ -350,12 +372,17 @@ define(["jquery", "moment", "./Numeric", "./UtilsIntersection", "../Error/Networ
      */
     function _J0(date) {
         var year = date.getUTCFullYear();
-        var month = date.getUTCMonth()+1;
+        var month = date.getUTCMonth() + 1;
         var day = date.getUTCDate();
         var UT = _UT(date);
         //TODO check 1721013.5 should be -730531.5 !!!
-        return 367*year - Math.floor(7/4*(year + Math.floor((month+9)/12))) +
-            Math.floor(275*month/9) + day + 1721013.5;
+        return (
+            367 * year -
+            Math.floor((7 / 4) * (year + Math.floor((month + 9) / 12))) +
+            Math.floor((275 * month) / 9) +
+            day +
+            1721013.5
+        );
     }
 
     /**
@@ -366,7 +393,7 @@ define(["jquery", "moment", "./Numeric", "./UtilsIntersection", "../Error/Networ
      * @private
      */
     Utils.JD = function(date) {
-        return _J0(date) + _UT(date)/24;
+        return _J0(date) + _UT(date) / 24;
     };
 
     /**
@@ -379,11 +406,13 @@ define(["jquery", "moment", "./Numeric", "./UtilsIntersection", "../Error/Networ
      */
     function _GST0(date) {
         //JC is Julian centuries between the Julian day J0 and J2000(2,451,545.0)
-        var julianCentury = (_J0(date) - 2451545.0)/36525;
-        var GST0 = 100.4606184 + 36000.77004*julianCentury + 
-            0.000387933*julianCentury*julianCentury - 
-            2.583e-8*julianCentury*julianCentury*julianCentury;
-        return GST0%360;
+        var julianCentury = (_J0(date) - 2451545.0) / 36525;
+        var GST0 =
+            100.4606184 +
+            36000.77004 * julianCentury +
+            0.000387933 * julianCentury * julianCentury -
+            2.583e-8 * julianCentury * julianCentury * julianCentury;
+        return GST0 % 360;
     }
 
     /**
@@ -393,7 +422,7 @@ define(["jquery", "moment", "./Numeric", "./UtilsIntersection", "../Error/Networ
      * @returns {number} the Greenwich sidereal time at any other UT time
      */
     Utils.GST = function(date) {
-        return (_GST0(date) + 360.98564724*_UT(date)/24)%360;
+        return (_GST0(date) + (360.98564724 * _UT(date)) / 24) % 360;
     };
 
     /**
@@ -403,8 +432,8 @@ define(["jquery", "moment", "./Numeric", "./UtilsIntersection", "../Error/Networ
      * @param {float} longitude - longitude
      * @returns {number}
      */
-    Utils.LST = function( date, longitude ) {
-        return (Utils.GST(date) + longitude)%360;
+    Utils.LST = function(date, longitude) {
+        return (Utils.GST(date) + longitude) % 360;
     };
 
     /**
@@ -414,7 +443,7 @@ define(["jquery", "moment", "./Numeric", "./UtilsIntersection", "../Error/Networ
      * @returns {number} SHA in decimal degree
      */
     Utils.SHA = function(ra) {
-        return 360.0 - 15.0 * ra * 24.0 / 360.0;
+        return 360.0 - (15.0 * ra * 24.0) / 360.0;
     };
 
     /**
@@ -426,8 +455,8 @@ define(["jquery", "moment", "./Numeric", "./UtilsIntersection", "../Error/Networ
      * @returns {number} Greenwich Hour Angle in decimal degree
      */
     Utils.GHA = function(date, ra) {
-        var GHA_Aries = 15.0 * Utils.GST(date) * 24.0 / 360.0;
-        return (Utils.SHA(ra) + GHA_Aries)%360;
+        var GHA_Aries = (15.0 * Utils.GST(date) * 24.0) / 360.0;
+        return (Utils.SHA(ra) + GHA_Aries) % 360;
     };
 
     /**
@@ -442,9 +471,9 @@ define(["jquery", "moment", "./Numeric", "./UtilsIntersection", "../Error/Networ
         var longInRadians = Numeric.toRadian(longitude);
         var cosLat = Math.cos(latInRadians);
         return {
-            x:cosLat * Math.cos(longInRadians),
-            y:cosLat * Math.sin(longInRadians),
-            z:Math.sin(latInRadians)
+            x: cosLat * Math.cos(longInRadians),
+            y: cosLat * Math.sin(longInRadians),
+            z: Math.sin(latInRadians)
         };
     };
 
@@ -457,13 +486,18 @@ define(["jquery", "moment", "./Numeric", "./UtilsIntersection", "../Error/Networ
      * @param {boolean} isFlat - is it a projected CRS
      * @return {float} the distance of the camera in meters.
      */
-    Utils.computeDistanceCameraFromBbox = function(bbox, fov, planetRadius, isFlat) {
+    Utils.computeDistanceCameraFromBbox = function(
+        bbox,
+        fov,
+        planetRadius,
+        isFlat
+    ) {
         var angularDistance = Math.abs(bbox[2] - bbox[0]);
         if (UtilsIntersection.isCrossDateLine(bbox[0], bbox[2])) {
             angularDistance = 360 - angularDistance;
         }
         var visibleAngularDistance;
-        if(isFlat) {
+        if (isFlat) {
             visibleAngularDistance = angularDistance;
         } else if (angularDistance > 180) {
             visibleAngularDistance = 360 - angularDistance;
@@ -471,19 +505,19 @@ define(["jquery", "moment", "./Numeric", "./UtilsIntersection", "../Error/Networ
             visibleAngularDistance = angularDistance;
         }
 
-        var distance = 2 * Math.PI * planetRadius * visibleAngularDistance / 360;
-        return 0.5 * distance / Math.tan(0.5 * Numeric.toRadian(fov));
+        var distance =
+            (2 * Math.PI * planetRadius * visibleAngularDistance) / 360;
+        return (0.5 * distance) / Math.tan(0.5 * Numeric.toRadian(fov));
     };
 
     Utils.defineTimeRequest = function(temporalRanges, timeRequest) {
-        var startDate= timeRequest.from;
+        var startDate = timeRequest.from;
         var stopDate = timeRequest.to;
 
         var times = temporalRanges.split(",");
-        if(times.length == 1) {
+        if (times.length == 1) {
             // no range
             var time = times[0];
-
         } else {
             // temporalRange
             var startTime = times[0];
@@ -494,13 +528,13 @@ define(["jquery", "moment", "./Numeric", "./UtilsIntersection", "../Error/Networ
 
     Utils.formatResolution = function(format) {
         var timeResolution;
-        if (Utils.aContainsB.call(this, format, 'ss')) {
+        if (Utils.aContainsB.call(this, format, "ss")) {
             timeResolution = "seconds";
-        } else if (Utils.aContainsB.call(this, format, 'mm')) {
+        } else if (Utils.aContainsB.call(this, format, "mm")) {
             timeResolution = "minutes";
         } else if (Utils.aContainsB.call(this, format, "HH")) {
             timeResolution = "hours";
-        } else if (Utils.aContainsB.call(this, format, 'DD')) {
+        } else if (Utils.aContainsB.call(this, format, "DD")) {
             timeResolution = "days";
         } else if (Utils.aContainsB.call(this, format, "MM")) {
             timeResolution = "months";
@@ -517,7 +551,7 @@ define(["jquery", "moment", "./Numeric", "./UtilsIntersection", "../Error/Networ
     };
 
     Utils.convertToMoment = function(time) {
-        return (time instanceof Moment()) ? time : Moment().utc(time);
+        return time instanceof Moment() ? time : Moment().utc(time);
     };
 
     Utils.isPassiveSupported = function() {
@@ -532,12 +566,11 @@ define(["jquery", "moment", "./Numeric", "./UtilsIntersection", "../Error/Networ
 
             window.addEventListener("test", options, options);
             window.removeEventListener("test", options, options);
-        } catch(err) {
+        } catch (err) {
             passiveSupported = false;
         }
         return passiveSupported;
     };
 
     return Utils;
-
 });

@@ -1,6 +1,15 @@
-define(['underscore-min','../Utils/Utils', './AbstractRegistryHandler', '../Utils/Constants', "./WCSServer"], function(_,Utils, AbstractRegistryHandler, Constants, WCSServer){
-
-    var WCSServerRegistryHandler = function(layers, mizarConfiguration, pendingLayers){
+define([
+    "underscore-min",
+    "../Utils/Utils",
+    "./AbstractRegistryHandler",
+    "../Utils/Constants",
+    "./WCSServer"
+], function(_, Utils, AbstractRegistryHandler, Constants, WCSServer) {
+    var WCSServerRegistryHandler = function(
+        layers,
+        mizarConfiguration,
+        pendingLayers
+    ) {
         AbstractRegistryHandler.prototype.constructor.call();
         this.layers = layers;
         this.pendingLayers = pendingLayers;
@@ -34,14 +43,14 @@ define(['underscore-min','../Utils/Utils', './AbstractRegistryHandler', '../Util
     function _destroyTileWireFrame(layers) {
         var i, layerDescription;
         var isFound = false;
-        for(i=0; i<layers.length; i++) {
+        for (i = 0; i < layers.length; i++) {
             var layer = layers[i];
             if (layer.getType() === Constants.LAYER.TileWireframe) {
                 isFound = true;
                 break;
             }
         }
-        if(isFound) {
+        if (isFound) {
             var layerToRemove = layers[i];
             layerDescription = layerToRemove.options;
             layerToRemove._detach();
@@ -58,27 +67,49 @@ define(['underscore-min','../Utils/Utils', './AbstractRegistryHandler', '../Util
      * @param fallback fallback
      * @private
      */
-    function _moveTileWireFrameLayer(layers, AbstractRegistryHandler, callback, fallback) {
+    function _moveTileWireFrameLayer(
+        layers,
+        AbstractRegistryHandler,
+        callback,
+        fallback
+    ) {
         var layerDescription = _destroyTileWireFrame(layers);
-        if(layerDescription) {
-            AbstractRegistryHandler.next.handleRequest(layerDescription, callback, fallback);
+        if (layerDescription) {
+            AbstractRegistryHandler.next.handleRequest(
+                layerDescription,
+                callback,
+                fallback
+            );
         }
     }
 
-    WCSServerRegistryHandler.prototype.handleRequest = function(layerDescription, callback, fallback){
+    WCSServerRegistryHandler.prototype.handleRequest = function(
+        layerDescription,
+        callback,
+        fallback
+    ) {
         try {
-            if(layerDescription.type === Constants.LAYER.WCSElevation) {
-                var wcsServer = new WCSServer(this.proxyUse, this.proxyUrl, layerDescription);
+            if (layerDescription.type === Constants.LAYER.WCSElevation) {
+                var wcsServer = new WCSServer(
+                    this.proxyUse,
+                    this.proxyUrl,
+                    layerDescription
+                );
                 var self = this;
                 wcsServer.createLayers(function(layers) {
                     self._handlePendingLayers(self.pendingLayers, layers);
                     callback(layers);
-                    _moveTileWireFrameLayer(self.layers, self, callback, fallback);
+                    _moveTileWireFrameLayer(
+                        self.layers,
+                        self,
+                        callback,
+                        fallback
+                    );
                 }, fallback);
             } else {
                 this.next.handleRequest(layerDescription, callback, fallback);
             }
-        } catch(e) {
+        } catch (e) {
             if (fallback) {
                 fallback(e);
             } else {
@@ -88,5 +119,4 @@ define(['underscore-min','../Utils/Utils', './AbstractRegistryHandler', '../Util
     };
 
     return WCSServerRegistryHandler;
-
 });

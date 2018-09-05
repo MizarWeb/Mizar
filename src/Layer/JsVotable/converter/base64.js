@@ -18,8 +18,13 @@
  ******************************************************************************/
 
 define(function() {
-
-    var TAB_DATA_SIZE = {short: 16, int: 32, float: 32, double: 64, unsignedByte: 8};
+    var TAB_DATA_SIZE = {
+        short: 16,
+        int: 32,
+        float: 32,
+        double: 64,
+        unsignedByte: 8
+    };
 
     /**
      * Creates a base64 constructor based on the description of the different data types.
@@ -47,14 +52,16 @@ define(function() {
      */
     Base64.prototype.computeDataSize = function(datatype, fieldNumber, stream) {
         var dataSize = 0;
-        if (datatype === 'char') {
-            if (/\*/.test(this.fields[fieldNumber].arraysize())) { // if size is variable (ex: arraysize="16*")
+        if (datatype === "char") {
+            if (/\*/.test(this.fields[fieldNumber].arraysize())) {
+                // if size is variable (ex: arraysize="16*")
 
                 var tabBits = this.streamB64(32, stream);
-                dataSize =  (8 * bin2uint32(tabBits));
+                dataSize = 8 * bin2uint32(tabBits);
                 tabBits = [];
-            } else { // fix size
-                dataSize = (8 * this.fields[fieldNumber].arraysize());
+            } else {
+                // fix size
+                dataSize = 8 * this.fields[fieldNumber].arraysize();
             }
         } else {
             dataSize = TAB_DATA_SIZE[datatype];
@@ -78,17 +85,17 @@ define(function() {
         this.bufferTabBits = []; // delete old data
 
         for (i = 0; i < needBit; i += 1) {
-
-            if (stream.charCodeAt(this.ptrStream) == 10) { // Line Feed (Fin de ligne)
+            if (stream.charCodeAt(this.ptrStream) == 10) {
+                // Line Feed (Fin de ligne)
                 i -= 1;
             } else {
                 var nb = b64ToUint6(stream.charCodeAt(this.ptrStream));
 
                 for (var z = 32; z > 0; z >>= 1) {
                     if (tabBits.length !== datasize) {
-                        tabBits.push(((nb & z) === z) ? "1" : "0");
+                        tabBits.push((nb & z) === z ? "1" : "0");
                     } else {
-                        this.bufferTabBits.push(((nb & z) === z) ? "1" : "0");
+                        this.bufferTabBits.push((nb & z) === z ? "1" : "0");
                     }
                 }
             }
@@ -105,42 +112,47 @@ define(function() {
      * @param stream the base64 stream
      * @returns {string} a value such a string or a number
      */
-    Base64.prototype.decodeValue = function(datatype, datasize, fieldNumber, stream) {
+    Base64.prototype.decodeValue = function(
+        datatype,
+        datasize,
+        fieldNumber,
+        stream
+    ) {
         var value;
         var tabBits = [];
         //extracts bits from the datasize
-        if(datatype != 'NULL') {
+        if (datatype != "NULL") {
             tabBits = this.streamB64(datasize, stream);
         }
 
         //converts the bits in human readable value
         switch (datatype) {
-            case 'short':
+            case "short":
                 value = bin2short16(tabBits);
                 break;
-            case 'int':
+            case "int":
                 value = bin2int32(tabBits);
                 break;
-            case 'float':
+            case "float":
                 value = bin2float32(tabBits);
                 value = value.toFixed(this.fields[fieldNumber].precision()); // round (arrondi)
                 break;
-            case 'double':
+            case "double":
                 value = bin2double64(tabBits);
                 value = value.toFixed(this.fields[fieldNumber].precision()); // round (arrondi)
                 break;
-            case 'unsignedByte':
+            case "unsignedByte":
                 value = bin2ubyte8(tabBits);
                 break;
-            case 'char':
+            case "char":
                 value = bin2string(tabBits);
                 break;
-            case 'NULL': // Empty Data
-                value = 'NULL';
+            case "NULL": // Empty Data
+                value = "NULL";
                 break;
         }
-        if(value === 'NaN' || value === 'NULL' || value === 0) {
-            value = '';
+        if (value === "NaN" || value === "NULL" || value === 0) {
+            value = "";
         }
         return value;
     };
@@ -158,21 +170,25 @@ define(function() {
         var nbFields = this.fields.length;
         var tds = [];
         do {
-            var datatype =this.fields[fieldNumber].datatype();
-            var datasize = this.computeDataSize(datatype, fieldNumber,stream);
-            if(datasize == 0) {
-                datatype = 'NULL';
+            var datatype = this.fields[fieldNumber].datatype();
+            var datasize = this.computeDataSize(datatype, fieldNumber, stream);
+            if (datasize == 0) {
+                datatype = "NULL";
             }
-            var value = this.decodeValue(datatype, datasize, fieldNumber, stream);
+            var value = this.decodeValue(
+                datatype,
+                datasize,
+                fieldNumber,
+                stream
+            );
             tds.push(value);
-            if(fieldNumber === (nbFields - 1)) {
+            if (fieldNumber === nbFields - 1) {
                 fieldNumber = 0;
                 trs.push(tds);
                 tds = [];
             } else {
                 fieldNumber += 1;
             }
-
         } while (this.ptrStream < streamLength);
         return trs;
     };
@@ -192,12 +208,12 @@ define(function() {
      ***/
 
     function bin2short16(TabBits) {
-        'use strict';
+        "use strict";
         var buffer, dataview, binary;
 
         buffer = new ArrayBuffer(2);
         dataview = new DataView(buffer);
-        binary = TabBits.join('');
+        binary = TabBits.join("");
         dataview.setUint16(0, parseInt(binary, 2));
 
         return dataview.getInt16(0);
@@ -218,12 +234,12 @@ define(function() {
      ***/
 
     function bin2int32(TabBits) {
-        'use strict';
+        "use strict";
         var buffer, dataview, binary;
 
         buffer = new ArrayBuffer(4);
         dataview = new DataView(buffer);
-        binary = TabBits.join('');
+        binary = TabBits.join("");
         dataview.setUint32(0, parseInt(binary, 2));
 
         return dataview.getInt32(0);
@@ -244,12 +260,12 @@ define(function() {
      ***/
 
     function bin2float32(TabBits) {
-        'use strict';
+        "use strict";
         var buffer, dataview, binary;
 
         buffer = new ArrayBuffer(4);
         dataview = new DataView(buffer);
-        binary = TabBits.join('');
+        binary = TabBits.join("");
         dataview.setUint32(0, parseInt(binary, 2));
 
         return dataview.getFloat32(0);
@@ -270,17 +286,17 @@ define(function() {
      ***/
 
     function bin2double64(TabBits) {
-        'use strict';
+        "use strict";
         var buffer, dataview, lenght, binary;
 
         buffer = new ArrayBuffer(8);
         dataview = new DataView(buffer);
 
-        binary = TabBits.slice(0, 32).join('');
+        binary = TabBits.slice(0, 32).join("");
         dataview.setUint32(0, parseInt(binary, 2));
-        binary = '';
+        binary = "";
 
-        binary =  TabBits.slice(32, 64).join('');
+        binary = TabBits.slice(32, 64).join("");
         dataview.setUint32(4, parseInt(binary, 2));
 
         return dataview.getFloat64(0);
@@ -301,12 +317,12 @@ define(function() {
      ***/
 
     function bin2ubyte8(TabBits) {
-        'use strict';
+        "use strict";
         var buffer, dataview, binary;
 
         buffer = new ArrayBuffer(1);
         dataview = new DataView(buffer);
-        binary = TabBits.join('');
+        binary = TabBits.join("");
         dataview.setUint8(0, parseInt(binary, 2));
 
         return dataview.getUint8(0);
@@ -327,16 +343,16 @@ define(function() {
      ***/
 
     function bin2string(TabBits) {
-        'use strict';
+        "use strict";
         var lenght, binary, i, j, str;
 
-        lenght = ((TabBits.length) / 8);
+        lenght = TabBits.length / 8;
         binary = [];
-        str = '';
+        str = "";
         j = 0;
 
-        for(i = 0; i < lenght; i += 1) {
-            binary = TabBits.slice(j, (j + 8));
+        for (i = 0; i < lenght; i += 1) {
+            binary = TabBits.slice(j, j + 8);
             str = str.concat(String.fromCharCode(bin2ubyte8(binary)));
             binary = [];
             j += 8;
@@ -360,12 +376,12 @@ define(function() {
      ***/
 
     function bin2uint32(TabBits) {
-        'use strict';
+        "use strict";
         var buffer, dataview, binary;
 
         buffer = new ArrayBuffer(4);
         dataview = new DataView(buffer);
-        binary = TabBits.join('');
+        binary = TabBits.join("");
         dataview.setUint32(0, parseInt(binary, 2));
 
         return dataview.getUint32(0);
@@ -388,15 +404,20 @@ define(function() {
     function b64ToUint6(caractere) {
         var byte;
 
-        if (caractere > 64 && caractere < 91) {  // char A-Z
+        if (caractere > 64 && caractere < 91) {
+            // char A-Z
             byte = caractere - 65;
-        } else if (caractere > 96 && caractere < 123) { // char a-z
+        } else if (caractere > 96 && caractere < 123) {
+            // char a-z
             byte = caractere - 71;
-        } else if (caractere > 47 && caractere < 58) { // number 0-9
+        } else if (caractere > 47 && caractere < 58) {
+            // number 0-9
             byte = caractere + 4;
-        } else if (caractere === 43) { // char +
+        } else if (caractere === 43) {
+            // char +
             byte = 62;
-        } else if (caractere === 47) { // char /
+        } else if (caractere === 47) {
+            // char /
             byte = 63;
         }
 
@@ -404,5 +425,4 @@ define(function() {
     }
 
     return Base64;
-
 });

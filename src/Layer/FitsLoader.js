@@ -19,8 +19,7 @@
 
 /*global define: false */
 
-define(["fits"], function () {
-
+define(["fits"], function() {
     /**
      *    Parse fits file
      *
@@ -38,7 +37,11 @@ define(["fits"], function () {
         var data = hdu.data;
 
         var uintPixels;
-        var swapPixels = new Uint8Array(data.view.buffer, data.begin, data.length); // with gl.UNSIGNED_byte
+        var swapPixels = new Uint8Array(
+            data.view.buffer,
+            data.begin,
+            data.length
+        ); // with gl.UNSIGNED_byte
 
         var bpe;
         if (data.arrayType) {
@@ -59,9 +62,14 @@ define(["fits"], function () {
         return fits;
     }
 
-    var loadFits = function (url, successCallback, failCallback, onprogressCallback) {
+    var loadFits = function(
+        url,
+        successCallback,
+        failCallback,
+        onprogressCallback
+    ) {
         var xhr = new XMLHttpRequest();
-        xhr.onreadystatechange = function (e) {
+        xhr.onreadystatechange = function(e) {
             if (xhr.readyState === 4) {
                 if (xhr.status === 200) {
                     if (xhr.response) {
@@ -70,8 +78,7 @@ define(["fits"], function () {
                             successCallback(fits);
                         }
                     }
-                }
-                else {
+                } else {
                     console.error("Error while loading " + url);
                     if (failCallback) {
                         failCallback();
@@ -80,14 +87,12 @@ define(["fits"], function () {
             }
         };
 
-
         // Define default on progress function, otherwise
         // Firefox won't take Content-length header into account
         // so evt.lengthComputable will be always set to false..
-        xhr.onprogress = function (evt) {
-        };
+        xhr.onprogress = function(evt) {};
         xhr.open("GET", url);
-        xhr.responseType = 'arraybuffer';
+        xhr.responseType = "arraybuffer";
         xhr.send();
         return xhr;
     };
@@ -96,5 +101,4 @@ define(["fits"], function () {
         loadFits: loadFits,
         parseFits: parseFits
     };
-
 });

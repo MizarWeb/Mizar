@@ -16,12 +16,59 @@
  * You should have received a copy of the GNU General Public License
  * along with JVotable.  If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
-define( ["./votable","./binary","./binary2","./coosys","./data","./definitions","./description","./field","./fieldref",
-    "./fits","./group","./info","./link","./max","./min","./option","./param","./paramref","./resource","./stream",
-    "./table","./tabledata","./td","./tr","./values"],
-    function(Votable, Binary, Binary2, Coosys, Data, Definitions, Description, Field, Fieldref, Fits, Group, Info, Link,
-    Max, Min, Option, Param, Paramref,Resource, Stream, Table, TableData, Td, Tr, Values) {
-
+define([
+    "./votable",
+    "./binary",
+    "./binary2",
+    "./coosys",
+    "./data",
+    "./definitions",
+    "./description",
+    "./field",
+    "./fieldref",
+    "./fits",
+    "./group",
+    "./info",
+    "./link",
+    "./max",
+    "./min",
+    "./option",
+    "./param",
+    "./paramref",
+    "./resource",
+    "./stream",
+    "./table",
+    "./tabledata",
+    "./td",
+    "./tr",
+    "./values"
+], function(
+    Votable,
+    Binary,
+    Binary2,
+    Coosys,
+    Data,
+    Definitions,
+    Description,
+    Field,
+    Fieldref,
+    Fits,
+    Group,
+    Info,
+    Link,
+    Max,
+    Min,
+    Option,
+    Param,
+    Paramref,
+    Resource,
+    Stream,
+    Table,
+    TableData,
+    Td,
+    Tr,
+    Values
+) {
     var JsVotable = {};
 
     JsVotable.Votable = Votable;
@@ -50,12 +97,12 @@ define( ["./votable","./binary","./binary2","./coosys","./data","./definitions",
     JsVotable.Tr = Tr;
     JsVotable.Values = Values;
     JsVotable.version = {
-        major : 1,
-        minor : 1,
-        patch : 0,
-        date : "2016-10-12",
-        toString : function () {
-            return this.major+ "." + this.minor + "." + this.patch;
+        major: 1,
+        minor: 1,
+        patch: 0,
+        date: "2016-10-12",
+        toString: function() {
+            return this.major + "." + this.minor + "." + this.patch;
         }
     };
 

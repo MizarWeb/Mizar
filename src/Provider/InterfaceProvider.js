@@ -18,22 +18,20 @@
  ******************************************************************************/
 
 /**
- * Provider is an interface that provides methods to load file, which are not supported by Mizar. 
+ * Provider is an interface that provides methods to load file, which are not supported by Mizar.
  * @interface
  */
-function Provider(){}
-
+function Provider() {}
 
 /**
  * Loads a specific file passed from configuration
  * @param {Layer} layer
  * @param {Object} configuration
  */
-Provider.prototype.loadFiles = function (layer, configuration) {};
+Provider.prototype.loadFiles = function(layer, configuration) {};
 
 /**
  * Process data and add them to the layer
  * @param {Layer} layer
  */
 Provider.prototype.handleFeatures = function(layer) {};
-

@@ -19,34 +19,35 @@
 require.config({
     baseUrl: "../src",
     name: "Mizar",
-    include: ['Mizar'],
-    insertRequire: ['Mizar'],
+    include: ["Mizar"],
+    insertRequire: ["Mizar"],
     out: "../build/generated/Mizar.min.js",
     optimize: "none",
     paths: {
         path: "../node_modules/path/path",
         fits: "../external/fits",
         "underscore-min": "../node_modules/underscore/underscore-min",
-        "jquery": "../node_modules/jquery/dist/jquery.min",
+        jquery: "../node_modules/jquery/dist/jquery.min",
         "jquery.ui": "../node_modules/jquery-ui-dist/jquery-ui.min",
         wcs: "../external/wcs",
         samp: "../external/samp",
         string: "../node_modules/string/dist/string",
         gzip: "../external/gzip.min",
         saveAs: "../node_modules/file-saver/FileSaver.min",
-        moment : "../node_modules/moment/min/moment-with-locales.min",
+        moment: "../node_modules/moment/min/moment-with-locales.min",
         jszip: "../node_modules/jszip/dist/jszip.min",
         xmltojson: "../node_modules/xmltojson/lib/xmlToJSON.min",
-        "wms-capabilities": "../node_modules/wms-capabilities/dist/wms-capabilities"
+        "wms-capabilities":
+            "../node_modules/wms-capabilities/dist/wms-capabilities"
     },
     shim: {
         "underscore-min": {
-            exports: '_',
-            init: function () {
+            exports: "_",
+            init: function() {
                 return _.noConflict();
             }
         },
-        "jquery": {
+        jquery: {
             exports: "$"
         }
     }

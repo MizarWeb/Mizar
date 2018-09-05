@@ -35,9 +35,7 @@
  * along with GlobWeb. If not, see <http://www.gnu.org/licenses/>.
  ***************************************/
 
-
-define(function () {
-
+define(function() {
     /**
      * @name AbstractAnimation
      * @class
@@ -46,7 +44,7 @@ define(function () {
      * @implements {Animation}
      * @todo Describes here and link to the tutos about Animation
      */
-    var AbstractAnimation = function () {
+    var AbstractAnimation = function() {
         this.startTime = -1;
         this.pauseTime = -1;
         this.renderContext = null;
@@ -56,7 +54,7 @@ define(function () {
      * @function getRenderContext
      * @memberOf AbstractAnimation#
      */
-    AbstractAnimation.prototype.getRenderContext = function () {
+    AbstractAnimation.prototype.getRenderContext = function() {
         return this.renderContext;
     };
 
@@ -66,31 +64,30 @@ define(function () {
      * @memberOf AbstractAnimation#
      * @private
      */
-    AbstractAnimation.prototype._unregisterActive = function () {
+    AbstractAnimation.prototype._unregisterActive = function() {
         var index = this.renderContext.activeAnimations.indexOf(this);
         if (index >= 0) {
             this.renderContext.activeAnimations.splice(index, 1);
         }
     };
 
-
     /**
      * @function getStatus
      * @memberOf AbstractAnimation#
      */
-    AbstractAnimation.prototype.getStatus = function () {
+    AbstractAnimation.prototype.getStatus = function() {
         if (this.startTime === -1) {
             return "STOPPED";
         } else {
             return this.pauseTime === -1 ? "RUNNING" : "PAUSED";
         }
     };
-    
+
     /**
      * @function start
      * @memberOf AbstractAnimation#
      */
-    AbstractAnimation.prototype.start = function () {
+    AbstractAnimation.prototype.start = function() {
         if (!this.renderContext) {
             return;
         }
@@ -99,8 +96,7 @@ define(function () {
             var now = Date.now();
             if (this.startTime === -1) {
                 this.startTime = now;
-            }
-            else {
+            } else {
                 // resume after pause
                 this.startTime += now - this.pauseTime;
                 this.pauseTime = -1;
@@ -116,7 +112,7 @@ define(function () {
      * @function pause
      * @memberOf AbstractAnimation#
      */
-    AbstractAnimation.prototype.pause = function () {
+    AbstractAnimation.prototype.pause = function() {
         if (!this.renderContext) {
             return;
         }
@@ -131,7 +127,7 @@ define(function () {
      * @function stop
      * @memberOf AbstractAnimation#
      */
-    AbstractAnimation.prototype.stop = function () {
+    AbstractAnimation.prototype.stop = function() {
         this.startTime = -1;
         this.pauseTime = -1;
 
@@ -146,5 +142,4 @@ define(function () {
     /**************************************************************************************************************/
 
     return AbstractAnimation;
-
 });

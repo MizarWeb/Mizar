@@ -16,8 +16,13 @@
  * You should have received a copy of the GNU General Public License
  * along with JVotable.  If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
-define(["./utils","./abstractNode","./min","./max","./option"], function(Utils, AbstractNode, Min, Max, Option) {
-
+define(["./utils", "./abstractNode", "./min", "./max", "./option"], function(
+    Utils,
+    AbstractNode,
+    Min,
+    Max,
+    Option
+) {
     /**
      * Constructs VALUES object.
      *
@@ -58,7 +63,6 @@ define(["./utils","./abstractNode","./min","./max","./option"], function(Utils, 
         this.options = result[2];
     };
 
-
     /**
      * Parses the VALUES node.
      *
@@ -69,7 +73,11 @@ define(["./utils","./abstractNode","./min","./max","./option"], function(Utils, 
         var min;
         var max;
         var options = [];
-        for(var i = 0; childNode!=null && i< childNode.childNodes.length; i++){
+        for (
+            var i = 0;
+            childNode != null && i < childNode.childNodes.length;
+            i++
+        ) {
             var element = childNode.childNodes[i];
             if (element.nodeType == 1) {
                 var nodeName = element.localName;
@@ -84,14 +92,16 @@ define(["./utils","./abstractNode","./min","./max","./option"], function(Utils, 
                         options.push(new Option(element));
                         break;
                     default:
-                        this.getCache().addWarning("unknown element "+nodeName+" in Values node");
+                        this.getCache().addWarning(
+                            "unknown element " + nodeName + " in Values node"
+                        );
                 }
             }
         }
         return [min, max, options];
     };
 
-    Utils.inherits(AbstractNode , Values );
+    Utils.inherits(AbstractNode, Values);
 
     /**
      * Returns the ID value of the attribute.
@@ -148,9 +158,9 @@ define(["./utils","./abstractNode","./min","./max","./option"], function(Utils, 
 
     /**
      * Returns the list of Options objects.
-     * 
+     *
      * Option is a sequence element of the Values node.
-     * 
+     *
      * @returns {?Option[]} the list of Option objects or 0 length when no Option node.
      */
     Values.prototype.getOptions = function() {

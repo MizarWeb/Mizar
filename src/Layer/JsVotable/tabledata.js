@@ -16,8 +16,11 @@
  * You should have received a copy of the GNU General Public License
  * along with JVotable.  If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
-define(["./utils","./tr","./abstractData"], function(Utils, Tr, AbstractData) {
-
+define(["./utils", "./tr", "./abstractData"], function(
+    Utils,
+    Tr,
+    AbstractData
+) {
     /**
      * Construct a TableData object.
      *
@@ -42,7 +45,7 @@ define(["./utils","./tr","./abstractData"], function(Utils, Tr, AbstractData) {
             this.trs = parseTableData(childNode);
         } else {
             this.trs = [];
-            for(var i=0;i<options.length; i++) {
+            for (var i = 0; i < options.length; i++) {
                 this.trs.push(new Tr(null, options[i]));
             }
         }
@@ -55,21 +58,27 @@ define(["./utils","./tr","./abstractData"], function(Utils, Tr, AbstractData) {
      */
     var parseTableData = function(childNode) {
         var trs = [];
-        for(var i = 0; childNode!=null && i< childNode.childNodes.length; i++){
+        for (
+            var i = 0;
+            childNode != null && i < childNode.childNodes.length;
+            i++
+        ) {
             var element = childNode.childNodes[i];
             if (element.nodeType == 1) {
                 var nodeName = element.localName;
                 if (nodeName == "TR") {
                     trs.push(new Tr(element));
-                }  else {
-                    this.getCache().addWarning("unknown element "+nodeName+" in TableData node");
+                } else {
+                    this.getCache().addWarning(
+                        "unknown element " + nodeName + " in TableData node"
+                    );
                 }
             }
         }
         return trs;
     };
 
-    Utils.inherits(AbstractData , TableData );
+    Utils.inherits(AbstractData, TableData);
 
     /**
      * Returns the list of Tr objects.

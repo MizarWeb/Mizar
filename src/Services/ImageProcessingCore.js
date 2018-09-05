@@ -21,202 +21,220 @@
 /**
  *    ImageProcessing module
  */
-define(["jquery", "../Renderer/FeatureStyle", "jquery.ui"],
-    function ($, FeatureStyle) {
+define(["jquery", "../Renderer/FeatureStyle", "jquery.ui"], function(
+    $,
+    FeatureStyle
+) {
+    /**************************************************************************************************************/
 
-        /**************************************************************************************************************/
+    var feature;
+    var layer;
+    var disable;
+    var unselect;
+    var $dialog;
+    var histogramElement;
+    var cutOutElement;
 
-        var feature;
-        var layer;
-        var disable;
-        var unselect;
-        var $dialog;
-        var histogramElement;
-        var cutOutElement;
+    /**************************************************************************************************************/
 
-        /**************************************************************************************************************/
+    /**
+     *    Toggle visibility of dialog
+     */
+    function toggle() {
+        if ($dialog.dialog("isOpen")) {
+            $dialog.dialog("close");
+        } else {
+            $dialog.dialog("open");
+        }
+    }
 
-        /**
-         *    Toggle visibility of dialog
-         */
-        function toggle() {
-            if ($dialog.dialog("isOpen")) {
-                $dialog.dialog("close");
-            }
-            else {
-                $dialog.dialog("open");
-            }
+    /**************************************************************************************************************/
+
+    /**
+     *    Remove view
+     */
+    function remove() {
+        if (unselect) {
+            unselect();
         }
 
-        /**************************************************************************************************************/
-
-        /**
-         *    Remove view
-         */
-        function remove() {
-            if (unselect) {
-                unselect();
-            }
-
-            if (disable) {
-                disable();
-            }
-
-            if (histogramElement) {
-                histogramElement.remove();
-            }
-
-            $dialog.remove();
+        if (disable) {
+            disable();
         }
 
-        /**************************************************************************************************************/
+        if (histogramElement) {
+            histogramElement.remove();
+        }
 
-        /**
-         *    Set data to process
-         *
-         *    @param selectedData Object containing feature and layer extracted by <PickingManager>
-         */
-        function setData(selectedData) {
-            if (feature && feature.properties.identifier === selectedData.feature.properties.identifier) {
+        $dialog.remove();
+    }
+
+    /**************************************************************************************************************/
+
+    /**
+     *    Set data to process
+     *
+     *    @param selectedData Object containing feature and layer extracted by <PickingManager>
+     */
+    function setData(selectedData) {
+        if (
+            feature &&
+            feature.properties.identifier ===
+                selectedData.feature.properties.identifier
+        ) {
+            this.toggle();
+        } else {
+            if (!$dialog.dialog("isOpen")) {
                 this.toggle();
             }
-            else {
-                if (!$dialog.dialog("isOpen")) {
-                    this.toggle();
-                }
-            }
+        }
 
-            feature = selectedData.feature;
-            layer = selectedData.layer;
+        feature = selectedData.feature;
+        layer = selectedData.layer;
 
-            if (selectedData.feature.services) {
-                cutOutElement.setUrl(selectedData.feature.services.download.url);
-            }/** else {
+        if (selectedData.feature.services) {
+            cutOutElement.setUrl(selectedData.feature.services.download.url);
+        } /** else {
                 // TODO : disable cutOutElement if feature's url isn't defined
             }*/
 
-            var image = selectedData.feature.properties.style.uniformValues;
-            if (!image) {
-                $dialog.find('.histogramContent').children('div').fadeOut(function () {
-                    $(this).siblings('p').fadeIn();
+        var image = selectedData.feature.properties.style.uniformValues;
+        if (!image) {
+            $dialog
+                .find(".histogramContent")
+                .children("div")
+                .fadeOut(function() {
+                    $(this)
+                        .siblings("p")
+                        .fadeIn();
                 });
+        } else {
+            this.setImage(image);
+        }
+    }
+
+    /**************************************************************************************************************/
+
+    /**
+     * Remove passed feature
+     *
+     * @param {Feature} data
+     */
+    function removeData(data) {
+        if (
+            feature &&
+            data.feature.properties.identifier === feature.properties.identifier
+        ) {
+            if (this.isOpened()) {
+                this.toggle();
             }
-            else {
-                this.setImage(image);
-            }
+            $dialog
+                .find(".histogramContent")
+                .children("div")
+                .fadeOut(function() {
+                    $(this)
+                        .siblings("p")
+                        .fadeIn();
+                });
+            feature = null;
+            layer = null;
+        }
+    }
+
+    /**************************************************************************************************************/
+
+    /**
+     * Set image on the Histogram element
+     *
+     * @param image
+     */
+    function setImage(image) {
+        histogramElement.setImage(image);
+        if (image.url) {
+            cutOutElement.setUrl(image.url);
         }
 
-        /**************************************************************************************************************/
-
-        /**
-         * Remove passed feature
-         *
-         * @param {Feature} data
-         */
-        function removeData(data) {
-            if (feature && data.feature.properties.identifier === feature.properties.identifier) {
-                if (this.isOpened()) {
-                    this.toggle();
-                }
-                $dialog.find('.histogramContent').children('div').fadeOut(function () {
-                    $(this).siblings('p').fadeIn();
-                });
-                feature = null;
-                layer = null;
-            }
-        }
-
-        /**************************************************************************************************************/
-
-        /**
-         * Set image on the Histogram element
-         *
-         * @param image
-         */
-        function setImage(image) {
-            histogramElement.setImage(image);
-            if (image.url) {
-                cutOutElement.setUrl(image.url);
-            }
-
-            $dialog.find('.histogramContent').children('p').fadeOut(function () {
-                $(this).siblings('div').fadeIn();
+        $dialog
+            .find(".histogramContent")
+            .children("p")
+            .fadeOut(function() {
+                $(this)
+                    .siblings("div")
+                    .fadeIn();
             });
+    }
+
+    /**************************************************************************************************************/
+
+    /**
+     * Change shader callback
+     *
+     * @param contrast
+     */
+    function changeShaderCallback(contrast) {
+        var targetStyle;
+        if (contrast === "raw") {
+            targetStyle = new FeatureStyle(feature.properties.style);
+            targetStyle.fillShader = {
+                fragmentCode: null,
+                updateUniforms: null
+            };
+            layer.modifyFeatureStyle(feature, targetStyle);
+        } else {
+            targetStyle = new FeatureStyle(feature.properties.style);
+            targetStyle.fillShader = {
+                fragmentCode: this.image.fragmentCode,
+                updateUniforms: this.image.updateUniforms
+            };
+            layer.modifyFeatureStyle(feature, targetStyle);
         }
+    }
 
-        /**************************************************************************************************************/
+    /**************************************************************************************************************/
 
+    /**
+     * Check if ImageProcessing is opened
+     */
+    function isOpened() {
+        return $dialog.dialog("isOpen");
+    }
+
+    /**************************************************************************************************************/
+
+    return {
         /**
-         * Change shader callback
+         *    Init ImageProcessingCore
          *
-         * @param contrast
+         *    @param options
+         *        <ul>
+         *            <li>feature: The feature to process
+         *            <li>layer: The layer to which the feature belongs to
+         *            <li>disable: Disable callback</li>
+         *            <li>unselect: Unselect callback</li>
+         *        </ul>
+         *    @param {HTMLElement} $dl dialogElement
+         *    @param {HTMLElement} $histoElmt histogramElement
+         *    @param {HTMLElement} $cutOutElmt cutOutElement
+         *
          */
-        function changeShaderCallback(contrast) {
-            var targetStyle;
-            if (contrast === "raw") {
-                targetStyle = new FeatureStyle(feature.properties.style);
-                targetStyle.fillShader = {
-                    fragmentCode: null,
-                    updateUniforms: null
-                };
-                layer.modifyFeatureStyle(feature, targetStyle);
+        init: function(options, $dl, histoElmt, cutOutElmt) {
+            if (options) {
+                //this.id = options.id;
+                feature = options.feature || null;
+                layer = options.layer || null;
+
+                // Callbacks
+                disable = options.disable || null;
+                unselect = options.unselect || null;
             }
-            else {
-                targetStyle = new FeatureStyle(feature.properties.style);
-                targetStyle.fillShader = {
-                    fragmentCode: this.image.fragmentCode,
-                    updateUniforms: this.image.updateUniforms
-                };
-                layer.modifyFeatureStyle(feature, targetStyle);
-            }
-        }
 
-        /**************************************************************************************************************/
+            $dialog = $dl;
+            histogramElement = histoElmt;
+            cutOutElement = cutOutElmt;
+        },
 
-        /**
-         * Check if ImageProcessing is opened
-         */
-        function isOpened() {
-            return $dialog.dialog("isOpen");
-        }
-
-        /**************************************************************************************************************/
-
-        return {
-
-            /**
-             *    Init ImageProcessingCore
-             *
-             *    @param options
-             *        <ul>
-             *            <li>feature: The feature to process
-             *            <li>layer: The layer to which the feature belongs to
-             *            <li>disable: Disable callback</li>
-             *            <li>unselect: Unselect callback</li>
-             *        </ul>
-             *    @param {HTMLElement} $dl dialogElement
-             *    @param {HTMLElement} $histoElmt histogramElement
-             *    @param {HTMLElement} $cutOutElmt cutOutElement
-             *
-             */
-            init: function (options, $dl, histoElmt, cutOutElmt) {
-                if (options) {
-                    //this.id = options.id;
-                    feature = options.feature || null;
-                    layer = options.layer || null;
-
-                    // Callbacks
-                    disable = options.disable || null;
-                    unselect = options.unselect || null;
-                }
-
-                $dialog = $dl;
-                histogramElement = histoElmt;
-                cutOutElement = cutOutElmt;
-            },
-
-            setData: setData,
-            setImage: setImage,
-            toggle: toggle
-        };
-    });
+        setData: setData,
+        setImage: setImage,
+        toggle: toggle
+    };
+});

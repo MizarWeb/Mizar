@@ -21,8 +21,7 @@
 /**
  * About dialog
  */
-define(["jquery", "jquery.ui"], function ($) {
-
+define(["jquery", "jquery.ui"], function($) {
     /*jshint multistr: true */
     var aboutContent =
         '<div id="about" title="About">\
@@ -48,11 +47,11 @@ define(["jquery", "jquery.ui"], function ($) {
         /**
          *    Show about dialog
          */
-        show: function () {
+        show: function() {
             if (!$about) {
                 // Create dialog
                 $about = $(aboutContent)
-                    .appendTo('body')
+                    .appendTo("body")
                     .dialog({
                         autoOpen: false,
                         resizable: false,
@@ -64,15 +63,17 @@ define(["jquery", "jquery.ui"], function ($) {
                             effect: "fade",
                             duration: 1000
                         },
-                        width: '500px',
-                        minHeight: 'auto',
+                        width: "500px",
+                        minHeight: "auto",
                         draggable: false,
-                        open: function () {
+                        open: function() {
                             // Remove auto-focus
-                            $(this).find('a:first-child').blur();
+                            $(this)
+                                .find("a:first-child")
+                                .blur();
                         },
-                        close: function () {
-                            if ($('#showAbout').is(':checked')) {
+                        close: function() {
+                            if ($("#showAbout").is(":checked")) {
                                 // Don't show about for later sessions
                                 localStorage.showAbout = false;
                             }
@@ -83,5 +84,4 @@ define(["jquery", "jquery.ui"], function ($) {
             }
         }
     };
-
 });

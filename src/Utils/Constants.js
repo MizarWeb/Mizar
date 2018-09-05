@@ -16,11 +16,8 @@
  * You should have received a copy of the GNU General Public License
  * along with MIZAR. If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
-define(function () {
-
-    var Constants = function () {
-    };
-
+define(function() {
+    var Constants = function() {};
 
     /**
      * @namespace
@@ -36,7 +33,6 @@ define(function () {
         Path: "Path",
         Segmented: "Segmented"
     };
-
 
     /**
      * @namespace
@@ -206,18 +202,18 @@ define(function () {
         FitsHips: "FitsHips",
         FitsVisu: "FitsVisu",
         Histogram: "Histogram",
-        ImageProcessing : "ImageProcessing",
-        MeasureToolSky : "MeasureToolSky",
-        MeasureToolPlanet : "MeasureToolPlanet",
-        MocBase : "MocBase",
-        MollweideViewer : "MollweideViewer",
-        PickingManager : "PickingManager",
-        Samp : "Samp",
-        SelectionTool : "SelectionTool",
-        NameResolver : "NameResolver",
-        ReverseNameResolver : "ReverseNameResolver",
-        ExportTool : "ExportTool",
-        TimeTravel : "TimeTravel"
+        ImageProcessing: "ImageProcessing",
+        MeasureToolSky: "MeasureToolSky",
+        MeasureToolPlanet: "MeasureToolPlanet",
+        MocBase: "MocBase",
+        MollweideViewer: "MollweideViewer",
+        PickingManager: "PickingManager",
+        Samp: "Samp",
+        SelectionTool: "SelectionTool",
+        NameResolver: "NameResolver",
+        ReverseNameResolver: "ReverseNameResolver",
+        ExportTool: "ExportTool",
+        TimeTravel: "TimeTravel"
     };
 
     /**
@@ -229,10 +225,10 @@ define(function () {
      * @property {String} GoogleMouse - GoogleMouse device
      */
     Constants.HANDLER = {
-        Touch : "Touch",
-        Keyboard : "Keyboard",
-        Mouse : "Mouse",
-        GoogleMouse : "GoogleMouse"
+        Touch: "Touch",
+        Keyboard: "Keyboard",
+        Mouse: "Mouse",
+        GoogleMouse: "GoogleMouse"
     };
 
     /**
@@ -245,11 +241,11 @@ define(function () {
      * @property {String} Trajectory - Trajectory
      */
     Constants.PROVIDER = {
-        Constellation : "Constellation",
-        Planet : "Planet",
-        Star : "Star",
-        Crater : "Crater",
-        Trajectory : "Trajectory"
+        Constellation: "Constellation",
+        Planet: "Planet",
+        Star: "Star",
+        Crater: "Crater",
+        Trajectory: "Trajectory"
     };
 
     /**
@@ -277,11 +273,11 @@ define(function () {
      * @property {String} FeatureStyle - FeatureStyle utility
      */
     Constants.UTILITY = {
-        Fits : "Fits",
-        Intersection : "Intersection",
-        Numeric : "Numeric",
-        CreateStyle : "CreateStyle",
-        FeatureStyle : "FeatureStyle"
+        Fits: "Fits",
+        Intersection: "Intersection",
+        Numeric: "Numeric",
+        CreateStyle: "CreateStyle",
+        FeatureStyle: "FeatureStyle"
     };
 
     /**
@@ -292,9 +288,9 @@ define(function () {
      * @property {String} PAUSED - animation is paused
      */
     Constants.ANIMATION_STATUS = {
-        STOPPED : "STOPPED",
-        RUNNING : "RUNNING",
-        PAUSED : "PAUSED"
+        STOPPED: "STOPPED",
+        RUNNING: "RUNNING",
+        PAUSED: "PAUSED"
     };
 
     /**
@@ -329,46 +325,46 @@ define(function () {
      * @property {String} FEATURED_ADDED - Feature added
      */
     Constants.EVENT_MSG = {
-        PLUGIN_NOT_FOUND : "plugin:not_found",
-        MIZAR_MODE_TOGGLE : "mizarMode:toggle",
-        LAYER_BACKGROUND_ADDED : "backgroundLayer:add",
-        LAYER_BACKGROUND_CHANGED : "backgroundLayer:change",
-        LAYER_ADDITIONAL_ADDED : "additionalLayer:add",
-        LAYER_REMOVED : "layer:remove",
-        LAYER_VISIBILITY_CHANGED : "visibility:changed",
-        LAYER_OPACITY_CHANGED : "opacity:changed",
-        LAYER_START_LOAD : "startLoad",
-        LAYER_END_LOAD : "endLoad",
-        LAYER_START_BACKGROUND_LOAD : "startBackgroundLoad",
-        LAYER_END_BACKGROUND_LOAD : "endBackgroundLoad",
-        LAYER_UPDATE_STATS_ATTRIBUTES : "updateStatsAttribute",
-        LAYER_TOGGLE_WMS : "toggleWMS",
-        LAYER_FORCE_REFRESH : "layer:forceRefresh",
-        LAYER_TIME_CHANGED : "layer:time:changed",
-        LAYERS_TIME_CHANGED : "layers:time:changed",
-        TIME_TRAVEL_UPDATED : "timeTravel:updated",
+        PLUGIN_NOT_FOUND: "plugin:not_found",
+        MIZAR_MODE_TOGGLE: "mizarMode:toggle",
+        LAYER_BACKGROUND_ADDED: "backgroundLayer:add",
+        LAYER_BACKGROUND_CHANGED: "backgroundLayer:change",
+        LAYER_ADDITIONAL_ADDED: "additionalLayer:add",
+        LAYER_REMOVED: "layer:remove",
+        LAYER_VISIBILITY_CHANGED: "visibility:changed",
+        LAYER_OPACITY_CHANGED: "opacity:changed",
+        LAYER_START_LOAD: "startLoad",
+        LAYER_END_LOAD: "endLoad",
+        LAYER_START_BACKGROUND_LOAD: "startBackgroundLoad",
+        LAYER_END_BACKGROUND_LOAD: "endBackgroundLoad",
+        LAYER_UPDATE_STATS_ATTRIBUTES: "updateStatsAttribute",
+        LAYER_TOGGLE_WMS: "toggleWMS",
+        LAYER_FORCE_REFRESH: "layer:forceRefresh",
+        LAYER_TIME_CHANGED: "layer:time:changed",
+        LAYERS_TIME_CHANGED: "layers:time:changed",
+        TIME_TRAVEL_UPDATED: "timeTravel:updated",
         /** json object like : 
          { "date" : the current time,
            "display" : the current date as string for display,
            "period" : { "from" : , "to" : } <-- if null , no period managed
          }
         */
-        BASE_LAYERS_ERROR : "baseLayersError",
-        BASE_LAYERS_READY : "baseLayersReady",
-        CRS_MODIFIED : "modifiedCrs",
-        NAVIGATION_STARTED : "startNavigation",
-        NAVIGATION_ENDED : "endNavigation",
-        NAVIGATION_MODIFIED : "modifiedNavigation",
-        NAVIGATION_CHANGED_DISTANCE : "navigation:changedDistance",
-        IMAGE_DOWNLOADED : "image:download",
-        IMAGE_REMOVED : "image:remove",
-        IMAGE_ADDED : "image:add",
-        FEATURED_ADDED : "features:added",
-        GLOBAL_TIME_REWIND    : "globalTime:rewind",
-        GLOBAL_TIME_FORWARD   : "globalTime:forward",
-        GLOBAL_TIME_SET       : "globalTime:set",
-        GLOBAL_TIME_CHANGED   : "globalTime:changed", // temporary, need to be link to LAYERS_TIME_CHANGED after dev
-        GLOBAL_TIME_INIT   : "globalTime:init"
+        BASE_LAYERS_ERROR: "baseLayersError",
+        BASE_LAYERS_READY: "baseLayersReady",
+        CRS_MODIFIED: "modifiedCrs",
+        NAVIGATION_STARTED: "startNavigation",
+        NAVIGATION_ENDED: "endNavigation",
+        NAVIGATION_MODIFIED: "modifiedNavigation",
+        NAVIGATION_CHANGED_DISTANCE: "navigation:changedDistance",
+        IMAGE_DOWNLOADED: "image:download",
+        IMAGE_REMOVED: "image:remove",
+        IMAGE_ADDED: "image:add",
+        FEATURED_ADDED: "features:added",
+        GLOBAL_TIME_REWIND: "globalTime:rewind",
+        GLOBAL_TIME_FORWARD: "globalTime:forward",
+        GLOBAL_TIME_SET: "globalTime:set",
+        GLOBAL_TIME_CHANGED: "globalTime:changed", // temporary, need to be link to LAYERS_TIME_CHANGED after dev
+        GLOBAL_TIME_INIT: "globalTime:init"
     };
 
     /**
@@ -382,56 +378,55 @@ define(function () {
      * @property {String} SERVICE_VECTOR - Service index
      */
     Constants.DISPLAY = {
-        RENDERING : -1,
-        DEFAULT_RASTER : 0,
-        SELECTED_RASTER : 10,
-        DEFAULT_VECTOR : 20,
-        SELECTED_VECTOR : 30,
-        SERVICE_VECTOR : 40
+        RENDERING: -1,
+        DEFAULT_RASTER: 0,
+        SELECTED_RASTER: 10,
+        DEFAULT_VECTOR: 20,
+        SELECTED_VECTOR: 30,
+        SERVICE_VECTOR: 40
     };
 
     Constants.TIME_STEP = {
-        YEAR        : "years",
-        QUARTER     : "quarters",
-        MONTH       : "months",
-        WEEK        : "weeks",
-        DAY         : "days",
-        HOUR        : "hours",
-        MINUTE      : "minutes",
-        SECOND      : "seconds",
-        MILLISECOND : "milliseconds",
-        ENUMERATED  : null
+        YEAR: "years",
+        QUARTER: "quarters",
+        MONTH: "months",
+        WEEK: "weeks",
+        DAY: "days",
+        HOUR: "hours",
+        MINUTE: "minutes",
+        SECOND: "seconds",
+        MILLISECOND: "milliseconds",
+        ENUMERATED: null
     };
 
     Constants.TIME_MOMENT_STEP = {
-        YEAR        : "year",
-        MONTH       : "month",
-        DAY         : "day",
-        HOUR        : "hour",
-        MINUTE      : "minute",
-        SECOND      : "second"
+        YEAR: "year",
+        MONTH: "month",
+        DAY: "day",
+        HOUR: "hour",
+        MINUTE: "minute",
+        SECOND: "second"
     };
 
     Constants.UNIT_TIME_WMS = {
-        YEAR        : "Y",
-        MONTH       : "M",
-        DAY         : "D",
-        HOUR        : "H",
-        MINUTE      : "M",
-        SECONDE     : "S"
+        YEAR: "Y",
+        MONTH: "M",
+        DAY: "D",
+        HOUR: "H",
+        MINUTE: "M",
+        SECONDE: "S"
     };
 
     Constants.UNIT_RESOLUTION_WMS = {
-        TIME        : "PT",
-        NOT_TIME    : "P"
+        TIME: "PT",
+        NOT_TIME: "P"
     };
 
     Constants.TIME = {
-        DEFAULT_FORMAT : "Do MMM Y HH:mm"
+        DEFAULT_FORMAT: "Do MMM Y HH:mm"
     };
 
     /**************************************************************************************************************/
 
     return Constants;
-
 });

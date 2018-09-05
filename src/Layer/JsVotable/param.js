@@ -16,8 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with JVotable.  If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
-define(["./utils","./field"], function(Utils, Field) {
-
+define(["./utils", "./field"], function(Utils, Field) {
     /**
      * Constructs the Param object.
      *
@@ -41,7 +40,7 @@ define(["./utils","./field"], function(Utils, Field) {
         Field.prototype.constructor.call(this, childNode);
     };
 
-    Utils.inherits(Field , Param );
+    Utils.inherits(Field, Param);
 
     /**
      * Returns the value value.

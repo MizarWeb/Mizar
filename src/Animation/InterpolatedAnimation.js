@@ -35,8 +35,10 @@
  * along with GlobWeb. If not, see <http://www.gnu.org/licenses/>.
  ***************************************/
 
-define(['../Utils/Utils', './AbstractAnimation'], function (Utils, AbstractAnimation) {
-
+define(["../Utils/Utils", "./AbstractAnimation"], function(
+    Utils,
+    AbstractAnimation
+) {
     /**
      * Interpolated animation configuration
      * @typedef {Object} AbstractAnimation.interpolated_configuration
@@ -46,7 +48,7 @@ define(['../Utils/Utils', './AbstractAnimation'], function (Utils, AbstractAnima
      * @property {Function} interpolationFunction-  Interpolation function
      * @property {Function} setFunction - Setter of the Interpolation function
      */
-    
+
     /**
      * @name InterpolatedAnimation
      * @class
@@ -60,7 +62,7 @@ define(['../Utils/Utils', './AbstractAnimation'], function (Utils, AbstractAnima
      * @memberOf module:Animation
      * @todo Create a tutorial with a simple InterpolatedAnimation on Mars
      */
-    var InterpolatedAnimation = function (options) {
+    var InterpolatedAnimation = function(options) {
         // Call ancestor constructor
         AbstractAnimation.prototype.constructor.call(this);
 
@@ -83,7 +85,7 @@ define(['../Utils/Utils', './AbstractAnimation'], function (Utils, AbstractAnima
      * @param {float} t Value at [0,1]
      * @param {float} value Value to reach
      */
-    InterpolatedAnimation.prototype.addValue = function (t, value) {
+    InterpolatedAnimation.prototype.addValue = function(t, value) {
         var count = this.values.length;
         var upper = 0;
         while (upper < count && this.values[upper][0] < t) {
@@ -93,25 +95,23 @@ define(['../Utils/Utils', './AbstractAnimation'], function (Utils, AbstractAnima
         this.values.splice(upper, 0, [t, value]);
     };
 
-
     /**
      * Starts the animation.
      * @function start
      * @memberOf InterpolatedAnimation#
      */
-    InterpolatedAnimation.prototype.start = function () {
+    InterpolatedAnimation.prototype.start = function() {
         Animation.prototype.start.call(this);
         this.setFunction(this.startValue);
         //TODO this.startValue is a bug ?
     };
-
 
     /**
      * Stops the animation.
      * @function stop
      * @memberOf InterpolatedAnimation
      */
-    InterpolatedAnimation.prototype.stop = function () {
+    InterpolatedAnimation.prototype.stop = function() {
         Animation.prototype.stop.call(this);
         this.setFunction(this.endValue);
         //TODO this.endValue is a bug ?
@@ -123,8 +123,12 @@ define(['../Utils/Utils', './AbstractAnimation'], function (Utils, AbstractAnima
      * @memberOf InterpolatedAnimation
      * @param {float} now Now
      */
-    InterpolatedAnimation.prototype.update = function (now) {
-        var t = Numeric.map01(now, this.startTime, this.startTime + this.duration);
+    InterpolatedAnimation.prototype.update = function(now) {
+        var t = Numeric.map01(
+            now,
+            this.startTime,
+            this.startTime + this.duration
+        );
         if (t >= 1) {
             this.stop();
             return;
@@ -142,7 +146,11 @@ define(['../Utils/Utils', './AbstractAnimation'], function (Utils, AbstractAnima
         // Remap t between lower and upper bounds
         t = Numeric.map01(t, this.values[lower][0], this.values[upper][0]);
         // Interpolate value
-        var value = this.interpolationFunction(t, this.values[lower][1], this.values[upper][1]);
+        var value = this.interpolationFunction(
+            t,
+            this.values[lower][1],
+            this.values[upper][1]
+        );
         // Use interpolated value
         this.setFunction(value);
     };
@@ -150,5 +158,4 @@ define(['../Utils/Utils', './AbstractAnimation'], function (Utils, AbstractAnima
     /**************************************************************************************************************/
 
     return InterpolatedAnimation;
-
 });

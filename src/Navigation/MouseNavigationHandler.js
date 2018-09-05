@@ -35,15 +35,14 @@
  * along with GlobWeb. If not, see <http://www.gnu.org/licenses/>.
  ***************************************/
 
-define(["../Utils/Utils"], function (Utils) {
-
+define(["../Utils/Utils"], function(Utils) {
     /**
      * Mouse navigation handler configuration
      * @typedef {Object} AbstractNavigation.mouse_configuration
      * @property {float} [panButton = 0]
      * @property {float} [rotateButton = 1]
      * @property {boolean} [zoomOnDblClick = false] - if true defines animation on double click
-     * @property {Object} [zoomOptions] - @see look at options in {@link Navigation#zoomTo} 
+     * @property {Object} [zoomOptions] - @see look at options in {@link Navigation#zoomTo}
      */
 
     /**
@@ -67,8 +66,7 @@ define(["../Utils/Utils"], function (Utils) {
      * @constructor
      * @memberOf module:Navigation
      */
-    var MouseNavigationHandler = function (options) {
-
+    var MouseNavigationHandler = function(options) {
         /**************************************************************************************************************/
 
         /**
@@ -83,7 +81,8 @@ define(["../Utils/Utils"], function (Utils) {
         var _dy = 0;
         var _panButton = (options && options.panButton) || 0;
         var _rotateButton = (options && options.rotateButton) || 1;
-        var _zoomOptions = (options && options.zoomOptions) ? options.zoomOptions : {};
+        var _zoomOptions =
+            options && options.zoomOptions ? options.zoomOptions : {};
 
         /**************************************************************************************************************/
 
@@ -94,14 +93,13 @@ define(["../Utils/Utils"], function (Utils) {
         /**
          Event handler for mouse wheel
          */
-        var _handleMouseWheel = function (event) {
+        var _handleMouseWheel = function(event) {
             var factor;
 
             // Check differences between firefox and the rest of the world
             if (event.wheelDelta === undefined) {
                 factor = event.detail;
-            }
-            else {
+            } else {
                 factor = -event.wheelDelta / 120.0;
             }
             _navigation.zoom(factor);
@@ -123,7 +121,7 @@ define(["../Utils/Utils"], function (Utils) {
         /**
          * Event handler for mouse down
          */
-        var _handleMouseDown = function (event) {
+        var _handleMouseDown = function(event) {
             document.addEventListener("mouseup", _handleMouseUp);
             _pressedButton = event.button;
 
@@ -146,7 +144,7 @@ define(["../Utils/Utils"], function (Utils) {
         /**
          * Event handler for mouse up
          */
-        var _handleMouseUp = function (event) {
+        var _handleMouseUp = function(event) {
             // No button pressed anymore
             _pressedButton = -1;
             document.removeEventListener("mouseup", _handleMouseUp);
@@ -154,7 +152,6 @@ define(["../Utils/Utils"], function (Utils) {
             if (_navigation.inertia && (_dx !== 0 || _dy !== 0)) {
                 if (event.button === _panButton) {
                     _navigation.inertia.launch("pan", _dx, _dy);
-
                 }
                 if (event.button === _rotateButton) {
                     _navigation.inertia.launch("rotate", _dx, _dy);
@@ -182,14 +179,14 @@ define(["../Utils/Utils"], function (Utils) {
         /**
          Event handler for mouse move
          */
-        var _handleMouseMove = function (event) {
+        var _handleMouseMove = function(event) {
             // No button pressed
             if (_pressedButton < 0) {
                 return;
             }
 
-            _dx = (event.clientX - _lastMouseX);
-            _dy = (event.clientY - _lastMouseY);
+            _dx = event.clientX - _lastMouseX;
+            _dy = event.clientY - _lastMouseY;
 
             if (_dx === 0 && _dy === 0) {
                 return;
@@ -216,14 +213,16 @@ define(["../Utils/Utils"], function (Utils) {
         /**
          Event handler for mouse double click
          */
-        var _handleMouseDblClick = function (event) {
+        var _handleMouseDblClick = function(event) {
             if (event.button === 0) {
-                var pos,geo;
-                pos = _navigation.ctx.getRenderContext().getXYRelativeToCanvas(event);
+                var pos, geo;
+                pos = _navigation.ctx
+                    .getRenderContext()
+                    .getXYRelativeToCanvas(event);
                 geo = _navigation.ctx.getLonLatFromPixel(pos[0], pos[1]);
 
                 if (geo) {
-                    _navigation.zoomTo(geo,_zoomOptions);
+                    _navigation.zoomTo(geo, _zoomOptions);
                 }
             }
         };
@@ -237,7 +236,7 @@ define(["../Utils/Utils"], function (Utils) {
         /**
          *    Setup the default event handlers for the _navigation
          */
-        this.install = function (nav) {
+        this.install = function(nav) {
             _navigation = nav;
             var canvas = _navigation.renderContext.canvas;
 
@@ -248,32 +247,44 @@ define(["../Utils/Utils"], function (Utils) {
             canvas.addEventListener("mousemove", _handleMouseMove);
 
             if (options && options.zoomOnDblClick) {
-              canvas.addEventListener("dblclick", _handleMouseDblClick);
+                canvas.addEventListener("dblclick", _handleMouseDblClick);
             }
 
             // For Firefox
-            canvas.addEventListener("DOMMouseScroll", _handleMouseWheel, passiveSupported ? { passive: true } : false);
-            canvas.addEventListener("mousewheel", _handleMouseWheel, passiveSupported ? { passive: true } : false);
+            canvas.addEventListener(
+                "DOMMouseScroll",
+                _handleMouseWheel,
+                passiveSupported ? { passive: true } : false
+            );
+            canvas.addEventListener(
+                "mousewheel",
+                _handleMouseWheel,
+                passiveSupported ? { passive: true } : false
+            );
 
             // Fix for Google Chrome : avoid dragging
             // TODO : a hack, should be more robust (restore on uninstall?)
-            canvas.addEventListener("dragstart", function (event) {
+            canvas.addEventListener("dragstart", function(event) {
                 event.preventDefault();
                 return false;
             });
 
             if (_rotateButton === 2) {
-                canvas.addEventListener("contextmenu", function (e) {
-                    e.preventDefault();
-                    return false;
-                }, false);
+                canvas.addEventListener(
+                    "contextmenu",
+                    function(e) {
+                        e.preventDefault();
+                        return false;
+                    },
+                    false
+                );
             }
         };
 
         /**
          *    Remove the default event handlers for the _navigation
          */
-        this.uninstall = function () {
+        this.uninstall = function() {
             // Setup the mouse event handlers
             var canvas = _navigation.renderContext.canvas;
 
@@ -291,5 +302,4 @@ define(["../Utils/Utils"], function (Utils) {
     };
 
     return MouseNavigationHandler;
-
 });

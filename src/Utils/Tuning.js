@@ -35,16 +35,15 @@
  * along with GlobWeb. If not, see <http://www.gnu.org/licenses/>.
  ***************************************/
 
-define(function () {
+define(function() {
     /**
      @name Tuning
      @class
          Get some statistics
      @constructor
     */
-    var Tuning = function () {
+    var Tuning = function() {
         var self = this;
-
     };
 
     /**************************************************************************************************************/
@@ -52,9 +51,11 @@ define(function () {
     /**
      Start measuring time
      */
-    Tuning.prototype.start = function (name,index) {
+    Tuning.prototype.start = function(name, index) {
         var completeName = name;
-        if (typeof index !== 'undefined') { completeName+=index;}
+        if (typeof index !== "undefined") {
+            completeName += index;
+        }
 
         this[completeName] = Date.now();
     };
@@ -64,24 +65,26 @@ define(function () {
     /**
      End measuring time
      */
-    Tuning.prototype.end = function (name,index) {
-      var completeName = name;
-      var isIndex = (typeof index !== 'undefined');
-      if (isIndex) { completeName+=index;}
-
-      var time = Date.now() - this[completeName];
-      this[completeName] = time;
-
-      if (isIndex) {
-        if (typeof this["sum"+name] === 'undefined') {
-           this["sum"+name]=0;
-           this["nb"+name]=0;
+    Tuning.prototype.end = function(name, index) {
+        var completeName = name;
+        var isIndex = typeof index !== "undefined";
+        if (isIndex) {
+            completeName += index;
         }
-        this["sum"+name]+=time;
-        this["nb"+name]++;
-      }
 
-      return time;
+        var time = Date.now() - this[completeName];
+        this[completeName] = time;
+
+        if (isIndex) {
+            if (typeof this["sum" + name] === "undefined") {
+                this["sum" + name] = 0;
+                this["nb" + name] = 0;
+            }
+            this["sum" + name] += time;
+            this["nb" + name]++;
+        }
+
+        return time;
     };
 
     /**************************************************************************************************************/
@@ -89,24 +92,33 @@ define(function () {
     /**
      Print stats in an HTML element
      */
-    Tuning.prototype.print = function (name,index) {
-      var completeName = name;
-      var isIndex = (typeof index !== 'undefined');
-      if (isIndex) { completeName = name+= index; }
-      console.log("Elapsed ["+completeName+"] = "+this[completeName]);
-
-
-      if (!isIndex) {
-        if (typeof this["sum"+name] !== 'undefined') {
-          var avg = this["sum"+name] / this["nb"+name];
-          console.log( "Average ["+name+"] = " + avg + " ("+this["nb"+name]+" / "+this["sum"+name]+")");
+    Tuning.prototype.print = function(name, index) {
+        var completeName = name;
+        var isIndex = typeof index !== "undefined";
+        if (isIndex) {
+            completeName = name += index;
         }
-      }
+        console.log("Elapsed [" + completeName + "] = " + this[completeName]);
 
+        if (!isIndex) {
+            if (typeof this["sum" + name] !== "undefined") {
+                var avg = this["sum" + name] / this["nb" + name];
+                console.log(
+                    "Average [" +
+                        name +
+                        "] = " +
+                        avg +
+                        " (" +
+                        this["nb" + name] +
+                        " / " +
+                        this["sum" + name] +
+                        ")"
+                );
+            }
+        }
     };
 
     /**************************************************************************************************************/
 
     return Tuning;
-
 });

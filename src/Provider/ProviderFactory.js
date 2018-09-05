@@ -16,15 +16,25 @@
  * You should have received a copy of the GNU General Public License
  * along with MIZAR. If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
-define(["./ConstellationProvider","./PlanetProvider","./StarProvider","./CraterProvider","./TrajectoryProvider","../Utils/Constants"],
-    function(ConstellationProvider, PlanetProvider, StarProvider, CraterProvider, TrajectoryProvider, Constants) {
-        
-
+define([
+    "./ConstellationProvider",
+    "./PlanetProvider",
+    "./StarProvider",
+    "./CraterProvider",
+    "./TrajectoryProvider",
+    "../Utils/Constants"
+], function(
+    ConstellationProvider,
+    PlanetProvider,
+    StarProvider,
+    CraterProvider,
+    TrajectoryProvider,
+    Constants
+) {
     return {
-        
-        create : function(type, options) {
+        create: function(type, options) {
             var obj;
-            switch(type) {
+            switch (type) {
                 case Constants.PROVIDER.Constellation:
                     obj = new ConstellationProvider(options);
                     break;
@@ -41,11 +51,12 @@ define(["./ConstellationProvider","./PlanetProvider","./StarProvider","./CraterP
                     obj = new TrajectoryProvider(options);
                     break;
                 default:
-                    throw new RangeError("unable to create the provider "+type, "ProviderFactory.js");
+                    throw new RangeError(
+                        "unable to create the provider " + type,
+                        "ProviderFactory.js"
+                    );
             }
             return obj;
         }
-        
     };
-    
 });

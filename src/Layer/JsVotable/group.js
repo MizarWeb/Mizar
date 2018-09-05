@@ -17,9 +17,14 @@
  * along with JVotable.  If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
 
-define(["./utils","./abstractNode","./description","./fieldref","./paramref","./param"],
-    function(Utils, AbstractNode, Description, Fieldref, Paramref, Param) {
-
+define([
+    "./utils",
+    "./abstractNode",
+    "./description",
+    "./fieldref",
+    "./paramref",
+    "./param"
+], function(Utils, AbstractNode, Description, Fieldref, Paramref, Param) {
     /**
      * Constructs the Group object.
      *
@@ -70,7 +75,11 @@ define(["./utils","./abstractNode","./description","./fieldref","./paramref","./
         var params = [];
         var groups = [];
 
-        for(var i = 0; childNode!=null && i< childNode.childNodes.length; i++){
+        for (
+            var i = 0;
+            childNode != null && i < childNode.childNodes.length;
+            i++
+        ) {
             var element = childNode.childNodes[i];
             if (element.nodeType == 1) {
                 var nodeName = element.localName;
@@ -91,15 +100,16 @@ define(["./utils","./abstractNode","./description","./fieldref","./paramref","./
                         groups.push(new Group(element));
                         break;
                     default:
-                        this.getCache().addWarning("unknown element "+nodeName+" in Group node");
+                        this.getCache().addWarning(
+                            "unknown element " + nodeName + " in Group node"
+                        );
                 }
             }
         }
         return [description, fieldrefs, paramrefs, params, groups];
-
     };
 
-    Utils.inherits(AbstractNode , Group );
+    Utils.inherits(AbstractNode, Group);
 
     /**
      * Returns the ID value.

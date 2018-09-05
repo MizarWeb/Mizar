@@ -1,5 +1,9 @@
-define(["jquery", "moment", "../Utils/Constants", "../Utils/Utils"], function ($, Moment, Constants, Utils) {
-
+define(["jquery", "moment", "../Utils/Constants", "../Utils/Utils"], function(
+    $,
+    Moment,
+    Constants,
+    Utils
+) {
     /**
      * Time parameter
      * @typedef {Object} Time.time
@@ -22,7 +26,7 @@ define(["jquery", "moment", "../Utils/Constants", "../Utils/Utils"], function ($
      * @param {Time.time} time
      * @constructor
      */
-    var Time = function (time) {
+    var Time = function(time) {
         this.date = time.date;
         this.display = time.display;
         this.period = time.period;
@@ -35,7 +39,11 @@ define(["jquery", "moment", "../Utils/Constants", "../Utils/Utils"], function ($
      * @private
      */
     function _isTimeTravel(value) {
-        return value.hasOwnProperty('date') && value.hasOwnProperty('display') && value.hasOwnProperty('period');
+        return (
+            value.hasOwnProperty("date") &&
+            value.hasOwnProperty("display") &&
+            value.hasOwnProperty("period")
+        );
     }
 
     /**
@@ -45,7 +53,7 @@ define(["jquery", "moment", "../Utils/Constants", "../Utils/Utils"], function ($
      * @private
      */
     function _isPeriod(value) {
-        return value.hasOwnProperty('from') && value.hasOwnProperty('to');
+        return value.hasOwnProperty("from") && value.hasOwnProperty("to");
     }
 
     /**
@@ -55,7 +63,7 @@ define(["jquery", "moment", "../Utils/Constants", "../Utils/Utils"], function ($
      * @private
      */
     function _isOpenedInterval(value) {
-        return value.hasOwnProperty('from');
+        return value.hasOwnProperty("from");
     }
 
     /**
@@ -149,7 +157,9 @@ define(["jquery", "moment", "../Utils/Constants", "../Utils/Utils"], function ($
             //time => hour, min, sec
             stepTime = resolution.substring(2, resolution.length - 1);
             unitTime = _unitWithTime(unit);
-        } else if (resolution.startsWith(Constants.UNIT_RESOLUTION_WMS.NOT_TIME)) {
+        } else if (
+            resolution.startsWith(Constants.UNIT_RESOLUTION_WMS.NOT_TIME)
+        ) {
             //day, month year
             stepTime = resolution.substring(1, resolution.length - 1);
             unitTime = _unitWithoutTime(unit);
@@ -171,7 +181,7 @@ define(["jquery", "moment", "../Utils/Constants", "../Utils/Utils"], function ($
      * @private
      */
     function _isSampling(timeDefinition) {
-        return timeDefinition.indexOf('/') !== -1;
+        return timeDefinition.indexOf("/") !== -1;
     }
 
     /**
@@ -181,7 +191,9 @@ define(["jquery", "moment", "../Utils/Constants", "../Utils/Utils"], function ($
      * @private
      */
     function _isDistinctValue(timeDefinition) {
-        return !_isSampling(timeDefinition) && timeDefinition.indexOf(",") === -1;
+        return (
+            !_isSampling(timeDefinition) && timeDefinition.indexOf(",") === -1
+        );
     }
 
     /**
@@ -194,10 +206,14 @@ define(["jquery", "moment", "../Utils/Constants", "../Utils/Utils"], function ($
     function _isEqual(date1, date2) {
         var interval1 = _createPeriod(date1);
         var interval2 = _createPeriod(date2);
-        return interval2.from <= interval1.from && interval1.from <= interval2.to ||
-               interval2.from <= interval1.to && interval1.to <= interval2.to ||
-               interval1.from <= interval2.from && interval2.from <= interval1.to ||
-               interval1.from <= interval2.to && interval2.to <= interval1.to;
+        return (
+            (interval2.from <= interval1.from &&
+                interval1.from <= interval2.to) ||
+            (interval2.from <= interval1.to && interval1.to <= interval2.to) ||
+            (interval1.from <= interval2.from &&
+                interval2.from <= interval1.to) ||
+            (interval1.from <= interval2.to && interval2.to <= interval1.to)
+        );
     }
 
     /**
@@ -217,11 +233,12 @@ define(["jquery", "moment", "../Utils/Constants", "../Utils/Utils"], function ($
 
     function _isIntersect(period1, date2) {
         var interval2 = _createPeriod(date2);
-        return interval2.from <= period1.from && period1.from <= interval2.to ||
-            interval2.from <= period1.to && period1.to <= interval2.to ||
-            period1.from <= interval2.from && interval2.from <= period1.to ||
-            period1.from <= interval2.to && interval2.to <= period1.to;
-
+        return (
+            (interval2.from <= period1.from && period1.from <= interval2.to) ||
+            (interval2.from <= period1.to && period1.to <= interval2.to) ||
+            (period1.from <= interval2.from && interval2.from <= period1.to) ||
+            (period1.from <= interval2.to && interval2.to <= period1.to)
+        );
     }
 
     /**
@@ -233,8 +250,16 @@ define(["jquery", "moment", "../Utils/Constants", "../Utils/Utils"], function ($
      * @param {{step,unit}} timeResolution time resolution
      * @return {number} -1 when the requestedTime is not find in the binarySearch otherwise False
      */
-    function _binarySearch(requestedTime, requestedPeriodTime, startTime, nbValues, timeResolution) {
-        var guess, start, currentDate,
+    function _binarySearch(
+        requestedTime,
+        requestedPeriodTime,
+        startTime,
+        nbValues,
+        timeResolution
+    ) {
+        var guess,
+            start,
+            currentDate,
             min = 0,
             max = nbValues;
 
@@ -242,12 +267,13 @@ define(["jquery", "moment", "../Utils/Constants", "../Utils/Utils"], function ($
             guess = Math.floor((min + max) / 2);
             currentDate = Moment(startTime);
             currentDate.add(guess * timeResolution.step, timeResolution.unit);
-            if (_isEqual(requestedTime, currentDate) || _isIntersect(requestedPeriodTime, currentDate))
+            if (
+                _isEqual(requestedTime, currentDate) ||
+                _isIntersect(requestedPeriodTime, currentDate)
+            )
                 return guess;
-            else if (requestedTime > currentDate)
-                min = guess + 1;
-            else
-                max = guess - 1;
+            else if (requestedTime > currentDate) min = guess + 1;
+            else max = guess - 1;
         }
         return -1;
     }
@@ -260,13 +286,13 @@ define(["jquery", "moment", "../Utils/Constants", "../Utils/Utils"], function ($
      */
     function _lowestFormatResolution(format) {
         var timeResolution;
-        if (Utils.aContainsB.call(this, format, 'ss')) {
+        if (Utils.aContainsB.call(this, format, "ss")) {
             timeResolution = Constants.TIME_MOMENT_STEP.SECOND;
-        } else if (Utils.aContainsB.call(this, format, 'mm')) {
+        } else if (Utils.aContainsB.call(this, format, "mm")) {
             timeResolution = Constants.TIME_MOMENT_STEP.MINUTE;
         } else if (Utils.aContainsB.call(this, format, "HH")) {
             timeResolution = Constants.TIME_MOMENT_STEP.HOUR;
-        } else if (Utils.aContainsB.call(this, format, 'DD')) {
+        } else if (Utils.aContainsB.call(this, format, "DD")) {
             timeResolution = Constants.TIME_MOMENT_STEP.DAY;
         } else if (Utils.aContainsB.call(this, format, "MM")) {
             timeResolution = Constants.TIME_MOMENT_STEP.MONTH;
@@ -288,7 +314,7 @@ define(["jquery", "moment", "../Utils/Constants", "../Utils/Utils"], function ($
      * @return {{date: *, display: *, period: {from: *, to: *}, computed: *}}
      * @private
      */
-    function _templateTimeTravel (date, display, from, to, computed) {
+    function _templateTimeTravel(date, display, from, to, computed) {
         return {
             date: _convertMoment(date),
             display: display,
@@ -302,9 +328,9 @@ define(["jquery", "moment", "../Utils/Constants", "../Utils/Utils"], function ($
 
     function _convertMoment(date) {
         var time;
-        if(REGEXP_YEAR.test(date)) {
-            time = Moment.utc(date,'YYYY');
-        } else if(date instanceof Date) {
+        if (REGEXP_YEAR.test(date)) {
+            time = Moment.utc(date, "YYYY");
+        } else if (date instanceof Date) {
             time = Moment.utc(date.toISOString());
         } else {
             time = Moment.utc(date);
@@ -332,7 +358,7 @@ define(["jquery", "moment", "../Utils/Constants", "../Utils/Utils"], function ($
      * @param {string} format
      * @return The time moment unit
      */
-    Time.lowestFormatResolution = function (format) {
+    Time.lowestFormatResolution = function(format) {
         return _lowestFormatResolution(format);
     };
 
@@ -368,14 +394,32 @@ define(["jquery", "moment", "../Utils/Constants", "../Utils/Utils"], function ($
      * @param {Time.time|Time.period|string|Date} time
      * @return {Time} time object
      */
-    Time.parse = function (time) {
+    Time.parse = function(time) {
         var result;
         if (_isTimeTravel(time)) {
-            result = _templateTimeTravel(time.date, time.display, time.period.from, time.period.to, true);
+            result = _templateTimeTravel(
+                time.date,
+                time.display,
+                time.period.from,
+                time.period.to,
+                true
+            );
         } else if (_isPeriod(time)) {
-            result = _templateTimeTravel(time.from, time.from, time.from, time.to, false);
+            result = _templateTimeTravel(
+                time.from,
+                time.from,
+                time.from,
+                time.to,
+                false
+            );
         } else if (_isOpenedInterval(time)) {
-            result = _templateTimeTravel(time.from, time.from, time.from, Moment(), false);
+            result = _templateTimeTravel(
+                time.from,
+                time.from,
+                time.from,
+                Moment(),
+                false
+            );
         } else if (_isDateString(time)) {
             result = _convertStringDateToTime(time);
         } else if (_isDate(time)) {
@@ -386,13 +430,12 @@ define(["jquery", "moment", "../Utils/Constants", "../Utils/Utils"], function ($
         return new Time(result);
     };
 
-
     /**
      * Tests if the singleDefinition is equal to the time object.
      * @param {string} singleTimeDefinition
      * @return {boolean} True when the singleDefinition is equal to the time object otherwise False
      */
-    Time.prototype.isEqual = function (singleTimeDefinition) {
+    Time.prototype.isEqual = function(singleTimeDefinition) {
         var singleTimeMoment = _convertMoment(singleTimeDefinition);
         var isEqual = _isEqual(this.date, singleTimeMoment);
         if (isEqual) {
@@ -407,22 +450,33 @@ define(["jquery", "moment", "../Utils/Constants", "../Utils/Utils"], function ($
      * @param {string} samplingTimeDefinition
      * @return {boolean} True when the samplingDefinition is in the sample otherwise False.
      */
-    Time.prototype.isInSampling = function (samplingTimeDefinition) {
+    Time.prototype.isInSampling = function(samplingTimeDefinition) {
         samplingTimeDefinition = samplingTimeDefinition.trim();
         var minMaxStepTimeDef = samplingTimeDefinition.split("/");
         var startDateTimeDef = _convertMoment(minMaxStepTimeDef[0]);
         var stopDateTimeDef = _convertMoment(minMaxStepTimeDef[1]);
         var stepDateTimeDef = minMaxStepTimeDef[2];
         var timeResolutionDef = _timeResolution(stepDateTimeDef);
-        var nbValues = Math.floor(stopDateTimeDef.diff(startDateTimeDef, timeResolutionDef.unit) / parseInt(timeResolutionDef.step));
-        var idx = _binarySearch(this.date, this.period, startDateTimeDef, nbValues, timeResolutionDef);
+        var nbValues = Math.floor(
+            stopDateTimeDef.diff(startDateTimeDef, timeResolutionDef.unit) /
+                parseInt(timeResolutionDef.step)
+        );
+        var idx = _binarySearch(
+            this.date,
+            this.period,
+            startDateTimeDef,
+            nbValues,
+            timeResolutionDef
+        );
         var isFound;
         if (idx === -1) {
             isFound = false;
         } else {
             isFound = true;
             var format = startDateTimeDef.creationData().format;
-            this.display = Moment.utc(startDateTimeDef).add(idx * timeResolutionDef.step, timeResolutionDef.unit).format(format);
+            this.display = Moment.utc(startDateTimeDef)
+                .add(idx * timeResolutionDef.step, timeResolutionDef.unit)
+                .format(format);
         }
         return isFound;
     };
@@ -433,7 +487,7 @@ define(["jquery", "moment", "../Utils/Constants", "../Utils/Utils"], function ($
      * @param {string} timeDefinition
      * @return {boolean} True when the timeDefinition is in Time definition otherwise False
      */
-    Time.prototype.isInTimeDefinition = function (timeDefinition) {
+    Time.prototype.isInTimeDefinition = function(timeDefinition) {
         timeDefinition = timeDefinition.trim();
         var dataTime, momentDataTime, timeIdx;
         var isInside = false;
@@ -455,10 +509,9 @@ define(["jquery", "moment", "../Utils/Constants", "../Utils/Utils"], function ($
      * Returns the real value coming from the server.
      * @return {string} the real value coming from the server
      */
-    Time.prototype.getDisplayValue = function () {
+    Time.prototype.getDisplayValue = function() {
         return this.display;
     };
-
 
     return Time;
 });

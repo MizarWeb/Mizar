@@ -17,8 +17,7 @@
  * along with GlobWeb. If not, see <http://www.gnu.org/licenses/>.
  ***************************************/
 
-define(['./SceneGraph'], function (SceneGraph) {
-
+define(["./SceneGraph"], function(SceneGraph) {
     /**
      * The scene graph built by the parser
      */
@@ -56,7 +55,7 @@ define(['./SceneGraph'], function (SceneGraph) {
     /**
      * Helper method to find an element by its URL
      */
-    var findElementByUrl = function (root, tag, url) {
+    var findElementByUrl = function(root, tag, url) {
         var selector = tag + "[id='" + url.substring(1) + "']";
         if (root) {
             return root.querySelector(selector);
@@ -68,7 +67,7 @@ define(['./SceneGraph'], function (SceneGraph) {
     /**
      * Helper method to find an element by its tag
      */
-    var findElementByTag = function (root, tag) {
+    var findElementByTag = function(root, tag) {
         var elements = root.getElementsByTagName(tag);
         return elements && elements.length > 0 ? elements[0] : null;
     };
@@ -77,7 +76,7 @@ define(['./SceneGraph'], function (SceneGraph) {
      * Skip asset child
      * A lot of collada elements contains an optionnal asset element, useful to skip it if it exists
      */
-    var skipAssetChild = function (node) {
+    var skipAssetChild = function(node) {
         var child = node.firstElementChild;
         while (child && child.nodeName === "asset") {
             child = child.nextElementSibling;
@@ -88,7 +87,7 @@ define(['./SceneGraph'], function (SceneGraph) {
     /**
      * Parse the textContent of node that contains an array of float
      */
-    var parseFloats = function (node) {
+    var parseFloats = function(node) {
         var array = [];
         var strs = node.textContent.trim().split(/\s+/);
         for (var i = 0; i < strs.length; i++) {
@@ -100,41 +99,53 @@ define(['./SceneGraph'], function (SceneGraph) {
     /**
      * Parse a texture node
      */
-    var parseTexture = function (effect, node) {
+    var parseTexture = function(effect, node) {
         var textureId = node.getAttribute("texture");
         var image;
 
         // Texture is a mess in collada : two cases one from Sketchup exporter, the other one from 3DSMax
-        var parentSampler = effect.querySelector("newparam[sid='" + node.getAttribute("texture") + "']");
+        var parentSampler = effect.querySelector(
+            "newparam[sid='" + node.getAttribute("texture") + "']"
+        );
         if (parentSampler) {
             var source = findElementByTag(parentSampler, "source");
-            var surface = effect.querySelector("newparam[sid='" + source.textContent.trim() + "']");
+            var surface = effect.querySelector(
+                "newparam[sid='" + source.textContent.trim() + "']"
+            );
             var imageId = findElementByTag(surface, "init_from");
-            image = findElementByUrl(rootElement, "image", '#' + imageId.textContent.trim());
+            image = findElementByUrl(
+                rootElement,
+                "image",
+                "#" + imageId.textContent.trim()
+            );
+        } else {
+            image = findElementByUrl(rootElement, "image", "#" + textureId);
         }
-        else {
-            image = findElementByUrl(rootElement, "image", '#' + textureId);
-        }
-        return new SceneGraph.Texture(baseURI + findElementByTag(image, "init_from").textContent.trim());
+        return new SceneGraph.Texture(
+            baseURI + findElementByTag(image, "init_from").textContent.trim()
+        );
     };
 
     /**
      * Parse a common shader : blinn, phong, lambert, etc...
      */
-    var parseShader = function (effect, shader) {
+    var parseShader = function(effect, shader) {
         var material = new SceneGraph.Material();
 
         var child = shader.firstElementChild;
         while (child) {
             switch (child.nodeName) {
-                case 'diffuse':
+                case "diffuse":
                     var colorOrTextureOrParam = child.firstElementChild;
                     if (colorOrTextureOrParam.nodeName === "color") {
                         material.diffuse = parseFloats(colorOrTextureOrParam);
                     } else {
-                      if (colorOrTextureOrParam.nodeName === "texture") {
-                        material.texture = parseTexture(effect, colorOrTextureOrParam);
-                      }
+                        if (colorOrTextureOrParam.nodeName === "texture") {
+                            material.texture = parseTexture(
+                                effect,
+                                colorOrTextureOrParam
+                            );
+                        }
                     }
                     break;
 
@@ -145,13 +156,13 @@ define(['./SceneGraph'], function (SceneGraph) {
             child = child.nextElementSibling;
         }
 
-        materials['#' + effect.getAttribute("id")] = material;
+        materials["#" + effect.getAttribute("id")] = material;
     };
 
     /**
      * Parse an effect
      */
-    var parseEffect = function (effect) {
+    var parseEffect = function(effect) {
         // Only common profile is supported for the moment
         var commonProfile = findElementByTag(effect, "profile_COMMON");
         if (commonProfile) {
@@ -159,10 +170,10 @@ define(['./SceneGraph'], function (SceneGraph) {
             var childTechnique = technique.firstElementChild;
             while (childTechnique) {
                 switch (childTechnique.nodeName) {
-                    case 'constant':
-                    case 'lambert':
-                    case 'blinn':
-                    case 'phong':
+                    case "constant":
+                    case "lambert":
+                    case "blinn":
+                    case "phong":
                         parseShader(effect, childTechnique);
                         break;
 
@@ -172,16 +183,17 @@ define(['./SceneGraph'], function (SceneGraph) {
 
                 childTechnique = childTechnique.nextElementSibling;
             }
-        }
-        else {
-            console.log("ColladaParser : Only effect with profile common is supported.");
+        } else {
+            console.log(
+                "ColladaParser : Only effect with profile common is supported."
+            );
         }
     };
 
     /**
      * Parse materials library
      */
-    var parseLibraryMaterials = function (node) {
+    var parseLibraryMaterials = function(node) {
         // library_materials :
         //		asset (0 or 1)
         //		material (1..*)
@@ -190,10 +202,15 @@ define(['./SceneGraph'], function (SceneGraph) {
         while (material && material.nodeName === "material") {
             // A material instantiate an effect, retreive the effect, and then parse it
             var instanceEffect = findElementByTag(material, "instance_effect");
-            var effect = findElementByUrl(rootElement, "effect", instanceEffect.getAttribute("url"));
+            var effect = findElementByUrl(
+                rootElement,
+                "effect",
+                instanceEffect.getAttribute("url")
+            );
             if (effect) {
                 parseEffect(effect);
-                materials['#' + material.getAttribute("id")] = materials[instanceEffect.getAttribute("url")];
+                materials["#" + material.getAttribute("id")] =
+                    materials[instanceEffect.getAttribute("url")];
             }
 
             material = material.nextElementSibling;
@@ -203,16 +220,19 @@ define(['./SceneGraph'], function (SceneGraph) {
     /**
      * Parse source
      */
-    var parseSource = function (node, colladaGeometry) {
-        colladaGeometry.sources['#' + node.getAttribute("id")] = parseFloats(findElementByTag(node, "float_array"));
+    var parseSource = function(node, colladaGeometry) {
+        colladaGeometry.sources["#" + node.getAttribute("id")] = parseFloats(
+            findElementByTag(node, "float_array")
+        );
     };
 
     /**
      * Parse vertices
      */
-    var parseVertices = function (node, colladaGeometry) {
+    var parseVertices = function(node, colladaGeometry) {
         var input = node.firstElementChild;
-        colladaGeometry.sources['#' + node.getAttribute("id")] = colladaGeometry.sources[input.getAttribute("source")];
+        colladaGeometry.sources["#" + node.getAttribute("id")] =
+            colladaGeometry.sources[input.getAttribute("source")];
     };
 
     /**
@@ -221,7 +241,7 @@ define(['./SceneGraph'], function (SceneGraph) {
      * But used by Autodesk exporter to Collada.
      * Only supports triangles !!! (Enough to support Autodesk exporter)
      */
-    var parsePolygons = function (node, colladaGeometry) {
+    var parsePolygons = function(node, colladaGeometry) {
         var vertices = null;
         var texCoords = null;
         var numberOfInputs = 0;
@@ -238,11 +258,16 @@ define(['./SceneGraph'], function (SceneGraph) {
                 case "input":
                     var semantic = child.getAttribute("semantic");
                     if (semantic === "VERTEX") {
-                        vertices = colladaGeometry.sources[child.getAttribute("source")];
+                        vertices =
+                            colladaGeometry.sources[
+                                child.getAttribute("source")
+                            ];
                         vertexOffset = parseInt(child.getAttribute("offset"));
-                    }
-                    else if (semantic === "TEXCOORD") {
-                        texCoords = colladaGeometry.sources[child.getAttribute("source")];
+                    } else if (semantic === "TEXCOORD") {
+                        texCoords =
+                            colladaGeometry.sources[
+                                child.getAttribute("source")
+                            ];
                         texCoordOffset = parseInt(child.getAttribute("offset"));
                     }
                     numberOfInputs++;
@@ -259,15 +284,22 @@ define(['./SceneGraph'], function (SceneGraph) {
                     var numVerts = colladaIndices.length / numberOfInputs;
                     if (numVerts === 3) {
                         for (var i = 0; i < numVerts; i++) {
-                            var vi = parseInt(colladaIndices[i * numberOfInputs + vertexOffset]);
+                            var vi = parseInt(
+                                colladaIndices[
+                                    i * numberOfInputs + vertexOffset
+                                ]
+                            );
 
                             if (texCoords) {
-                                var tci = parseInt(colladaIndices[i * numberOfInputs + texCoordOffset]);
-                                var key = vi + '_' + tci;
+                                var tci = parseInt(
+                                    colladaIndices[
+                                        i * numberOfInputs + texCoordOffset
+                                    ]
+                                );
+                                var key = vi + "_" + tci;
                                 if (indexMap.hasOwnProperty(key)) {
                                     indices.push(indexMap[key]);
-                                }
-                                else {
+                                } else {
                                     var index = meshVerts.length / numElements;
 
                                     meshVerts.push(vertices[3 * vi]);
@@ -280,14 +312,14 @@ define(['./SceneGraph'], function (SceneGraph) {
 
                                     indices.push(index);
                                 }
-                            }
-                            else {
+                            } else {
                                 indices.push(vi);
                             }
                         }
-                    }
-                    else {
-                        console.log("ColladaParser : polygons with more 3 vertices not yet implemented");
+                    } else {
+                        console.log(
+                            "ColladaParser : polygons with more 3 vertices not yet implemented"
+                        );
                     }
                     break;
             }
@@ -303,7 +335,7 @@ define(['./SceneGraph'], function (SceneGraph) {
     /**
      * Parse triangles
      */
-    var parseTriangles = function (node, colladaGeometry) {
+    var parseTriangles = function(node, colladaGeometry) {
         var vertices = null;
         var texCoords = null;
         var numberOfInputs = 0;
@@ -316,17 +348,21 @@ define(['./SceneGraph'], function (SceneGraph) {
                 case "input":
                     var semantic = child.getAttribute("semantic");
                     if (semantic === "VERTEX") {
-                        vertices = colladaGeometry.sources[child.getAttribute("source")];
+                        vertices =
+                            colladaGeometry.sources[
+                                child.getAttribute("source")
+                            ];
                         vertexOffset = parseInt(child.getAttribute("offset"));
-                    }
-                    else if (semantic === "TEXCOORD") {
-                        texCoords = colladaGeometry.sources[child.getAttribute("source")];
+                    } else if (semantic === "TEXCOORD") {
+                        texCoords =
+                            colladaGeometry.sources[
+                                child.getAttribute("source")
+                            ];
                         texCoordOffset = parseInt(child.getAttribute("offset"));
                     }
                     numberOfInputs++;
                     break;
                 case "p":
-
                     var colladaIndices = child.textContent.trim().split(/\s+/);
 
                     var indices = [];
@@ -335,16 +371,25 @@ define(['./SceneGraph'], function (SceneGraph) {
                     var meshVerts = texCoords ? [] : vertices;
                     var numElements = texCoords ? 5 : 3;
 
-                    for (var i = 0; i < colladaIndices.length / numberOfInputs; i++) {
-                        var vi = parseInt(colladaIndices[i * numberOfInputs + vertexOffset]);
+                    for (
+                        var i = 0;
+                        i < colladaIndices.length / numberOfInputs;
+                        i++
+                    ) {
+                        var vi = parseInt(
+                            colladaIndices[i * numberOfInputs + vertexOffset]
+                        );
 
                         if (texCoords) {
-                            var tci = parseInt(colladaIndices[i * numberOfInputs + texCoordOffset]);
-                            var key = vi + '_' + tci;
+                            var tci = parseInt(
+                                colladaIndices[
+                                    i * numberOfInputs + texCoordOffset
+                                ]
+                            );
+                            var key = vi + "_" + tci;
                             if (indexMap.hasOwnProperty(key)) {
                                 indices.push(indexMap[key]);
-                            }
-                            else {
+                            } else {
                                 var index = meshVerts.length / numElements;
 
                                 meshVerts.push(vertices[3 * vi]);
@@ -357,8 +402,7 @@ define(['./SceneGraph'], function (SceneGraph) {
 
                                 indices.push(index);
                             }
-                        }
-                        else {
+                        } else {
                             indices.push(vi);
                         }
                     }
@@ -367,7 +411,9 @@ define(['./SceneGraph'], function (SceneGraph) {
                     mesh.vertices = meshVerts;
                     mesh.indices = indices;
                     mesh.numElements = numElements;
-                    colladaGeometry.meshes[node.getAttribute("material")] = mesh;
+                    colladaGeometry.meshes[
+                        node.getAttribute("material")
+                    ] = mesh;
 
                     break;
             }
@@ -378,7 +424,7 @@ define(['./SceneGraph'], function (SceneGraph) {
     /**
      * Parse mesh
      */
-    var parseMesh = function (node) {
+    var parseMesh = function(node) {
         var colladaGeometry = {
             sources: {},
             meshes: {}
@@ -387,17 +433,19 @@ define(['./SceneGraph'], function (SceneGraph) {
         var child = node.firstElementChild;
         while (child) {
             switch (child.nodeName) {
-                case 'source':
+                case "source":
                     parseSource(child, colladaGeometry);
                     break;
-                case 'vertices':
+                case "vertices":
                     parseVertices(child, colladaGeometry);
                     break;
-                case 'polylist':
-                case 'lines':
-                    console.log("ColladaParser : only triangles are implemented for mesh element");
+                case "polylist":
+                case "lines":
+                    console.log(
+                        "ColladaParser : only triangles are implemented for mesh element"
+                    );
                     break;
-                case 'polygons':
+                case "polygons":
                     parsePolygons(child, colladaGeometry);
                     break;
                 case "triangles":
@@ -413,7 +461,7 @@ define(['./SceneGraph'], function (SceneGraph) {
     /**
      * Parse geometries library
      */
-    var parseLibraryGeometries = function (node) {
+    var parseLibraryGeometries = function(node) {
         var geometryElt = skipAssetChild(node);
         while (geometryElt && geometryElt.nodeName === "geometry") {
             var meshElt = findElementByTag(geometryElt, "mesh");
@@ -423,13 +471,13 @@ define(['./SceneGraph'], function (SceneGraph) {
                 var geometry = parseMesh(meshElt);
                 // Store the geometry
                 if (geometry) {
-                    geometries['#' + geometryElt.getAttribute("id")] = geometry;
+                    geometries["#" + geometryElt.getAttribute("id")] = geometry;
                 }
+            } else {
+                console.log(
+                    "ColladaParser : only mesh geometry are supported."
+                );
             }
-            else {
-                console.log("ColladaParser : only mesh geometry are supported.");
-            }
-
 
             geometryElt = geometryElt.nextElementSibling;
         }
@@ -438,7 +486,7 @@ define(['./SceneGraph'], function (SceneGraph) {
     /**
      * Parse a node
      */
-    var parseNode = function (element) {
+    var parseNode = function(element) {
         var node = new SceneGraph.Node();
 
         var child = element.firstElementChild;
@@ -454,12 +502,21 @@ define(['./SceneGraph'], function (SceneGraph) {
                     break;
                 case "instance_geometry":
                     if (geometries.hasOwnProperty(child.getAttribute("url"))) {
-                        var colladaGeometry = geometries[child.getAttribute("url")];
-                        var instance_materials = child.getElementsByTagName("instance_material");
+                        var colladaGeometry =
+                            geometries[child.getAttribute("url")];
+                        var instance_materials = child.getElementsByTagName(
+                            "instance_material"
+                        );
                         for (var i = 0; i < instance_materials.length; i++) {
                             var geometry = new SceneGraph.Geometry();
-                            geometry.mesh = colladaGeometry.meshes[instance_materials[i].getAttribute("symbol")];
-                            geometry.material = materials[instance_materials[i].getAttribute("target")];
+                            geometry.mesh =
+                                colladaGeometry.meshes[
+                                    instance_materials[i].getAttribute("symbol")
+                                ];
+                            geometry.material =
+                                materials[
+                                    instance_materials[i].getAttribute("target")
+                                ];
 
                             node.geometries.push(geometry);
                         }
@@ -477,8 +534,7 @@ define(['./SceneGraph'], function (SceneGraph) {
                     mat4.transpose(mat);
                     if (!node.matrix) {
                         node.matrix = mat;
-                    }
-                    else {
+                    } else {
                         mat4.multiply(node.matrix, mat);
                     }
                     break;
@@ -493,12 +549,12 @@ define(['./SceneGraph'], function (SceneGraph) {
     /**
      * Parse nodes library
      */
-    var parseLibraryNodes = function (library) {
+    var parseLibraryNodes = function(library) {
         var child = skipAssetChild(library);
         while (child && child.nodeName === "node") {
             var node = parseNode(child);
             if (node) {
-                nodes['#' + child.getAttribute("id")] = node;
+                nodes["#" + child.getAttribute("id")] = node;
             }
 
             child = child.nextElementSibling;
@@ -508,7 +564,7 @@ define(['./SceneGraph'], function (SceneGraph) {
     /**
      * Parse visual scene library
      */
-    var parseLibraryVisualScenes = function (library) {
+    var parseLibraryVisualScenes = function(library) {
         var visual_scene = library.firstElementChild;
         var child = visual_scene.firstElementChild;
 
@@ -517,12 +573,12 @@ define(['./SceneGraph'], function (SceneGraph) {
         while (child) {
             switch (child.nodeName) {
                 case "node":
-                {
-                    var node = parseNode(child);
-                    if (node) {
-                        root.children.push(node);
+                    {
+                        var node = parseNode(child);
+                        if (node) {
+                            root.children.push(node);
+                        }
                     }
-                }
                     break;
             }
 
@@ -533,18 +589,21 @@ define(['./SceneGraph'], function (SceneGraph) {
     /**
      * Parse a Collada document
      */
-    var parse = function (doc) {
-        baseURI = doc.documentURI.substr(0, doc.documentURI.lastIndexOf('/') + 1);
+    var parse = function(doc) {
+        baseURI = doc.documentURI.substr(
+            0,
+            doc.documentURI.lastIndexOf("/") + 1
+        );
         rootElement = doc.documentElement;
 
         // First parse materials
-        var lib_mat = rootElement.getElementsByTagName('library_materials');
+        var lib_mat = rootElement.getElementsByTagName("library_materials");
         if (lib_mat) {
             parseLibraryMaterials(lib_mat[0]);
         }
 
         // Then parse geometries
-        var lib_geom = rootElement.getElementsByTagName('library_geometries');
+        var lib_geom = rootElement.getElementsByTagName("library_geometries");
         if (lib_geom) {
             parseLibraryGeometries(lib_geom[0]);
         }
@@ -574,5 +633,4 @@ define(['./SceneGraph'], function (SceneGraph) {
     return {
         parse: parse
     };
-
 });

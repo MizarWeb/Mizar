@@ -21,32 +21,27 @@
  * Interface to handle tracker
  * @interface
  */
-function Tracker() {
-}
+function Tracker() {}
 
 /**
  * Update the tracker
  * @param event
  */
-AbstractTracker.prototype.update = function (event) {
-};
+AbstractTracker.prototype.update = function(event) {};
 
 /**
  * Compute from geoPosition
  * @param {float[]} geoPosition
  */
-AbstractTracker.prototype.compute = function (geoPosition) {
-};
+AbstractTracker.prototype.compute = function(geoPosition) {};
 
 /**
  * Attaches the tracker to the globe
  * @param {globe} globeContext - globe
  */
-AbstractTracker.prototype.attachTo = function (globeContext) {
-};
+AbstractTracker.prototype.attachTo = function(globeContext) {};
 
 /**
  * Detaches from the globe
  */
-AbstractTracker.prototype.detach = function () {
-}; 
+AbstractTracker.prototype.detach = function() {};

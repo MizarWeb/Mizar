@@ -16,33 +16,34 @@
  * You should have received a copy of the GNU General Public License
  * along with MIZAR. If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
- define(["./OpenSearchParam","./OpenSearchUtils"],
-   function (OpenSearchParam,OpenSearchUtils) {
+define(["./OpenSearchParam", "./OpenSearchUtils"], function(
+    OpenSearchParam,
+    OpenSearchUtils
+) {
+    /**
+     * @name OpenSearchForm
+     * @class
+     * All informations describing an OpenSearch form
+     * @param {Object} paramsJson a json object describing the form
+     * @param {String} type form to load (application/json or application/atom+xml)
+     * @memberof module:Layer
+     */
+    var OpenSearchForm = function(paramsJson, type) {
+        // init all values
+        this.type = null; // type of form (only application/json supported)
+        this.template = null; // url template with params
+        this.parameters = []; // list of params
 
-   /**
-    * @name OpenSearchForm
-    * @class
-    * All informations describing an OpenSearch form
-    * @param {Object} paramsJson a json object describing the form
-    * @param {String} type form to load (application/json or application/atom+xml)
-    * @memberof module:Layer
-    */
-    var OpenSearchForm = function (paramsJson,type) {
-      // init all values
-      this.type = null;         // type of form (only application/json supported)
-      this.template = null;     // url template with params
-      this.parameters = [];     // list of params
+        this.ignoredParameters = [];
+        this.ignoredParameters.push("searchTerms");
+        this.ignoredParameters.push("count");
+        this.ignoredParameters.push("startIndex");
+        this.ignoredParameters.push("startPage");
+        this.ignoredParameters.push("language");
+        this.ignoredParameters.push("inputEncoding");
+        this.ignoredParameters.push("outputEncoding");
 
-      this.ignoredParameters = [];
-      this.ignoredParameters.push("searchTerms");
-      this.ignoredParameters.push("count");
-      this.ignoredParameters.push("startIndex");
-      this.ignoredParameters.push("startPage");
-      this.ignoredParameters.push("language");
-      this.ignoredParameters.push("inputEncoding");
-      this.ignoredParameters.push("outputEncoding");
-
-      this.parseJson(paramsJson,type);
+        this.parseJson(paramsJson, type);
     };
 
     /**************************************************************************************************************/
@@ -54,32 +55,32 @@
      * @param {Objet} urlJson Json urls founded
      * @param {type} type Url type searched
      */
-      OpenSearchForm.prototype.parseUrl = function (urlJson,type) {
-      var typeValue = OpenSearchUtils.getAttributeValue(urlJson,"type");
-      if (typeValue !== type) {
-        // Not the good type, do not take it into account
-        return;
-      }
-      this.type = typeValue;
-      this.template = OpenSearchUtils.getAttributeValue(urlJson,"template");
-      listParameters = urlJson.Parameter;
-      if (typeof listParameters.length !== 'undefined') {
-        for (var i=0;i<listParameters.length;i++) {
-          var param = new OpenSearchParam(listParameters[i]);
-          param.isDisplayed = true;
-          for (var j=0;j<this.ignoredParameters.length;j++) {
-            if (param.value === ("{"+this.ignoredParameters[j]+"}") ) {
-              param.isDisplayed = false;
-            }
-          }
-          if (param.value.startsWith("{geo:")) {
-            param.isDisplayed = false;
-          }
-          this.parameters.push(param);
+    OpenSearchForm.prototype.parseUrl = function(urlJson, type) {
+        var typeValue = OpenSearchUtils.getAttributeValue(urlJson, "type");
+        if (typeValue !== type) {
+            // Not the good type, do not take it into account
+            return;
         }
-      } else {
-        this.parameters.push(new OpenSearchParam(listParameters));
-      }
+        this.type = typeValue;
+        this.template = OpenSearchUtils.getAttributeValue(urlJson, "template");
+        listParameters = urlJson.Parameter;
+        if (typeof listParameters.length !== "undefined") {
+            for (var i = 0; i < listParameters.length; i++) {
+                var param = new OpenSearchParam(listParameters[i]);
+                param.isDisplayed = true;
+                for (var j = 0; j < this.ignoredParameters.length; j++) {
+                    if (param.value === "{" + this.ignoredParameters[j] + "}") {
+                        param.isDisplayed = false;
+                    }
+                }
+                if (param.value.startsWith("{geo:")) {
+                    param.isDisplayed = false;
+                }
+                this.parameters.push(param);
+            }
+        } else {
+            this.parameters.push(new OpenSearchParam(listParameters));
+        }
     };
 
     /**************************************************************************************************************/
@@ -90,15 +91,15 @@
      * @memberof OpenSearchForm#
      * @return {String} String representation of the form
      */
-    OpenSearchForm.prototype.toString = function () {
-      var res = "";
-      res+= "  type : "+this.type+"\n";
-      res+= "  template : "+this.template+"\n";
-      res+= "  parameters :\n";
-      for (var i=0;i<this.parameters.length;i++) {
-        res+= this.parameters[i].toString()+"\n";
-      }
-      return res;
+    OpenSearchForm.prototype.toString = function() {
+        var res = "";
+        res += "  type : " + this.type + "\n";
+        res += "  template : " + this.template + "\n";
+        res += "  parameters :\n";
+        for (var i = 0; i < this.parameters.length; i++) {
+            res += this.parameters[i].toString() + "\n";
+        }
+        return res;
     };
 
     /**************************************************************************************************************/
@@ -110,17 +111,16 @@
      * @param {Object} paramsJson Parameteres
      * @param {String} type Type
      */
-    OpenSearchForm.prototype.parseJson = function (paramsJson,type) {
-      if (typeof paramsJson.length !== 'undefined') {
-        // Management of an array
-        for (var i=0;i<paramsJson.length;i++) {
-          this.parseUrl(paramsJson[i],type);
+    OpenSearchForm.prototype.parseJson = function(paramsJson, type) {
+        if (typeof paramsJson.length !== "undefined") {
+            // Management of an array
+            for (var i = 0; i < paramsJson.length; i++) {
+                this.parseUrl(paramsJson[i], type);
+            }
+        } else {
+            this.parseUrl(paramsJson, type);
         }
-      } else {
-        this.parseUrl(paramsJson,type);
-      }
     };
-
 
     /**************************************************************************************************************/
 
@@ -130,19 +130,18 @@
      * @memberof OpenSearchForm#
      */
     OpenSearchForm.prototype.updateFromGUI = function() {
-      for (var i=0;i<this.parameters.length;i++) {
-          param = this.parameters[i];
-          val = $("#p_"+param.name).val();
-          if (val !== "") {
-            param.currentValue = val;
-          } else {
-            param.currentValue = null;
-          }
-      }
+        for (var i = 0; i < this.parameters.length; i++) {
+            param = this.parameters[i];
+            val = $("#p_" + param.name).val();
+            if (val !== "") {
+                param.currentValue = val;
+            } else {
+                param.currentValue = null;
+            }
+        }
     };
 
     /*************************************************************************************************************/
 
     return OpenSearchForm;
-
 });

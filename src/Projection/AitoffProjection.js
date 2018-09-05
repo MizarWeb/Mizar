@@ -55,141 +55,166 @@
  * @module Projection
  * @implements {Projection}
  */
-define(['./AbstractProjection', '../Utils/Utils', '../Utils/Constants', '../Renderer/glMatrix'],
-    function (AbstractProjection, Utils, Constants) {
-        /**
-         * @name AitoffProjection
-         * @class
-         *    The Aitoff coordinate system is a coordinate reference system. It is composed of :
-         * <ul>
-         *  <li>a reference frame : the reference geoid, which is set as parameter of the options object,</li>
-         *  <li>a projection : the Aitoff projection.</li>
-         * </ul>
-         *
-         * The Aitoff projection is a modified azimuthal map projection first proposed by David A. Aitoff in 1889.
-         * Based on the equatorial form of the azimuthal equidistant projection, Aitoff halved longitudes from the central
-         * meridian, projected by the azimuthal equidistant, and then stretched the result horizontally into a 2:1 ellipse.
-         * <img src="../doc/images/aitoff.png" width="200px"/>
-         *
-         *
-         * @see {@link https://en.wikipedia.org/wiki/Aitoff_projection}
-         * @augments AbstractProjection
-         * @param {AbstractProjection.configuration} [options] - Aitoff projection configuration.
-         * @constructor
-         * @memberOf module:Projection
-         */
-        var AitoffProjection = function (options) {
-            AbstractProjection.prototype.constructor.call(this, [0, 0], [-180, -90, 180, 90], options);
-        };
+define([
+    "./AbstractProjection",
+    "../Utils/Utils",
+    "../Utils/Constants",
+    "../Renderer/glMatrix"
+], function(AbstractProjection, Utils, Constants) {
+    /**
+     * @name AitoffProjection
+     * @class
+     *    The Aitoff coordinate system is a coordinate reference system. It is composed of :
+     * <ul>
+     *  <li>a reference frame : the reference geoid, which is set as parameter of the options object,</li>
+     *  <li>a projection : the Aitoff projection.</li>
+     * </ul>
+     *
+     * The Aitoff projection is a modified azimuthal map projection first proposed by David A. Aitoff in 1889.
+     * Based on the equatorial form of the azimuthal equidistant projection, Aitoff halved longitudes from the central
+     * meridian, projected by the azimuthal equidistant, and then stretched the result horizontally into a 2:1 ellipse.
+     * <img src="../doc/images/aitoff.png" width="200px"/>
+     *
+     *
+     * @see {@link https://en.wikipedia.org/wiki/Aitoff_projection}
+     * @augments AbstractProjection
+     * @param {AbstractProjection.configuration} [options] - Aitoff projection configuration.
+     * @constructor
+     * @memberOf module:Projection
+     */
+    var AitoffProjection = function(options) {
+        AbstractProjection.prototype.constructor.call(
+            this,
+            [0, 0],
+            [-180, -90, 180, 90],
+            options
+        );
+    };
 
-        /**************************************************************************************************************/
+    /**************************************************************************************************************/
 
-        Utils.inherits(AbstractProjection, AitoffProjection);
+    Utils.inherits(AbstractProjection, AitoffProjection);
 
-        /**************************************************************************************************************/
+    /**************************************************************************************************************/
 
-        /**
-         *    Inverse sampling function(sinc)
-         */
-        var _sinci = function (x) {
-            return x ? x / Math.sin(x) : 1;
-        };
+    /**
+     *    Inverse sampling function(sinc)
+     */
+    var _sinci = function(x) {
+        return x ? x / Math.sin(x) : 1;
+    };
 
+    /**
+     * @function unProject
+     * @memberOf AitoffProjection#
+     */
+    AitoffProjection.prototype.unProject = function(position3d, dest) {
+        if (!dest) {
+            dest = new Array(3);
+        }
 
-        /**
-         * @function unProject
-         * @memberOf AitoffProjection#
-         */
-        AitoffProjection.prototype.unProject = function (position3d, dest) {
-            if (!dest) {
-                dest = new Array(3);
+        var epsilon = 0.005;
+        var deltaLambda;
+        var deltaPhi;
+        // Abort if [x, y] is not within an ellipse centered at [0, 0] with
+        // semi-major axis pi and semi-minor axis pi/2.
+        if (
+            position3d[0] * position3d[0] + 4 * position3d[1] * position3d[1] >
+            Math.PI * Math.PI + epsilon
+        ) {
+            return;
+        }
+
+        var lambda = position3d[0],
+            phi = position3d[1],
+            i = 25;
+
+        do {
+            var sinLambda = Math.sin(lambda),
+                sinLambda_2 = Math.sin(lambda / 2),
+                cosLambda_2 = Math.cos(lambda / 2),
+                sinPhi = Math.sin(phi),
+                cosPhi = Math.cos(phi),
+                sin_2phi = Math.sin(2 * phi),
+                sin2phi = sinPhi * sinPhi,
+                cos2phi = cosPhi * cosPhi,
+                sin2lambda_2 = sinLambda_2 * sinLambda_2,
+                F,
+                C = 1 - cos2phi * cosLambda_2 * cosLambda_2,
+                E = C
+                    ? Math.acos(cosPhi * cosLambda_2) * Math.sqrt((F = 1 / C))
+                    : (F = 0),
+                fx = 2 * E * cosPhi * sinLambda_2 - position3d[0],
+                fy = E * sinPhi - position3d[1],
+                deltaXLambda =
+                    F *
+                    (cos2phi * sin2lambda_2 +
+                        E * cosPhi * cosLambda_2 * sin2phi),
+                deltaXPhi =
+                    F *
+                    (0.5 * sinLambda * sin_2phi - E * 2 * sinPhi * sinLambda_2),
+                deltaYLambda =
+                    F *
+                    0.25 *
+                    (sin_2phi * sinLambda_2 - E * sinPhi * cos2phi * sinLambda),
+                deltaYPhi =
+                    F * (sin2phi * cosLambda_2 + E * sin2lambda_2 * cosPhi),
+                denominator =
+                    deltaXPhi * deltaYLambda - deltaYPhi * deltaXLambda;
+            if (!denominator) {
+                break;
             }
+            deltaLambda = (fy * deltaXPhi - fx * deltaYPhi) / denominator;
+            deltaPhi = (fx * deltaYLambda - fy * deltaXLambda) / denominator;
+            lambda -= deltaLambda;
+            phi -= deltaPhi;
+        } while (
+            (Math.abs(deltaLambda) > epsilon || Math.abs(deltaPhi) > epsilon) &&
+            --i > 0
+        );
 
-            var epsilon = 0.005;
-            var deltaLambda;
-            var deltaPhi;
-            // Abort if [x, y] is not within an ellipse centered at [0, 0] with
-            // semi-major axis pi and semi-minor axis pi/2.
-            if (position3d[0] * position3d[0] + 4 * position3d[1] * position3d[1] > Math.PI * Math.PI + epsilon) {
-                return;
-            }
+        dest[0] = (lambda * 180) / Math.PI;
+        dest[1] = (phi * 180) / Math.PI;
+        dest[2] = position3d[2];
+        return dest;
+    };
 
-            var lambda = position3d[0],
-                phi = position3d[1],
-                i = 25;
+    /**
+     * @function project
+     * @memberOf AitoffProjection#
+     */
+    AitoffProjection.prototype.project = function(geoPos, dest) {
+        if (!dest) {
+            dest = new Array(3);
+        }
 
-            do {
-                var sinLambda = Math.sin(lambda),
-                    sinLambda_2 = Math.sin(lambda / 2),
-                    cosLambda_2 = Math.cos(lambda / 2),
-                    sinPhi = Math.sin(phi),
-                    cosPhi = Math.cos(phi),
-                    sin_2phi = Math.sin(2 * phi),
-                    sin2phi = sinPhi * sinPhi,
-                    cos2phi = cosPhi * cosPhi,
-                    sin2lambda_2 = sinLambda_2 * sinLambda_2,
-                    F,
-                    C = 1 - cos2phi * cosLambda_2 * cosLambda_2,
-                    E = C ? Math.acos(cosPhi * cosLambda_2) * Math.sqrt(F = 1 / C) : F = 0,
-                    fx = 2 * E * cosPhi * sinLambda_2 - position3d[0],
-                    fy = E * sinPhi - position3d[1],
-                    deltaXLambda = F * (cos2phi * sin2lambda_2 + E * cosPhi * cosLambda_2 * sin2phi),
-                    deltaXPhi = F * (0.5 * sinLambda * sin_2phi - E * 2 * sinPhi * sinLambda_2),
-                    deltaYLambda = F * 0.25 * (sin_2phi * sinLambda_2 - E * sinPhi * cos2phi * sinLambda),
-                    deltaYPhi = F * (sin2phi * cosLambda_2 + E * sin2lambda_2 * cosPhi),
-                    denominator = deltaXPhi * deltaYLambda - deltaYPhi * deltaXLambda;
-                if (!denominator) {
-                    break;
-                }
-                deltaLambda = (fy * deltaXPhi - fx * deltaYPhi) / denominator;
-                deltaPhi = (fx * deltaYLambda - fy * deltaXLambda) / denominator;
-                lambda -= deltaLambda;
-                phi -= deltaPhi;
-            } while ((Math.abs(deltaLambda) > epsilon || Math.abs(deltaPhi) > epsilon) && --i > 0);
+        var lambda = (geoPos[0] * Math.PI) / 180; // longitude
+        var phi = (geoPos[1] * Math.PI) / 180; // latitude
 
-            dest[0] = lambda * 180 / Math.PI;
-            dest[1] = phi * 180 / Math.PI;
-            dest[2] = position3d[2];
-            return dest;
-        };
+        var cosPhi = Math.cos(phi);
+        var sinciAlpha = _sinci(Math.acos(cosPhi * Math.cos((lambda /= 2))));
 
-        /**
-         * @function project
-         * @memberOf AitoffProjection#
-         */
-        AitoffProjection.prototype.project = function (geoPos, dest) {
-            if (!dest) {
-                dest = new Array(3);
-            }
+        dest[0] = 2 * cosPhi * Math.sin(lambda) * sinciAlpha;
+        dest[1] = Math.sin(phi) * sinciAlpha;
+        dest[2] = geoPos[2];
 
-            var lambda = geoPos[0] * Math.PI / 180; // longitude
-            var phi = geoPos[1] * Math.PI / 180;  // latitude
+        // Triple winkel: mode
+        // TODO: inverse
+        // dest[0] = (dest[0] + lambda / Math.PI/2) / 2;
+        // dest[1] = (dest[1] + phi) / 2;
 
-            var cosPhi = Math.cos(phi);
-            var sinciAlpha = _sinci(Math.acos(cosPhi * Math.cos(lambda /= 2)));
+        return dest;
+    };
 
-            dest[0] = 2 * cosPhi * Math.sin(lambda) * sinciAlpha;
-            dest[1] = Math.sin(phi) * sinciAlpha;
-            dest[2] = geoPos[2];
+    /**
+     * @function getName
+     * @memberOf AitoffProjection#
+     */
+    AitoffProjection.prototype.getName = function() {
+        return Constants.PROJECTION.Aitoff;
+    };
 
-            // Triple winkel: mode
-            // TODO: inverse
-            // dest[0] = (dest[0] + lambda / Math.PI/2) / 2;
-            // dest[1] = (dest[1] + phi) / 2;
+    /**************************************************************************************************************/
 
-            return dest;
-        };
-
-        /**
-         * @function getName
-         * @memberOf AitoffProjection#
-         */
-        AitoffProjection.prototype.getName = function() {
-            return Constants.PROJECTION.Aitoff;
-        };
-
-        /**************************************************************************************************************/
-
-        return AitoffProjection;
-
-    });
+    return AitoffProjection;
+});

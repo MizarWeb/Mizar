@@ -34,53 +34,55 @@ function VectorLayer() {}
  * Returns the min level for which the vector is displayed.
  * @returns {int} Returns the min level for which the vector is displayed.
  */
-AbstractVectorLayer.prototype.getMinLevel = function () {};
+AbstractVectorLayer.prototype.getMinLevel = function() {};
 
 /**
  * Returns the max level for which the vector is not displayed.
  * @returns {int} Returns the max level for which the vector is not displayed.
  */
-AbstractVectorLayer.prototype.getMaxLevel = function () {};
+AbstractVectorLayer.prototype.getMaxLevel = function() {};
 
 /**
  * Returns the URL to get the vector data.
  * @returns {String} the URL to get the vector data
  */
-AbstractVectorLayer.prototype.getUrl = function () {};
+AbstractVectorLayer.prototype.getUrl = function() {};
 
 /**
  * Attaches the vector layer to the globe and adds features to the renderers {@link _addFeatureToRenderers}
  * @param {AbstractGlobe} g globe
  * @private
  */
-AbstractVectorLayer.prototype._attach = function (g) {};
+AbstractVectorLayer.prototype._attach = function(g) {};
 
 /**
  * Detaches the vector layer from the globe ands removes features from the renderers {@link _removeFeatureFromRenderers}
  * @private
  */
-AbstractVectorLayer.prototype._detach = function () {};
+AbstractVectorLayer.prototype._detach = function() {};
 
 /**
  * {@link addFeature Adds a feature} collection, in GeoJSON format
  * @param {GeoJSON} featureCollection Feature Collection
  */
-AbstractVectorLayer.prototype.addFeatureCollection = function (featureCollection) {};
+AbstractVectorLayer.prototype.addFeatureCollection = function(
+    featureCollection
+) {};
 
 /**
  * {@link removeFeature Removes a feature} collection, in GeoJSON format
  * @param {GeoJSON} featureCollection Feature Collection
  */
-AbstractVectorLayer.prototype.removeFeatureCollection = function (featureCollection) {};
-
+AbstractVectorLayer.prototype.removeFeatureCollection = function(
+    featureCollection
+) {};
 
 /**
  * Add a feature to renderers.
  * @param {GeoJSON} feature Feature
  * @private
  */
-AbstractVectorLayer.prototype._addFeatureToRenderers = function (feature) {};
-
+AbstractVectorLayer.prototype._addFeatureToRenderers = function(feature) {};
 
 /**
  * Removes a feature from renderers.
@@ -88,34 +90,36 @@ AbstractVectorLayer.prototype._addFeatureToRenderers = function (feature) {};
  * @returns {boolean} True when the feature is removed from the globe otherwise False
  * @private
  */
-AbstractVectorLayer.prototype._removeFeatureFromRenderers = function (feature) {};
+AbstractVectorLayer.prototype._removeFeatureFromRenderers = function(
+    feature
+) {};
 
 /**
  * Add a feature to the layer
  * @param {GeoJSON} feature Feature
  */
-AbstractVectorLayer.prototype.addFeature = function (feature) {};
+AbstractVectorLayer.prototype.addFeature = function(feature) {};
 
 /**
  * Removes a feature from the layer.
  * @param {GeoJSON} feature Feature
  */
-AbstractVectorLayer.prototype.removeFeature = function (feature) {};
+AbstractVectorLayer.prototype.removeFeature = function(feature) {};
 
 /**
  * Removes all features from the layer.
  */
-AbstractVectorLayer.prototype.removeAllFeatures = function () {};
+AbstractVectorLayer.prototype.removeAllFeatures = function() {};
 
 /**
  * Modifies the feature style for a specific feature.
  * @param {GeoJson} feature feature for which the feature style is modified
  * @param {FeatureStyle} style Feature style
  */
-AbstractVectorLayer.prototype.modifyFeatureStyle = function (feature, style) {};
+AbstractVectorLayer.prototype.modifyFeatureStyle = function(feature, style) {};
 
 /**
  * Modifies the feature style for all features.
  * @param {FeatureStyle} style Feature style
  */
-AbstractVectorLayer.prototype.modifyStyle = function (style) {};
+AbstractVectorLayer.prototype.modifyStyle = function(style) {};

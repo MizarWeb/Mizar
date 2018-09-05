@@ -16,9 +16,27 @@
  * You should have received a copy of the GNU General Public License
  * along with JVotable.  If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
-define(["./utils", "./abstractNode", "./description", "./field", "./param", "./group", "./link", "./data", "./info"],
-    function(Utils, AbstractNode, Description, Field, Param, Group, Link, Data, Info) {
-
+define([
+    "./utils",
+    "./abstractNode",
+    "./description",
+    "./field",
+    "./param",
+    "./group",
+    "./link",
+    "./data",
+    "./info"
+], function(
+    Utils,
+    AbstractNode,
+    Description,
+    Field,
+    Param,
+    Group,
+    Link,
+    Data,
+    Info
+) {
     /**
      * Constructs the Table object.
      *
@@ -77,7 +95,11 @@ define(["./utils", "./abstractNode", "./description", "./field", "./param", "./g
         var data;
         var description;
         var infos = [];
-        for(var i = 0; childNodes!=null && i< childNodes.childNodes.length; i++){
+        for (
+            var i = 0;
+            childNodes != null && i < childNodes.childNodes.length;
+            i++
+        ) {
             var element = childNodes.childNodes[i];
             if (element.nodeType == 1) {
                 var nodeName = element.localName;
@@ -104,14 +126,16 @@ define(["./utils", "./abstractNode", "./description", "./field", "./param", "./g
                         infos.push(new Info(element));
                         break;
                     default:
-                        this.getCache().addWarning("unknown element "+nodeName+" in Table node");
+                        this.getCache().addWarning(
+                            "unknown element " + nodeName + " in Table node"
+                        );
                 }
             }
         }
         return [fields, params, groups, links, data, description, infos];
     };
 
-    Utils.inherits(AbstractNode , Table );
+    Utils.inherits(AbstractNode, Table);
 
     /**
      * Returns the ID value of the attribute.

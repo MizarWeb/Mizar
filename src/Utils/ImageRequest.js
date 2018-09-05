@@ -35,13 +35,12 @@
  * along with GlobWeb. If not, see <http://www.gnu.org/licenses/>.
  ***************************************/
 
-define([], function () {
-
+define([], function() {
     /**
      *    @constructor
      *    ImageRequest constructor
      */
-    var ImageRequest = function (options) {
+    var ImageRequest = function(options) {
         this.successCallback = options.successCallback;
         this.failCallback = options.failCallback;
         this.abortCallback = options.abortCallback;
@@ -53,14 +52,15 @@ define([], function () {
     /**
      *    Send image request
      */
-    ImageRequest.prototype.send = function (url, crossOrigin) {
+    ImageRequest.prototype.send = function(url, crossOrigin) {
         this.image = new Image();
         this.image.crossOrigin = crossOrigin;
         this.image.dataType = "byte";
 
         var self = this;
-        this.image.onload = function () {
-            var isComplete = self.image.naturalWidth !== 0 && self.image.complete;
+        this.image.onload = function() {
+            var isComplete =
+                self.image.naturalWidth !== 0 && self.image.complete;
             if (isComplete) {
                 self.successCallback(self);
             }
@@ -74,15 +74,14 @@ define([], function () {
     /**
      *    Abort image request
      */
-    ImageRequest.prototype.abort = function () {
+    ImageRequest.prototype.abort = function() {
         if (this.abortCallback) {
             this.abortCallback(this);
         }
-        this.image.src = '';
+        this.image.src = "";
     };
 
     /**************************************************************************************************************/
 
     return ImageRequest;
-
 });

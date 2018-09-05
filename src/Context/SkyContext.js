@@ -16,178 +16,207 @@
  * You should have received a copy of the GNU General Public License
  * along with MIZAR. If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
-define(["underscore-min", "../Utils/Utils",
-        "./AbstractContext", "../Globe/GlobeFactory", "../Navigation/NavigationFactory", "../Services/ServiceFactory",
-        "../Gui/TimeTravel","../Utils/Constants", "../Gui/dialog/ErrorDialog"],
-    function (_, Utils,
-              AbstractContext, GlobeFactory, NavigationFactory, ServiceFactory,
-              TimeTravel,Constants,ErrorDialog) {
+define([
+    "underscore-min",
+    "../Utils/Utils",
+    "./AbstractContext",
+    "../Globe/GlobeFactory",
+    "../Navigation/NavigationFactory",
+    "../Services/ServiceFactory",
+    "../Gui/TimeTravel",
+    "../Utils/Constants",
+    "../Gui/dialog/ErrorDialog"
+], function(
+    _,
+    Utils,
+    AbstractContext,
+    GlobeFactory,
+    NavigationFactory,
+    ServiceFactory,
+    TimeTravel,
+    Constants,
+    ErrorDialog
+) {
+    /**
+     * sky context configuration
+     * @typedef {Object} AbstractContext.skyContext
+     * @property {float} [tileErrorTreshold=1.5]
+     * @property {float} [continuousRendering=true]
+     * @property {float} [radius = 10.0] - Vector distance of the sky
+     * @property {int} [minFar = 15]
+     * @property {AbstractProjection.configuration|AbstractProjection.azimuth_configuration|AbstractProjection.mercator_configuration} coordinateSystem - CRS configuration
+     * @property {RenderContext} [renderContext] - Context rendering
+     * @property {AbstractNavigation.astro_configuration} navigation - navigation configuration
+     * @property {string} [compass="compassDiv"] - div element where compass is displayed
+     * @property {string} [timeTravel="timeTravelDiv"] - div element where time travel is displayed
+     */
 
-        /**
-         * sky context configuration
-         * @typedef {Object} AbstractContext.skyContext
-         * @property {float} [tileErrorTreshold=1.5]
-         * @property {float} [continuousRendering=true]
-         * @property {float} [radius = 10.0] - Vector distance of the sky
-         * @property {int} [minFar = 15]
-         * @property {AbstractProjection.configuration|AbstractProjection.azimuth_configuration|AbstractProjection.mercator_configuration} coordinateSystem - CRS configuration
-         * @property {RenderContext} [renderContext] - Context rendering
-         * @property {AbstractNavigation.astro_configuration} navigation - navigation configuration
-         * @property {string} [compass="compassDiv"] - div element where compass is displayed
-         * @property {string} [timeTravel="timeTravelDiv"] - div element where time travel is displayed
-         */
+    /**
+     * @name SkyContext
+     * @class
+     * Virtual globe where the camera is inside the globe.<br/>
+     * When an error happens at the initialisation, a message is displayed
+     * @augments AbstractContext
+     * @param {Mizar.configuration} mizarConfiguration - mizar configuration
+     * @param {AbstractContext.skyContext} options - skyContext configuration
+     * @constructor
+     * @memberOf module:Context
+     */
+    var SkyContext = function(mizarConfiguration, options) {
+        AbstractContext.prototype.constructor.call(
+            this,
+            mizarConfiguration,
+            Constants.CONTEXT.Sky,
+            options
+        );
 
-        /**
-         * @name SkyContext
-         * @class
-         * Virtual globe where the camera is inside the globe.<br/>
-         * When an error happens at the initialisation, a message is displayed
-         * @augments AbstractContext
-         * @param {Mizar.configuration} mizarConfiguration - mizar configuration
-         * @param {AbstractContext.skyContext} options - skyContext configuration
-         * @constructor
-         * @memberOf module:Context
-         */
-        var SkyContext = function (mizarConfiguration, options) {
-            AbstractContext.prototype.constructor.call(this, mizarConfiguration, Constants.CONTEXT.Sky, options);
+        var self = this;
+        this.components = {
+            posTrackerInfo: true,
+            posTracker: true,
+            elevTracker: false,
+            compassDiv: true,
+            timeTravelDiv: true
+        };
+        var skyOptions = _createSkyConfiguration.call(this, options);
 
-            var self = this;
-            this.components = {
-                "posTrackerInfo": true,
-                "posTracker": true,
-                "elevTracker": false,
-                "compassDiv": true,
-                "timeTravelDiv": true
-            };
-            var skyOptions = _createSkyConfiguration.call(this, options);
+        // Initialize sky
+        try {
+            // Create the sky
+            this.globe = GlobeFactory.create(Constants.GLOBE.Sky, skyOptions);
+            this.navigation = NavigationFactory.create(
+                Constants.NAVIGATION.AstroNavigation,
+                this,
+                options.navigation ? options.navigation : options
+            );
+            this.initGlobeEvents(this.globe);
 
-            // Initialize sky
+            ServiceFactory.create(Constants.SERVICE.PickingManager).init(this);
+
             try {
-                // Create the sky
-                this.globe = GlobeFactory.create(Constants.GLOBE.Sky, skyOptions);
-                this.navigation = NavigationFactory.create(Constants.NAVIGATION.AstroNavigation, this, options.navigation ? options.navigation : options);
-                this.initGlobeEvents(this.globe);
-
-                ServiceFactory.create(Constants.SERVICE.PickingManager).init(this);
-
-                try {
-                    this.setTimeTravelVisible(options.timeTravel && this.components.timeTravelDiv ? options.timeTravel : "timeTravelDiv", true);
-                } catch(err) {
-                    ErrorDialog.open("<font style='color:orange'>Warning : "+err+".");
-                }
+                this.setTimeTravelVisible(
+                    options.timeTravel && this.components.timeTravelDiv
+                        ? options.timeTravel
+                        : "timeTravelDiv",
+                    true
+                );
+            } catch (err) {
+                ErrorDialog.open(
+                    "<font style='color:orange'>Warning : " + err + "."
+                );
             }
-            catch (err) {
-                this._showUpError(this, err);
-            }
-
-        };
-
-        /**
-         * Planet configuration data model
-         * @typedef {Object} AbstractGlobe.dm_sky
-         * @property {Object} canvas - canvas object
-         * @property {int} tileErrorTreshold - tile error treshold
-         * @property {boolean} continuousRendering - continuous rendering
-         * @property {renderContext} [renderContext] - Rendering context
-         * @property {AbstractCrs.crsFactory} coordinateSystem - Coordinate reference system of the planet
-         * @property {boolean} lighting = false - Lighting
-         * @property {float[]} backgroundColor = [0.0, 0.0, 0.0, 1.0] - Background color
-         * @property {int} minFar
-         * @property {float} radius
-         * @property {int[]} defaultColor = [200, 200, 200, 255] - Default color
-         * @property {string} shadersPath = "../../shaders/" - Shaders location
-         * @property {boolean} renderTileWithoutTexture = false
-         * @property {function} publishEvent - Callback
-         */
-
-        /**
-         * Creates planet configuration
-         * @param {Object} options
-         * @param {int} [options.tileErrorTreshold = 1.5] - Tile error treshold
-         * @param {boolean} [options.continuousRendering = true] - continuous rendering
-         * @param {renderContext} [options.renderContext] - Rendering context
-         * @param {AbstractCrs.crsFactory} options.coordinateSystem - Coordinate reference system of the planet
-         * @param {float} [options.radius = 10.0] - Radius object in vector length
-         * @returns {AbstractGlobe.dm_sky} Planet data model.
-         * @private
-         */
-        function _createSkyConfiguration(options) {
-            var self = this;
-            var skyOptions = {
-                canvas: this.canvas,
-                tileErrorTreshold: options.tileErrorTreshold || 1.5,
-                continuousRendering: options.continuousRendering || true,
-                renderTileWithoutTexture: false,
-                radius: options.radius || 10.0,
-                minFar: options.minFar || 15,		// Fix problem with far buffer, with planet rendering
-                coordinateSystem: options.coordinateSystem,
-                lighting: false,
-                backgroundColor: [0.0, 0.0, 0.0, 1.0],
-                defaultColor: [200, 200, 200, 255],
-                shadersPath: this.mizarConfiguration.mizarAPIUrl + 'shaders/',
-                publishEvent: function (message, object) {
-                    self.publish(message, object);
-                }
-            };
-            if (options.renderContext) {
-                skyOptions.renderContext = options.renderContext;
-            }
-            return skyOptions;
+        } catch (err) {
+            this._showUpError(this, err);
         }
-        
+    };
 
-        /**************************************************************************************************************/
+    /**
+     * Planet configuration data model
+     * @typedef {Object} AbstractGlobe.dm_sky
+     * @property {Object} canvas - canvas object
+     * @property {int} tileErrorTreshold - tile error treshold
+     * @property {boolean} continuousRendering - continuous rendering
+     * @property {renderContext} [renderContext] - Rendering context
+     * @property {AbstractCrs.crsFactory} coordinateSystem - Coordinate reference system of the planet
+     * @property {boolean} lighting = false - Lighting
+     * @property {float[]} backgroundColor = [0.0, 0.0, 0.0, 1.0] - Background color
+     * @property {int} minFar
+     * @property {float} radius
+     * @property {int[]} defaultColor = [200, 200, 200, 255] - Default color
+     * @property {string} shadersPath = "../../shaders/" - Shaders location
+     * @property {boolean} renderTileWithoutTexture = false
+     * @property {function} publishEvent - Callback
+     */
 
-        Utils.inherits(AbstractContext, SkyContext);
-
-        /**************************************************************************************************************/
-
-        /**
-         * @function setTimeTravelVisible
-         * @memberOf SkyContext#
-         */
-        SkyContext.prototype.setTimeTravelVisible = function (divName, visible) {
-            if (visible) {
-                this.timeTravel = new TimeTravel({
-                    element: divName,
-                    ctx: this,
-                    crs : Constants.CRS.Equatorial
-                });
-            } else {
-                if (this.timeTravel) {
-                    this.timeTravel.remove();
-                }
+    /**
+     * Creates planet configuration
+     * @param {Object} options
+     * @param {int} [options.tileErrorTreshold = 1.5] - Tile error treshold
+     * @param {boolean} [options.continuousRendering = true] - continuous rendering
+     * @param {renderContext} [options.renderContext] - Rendering context
+     * @param {AbstractCrs.crsFactory} options.coordinateSystem - Coordinate reference system of the planet
+     * @param {float} [options.radius = 10.0] - Radius object in vector length
+     * @returns {AbstractGlobe.dm_sky} Planet data model.
+     * @private
+     */
+    function _createSkyConfiguration(options) {
+        var self = this;
+        var skyOptions = {
+            canvas: this.canvas,
+            tileErrorTreshold: options.tileErrorTreshold || 1.5,
+            continuousRendering: options.continuousRendering || true,
+            renderTileWithoutTexture: false,
+            radius: options.radius || 10.0,
+            minFar: options.minFar || 15, // Fix problem with far buffer, with planet rendering
+            coordinateSystem: options.coordinateSystem,
+            lighting: false,
+            backgroundColor: [0.0, 0.0, 0.0, 1.0],
+            defaultColor: [200, 200, 200, 255],
+            shadersPath: this.mizarConfiguration.mizarAPIUrl + "shaders/",
+            publishEvent: function(message, object) {
+                self.publish(message, object);
             }
-            this.setComponentVisibility(divName, visible);
         };
+        if (options.renderContext) {
+            skyOptions.renderContext = options.renderContext;
+        }
+        return skyOptions;
+    }
 
-        /**
-         * @function setCoordinateSystem
-         * @memberOf SkyContext#
-         * @throws ReferenceError - incompatible coordinate reference system with Sky context
-         */
-        SkyContext.prototype.setCoordinateSystem = function (cs) {
-            if (cs.getType() !== this.getMode()) {
-                throw ReferenceError("incompatible coordinate reference system with Sky context", "SkyContex.js");
-            }
-            this.globe.setCoordinateSystem(cs);
-            this.publish(Constants.EVENT_MSG.CRS_MODIFIED, this);
-        };
+    /**************************************************************************************************************/
 
-        /**
-         * @function destroy
-         * @memberOf SkyContext#
-         */
-        SkyContext.prototype.destroy = function () {
-            //this.setTimeTravelVisible(false);
+    Utils.inherits(AbstractContext, SkyContext);
+
+    /**************************************************************************************************************/
+
+    /**
+     * @function setTimeTravelVisible
+     * @memberOf SkyContext#
+     */
+    SkyContext.prototype.setTimeTravelVisible = function(divName, visible) {
+        if (visible) {
+            this.timeTravel = new TimeTravel({
+                element: divName,
+                ctx: this,
+                crs: Constants.CRS.Equatorial
+            });
+        } else {
             if (this.timeTravel) {
                 this.timeTravel.remove();
             }
-            AbstractContext.prototype.destroy.call(this);
-        };
+        }
+        this.setComponentVisibility(divName, visible);
+    };
 
-        /**************************************************************************************************************/
+    /**
+     * @function setCoordinateSystem
+     * @memberOf SkyContext#
+     * @throws ReferenceError - incompatible coordinate reference system with Sky context
+     */
+    SkyContext.prototype.setCoordinateSystem = function(cs) {
+        if (cs.getType() !== this.getMode()) {
+            throw ReferenceError(
+                "incompatible coordinate reference system with Sky context",
+                "SkyContex.js"
+            );
+        }
+        this.globe.setCoordinateSystem(cs);
+        this.publish(Constants.EVENT_MSG.CRS_MODIFIED, this);
+    };
 
-        return SkyContext;
+    /**
+     * @function destroy
+     * @memberOf SkyContext#
+     */
+    SkyContext.prototype.destroy = function() {
+        //this.setTimeTravelVisible(false);
+        if (this.timeTravel) {
+            this.timeTravel.remove();
+        }
+        AbstractContext.prototype.destroy.call(this);
+    };
 
-    });
+    /**************************************************************************************************************/
+
+    return SkyContext;
+});

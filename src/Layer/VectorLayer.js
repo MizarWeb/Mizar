@@ -17,35 +17,41 @@
  * along with MIZAR. If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
 
-define(['../Utils/Utils', './AbstractVectorLayer', '../Utils/Constants'],
-    function (Utils, AbstractVectorLayer, Constants) {
-        /**
-         * Vector layer configuration
-         * @typedef {AbstractLayer.configuration} AbstractLayer.vector_configuration
-         * @property {string} url - the url of json data to load when attaching to globe
-         * @property {int} [minLevel = 0] - minimum rendering level depending on tile level
-         * @property {int} [maxLevel = 15] - maximum rendering level depending on tile level
-         * @property {function} [callback] - the callback function called when data are loaded. Data loaded are passed in parameter of the function.
-         */
-        /**
-         * @name VectorLayer
-         * @class
-         *    Create a layer to display vector data in GeoJSON format.
-         * @augments AbstractVectorLayer
-         * @param {AbstractLayer.vector_configuration} options - Vector configuration
-         * @constructor
-         * @memberOf module:Layer
-         */
-        var VectorLayer = function (options) {
-            AbstractVectorLayer.prototype.constructor.call(this, Constants.LAYER.Vector, options);
-        };
+define([
+    "../Utils/Utils",
+    "./AbstractVectorLayer",
+    "../Utils/Constants"
+], function(Utils, AbstractVectorLayer, Constants) {
+    /**
+     * Vector layer configuration
+     * @typedef {AbstractLayer.configuration} AbstractLayer.vector_configuration
+     * @property {string} url - the url of json data to load when attaching to globe
+     * @property {int} [minLevel = 0] - minimum rendering level depending on tile level
+     * @property {int} [maxLevel = 15] - maximum rendering level depending on tile level
+     * @property {function} [callback] - the callback function called when data are loaded. Data loaded are passed in parameter of the function.
+     */
+    /**
+     * @name VectorLayer
+     * @class
+     *    Create a layer to display vector data in GeoJSON format.
+     * @augments AbstractVectorLayer
+     * @param {AbstractLayer.vector_configuration} options - Vector configuration
+     * @constructor
+     * @memberOf module:Layer
+     */
+    var VectorLayer = function(options) {
+        AbstractVectorLayer.prototype.constructor.call(
+            this,
+            Constants.LAYER.Vector,
+            options
+        );
+    };
 
-        /**************************************************************************************************************/
+    /**************************************************************************************************************/
 
-        Utils.inherits(AbstractVectorLayer, VectorLayer);
+    Utils.inherits(AbstractVectorLayer, VectorLayer);
 
-        /**************************************************************************************************************/
+    /**************************************************************************************************************/
 
-        return VectorLayer;
-
-    });
+    return VectorLayer;
+});

@@ -21,9 +21,12 @@
 /**
  * Mollweider viewer module : Sky representation in mollweide coordinate system
  */
-define(["jquery", "../Utils/Numeric", "../Renderer/Ray","../Renderer/glMatrix"],
-    function ($, Numeric, Ray) {
-
+define([
+    "jquery",
+    "../Utils/Numeric",
+    "../Renderer/Ray",
+    "../Renderer/glMatrix"
+], function($, Numeric, Ray) {
     var mizarAPI;
     var mizarBaseUrl;
     var navigation;
@@ -51,17 +54,19 @@ define(["jquery", "../Utils/Numeric", "../Renderer/Ray","../Renderer/glMatrix"],
         }
 
         var epsilon = 0.001;
-        var thetaN;  // n
+        var thetaN; // n
         var thetaN1; // n+1
 
-        do
-        {
+        do {
             thetaN = thetaN1;
             if (!thetaN) {
                 thetaN = lat;
             }
             var twoThetaN = 2 * thetaN;
-            thetaN1 = twoThetaN / 2 - (twoThetaN + Math.sin(twoThetaN) - Math.PI * Math.sin(lat)) / (2 + 2 * Math.cos(twoThetaN));
+            thetaN1 =
+                twoThetaN / 2 -
+                (twoThetaN + Math.sin(twoThetaN) - Math.PI * Math.sin(lat)) /
+                    (2 + 2 * Math.cos(twoThetaN));
         } while (Math.abs(thetaN1 - thetaN) >= epsilon);
 
         return thetaN1;
@@ -75,13 +80,13 @@ define(["jquery", "../Utils/Numeric", "../Renderer/Ray","../Renderer/glMatrix"],
      *      <ul>
      *          <li>options : x,y, color, size</li>
      */
-    var Point = function (options) {
+    var Point = function(options) {
         this.x = options.x | 0;
         this.y = options.y | 0;
         this.color = options.color | "rgb(255,0,0)";
         this.size = options.size | 2;
         for (var x in options) {
-            if(options.hasOwnProperty(x)) {
+            if (options.hasOwnProperty(x)) {
                 this[x] = options[x];
             }
         }
@@ -97,26 +102,26 @@ define(["jquery", "../Utils/Numeric", "../Renderer/Ray","../Renderer/glMatrix"],
     function computeMollweidePosition(pos) {
         var coordinateSystem = mizarAPI.getCrs();
         var geoPos = coordinateSystem.getWorldFrom3D(pos);
-        if(geoPos[0] > 180)
-            geoPos[0]-=360;
+        if (geoPos[0] > 180) geoPos[0] -= 360;
         //var geoPos = coordinateSystem.from3DToEquatorial(pos, null, false);
         //geoPos = coordinateSystem.convert(geoPos, Constants.CRS.Equatorial, coordinateSystem.getGeoideName());
         //geoPos = coordinateSystem.fromEquatorialToGeo(geoPos, null, false);
 
-        var lambda = geoPos[0] * Math.PI / 180; // longitude
-        var theta0 = geoPos[1] * Math.PI / 180;  // latitude
+        var lambda = (geoPos[0] * Math.PI) / 180; // longitude
+        var theta0 = (geoPos[1] * Math.PI) / 180; // latitude
 
         var auxTheta = _findTheta(theta0);
 
         // Transfrom to Mollweide coordinate system
-        var mollX = 2 * Math.sqrt(2) / Math.PI * lambda * Math.cos(auxTheta);
+        var mollX =
+            ((2 * Math.sqrt(2)) / Math.PI) * lambda * Math.cos(auxTheta);
         var mollY = Math.sqrt(2) * Math.sin(auxTheta);
 
         // Transform to image space
         //    2.8: max x value in Mollweide projection
         //    1.38: max y value in Mollweide projection
-        var x = -mollX * halfWidth / 2.8 + halfWidth + halfPaddingX;
-        var y = -mollY * halfHeight / 1.38 + halfHeight + halfPaddingY;
+        var x = (-mollX * halfWidth) / 2.8 + halfWidth + halfPaddingX;
+        var y = (-mollY * halfHeight) / 1.38 + halfHeight + halfPaddingY;
 
         return [x, y];
     }
@@ -129,17 +134,19 @@ define(["jquery", "../Utils/Numeric", "../Renderer/Ray","../Renderer/glMatrix"],
      */
     function updateNavigation(moll) {
         // Transform to Mollweide space
-        center3d.x = -( moll[0] - halfWidth - halfPaddingX ) * 2.8 / halfWidth;
-        center3d.y = -( moll[1] - halfHeight - halfPaddingY ) * 1.38 / halfHeight;
+        center3d.x = (-(moll[0] - halfWidth - halfPaddingX) * 2.8) / halfWidth;
+        center3d.y =
+            (-(moll[1] - halfHeight - halfPaddingY) * 1.38) / halfHeight;
 
         // Transform to geographic coordinate system
         // http://mathworld.wolfram.com/MollweideProjection.html
         var auxTheta = Math.asin(center3d.y / Math.sqrt(2));
 
         var phi = Math.asin((2 * auxTheta + Math.sin(2 * auxTheta)) / Math.PI);
-        var lambda = (Math.PI * center3d.x) / ( 2 * Math.sqrt(2) * Math.cos(auxTheta));
+        var lambda =
+            (Math.PI * center3d.x) / (2 * Math.sqrt(2) * Math.cos(auxTheta));
 
-        var geo = [lambda * 180 / Math.PI, phi * 180 / Math.PI];
+        var geo = [(lambda * 180) / Math.PI, (phi * 180) / Math.PI];
 
         // Update navigation
         mizarAPI.getCrs().get3DFromWorld(geo, navigation.center3d);
@@ -159,8 +166,10 @@ define(["jquery", "../Utils/Numeric", "../Renderer/Ray","../Renderer/glMatrix"],
 
         // Draw fov
         context.fillStyle = "rgb(255,0,0)";
-        var stepX = mizarAPI.getRenderContext().canvas.clientWidth / (tesselation - 1);
-        var stepY = mizarAPI.getRenderContext().canvas.clientHeight / (tesselation - 1);
+        var stepX =
+            mizarAPI.getRenderContext().canvas.clientWidth / (tesselation - 1);
+        var stepY =
+            mizarAPI.getRenderContext().canvas.clientHeight / (tesselation - 1);
 
         var ray;
         var pos3d;
@@ -169,8 +178,20 @@ define(["jquery", "../Utils/Numeric", "../Renderer/Ray","../Renderer/glMatrix"],
             // Width
             for (var j = 0; j < tesselation; j++) {
                 // Height
-                ray = Ray.createFromPixel(mizarAPI.getRenderContext(), i * stepX, j * stepY);
-                pos3d = ray.computePoint(ray.sphereIntersect([0, 0, 0], mizarAPI.getCrs().getGeoide().getRadius()));
+                ray = Ray.createFromPixel(
+                    mizarAPI.getRenderContext(),
+                    i * stepX,
+                    j * stepY
+                );
+                pos3d = ray.computePoint(
+                    ray.sphereIntersect(
+                        [0, 0, 0],
+                        mizarAPI
+                            .getCrs()
+                            .getGeoide()
+                            .getRadius()
+                    )
+                );
 
                 mPos = computeMollweidePosition(pos3d);
 
@@ -186,7 +207,12 @@ define(["jquery", "../Utils/Numeric", "../Renderer/Ray","../Renderer/glMatrix"],
         center3d.y = mPos[1] - center3d.size / 2;
 
         // Draw on canvas 2d
-        context.fillRect(mPos[0] - center3d.size / 2, mPos[1] - center3d.size / 2, center3d.size, center3d.size);
+        context.fillRect(
+            mPos[0] - center3d.size / 2,
+            mPos[1] - center3d.size / 2,
+            center3d.size,
+            center3d.size
+        );
 
         // Update fov degrees
         var fov = navigation.getFov();
@@ -194,17 +220,23 @@ define(["jquery", "../Utils/Numeric", "../Renderer/Ray","../Renderer/glMatrix"],
         fovx = mizarAPI.getCrs().fromDegreesToDMS(fovx);
         var fovy = Numeric.roundNumber(fov[1], 2);
         fovy = mizarAPI.getCrs().fromDegreesToDMS(fovy);
-        $('#fov').html("Fov : " + fovx + " x " + fovy);
+        $("#fov").html("Fov : " + fovx + " x " + fovy);
     }
 
     function updateGalaxyProjection(ctx) {
-        $(self.getImageObj()).attr("src", mizarBaseUrl + "css/images/MollweideSky_" + ctx.getCoordinateSystem().getGeoideName() + ".png");
+        $(self.getImageObj()).attr(
+            "src",
+            mizarBaseUrl +
+                "css/images/MollweideSky_" +
+                ctx.getCoordinateSystem().getGeoideName() +
+                ".png"
+        );
     }
 
     /**********************************************************************************************/
 
     return {
-        init: function (options) {
+        init: function(options) {
             mizarAPI = options.mizar;
             mizarBaseUrl = options.mizarBaseUrl;
 
@@ -227,17 +259,17 @@ define(["jquery", "../Utils/Numeric", "../Renderer/Ray","../Renderer/glMatrix"],
             });
 
             // Init image background
-            canvas = document.getElementById('mollweideCanvas');
-            context = canvas.getContext('2d');
+            canvas = document.getElementById("mollweideCanvas");
+            context = canvas.getContext("2d");
             self = this;
 
             imageObj = new Image();
-            imageObj.onload = function () {
+            imageObj.onload = function() {
                 context.drawImage(imageObj, 0, 0);
                 updateMollweideFov(imageObj);
             };
         },
-        getImageObj: function () {
+        getImageObj: function() {
             return imageObj;
         },
         _findTheta: _findTheta,
@@ -246,5 +278,4 @@ define(["jquery", "../Utils/Numeric", "../Renderer/Ray","../Renderer/glMatrix"],
         updateMollweideFov: updateMollweideFov,
         updateGalaxyProjection: updateGalaxyProjection
     };
-
 });

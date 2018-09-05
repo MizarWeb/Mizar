@@ -17,14 +17,16 @@
  * along with GlobWeb. If not, see <http://www.gnu.org/licenses/>.
  ***************************************/
 
-define(['../Renderer/FeatureStyle', '../Utils/Constants'], function (FeatureStyle, Constants) {
-
+define(["../Renderer/FeatureStyle", "../Utils/Constants"], function(
+    FeatureStyle,
+    Constants
+) {
     /**************************************************************************************************************/
 
     /** @constructor
      KMLParser constructor
      */
-    var KMLParser = (function () {
+    var KMLParser = (function() {
         var featureCollection = {
             type: "FeatureCollection",
             features: []
@@ -39,10 +41,15 @@ define(['../Renderer/FeatureStyle', '../Utils/Constants'], function (FeatureStyl
          * @param color_string : the color string
          * @return the color
          */
-        var fromStringToColor = function (color_string) {
+        var fromStringToColor = function(color_string) {
             var match = parseColor.exec(color_string);
             if (match) {
-                return [parseInt(match[4], 16) / 255.0, parseInt(match[3], 16) / 255.0, parseInt(match[2], 16) / 255.0, parseInt(match[1], 16) / 255.0];
+                return [
+                    parseInt(match[4], 16) / 255.0,
+                    parseInt(match[3], 16) / 255.0,
+                    parseInt(match[2], 16) / 255.0,
+                    parseInt(match[1], 16) / 255.0
+                ];
             }
 
             return [1.0, 1.0, 1.0, 1.0];
@@ -52,12 +59,16 @@ define(['../Renderer/FeatureStyle', '../Utils/Constants'], function (FeatureStyl
          * Parse coordinates, split them and return an array of coordinates in GeoJSON format
          * @param coordsText : the text node value for coordinates
          */
-        var parseCoordinates = function (coordsText) {
+        var parseCoordinates = function(coordsText) {
             var coordinates = [];
             // Trim the coordinates, then split them
             var coords = coordsText.trim().split(/[\s,]+/);
             for (var i = 0; i < coords.length; i += 3) {
-                coordinates.push([parseFloat(coords[i]), parseFloat(coords[i + 1]), parseFloat(coords[i + 2])]);
+                coordinates.push([
+                    parseFloat(coords[i]),
+                    parseFloat(coords[i + 1]),
+                    parseFloat(coords[i + 2])
+                ]);
             }
             return coordinates;
         };
@@ -66,7 +77,7 @@ define(['../Renderer/FeatureStyle', '../Utils/Constants'], function (FeatureStyl
          * Parse KML geometry, return a GeoJSON geometry
          * @param node : a candiate node for geoemtry
          */
-        var checkAndParseGeometry = function (node, style) {
+        var checkAndParseGeometry = function(node, style) {
             var extrude, outerBoundary, coordNode;
 
             switch (node.nodeName) {
@@ -75,19 +86,27 @@ define(['../Renderer/FeatureStyle', '../Utils/Constants'], function (FeatureStyl
 
                     var children = node.childNodes;
                     for (var i = 0; i < children.length; i++) {
-                        var geometry = checkAndParseGeometry(children[i], style);
+                        var geometry = checkAndParseGeometry(
+                            children[i],
+                            style
+                        );
                         if (geometry) {
                             geoms.push(geometry);
                         }
                     }
 
-                    return {type: Constants.GEOMETRY.GeometryCollection, geometries: geoms};
+                    return {
+                        type: Constants.GEOMETRY.GeometryCollection,
+                        geometries: geoms
+                    };
                 case Constants.GEOMETRY.LineString:
                     coordNode = node.getElementsByTagName("coordinates");
                     if (coordNode.length === 1) {
                         return {
                             type: Constants.GEOMETRY.LineString,
-                            coordinates: parseCoordinates(coordNode[0].textContent)
+                            coordinates: parseCoordinates(
+                                coordNode[0].textContent
+                            )
                         };
                     }
                     break;
@@ -95,7 +114,8 @@ define(['../Renderer/FeatureStyle', '../Utils/Constants'], function (FeatureStyl
                     // Take into accout extresion
                     extrude = node.getElementsByTagName("extrude");
                     if (extrude.length === 1) {
-                        style.extrude = parseInt(extrude[0].childNodes[0].nodeValue) !== 0;
+                        style.extrude =
+                            parseInt(extrude[0].childNodes[0].nodeValue) !== 0;
                     }
 
                     // TODO : check how to manage fill property
@@ -104,12 +124,18 @@ define(['../Renderer/FeatureStyle', '../Utils/Constants'], function (FeatureStyl
                     }
 
                     // TODO : manage holes
-                    outerBoundary = node.getElementsByTagName("outerBoundaryIs");
-                    coordNode = outerBoundary[0].getElementsByTagName("coordinates");
+                    outerBoundary = node.getElementsByTagName(
+                        "outerBoundaryIs"
+                    );
+                    coordNode = outerBoundary[0].getElementsByTagName(
+                        "coordinates"
+                    );
                     if (coordNode.length === 1) {
                         return {
                             type: Constants.GEOMETRY.Polygon,
-                            coordinates: [parseCoordinates(coordNode[0].textContent)]
+                            coordinates: [
+                                parseCoordinates(coordNode[0].textContent)
+                            ]
                         };
                     }
                     break;
@@ -119,7 +145,10 @@ define(['../Renderer/FeatureStyle', '../Utils/Constants'], function (FeatureStyl
                         var coord = coordNode[0].textContent.split(",");
                         return {
                             type: Constants.GEOMETRY.Point,
-                            coordinates: [parseFloat(coord[0]), parseFloat(coord[1])]
+                            coordinates: [
+                                parseFloat(coord[0]),
+                                parseFloat(coord[1])
+                            ]
                         };
                     }
                     break;
@@ -131,12 +160,14 @@ define(['../Renderer/FeatureStyle', '../Utils/Constants'], function (FeatureStyl
         /*
          * Parse poly style
          */
-        var parsePolyStyle = function (node, style) {
+        var parsePolyStyle = function(node, style) {
             var child = node.firstElementChild;
             while (child) {
                 switch (child.nodeName) {
                     case "color":
-                        style.fillColor = fromStringToColor(child.childNodes[0].nodeValue);
+                        style.fillColor = fromStringToColor(
+                            child.childNodes[0].nodeValue
+                        );
                         break;
                 }
                 child = child.nextElementSibling;
@@ -146,15 +177,19 @@ define(['../Renderer/FeatureStyle', '../Utils/Constants'], function (FeatureStyl
         /*
          * Parse line style
          */
-        var parseLineStyle = function (node, style) {
+        var parseLineStyle = function(node, style) {
             var child = node.firstElementChild;
             while (child) {
                 switch (child.nodeName) {
                     case "color":
-                        style.strokeColor = fromStringToColor(child.childNodes[0].nodeValue);
+                        style.strokeColor = fromStringToColor(
+                            child.childNodes[0].nodeValue
+                        );
                         break;
                     case "width":
-                        style.strokeWidth = parseFloat(child.childNodes[0].nodeValue);
+                        style.strokeWidth = parseFloat(
+                            child.childNodes[0].nodeValue
+                        );
                         break;
                 }
                 child = child.nextElementSibling;
@@ -164,7 +199,7 @@ define(['../Renderer/FeatureStyle', '../Utils/Constants'], function (FeatureStyl
         /*
          * Parse icon style
          */
-        var parseIconStyle = function (node, style) {
+        var parseIconStyle = function(node, style) {
             var child = node.firstElementChild;
             while (child) {
                 switch (child.nodeName) {
@@ -173,7 +208,8 @@ define(['../Renderer/FeatureStyle', '../Utils/Constants'], function (FeatureStyl
                         break;
                     case "Icon":
                         if (child.firstElementChild) {
-                            style.iconUrl = child.firstElementChild.childNodes[0].nodeValue;
+                            style.iconUrl =
+                                child.firstElementChild.childNodes[0].nodeValue;
                         } else {
                             style.iconUrl = null;
                         }
@@ -186,12 +222,14 @@ define(['../Renderer/FeatureStyle', '../Utils/Constants'], function (FeatureStyl
         /*
          * Parse label style
          */
-        var parseLabelStyle = function (node, style) {
+        var parseLabelStyle = function(node, style) {
             var child = node.firstElementChild;
             while (child) {
                 switch (child.nodeName) {
                     case "color":
-                        var labelColor = fromStringToColor(child.textContent.trim());
+                        var labelColor = fromStringToColor(
+                            child.textContent.trim()
+                        );
                         if (labelColor[3] === 0) {
                             style.label = null;
                             style.textColor = labelColor;
@@ -211,8 +249,8 @@ define(['../Renderer/FeatureStyle', '../Utils/Constants'], function (FeatureStyl
         /*
          * Parse style
          */
-        var parseStyle = function (node, parentStyle) {
-            var id = '#' + node.getAttribute("id");
+        var parseStyle = function(node, parentStyle) {
+            var id = "#" + node.getAttribute("id");
 
             var style = new FeatureStyle(parentStyle);
             styles[id] = style;
@@ -243,7 +281,7 @@ define(['../Renderer/FeatureStyle', '../Utils/Constants'], function (FeatureStyl
         /*
          * Parse placemark
          */
-        var parsePlacemark = function (node) {
+        var parsePlacemark = function(node) {
             // Create a feature
             var feature = {
                 type: "Feature",
@@ -260,26 +298,33 @@ define(['../Renderer/FeatureStyle', '../Utils/Constants'], function (FeatureStyl
                         feature.properties.name = child.childNodes[0].nodeValue;
                         break;
                     case "styleUrl":
-                    {
-                        id = child.childNodes[0].nodeValue;
-                        if (styles.hasOwnProperty(id)) {
-                            feature.properties.style = styles[id];
-                            shareStyle = true;
+                        {
+                            id = child.childNodes[0].nodeValue;
+                            if (styles.hasOwnProperty(id)) {
+                                feature.properties.style = styles[id];
+                                shareStyle = true;
+                            }
                         }
-                    }
                         break;
                     case "Style":
-                    {
-                        style = parseStyle(child, feature.properties.name, feature.properties.style);
-                        if (style) {
-                            feature.properties.style = style;
+                        {
+                            style = parseStyle(
+                                child,
+                                feature.properties.name,
+                                feature.properties.style
+                            );
+                            if (style) {
+                                feature.properties.style = style;
+                            }
                         }
-                    }
                         break;
                     default:
                         // Try with geometry
                         if (feature.geometry === null) {
-                            feature.geometry = checkAndParseGeometry(child, style);
+                            feature.geometry = checkAndParseGeometry(
+                                child,
+                                style
+                            );
                         }
                 }
                 child = child.nextElementSibling;
@@ -288,9 +333,15 @@ define(['../Renderer/FeatureStyle', '../Utils/Constants'], function (FeatureStyl
             if (feature.geometry) {
                 // Manage the fact that labels are always active with KML
                 style = feature.properties.style;
-                if (style && style.textColor[3] > 0.0 && feature.geometry.type === Constants.GEOMETRY.Point) {
+                if (
+                    style &&
+                    style.textColor[3] > 0.0 &&
+                    feature.geometry.type === Constants.GEOMETRY.Point
+                ) {
                     if (shareStyle) {
-                        style = feature.properties.style = new FeatureStyle(style);
+                        style = feature.properties.style = new FeatureStyle(
+                            style
+                        );
                     }
                     style.label = feature.properties.name;
                 }
@@ -302,7 +353,7 @@ define(['../Renderer/FeatureStyle', '../Utils/Constants'], function (FeatureStyl
         /*
          * Parse Document or folder
          */
-        var parseDocumentOrFolder = function (node) {
+        var parseDocumentOrFolder = function(node) {
             var child = node.firstElementChild;
             var vis;
             while (child) {
@@ -326,7 +377,7 @@ define(['../Renderer/FeatureStyle', '../Utils/Constants'], function (FeatureStyl
         /*
          * Parse feature
          */
-        var checkAndParseFeature = function (node) {
+        var checkAndParseFeature = function(node) {
             switch (node.nodeName) {
                 case "Style":
                     parseStyle(node);
@@ -341,11 +392,10 @@ define(['../Renderer/FeatureStyle', '../Utils/Constants'], function (FeatureStyl
             }
         };
 
-
         /*
          * Parse a KML document
          */
-        var parse = function (doc) {
+        var parse = function(doc) {
             var root = doc.documentElement;
             var child = root.firstElementChild;
             while (child) {
@@ -356,9 +406,8 @@ define(['../Renderer/FeatureStyle', '../Utils/Constants'], function (FeatureStyl
             return featureCollection;
         };
 
-        return {parse: parse};
+        return { parse: parse };
     })();
 
     return KMLParser;
-
 });

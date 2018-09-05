@@ -35,55 +35,68 @@
  * along with GlobWeb. If not, see <http://www.gnu.org/licenses/>.
  ***************************************/
 
-define(['../Utils/Utils', './AbstractRasterLayer', '../Utils/Constants', '../Tiling/MercatorTiling'],
-    function (Utils, AbstractRasterLayer, Constants, MercatorTiling) {
+define([
+    "../Utils/Utils",
+    "./AbstractRasterLayer",
+    "../Utils/Constants",
+    "../Tiling/MercatorTiling"
+], function(Utils, AbstractRasterLayer, Constants, MercatorTiling) {
+    /**************************************************************************************************************/
 
-        /**************************************************************************************************************/
+    /**
+     * Open Street Map configuration
+     * @typedef {AbstractRasterLayer.configuration} AbstractRasterLayer.osm_configuration
+     * @property {int} [tilePixelSize=256]
+     * @property {int} [baseLevel=2]
+     * @property {int} [numberOfLevels=21]
+     */
+    /**
+     * @name OSMLayer
+     * @class
+     *    A layer to display data coming from OpenStreetMap server. OpenStreetMap (OSM) is a collaborative project to
+     * create a free editable map of the world
+     * @augments AbstractRasterLayer
+     * @param {AbstractRasterLayer.osm_configuration} options - OSM Configuration
+     * @memberOf module:Layer
+     */
+    var OSMLayer = function(options) {
+        options.tilePixelSize = options.tilePixelSize || 256;
+        options.tiling = new MercatorTiling(options.baseLevel || 2);
+        options.numberOfLevels = options.numberOfLevels || 21;
+        AbstractRasterLayer.prototype.constructor.call(
+            this,
+            Constants.LAYER.OSM,
+            options
+        );
+    };
 
-        /**
-         * Open Street Map configuration
-         * @typedef {AbstractRasterLayer.configuration} AbstractRasterLayer.osm_configuration
-         * @property {int} [tilePixelSize=256]
-         * @property {int} [baseLevel=2]
-         * @property {int} [numberOfLevels=21]
-         */
-        /**
-         * @name OSMLayer
-         * @class
-         *    A layer to display data coming from OpenStreetMap server. OpenStreetMap (OSM) is a collaborative project to
-         * create a free editable map of the world
-         * @augments AbstractRasterLayer
-         * @param {AbstractRasterLayer.osm_configuration} options - OSM Configuration
-         * @memberOf module:Layer
-         */
-        var OSMLayer = function (options) {
-            options.tilePixelSize = options.tilePixelSize || 256;
-            options.tiling = new MercatorTiling(options.baseLevel || 2);
-            options.numberOfLevels = options.numberOfLevels || 21;
-            AbstractRasterLayer.prototype.constructor.call(this, Constants.LAYER.OSM, options);
-        };
+    /**************************************************************************************************************/
 
-        /**************************************************************************************************************/
+    Utils.inherits(AbstractRasterLayer, OSMLayer);
 
-        Utils.inherits(AbstractRasterLayer, OSMLayer);
+    /**************************************************************************************************************/
 
-        /**************************************************************************************************************/
+    /**
+     * Returns an url for the given tile.
+     * @function getUrl
+     * @memberof OSMLayer#
+     * @param {Tile} tile Tile
+     * @return {String} Url
+     */
+    OSMLayer.prototype.getUrl = function(tile) {
+        var url =
+            this.baseUrl +
+            "/" +
+            tile.level +
+            "/" +
+            tile.x +
+            "/" +
+            tile.y +
+            ".png";
+        return this.proxify(url, tile.level);
+    };
 
-        /**
-         * Returns an url for the given tile.
-         * @function getUrl
-         * @memberof OSMLayer#
-         * @param {Tile} tile Tile
-         * @return {String} Url
-         */
-        OSMLayer.prototype.getUrl = function (tile) {
-            var url =  this.baseUrl + '/' + tile.level + '/' + tile.x + '/' + tile.y + '.png';
-            return this.proxify(url, tile.level);
-        };
+    /**************************************************************************************************************/
 
-
-        /**************************************************************************************************************/
-
-        return OSMLayer;
-
-    });
+    return OSMLayer;
+});

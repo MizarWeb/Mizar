@@ -17,15 +17,19 @@
  * along with GlobWeb. If not, see <http://www.gnu.org/licenses/>.
  ***************************************/
 
-define(['../Utils/Utils', '../Navigation/AbstractNavigation', '../Renderer/Ray', '../Renderer/glMatrix'], function (Utils, BaseNavigation, Ray) {
-
+define([
+    "../Utils/Utils",
+    "../Navigation/AbstractNavigation",
+    "../Renderer/Ray",
+    "../Renderer/glMatrix"
+], function(Utils, BaseNavigation, Ray) {
     /**************************************************************************************************************/
 
     /** @export
      @constructor
      Navigation constructor
      */
-    var Navigation = function (renderContext, options) {
+    var Navigation = function(renderContext, options) {
         BaseNavigation.prototype.constructor.call(this, renderContext, options);
 
         this.inverseViewMatrix = mat4.create();
@@ -57,9 +61,13 @@ define(['../Utils/Utils', '../Navigation/AbstractNavigation', '../Renderer/Ray',
     /*
      Compute the inverse view matrix
      */
-    Navigation.prototype.applyLocalRotation = function (matrix) {
-        mat4.rotate(matrix, (this.heading) * Math.PI / 180.0, [0.0, 0.0, 1.0]);
-        mat4.rotate(matrix, (90 - this.tilt) * Math.PI / 180.0, [1.0, 0.0, 0.0]);
+    Navigation.prototype.applyLocalRotation = function(matrix) {
+        mat4.rotate(matrix, (this.heading * Math.PI) / 180.0, [0.0, 0.0, 1.0]);
+        mat4.rotate(matrix, ((90 - this.tilt) * Math.PI) / 180.0, [
+            1.0,
+            0.0,
+            0.0
+        ]);
     };
 
     /**************************************************************************************************************/
@@ -67,7 +75,7 @@ define(['../Utils/Utils', '../Navigation/AbstractNavigation', '../Renderer/Ray',
     /*
      Compute the view matrix
      */
-    Navigation.prototype.computeViewMatrix = function () {
+    Navigation.prototype.computeViewMatrix = function() {
         this.computeInverseViewMatrix();
         mat4.inverse(this.inverseViewMatrix, this.renderContext.viewMatrix);
     };
@@ -77,20 +85,19 @@ define(['../Utils/Utils', '../Navigation/AbstractNavigation', '../Renderer/Ray',
     /*
      Compute the inverse view matrix
      */
-    Navigation.prototype.computeInverseViewMatrix = function () {
+    Navigation.prototype.computeInverseViewMatrix = function() {
         mat4.identity(this.inverseViewMatrix);
         mat4.translate(this.inverseViewMatrix, this.center);
         this.applyLocalRotation(this.inverseViewMatrix);
         mat4.translate(this.inverseViewMatrix, [0.0, 0.0, this.distance]);
     };
 
-
     /**************************************************************************************************************/
 
     /*
      Pan the navigator
      */
-    Navigation.prototype.pan = function (dx, dy) {
+    Navigation.prototype.pan = function(dx, dy) {
         var cx = this.renderContext.canvas.width / 2;
         var cy = this.renderContext.canvas.height / 2;
         var ray = Ray.createFromPixel(this.renderContext, cx + dx, cy + dy);
@@ -103,8 +110,10 @@ define(['../Utils/Utils', '../Navigation/AbstractNavigation', '../Renderer/Ray',
         vec3.normalize(normal);
         var d = vec3.dot(this.center, normal);
 
-        var t = ( d - vec3.dot(ray.orig, normal) ) / vec3.dot(ray.dir, normal);
-        var tPrev = ( d - vec3.dot(prevRay.orig, normal) ) / vec3.dot(prevRay.dir, normal);
+        var t = (d - vec3.dot(ray.orig, normal)) / vec3.dot(ray.dir, normal);
+        var tPrev =
+            (d - vec3.dot(prevRay.orig, normal)) /
+            vec3.dot(prevRay.dir, normal);
 
         var point = ray.computePoint(t);
         var prevPoint = prevRay.computePoint(tPrev);
@@ -119,7 +128,7 @@ define(['../Utils/Utils', '../Navigation/AbstractNavigation', '../Renderer/Ray',
         ray = new Ray(ray.orig, dir);
         var intersections = this.node.intersectWith(ray);
         if (intersections.length > 0) {
-            intersections.sort(function (a, b) {
+            intersections.sort(function(a, b) {
                 return a.t - b.t;
             });
             var newCenter = ray.computePoint(intersections[0].t);
@@ -128,7 +137,6 @@ define(['../Utils/Utils', '../Navigation/AbstractNavigation', '../Renderer/Ray',
 
             this.computeViewMatrix();
         }
-
     };
 
     /**************************************************************************************************************/
@@ -137,10 +145,10 @@ define(['../Utils/Utils', '../Navigation/AbstractNavigation', '../Renderer/Ray',
      Zoom to the current observed location
      @param delta Delta zoom
      */
-    Navigation.prototype.zoom = function (delta) {
+    Navigation.prototype.zoom = function(delta) {
         var previousDistance = this.distance;
 
-        this.distance *= (1 + delta * 0.1);
+        this.distance *= 1 + delta * 0.1;
 
         if (this.distance > this.maxDistance) {
             this.distance = this.maxDistance;
@@ -163,7 +171,7 @@ define(['../Utils/Utils', '../Navigation/AbstractNavigation', '../Renderer/Ray',
     /*
      Rotate the navigator
      */
-    Navigation.prototype.rotate = function (dx, dy) {
+    Navigation.prototype.rotate = function(dx, dy) {
         var previousHeading = this.heading;
         var previousTilt = this.tilt;
 
@@ -180,7 +188,5 @@ define(['../Utils/Utils', '../Navigation/AbstractNavigation', '../Renderer/Ray',
         // }
     };
 
-
     return Navigation;
-
 });

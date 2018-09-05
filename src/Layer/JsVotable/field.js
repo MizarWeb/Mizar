@@ -16,9 +16,13 @@
  * You should have received a copy of the GNU General Public License
  * along with JVotable.  If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
-define(["./utils","./abstractNode","./description","./values","./link"], 
-    function(Utils, AbstractNode, Description, Values, Link) {
-
+define([
+    "./utils",
+    "./abstractNode",
+    "./description",
+    "./values",
+    "./link"
+], function(Utils, AbstractNode, Description, Values, Link) {
     /**
      * Constructs the Field object.
      *
@@ -78,7 +82,11 @@ define(["./utils","./abstractNode","./description","./values","./link"],
         var description;
         var values;
         var links = [];
-        for(var i = 0; childNode!=null && i< childNode.childNodes.length; i++){
+        for (
+            var i = 0;
+            childNode != null && i < childNode.childNodes.length;
+            i++
+        ) {
             var element = childNode.childNodes[i];
             if (element.nodeType == 1) {
                 var nodeName = element.localName;
@@ -93,14 +101,16 @@ define(["./utils","./abstractNode","./description","./values","./link"],
                         links.push(new Link(element));
                         break;
                     default:
-                        this.getCache().addWarning("unknown element "+nodeName+" in Field node");
+                        this.getCache().addWarning(
+                            "unknown element " + nodeName + " in Field node"
+                        );
                 }
             }
         }
         return [description, values, links];
     };
 
-    Utils.inherits(AbstractNode , Field );
+    Utils.inherits(AbstractNode, Field);
 
     /**
      * Returns the ID value.

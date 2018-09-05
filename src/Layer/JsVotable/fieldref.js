@@ -17,7 +17,6 @@
  * along with JVotable.  If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
 define(["./utils", "./abstractNode"], function(Utils, AbstractNode) {
-
     /**
      * Construct the Fieldref object.
      *
@@ -39,7 +38,7 @@ define(["./utils", "./abstractNode"], function(Utils, AbstractNode) {
         AbstractNode.prototype.constructor.call(this, childNode);
     };
 
-    Utils.inherits(AbstractNode , Fieldref );
+    Utils.inherits(AbstractNode, Fieldref);
 
     /**
      * Returns the ref value.

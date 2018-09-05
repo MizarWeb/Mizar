@@ -17,7 +17,6 @@
  * along with JVotable.  If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
 define(["./utils", "./abstractNode"], function(Utils, AbstractNode) {
-
     /**
      * Stores the name of the data implementation
      * @param {NodeList} childNode XML node
@@ -32,7 +31,7 @@ define(["./utils", "./abstractNode"], function(Utils, AbstractNode) {
         this.name = name;
     };
 
-    Utils.inherits(AbstractNode , AbstractData );
+    Utils.inherits(AbstractNode, AbstractData);
 
     AbstractData.prototype.getName = function() {
         return this.name;

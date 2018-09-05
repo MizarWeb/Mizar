@@ -21,12 +21,15 @@
 /**
  * Compass module : map control with "north" component
  */
-define(["jquery","../Time/TimeTravelParams","../Utils/Constants"], function ($, TimeTravelParams, Constants) {
-
+define(["jquery", "../Time/TimeTravelParams", "../Utils/Constants"], function(
+    $,
+    TimeTravelParams,
+    Constants
+) {
     /**
      *    Private variables
      */
-    
+
     var params = new TimeTravelParams();
 
     var parentElement = null;
@@ -36,7 +39,7 @@ define(["jquery","../Time/TimeTravelParams","../Utils/Constants"], function ($, 
 
     /**
      *    Go Rewind
-     *    
+     *
      */
     function goRewind() {
         params.rewind();
@@ -44,7 +47,7 @@ define(["jquery","../Time/TimeTravelParams","../Utils/Constants"], function ($, 
 
     /**
      *    Go Forward
-     *    
+     *
      */
     function goForward() {
         params.forward();
@@ -52,29 +55,28 @@ define(["jquery","../Time/TimeTravelParams","../Utils/Constants"], function ($, 
 
     /**
      *    Choose time
-     *    
+     *
      */
-    function chooseTime() {
-    }
+    function chooseTime() {}
 
     /**************************************************************************************************************/
 
     /**
      *    Remove time travel element
-     *    
+     *
      */
     function remove() {
-        ctx.unsubscribe(Constants.EVENT_MSG.GLOBAL_TIME_FORWARD,goForward);
-        ctx.unsubscribe(Constants.EVENT_MSG.GLOBAL_TIME_REWIND,goRewind);
-        ctx.unsubscribe(Constants.EVENT_MSG.GLOBAL_TIME_SET,chooseTime);
-        document.getElementById(parentElement).innerHTML = '';
+        ctx.unsubscribe(Constants.EVENT_MSG.GLOBAL_TIME_FORWARD, goForward);
+        ctx.unsubscribe(Constants.EVENT_MSG.GLOBAL_TIME_REWIND, goRewind);
+        ctx.unsubscribe(Constants.EVENT_MSG.GLOBAL_TIME_SET, chooseTime);
+        document.getElementById(parentElement).innerHTML = "";
     }
 
     /**************************************************************************************************************/
 
     /**
      *    reset values
-     *    
+     *
      */
     function reset() {
         params.reset();
@@ -82,7 +84,7 @@ define(["jquery","../Time/TimeTravelParams","../Utils/Constants"], function ($, 
 
     /**
      *    update
-     *    
+     *
      */
     function update(parameters) {
         params.update(parameters);
@@ -90,12 +92,11 @@ define(["jquery","../Time/TimeTravelParams","../Utils/Constants"], function ($, 
 
     /**
      *    get current date
-     *    
+     *
      */
     function getCurrentDate() {
         return params.getCurrentDate();
     }
-
 
     function isCurrentDateTheFirst() {
         return params.isCurrentDateTheFirst();
@@ -108,26 +109,29 @@ define(["jquery","../Time/TimeTravelParams","../Utils/Constants"], function ($, 
     /**************************************************************************************************************/
 
     return {
-        init: function (options) {
+        init: function(options) {
             parentElement = options.element;
             ctx = options.ctx;
             params.setContext(ctx);
-            
+
             // subscribe
             if (ctx) {
-                ctx.subscribe(Constants.EVENT_MSG.GLOBAL_TIME_FORWARD,goForward);
-                ctx.subscribe(Constants.EVENT_MSG.GLOBAL_TIME_REWIND,goRewind);
-                ctx.subscribe(Constants.EVENT_MSG.GLOBAL_TIME_SET,chooseTime);
+                ctx.subscribe(
+                    Constants.EVENT_MSG.GLOBAL_TIME_FORWARD,
+                    goForward
+                );
+                ctx.subscribe(Constants.EVENT_MSG.GLOBAL_TIME_REWIND, goRewind);
+                ctx.subscribe(Constants.EVENT_MSG.GLOBAL_TIME_SET, chooseTime);
             }
         },
-        reset                 : reset,
-        update                : update,
-        goForward             : goForward,
-        goRewind              : goRewind,
-        isCurrentDateTheFirst : isCurrentDateTheFirst,
-        isCurrentDateTheLast  : isCurrentDateTheLast,
-        chooseTime            : chooseTime,
-        remove                : remove,
-        getCurrentDate        : getCurrentDate,
+        reset: reset,
+        update: update,
+        goForward: goForward,
+        goRewind: goRewind,
+        isCurrentDateTheFirst: isCurrentDateTheFirst,
+        isCurrentDateTheLast: isCurrentDateTheLast,
+        chooseTime: chooseTime,
+        remove: remove,
+        getCurrentDate: getCurrentDate
     };
 });

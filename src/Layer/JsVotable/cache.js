@@ -18,14 +18,13 @@
  ******************************************************************************/
 
 define(function() {
-
     /**
      * Cache system for VOTable.
      * @exports Cache
      * @constructor
      * @author Jean-Christophe Malapert
      */
-    var Cache = function () {
+    var Cache = function() {
         this.nodeID = {};
         this.nodeName = {};
         this.warnings = [];
@@ -70,7 +69,7 @@ define(function() {
      * @param {AbstractNode} node VOTable element
      */
     Cache.prototype.addEntryName = function(name, node) {
-        if(this.nodeName.hasOwnProperty(name)) {
+        if (this.nodeName.hasOwnProperty(name)) {
             this.nodeName[name].push(node);
         } else {
             this.nodeName[name] = [];

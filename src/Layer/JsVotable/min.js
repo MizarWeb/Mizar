@@ -16,8 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with JVotable.  If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
-define(["./utils","./abstractNode"], function(Utils, AbstractNode) {
-
+define(["./utils", "./abstractNode"], function(Utils, AbstractNode) {
     /**
      * Construct a Min object.
      *
@@ -38,7 +37,7 @@ define(["./utils","./abstractNode"], function(Utils, AbstractNode) {
         AbstractNode.prototype.constructor.call(this, childNode);
     };
 
-    Utils.inherits(AbstractNode , Min );
+    Utils.inherits(AbstractNode, Min);
 
     /**
      * Returns the value value.

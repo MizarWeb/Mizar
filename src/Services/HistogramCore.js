@@ -21,8 +21,7 @@
 /**
  * Histogram module : create histogram to the given image
  */
-define(["./Triangle"], function (Triangle) {
-
+define(["./Triangle"], function(Triangle) {
     // Private variables
     var nbBins;
     var self;
@@ -54,7 +53,7 @@ define(["./Triangle"], function (Triangle) {
         };
     }
 
-    function _handleMouseDown (evt) {
+    function _handleMouseDown(evt) {
         var mousePos = _getMousePos(canvas, evt);
 
         if (self.minThreshold.contains([mousePos.x, mousePos.y, 0])) {
@@ -70,7 +69,7 @@ define(["./Triangle"], function (Triangle) {
 
     /**************************************************************************************************************/
 
-    function _handleMouseUp (evt) {
+    function _handleMouseUp(evt) {
         self.minThreshold.dragging = false;
         self.maxThreshold.dragging = false;
 
@@ -87,35 +86,66 @@ define(["./Triangle"], function (Triangle) {
 
     /**************************************************************************************************************/
 
-    function _handleMouseMove (evt) {
+    function _handleMouseMove(evt) {
         var mousePos = _getMousePos(canvas, evt);
 
         self.ctx.clearRect(0.0, originY, canvas.width, paddingBottom);
 
-        self.minThreshold.hover = self.minThreshold.contains([mousePos.x, mousePos.y, 0]);
+        self.minThreshold.hover = self.minThreshold.contains([
+            mousePos.x,
+            mousePos.y,
+            0
+        ]);
 
-        self.maxThreshold.hover = self.maxThreshold.contains([mousePos.x, mousePos.y, 0]);
+        self.maxThreshold.hover = self.maxThreshold.contains([
+            mousePos.x,
+            mousePos.y,
+            0
+        ]);
 
         // Draw threshold controls
-        if (self.minThreshold.dragging && mousePos.x >= self.minThreshold.initA[0] && mousePos.x < self.maxThreshold.a[0]) {
-            self.minThreshold.modifyPosition([mousePos.x, self.minThreshold.a[1]]);
+        if (
+            self.minThreshold.dragging &&
+            mousePos.x >= self.minThreshold.initA[0] &&
+            mousePos.x < self.maxThreshold.a[0]
+        ) {
+            self.minThreshold.modifyPosition([
+                mousePos.x,
+                self.minThreshold.a[1]
+            ]);
         }
 
-        if (self.maxThreshold.dragging && mousePos.x <= self.maxThreshold.initA[0] && mousePos.x > self.minThreshold.a[0]) {
-            self.maxThreshold.modifyPosition([mousePos.x, self.maxThreshold.a[1]]);
+        if (
+            self.maxThreshold.dragging &&
+            mousePos.x <= self.maxThreshold.initA[0] &&
+            mousePos.x > self.minThreshold.a[0]
+        ) {
+            self.maxThreshold.modifyPosition([
+                mousePos.x,
+                self.maxThreshold.a[1]
+            ]);
         }
         self.drawThresholdControls();
 
         // Don't draw histogram values if the mouse is out of histogram canvas
-        if (mousePos.y > canvas.height || mousePos.y < 0.0 || mousePos.x > originX + nbBins || mousePos.x < originX) {
+        if (
+            mousePos.y > canvas.height ||
+            mousePos.y < 0.0 ||
+            mousePos.x > originX + nbBins ||
+            mousePos.x < originX
+        ) {
             return;
         }
 
         // Draw the text indicating the histogram value on mouse position
-        self.ctx.font = '8pt Calibri';
-        self.ctx.fillStyle = 'yellow';
+        self.ctx.font = "8pt Calibri";
+        self.ctx.fillStyle = "yellow";
         var thresholdValue = self.getHistValue([mousePos.x, mousePos.y]);
-        self.ctx.fillText(thresholdValue, canvas.width / 2 - 15.0, originY + paddingBottom);
+        self.ctx.fillText(
+            thresholdValue,
+            canvas.width / 2 - 15.0,
+            originY + paddingBottom
+        );
         // Draw a tiny line indicating the mouse position on X-axis
         self.ctx.fillRect(mousePos.x, originY, 1, 2);
     }
@@ -128,7 +158,14 @@ define(["./Triangle"], function (Triangle) {
      * @returns {number} value
      */
     function getHistValue(position) {
-        return Math.floor((((position[0] - originX) / 256.0) * (this.image.tmax - this.image.tmin) + this.image.tmin) * Math.pow(10, this.accuracy)) / Math.pow(10, this.accuracy);
+        return (
+            Math.floor(
+                (((position[0] - originX) / 256.0) *
+                    (this.image.tmax - this.image.tmin) +
+                    this.image.tmin) *
+                    Math.pow(10, this.accuracy)
+            ) / Math.pow(10, this.accuracy)
+        );
     }
 
     /**************************************************************************************************************/
@@ -137,9 +174,9 @@ define(["./Triangle"], function (Triangle) {
      * Init Thresholds by creating to
      */
     function initThresholds() {
-
         originY = canvas.height - paddingBottom;
-        hwidth = nbBins + originX > canvas.width ? canvas.width : nbBins + originX;
+        hwidth =
+            nbBins + originX > canvas.width ? canvas.width : nbBins + originX;
 
         this.minThreshold = new Triangle(
             [originX, originY + 1, 0],
@@ -157,7 +194,7 @@ define(["./Triangle"], function (Triangle) {
     /**************************************************************************************************************/
 
     function drawThresholdControls() {
-        this.minThreshold.draw(this.ctx,  {});
+        this.minThreshold.draw(this.ctx, {});
         this.maxThreshold.draw(this.ctx, {});
     }
 
@@ -172,7 +209,7 @@ define(["./Triangle"], function (Triangle) {
      *
      */
     function drawHistogram(options) {
-        if(options == null) {
+        if (options == null) {
             options = {};
         }
         this.ctx.fillStyle = options.color || "blue";
@@ -189,7 +226,6 @@ define(["./Triangle"], function (Triangle) {
      *    Draw histogram axis
      */
     function drawAxes() {
-
         var leftY, rightX;
         leftY = 0;
         rightX = originX + hwidth;
@@ -220,7 +256,7 @@ define(["./Triangle"], function (Triangle) {
     function drawTransferFunction(options) {
         // Draw transfer functions
         // "Grey" colormap for now(luminance curve only)
-        if(options == null) {
+        if (options == null) {
             options = {};
         }
         this.ctx.fillStyle = options.color || "red";
@@ -234,16 +270,27 @@ define(["./Triangle"], function (Triangle) {
                     scaledValue = (value / nbBins) * originY;
                     break;
                 case "log":
-                    scaledValue = Math.log(value / 10.0 + 1) / Math.log(nbBins / 10.0 + 1) * originY;
+                    scaledValue =
+                        (Math.log(value / 10.0 + 1) /
+                            Math.log(nbBins / 10.0 + 1)) *
+                        originY;
                     break;
                 case "sqrt":
-                    scaledValue = Math.sqrt(value / 10.0) / Math.sqrt(nbBins / 10.0) * originY;
+                    scaledValue =
+                        (Math.sqrt(value / 10.0) / Math.sqrt(nbBins / 10.0)) *
+                        originY;
                     break;
                 case "sqr":
-                    scaledValue = Math.pow(value, 2) / Math.pow(nbBins, 2) * originY;
+                    scaledValue =
+                        (Math.pow(value, 2) / Math.pow(nbBins, 2)) * originY;
                     break;
                 case "asin":
-                    scaledValue = Math.log(value + Math.sqrt(Math.pow(value, 2) + 1.0)) / Math.log(nbBins + Math.sqrt(Math.pow(nbBins, 2) + 1.0)) * originY;
+                    scaledValue =
+                        (Math.log(value + Math.sqrt(Math.pow(value, 2) + 1.0)) /
+                            Math.log(
+                                nbBins + Math.sqrt(Math.pow(nbBins, 2) + 1.0)
+                            )) *
+                        originY;
                     break;
                 default:
                     break;
@@ -301,7 +348,9 @@ define(["./Triangle"], function (Triangle) {
             }
 
             // Scale to [0,255]
-            var bin = Math.floor(nbBins * (val - image.tmin) / (image.tmax - image.tmin));
+            var bin = Math.floor(
+                (nbBins * (val - image.tmin)) / (image.tmax - image.tmin)
+            );
             hist[bin]++;
 
             // Compute histogram max value
@@ -348,7 +397,7 @@ define(["./Triangle"], function (Triangle) {
          *            <li>originX
          *        </ul>
          */
-        init : function (options) {
+        init: function(options) {
             this.image = options.image;
             this.onUpdate = options.onUpdate;
             this.accuracy = options.accuracy || 6;
@@ -361,26 +410,26 @@ define(["./Triangle"], function (Triangle) {
 
             // Init canvas
             canvas = document.getElementById(options.canvas);
-            canvas.addEventListener('mousemove', _handleMouseMove);
+            canvas.addEventListener("mousemove", _handleMouseMove);
 
             // Handle threshold controller selection
-            canvas.addEventListener('mousedown', _handleMouseDown);
+            canvas.addEventListener("mousedown", _handleMouseDown);
 
             // Update histogram on mouseup
-            canvas.addEventListener('mouseup', _handleMouseUp);
-            this.ctx = canvas.getContext('2d');
+            canvas.addEventListener("mouseup", _handleMouseUp);
+            this.ctx = canvas.getContext("2d");
 
             this.initThresholds();
         },
-        initThresholds : initThresholds,
-        getHistValue : getHistValue,
-        drawThresholdControls : drawThresholdControls,
-        drawHistogram : drawHistogram,
-        drawAxes : drawAxes,
-        drawTransferFunction : drawTransferFunction,
-        draw : draw,
-        compute : compute,
-        setImage : setImage,
-        getCanvas : getCanvas
+        initThresholds: initThresholds,
+        getHistValue: getHistValue,
+        drawThresholdControls: drawThresholdControls,
+        drawHistogram: drawHistogram,
+        drawAxes: drawAxes,
+        drawTransferFunction: drawTransferFunction,
+        draw: draw,
+        compute: compute,
+        setImage: setImage,
+        getCanvas: getCanvas
     };
 });

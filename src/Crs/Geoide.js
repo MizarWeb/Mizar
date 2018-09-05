@@ -16,8 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with MIZAR. If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
-define([], function () {
-
+define([], function() {
     /**
      * Geoide configuration
      * @typedef {Object} AbstractCrs.geoide_configuration
@@ -36,15 +35,21 @@ define([], function () {
      * @memberOf module:Crs
      * @todo add flattening parameter
      */
-    var Geoide = function (options) {
-        this.radius = options && options.hasOwnProperty('radius') ? options.radius : null;
-        this.realPlanetRadius = options && options.hasOwnProperty('realPlanetRadius') ? options.realPlanetRadius : null;
+    var Geoide = function(options) {
+        this.radius =
+            options && options.hasOwnProperty("radius") ? options.radius : null;
+        this.realPlanetRadius =
+            options && options.hasOwnProperty("realPlanetRadius")
+                ? options.realPlanetRadius
+                : null;
         if (this.radius === null || this.realPlanetRadius === null) {
-            throw new ReferenceError("Radius and realPlanetRadius must be set to define a geoide", "Geoide.js");
+            throw new ReferenceError(
+                "Radius and realPlanetRadius must be set to define a geoide",
+                "Geoide.js"
+            );
         }
         this.heightScale = this.radius / this.realPlanetRadius;
     };
-
 
     /**
      * Get real planet radius in meter
@@ -52,7 +57,7 @@ define([], function () {
      * @memberOf Geoide#
      * @return {float} Real planet radius
      */
-    Geoide.prototype.getRealPlanetRadius = function () {
+    Geoide.prototype.getRealPlanetRadius = function() {
         return this.realPlanetRadius;
     };
 
@@ -62,7 +67,7 @@ define([], function () {
      * @memberOf Geoide#
      * @return {float} Radius
      */
-    Geoide.prototype.getRadius = function () {
+    Geoide.prototype.getRadius = function() {
         return this.radius;
     };
 
@@ -72,11 +77,10 @@ define([], function () {
      * @memberOf Geoide#
      * @return {float} Height scale
      */
-    Geoide.prototype.getHeightScale = function () {
+    Geoide.prototype.getHeightScale = function() {
         return this.heightScale;
     };
     /**************************************************************************************************************/
 
     return Geoide;
-
 });

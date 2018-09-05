@@ -28,7 +28,6 @@
  */
 function Layer() {}
 
-
 Layer.prototype.hasDimension = function() {};
 
 Layer.prototype.getDimensions = function() {};
@@ -100,7 +99,7 @@ Layer.prototype.setOnTheTop = function() {};
  * @fires Layer#visibility:changed
  * @throws {TypeError} Will throw an error when arg is not a boolean
  */
-Layer.prototype.setVisible = function (arg) {};
+Layer.prototype.setVisible = function(arg) {};
 
 /**
  * Returns the opacity.
@@ -114,7 +113,7 @@ Layer.prototype.getOpacity = function() {};
  * @fires Layer#opacity:changed
  * @throws {TypeError} Will throw an error when arg is not a number in [0..1]
  */
-Layer.prototype.setOpacity = function (arg) {};
+Layer.prototype.setOpacity = function(arg) {};
 
 /**
  * Returns the properties.
@@ -139,7 +138,7 @@ Layer.prototype.isPickable = function() {};
  * @param {String} type Type to check
  * @return {boolean} Result
  */
-Layer.prototype.isType = function (type) {};
+Layer.prototype.isType = function(type) {};
 
 /**
  * Returns the services related to the layer
@@ -165,7 +164,6 @@ Layer.prototype.getFormat = function() {};
  */
 Layer.prototype.getCoordinateSystem = function() {};
 
-
 /**
  * Returns the base URL
  * @returns {string} the base URL
@@ -180,7 +178,7 @@ Layer.prototype.isDeletable = function() {};
 
 /**
  * Returns the style.
- * @returns {FeatureStyle} the style 
+ * @returns {FeatureStyle} the style
  */
 Layer.prototype.getStyle = function() {};
 
@@ -189,7 +187,7 @@ Layer.prototype.getStyle = function() {};
  * @function setStyle
  * @param {FeatureStyle} arg Feature style
  */
-Layer.prototype.setStyle = function (arg) {};
+Layer.prototype.setStyle = function(arg) {};
 
 /**
  * Returns true when the layer is set as background otherwise false.
@@ -290,10 +288,10 @@ Layer.prototype.isVectorLayer = function() {};
  * @param {Globe} g - globe
  * @protected
  */
-Layer.prototype._attach = function (g) {};
+Layer.prototype._attach = function(g) {};
 
 /**
  * Detaches the vector layer from the planet.
  * @protected
  */
-Layer.prototype._detach = function () {};
+Layer.prototype._detach = function() {};

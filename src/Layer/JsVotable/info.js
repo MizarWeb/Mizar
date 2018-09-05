@@ -16,8 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with JVotable.  If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
-define(["./utils","./abstractNode"], function(Utils, AbstractNode) {
-
+define(["./utils", "./abstractNode"], function(Utils, AbstractNode) {
     /**
      * Constructs the Info object.
      *
@@ -46,8 +45,9 @@ define(["./utils","./abstractNode"], function(Utils, AbstractNode) {
     var Info = function(childNode) {
         AbstractNode.prototype.constructor.call(this, childNode);
         var element = childNode.childNodes[0];
-        if (element!=null && element.nodeType == 3) {
-            this.value = (element.textContent == null) ? null : element.textContent.trim();
+        if (element != null && element.nodeType == 3) {
+            this.value =
+                element.textContent == null ? null : element.textContent.trim();
         }
     };
 

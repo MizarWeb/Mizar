@@ -25,7 +25,11 @@
  *    Module processing feature collection
  *
  */
-define(["../Layer/HipsGraphicLayer", "../Utils/Constants", "../Crs/CoordinateSystemFactory"], function (HipsLayer, Constants, CoordinateSystemFactory) {
+define([
+    "../Layer/HipsGraphicLayer",
+    "../Utils/Constants",
+    "../Crs/CoordinateSystemFactory"
+], function(HipsLayer, Constants, CoordinateSystemFactory) {
     var gid = 0;
 
     /**
@@ -69,7 +73,7 @@ define(["../Layer/HipsGraphicLayer", "../Utils/Constants", "../Crs/CoordinateSys
          *    @param featureCollection GeoJSON FeatureCollection
          *
          */
-        handleFeatureCollection: function (gwLayer, featureCollection) {
+        handleFeatureCollection: function(gwLayer, featureCollection) {
             // Default CRS according to GeoJSON specification
             var defaultCrs = {
                 type: "name",
@@ -78,18 +82,28 @@ define(["../Layer/HipsGraphicLayer", "../Utils/Constants", "../Crs/CoordinateSys
                 }
             };
 
-            if ((featureCollection === null) || (featureCollection === undefined)) {
-                throw new ReferenceError("Error, featureCollection is null", "JsonProcessor.js");
+            if (featureCollection === null || featureCollection === undefined) {
+                throw new ReferenceError(
+                    "Error, featureCollection is null",
+                    "JsonProcessor.js"
+                );
             }
-            
-            //check if crs is global at the featureCollection
-            var crs = (featureCollection.crs) ? featureCollection.crs : defaultCrs;
 
-            gwLayer.coordinateSystem = CoordinateSystemFactory.create({geoideName:crs.properties.name});
+            //check if crs is global at the featureCollection
+            var crs = featureCollection.crs
+                ? featureCollection.crs
+                : defaultCrs;
+
+            gwLayer.coordinateSystem = CoordinateSystemFactory.create({
+                geoideName: crs.properties.name
+            });
 
             var features = featureCollection.features;
-            if ((features === null) || (features === undefined)) {
-                console.error("Error, no feature in featureCollection : ", featureCollection);
+            if (features === null || features === undefined) {
+                console.error(
+                    "Error, no feature in featureCollection : ",
+                    featureCollection
+                );
                 return;
             }
             var i, j, r;
@@ -102,25 +116,25 @@ define(["../Layer/HipsGraphicLayer", "../Utils/Constants", "../Crs/CoordinateSys
                         if (!gwLayer.dataType) {
                             gwLayer.dataType = "point";
                         } else {
-                            if (gwLayer.dataType !== 'point') {
+                            if (gwLayer.dataType !== "point") {
                                 gwLayer.dataType = "none";
                             }
                         }
                         break;
                     case Constants.GEOMETRY.Polygon:
                     case Constants.GEOMETRY.MultiPolygon:
-
                         if (!gwLayer.dataType) {
                             gwLayer.dataType = "line";
                         } else {
-                            if (gwLayer.dataType !== 'line') {
+                            if (gwLayer.dataType !== "line") {
                                 gwLayer.dataType = "none";
                             }
                         }
 
                         if (currentFeature.properties._imageCoordinates) {
                             // Set _imageCoordinates as geometry's property (may be modified later)
-                            currentFeature.geometry._imageCoordinates = currentFeature.properties._imageCoordinates;
+                            currentFeature.geometry._imageCoordinates =
+                                currentFeature.properties._imageCoordinates;
                         }
 
                         break;
@@ -139,5 +153,4 @@ define(["../Layer/HipsGraphicLayer", "../Utils/Constants", "../Crs/CoordinateSys
             }
         }
     };
-
 });

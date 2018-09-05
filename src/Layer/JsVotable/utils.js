@@ -16,41 +16,34 @@
  * You should have received a copy of the GNU General Public License
  * along with JVotable.  If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
-define(function () {
-
+define(function() {
     var Utils = {};
 
     /**
      * Inherits from an object
      * @author Jean-Christophe Malapert
      */
-    Utils.inherits = function(base, sub)
-    {
+    Utils.inherits = function(base, sub) {
         function tempCtor() {}
         tempCtor.prototype = base.prototype;
         sub.prototype = new tempCtor();
         sub.prototype.constructor = sub;
     };
 
-
     Utils.makeHttpObject = function() {
         try {
             return new XMLHttpRequest();
-        }
-        catch (erreur) {
-        }
+        } catch (erreur) {}
         try {
             return new ActiveXObject("Msxml2.XMLHTTP");
-        }
-        catch (erreur) {
-        }
+        } catch (erreur) {}
         try {
             return new ActiveXObject("Microsoft.XMLHTTP");
-        }
-        catch (erreur) {
-        }
+        } catch (erreur) {}
 
-        throw new Error("The object creation for making HTTP requests has failed.");
+        throw new Error(
+            "The object creation for making HTTP requests has failed."
+        );
     };
 
     Utils.guid = function() {
@@ -59,13 +52,25 @@ define(function () {
                 .toString(16)
                 .substring(1);
         }
-        return s4() + s4() + '-' + s4() + '-' + s4() + '-' +
-            s4() + '-' + s4() + s4() + s4();
+        return (
+            s4() +
+            s4() +
+            "-" +
+            s4() +
+            "-" +
+            s4() +
+            "-" +
+            s4() +
+            "-" +
+            s4() +
+            s4() +
+            s4()
+        );
     };
 
     Utils.findValueByKeyword = function(listKeywords, keyword) {
         var result;
-        for(i=0 ; i<listKeywords.length;i++) {
+        for (i = 0; i < listKeywords.length; i++) {
             var currentKeyword = listKeywords[i];
             if (currentKeyword[0] === keyword) {
                 result = currentKeyword[1];
@@ -75,17 +80,14 @@ define(function () {
         return result;
     };
 
-    Utils.parseXML = function (val) {
+    Utils.parseXML = function(val) {
         if (document.implementation && document.implementation.createDocument) {
-            xmlDoc = new DOMParser().parseFromString(val, 'text/xml');
-        }
-        else if (window.ActiveXObject) {
+            xmlDoc = new DOMParser().parseFromString(val, "text/xml");
+        } else if (window.ActiveXObject) {
             xmlDoc = new ActiveXObject("Microsoft.XMLDOM");
             xmlDoc.loadXML(val);
-        }
-        else
-        {
-            alert('Your browser cannot handle this script');
+        } else {
+            alert("Your browser cannot handle this script");
             return null;
         }
         return xmlDoc;

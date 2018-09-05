@@ -16,19 +16,18 @@
  * You should have received a copy of the GNU General Public License
  * along with MIZAR. If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
-define(["wcs"],function (wcs) {
-
+define(["wcs"], function(wcs) {
     var UtilsFits = {};
 
     function createCoordinate(x, y) {
         var coordinate = wcs.pixelToCoordinate([x, y]);
         return [coordinate.ra, coordinate.dec];
     }
-    
+
     /**
      *    Get GeoJson polygon coordinates representing fits using wcs data from header
      */
-    UtilsFits.getPolygonCoordinatesFromFits = function (fits) {
+    UtilsFits.getPolygonCoordinatesFromFits = function(fits) {
         var hdu = fits.getHDU();
         var fitsData = hdu.data;
 

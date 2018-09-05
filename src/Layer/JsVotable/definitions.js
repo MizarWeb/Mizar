@@ -16,27 +16,32 @@
  * You should have received a copy of the GNU General Public License
  * along with JVotable.  If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
-define(["./utils","./abstractNode","./group","./param","./coosys"], function (Utils, AbstractNode, Group, Param, Coosys) {
-
+define([
+    "./utils",
+    "./abstractNode",
+    "./group",
+    "./param",
+    "./coosys"
+], function(Utils, AbstractNode, Group, Param, Coosys) {
     /**
      * Constructs a Definitions object.
      *
      * @example <caption>Definitions schema</caption>
-     * {@lang xml}     
+     * {@lang xml}
      *  <xs:complexType name="Definitions">
      *      <xs:choice minOccurs="0" maxOccurs="unbounded">
      *          <xs:element name="COOSYS" type="CoordinateSystem"/>
      *          <xs:element name="PARAM" type="Param"/>
      *      </xs:choice>
      *  </xs:complexType>
-     *  
+     *
      * @param {NodeList} childNode the DEFINITIONS node
      * @exports Definitions
      * @augments AbstractNode
      * @constructor
      * @author Jean-Christophe Malapert
      */
-    var Definitions = function (childNode) {
+    var Definitions = function(childNode) {
         AbstractNode.prototype.constructor.call(this, childNode);
         var result = parseDefinitions(childNode);
         this.coosys = result[0];
@@ -52,7 +57,11 @@ define(["./utils","./abstractNode","./group","./param","./coosys"], function (Ut
         var coosyss = [];
         var params = [];
 
-        for (var i = 0; childNode!=null && i < childNode.childNodes.length; i++) {
+        for (
+            var i = 0;
+            childNode != null && i < childNode.childNodes.length;
+            i++
+        ) {
             var element = childNode.childNodes[i];
             if (element.nodeType == 1) {
                 var nodeName = element.localName;
@@ -64,22 +73,27 @@ define(["./utils","./abstractNode","./group","./param","./coosys"], function (Ut
                         params.push(new Param(element));
                         break;
                     default:
-                        this.getCache().addWarning("unknown element "+nodeName+" in Definitions node");
+                        this.getCache().addWarning(
+                            "unknown element " +
+                                nodeName +
+                                " in Definitions node"
+                        );
                 }
                 if (nodeName == "COOSYS") {
                     coosyss.push(new Coosys(element));
                 } else if (nodeName == "PARAM") {
                     params.push(new Param(element));
                 } else {
-                    this.getCache().addWarning("unknown element "+nodeName+" in Definitions node");
-
+                    this.getCache().addWarning(
+                        "unknown element " + nodeName + " in Definitions node"
+                    );
                 }
             }
         }
         return [coosyss, params];
     };
 
-    Utils.inherits(AbstractNode , Definitions );
+    Utils.inherits(AbstractNode, Definitions);
 
     /**
      * Returns the list of Coosys objects.

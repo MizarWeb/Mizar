@@ -17,13 +17,16 @@
  * along with JVotable.  If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
 
-define(["./utils","./stream","./abstractData"], function(Utils, Stream, AbstractData) {
-
+define(["./utils", "./stream", "./abstractData"], function(
+    Utils,
+    Stream,
+    AbstractData
+) {
     /**
      * Constructs the Binary2 object.
      *
      * @example <caption>Binary2 schema</caption>
-     * {@lang xml}     
+     * {@lang xml}
      *  <xs:complexType name="Binary2">
      *      <xs:sequence>
      *          <xs:element name="STREAM" type="Stream"/>
@@ -48,29 +51,35 @@ define(["./utils","./stream","./abstractData"], function(Utils, Stream, Abstract
      */
     var parseBinary2 = function(childNode) {
         var stream;
-        for(var i = 0; childNode!=null && i< childNode.childNodes.length; i++){
+        for (
+            var i = 0;
+            childNode != null && i < childNode.childNodes.length;
+            i++
+        ) {
             var element = childNode.childNodes[i];
             if (element.nodeType == 1) {
                 var nodeName = element.localName;
                 if (nodeName == "STREAM") {
                     stream = new Definitions(element);
                 } else {
-                    this.getCache().addWarning("unknown element "+nodeName+" in Binary2 node");
+                    this.getCache().addWarning(
+                        "unknown element " + nodeName + " in Binary2 node"
+                    );
                 }
             }
         }
         return stream;
     };
 
-    Utils.inherits(AbstractData , Binary2 );
+    Utils.inherits(AbstractData, Binary2);
 
     /**
      * Returns the Stream object.
      * @returns {!Stream} the Stream object
      */
-    Binary2.prototype.getStream = function(){
+    Binary2.prototype.getStream = function() {
         return this.stream;
     };
-    
+
     return Binary2;
 });

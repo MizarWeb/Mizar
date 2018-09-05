@@ -19,24 +19,31 @@
 /*global define: false */
 
 /**
- * Time travel module : time control 
+ * Time travel module : time control
  */
-define(["jquery", "moment", "./TimeSample","./TimeEnumerated","../Utils/Constants"], function ($, Moment, TimeSample, TimeEnumerated, Constants) {
-
+define([
+    "jquery",
+    "moment",
+    "./TimeSample",
+    "./TimeEnumerated",
+    "../Utils/Constants"
+], function($, Moment, TimeSample, TimeEnumerated, Constants) {
     /**
      * @name TimeTravelParams
      * @class
      * Management of time travel
      */
-    var TimeTravelParams = function () {
+    var TimeTravelParams = function() {
         this.currentDate = new Date();
-        
+
         this.currentPeriod = {
-            "from" : null,
-            "to" : null
+            from: null,
+            to: null
         };
 
-        this.currentDisplayDate = Moment(this.currentDate).format(Moment(this.currentDate).creationData().format);
+        this.currentDisplayDate = Moment(this.currentDate).format(
+            Moment(this.currentDate).creationData().format
+        );
         this.minDate = null;
         this.maxDate = null;
 
@@ -47,7 +54,7 @@ define(["jquery", "moment", "./TimeSample","./TimeEnumerated","../Utils/Constant
         this.enumeratedValues = new TimeEnumerated();
 
         // TODO: internationalized
-        Moment.locale('fr');
+        Moment.locale("fr");
     };
 
     /**************************************************************************************************************/
@@ -58,12 +65,10 @@ define(["jquery", "moment", "./TimeSample","./TimeEnumerated","../Utils/Constant
      * @param ctx Context context
      * @memberOf TimeTravelParams#
      */
-    TimeTravelParams.prototype.setContext = function (ctx) {
+    TimeTravelParams.prototype.setContext = function(ctx) {
         this.ctx = ctx;
         this.apply();
     };
-
-   
 
     /**************************************************************************************************************/
 
@@ -73,10 +78,9 @@ define(["jquery", "moment", "./TimeSample","./TimeEnumerated","../Utils/Constant
      * @param date Date current date
      * @memberOf TimeTravelParams#
      */
-    TimeTravelParams.prototype.setCurrentDate = function (date) {
+    TimeTravelParams.prototype.setCurrentDate = function(date) {
         this.currentDate = Moment.utc(date);
     };
-
 
     /**************************************************************************************************************/
 
@@ -86,10 +90,9 @@ define(["jquery", "moment", "./TimeSample","./TimeEnumerated","../Utils/Constant
      * @return Date current date
      * @memberOf TimeTravelParams#
      */
-    TimeTravelParams.prototype.getCurrentDate = function () {
+    TimeTravelParams.prototype.getCurrentDate = function() {
         return this.currentDate;
     };
-
 
     /**************************************************************************************************************/
 
@@ -115,7 +118,13 @@ define(["jquery", "moment", "./TimeSample","./TimeEnumerated","../Utils/Constant
      * @param {String} ID Layer ID
      * @memberOf TimeTravelParams#
      */
-    TimeTravelParams.prototype.addSample = function (start,end,stepKind,stepValue,ID) {
+    TimeTravelParams.prototype.addSample = function(
+        start,
+        end,
+        stepKind,
+        stepValue,
+        ID
+    ) {
         var sample = new TimeSample();
         sample.setStart(start);
         sample.setEnd(end);
@@ -125,7 +134,6 @@ define(["jquery", "moment", "./TimeSample","./TimeEnumerated","../Utils/Constant
         this.samples.push(sample);
     };
 
-
     /**************************************************************************************************************/
 
     /**
@@ -134,7 +142,7 @@ define(["jquery", "moment", "./TimeSample","./TimeEnumerated","../Utils/Constant
      * @param {Json} parameters Parameters
      * @memberOf TimeTravelParams#
      */
-    TimeTravelParams.prototype.addValues = function (parameters) {
+    TimeTravelParams.prototype.addValues = function(parameters) {
         if (!parameters) {
             return;
         }
@@ -142,12 +150,30 @@ define(["jquery", "moment", "./TimeSample","./TimeEnumerated","../Utils/Constant
 
         if (parameters.enumeratedValues) {
             // Add to enumerated
-            this.enumeratedValues.addEnumeratedValuesForID(parameters.enumeratedValues,parameters.ID);
-        } else if (parameters.start && parameters.end && parameters.stepKind && parameters.stepValue && parameters.ID) {
+            this.enumeratedValues.addEnumeratedValuesForID(
+                parameters.enumeratedValues,
+                parameters.ID
+            );
+        } else if (
+            parameters.start &&
+            parameters.end &&
+            parameters.stepKind &&
+            parameters.stepValue &&
+            parameters.ID
+        ) {
             // Add a new sample
-            this.addSample(parameters.start,parameters.end,parameters.stepKind,parameters.stepValue,parameters.ID);
+            this.addSample(
+                parameters.start,
+                parameters.end,
+                parameters.stepKind,
+                parameters.stepValue,
+                parameters.ID
+            );
         } else {
-            console.error("Can't understand add values for time travel with parameters",parameters);
+            console.error(
+                "Can't understand add values for time travel with parameters",
+                parameters
+            );
         }
 
         this.setToNearestValue(saveCurrentValue);
@@ -161,7 +187,7 @@ define(["jquery", "moment", "./TimeSample","./TimeEnumerated","../Utils/Constant
      * @param {Json} parameters Parameters
      * @memberOf TimeTravelParams#
      */
-    TimeTravelParams.prototype.removeValues = function (parameters) {
+    TimeTravelParams.prototype.removeValues = function(parameters) {
         if (!parameters) {
             return;
         }
@@ -173,7 +199,7 @@ define(["jquery", "moment", "./TimeSample","./TimeEnumerated","../Utils/Constant
 
             // Remove samples with ID
             var newSamples = [];
-            for (var i=0;i<this.samples.length;i++) {
+            for (var i = 0; i < this.samples.length; i++) {
                 if (this.samples[i].getLayerID() !== parameters.ID) {
                     newSamples.push(samples[i]);
                 }
@@ -186,19 +212,19 @@ define(["jquery", "moment", "./TimeSample","./TimeEnumerated","../Utils/Constant
     /**************************************************************************************************************/
 
     /**
-     * Get next date 
+     * Get next date
      * @function getNextDate
      * @return {Date} Date
      * @memberOf TimeTravelParams#
      */
-    TimeTravelParams.prototype.getNextDate = function (date) {
+    TimeTravelParams.prototype.getNextDate = function(date) {
         var minDate = {
-            "date" : null
+            date: null
         };
 
         var allDates = [];
         var aDate = null;
-        for (var i=0;i<this.samples.length;i++) {
+        for (var i = 0; i < this.samples.length; i++) {
             aDate = this.samples[i].getFirstDateAfter(date);
             if (aDate.date !== null) {
                 allDates.push(aDate);
@@ -209,12 +235,12 @@ define(["jquery", "moment", "./TimeSample","./TimeEnumerated","../Utils/Constant
             allDates.push(aDate);
         }
 
-        for (i=0;i<allDates.length;i++) {
+        for (i = 0; i < allDates.length; i++) {
             var currentNextDate = allDates[i];
             if (minDate.date === null) {
                 minDate = currentNextDate;
             } else {
-                if (Math.abs((currentNextDate-date)<(minDate-date))) {
+                if (Math.abs(currentNextDate - date < minDate - date)) {
                     minDate = currentNextDate;
                 }
             }
@@ -225,19 +251,19 @@ define(["jquery", "moment", "./TimeSample","./TimeEnumerated","../Utils/Constant
     /**************************************************************************************************************/
 
     /**
-     * Get previous date 
+     * Get previous date
      * @function getNextDate
      * @return {Date} Date
      * @memberOf TimeTravelParams#
      */
-    TimeTravelParams.prototype.getPreviousDate = function (date) {
+    TimeTravelParams.prototype.getPreviousDate = function(date) {
         var minDate = {
-            "date" : null
+            date: null
         };
 
         var allDates = [];
         var aDate = null;
-        for (var i=0;i<this.samples.length;i++) {
+        for (var i = 0; i < this.samples.length; i++) {
             aDate = this.samples[i].getFirstDateBefore(date);
             if (aDate.date !== null) {
                 allDates.push(aDate);
@@ -248,12 +274,16 @@ define(["jquery", "moment", "./TimeSample","./TimeEnumerated","../Utils/Constant
             allDates.push(aDate);
         }
 
-        for (i=0;i<allDates.length;i++) {
+        for (i = 0; i < allDates.length; i++) {
             var currentPreviousDate = allDates[i];
             if (minDate.date === null) {
                 minDate = currentPreviousDate;
             } else {
-                if (Math.abs((currentPreviousDate.date-date)<(minDate.date-date))) {
+                if (
+                    Math.abs(
+                        currentPreviousDate.date - date < minDate.date - date
+                    )
+                ) {
                     minDate = currentPreviousDate;
                 }
             }
@@ -261,7 +291,6 @@ define(["jquery", "moment", "./TimeSample","./TimeEnumerated","../Utils/Constant
 
         return minDate;
     };
-
 
     /**************************************************************************************************************/
 
@@ -271,15 +300,23 @@ define(["jquery", "moment", "./TimeSample","./TimeEnumerated","../Utils/Constant
      * @param {Date} date date
      * @memberOf TimeTravelParams#
      */
-    TimeTravelParams.prototype.setToNearestValue = function (date) {
+    TimeTravelParams.prototype.setToNearestValue = function(date) {
         var previousExistingDate = this.getPreviousDate(date);
         var nextExistingDate = this.getNextDate(date);
 
-        if ( (previousExistingDate.date === null) && (nextExistingDate.date === null) ) {
+        if (
+            previousExistingDate.date === null &&
+            nextExistingDate.date === null
+        ) {
             // No date found
             this.currentDate = new Date();
-            this.currentDisplayDate = Moment(this.currentDate).format("Do MMM Y");
-            this.currentPeriod = {"from" : this.currentDate,"to":this.currentDate};
+            this.currentDisplayDate = Moment(this.currentDate).format(
+                "Do MMM Y"
+            );
+            this.currentPeriod = {
+                from: this.currentDate,
+                to: this.currentDate
+            };
         } else if (previousExistingDate.date === null) {
             // Only before
             this.currentDate = nextExistingDate.date;
@@ -292,8 +329,8 @@ define(["jquery", "moment", "./TimeSample","./TimeEnumerated","../Utils/Constant
             this.currentPeriod = previousExistingDate.period;
         } else {
             // Search nearest
-            deltaPrevious = Math.abs(date-previousExistingDate.date);
-            deltaNext = Math.abs(nextExistingDate.date-date);
+            deltaPrevious = Math.abs(date - previousExistingDate.date);
+            deltaNext = Math.abs(nextExistingDate.date - date);
             if (deltaPrevious < deltaNext) {
                 this.currentDate = previousExistingDate.date;
                 this.currentDisplayDate = previousExistingDate.display;
@@ -315,7 +352,7 @@ define(["jquery", "moment", "./TimeSample","./TimeEnumerated","../Utils/Constant
      * @param {Json} parameters Parameters
      * @memberOf TimeTravelParams#
      */
-    TimeTravelParams.prototype.update = function (parameters) {
+    TimeTravelParams.prototype.update = function(parameters) {
         if (!parameters) {
             return;
         }
@@ -333,7 +370,7 @@ define(["jquery", "moment", "./TimeSample","./TimeEnumerated","../Utils/Constant
         // apply !
         this.apply();
 
-        console.log("all dates availables :\n"+this.toString());
+        console.log("all dates availables :\n" + this.toString());
     };
 
     /**************************************************************************************************************/
@@ -343,13 +380,13 @@ define(["jquery", "moment", "./TimeSample","./TimeEnumerated","../Utils/Constant
      * @function apply
      * @memberOf TimeTravelParams#
      */
-    TimeTravelParams.prototype.apply = function () {
+    TimeTravelParams.prototype.apply = function() {
         var details = {
-            date :   this.currentDate,
+            date: this.currentDate,
             display: this.currentDisplayDate,
-            period : this.currentPeriod
+            period: this.currentPeriod
         };
-        this.ctx.publish(Constants.EVENT_MSG.GLOBAL_TIME_CHANGED,details);
+        this.ctx.publish(Constants.EVENT_MSG.GLOBAL_TIME_CHANGED, details);
     };
 
     /**************************************************************************************************************/
@@ -359,9 +396,14 @@ define(["jquery", "moment", "./TimeSample","./TimeEnumerated","../Utils/Constant
      * @function rewind
      * @memberOf TimeTravelParams#
      */
-    TimeTravelParams.prototype.rewind = function () {
+    TimeTravelParams.prototype.rewind = function() {
         if (!this.isEmpty()) {
-            var previousDate = this.getPreviousDate(Moment(this.currentDate).subtract(1,Constants.TIME_STEP.MILLISECOND));
+            var previousDate = this.getPreviousDate(
+                Moment(this.currentDate).subtract(
+                    1,
+                    Constants.TIME_STEP.MILLISECOND
+                )
+            );
             if (previousDate.date !== null) {
                 this.currentDate = previousDate.date;
                 this.currentPeriod = previousDate.period;
@@ -378,15 +420,17 @@ define(["jquery", "moment", "./TimeSample","./TimeEnumerated","../Utils/Constant
      * @function forward
      * @memberOf TimeTravelParams#
      */
-    TimeTravelParams.prototype.forward = function () {
+    TimeTravelParams.prototype.forward = function() {
         if (!this.isEmpty()) {
-            var nextDate = this.getNextDate(Moment(this.currentDate).add(1,Constants.TIME_STEP.MILLISECOND));
+            var nextDate = this.getNextDate(
+                Moment(this.currentDate).add(1, Constants.TIME_STEP.MILLISECOND)
+            );
             if (nextDate.date !== null) {
                 this.currentDate = nextDate.date;
                 this.currentPeriod = nextDate.period;
                 this.currentDisplayDate = nextDate.display;
                 this.apply();
-            } 
+            }
         }
     };
 
@@ -399,23 +443,33 @@ define(["jquery", "moment", "./TimeSample","./TimeEnumerated","../Utils/Constant
      * @return String Date formated
      * @memberOf TimeTravelParams#
      */
-    TimeTravelParams.prototype.getDateFormated = function (date) {
-            // Check with STEP kind value
-            var formatPattern = "LLLL";
-            if (this.stepKind === Constants.TIME_STEP.YEAR) {
-                formatPattern = "Y";
-            } else if ( (this.stepKind === Constants.TIME_STEP.QUARTER) || (this.stepKind === Constants.TIME_STEP.MONTH) ) {
-                formatPattern = "MMM Y";
-            } else if ( (this.stepKind === Constants.TIME_STEP.WEEK) || (this.stepKind === Constants.TIME_STEP.DAY) || (this.stepKind === Constants.TIME_STEP.ENUMERATED)) {
-                formatPattern = "Do MMM Y";
-            } else if ( (this.stepKind === Constants.TIME_STEP.HOUR) || (this.stepKind === Constants.TIME_STEP.MINUTE) ) {
-                formatPattern = "Do MMM Y HH:mm";
-            } else if ( this.stepKind === Constants.TIME_STEP.SECOND) {
-                formatPattern = "Do MMM Y   HH:mm:ss";
-            } else {
-                formatPattern = "Do MMM Y   HH:mm:ss.SSS";
-            }    
-            return Moment.utc(this.currentDate).format(formatPattern);
+    TimeTravelParams.prototype.getDateFormated = function(date) {
+        // Check with STEP kind value
+        var formatPattern = "LLLL";
+        if (this.stepKind === Constants.TIME_STEP.YEAR) {
+            formatPattern = "Y";
+        } else if (
+            this.stepKind === Constants.TIME_STEP.QUARTER ||
+            this.stepKind === Constants.TIME_STEP.MONTH
+        ) {
+            formatPattern = "MMM Y";
+        } else if (
+            this.stepKind === Constants.TIME_STEP.WEEK ||
+            this.stepKind === Constants.TIME_STEP.DAY ||
+            this.stepKind === Constants.TIME_STEP.ENUMERATED
+        ) {
+            formatPattern = "Do MMM Y";
+        } else if (
+            this.stepKind === Constants.TIME_STEP.HOUR ||
+            this.stepKind === Constants.TIME_STEP.MINUTE
+        ) {
+            formatPattern = "Do MMM Y HH:mm";
+        } else if (this.stepKind === Constants.TIME_STEP.SECOND) {
+            formatPattern = "Do MMM Y   HH:mm:ss";
+        } else {
+            formatPattern = "Do MMM Y   HH:mm:ss.SSS";
+        }
+        return Moment.utc(this.currentDate).format(formatPattern);
     };
 
     /**************************************************************************************************************/
@@ -455,8 +509,13 @@ define(["jquery", "moment", "./TimeSample","./TimeEnumerated","../Utils/Constant
         if (this.isEmpty() === true) {
             this.isFirstDate = true;
         } else {
-            var previousDate = this.getPreviousDate(Moment(this.currentDate).subtract(1,Constants.TIME_STEP.MILLISECOND));
-            this.isFirstDate = (previousDate.date === null);
+            var previousDate = this.getPreviousDate(
+                Moment(this.currentDate).subtract(
+                    1,
+                    Constants.TIME_STEP.MILLISECOND
+                )
+            );
+            this.isFirstDate = previousDate.date === null;
         }
         return this.isFirstDate;
     };
@@ -473,12 +532,13 @@ define(["jquery", "moment", "./TimeSample","./TimeEnumerated","../Utils/Constant
         if (this.isEmpty() === true) {
             this.isLastDate = true;
         } else {
-            var nextDate = this.getNextDate(Moment(this.currentDate).add(1,Constants.TIME_STEP.MILLISECOND));
-            this.isLastDate = (nextDate.date === null);
+            var nextDate = this.getNextDate(
+                Moment(this.currentDate).add(1, Constants.TIME_STEP.MILLISECOND)
+            );
+            this.isLastDate = nextDate.date === null;
         }
         return this.isLastDate;
     };
-
 
     /**************************************************************************************************************/
 
@@ -488,20 +548,20 @@ define(["jquery", "moment", "./TimeSample","./TimeEnumerated","../Utils/Constant
      * @return {Date} Min date or null
      * @memberOf TimeTravelParams#
      */
-    TimeTravelParams.prototype.getMinDate = function () {
+    TimeTravelParams.prototype.getMinDate = function() {
         var result = null;
-        
+
         var allDates = [];
-        for (var i=0;i<this.samples.length;i++) {
+        for (var i = 0; i < this.samples.length; i++) {
             allDates.push(this.samples[i].getMinDate());
         }
         allDates.push(this.enumeratedValues.getMinDate());
 
-        for (i=0;i<allDates.length;i++) {
+        for (i = 0; i < allDates.length; i++) {
             if (result === null) {
                 result = allDates[i];
-            } else if ( (allDates[i]<result) && (allDates[i] !== null) ) {
-                    result = allDates[i];
+            } else if (allDates[i] < result && allDates[i] !== null) {
+                result = allDates[i];
             }
         }
         return result;
@@ -515,25 +575,25 @@ define(["jquery", "moment", "./TimeSample","./TimeEnumerated","../Utils/Constant
      * @return {Date} Max date or null
      * @memberOf TimeTravelParams#
      */
-    TimeTravelParams.prototype.getMaxDate = function () {
+    TimeTravelParams.prototype.getMaxDate = function() {
         var result = null;
-        
+
         var allDates = [];
-        for (var i=0;i<this.samples.length;i++) {
+        for (var i = 0; i < this.samples.length; i++) {
             allDates.push(this.samples[i].getMaxDate());
         }
         allDates.push(this.enumeratedValues.getMaxDate());
 
-        for (i=0;i<allDates.length;i++) {
+        for (i = 0; i < allDates.length; i++) {
             if (result === null) {
                 result = allDates[i];
-            } else if ( (allDates[i]>result) && (allDates[i] !== null) ){
-                    result = allDates[i];
+            } else if (allDates[i] > result && allDates[i] !== null) {
+                result = allDates[i];
             }
         }
         return result;
     };
-    
+
     /**************************************************************************************************************/
 
     /**
@@ -543,8 +603,8 @@ define(["jquery", "moment", "./TimeSample","./TimeEnumerated","../Utils/Constant
      * @memberOf TimeTravelParams#
      */
     TimeTravelParams.prototype.isEmpty = function() {
-        var hasSamples = ( (this.samples) && (this.samples.length>0) );
-        return ( (!hasSamples) && (this.enumeratedValues.isEmpty()) );
+        var hasSamples = this.samples && this.samples.length > 0;
+        return !hasSamples && this.enumeratedValues.isEmpty();
     };
 
     /**************************************************************************************************************/
@@ -561,7 +621,9 @@ define(["jquery", "moment", "./TimeSample","./TimeEnumerated","../Utils/Constant
         var res = [];
         var aDate = this.minDate;
         res.push(aDate);
-        var nextDate = this.getNextDate(Moment(aDate).add(1,Constants.TIME_STEP.MILLISECOND));
+        var nextDate = this.getNextDate(
+            Moment(aDate).add(1, Constants.TIME_STEP.MILLISECOND)
+        );
 
         while (nextDate.date !== null) {
             aDate = nextDate.date;
@@ -569,12 +631,13 @@ define(["jquery", "moment", "./TimeSample","./TimeEnumerated","../Utils/Constant
             if (res.length % 500 === 0) {
                 console.log(res.length);
             }
-            nextDate = this.getNextDate(Moment(aDate).add(1,Constants.TIME_STEP.MILLISECOND));
+            nextDate = this.getNextDate(
+                Moment(aDate).add(1, Constants.TIME_STEP.MILLISECOND)
+            );
         }
-        
+
         return res;
     };
-
 
     /**************************************************************************************************************/
 
@@ -586,27 +649,33 @@ define(["jquery", "moment", "./TimeSample","./TimeEnumerated","../Utils/Constant
      */
     TimeTravelParams.prototype.toString = function() {
         var res = "";
-        
-        res+= "Metadata : \n";
-        res+= "  Start date : "+Moment(this.minDate).format(Constants.TIME.DEFAULT_FORMAT)+" : "+this.minDate+"\n";
-        res+= "  End date   : "+Moment(this.maxDate).format(Constants.TIME.DEFAULT_FORMAT)+" : "+this.maxDate+"\n";
+
+        res += "Metadata : \n";
+        res +=
+            "  Start date : " +
+            Moment(this.minDate).format(Constants.TIME.DEFAULT_FORMAT) +
+            " : " +
+            this.minDate +
+            "\n";
+        res +=
+            "  End date   : " +
+            Moment(this.maxDate).format(Constants.TIME.DEFAULT_FORMAT) +
+            " : " +
+            this.maxDate +
+            "\n";
 
         if (this.samples) {
-            for (var i=0;i<this.samples.length;i++) {
-                res += "Sample : "+this.samples[i].toString()+"\n";
+            for (var i = 0; i < this.samples.length; i++) {
+                res += "Sample : " + this.samples[i].toString() + "\n";
             }
         }
 
         if (!this.enumeratedValues.isEmpty()) {
-            res += "Enumerated : "+this.enumeratedValues.toString()+"\n";
+            res += "Enumerated : " + this.enumeratedValues.toString() + "\n";
         }
 
         return res;
     };
-    
 
     return TimeTravelParams;
 });
-
-
-

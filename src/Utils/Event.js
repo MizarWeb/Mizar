@@ -35,8 +35,7 @@
  * along with GlobWeb. If not, see <http://www.gnu.org/licenses/>.
  ***************************************/
 
-define(function () {
-
+define(function() {
     /**************************************************************************************************************/
 
     /**
@@ -44,7 +43,7 @@ define(function () {
      @class
          A light-weight event object.
      */
-    var Event = function () {
+    var Event = function() {
         // Event callbacks
         this.callbacks = {};
     };
@@ -67,7 +66,7 @@ define(function () {
      </ul>
      @param callback Callback function
      */
-    Event.prototype.subscribe = function (name, callback) {
+    Event.prototype.subscribe = function(name, callback) {
         if (!this.callbacks[name]) {
             this.callbacks[name] = [callback];
         } else {
@@ -83,7 +82,7 @@ define(function () {
      @param name Event name {@link Globe#subscribe}
      @param callback Callback function
      */
-    Event.prototype.unsubscribe = function (name, callback) {
+    Event.prototype.unsubscribe = function(name, callback) {
         if (this.callbacks[name]) {
             var i = this.callbacks[name].indexOf(callback);
             if (i !== -1) {
@@ -100,7 +99,7 @@ define(function () {
      @param name Event name
      @param context Context
      */
-    Event.prototype.publish = function (name, context) {
+    Event.prototype.publish = function(name, context) {
         if (this.callbacks[name]) {
             var cbs = this.callbacks[name];
             for (var i = 0; i < cbs.length; i++) {
@@ -112,5 +111,4 @@ define(function () {
     /**************************************************************************************************************/
 
     return Event;
-
 });

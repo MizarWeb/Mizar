@@ -17,107 +17,114 @@
  * along with MIZAR. If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
 
+define([
+    "./AbstractProjection",
+    "../Utils/Utils",
+    "../Utils/Constants",
+    "../Renderer/glMatrix"
+], function(AbstractProjection, Utils, Constants) {
+    /**
+     * Azimuthal projection configuration
+     * @typedef {AbstractProjection.configuration} AbstractProjection.azimuth_configuration
+     * @property {string} [pole = "north"] - Projection center. It can be "north" or "south"
+     */
 
-define(['./AbstractProjection', '../Utils/Utils', '../Utils/Constants', '../Renderer/glMatrix'],
-    function (AbstractProjection, Utils, Constants) {
+    /**
+     * @name AzimuthProjection
+     * @class
+     *    The Azimuth coordinate system is a coordinate reference system. It is composed of :
+     * <ul>
+     * <li>a reference frame : the reference geoid, which is set as parameter of the options object,</li>
+     * <li>a projection : the Azimuth projection.</li>
+     * </ul>
+     * <img src="../doc/images/azimuth.png" width="200px"/>
+     *
+     * @see {@link https://en.wikipedia.org/wiki/Azimuthal_equidistant_projection}
+     * @augments AbstractProjection
+     * @param {AbstractProjection.azimuth_configuration} [options] - Azimuthal projection configuration.
+     * @constructor
+     * @memberOf module:Projection
+     */
+    var AzimuthProjection = function(options) {
+        this.pole = (options && options.pole) || "north";
+        var geoBound;
+        var projectionCenter;
+        if (this.pole === "south") {
+            geoBound = [-180, -90, 180, 0];
+            projectionCenter = [0, -90];
+        } else {
+            geoBound = [-180, 0, 180, 90];
+            projectionCenter = [0, 90];
+            this.pole = "north";
+        }
+        AbstractProjection.prototype.constructor.call(
+            this,
+            projectionCenter,
+            geoBound,
+            options
+        );
+    };
 
-        /**
-         * Azimuthal projection configuration
-         * @typedef {AbstractProjection.configuration} AbstractProjection.azimuth_configuration
-         * @property {string} [pole = "north"] - Projection center. It can be "north" or "south"
-         */
+    /**************************************************************************************************************/
 
-        /**
-         * @name AzimuthProjection
-         * @class
-         *    The Azimuth coordinate system is a coordinate reference system. It is composed of :
-         * <ul>
-         * <li>a reference frame : the reference geoid, which is set as parameter of the options object,</li>
-         * <li>a projection : the Azimuth projection.</li>
-         * </ul>
-         * <img src="../doc/images/azimuth.png" width="200px"/>
-         *
-         * @see {@link https://en.wikipedia.org/wiki/Azimuthal_equidistant_projection}
-         * @augments AbstractProjection
-         * @param {AbstractProjection.azimuth_configuration} [options] - Azimuthal projection configuration.
-         * @constructor
-         * @memberOf module:Projection
-         */
-        var AzimuthProjection = function (options) {
-            this.pole = (options && options.pole) || "north";
-            var geoBound;
-            var projectionCenter;
-            if (this.pole === "south") {
-                geoBound = [-180, -90, 180, 0];
-                projectionCenter = [0, -90];
-            } else {
-                geoBound = [-180, 0, 180, 90];
-                projectionCenter = [0, 90];
-                this.pole = "north";
-            }
-            AbstractProjection.prototype.constructor.call(this, projectionCenter, geoBound, options);
-        };
+    Utils.inherits(AbstractProjection, AzimuthProjection);
 
-        /**************************************************************************************************************/
+    /**************************************************************************************************************/
 
-        Utils.inherits(AbstractProjection, AzimuthProjection);
+    /**
+     * @function unProject
+     * @memberOf AzimuthProjection#
+     */
+    AzimuthProjection.prototype.unProject = function(position3d, dest) {
+        var p = Math.sqrt(
+            position3d[0] * position3d[0] + position3d[1] * position3d[1]
+        );
+        var o = Math.atan2(position3d[0], -position3d[1]);
 
-        /**************************************************************************************************************/
+        p = (p * 180) / Math.PI;
+        o = (o * 180) / Math.PI;
 
-        /**
-         * @function unProject
-         * @memberOf AzimuthProjection#
-         */
-        AzimuthProjection.prototype.unProject = function (position3d, dest) {
-            var p = Math.sqrt(position3d[0] * position3d[0] + position3d[1] * position3d[1]);
-            var o = Math.atan2(position3d[0], -position3d[1]);
+        o *= this.pole === "south" ? -1 : 1;
 
-            p = p * 180 / Math.PI;
-            o = o * 180 / Math.PI;
+        if (p > 90) return null;
 
-            o *= this.pole === "south" ? -1 : 1;
+        if (!dest) {
+            dest = new Array(3);
+        }
+        dest[0] = o;
+        dest[1] = this.pole === "south" ? p - 90 : 90 - p;
+        dest[2] = position3d[2];
+        return dest;
+    };
 
-            if (p > 90)
-                return null;
+    /**
+     * @function project
+     * @memberOf AzimuthProjection#
+     */
+    AzimuthProjection.prototype.project = function(geoPos, dest) {
+        if (!dest) {
+            dest = new Array(3);
+        }
+        var p = this.pole === "south" ? 90 + geoPos[1] : 90 - geoPos[1];
+        p = (p * Math.PI) / 180;
 
-            if (!dest) {
-                dest = new Array(3);
-            }
-            dest[0] = o;
-            dest[1] = this.pole === "south" ? p - 90 : 90 - p;
-            dest[2] = position3d[2];
-            return dest;
-        };
+        var o = (geoPos[0] * Math.PI) / 180;
+        o *= this.pole === "south" ? -1 : 1;
+        dest[0] = p * Math.sin(o);
+        dest[1] = -p * Math.cos(o);
+        dest[2] = geoPos[2];
+        return dest;
+    };
 
-        /**
-         * @function project
-         * @memberOf AzimuthProjection#
-         */
-        AzimuthProjection.prototype.project = function (geoPos, dest) {
-            if (!dest) {
-                dest = new Array(3);
-            }
-            var p = this.pole === "south" ? 90 + geoPos[1] : 90 - geoPos[1];
-            p = p * Math.PI / 180;
+    /**
+     * @function getName
+     * @memberOf AzimuthProjection#
+     */
+    AzimuthProjection.prototype.getName = function() {
+        return Constants.PROJECTION.Azimuth;
+    };
 
-            var o = geoPos[0] * Math.PI / 180;
-            o *= this.pole === "south" ? -1 : 1;
-            dest[0] = p * Math.sin(o);
-            dest[1] = -p * Math.cos(o);
-            dest[2] = geoPos[2];
-            return dest;
-        };
+    /**************************************************************************************************************/
 
-        /**
-         * @function getName
-         * @memberOf AzimuthProjection#
-         */
-        AzimuthProjection.prototype.getName = function() {
-            return Constants.PROJECTION.Azimuth;
-        };
-
-        /**************************************************************************************************************/
-
-        return AzimuthProjection;
-
-    });
+    return AzimuthProjection;
+});

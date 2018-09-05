@@ -17,8 +17,7 @@
  * along with JVotable.  If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
 
-define(["./utils","./abstractNode"], function(Utils, AbstractNode) {
-
+define(["./utils", "./abstractNode"], function(Utils, AbstractNode) {
     /**
      * Constructs a CoordinateSystem object.
      *
@@ -61,7 +60,7 @@ define(["./utils","./abstractNode"], function(Utils, AbstractNode) {
         this.value = parseCoordinateSystem(childNode);
     };
 
-    Utils.inherits(AbstractNode , Coosys );
+    Utils.inherits(AbstractNode, Coosys);
 
     /**
      * Parses the CoordinateSystem node.
@@ -70,12 +69,21 @@ define(["./utils","./abstractNode"], function(Utils, AbstractNode) {
      */
     var parseCoordinateSystem = function(childNode) {
         var value;
-        for(var i = 0; childNode!=null && i< childNode.childNodes.length; i++){
+        for (
+            var i = 0;
+            childNode != null && i < childNode.childNodes.length;
+            i++
+        ) {
             var element = childNode.childNodes[i];
-            if (element!=null && element.nodeType == 3) {
-                value = (element.textContent == null) ? null : element.textContent.trim();
+            if (element != null && element.nodeType == 3) {
+                value =
+                    element.textContent == null
+                        ? null
+                        : element.textContent.trim();
             } else {
-                this.getCache().addWarning("unknown element "+element+" in Coosys node");
+                this.getCache().addWarning(
+                    "unknown element " + element + " in Coosys node"
+                );
             }
         }
         return value;

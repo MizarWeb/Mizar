@@ -16,116 +16,121 @@
  * You should have received a copy of the GNU General Public License
  * along with SITools2. If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
-define(["jquery", "./AbstractTracker", "../../Utils/Utils", "../../Utils/Numeric"],
-    function ($, AbstractTracker, Utils, Numeric) {
+define([
+    "jquery",
+    "./AbstractTracker",
+    "../../Utils/Utils",
+    "../../Utils/Numeric"
+], function($, AbstractTracker, Utils, Numeric) {
+    var self;
 
-        var self;
+    /**
+     * Elevation tracker configuration
+     * @typedef {AbstractTracker.position_configuration} AbstractTracker.elevation_configuration
+     * @property {Layer} [elevationLayer] - elevationLayer
+     */
 
-        /**
-         * Elevation tracker configuration
-         * @typedef {AbstractTracker.position_configuration} AbstractTracker.elevation_configuration
-         * @property {Layer} [elevationLayer] - elevationLayer
-         */
+    /**
+     * @name ElevationTracker
+     * @class
+     *   ElevationTracker context constructor
+     * @augments AbstractTracker
+     * @param {AbstractTracker.elevation_configuration} options - Elevation tracker configuration
+     * @constructor
+     */
+    var ElevationTracker = function(options) {
+        AbstractTracker.prototype.constructor.call(this, options);
+        this.scale = null;
+        if (options.elevationLayer != null) {
+            this.scale = options.elevationLayer.getScale();
+        }
+    };
 
-        /**
-         * @name ElevationTracker
-         * @class
-         *   ElevationTracker context constructor
-         * @augments AbstractTracker
-         * @param {AbstractTracker.elevation_configuration} options - Elevation tracker configuration
-         * @constructor
-         */
-        var ElevationTracker = function (options) {
-            AbstractTracker.prototype.constructor.call(this, options);
-            this.scale = null;
-            if (options.elevationLayer != null) {
-                this.scale = options.elevationLayer.getScale();
+    /**************************************************************************************************************/
+
+    Utils.inherits(AbstractTracker, ElevationTracker);
+
+    /**************************************************************************************************************/
+
+    /**
+     * Sets the scale layer taken from the elevationLayer
+     * @param elevationLayer
+     */
+    ElevationTracker.prototype.setScaleLayer = function(elevationLayer) {
+        this.scale = elevationLayer.getScale();
+    };
+
+    /**
+     * Update the tracker
+     * @function update
+     * @memberof AbstractTracker.prototype
+     * @param {object} event
+     */
+    ElevationTracker.prototype.update = function(event) {
+        if (event.type.search("touch") >= 0) {
+            event.clientX = event.changedTouches[0].clientX;
+            event.clientY = event.changedTouches[0].clientY;
+        }
+        if (document.getElementById(self._getElement())) {
+            var geoPos = self
+                ._getGlobe()
+                .getLonLatFromPixel(event.clientX, event.clientY);
+            if (geoPos && self.scale) {
+                var elevation = self.compute([geoPos[0], geoPos[1]]);
+                document.getElementById(self._getElement()).innerHTML =
+                    "Elevation : " +
+                    Numeric.roundNumber(elevation / self.scale, 0) +
+                    " meters";
+            } else {
+                document.getElementById(self._getElement()).innerHTML = "";
             }
+        }
+    };
 
-        };
+    /**************************************************************************************************************/
 
-        /**************************************************************************************************************/
+    /**
+     * Compute elevation from a specific point
+     * @function compute
+     * @memberOf AbstractTracker.prototype
+     * @param geoPosition
+     * @returns {number} elevation
+     */
+    ElevationTracker.prototype.compute = function(geoPosition) {
+        return this._getGlobe().getElevation(geoPosition[0], geoPosition[1]);
+    };
 
-        Utils.inherits(AbstractTracker, ElevationTracker);
+    /**
+     * @function attachTo
+     * @memberOf ElevationTracker#
+     */
+    ElevationTracker.prototype.attachTo = function(context) {
+        AbstractTracker.prototype.attachTo.call(this, context);
+        self = this;
+    };
 
-        /**************************************************************************************************************/
+    /**
+     * @function detach
+     * @memberOf ElevationTracker#
+     */
+    ElevationTracker.prototype.detach = function() {
+        AbstractTracker.prototype.detach.call(this);
+        self = null;
+    };
 
-        /**
-         * Sets the scale layer taken from the elevationLayer
-         * @param elevationLayer
-         */
-        ElevationTracker.prototype.setScaleLayer = function (elevationLayer) {
-            this.scale = elevationLayer.getScale();
-        };
+    /**
+     * Destroy the elevation tracker.
+     * @function destroy
+     * @memberOf AbstractTracker.prototype
+     */
+    ElevationTracker.prototype.destroy = function() {
+        this.detach.call(this);
+        AbstractTracker.prototype.destroy.call(this);
+        this.scale = null;
+        self = null;
+    };
 
-        /**
-         * Update the tracker
-         * @function update
-         * @memberof AbstractTracker.prototype
-         * @param {object} event
-         */
-        ElevationTracker.prototype.update = function (event) {
-            if (event.type.search("touch") >= 0) {
-                event.clientX = event.changedTouches[0].clientX;
-                event.clientY = event.changedTouches[0].clientY;
-            }
-            if (document.getElementById(self._getElement())) {
-                var geoPos = self._getGlobe().getLonLatFromPixel(event.clientX, event.clientY);
-                if (geoPos && self.scale) {
-                    var elevation = self.compute([geoPos[0], geoPos[1]]);
-                    document.getElementById(self._getElement()).innerHTML = "Elevation : " + Numeric.roundNumber(elevation / self.scale, 0) + " meters";
-                } else {
-                    document.getElementById(self._getElement()).innerHTML = "";
-                }
-            }
+    /**************************************************************************************************************/
 
-        };
-
-        /**************************************************************************************************************/
-
-        /**
-         * Compute elevation from a specific point
-         * @function compute
-         * @memberOf AbstractTracker.prototype
-         * @param geoPosition
-         * @returns {number} elevation
-         */
-        ElevationTracker.prototype.compute = function (geoPosition) {
-            return this._getGlobe().getElevation(geoPosition[0], geoPosition[1]);
-        };
-
-        /**
-         * @function attachTo
-         * @memberOf ElevationTracker#
-         */
-        ElevationTracker.prototype.attachTo = function (context) {
-            AbstractTracker.prototype.attachTo.call(this, context);
-            self = this;
-        };
-
-        /**
-         * @function detach
-         * @memberOf ElevationTracker#
-         */
-        ElevationTracker.prototype.detach = function () {
-            AbstractTracker.prototype.detach.call(this);
-            self = null;
-        };
-
-        /**
-         * Destroy the elevation tracker.
-         * @function destroy
-         * @memberOf AbstractTracker.prototype
-         */
-        ElevationTracker.prototype.destroy = function() {
-            this.detach.call(this);
-            AbstractTracker.prototype.destroy.call(this);
-            this.scale = null;
-            self = null;
-        };
-
-        /**************************************************************************************************************/
-
-        return ElevationTracker;
-
-    });
+    return ElevationTracker;
+});

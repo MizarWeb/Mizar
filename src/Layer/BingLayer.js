@@ -35,10 +35,14 @@
  * along with GlobWeb. If not, see <http://www.gnu.org/licenses/>.
  ***************************************/
 
-define(['../Utils/Utils', './AbstractRasterLayer', '../Utils/Constants','../Tiling/MercatorTiling'], function (Utils, AbstractRasterLayer, Constants, MercatorTiling) {
-
+define([
+    "../Utils/Utils",
+    "./AbstractRasterLayer",
+    "../Utils/Constants",
+    "../Tiling/MercatorTiling"
+], function(Utils, AbstractRasterLayer, Constants, MercatorTiling) {
     /**************************************************************************************************************/
-    var BingTileSystem = (function () {
+    var BingTileSystem = (function() {
         var EarthRadius = 6378137;
         var MinLatitude = -85.05112878;
         var MaxLatitude = 85.05112878;
@@ -79,7 +83,13 @@ define(['../Utils/Utils', './AbstractRasterLayer', '../Utils/Constants','../Tili
          */
         function GroundResolution(latitude, levelOfDetail) {
             latitude = Clip(latitude, MinLatitude, MaxLatitude);
-            return Math.cos(latitude * Math.PI / 180.0) * 2.0 * Math.PI * EarthRadius / MapSize(levelOfDetail);
+            return (
+                (Math.cos((latitude * Math.PI) / 180.0) *
+                    2.0 *
+                    Math.PI *
+                    EarthRadius) /
+                MapSize(levelOfDetail)
+            );
         }
 
         /**
@@ -92,7 +102,9 @@ define(['../Utils/Utils', './AbstractRasterLayer', '../Utils/Constants','../Tili
          * @private
          */
         function MapScale(latitude, levelOfDetail, screenDpi) {
-            return GroundResolution(latitude, levelOfDetail) * screenDpi / 0.0254;
+            return (
+                (GroundResolution(latitude, levelOfDetail) * screenDpi) / 0.0254
+            );
         }
 
         /**
@@ -109,8 +121,10 @@ define(['../Utils/Utils', './AbstractRasterLayer', '../Utils/Constants','../Tili
             longitude = Clip(longitude, MinLongitude, MaxLongitude);
 
             var x = (longitude + 180) / 360;
-            var sinLatitude = Math.sin(latitude * Math.PI / 180);
-            var y = 0.5 - Math.log((1 + sinLatitude) / (1 - sinLatitude)) / (4 * Math.PI);
+            var sinLatitude = Math.sin((latitude * Math.PI) / 180);
+            var y =
+                0.5 -
+                Math.log((1 + sinLatitude) / (1 - sinLatitude)) / (4 * Math.PI);
 
             var mapSize = MapSize(levelOfDetail);
             var pixelX = Clip(x * mapSize + 0.5, 0, mapSize - 1);
@@ -130,10 +144,11 @@ define(['../Utils/Utils', './AbstractRasterLayer', '../Utils/Constants','../Tili
          */
         function PixelXYToLatLong(pixelX, pixelY, levelOfDetail) {
             var mapSize = MapSize(levelOfDetail);
-            var x = (Clip(pixelX, 0, mapSize - 1) / mapSize) - 0.5;
-            var y = 0.5 - (Clip(pixelY, 0, mapSize - 1) / mapSize);
+            var x = Clip(pixelX, 0, mapSize - 1) / mapSize - 0.5;
+            var y = 0.5 - Clip(pixelY, 0, mapSize - 1) / mapSize;
 
-            var latitude = 90 - 360 * Math.atan(Math.exp(-y * 2 * Math.PI)) / Math.PI;
+            var latitude =
+                90 - (360 * Math.atan(Math.exp(-y * 2 * Math.PI))) / Math.PI;
             var longitude = 360 * x;
 
             return [latitude, longitude];
@@ -171,7 +186,7 @@ define(['../Utils/Utils', './AbstractRasterLayer', '../Utils/Constants','../Tili
         function TileXYToQuadKey(tileX, tileY, levelOfDetail) {
             var quadKey = "";
             for (var i = levelOfDetail; i > 0; i--) {
-                var digit = '0';
+                var digit = "0";
                 var mask = 1 << (i - 1);
                 if ((tileX & mask) !== 0) {
                     digit++;
@@ -191,29 +206,32 @@ define(['../Utils/Utils', './AbstractRasterLayer', '../Utils/Constants','../Tili
          * @constructor
          */
         function QuadKeyToTileXY(quadKey) {
-            var tileX = 0, tileY = 0;
+            var tileX = 0,
+                tileY = 0;
             var levelOfDetail = quadKey.length();
             for (var i = levelOfDetail; i > 0; i--) {
                 var mask = 1 << (i - 1);
                 switch (quadKey[levelOfDetail - i]) {
-                    case '0':
+                    case "0":
                         break;
 
-                    case '1':
+                    case "1":
                         tileX |= mask;
                         break;
 
-                    case '2':
+                    case "2":
                         tileY |= mask;
                         break;
 
-                    case '3':
+                    case "3":
                         tileX |= mask;
                         tileY |= mask;
                         break;
 
                     default:
-                        throw new ArgumentException("Invalid QuadKey digit sequence.");
+                        throw new ArgumentException(
+                            "Invalid QuadKey digit sequence."
+                        );
                 }
             }
         }
@@ -251,9 +269,13 @@ define(['../Utils/Utils', './AbstractRasterLayer', '../Utils/Constants','../Tili
      * @see {@link https://en.wikipedia.org/wiki/Bing_Maps}
      * @memberOf module:Layer
      */
-    var BingLayer = function (options) {
+    var BingLayer = function(options) {
         // Call ancestor
-        AbstractRasterLayer.prototype.constructor.call(this, Constants.LAYER.Bing, options);
+        AbstractRasterLayer.prototype.constructor.call(
+            this,
+            Constants.LAYER.Bing,
+            options
+        );
 
         this.tilePixelSize = 256;
         this.tiling = new MercatorTiling(options.baseLevel || 2);
@@ -265,10 +287,13 @@ define(['../Utils/Utils', './AbstractRasterLayer', '../Utils/Constants','../Tili
         var self = this;
 
         // Need to provide a global callback for JSONP
-        window._bingTileProviderCallback = function (result) {
-
-            self.baseUrl = self.proxify(result.resourceSets[0].resources[0].imageUrl);
-            self.baseUrlSubDomains = self.proxify(result.resourceSets[0].resources[0].imageUrlSubdomains);
+        window._bingTileProviderCallback = function(result) {
+            self.baseUrl = self.proxify(
+                result.resourceSets[0].resources[0].imageUrl
+            );
+            self.baseUrlSubDomains = self.proxify(
+                result.resourceSets[0].resources[0].imageUrlSubdomains
+            );
             self._ready = true;
 
             // Call callback if set
@@ -285,7 +310,12 @@ define(['../Utils/Utils', './AbstractRasterLayer', '../Utils/Constants','../Tili
         // JSONP Call : needed because of cross-site origin policy
         var script = document.createElement("script");
         script.type = "text/javascript";
-        script.src = this.proxify("http://dev.virtualearth.net/REST/V1/Imagery/Metadata/" + options.imageSet + "?jsonp=_bingTileProviderCallback&key=" + options.key);
+        script.src = this.proxify(
+            "http://dev.virtualearth.net/REST/V1/Imagery/Metadata/" +
+                options.imageSet +
+                "?jsonp=_bingTileProviderCallback&key=" +
+                options.key
+        );
         script.id = "_bingTileProviderCallback";
         document.getElementsByTagName("head")[0].appendChild(script);
     };
@@ -301,14 +331,21 @@ define(['../Utils/Utils', './AbstractRasterLayer', '../Utils/Constants','../Tili
      * @param {Tile} tile Tile
      * @returns {string} Url
      */
-    BingLayer.prototype.getUrl = function (tile) {
-        var url = this.baseUrl.replace("{quadkey}", BingTileSystem.tileXYToQuadKey(tile.x, tile.y, tile.level));
-        url =  url.replace("{subdomain}", this.baseUrlSubDomains[Math.floor(Math.random() * this.baseUrlSubDomains.length)]);
+    BingLayer.prototype.getUrl = function(tile) {
+        var url = this.baseUrl.replace(
+            "{quadkey}",
+            BingTileSystem.tileXYToQuadKey(tile.x, tile.y, tile.level)
+        );
+        url = url.replace(
+            "{subdomain}",
+            this.baseUrlSubDomains[
+                Math.floor(Math.random() * this.baseUrlSubDomains.length)
+            ]
+        );
         return this.proxify(url, tile.level);
     };
 
     /**************************************************************************************************************/
 
     return BingLayer;
-
 });

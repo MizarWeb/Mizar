@@ -17,14 +17,17 @@
  * along with GlobWeb. If not, see <http://www.gnu.org/licenses/>.
  ***************************************/
 
-define(['../Utils/Utils', './Renderer', './ColladaParser'], function (Utils, Renderer, ColladaParser) {
-
+define(["../Utils/Utils", "./Renderer", "./ColladaParser"], function(
+    Utils,
+    Renderer,
+    ColladaParser
+) {
     /**************************************************************************************************************/
 
     /**
      *    @constructor SceneGraph Renderer
      */
-    var LODTreeRenderer = function (renderContext, node) {
+    var LODTreeRenderer = function(renderContext, node) {
         Renderer.prototype.constructor.call(this, renderContext, node);
 
         this.freeRequests = [new XMLHttpRequest(), new XMLHttpRequest()];
@@ -41,16 +44,20 @@ define(['../Utils/Utils', './Renderer', './ColladaParser'], function (Utils, Ren
     /**
      *    Main render
      */
-    LODTreeRenderer.prototype.render = function () {
+    LODTreeRenderer.prototype.render = function() {
         this.numRendered = 0;
 
         Renderer.prototype.render.call(this);
 
         // Load the needed nodes
-        this.nodesToLoad.sort(function (a, b) {
+        this.nodesToLoad.sort(function(a, b) {
             return b.pixelSize - a.pixelSize;
         });
-        for (var i = 0; i < this.nodesToLoad.length && this.freeRequests.length > 0; i++) {
+        for (
+            var i = 0;
+            i < this.nodesToLoad.length && this.freeRequests.length > 0;
+            i++
+        ) {
             this.load(this.nodesToLoad[i].node);
         }
         this.nodesToLoad.length = 0;
@@ -58,8 +65,8 @@ define(['../Utils/Utils', './Renderer', './ColladaParser'], function (Utils, Ren
 
     /**************************************************************************************************************/
 
-// Function to collect geometries from the COLLADA nodes
-    var findGeometry = function (geometries, node) {
+    // Function to collect geometries from the COLLADA nodes
+    var findGeometry = function(geometries, node) {
         var i;
         for (i = 0; i < node.geometries.length; i++) {
             geometries.push(node.geometries[i]);
@@ -75,7 +82,7 @@ define(['../Utils/Utils', './Renderer', './ColladaParser'], function (Utils, Ren
     /**
      * Internal function call when an image is loaded
      */
-    var onImageLoad = function (node) {
+    var onImageLoad = function(node) {
         node.imagesToLoad--;
         if (node.imagesToLoad === 0) {
             node.loading = false;
@@ -83,22 +90,20 @@ define(['../Utils/Utils', './Renderer', './ColladaParser'], function (Utils, Ren
         }
     };
 
-
     /**************************************************************************************************************/
 
     /**
      * Load the images of a node.
      * A node is considered as loaded when all its images are loaded to avoid flickering
      */
-    LODTreeRenderer.prototype.loadImages = function (node) {
+    LODTreeRenderer.prototype.loadImages = function(node) {
         node.imagesToLoad = node.geometries.length;
         for (var i = 0; i < node.geometries.length; i++) {
             var image = node.geometries[i].material.texture.image;
             if (image.complete) {
                 onImageLoad(node);
-            }
-            else {
-                image.onload = function () {
+            } else {
+                image.onload = function() {
                     onImageLoad(node);
                 };
             }
@@ -110,7 +115,7 @@ define(['../Utils/Utils', './Renderer', './ColladaParser'], function (Utils, Ren
     /**
      * Internal function to merge geometries with the same texture
      */
-    var optimizeGeometries = function (geoms) {
+    var optimizeGeometries = function(geoms) {
         for (var i = 0; i < geoms.length; i++) {
             var mat = geoms[i].material;
             var mesh = geoms[i].mesh;
@@ -120,21 +125,19 @@ define(['../Utils/Utils', './Renderer', './ColladaParser'], function (Utils, Ren
                 if (geoms[j].material === mat) {
                     mesh.merge(geoms[j].mesh);
                     geoms.splice(j, 1);
-                }
-                else {
+                } else {
                     j++;
                 }
             }
         }
     };
 
-
     /**************************************************************************************************************/
 
     /**
      * Load a LOD node
      */
-    LODTreeRenderer.prototype.load = function (node) {
+    LODTreeRenderer.prototype.load = function(node) {
         if (node.loading || node.loaded) {
             return;
         }
@@ -142,7 +145,7 @@ define(['../Utils/Utils', './Renderer', './ColladaParser'], function (Utils, Ren
         var self = this;
         var xhr = this.freeRequests.pop();
         if (xhr) {
-            xhr.onreadystatechange = function (e) {
+            xhr.onreadystatechange = function(e) {
                 if (xhr.readyState === 4 && xhr.status === 200) {
                     //console.log("Load " + node.modelPath);
                     var root = ColladaParser.parse(xhr.responseXML);
@@ -159,7 +162,7 @@ define(['../Utils/Utils', './Renderer', './ColladaParser'], function (Utils, Ren
 
             node.loading = true;
             xhr.open("GET", node.modelPath);
-            xhr.overrideMimeType('text/xml');
+            xhr.overrideMimeType("text/xml");
             xhr.send();
         }
     };
@@ -170,12 +173,11 @@ define(['../Utils/Utils', './Renderer', './ColladaParser'], function (Utils, Ren
      Display some render statistics
      @private
      */
-    LODTreeRenderer.prototype.getRenderStats = function () {
+    LODTreeRenderer.prototype.getRenderStats = function() {
         return "# rendered nodes : " + this.numRendered;
     };
 
     /**************************************************************************************************************/
 
     return LODTreeRenderer;
-
 });

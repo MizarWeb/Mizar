@@ -19,16 +19,13 @@
 
 /*global define: false */
 
-define(['../Utils/ImageRequest'], function (ImageRequest) {
-
+define(["../Utils/ImageRequest"], function(ImageRequest) {
     /**************************************************************************************************************/
 
     /*
      *	Override send function to handle fits requests
      */
-    ImageRequest.prototype.send = function (url, crossOrigin, noRequest) {
-
-
+    ImageRequest.prototype.send = function(url, crossOrigin, noRequest) {
         var self = this;
         if (noRequest || url == null) {
             self.failCallback(self);
@@ -37,7 +34,7 @@ define(['../Utils/ImageRequest'], function (ImageRequest) {
         if (url.search("fits") > 0) {
             // Fits
             var xhr = new XMLHttpRequest();
-            xhr.onreadystatechange = function (e) {
+            xhr.onreadystatechange = function(e) {
                 if (xhr && xhr.readyState === 4) {
                     if (xhr.status === 200) {
                         if (xhr.response) {
@@ -46,8 +43,7 @@ define(['../Utils/ImageRequest'], function (ImageRequest) {
                                 self.successCallback(self);
                             }
                         }
-                    }
-                    else {
+                    } else {
                         if (xhr.status !== 0) {
                             // Fail
                             console.error("Error while loading " + url);
@@ -60,7 +56,7 @@ define(['../Utils/ImageRequest'], function (ImageRequest) {
                 }
             };
 
-            xhr.onabort = function (e) {
+            xhr.onabort = function(e) {
                 if (self.abortCallback) {
                     self.abortCallback(self);
                 }
@@ -68,22 +64,22 @@ define(['../Utils/ImageRequest'], function (ImageRequest) {
             };
 
             xhr.open("GET", url);
-            xhr.responseType = 'arraybuffer';
+            xhr.responseType = "arraybuffer";
             xhr.send();
             this.xhr = xhr;
-        }
-        else {
+        } else {
             this.image = new Image();
             this.image.aborted = false;
-            this.image.crossOrigin = '';
+            this.image.crossOrigin = "";
             this.image.dataType = "byte";
-            this.image.onload = function () {
-                var isComplete = self.image.naturalWidth !== 0 && self.image.complete;
+            this.image.onload = function() {
+                var isComplete =
+                    self.image.naturalWidth !== 0 && self.image.complete;
                 if (isComplete && !this.aborted) {
                     self.successCallback(self);
                 }
             };
-            this.image.onerror = function () {
+            this.image.onerror = function() {
                 if (self.failCallback && !this.aborted) {
                     self.failCallback(self);
                 }
@@ -97,19 +93,17 @@ define(['../Utils/ImageRequest'], function (ImageRequest) {
     /*
      *	Override abort
      */
-    ImageRequest.prototype.abort = function () {
+    ImageRequest.prototype.abort = function() {
         if (this.xhr) {
             this.xhr.abort();
-        }
-        else {
+        } else {
             if (this.abortCallback) {
                 this.abortCallback(this);
             }
             this.image.aborted = true;
-            this.image.src = '';
+            this.image.src = "";
         }
     };
 
     /**************************************************************************************************************/
-
 });

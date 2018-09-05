@@ -35,8 +35,7 @@
  * along with GlobWeb. If not, see <http://www.gnu.org/licenses/>.
  ***************************************/
 
-define(function () {
-
+define(function() {
     /**
      *    Cache storing <AbstractRasterLayer> tile requests in browser's local storage
      *    Due to performance reasons, it's recommended to use it only for tiles of level 0
@@ -46,11 +45,12 @@ define(function () {
      *            <li>cacheLevel: the maximum level of tiles to be cached</li>
      *        </ul>
      */
-    var Cache = function (options) {
-
+    var Cache = function(options) {
         this.layer = options.layer;
 
-        this.cacheLevel = options.hasOwnProperty('cacheLevel') ? options.cacheLevel : 1;
+        this.cacheLevel = options.hasOwnProperty("cacheLevel")
+            ? options.cacheLevel
+            : 1;
 
         if (!localStorage.getItem(this.layer.getName())) {
             // Create cache space in local storage named after layer
@@ -67,14 +67,13 @@ define(function () {
         this.imgContext = this.imgCanvas.getContext("2d");
     };
 
-
     /**************************************************************************************************************/
 
     /**
      *    Get tile request from cache for the given tile
      *    @returns The image(TODO: handle elevations) corresponding to the given tile, null if doesn't exist in cache
      */
-    Cache.prototype.getFromCache = function (tile) {
+    Cache.prototype.getFromCache = function(tile) {
         var cachedTileRequest = null;
         if (this.cacheLevel >= tile.level) {
             var tileId = this.layer.getUrl(tile);
@@ -100,7 +99,7 @@ define(function () {
     /**
      *    Internal method to generate data url from HTML image object
      */
-    Cache.prototype._createDataURL = function (image) {
+    Cache.prototype._createDataURL = function(image) {
         // Draw image into canvas element
         this.imgContext.drawImage(image, 0, 0, image.width, image.height);
 
@@ -113,7 +112,7 @@ define(function () {
     /**
      *    Store tile request in cache
      */
-    Cache.prototype.storeInCache = function (tileRequest) {
+    Cache.prototype.storeInCache = function(tileRequest) {
         var tile = tileRequest.tile;
         if (this.cacheLevel >= tile.level) {
             var tileId = this.layer.getUrl(tile);
@@ -124,10 +123,12 @@ define(function () {
             };
 
             // Update local storage with new cache
-            localStorage.setItem(this.layer.getName(), JSON.stringify(this._cacheMap));
+            localStorage.setItem(
+                this.layer.getName(),
+                JSON.stringify(this._cacheMap)
+            );
         }
     };
 
     return Cache;
-
 });

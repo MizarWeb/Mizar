@@ -16,8 +16,11 @@
  * You should have received a copy of the GNU General Public License
  * along with JVotable.  If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
-define(["./utils","./abstractNode","./td"], function(Utils, AbstractNode, Td) {
-
+define(["./utils", "./abstractNode", "./td"], function(
+    Utils,
+    AbstractNode,
+    Td
+) {
     /**
      * Constructs the Tr object.
      *
@@ -47,7 +50,7 @@ define(["./utils","./abstractNode","./td"], function(Utils, AbstractNode, Td) {
             this.tds = parseTr(childNode);
         } else {
             this.tds = [];
-            for (var i=0;i<options.length;i++) {
+            for (var i = 0; i < options.length; i++) {
                 this.tds.push(new Td(null, options[i]));
             }
         }
@@ -60,21 +63,27 @@ define(["./utils","./abstractNode","./td"], function(Utils, AbstractNode, Td) {
      */
     var parseTr = function(childNode) {
         var tds = [];
-        for(var i = 0; childNode!=null && i< childNode.childNodes.length; i++){
+        for (
+            var i = 0;
+            childNode != null && i < childNode.childNodes.length;
+            i++
+        ) {
             var element = childNode.childNodes[i];
             if (element.nodeType == 1) {
                 var nodeName = element.localName;
                 if (nodeName == "TD") {
                     tds.push(new Td(element));
-                }  else {
-                    this.getCache().addWarning("unknown element "+nodeName+" in Tr node");
+                } else {
+                    this.getCache().addWarning(
+                        "unknown element " + nodeName + " in Tr node"
+                    );
                 }
             }
         }
         return tds;
     };
 
-    Utils.inherits(AbstractNode , Tr );
+    Utils.inherits(AbstractNode, Tr);
 
     /**
      * Returns the ID value of the attribute.

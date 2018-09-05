@@ -35,14 +35,13 @@
  * along with GlobWeb. If not, see <http://www.gnu.org/licenses/>.
  ***************************************/
 
-define(function () {
-
+define(function() {
     /**************************************************************************************************************/
 
     /** @constructor
      Mesh constructor
      */
-    var Mesh = function (renderContext) {
+    var Mesh = function(renderContext) {
         this.renderContext = renderContext;
         this.vertexBuffer = null;
         this.tcoordBuffer = null;
@@ -57,13 +56,17 @@ define(function () {
     /*
      Mesh setVertices method
      */
-    Mesh.prototype.setVertices = function (vertices) {
+    Mesh.prototype.setVertices = function(vertices) {
         var gl = this.renderContext.gl;
         if (this.vertexBuffer === null) {
             this.vertexBuffer = gl.createBuffer();
         }
         gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexBuffer);
-        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
+        gl.bufferData(
+            gl.ARRAY_BUFFER,
+            new Float32Array(vertices),
+            gl.STATIC_DRAW
+        );
         this.numVertices = vertices.length;
     };
 
@@ -72,13 +75,17 @@ define(function () {
     /*
      Mesh setTexCoords method
      */
-    Mesh.prototype.setTexCoords = function (tcoords) {
+    Mesh.prototype.setTexCoords = function(tcoords) {
         var gl = this.renderContext.gl;
         if (this.tcoordBuffer === null) {
             this.tcoordBuffer = gl.createBuffer();
         }
         gl.bindBuffer(gl.ARRAY_BUFFER, this.tcoordBuffer);
-        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(tcoords), gl.STATIC_DRAW);
+        gl.bufferData(
+            gl.ARRAY_BUFFER,
+            new Float32Array(tcoords),
+            gl.STATIC_DRAW
+        );
     };
 
     /**************************************************************************************************************/
@@ -86,13 +93,17 @@ define(function () {
     /*
      Mesh setColors method
      */
-    Mesh.prototype.setColors = function (colors) {
+    Mesh.prototype.setColors = function(colors) {
         var gl = this.renderContext.gl;
         if (this.colorBuffer === null) {
             this.colorBuffer = gl.createBuffer();
         }
         gl.bindBuffer(gl.ARRAY_BUFFER, this.colorBuffer);
-        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(colors), gl.STATIC_DRAW);
+        gl.bufferData(
+            gl.ARRAY_BUFFER,
+            new Float32Array(colors),
+            gl.STATIC_DRAW
+        );
     };
 
     /**************************************************************************************************************/
@@ -100,13 +111,17 @@ define(function () {
     /*
      Mesh setIndices method
      */
-    Mesh.prototype.setIndices = function (indices) {
+    Mesh.prototype.setIndices = function(indices) {
         var gl = this.renderContext.gl;
         if (this.indexBuffer === null) {
             this.indexBuffer = gl.createBuffer();
         }
         gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indexBuffer);
-        gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(indices), gl.STATIC_DRAW);
+        gl.bufferData(
+            gl.ELEMENT_ARRAY_BUFFER,
+            new Uint16Array(indices),
+            gl.STATIC_DRAW
+        );
         this.numIndices = indices.length;
     };
 
@@ -115,7 +130,7 @@ define(function () {
     /*
      Convert to wireframe (for debug purposes)
      */
-    Mesh.prototype.setIndicesToWireframe = function (indices) {
+    Mesh.prototype.setIndicesToWireframe = function(indices) {
         this.mode = this.renderContext.gl.LINES;
 
         // Convert indices
@@ -141,25 +156,24 @@ define(function () {
     /*
      Mesh render method
      */
-    Mesh.prototype.render = function (attributes) {
+    Mesh.prototype.render = function(attributes) {
         var gl = this.renderContext.gl;
 
         // Warning : use quoted strings to access properties of the attributes, to work correclty in advanced mode with closure compiler
         gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexBuffer);
         gl.vertexAttribPointer(attributes.vertex, 3, gl.FLOAT, false, 0, 0);
-        if (attributes.hasOwnProperty('tcoord')) {
+        if (attributes.hasOwnProperty("tcoord")) {
             gl.bindBuffer(gl.ARRAY_BUFFER, this.tcoordBuffer);
             gl.vertexAttribPointer(attributes.tcoord, 2, gl.FLOAT, false, 0, 0);
         }
-        if (attributes.hasOwnProperty('color')) {
+        if (attributes.hasOwnProperty("color")) {
             gl.bindBuffer(gl.ARRAY_BUFFER, this.colorBuffer);
             gl.vertexAttribPointer(attributes.color, 4, gl.FLOAT, false, 0, 0);
         }
         if (this.indexBuffer) {
             gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indexBuffer);
             gl.drawElements(this.mode, this.numIndices, gl.UNSIGNED_SHORT, 0);
-        }
-        else {
+        } else {
             gl.drawArrays(this.mode, 0, this.numVertices / 3);
         }
     };
@@ -169,7 +183,7 @@ define(function () {
     /*
      Mesh dispose method
      */
-    Mesh.prototype.dispose = function () {
+    Mesh.prototype.dispose = function() {
         var gl = this.renderContext.gl;
         if (this.indexBuffer) {
             gl.deleteBuffer(this.indexBuffer);
@@ -193,5 +207,4 @@ define(function () {
     /**************************************************************************************************************/
 
     return Mesh;
-
 });

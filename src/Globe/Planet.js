@@ -52,144 +52,153 @@
  * @module Globe
  * @implements {Globe}
  */
-define(['../Tiling/Tile',
-        '../Utils/Event', '../Utils/Utils',
-        './AbstractGlobe', '../Utils/Constants'],
-    function (Tile,
-              Event, Utils,
-              AbstractGlobe, Constants) {
+define([
+    "../Tiling/Tile",
+    "../Utils/Event",
+    "../Utils/Utils",
+    "./AbstractGlobe",
+    "../Utils/Constants"
+], function(Tile, Event, Utils, AbstractGlobe, Constants) {
+    /**
+     * @name Planet
+     * @class
+     * Create a virtual planet in a HTML canvas element with its own coordinate reference system.
+     * @augments AbstractGlobe
+     * @param {AbstractGlobe.configuration} options - Planet configuration
+     * @constructor
+     * @memberOf module:Globe
+     */
+    var Planet = function(options) {
+        AbstractGlobe.prototype.constructor.call(
+            this,
+            Constants.GLOBE.Planet,
+            options
+        );
+        this.sky = false;
+        this.manualRendererlayers = [];
+    };
 
-        /**
-         * @name Planet
-         * @class
-         * Create a virtual planet in a HTML canvas element with its own coordinate reference system.
-         * @augments AbstractGlobe
-         * @param {AbstractGlobe.configuration} options - Planet configuration
-         * @constructor
-         * @memberOf module:Globe
-         */
-        var Planet = function (options) {
-            AbstractGlobe.prototype.constructor.call(this, Constants.GLOBE.Planet, options);
-            this.sky = false;
-            this.manualRendererlayers = [];
-        };
+    /**************************************************************************************************************/
 
-        /**************************************************************************************************************/
+    Utils.inherits(AbstractGlobe, Planet);
 
-        Utils.inherits(AbstractGlobe, Planet);
+    /**************************************************************************************************************/
 
-        /**************************************************************************************************************/
+    /**
+     * Sets the base imagery layer for the Planet.
+     * @function setBaseImagery
+     * @memberOf Planet#
+     * @param {AbstractRasterLayer} layer the layer to use
+     */
+    Planet.prototype.setBaseImagery = function(layer) {
+        if (this.baseImagery === layer) {
+            return;
+        }
 
-        /**
-         * Sets the base imagery layer for the Planet.
-         * @function setBaseImagery
-         * @memberOf Planet#
-         * @param {AbstractRasterLayer} layer the layer to use
-         */
-        Planet.prototype.setBaseImagery = function (layer) {
-            if (this.baseImagery === layer) {
-                return;
+        if (this.baseImagery) {
+            this.removeLayer(this.baseImagery);
+            this.baseImagery = null;
+        }
+        // Attach the layer to the globe
+        if (layer) {
+            layer._overlay = false;
+            layer.background = true;
+            this.addLayer(layer);
+            this.baseImagery = layer;
+            layer.setVisible(true);
+        }
+
+        // Modify the tile manager after the layer has been attached
+        if (layer.getCapabilitiesEnabled === true) {
+            // if get capabilities still not loaded, wait...
+            layer.getCapabilitiesTileManager = this.tileManager;
+        } else {
+            // ...else action !
+            this.tileManager.setImageryProvider(layer);
+        }
+    };
+
+    /**
+     * @function setBaseElevation
+     * @memberOf Planet#
+     */
+    Planet.prototype.setBaseElevation = function(layer) {
+        if (this.tileManager.elevationProvider) {
+            this.removeLayer(this.tileManager.elevationProvider);
+        }
+        this.tileManager.setElevationProvider(layer);
+        if (layer) {
+            layer._overlay = false;
+            this.addLayer(layer);
+        }
+    };
+
+    /**
+     * @function
+     * @memberOf Planet#
+     */
+    Planet.prototype.getElevation = function(lon, lat) {
+        // Use imagery provider tiling if defined, otherwise use globe default one
+        var tiling = this.tileManager.tiling;
+        if (this.baseImagery) {
+            tiling = this.baseImagery.tiling;
+        }
+        var levelZeroTile = this.tileManager.level0Tiles[
+            tiling.lonlat2LevelZeroIndex(lon, lat)
+        ];
+
+        if (
+            Tile.State &&
+            levelZeroTile &&
+            levelZeroTile.state === Tile.State.LOADED
+        ) {
+            return levelZeroTile.getElevation(lon, lat);
+        } else {
+            return 0.0;
+        }
+    };
+
+    Planet.prototype.addManualRendererLayer = function(layer) {
+        this.manualRendererlayers.push(layer);
+    };
+
+    Planet.prototype.removeManualRendererLayer = function(layer) {
+        var newArray = [];
+        for (var i = 0; i < this.manualRendererlayers.length; i++) {
+            if (this.manualRendererlayers[i].ID !== layer.ID) {
+                newArray.push(this.manualRendererlayers[i]);
             }
+        }
+        this.manualRendererlayers = newArray;
+    };
 
-            if (this.baseImagery) {
-                this.removeLayer(this.baseImagery);
-                this.baseImagery = null;
-            }
-            // Attach the layer to the globe
-            if (layer) {
-                layer._overlay = false;
-                layer.background = true;
-                this.addLayer(layer);
-                this.baseImagery = layer;
-                layer.setVisible(true);
-            }
-            
-            // Modify the tile manager after the layer has been attached
-            if (layer.getCapabilitiesEnabled === true) {
-                // if get capabilities still not loaded, wait...
-                layer.getCapabilitiesTileManager = this.tileManager;
-            } else {
-                // ...else action !
-                this.tileManager.setImageryProvider(layer);
-            }
-        };
-
-        /**
-         * @function setBaseElevation
-         * @memberOf Planet#
-         */
-        Planet.prototype.setBaseElevation = function (layer) {
-            if (this.tileManager.elevationProvider) {
-                this.removeLayer(this.tileManager.elevationProvider);
-            }
-            this.tileManager.setElevationProvider(layer);
-            if (layer) {
-                layer._overlay = false;
-                this.addLayer(layer);
-            }
-        };
-
-        /**
-         * @function
-         * @memberOf Planet#
-         */
-        Planet.prototype.getElevation = function (lon, lat) {
-            // Use imagery provider tiling if defined, otherwise use globe default one
-            var tiling = this.tileManager.tiling;
-            if (this.baseImagery) {
-                tiling = this.baseImagery.tiling;
-            }
-            var levelZeroTile = this.tileManager.level0Tiles[tiling.lonlat2LevelZeroIndex(lon, lat)];
-
-            if (Tile.State && levelZeroTile && levelZeroTile.state === Tile.State.LOADED) {
-                return levelZeroTile.getElevation(lon, lat);
-            } else {
-                return 0.0;
-            }
-        };
-
-        Planet.prototype.addManualRendererLayer = function (layer) {
-            this.manualRendererlayers.push(layer);
-        };
-
-        Planet.prototype.removeManualRendererLayer = function (layer) {
-            var newArray = [];
-            for (var i=0;i<this.manualRendererlayers.length;i++) {
-                if ( this.manualRendererlayers[i].ID !== layer.ID) {
-                    newArray.push(this.manualRendererlayers[i]);
+    /**
+     * @private
+     * @function render
+     * @memberOf AbstractGlobe#
+     */
+    Planet.prototype.render = function() {
+        if (this.isEnabled()) {
+            // Call pre-renderers (only in 3D mode, no atmosphere for 2D)
+            if (!this.coordinateSystem.isFlat()) {
+                for (var i = 0; i < this.preRenderers.length; i++) {
+                    this.preRenderers[i].preRender();
                 }
             }
-            this.manualRendererlayers = newArray;
-        };
-        
-        /**
-         * @private
-         * @function render
-         * @memberOf AbstractGlobe#
-         */
-        Planet.prototype.render = function () {
-            if (this.isEnabled()) {
-                // Call pre-renderers (only in 3D mode, no atmosphere for 2D)
-                if (!this.coordinateSystem.isFlat()) {
-                    for (var i = 0; i < this.preRenderers.length; i++) {
-                        this.preRenderers[i].preRender();
-                    }
-                }
-                // Render tiles
-                this.tileManager.render();
+            // Render tiles
+            this.tileManager.render();
 
-                for (var j=0;j<this.manualRendererlayers.length;j++) {
-                    this.manualRendererlayers[j].render();
-                }
+            for (var j = 0; j < this.manualRendererlayers.length; j++) {
+                this.manualRendererlayers[j].render();
             }
-        };
+        }
+    };
 
-        Planet.prototype.hasMesh = function () {
-            return true;
-        };
+    Planet.prototype.hasMesh = function() {
+        return true;
+    };
 
-        /**************************************************************************************************************/
+    /**************************************************************************************************************/
 
-        return Planet;
-
-    });
+    return Planet;
+});

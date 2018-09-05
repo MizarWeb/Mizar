@@ -16,9 +16,27 @@
  * You should have received a copy of the GNU General Public License
  * along with JVotable.  If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
-define(["./utils","./abstractNode","./description","./info","./table","./link","./coosys","./param","./group"], 
-    function(Utils, AbstractNode, Description, Info, Table, Link, Coosys, Param, Group) {
-
+define([
+    "./utils",
+    "./abstractNode",
+    "./description",
+    "./info",
+    "./table",
+    "./link",
+    "./coosys",
+    "./param",
+    "./group"
+], function(
+    Utils,
+    AbstractNode,
+    Description,
+    Info,
+    Table,
+    Link,
+    Coosys,
+    Param,
+    Group
+) {
     /**
      * Constructs the Resource object.
      *
@@ -60,7 +78,7 @@ define(["./utils","./abstractNode","./description","./info","./table","./link","
      *      <!-- Suggested Doug Tody, to include new RESOURCE attributes -->
      *      <xs:anyAttribute namespace="##other" processContents="lax"/>
      *  </xs:complexType>
-     *  
+     *
      *  @example <caption>Get a table</caption>
      *  var listResourcesOrTable = resource.getResourcesOrTables();
      *  var resourceOrTable = listResourcesOrTable[0];
@@ -99,7 +117,11 @@ define(["./utils","./abstractNode","./description","./info","./table","./link","
         var element = null;
         var nodeName = null;
 
-        for(var i = 0; childNode!=null && i< childNode.childNodes.length; i++) {
+        for (
+            var i = 0;
+            childNode != null && i < childNode.childNodes.length;
+            i++
+        ) {
             element = childNode.childNodes[i];
             if (element.nodeType == 1) {
                 nodeName = element.localName;
@@ -123,20 +145,27 @@ define(["./utils","./abstractNode","./description","./info","./table","./link","
                         end = i;
                 }
             }
-            if (end!=0) {
+            if (end != 0) {
                 break;
             }
         }
         var seqElts = {};
         var seqLinks = [];
         var seqInfos = [];
-        for(i = end; childNode!=null && i< childNode.childNodes.length; i++) {
+        for (
+            i = end;
+            childNode != null && i < childNode.childNodes.length;
+            i++
+        ) {
             element = childNode.childNodes[i];
             if (element.nodeType == 1) {
                 nodeName = element.localName;
                 switch (nodeName) {
                     case "LINK":
-                        if (seqElts.hasOwnProperty("TABLE") || seqElts.hasOwnProperty("RESOURCE")) {
+                        if (
+                            seqElts.hasOwnProperty("TABLE") ||
+                            seqElts.hasOwnProperty("RESOURCE")
+                        ) {
                             seqElts.LINKS = seqLinks;
                             seqElts.INFOS = seqInfos;
                             abstractSequences.push(seqElts);
@@ -157,17 +186,19 @@ define(["./utils","./abstractNode","./description","./info","./table","./link","
                         seqInfos.push(new Info(element));
                         break;
                     default:
-                        this.getCache().addWarning("Unkknown element "+nodeName+" in RESOURCE node");
+                        this.getCache().addWarning(
+                            "Unkknown element " + nodeName + " in RESOURCE node"
+                        );
                 }
             }
         }
-        if(Object.keys(seqElts).length != 0) {
+        if (Object.keys(seqElts).length != 0) {
             abstractSequences.push(seqElts);
         }
         return [description, infos, coosyss, params, groups, abstractSequences];
     };
 
-    Utils.inherits(AbstractNode , Resource );
+    Utils.inherits(AbstractNode, Resource);
 
     /**
      * Returns the ID value.

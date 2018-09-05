@@ -16,8 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with JVotable.  If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
-define(["./utils","./abstractNode"], function(Utils, AbstractNode) {
-
+define(["./utils", "./abstractNode"], function(Utils, AbstractNode) {
     /**
      * Constructs the Link object.
      *
@@ -34,7 +33,7 @@ define(["./utils","./abstractNode"], function(Utils, AbstractNode) {
      *      <xs:attribute name="gref" type="xs:token"/>
      *      <xs:attribute name="action" type="xs:anyURI"/>
      * </xs:complexType>
-     * 
+     *
      * @param {NodeList} childNode the Link node
      * @exports Link
      * @augments AbstractNode
@@ -45,7 +44,7 @@ define(["./utils","./abstractNode"], function(Utils, AbstractNode) {
         AbstractNode.prototype.constructor.call(this, childNode);
     };
 
-    Utils.inherits(AbstractNode , Link );
+    Utils.inherits(AbstractNode, Link);
 
     /**
      * Returns the ID value.
@@ -60,7 +59,7 @@ define(["./utils","./abstractNode"], function(Utils, AbstractNode) {
      * @returns {?String} the content-role value or null when no content-role attribute.
      */
     Link.prototype.content_role = function() {
-        return this.attributes.content-role;
+        return this.attributes.content - role;
     };
 
     /**
@@ -68,7 +67,7 @@ define(["./utils","./abstractNode"], function(Utils, AbstractNode) {
      * @returns {?String} the content-type value or null when no content-type attribute.
      */
     Link.prototype.content_type = function() {
-        return this.attributes.content-type;
+        return this.attributes.content - type;
     };
 
     /**

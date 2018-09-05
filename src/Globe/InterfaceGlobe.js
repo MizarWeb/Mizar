@@ -46,7 +46,7 @@
  * </table>
  *
  * In addition to the classes, a {@link module:Globe.GlobeFactory factory} is available to help for creating
- * globe. Once the globe is created, the client can handle it by the use of its {@link Globe interface}. 
+ * globe. Once the globe is created, the client can handle it by the use of its {@link Globe interface}.
  * @see {@link module:Globe the globe package}
  * @interface
  */
@@ -69,26 +69,26 @@ Globe.prototype.getType = function() {};
  * When a raster layer is already set, this layer is replaced by the new one.
  * @param {AbstractRasterLayer} layer - raster layer to use
  */
-Globe.prototype.setBaseImagery = function (layer) {};
+Globe.prototype.setBaseImagery = function(layer) {};
 
 /**
  * Returns the background raster as a layer.
  * @return {AbstractRasterLayer} the raster layer
  */
-Globe.prototype.getBaseImagery = function () {};
+Globe.prototype.getBaseImagery = function() {};
 
 /**
  * Registers the elevation layer and attach it to the globe.<br/>
  * When an elevation layer is already set, this layer is replaced by the new one
  * @returns {WMSElevationLayer|WCSElevationLayer} the layer used
  */
-Globe.prototype.setBaseElevation = function (layer) {};
+Globe.prototype.setBaseElevation = function(layer) {};
 
 /**
  * Returns the elevation layer.
  * @returns {WMSElevationLayer|WCSElevationLayer|null} the layer used
  */
-Globe.prototype.getBaseElevation = function () {};
+Globe.prototype.getBaseElevation = function() {};
 
 /**
  * Registers a new layer to globe to be visualized on the globe.<br/>
@@ -98,13 +98,13 @@ Globe.prototype.getBaseElevation = function () {};
  * the layer is automatically shown on the globe.
  *
  * The layer can be mainly a raster or a set of vectors.<br/>
- * In the vector case, the data is located in the <i>url</i> attribute of the layer object. In addition to the URL, 
+ * In the vector case, the data is located in the <i>url</i> attribute of the layer object. In addition to the URL,
  * a <i>callback</i> attribute can be applied to the data.
  *
  * @param {Layer} layer the layer to add
  * @fires Context#layer:add
  */
-Globe.prototype.addLayer = function (layer) {};
+Globe.prototype.addLayer = function(layer) {};
 
 /**
  * Removes a layer.
@@ -115,19 +115,19 @@ Globe.prototype.addLayer = function (layer) {};
  * @param {Layer} layer - the layer to remove
  * @fires Context#layer:remove
  */
-Globe.prototype.removeLayer = function (layer) {};
+Globe.prototype.removeLayer = function(layer) {};
 
 /**
  * Adds an animation to be played later on.
  * @param {Animation} anim - the animation to add
  */
-Globe.prototype.addAnimation = function (anim) {};
+Globe.prototype.addAnimation = function(anim) {};
 
 /**
  * Removes an animation.
  * @param {Animation} anim - the animation to remove
  */
-Globe.prototype.removeAnimation = function (anim) {};
+Globe.prototype.removeAnimation = function(anim) {};
 
 /**
  * Returns the elevation in meters at a geo position at the defined coordinate reference system.
@@ -135,14 +135,14 @@ Globe.prototype.removeAnimation = function (anim) {};
  * @param {float} lat - the latitude in degree
  * @return {float} the elevation in meter at the position [lon,lat]
  */
-Globe.prototype.getElevation = function (lon, lat) {};
+Globe.prototype.getElevation = function(lon, lat) {};
 
 /**
  * Returns the viewport geo bound.
  * @param transformCallback Callback transforming the frustum/globe intersection coordinates if needed
  * @return {GeoBound} the geo bound of the viewport
  */
-Globe.prototype.getViewportGeoBound = function (transformCallback) {};
+Globe.prototype.getViewportGeoBound = function(transformCallback) {};
 
 /**
  * Returns the geo position [longitude, latitude] in degree from a pixel.<br/>
@@ -152,7 +152,7 @@ Globe.prototype.getViewportGeoBound = function (transformCallback) {};
  * @param    {int} y the pixel y coordinate
  * @return   {float[]|null} an array of two numbers [lon,lat] or null if the pixel is not on the globe
  */
-Globe.prototype.getLonLatFromPixel = function (x, y) {};
+Globe.prototype.getLonLatFromPixel = function(x, y) {};
 
 /**
  * Returns the pixel coordinates from geo position [longitude, latitude] in degree in the defined coordinate reference
@@ -162,43 +162,43 @@ Globe.prototype.getLonLatFromPixel = function (x, y) {};
  * @param {float} lat - the latitude in decimal degree
  * @return {int[]|null} an array of two numbers [x,y] or null if the pixel is not on the globe
  */
-Globe.prototype.getPixelFromLonLat = function (lon, lat) {};
+Globe.prototype.getPixelFromLonLat = function(lon, lat) {};
 
 /**
  * Sets the coordinate reference system
  * @param {Crs} coordinateSystem - the coordinate reference system
  */
-Globe.prototype.setCoordinateSystem = function (coordinateSystem) {};
+Globe.prototype.setCoordinateSystem = function(coordinateSystem) {};
 
 /**
  * Returns the coordinate reference system.
  * @return {Crs} the coordinate reference system
  */
-Globe.prototype.getCoordinateSystem = function () {};
+Globe.prototype.getCoordinateSystem = function() {};
 
 /**
  * Displays some rendering statistics.
  * @return {string} the statistics
  */
-Globe.prototype.getRenderStats = function () {};
+Globe.prototype.getRenderStats = function() {};
 
 /**
  * Returns the rendering context.
  * @return {RenderContext} the rendering context
  */
-Globe.prototype.getRenderContext = function () {};
+Globe.prototype.getRenderContext = function() {};
 
 /**
  * Sets the rendering context.
  * @param {RenderContext} context - the rendering context
  */
-Globe.prototype.setRenderContext = function (context) {};
+Globe.prototype.setRenderContext = function(context) {};
 
 /**
  * Returns the tile manager.
  * @return {TileManager} Tile manager
  */
-Globe.prototype.getTileManager = function () {};
+Globe.prototype.getTileManager = function() {};
 
 /**
  * Returns the vector renderer manager.
@@ -212,12 +212,12 @@ Globe.prototype.getVectorRendererManager = function() {};
  * (private for now because it is automatically called in requestAnimationFrame)
  * @private
  */
-Globe.prototype.render = function () {};
+Globe.prototype.render = function() {};
 
 /**
  * Cleans up every reference to gl objects and unloads all tiles
  */
-Globe.prototype.dispose = function () {};
+Globe.prototype.dispose = function() {};
 
 /**
  * Destroys the globe.
@@ -227,25 +227,25 @@ Globe.prototype.dispose = function () {};
  *     <li>Removing the renderer from all the tiles</li>
  * </ul>
  */
-Globe.prototype.destroy = function () {};
+Globe.prototype.destroy = function() {};
 
 /**
  * Refreshes rendering, must be called when canvas size is modified.
  */
-Globe.prototype.refresh = function () {};
+Globe.prototype.refresh = function() {};
 
 /**
  * Checks if the globe rendering is enabled.
  * @return {boolean} True when the globe rendering is enabled whereas False
  */
-Globe.prototype.isEnabled = function () {};
+Globe.prototype.isEnabled = function() {};
 
 /**
  * Enables the globe.
  * This is used to enable the sky when we use the sphere to map the data. In this way,
  * we see the globe and the sky in the same time.
  */
-Globe.prototype.enable = function () {};
+Globe.prototype.enable = function() {};
 
 /**
  * Disables the globe.
@@ -253,4 +253,4 @@ Globe.prototype.enable = function () {};
  * This method is only overloaded by the sky to make disable the sky when the planet
  * is projected on a map.
  */
-Globe.prototype.disable = function () {};
+Globe.prototype.disable = function() {};

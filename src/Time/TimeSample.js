@@ -1,10 +1,14 @@
-define(["jquery", "moment", "../Utils/Constants", "../Utils/Utils"], function ($, Moment, Constants, Utils) {
-
+define(["jquery", "moment", "../Utils/Constants", "../Utils/Utils"], function(
+    $,
+    Moment,
+    Constants,
+    Utils
+) {
     /**
      * Store time sample
      * @constructor
      */
-    var TimeSample = function () {
+    var TimeSample = function() {
         this.start = null;
         this.end = null;
         this.stepValue = null;
@@ -20,7 +24,7 @@ define(["jquery", "moment", "../Utils/Constants", "../Utils/Utils"], function ($
      * @return {Date} Start date
      * @memberOf TimeSample#
      */
-    TimeSample.prototype.getStart = function () {
+    TimeSample.prototype.getStart = function() {
         return this.start;
     };
 
@@ -32,7 +36,7 @@ define(["jquery", "moment", "../Utils/Constants", "../Utils/Utils"], function ($
      * @param {Date} date Start date
      * @memberOf TimeSample#
      */
-    TimeSample.prototype.setStart = function (date) {
+    TimeSample.prototype.setStart = function(date) {
         this.start = Moment.utc(date);
     };
 
@@ -44,19 +48,19 @@ define(["jquery", "moment", "../Utils/Constants", "../Utils/Utils"], function ($
      * @return {Date} End date
      * @memberOf TimeSample#
      */
-    TimeSample.prototype.getEnd = function () {
+    TimeSample.prototype.getEnd = function() {
         return this.end;
     };
 
     /**************************************************************************************************************/
-    
+
     /**
      * Set the end date
      * @function setEnd
      * @param {Date} date End date
      * @memberOf TimeSample#
      */
-    TimeSample.prototype.setEnd = function (date) {
+    TimeSample.prototype.setEnd = function(date) {
         this.end = Moment.utc(date);
     };
 
@@ -68,21 +72,21 @@ define(["jquery", "moment", "../Utils/Constants", "../Utils/Utils"], function ($
      * @return {Integer} Step value
      * @memberOf TimeSample#
      */
-    TimeSample.prototype.getStepValue = function () {
+    TimeSample.prototype.getStepValue = function() {
         return this.stepValue;
     };
 
     /**************************************************************************************************************/
-    
+
     /**
      * Set the step value
      * @function setStepValue
      * @param {Integer} stepValue Step value
      * @memberOf TimeSample#
      */
-    TimeSample.prototype.setStepValue = function (stepValue) {
+    TimeSample.prototype.setStepValue = function(stepValue) {
         this.stepValue = stepValue;
-    }; 
+    };
 
     /**************************************************************************************************************/
 
@@ -92,7 +96,7 @@ define(["jquery", "moment", "../Utils/Constants", "../Utils/Utils"], function ($
      * @return {String} Step kind
      * @memberOf TimeSample#
      */
-    TimeSample.prototype.getStepKind = function () {
+    TimeSample.prototype.getStepKind = function() {
         return this.stepKind;
     };
 
@@ -104,21 +108,21 @@ define(["jquery", "moment", "../Utils/Constants", "../Utils/Utils"], function ($
      * @param {String} stepKind Step kind
      * @memberOf TimeSample#
      */
-    TimeSample.prototype.setStepKind = function (stepKind) {
+    TimeSample.prototype.setStepKind = function(stepKind) {
         this.stepKind = stepKind;
     };
 
     /**************************************************************************************************************/
-    
+
     /**
      * Set the layer ID
      * @function setLayerID
      * @param {String} layerID Layer ID
      * @memberOf TimeSample#
      */
-    TimeSample.prototype.setLayerID = function (layerID) {
+    TimeSample.prototype.setLayerID = function(layerID) {
         this.layerID = layerID;
-    }; 
+    };
 
     /**************************************************************************************************************/
 
@@ -128,22 +132,22 @@ define(["jquery", "moment", "../Utils/Constants", "../Utils/Utils"], function ($
      * @return {String} Layer ID
      * @memberOf TimeSample#
      */
-    TimeSample.prototype.getLayerID = function () {
+    TimeSample.prototype.getLayerID = function() {
         return this.layerID;
     };
 
     /**************************************************************************************************************/
 
     /**
-     * Get next date 
+     * Get next date
      * @function getNextDate
      * @return {Date} Next date
      * @memberOf TimeSample#
      */
-    TimeSample.prototype.getNextDate = function (date) {
+    TimeSample.prototype.getNextDate = function(date) {
         var nextDate = null;
-        nextDate = Moment.utc(date).add(this.stepValue,this.stepKind);
-        if (nextDate>this.end) {
+        nextDate = Moment.utc(date).add(this.stepValue, this.stepKind);
+        if (nextDate > this.end) {
             nextDate = null;
         }
         return nextDate;
@@ -152,38 +156,40 @@ define(["jquery", "moment", "../Utils/Constants", "../Utils/Utils"], function ($
     /**************************************************************************************************************/
 
     /**
-     * Get previous date 
+     * Get previous date
      * @function getPreviousDate
      * @return {Date} Previous date
      * @memberOf TimeSample#
      */
-    TimeSample.prototype.getPreviousDate = function (date) {
+    TimeSample.prototype.getPreviousDate = function(date) {
         var previousDate = null;
-        previousDate = Moment.utc(date).subtract(this.stepValue,this.stepKind);
-        if (previousDate<this.start) {
+        previousDate = Moment.utc(date).subtract(this.stepValue, this.stepKind);
+        if (previousDate < this.start) {
             previousDate = null;
         }
         return previousDate;
     };
 
     /**************************************************************************************************************/
-    
+
     /**
      * Get first date AFTER a specified date
      * @function getFirstDateAfter
      * @param {Date} date Date
      * @memberOf TimeSample#
      */
-    TimeSample.prototype.getFirstDateAfter = function (date) {
+    TimeSample.prototype.getFirstDateAfter = function(date) {
         var foundDate = null;
-        var foundPeriod = { "from": null, "to" : null};
+        var foundPeriod = { from: null, to: null };
         var foundDisplay = null;
-        
-        if (date<this.start) {
+
+        if (date < this.start) {
             // trivial case, first date is after !
             foundDate = this.start;
-            foundDisplay = Moment(foundDate.toISOString()).format(Moment(foundDate).creationData().format);
-        } else if (date>this.end) {
+            foundDisplay = Moment(foundDate.toISOString()).format(
+                Moment(foundDate).creationData().format
+            );
+        } else if (date > this.end) {
             // trivial case, date is after the last date
             foundDate = null;
         } else {
@@ -198,7 +204,7 @@ define(["jquery", "moment", "../Utils/Constants", "../Utils/Utils"], function ($
                     isDone = true;
                     foundDate = null;
                 }
-                if (currentDate>date) {
+                if (currentDate > date) {
                     isDone = true;
                     foundDate = currentDate;
                 }
@@ -208,34 +214,38 @@ define(["jquery", "moment", "../Utils/Constants", "../Utils/Utils"], function ($
         if (foundDate !== null) {
             foundPeriod.from = foundDate;
             foundPeriod.to = foundDate;
-            foundDisplay = Moment(foundDate.toISOString()).format(Moment(foundDate).creationData().format);
+            foundDisplay = Moment(foundDate.toISOString()).format(
+                Moment(foundDate).creationData().format
+            );
         }
 
         return {
-            "date" : foundDate,
-            "period" : foundPeriod,
-            "display" : foundDisplay
+            date: foundDate,
+            period: foundPeriod,
+            display: foundDisplay
         };
-    }; 
+    };
 
     /**************************************************************************************************************/
-    
+
     /**
      * Get first date BEFORE a specified date
      * @function getFirstDateBefore
      * @param {Date} date Date
      * @memberOf TimeSample#
      */
-    TimeSample.prototype.getFirstDateBefore = function (date) {
+    TimeSample.prototype.getFirstDateBefore = function(date) {
         var foundDate = null;
-        var foundPeriod = { "from": null, "to" : null};
+        var foundPeriod = { from: null, to: null };
         var foundDisplay = null;
 
-        if (date>this.end) {
+        if (date > this.end) {
             // trivial case, end date is before !
             foundDate = this.end;
-            foundDisplay = Moment(foundDate.toISOString()).format(Moment(foundDate).creationData().format);
-        } else if (date<this.start) {
+            foundDisplay = Moment(foundDate.toISOString()).format(
+                Moment(foundDate).creationData().format
+            );
+        } else if (date < this.start) {
             // trivial case, date is before the first date
             foundDate = null;
         } else {
@@ -244,7 +254,7 @@ define(["jquery", "moment", "../Utils/Constants", "../Utils/Utils"], function ($
             var previousDate = null;
             var isDone = false;
             var nextDate = null;
-            
+
             while (!isDone) {
                 previousDate = currentDate;
                 currentDate = this.getNextDate(currentDate);
@@ -253,24 +263,25 @@ define(["jquery", "moment", "../Utils/Constants", "../Utils/Utils"], function ($
                     isDone = true;
                     foundDate = previousDate;
                 }
-                if (currentDate>date) {
+                if (currentDate > date) {
                     isDone = true;
                     foundDate = previousDate;
                 }
             }
         }
         if (foundDate !== null) {
-            foundDisplay = Moment(foundDate.toISOString()).format(Moment(foundDate).creationData().format);
+            foundDisplay = Moment(foundDate.toISOString()).format(
+                Moment(foundDate).creationData().format
+            );
             foundPeriod.from = foundDate;
             foundPeriod.to = foundDate;
         }
         return {
-            "date" : foundDate,
-            "period" : foundPeriod,
-            "display" : foundDisplay
+            date: foundDate,
+            period: foundPeriod,
+            display: foundDisplay
         };
-    }; 
-
+    };
 
     /**************************************************************************************************************/
 
@@ -280,7 +291,7 @@ define(["jquery", "moment", "../Utils/Constants", "../Utils/Utils"], function ($
      * @return {Date} Min date or null
      * @memberOf TimeSample#
      */
-    TimeSample.prototype.getMinDate = function () {
+    TimeSample.prototype.getMinDate = function() {
         return this.getStart();
     };
 
@@ -292,7 +303,7 @@ define(["jquery", "moment", "../Utils/Constants", "../Utils/Utils"], function ($
      * @return {Date} Max date or null
      * @memberOf TimeSample#
      */
-    TimeSample.prototype.getMaxDate = function () {
+    TimeSample.prototype.getMaxDate = function() {
         return this.getEnd();
     };
 
@@ -304,8 +315,17 @@ define(["jquery", "moment", "../Utils/Constants", "../Utils/Utils"], function ($
      * @return {String} String representation
      * @memberOf TimeSample#
      */
-    TimeSample.prototype.toString = function () {
-        return Moment(this.start)+" / "+Moment(this.end)+" / "+this.stepValue + this.stepKind + " / ID="+this.layerID;
+    TimeSample.prototype.toString = function() {
+        return (
+            Moment(this.start) +
+            " / " +
+            Moment(this.end) +
+            " / " +
+            this.stepValue +
+            this.stepKind +
+            " / ID=" +
+            this.layerID
+        );
     };
 
     return TimeSample;

@@ -35,15 +35,14 @@
  * along with GlobWeb. If not, see <http://www.gnu.org/licenses/>.
  ***************************************/
 
-define(function () {
-
+define(function() {
     /**************************************************************************************************************/
 
     /**
      @constructor TileIndexBuffer
      TileIndexBuffer
      */
-    var TileIndexBuffer = function (renderContext, config) {
+    var TileIndexBuffer = function(renderContext, config) {
         this.renderContext = renderContext;
         this.config = config;
         this.solidIndexBuffer = null;
@@ -57,7 +56,7 @@ define(function () {
     /**
      * Reset the index buffers.
      */
-    TileIndexBuffer.prototype.reset = function () {
+    TileIndexBuffer.prototype.reset = function() {
         var gl = this.renderContext.gl;
         for (var i = 0; i < 4; i++) {
             if (this.subSolidIndexBuffer[i]) {
@@ -76,11 +75,11 @@ define(function () {
     /**
      *    Get index buffer for sub solid
      */
-    TileIndexBuffer.prototype.getSubSolid = function (ii) {
+    TileIndexBuffer.prototype.getSubSolid = function(ii) {
         if (this.subSolidIndexBuffer[ii] === null) {
             var i = ii % 2;
             var j = Math.floor(ii / 2);
-            var n,k;
+            var n, k;
 
             var size = this.config.tesselation;
             var halfTesselation = (size - 1) / 2;
@@ -88,7 +87,11 @@ define(function () {
             // Build the sub grid for 'inside' tile
             var indices = [];
             for (n = halfTesselation * j; n < halfTesselation * (j + 1); n++) {
-                for (k = halfTesselation * i; k < halfTesselation * (i + 1); k++) {
+                for (
+                    k = halfTesselation * i;
+                    k < halfTesselation * (i + 1);
+                    k++
+                ) {
                     indices.push(n * size + k);
                     indices.push((n + 1) * size + k);
                     indices.push(n * size + k + 1);
@@ -104,9 +107,13 @@ define(function () {
             if (this.config.skirt) {
                 // Build skirts
                 // Top skirt
-                var start = (j === 0) ? size * size : size * size + 4 * size;
-                var src = (j === 0) ? 0 : halfTesselation * size;
-                for (n = halfTesselation * i; n < halfTesselation * (i + 1); n++) {
+                var start = j === 0 ? size * size : size * size + 4 * size;
+                var src = j === 0 ? 0 : halfTesselation * size;
+                for (
+                    n = halfTesselation * i;
+                    n < halfTesselation * (i + 1);
+                    n++
+                ) {
                     indices.push(start + n);
                     indices.push(src + n);
                     indices.push(start + n + 1);
@@ -117,9 +124,13 @@ define(function () {
                 }
 
                 // Bottom skirt
-                start = (j === 0) ? size * size + 4 * size : size * size + size;
-                src = (j === 0) ? halfTesselation * size : (size - 1) * size;
-                for (n = halfTesselation * i; n < halfTesselation * (i + 1); n++) {
+                start = j === 0 ? size * size + 4 * size : size * size + size;
+                src = j === 0 ? halfTesselation * size : (size - 1) * size;
+                for (
+                    n = halfTesselation * i;
+                    n < halfTesselation * (i + 1);
+                    n++
+                ) {
                     indices.push(src + n);
                     indices.push(start + n);
                     indices.push(src + n + 1);
@@ -130,9 +141,14 @@ define(function () {
                 }
 
                 // Left skirt
-                start = (i === 0) ? size * size + 2 * size : size * size + 5 * size;
-                src = (i === 0) ? 0 : halfTesselation;
-                for (k = halfTesselation * j; k < halfTesselation * (j + 1); k++) {
+                start =
+                    i === 0 ? size * size + 2 * size : size * size + 5 * size;
+                src = i === 0 ? 0 : halfTesselation;
+                for (
+                    k = halfTesselation * j;
+                    k < halfTesselation * (j + 1);
+                    k++
+                ) {
                     indices.push(start + k);
                     indices.push(start + k + 1);
                     indices.push(src + k * size);
@@ -143,9 +159,14 @@ define(function () {
                 }
 
                 // Right skirt
-                start = (i === 0) ? size * size + 5 * size : size * size + 3 * size;
-                src = (i === 0) ? halfTesselation : size - 1;
-                for (k = halfTesselation * j; k < halfTesselation * (j + 1); k++) {
+                start =
+                    i === 0 ? size * size + 5 * size : size * size + 3 * size;
+                src = i === 0 ? halfTesselation : size - 1;
+                for (
+                    k = halfTesselation * j;
+                    k < halfTesselation * (j + 1);
+                    k++
+                ) {
                     indices.push(k * size + src);
                     indices.push((k + 1) * size + src);
                     indices.push(start + k);
@@ -159,7 +180,11 @@ define(function () {
             var gl = this.renderContext.gl;
             var ib = gl.createBuffer();
             gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, ib);
-            gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(indices), gl.STATIC_DRAW);
+            gl.bufferData(
+                gl.ELEMENT_ARRAY_BUFFER,
+                new Uint16Array(indices),
+                gl.STATIC_DRAW
+            );
             ib.numIndices = indices.length;
             this.subSolidIndexBuffer[ii] = ib;
         }
@@ -172,9 +197,9 @@ define(function () {
     /*
      Build index buffer
      */
-    TileIndexBuffer.prototype.getSolid = function () {
+    TileIndexBuffer.prototype.getSolid = function() {
         if (this.solidIndexBuffer === null) {
-            var i,j;
+            var i, j;
             var size = this.config.tesselation;
             this.indices = [];
             // Build the grid
@@ -243,7 +268,11 @@ define(function () {
             var gl = this.renderContext.gl;
             var ib = gl.createBuffer();
             gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, ib);
-            gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(this.indices), gl.STATIC_DRAW);
+            gl.bufferData(
+                gl.ELEMENT_ARRAY_BUFFER,
+                new Uint16Array(this.indices),
+                gl.STATIC_DRAW
+            );
             this.numIndices = this.indices.length;
 
             this.solidIndexBuffer = ib;
@@ -256,5 +285,4 @@ define(function () {
     /**************************************************************************************************************/
 
     return TileIndexBuffer;
-
 });

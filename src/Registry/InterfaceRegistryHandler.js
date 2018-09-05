@@ -19,6 +19,10 @@
 
 function InterfaceRegistryHandler() {}
 
-InterfaceRegistryHandler.prototype.setNext = function(next){};
+InterfaceRegistryHandler.prototype.setNext = function(next) {};
 
-InterfaceRegistryHandler.prototype.handleRequest = function(layerDescription, callback, fallback){};
+InterfaceRegistryHandler.prototype.handleRequest = function(
+    layerDescription,
+    callback,
+    fallback
+) {};

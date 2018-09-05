@@ -65,9 +65,14 @@
  * @implements {Layer}
  * @module Layer
  */
-define(['../Utils/Utils', './AbstractLayer', '../Utils/Constants', '../Provider/PlanetProvider', '../Renderer/Program', '../Time/Time'],
-        function (Utils, AbstractLayer, Constants, PlanetProvider, Program, Time) {
-
+define([
+    "../Utils/Utils",
+    "./AbstractLayer",
+    "../Utils/Constants",
+    "../Provider/PlanetProvider",
+    "../Renderer/Program",
+    "../Time/Time"
+], function(Utils, AbstractLayer, Constants, PlanetProvider, Program, Time) {
     /**
      * Atmosphere layer configuration
      * @typedef {AbstractLayer.configuration} AbstractLayer.atmosphere_configuration
@@ -76,9 +81,9 @@ define(['../Utils/Utils', './AbstractLayer', '../Utils/Constants', '../Provider/
      * @property {float} [sunBrightness=15] The Sun brightness
      * @property {float} [exposure=2.0] the exposure, use for basic high dynamic range
      * @property {float[]} [wavelength=[0.650, 0.570, 0.475]] the RGB color of the sun
-     * @property {float[]} [lightDir=[1, 0, 0]] The location of the light in (x,y,z)     
+     * @property {float[]} [lightDir=[1, 0, 0]] The location of the light in (x,y,z)
      */
-    
+
     /**
      * @name AtmosphereLayer
      * @class
@@ -88,7 +93,7 @@ define(['../Utils/Utils', './AbstractLayer', '../Utils/Constants', '../Provider/
      * @constructor
      * @memberOf module:Layer
      */
-    var AtmosphereLayer = function (options) {
+    var AtmosphereLayer = function(options) {
         var currentDate = new Date();
         var tomorrow = new Date();
         tomorrow.setDate(currentDate.getDate() + 1);
@@ -100,13 +105,21 @@ define(['../Utils/Utils', './AbstractLayer', '../Utils/Constants', '../Provider/
                 multipleValues: null,
                 nearestValue: null,
                 current: null,
-                value: currentDate.toISOString()+"/"+tomorrow.toISOString()+"/PT1H"
+                value:
+                    currentDate.toISOString() +
+                    "/" +
+                    tomorrow.toISOString() +
+                    "/PT1H"
             }
         };
         // For rendering
         options.zIndex = Constants.DISPLAY.RENDERING;
 
-        AbstractLayer.prototype.constructor.call(this, Constants.LAYER.Atmosphere, options);
+        AbstractLayer.prototype.constructor.call(
+            this,
+            Constants.LAYER.Atmosphere,
+            options
+        );
         if (!this.name) {
             this.name = "Atmosphere";
         }
@@ -114,8 +127,14 @@ define(['../Utils/Utils', './AbstractLayer', '../Utils/Constants', '../Provider/
         this.km = (options && options.km) || 0.0015;
         this.sunBrightness = (options && options.sunBrightness) || 15.0;
         this.exposure = (options && options.exposure) || 2.0;
-        this.wavelength = (options && options.wavelength) || [0.650, 0.570, 0.475];
-        this.lightDir = (options && options.lightDir) || _computeLightDir.call(this, new Date());
+        this.wavelength = (options && options.wavelength) || [
+            0.65,
+            0.57,
+            0.475
+        ];
+        this.lightDir =
+            (options && options.lightDir) ||
+            _computeLightDir.call(this, new Date());
 
         // internal properties
         this._skyProgram = null;
@@ -141,7 +160,7 @@ define(['../Utils/Utils', './AbstractLayer', '../Utils/Constants', '../Provider/
         var sunPosition = sunProvider.getSunPosition(date);
         var latitude = sunPosition.dec;
         var longitude = -Utils.GHA(date, sunPosition.ra);
-        var coords =  Utils.longLat2XYZ(longitude, latitude);
+        var coords = Utils.longLat2XYZ(longitude, latitude);
         return [coords.x, coords.y, coords.z];
     }
 
@@ -152,30 +171,46 @@ define(['../Utils/Utils', './AbstractLayer', '../Utils/Constants', '../Provider/
      * @param {Planet} g Planet
      * @private
      */
-    AtmosphereLayer.prototype._attach = function (g) {
+    AtmosphereLayer.prototype._attach = function(g) {
         this.globe = g;
-        this._innerRadius = this.getGlobe().getCoordinateSystem().getGeoide().getRadius();
+        this._innerRadius = this.getGlobe()
+            .getCoordinateSystem()
+            .getGeoide()
+            .getRadius();
         this._outerRadius = this._innerRadius * 1.005;
         var renderContext = g.getRenderContext();
 
         // Setup program, uniform now that we have the render context
 
         this._skyFromSpaceProgram = new Program(renderContext);
-        this._skyFromSpaceProgram.loadFromFile("SkyFromSpaceVert.glsl", "SkyFrag.glsl");
+        this._skyFromSpaceProgram.loadFromFile(
+            "SkyFromSpaceVert.glsl",
+            "SkyFrag.glsl"
+        );
         this._skyFromAtmosphereProgram = new Program(renderContext);
-        this._skyFromAtmosphereProgram.loadFromFile("SkyFromAtmosphereVert.glsl", "SkyFrag.glsl");
+        this._skyFromAtmosphereProgram.loadFromFile(
+            "SkyFromAtmosphereVert.glsl",
+            "SkyFrag.glsl"
+        );
 
         this._groundFromSpaceProgram = new Program(renderContext);
-        this._groundFromSpaceProgram.loadFromFile("GroundFromSpaceVert.glsl", "GroundFrag.glsl");
+        this._groundFromSpaceProgram.loadFromFile(
+            "GroundFromSpaceVert.glsl",
+            "GroundFrag.glsl"
+        );
 
         this._groundFromAtmosphereProgram = new Program(renderContext);
-        this._groundFromAtmosphereProgram.loadFromFile("GroundFromAtmosphereVert.glsl", "GroundFrag.glsl");
+        this._groundFromAtmosphereProgram.loadFromFile(
+            "GroundFromAtmosphereVert.glsl",
+            "GroundFrag.glsl"
+        );
 
         // Check if the atmosphre is valid : all programs must be OK
-        this._isValid = (this._skyFromSpaceProgram.glProgram !== null) &&
-                        (this._skyFromAtmosphereProgram.glProgram !== null) &&
-                        (this._groundFromSpaceProgram.glProgram !== null) &&
-                        (this._groundFromAtmosphereProgram.glProgram !== null);
+        this._isValid =
+            this._skyFromSpaceProgram.glProgram !== null &&
+            this._skyFromAtmosphereProgram.glProgram !== null &&
+            this._groundFromSpaceProgram.glProgram !== null &&
+            this._groundFromAtmosphereProgram.glProgram !== null;
 
         if (!this._isValid) {
             return;
@@ -200,12 +235,14 @@ define(['../Utils/Utils', './AbstractLayer', '../Utils/Constants', '../Provider/
         var el;
         var az;
         for (el = -nbEl; el <= nbEl; el++) {
-            var elevation = el * (Math.PI * 0.5) / nbEl;
+            var elevation = (el * (Math.PI * 0.5)) / nbEl;
             for (az = -nbAz; az <= nbAz; az++) {
-                var azimuth = az * Math.PI / nbAz;
+                var azimuth = (az * Math.PI) / nbAz;
 
-                var x = this._outerRadius * Math.cos(azimuth) * Math.cos(elevation);
-                var y = this._outerRadius * Math.sin(azimuth) * Math.cos(elevation);
+                var x =
+                    this._outerRadius * Math.cos(azimuth) * Math.cos(elevation);
+                var y =
+                    this._outerRadius * Math.sin(azimuth) * Math.cos(elevation);
                 var z = this._outerRadius * Math.sin(elevation);
 
                 vertices.push(x);
@@ -230,11 +267,19 @@ define(['../Utils/Utils', './AbstractLayer', '../Utils/Constants', '../Provider/
         var gl = renderContext.gl;
         this._vertexBuffer = gl.createBuffer();
         gl.bindBuffer(gl.ARRAY_BUFFER, this._vertexBuffer);
-        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
+        gl.bufferData(
+            gl.ARRAY_BUFFER,
+            new Float32Array(vertices),
+            gl.STATIC_DRAW
+        );
 
         this._indexBuffer = gl.createBuffer();
         gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this._indexBuffer);
-        gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(indices), gl.STATIC_DRAW);
+        gl.bufferData(
+            gl.ELEMENT_ARRAY_BUFFER,
+            new Uint16Array(indices),
+            gl.STATIC_DRAW
+        );
         this._numIndices = indices.length;
 
         this._originalProgram = g.getTileManager().program;
@@ -252,11 +297,11 @@ define(['../Utils/Utils', './AbstractLayer', '../Utils/Constants', '../Provider/
      * @param uniforms
      * @private
      */
-    AtmosphereLayer.prototype._initUniforms = function (uniforms) {
+    AtmosphereLayer.prototype._initUniforms = function(uniforms) {
         var gl = this.getGlobe().getRenderContext().gl;
 
-        var g = -0.95;		// The Mie phase asymmetry factor
-        var scale = 1.0 / ( this._outerRadius - this._innerRadius );
+        var g = -0.95; // The Mie phase asymmetry factor
+        var scale = 1.0 / (this._outerRadius - this._innerRadius);
         var rayleighScaleDepth = 0.25;
         //var mieScaleDepth = 0.1;
 
@@ -268,14 +313,34 @@ define(['../Utils/Utils', './AbstractLayer', '../Utils/Constants', '../Provider/
         gl.uniform1f(uniforms.fKm4PI, this.km * 4.0 * Math.PI);
         gl.uniform1f(uniforms.fExposure, this.exposure);
 
-        var wavelength = [Math.pow(this.wavelength[0], 4.0), Math.pow(this.wavelength[1], 4.0), Math.pow(this.wavelength[2], 4.0)];
-        gl.uniform3f(uniforms.v3InvWavelength, 1.0 / wavelength[0], 1.0 / wavelength[1], 1.0 / wavelength[2]);
+        var wavelength = [
+            Math.pow(this.wavelength[0], 4.0),
+            Math.pow(this.wavelength[1], 4.0),
+            Math.pow(this.wavelength[2], 4.0)
+        ];
+        gl.uniform3f(
+            uniforms.v3InvWavelength,
+            1.0 / wavelength[0],
+            1.0 / wavelength[1],
+            1.0 / wavelength[2]
+        );
 
-        gl.uniform3f(uniforms.v3LightPos, this.lightDir[0], this.lightDir[1], this.lightDir[2]);
+        gl.uniform3f(
+            uniforms.v3LightPos,
+            this.lightDir[0],
+            this.lightDir[1],
+            this.lightDir[2]
+        );
         gl.uniform1f(uniforms.fInnerRadius, this._innerRadius);
-        gl.uniform1f(uniforms.fInnerRadius2, this._innerRadius * this._innerRadius);
+        gl.uniform1f(
+            uniforms.fInnerRadius2,
+            this._innerRadius * this._innerRadius
+        );
         gl.uniform1f(uniforms.fOuterRadius, this._outerRadius);
-        gl.uniform1f(uniforms.fOuterRadius2, this._outerRadius * this._outerRadius);
+        gl.uniform1f(
+            uniforms.fOuterRadius2,
+            this._outerRadius * this._outerRadius
+        );
         gl.uniform1f(uniforms.fScale, scale);
         gl.uniform1f(uniforms.fScaleDepth, rayleighScaleDepth);
         gl.uniform1f(uniforms.fScaleOverScaleDepth, scale / rayleighScaleDepth);
@@ -290,7 +355,7 @@ define(['../Utils/Utils', './AbstractLayer', '../Utils/Constants', '../Provider/
      * @function preRender
      * @memberof AtmosphereLayer#
      */
-    AtmosphereLayer.prototype.preRender = function () {
+    AtmosphereLayer.prototype.preRender = function() {
         if (!this._isValid) {
             return;
         }
@@ -302,7 +367,7 @@ define(['../Utils/Utils', './AbstractLayer', '../Utils/Constants', '../Provider/
 
         var rc = this.getGlobe().getRenderContext();
         var gl = rc.gl;
-        var x,y,z;
+        var x, y, z;
 
         // Compute the eye position from the view matrix : the eye position is equals to [0,0,0] * inv(viewMatrix)
         // Optimized to avoid to compute the view matrix inverse
@@ -310,25 +375,46 @@ define(['../Utils/Utils', './AbstractLayer', '../Utils/Constants', '../Provider/
         x = vm[12];
         y = vm[13];
         z = vm[14];
-        var eyePos = [-( vm[0] * x + vm[1] * y + vm[2] * z ),
-            -( vm[4] * x + vm[5] * y + vm[6] * z ),
-            -( vm[8] * x + vm[9] * y + vm[10] * z )];
+        var eyePos = [
+            -(vm[0] * x + vm[1] * y + vm[2] * z),
+            -(vm[4] * x + vm[5] * y + vm[6] * z),
+            -(vm[8] * x + vm[9] * y + vm[10] * z)
+        ];
         var eyeHeight = vec3.length(eyePos);
 
-        this._skyProgram = eyeHeight < this._outerRadius ? this._skyFromAtmosphereProgram : this._skyFromSpaceProgram;
-        this._groundProgram = eyeHeight < this._outerRadius ? this._groundFromAtmosphereProgram : this._groundFromSpaceProgram;
+        this._skyProgram =
+            eyeHeight < this._outerRadius
+                ? this._skyFromAtmosphereProgram
+                : this._skyFromSpaceProgram;
+        this._groundProgram =
+            eyeHeight < this._outerRadius
+                ? this._groundFromAtmosphereProgram
+                : this._groundFromSpaceProgram;
 
         this._skyProgram.apply();
 
-        gl.uniform3f(this._skyProgram.uniforms.v3CameraPos, eyePos[0], eyePos[1], eyePos[2]);
-        gl.uniform1f(this._skyProgram.uniforms.fCameraHeight2, eyeHeight * eyeHeight);
+        gl.uniform3f(
+            this._skyProgram.uniforms.v3CameraPos,
+            eyePos[0],
+            eyePos[1],
+            eyePos[2]
+        );
+        gl.uniform1f(
+            this._skyProgram.uniforms.fCameraHeight2,
+            eyeHeight * eyeHeight
+        );
         gl.uniform1f(this._skyProgram.uniforms.fCameraHeight, eyeHeight);
 
         this._groundProgram.apply();
 
         var earthCenter = [0.0, 0.0, 0.0];
         mat4.multiplyVec3(rc.viewMatrix, earthCenter);
-        gl.uniform3f(this._groundProgram.uniforms.earthCenter, earthCenter[0], earthCenter[1], earthCenter[2]);
+        gl.uniform3f(
+            this._groundProgram.uniforms.earthCenter,
+            earthCenter[0],
+            earthCenter[1],
+            earthCenter[2]
+        );
 
         vec3.normalize(this.lightDir);
         x = this.lightDir[0];
@@ -339,15 +425,28 @@ define(['../Utils/Utils', './AbstractLayer', '../Utils/Constants', '../Provider/
         lightDirUpdated[0] = mat[0] * x + mat[4] * y + mat[8] * z;
         lightDirUpdated[1] = mat[1] * x + mat[5] * y + mat[9] * z;
         lightDirUpdated[2] = mat[2] * x + mat[6] * y + mat[10] * z;
-        gl.uniform3f(this._groundProgram.uniforms.lightDir, lightDirUpdated[0], lightDirUpdated[1], lightDirUpdated[2]);
+        gl.uniform3f(
+            this._groundProgram.uniforms.lightDir,
+            lightDirUpdated[0],
+            lightDirUpdated[1],
+            lightDirUpdated[2]
+        );
 
-        gl.uniform3f(this._groundProgram.uniforms.v3CameraPos, eyePos[0], eyePos[1], eyePos[2]);
-        gl.uniform1f(this._groundProgram.uniforms.fCameraHeight2, eyeHeight * eyeHeight);
+        gl.uniform3f(
+            this._groundProgram.uniforms.v3CameraPos,
+            eyePos[0],
+            eyePos[1],
+            eyePos[2]
+        );
+        gl.uniform1f(
+            this._groundProgram.uniforms.fCameraHeight2,
+            eyeHeight * eyeHeight
+        );
         gl.uniform1f(this._groundProgram.uniforms.fCameraHeight, eyeHeight);
 
         tileManager.program = this._groundProgram;
 
-//	rc.minFar = 2.0;
+        //	rc.minFar = 2.0;
     };
 
     /**************************************************************************************************************/
@@ -357,7 +456,7 @@ define(['../Utils/Utils', './AbstractLayer', '../Utils/Constants', '../Provider/
      * @function render
      * @memberof AtmosphereLayer#
      */
-    AtmosphereLayer.prototype.render = function () {
+    AtmosphereLayer.prototype.render = function() {
         if (!this._isValid || !this.isVisible() || !this.getGlobe()) {
             return;
         }
@@ -366,13 +465,28 @@ define(['../Utils/Utils', './AbstractLayer', '../Utils/Constants', '../Provider/
 
         gl.enable(gl.CULL_FACE);
 
-		this._skyProgram.apply();
+        this._skyProgram.apply();
 
-        gl.uniformMatrix4fv(this._skyProgram.uniforms.projectionMatrix, false, rc.projectionMatrix);
-        gl.uniformMatrix4fv(this._skyProgram.uniforms.viewMatrix, false, rc.viewMatrix);
+        gl.uniformMatrix4fv(
+            this._skyProgram.uniforms.projectionMatrix,
+            false,
+            rc.projectionMatrix
+        );
+        gl.uniformMatrix4fv(
+            this._skyProgram.uniforms.viewMatrix,
+            false,
+            rc.viewMatrix
+        );
 
         gl.bindBuffer(gl.ARRAY_BUFFER, this._vertexBuffer);
-        gl.vertexAttribPointer(this._skyProgram.attributes.vertex, 3, gl.FLOAT, false, 0, 0);
+        gl.vertexAttribPointer(
+            this._skyProgram.attributes.vertex,
+            3,
+            gl.FLOAT,
+            false,
+            0,
+            0
+        );
         gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this._indexBuffer);
         gl.drawElements(gl.TRIANGLES, this._numIndices, gl.UNSIGNED_SHORT, 0);
 
@@ -404,5 +518,4 @@ define(['../Utils/Utils', './AbstractLayer', '../Utils/Constants', '../Provider/
     /**************************************************************************************************************/
 
     return AtmosphereLayer;
-
 });

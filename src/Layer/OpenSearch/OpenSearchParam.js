@@ -16,30 +16,28 @@
  * You should have received a copy of the GNU General Public License
  * along with MIZAR. If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
- define(["./OpenSearchUtils"],
-   function (OpenSearchUtils) {
+define(["./OpenSearchUtils"], function(OpenSearchUtils) {
+    /**
+     * @name OpenSearchParam
+     * @class
+     * All informations describing a parameter in an OpenSearch form
+     * @param {Object} a json object describing the param
+     * @memberOf module:Layer
+     */
+    var OpenSearchParam = function(paramJson) {
+        // init all values
+        this.name = null; // Name of parameters
+        this.value = null; // Value identifying the parameters
+        this.title = null; // Title of parameter (for display)
+        this.minInclusive = null; // (Level 1 Control - Number) Min value inclusive
+        this.maxInclusive = null; // (Level 1 Control - Number) Max value inclusive
+        this.pattern = null; // (Level 1 Control - String) Pattern
+        this.options = null; // List of values if list provided
+        this.currentValue = null; // Value to pass to parameter
+        this.defaultValue = null; // Default value
+        this.displayValue = ""; // Display value
 
-   /**
-    * @name OpenSearchParam
-    * @class
-    * All informations describing a parameter in an OpenSearch form
-    * @param {Object} a json object describing the param
-    * @memberOf module:Layer
-    */
-    var OpenSearchParam = function (paramJson) {
-      // init all values
-      this.name = null;          // Name of parameters
-      this.value = null;         // Value identifying the parameters
-      this.title = null;         // Title of parameter (for display)
-      this.minInclusive = null;  // (Level 1 Control - Number) Min value inclusive
-      this.maxInclusive = null;  // (Level 1 Control - Number) Max value inclusive
-      this.pattern = null;       // (Level 1 Control - String) Pattern
-      this.options = null;       // List of values if list provided
-      this.currentValue = null;  // Value to pass to parameter
-      this.defaultValue = null;  // Default value
-      this.displayValue = "";    // Display value
-
-      this.parseJson(paramJson);
+        this.parseJson(paramJson);
     };
 
     /**************************************************************************************************************/
@@ -49,68 +47,94 @@
      * @function parseJson
      * @memberof OpenSearchParam#
      * @param {Object} paramJson Json object
-     */ 
-    OpenSearchParam.prototype.parseJson = function (paramJson) {
-      this.name = OpenSearchUtils.getAttributeValue(paramJson,"name");
-      this.name = this.name.replace(/\./g,"_");
-      this.value = OpenSearchUtils.getAttributeValue(paramJson,"value");
-      this.title = OpenSearchUtils.getAttributeValue(paramJson,"title");
-      this.minInclusive = OpenSearchUtils.getAttributeValue(paramJson,"minInclusive");
-      this.maxInclusive = OpenSearchUtils.getAttributeValue(paramJson,"maxInclusive");
-      this.pattern = OpenSearchUtils.getAttributeValue(paramJson,"pattern");
+     */
 
-      if (this.pattern === null) {
-        this.patternAttribute = "";
-      } else {
-        this.patternAttribute = "pattern=\""+this.pattern+"\" ";
-      }
+    OpenSearchParam.prototype.parseJson = function(paramJson) {
+        this.name = OpenSearchUtils.getAttributeValue(paramJson, "name");
+        this.name = this.name.replace(/\./g, "_");
+        this.value = OpenSearchUtils.getAttributeValue(paramJson, "value");
+        this.title = OpenSearchUtils.getAttributeValue(paramJson, "title");
+        this.minInclusive = OpenSearchUtils.getAttributeValue(
+            paramJson,
+            "minInclusive"
+        );
+        this.maxInclusive = OpenSearchUtils.getAttributeValue(
+            paramJson,
+            "maxInclusive"
+        );
+        this.pattern = OpenSearchUtils.getAttributeValue(paramJson, "pattern");
 
-      if (paramJson.Option !== undefined) {
-        this.options = [];
-        if (paramJson.Option.length !== undefined) {
-          for (var i=0;i<paramJson.Option.length;i++) {
-            this.options.push(OpenSearchUtils.getAttributeValue(paramJson.Option[i],"value"));
-          }
+        if (this.pattern === null) {
+            this.patternAttribute = "";
         } else {
-          this.options.push(OpenSearchUtils.getAttributeValue(paramJson.Option,"value"));
+            this.patternAttribute = 'pattern="' + this.pattern + '" ';
         }
-      }
-      if (paramJson.Option !== undefined) {
-        this.options = [];
-        if (paramJson.Option.length !== undefined) {
-          for (var j=0;j<paramJson.Option.length;j++) {
-            this.options.push(OpenSearchUtils.getAttributeValue(paramJson.Option[j],"value"));
-          }
-        } else {
-          this.options.push(OpenSearchUtils.getAttributeValue(paramJson.Option,"value"));
-        }
-      }
 
-      if(this.options !== null) {
-        this.type = "options";
-      } else if ((this.minInclusive !== null) || (this.maxInclusive !== null)) {
-        this.type = "number";
+        if (paramJson.Option !== undefined) {
+            this.options = [];
+            if (paramJson.Option.length !== undefined) {
+                for (var i = 0; i < paramJson.Option.length; i++) {
+                    this.options.push(
+                        OpenSearchUtils.getAttributeValue(
+                            paramJson.Option[i],
+                            "value"
+                        )
+                    );
+                }
+            } else {
+                this.options.push(
+                    OpenSearchUtils.getAttributeValue(paramJson.Option, "value")
+                );
+            }
+        }
+        if (paramJson.Option !== undefined) {
+            this.options = [];
+            if (paramJson.Option.length !== undefined) {
+                for (var j = 0; j < paramJson.Option.length; j++) {
+                    this.options.push(
+                        OpenSearchUtils.getAttributeValue(
+                            paramJson.Option[j],
+                            "value"
+                        )
+                    );
+                }
+            } else {
+                this.options.push(
+                    OpenSearchUtils.getAttributeValue(paramJson.Option, "value")
+                );
+            }
+        }
+
+        if (this.options !== null) {
+            this.type = "options";
+        } else if (this.minInclusive !== null || this.maxInclusive !== null) {
+            this.type = "number";
+            if (this.title === null) {
+                this.title = "";
+            }
+            if (this.maxInclusive === null) {
+                this.title += "( >= " + this.minInclusive + " )";
+            } else if (this.minInclusive === null) {
+                this.title += "( <= " + this.maxInclusive + " )";
+            } else {
+                this.title +=
+                    "( between " +
+                    this.minInclusive +
+                    " and " +
+                    this.maxInclusive +
+                    " )";
+            }
+        } else if (this.value.startsWith("{time:") === true) {
+            this.type = "datetime";
+        } else {
+            this.type = "text";
+        }
+
         if (this.title === null) {
-          this.title = "";
-        }
-        if (this.maxInclusive === null) {
-          this.title += "( >= "+this.minInclusive+" )";
-        } else if (this.minInclusive === null) {
-          this.title += "( <= "+this.maxInclusive+" )";
+            this.titleAttribute = "";
         } else {
-          this.title += "( between "+this.minInclusive+" and "+this.maxInclusive+" )";
+            this.titleAttribute = 'title="' + this.title + '" ';
         }
-      } else if (this.value.startsWith("{time:") === true) {
-        this.type = "datetime";
-      } else {
-        this.type = "text";
-      }
-
-      if (this.title === null) {
-        this.titleAttribute = "";
-      } else {
-        this.titleAttribute = "title=\""+this.title+"\" ";
-      }
     };
 
     /**************************************************************************************************************/
@@ -120,42 +144,43 @@
      * @function toString
      * @memberof OpenSearchParam#
      * @return {String} String representation
-     */ 
-    OpenSearchParam.prototype.toString = function () {
-      var res = "";
+     */
 
-      if (this.name !== null) {
-        res+= "     name : "+this.name+"\n";
-      }
+    OpenSearchParam.prototype.toString = function() {
+        var res = "";
 
-      if (this.value !== null) {
-        res+= "     value : "+this.value+"\n";
-      }
-
-      if (this.title !== null) {
-        res+= "     title : "+this.title+"\n";
-      }
-
-      if (this.minInclusive !== null) {
-        res+= "     minInclusive : "+this.minInclusive+"\n";
-      }
-
-      if (this.maxInclusive !== null) {
-        res+= "     maxInclusive : "+this.maxInclusive+"\n";
-      }
-
-      if (this.pattern !== null) {
-        res+= "     pattern : "+this.pattern+"\n";
-      }
-
-      if (this.options != null) {
-        res+= "     options : ";
-        for (var i=0;i<this.options.length;i++) {
-          res+= this.options[i]+", ";
+        if (this.name !== null) {
+            res += "     name : " + this.name + "\n";
         }
-        res+= "\n";
-      }
-      return res;
+
+        if (this.value !== null) {
+            res += "     value : " + this.value + "\n";
+        }
+
+        if (this.title !== null) {
+            res += "     title : " + this.title + "\n";
+        }
+
+        if (this.minInclusive !== null) {
+            res += "     minInclusive : " + this.minInclusive + "\n";
+        }
+
+        if (this.maxInclusive !== null) {
+            res += "     maxInclusive : " + this.maxInclusive + "\n";
+        }
+
+        if (this.pattern !== null) {
+            res += "     pattern : " + this.pattern + "\n";
+        }
+
+        if (this.options != null) {
+            res += "     options : ";
+            for (var i = 0; i < this.options.length; i++) {
+                res += this.options[i] + ", ";
+            }
+            res += "\n";
+        }
+        return res;
     };
 
     /**************************************************************************************************************/
@@ -165,26 +190,28 @@
      * @function currentValueTransformed
      * @memberof OpenSearchParam#
      * @return {String} Current value transformed
-     */ 
-     OpenSearchParam.prototype.currentValueTransformed = function () {
-      // Only for date time, all other : no change
-      if (this.type !== "datetime") {
-        return this.currentValue;
-      }
+     */
 
-      if ((this.currentValue === null) || (typeof this.currentValue === "undefined")) {
-        return this.currentValue;
-      }
+    OpenSearchParam.prototype.currentValueTransformed = function() {
+        // Only for date time, all other : no change
+        if (this.type !== "datetime") {
+            return this.currentValue;
+        }
 
-      var deb = this.currentValue.substr(0,10);
-      var fin = this.currentValue.substr(-5);
-      var res = deb+"T"+fin+":00.00";
-      return res;
+        if (
+            this.currentValue === null ||
+            typeof this.currentValue === "undefined"
+        ) {
+            return this.currentValue;
+        }
 
+        var deb = this.currentValue.substr(0, 10);
+        var fin = this.currentValue.substr(-5);
+        var res = deb + "T" + fin + ":00.00";
+        return res;
     };
-    
-    /*************************************************************************************************************/
-    
-    return OpenSearchParam;
 
+    /*************************************************************************************************************/
+
+    return OpenSearchParam;
 });

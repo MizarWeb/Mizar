@@ -27,11 +27,9 @@ function ReverseNameResolver() {}
  * Code to execute when the service is request to get the information
  * @param options - options
  */
-ReverseNameResolver.prototype.handle = function(options) {
-};
+ReverseNameResolver.prototype.handle = function(options) {};
 
 /**
  * Code to execute when remove
  */
-ReverseNameResolver.prototype.remove = function() {
-};
+ReverseNameResolver.prototype.remove = function() {};

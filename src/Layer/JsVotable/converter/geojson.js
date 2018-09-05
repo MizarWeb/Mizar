@@ -16,11 +16,10 @@
  * You should have received a copy of the GNU General Public License
  * along with JVotable.  If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
-define(["../utils"], function (Utils) {
-
-    var UCD_ID = ["meta.record","meta.id;meta.main","VOX:Image_Titleq"];
-    var UCD_RA = ["pos.eq.ra;meta.main","POS_EQ_RA_MAIN"];
-    var UCD_DEC = ["pos.eq.dec;meta.main","POS_EQ_DEC_MAIN"];
+define(["../utils"], function(Utils) {
+    var UCD_ID = ["meta.record", "meta.id;meta.main", "VOX:Image_Titleq"];
+    var UCD_RA = ["pos.eq.ra;meta.main", "POS_EQ_RA_MAIN"];
+    var UCD_DEC = ["pos.eq.dec;meta.main", "POS_EQ_DEC_MAIN"];
 
     /**
      * Contructs a GeoJSON.
@@ -51,21 +50,21 @@ define(["../utils"], function (Utils) {
      */
     function process(votable) {
         var featureCollection = {
-            "type":"FeatureCollection",
-            "features":[]
+            type: "FeatureCollection",
+            features: []
         };
         var coosys = findAndGetGlobalCoosys(votable);
-        if(coosys != null) {
+        if (coosys != null) {
             featureCollection.crs = {
-                    "type": "name",
-                    "properties": {
-                        "name": coosys
-                    }
+                type: "name",
+                properties: {
+                    name: coosys
+                }
             };
         }
         var features = [];
         var resources = votable.getResources();
-        for(var i=0; i<resources.length;i++) {
+        for (var i = 0; i < resources.length; i++) {
             processResource(resources[i], features);
         }
         featureCollection.features = features;
@@ -81,7 +80,7 @@ define(["../utils"], function (Utils) {
             if (defs != null) {
                 coosys = defs.getCoosyss()[0];
             }
-            if(votable.getCoosyss()[0] != null) {
+            if (votable.getCoosyss()[0] != null) {
                 coosys = votable.getCoosyss()[0];
             }
             return coosys;
@@ -97,7 +96,7 @@ define(["../utils"], function (Utils) {
      */
     function processResource(resource, features) {
         var resourcesOrTables = resource.getResourcesOrTables();
-        for (var i=0;i<resourcesOrTables.length;i++) {
+        for (var i = 0; i < resourcesOrTables.length; i++) {
             var resourceOrTable = resourcesOrTables[i];
             if (resourceOrTable.hasOwnProperty("RESOURCE")) {
                 processResource(resourceOrTable.RESOURCE, features);
@@ -148,7 +147,7 @@ define(["../utils"], function (Utils) {
      * @param features the features to fill
      */
     function creatureFeatures(fields, infos, trs, features) {
-        for (var i=0 ; i<trs.length; i++) {
+        for (var i = 0; i < trs.length; i++) {
             var tds = trs[i].getTds();
             features.push(createFeature(fields, infos, tds));
         }
@@ -164,50 +163,50 @@ define(["../utils"], function (Utils) {
      */
     function createFeature(fields, infos, tds) {
         var feature = {
-            "type":"Feature",
-            "geometry":null,
-            "properties":{}
+            type: "Feature",
+            geometry: null,
+            properties: {}
         };
         var coreMetadata = {};
         var properties = null;
-        for (var i=0;i<tds.length;i++) {
+        for (var i = 0; i < tds.length; i++) {
             var td = tds[i];
             var field = fields[i];
             var values = field.getValues();
-            var nullValue = (values != null) ? values.null() : null;
+            var nullValue = values != null ? values.null() : null;
             var ucd = field.ucd();
             var datatype = field.datatype();
             var value = td.getContent();
             var name = field.name();
-            if (filter(UCD_RA,ucd)) {
+            if (filter(UCD_RA, ucd)) {
                 coreMetadata.RA = Number.parseFloat(value);
                 coreMetadata.COOSYS = field.ref();
-            } else if(filter(UCD_DEC,ucd)) {
+            } else if (filter(UCD_DEC, ucd)) {
                 coreMetadata.DEC = Number.parseFloat(value);
-            } else if(filter(UCD_ID,ucd)) {
+            } else if (filter(UCD_ID, ucd)) {
                 coreMetadata.ID = value;
             } else {
                 properties = feature.properties;
-                if(value != nullValue) {
+                if (value != nullValue) {
                     properties[name] = parseDatatype(value, datatype);
                 }
             }
         }
-        if(!coreMetadata.hasOwnProperty("ID")) {
+        if (!coreMetadata.hasOwnProperty("ID")) {
             coreMetadata.ID = Utils.guid();
         }
-        for(i=0 ;i<infos.length; i++) {
+        for (i = 0; i < infos.length; i++) {
             var info = infos[i];
             properties[info.name()] = info.value();
         }
         checkCoreMetadata(coreMetadata);
         var geometry = {
-            "type":"Point",
-            "coordinates":[coreMetadata.RA, coreMetadata.DEC],
-            "crs":{
-                "type": "name",
-                "properties": {
-                    "name": coreMetadata.COOSYS
+            type: "Point",
+            coordinates: [coreMetadata.RA, coreMetadata.DEC],
+            crs: {
+                type: "name",
+                properties: {
+                    name: coreMetadata.COOSYS
                 }
             }
         };
@@ -218,9 +217,17 @@ define(["../utils"], function (Utils) {
          * @param coreMetadata
          */
         function checkCoreMetadata(coreMetadata) {
-            if (!(coreMetadata.hasOwnProperty("RA") && coreMetadata.hasOwnProperty("DEC") &&
-               coreMetadata.hasOwnProperty("COOSYS") && coreMetadata.hasOwnProperty("ID"))) {
-                throw new Error("core metadata missing "+JSON.stringify(coreMetadata));
+            if (
+                !(
+                    coreMetadata.hasOwnProperty("RA") &&
+                    coreMetadata.hasOwnProperty("DEC") &&
+                    coreMetadata.hasOwnProperty("COOSYS") &&
+                    coreMetadata.hasOwnProperty("ID")
+                )
+            ) {
+                throw new Error(
+                    "core metadata missing " + JSON.stringify(coreMetadata)
+                );
             }
         }
 
@@ -255,16 +262,14 @@ define(["../utils"], function (Utils) {
          * @return {boolean} True when the criteria is found
          */
         function filter(arr, criteria) {
-            var result= arr.filter(function(obj) {
-                return (obj === criteria);
+            var result = arr.filter(function(obj) {
+                return obj === criteria;
             });
-            return (result.length == 0) ? false : true;
+            return result.length == 0 ? false : true;
         }
 
         return feature;
-
     }
 
     return GeoJson;
-
 });

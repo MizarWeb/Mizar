@@ -35,8 +35,8 @@
  * along with GlobWeb. If not, see <http://www.gnu.org/licenses/>.
  ***************************************/
 
-define(function () {
-  /**
+define(function() {
+    /**
     @name AttributionHandler
     @class
     Manage the attributions
@@ -46,51 +46,59 @@ define(function () {
     <li>element : the HTML element to show attributions, can be a string (the ID) or the DOM element itself</li>
     </ul>
   */
-    var AttributionHandler = function (globe, options) {
-
-		// Search for the element to use
+    var AttributionHandler = function(globe, options) {
+        // Search for the element to use
         var elt = options ? options.element : undefined;
         if (elt) {
             if (typeof elt === "string") {
                 this.element = document.getElementById(elt);
-            }
-            else {
+            } else {
                 this.element = elt;
             }
         }
 
-		// Only add the attribution handler to the globe if element is not null
-		if (this.element) {
-			 globe.attributionHandler = this;
-		}
+        // Only add the attribution handler to the globe if element is not null
+        if (this.element) {
+            globe.attributionHandler = this;
+        }
     };
 
-     /**
-      * Remove attribution from HTML
-      * @function removeAttribution
-      * @memberOf AttributionHandler.prototype
-      * @param {Layer} layer Layer
-      */
-    AttributionHandler.prototype.removeAttribution = function (layer) {
+    /**
+     * Remove attribution from HTML
+     * @function removeAttribution
+     * @memberOf AttributionHandler.prototype
+     * @param {Layer} layer Layer
+     */
+    AttributionHandler.prototype.removeAttribution = function(layer) {
         var div = document.getElementById(this.element.id + "_" + layer.id);
         if (div) {
             this.element.removeChild(div);
         }
     };
 
-     /**
-      * Add attribution in HTML
-      * @function addAttribution
-      * @memberOf AttributionHandler.prototype
-      * @param {Layer} layer Layer
-      */
-    AttributionHandler.prototype.addAttribution = function (layer) {
-        var div = document.createElement('div');
+    /**
+     * Add attribution in HTML
+     * @function addAttribution
+     * @memberOf AttributionHandler.prototype
+     * @param {Layer} layer Layer
+     */
+    AttributionHandler.prototype.addAttribution = function(layer) {
+        var div = document.createElement("div");
 
         var attribution;
-        var title = (layer.getAck() != null) ? layer.getAck() : "";
-        if (layer.getCopyrightUrl() !== "" && layer.getCopyrightUrl() !== undefined) {
-            attribution = '<a class="whiteLink" href="' + layer.getCopyrightUrl()  + '" target="_blank" title="'+ title +'">' + layer.getAttribution() + '</a>';
+        var title = layer.getAck() != null ? layer.getAck() : "";
+        if (
+            layer.getCopyrightUrl() !== "" &&
+            layer.getCopyrightUrl() !== undefined
+        ) {
+            attribution =
+                '<a class="whiteLink" href="' +
+                layer.getCopyrightUrl() +
+                '" target="_blank" title="' +
+                title +
+                '">' +
+                layer.getAttribution() +
+                "</a>";
         } else {
             attribution = layer.getAttribution();
         }
@@ -101,8 +109,7 @@ define(function () {
         if (layer.id === 0) {
             // Background layer
             this.element.insertBefore(div, this.element.firstChild);
-        }
-        else {
+        } else {
             this.element.appendChild(div);
         }
     };
@@ -116,12 +123,11 @@ define(function () {
     AttributionHandler.prototype.enable = function(layer) {
         if (layer && layer.isVisible()) {
             var div = document.getElementById(this.element.id + "_" + layer.id);
-            if(div) {
+            if (div) {
                 div.style.display = "block";
             }
         }
     };
-
 
     /**
      * Disables all HTML attribution.
@@ -132,24 +138,23 @@ define(function () {
     AttributionHandler.prototype.disable = function(layer) {
         if (layer && layer.isVisible()) {
             var div = document.getElementById(this.element.id + "_" + layer.id);
-            if(div) {
+            if (div) {
                 div.style.display = "none";
             }
         }
     };
 
-     /**
-      * Toggle attribution
-      * @function toggleAttribution
-      * @memberOf AttributionHandler.prototype
-      * @param {Layer} layer Layer
-      */
-    AttributionHandler.prototype.toggleAttribution = function (layer) {
+    /**
+     * Toggle attribution
+     * @function toggleAttribution
+     * @memberOf AttributionHandler.prototype
+     * @param {Layer} layer Layer
+     */
+    AttributionHandler.prototype.toggleAttribution = function(layer) {
         var div = document.getElementById(this.element.id + "_" + layer.id);
         if (div) {
             this.removeAttribution(layer);
-        }
-        else {
+        } else {
             this.addAttribution(layer);
         }
     };
@@ -157,5 +162,4 @@ define(function () {
     /**************************************************************************************************************/
 
     return AttributionHandler;
-
 });

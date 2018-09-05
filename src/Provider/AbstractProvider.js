@@ -22,41 +22,35 @@
  * @module Provider
  * @implements {Provider}
  */
-define(["jquery"],
-    function ($) {
+define(["jquery"], function($) {
+    /**************************************************************************************************************/
 
-      /**************************************************************************************************************/
+    /**
+     * @name AbstractProvider
+     * @class
+     *  Abstract Provider constructor
+     * @param {object} options
+     * @constructor
+     * @memberOf module:Provider
+     */
+    var AbstractProvider = function(options) {
+        this.options = options;
+    };
 
-      /**
-       * @name AbstractProvider
-       * @class
-       *  Abstract Provider constructor
-       * @param {object} options
-       * @constructor
-       * @memberOf module:Provider
-       */
-        var AbstractProvider = function (options) {
-            this.options = options;
-        };
+    /**
+     * @function loadFiles
+     * @memberOf Provider#
+     * @abstract
+     */
+    AbstractProvider.prototype.loadFiles = function(layer, configuration) {};
 
+    /**
+     * @function handleFeatures
+     * @memberOf Provider#
+     */
+    AbstractProvider.prototype.handleFeatures = function(layer) {};
 
-        /**
-         * @function loadFiles
-         * @memberOf Provider#
-         * @abstract
-         */
-        AbstractProvider.prototype.loadFiles = function (layer, configuration) {
-        };
+    /**************************************************************************************************************/
 
-
-        /**
-         * @function handleFeatures
-         * @memberOf Provider#
-         */
-        AbstractProvider.prototype.handleFeatures = function (layer) {
-        };
-
-        /**************************************************************************************************************/
-
-        return AbstractProvider;
-    });
+    return AbstractProvider;
+});

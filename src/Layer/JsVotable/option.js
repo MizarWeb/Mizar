@@ -16,13 +16,12 @@
  * You should have received a copy of the GNU General Public License
  * along with JVotable.  If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
-define(["./utils","./abstractNode"], function(Utils, AbstractNode) {
-
+define(["./utils", "./abstractNode"], function(Utils, AbstractNode) {
     /**
      * Constructs the Option object.
      *
      * @example <caption>Option schema</caption>
-     * {@lang xml}     
+     * {@lang xml}
      *  <xs:complexType name="Option">
      *      <xs:sequence>
      *          <xs:element name="OPTION" type="Option" minOccurs="0" maxOccurs="unbounded"/>
@@ -49,21 +48,27 @@ define(["./utils","./abstractNode"], function(Utils, AbstractNode) {
      */
     var parseOptionTag = function(childNode) {
         var options = [];
-        for(var i = 0; childNode!=null && i< childNode.childNodes.length; i++){
+        for (
+            var i = 0;
+            childNode != null && i < childNode.childNodes.length;
+            i++
+        ) {
             var element = childNode.childNodes[i];
             if (element.nodeType == 1) {
                 var nodeName = element.localName;
                 if (nodeName == "OPTION") {
                     options.push(new Option(element));
-                }  else {
-                    this.getCache().addWarning("unknown element "+nodeName+" in Option node");
+                } else {
+                    this.getCache().addWarning(
+                        "unknown element " + nodeName + " in Option node"
+                    );
                 }
             }
         }
         return options;
     };
 
-    Utils.inherits(AbstractNode , Option );
+    Utils.inherits(AbstractNode, Option);
 
     /**
      * Returns the name value.

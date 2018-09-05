@@ -35,8 +35,7 @@
  * along with GlobWeb. If not, see <http://www.gnu.org/licenses/>.
  ***************************************/
 
-define(["../Utils/Utils"],function (Utils) {
-
+define(["../Utils/Utils"], function(Utils) {
     /**************************************************************************************************************/
 
     /**
@@ -64,8 +63,7 @@ define(["../Utils/Utils"],function (Utils) {
      * @constructor
      * @memberOf module:Navigation
      */
-    var TouchNavigationHandler = function (options) {
-
+    var TouchNavigationHandler = function(options) {
         /**************************************************************************************************************/
 
         /**
@@ -86,10 +84,12 @@ define(["../Utils/Utils"],function (Utils) {
         var _lastTapDate;
         var _rotation;
 
-
         // Double tap
         var _doubletap_interval = 300;
-        var _inversed = (options && options.hasOwnProperty('inversed')) ? options.inversed : false;
+        var _inversed =
+            options && options.hasOwnProperty("inversed")
+                ? options.inversed
+                : false;
 
         /**************************************************************************************************************/
 
@@ -100,10 +100,10 @@ define(["../Utils/Utils"],function (Utils) {
         /**
          * Calculate the angle between two coordinates
          */
-        var _getAngle = function (touch1, touch2) {
+        var _getAngle = function(touch1, touch2) {
             var y = touch2.clientY - touch1.clientY,
                 x = touch2.clientX - touch1.clientX;
-            return Math.atan2(y, x) * 180 / Math.PI;
+            return (Math.atan2(y, x) * 180) / Math.PI;
         };
 
         /**************************************************************************************************************/
@@ -111,10 +111,12 @@ define(["../Utils/Utils"],function (Utils) {
         /**
          * Calculate the rotation degrees between two touchLists (fingers)
          */
-        var _getRotation = function (start, end) {
+        var _getRotation = function(start, end) {
             // Need two fingers
             if (start.length >= 2 && end.length >= 2) {
-                return _getAngle(end[1], end[0]) - _getAngle(start[1], start[0]);
+                return (
+                    _getAngle(end[1], end[0]) - _getAngle(start[1], start[0])
+                );
             }
             return 0;
         };
@@ -124,7 +126,7 @@ define(["../Utils/Utils"],function (Utils) {
         /**
          Handle touch start event
          */
-        var _handleTouchStart = function (event) {
+        var _handleTouchStart = function(event) {
             //console.log("# events : " + event.touches.length );
             _lastTouches = event.touches;
             _startTouches = event.touches;
@@ -155,26 +157,27 @@ define(["../Utils/Utils"],function (Utils) {
         /**
          Handle touch move event
          */
-        var _handleTouchMove = function (event) {
+        var _handleTouchMove = function(event) {
             _dx = event.touches[0].clientX - _lastTouches[0].clientX;
             _dy = event.touches[0].clientY - _lastTouches[0].clientY;
-            var dx,dy;
-            var rotation,fingerDistance,deltaDistance;
+            var dx, dy;
+            var rotation, fingerDistance, deltaDistance;
 
             if (event.touches.length === 1) {
                 // Pan
                 _navigation.pan(_dx, _dy);
                 _actionHits[Type.PAN]++;
-            }
-            else {
+            } else {
                 // Depending on direction of two fingers, decide if tilt OR rotation
-                var sameDirection = ( (event.touches[0].clientY - _lastTouches[0].clientY) * (event.touches[1].clientY - _lastTouches[1].clientY) > 0 );
+                var sameDirection =
+                    (event.touches[0].clientY - _lastTouches[0].clientY) *
+                        (event.touches[1].clientY - _lastTouches[1].clientY) >
+                    0;
                 if (sameDirection) {
                     // Tilt
                     _navigation.rotate(0.0, -_dy);
                     _actionHits[Type.TILT]++;
-                }
-                else {
+                } else {
                     // Rotation
                     rotation = _getRotation(_startTouches, event.touches);
                     dx = rotation - _lastAngle;
@@ -193,13 +196,12 @@ define(["../Utils/Utils"],function (Utils) {
                 dx = event.touches[0].clientX - event.touches[1].clientX;
                 dy = event.touches[0].clientY - event.touches[1].clientY;
                 fingerDistance = Math.sqrt(dx * dx + dy * dy);
-                deltaDistance = (fingerDistance - _lastFingerDistance);
+                deltaDistance = fingerDistance - _lastFingerDistance;
 
                 var scale;
                 if (_inversed) {
                     scale = fingerDistance / _lastFingerDistance;
-                }
-                else {
+                } else {
                     scale = _lastFingerDistance / fingerDistance;
                 }
 
@@ -224,13 +226,22 @@ define(["../Utils/Utils"],function (Utils) {
         /**
          Handle touch end event
          */
-        var _handleTouchEnd = function (event) {
-            if (options && options.zoomOnDblClick && event.touches.length === 0 && _dx === 0 && _dy === 0) {
+        var _handleTouchEnd = function(event) {
+            if (
+                options &&
+                options.zoomOnDblClick &&
+                event.touches.length === 0 &&
+                _dx === 0 &&
+                _dy === 0
+            ) {
                 // Handle double tap
                 // TODO : take into account the distance
                 var now = Date.now();
                 if (now - _lastTapDate < _doubletap_interval) {
-                    var geo = _navigation.ctx.getLonLatFromPixel(_lastTouches[0].clientX, _lastTouches[0].clientY);
+                    var geo = _navigation.ctx.getLonLatFromPixel(
+                        _lastTouches[0].clientX,
+                        _lastTouches[0].clientY
+                    );
 
                     if (geo) {
                         _navigation.zoomTo(geo);
@@ -244,17 +255,17 @@ define(["../Utils/Utils"],function (Utils) {
 
             if (_navigation.inertia && (_dx !== 0 || _dy !== 0)) {
                 // Launch inertia depending on action hits while "moving" phase
-                var hitIndex = _actionHits.indexOf(Math.max.apply(this, _actionHits));
+                var hitIndex = _actionHits.indexOf(
+                    Math.max.apply(this, _actionHits)
+                );
                 if (hitIndex === Type.PAN) {
                     // Pan
                     _navigation.inertia.launch("pan", _dx, _dy);
-                }
-                else if (hitIndex === Type.ROTATE) {
+                } else if (hitIndex === Type.ROTATE) {
                     console.error("Rotate not implemented in navigation");
                     // Rotate
                     //_navigation.inertia.launch("rotate", _rotation, 0);
-                }
-                else if (hitIndex === Type.TILT) {
+                } else if (hitIndex === Type.TILT) {
                     console.error("Tilt not implemented in navigation");
                     // No inertia for tilt
                 }
@@ -277,7 +288,7 @@ define(["../Utils/Utils"],function (Utils) {
         /**
          *    Setup the default event handlers for the _navigation
          */
-        this.install = function (nav) {
+        this.install = function(nav) {
             _navigation = nav;
 
             // Setup the touch event handlers
@@ -285,15 +296,23 @@ define(["../Utils/Utils"],function (Utils) {
 
             var passiveSupported = Utils.isPassiveSupported();
 
-            canvas.addEventListener("touchstart", _handleTouchStart, passiveSupported ? { passive: true } : false);
+            canvas.addEventListener(
+                "touchstart",
+                _handleTouchStart,
+                passiveSupported ? { passive: true } : false
+            );
             canvas.addEventListener("touchend", _handleTouchEnd, false);
-            canvas.addEventListener("touchmove", _handleTouchMove, passiveSupported ? { passive: true } : false);
+            canvas.addEventListener(
+                "touchmove",
+                _handleTouchMove,
+                passiveSupported ? { passive: true } : false
+            );
         };
 
         /**
          *    Remove the default event handlers for the _navigation
          */
-        this.uninstall = function () {
+        this.uninstall = function() {
             // Setup the mouse event handlers
             var canvas = _navigation.renderContext.canvas;
 
@@ -304,5 +323,4 @@ define(["../Utils/Utils"],function (Utils) {
     };
 
     return TouchNavigationHandler;
-
 });

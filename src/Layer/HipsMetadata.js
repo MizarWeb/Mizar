@@ -17,8 +17,11 @@
  * along with MIZAR. If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
 
-define(["jquery", "../Utils/Constants", "../Gui/dialog/ErrorDialog"], function ($, Constants, ErrorDialog) {
-
+define(["jquery", "../Utils/Constants", "../Gui/dialog/ErrorDialog"], function(
+    $,
+    Constants,
+    ErrorDialog
+) {
     /**
      * @namespace
      * GENERAL_WAVELENGTH
@@ -32,12 +35,12 @@ define(["jquery", "../Utils/Constants", "../Gui/dialog/ErrorDialog"], function (
      * @property {String} Gamma-ray - Gamma-ray
      */
     var GENERAL_WAVELENGTH = {
-        "Radio": "Radio",
-        "Millimeter": "Millimeter",
-        "Infrared": "Infrared",
-        "Optical": "Optical",
-        "UV": "UV",
-        "EUV": "EUV",
+        Radio: "Radio",
+        Millimeter: "Millimeter",
+        Infrared: "Infrared",
+        Optical: "Optical",
+        UV: "UV",
+        EUV: "EUV",
         "X-ray": "X-ray",
         "Gamma-ray": "Gamma-ray"
     };
@@ -51,10 +54,10 @@ define(["jquery", "../Utils/Constants", "../Gui/dialog/ErrorDialog"], function (
      * @property {String} horizontalLocal - horizontalLocal
      */
     var HIPS_FRAME = {
-        "equatorial": Constants.CRS.Equatorial,
-        "galactic": Constants.CRS.Galactic,
-        "ecliptic": "ecliptic",
-        "horizontalLocal" : Constants.CRS.HorizontalLocal
+        equatorial: Constants.CRS.Equatorial,
+        galactic: Constants.CRS.Galactic,
+        ecliptic: "ecliptic",
+        horizontalLocal: Constants.CRS.HorizontalLocal
     };
 
     /**
@@ -66,10 +69,10 @@ define(["jquery", "../Utils/Constants", "../Gui/dialog/ErrorDialog"], function (
      * @property {String} tsv - tsv
      */
     var HIPS_TILE_FORMAT = {
-        "jpeg": "jpeg",
-        "png": "png",
-        "fits": "fits",
-        "tsv": "tsv"
+        jpeg: "jpeg",
+        png: "png",
+        fits: "fits",
+        tsv: "tsv"
     };
 
     /**
@@ -80,9 +83,9 @@ define(["jquery", "../Utils/Constants", "../Gui/dialog/ErrorDialog"], function (
      * @property {String} bilinear - bilinear
      */
     var SAMPLING = {
-        "none": "non",
-        "nearest": "nearest",
-        "bilinear": "bilinear"
+        none: "non",
+        nearest: "nearest",
+        bilinear: "bilinear"
     };
 
     /**
@@ -95,11 +98,11 @@ define(["jquery", "../Utils/Constants", "../Gui/dialog/ErrorDialog"], function (
      * @property {String} custom - custom
      */
     var PIXEL_OVERLAY = {
-        "add": "add",
-        "mean": "mean",
-        "first": "first",
-        "border_fading": "border_fading",
-        "custom": "custom"
+        add: "add",
+        mean: "mean",
+        first: "first",
+        border_fading: "border_fading",
+        custom: "custom"
     };
 
     /**
@@ -110,9 +113,9 @@ define(["jquery", "../Utils/Constants", "../Gui/dialog/ErrorDialog"], function (
      * @property {String} fits_keyword - fits_keyword
      */
     var SKY_VAL = {
-        "none": "none",
-        "hips_estimation": "hips_estimation",
-        "fits_keyword": "fits_keyword"
+        none: "none",
+        hips_estimation: "hips_estimation",
+        fits_keyword: "fits_keyword"
     };
 
     /**
@@ -124,10 +127,10 @@ define(["jquery", "../Utils/Constants", "../Gui/dialog/ErrorDialog"], function (
      * @property {String} meta - meta
      */
     var DATA_PRODUCT_TYPE = {
-        "image": "image",
-        "cube": "cube",
-        "catalog": "catalog",
-        "meta": "meta"
+        image: "image",
+        cube: "cube",
+        catalog: "catalog",
+        meta: "meta"
     };
 
     /**
@@ -137,8 +140,8 @@ define(["jquery", "../Utils/Constants", "../Gui/dialog/ErrorDialog"], function (
      * @property {String} live - live
      */
     var SUB_TYPE_DATA = {
-        "color": "color",
-        "live": "live"
+        color: "color",
+        live: "live"
     };
 
     /**
@@ -203,61 +206,438 @@ define(["jquery", "../Utils/Constants", "../Gui/dialog/ErrorDialog"], function (
      * @property {float} [moc_sky_fraction] - Fraction of the sky covers by the MOC associated to the HiPS – Format: real between 0 and 1
      */
     var HipsVersion_1_4 = {
-        creator_did: ["R", "Unique ID of the HiPS - Format: IVOID - Ex : ivo://CDS/P/2MASS/J", false, null, null, false],
-        publisher_id: [null, "Unique ID of the HiPS publisher – Format: IVOID - Ex : ivo://CDS", false, null, null, false],
-        obs_collection: [null, "Short name of original data set – Format: one word – Ex : 2MASS", false, null, null, false],
-        obs_title: ["R", "Data set title – Format: free text, one line – Ex : HST F110W observations", false, null, null, false],
-        obs_description: ["S", "Data set description – Format: free text, longer free text description of the dataset", false, null, null, false],
+        creator_did: [
+            "R",
+            "Unique ID of the HiPS - Format: IVOID - Ex : ivo://CDS/P/2MASS/J",
+            false,
+            null,
+            null,
+            false
+        ],
+        publisher_id: [
+            null,
+            "Unique ID of the HiPS publisher – Format: IVOID - Ex : ivo://CDS",
+            false,
+            null,
+            null,
+            false
+        ],
+        obs_collection: [
+            null,
+            "Short name of original data set – Format: one word – Ex : 2MASS",
+            false,
+            null,
+            null,
+            false
+        ],
+        obs_title: [
+            "R",
+            "Data set title – Format: free text, one line – Ex : HST F110W observations",
+            false,
+            null,
+            null,
+            false
+        ],
+        obs_description: [
+            "S",
+            "Data set description – Format: free text, longer free text description of the dataset",
+            false,
+            null,
+            null,
+            false
+        ],
         obs_ack: [null, "Acknowledgment mention", false, null, null, false],
-        prov_progenitor: ["S", "Provenance of the original data – Format: free text", true, null, null, false],
-        bib_reference: [null, "Bibliographic reference", true, null, null, false],
-        bib_reference_url: [null, "URL to bibliographic reference", true, null, null, false],
-        obs_copyright: [null, "Copyright mention – Format: free text", false, null, null, false],
-        obs_copyright_url: [null, "URL to a copyright mention", false, null, null, false],
-        obs_regime: ["S", "General wavelength – Format: word", true, null, GENERAL_WAVELENGTH, false],
-        data_ucd: [null, "UCD describing data contents", true, null, null, false],
-        hips_version: ["R", "Number of HiPS version – Format: number", false, "1.4", null, false],
-        hips_builder: [null, "Name and version of the tool used for building the HiPS – Format: free text", false, null, null, false],
-        hips_publisher: [null, "Institute or person who built the HiPS – Format: free text – Ex : CDS (T.Boch)", false, null, null, false],
-        hips_creation_date: ["S", "HiPS first creation date - Format: ISO 8601 => YYYY-mm-ddTHH:MMZ", false, null, null, false],
-        hips_release_date: ["R", "Last HiPS update date - Format: ISO 8601 => YYYY-mm-ddTHH:MMZ", false, null, null, false],
-        hips_service_url: [null, "HiPS access url – Format: URL", false, null, null, false],
-        hips_status: ["R", "HiPS status", false, "public master clonableOnce", null, true],
-        hips_estsize: [null, "HiPS size estimation – Format: positive integer – Unit : KB", false, null, null, false],
-        hips_frame: ["R", "Coordinate frame reference", false, null, HIPS_FRAME, false],
-        hips_order: ["R", "Deepest HiPS order – Format: positive integer", false, null, null, false],
-        hips_tile_width: [null, "Tiles width in pixels – Format: positive integer", false, 512, null, false],
-        hips_tile_format: ["R", "List of available tile formats. The first one is the default suggested to the client", false, null, HIPS_TILE_FORMAT, true],
-        hips_pixel_cut: [null, "Suggested pixel display cut range (physical values) – Format: min max", null, null, null, true],
-        hips_data_range: [null, "Pixel data range taken into account during the HiPS generation (physical values) – Format: min max – Ex : -18.5 510.5", false, null, null, true],
-        hips_sampling: [null, "Sampling applied for the HiPS generation", false, null, SAMPLING, false],
-        hips_overlay: [null, "Pixel composition method applied on the image overlay region during HiPS generation", false, null, PIXEL_OVERLAY, false],
-        hips_skyval: [null, "Sky background subtraction method applied during HiPS generation", false, null, SKY_VAL, false],
-        hips_pixel_bitpix: [null, "Fits tile BITPIX code", false, null, null, false],
-        data_pixel_bitpix: [null, "Original data BITPIX code", false, null, null],
-        dataproduct_type: ["R", "Type of data", false, null, DATA_PRODUCT_TYPE, false],
-        dataproduct_subtype: ["RD", "Subtype of data", false, null, SUB_TYPE_DATA, false],
-        hips_progenitor_url: [null, "URL to an associated progenitor HiPS", false, null, null, false],
-        hips_cat_nrows: ["S", "Number of rows of the HiPS catalog", false, null, null, false],
-        hips_cube_depth: ["RD", "Number of frames of the HiPS cube", false, null, null, false],
-        hips_cube_firstframe: [null, "Initial first index frame to display for a HiPS cube", false, 0, null, false],
-        data_cube_crpix3: [null, "Coef for computing physical channel value (see FITS doc)", false, null, null, false],
-        data_cube_crval3: [null, "Coef for computing physical channel value (see FITS doc)", false, null, null, false],
-        data_cube_cdelt3: [null, "Coef for computing physical channel value (see FITS doc)", false, null, null, false],
-        data_cube_bunit3: [null, "Third axis unit (see FITS doc)", false, null, null, false],
-        hips_initial_ra: ["S", "Default RA display position (ICRS frame) – Unit : degrees", false, null, null, false],
-        hips_initial_dec: ["S", "Default DEC display position (ICRS frame) – Unit : degrees", false, null, null, false],
-        hips_initial_fov: ["S", "Default display size – Unit : degrees", false, null, null, false],
-        hips_pixel_scale: [null, "HiPS pixel angular resolution at the highest order – Unit : degrees", false, null, null, false],
-        s_pixel_scale: [null, "Best pixel angular resolution of the original images – Unit : degrees", false, null, null, false],
-        t_min: ["S", "Start time of the observations - Representation: MJD", false, null, null, false],
-        t_max: ["S", "Stop time of the observations - Representation: MJD", false, null, null, false],
-        em_min: ["S", "Start in spectral coordinates – Unit: meters", false, null, null, false],
-        em_max: ["S", "Stop in spectral coordinates – Unit: meters", false, null, null, false],
-        client_category: [null, "/ separated keywords suggesting a display hierarchy to the client – Ex : Image/InfraRed", false, null, null, false],
-        client_sort_key: [null, "Sort key suggesting a display order to the client inside a client_category – Sort : alphanumeric", false, null, null, false],
-        addendum_did: [null, "In case of “live” HiPS, creator_did of the added HiPS", true, null, null, false],
-        moc_sky_fraction: [null, "Fraction of the sky covers by the MOC associated to the HiPS – Format: real between 0 and 1", false, null, null, false]
+        prov_progenitor: [
+            "S",
+            "Provenance of the original data – Format: free text",
+            true,
+            null,
+            null,
+            false
+        ],
+        bib_reference: [
+            null,
+            "Bibliographic reference",
+            true,
+            null,
+            null,
+            false
+        ],
+        bib_reference_url: [
+            null,
+            "URL to bibliographic reference",
+            true,
+            null,
+            null,
+            false
+        ],
+        obs_copyright: [
+            null,
+            "Copyright mention – Format: free text",
+            false,
+            null,
+            null,
+            false
+        ],
+        obs_copyright_url: [
+            null,
+            "URL to a copyright mention",
+            false,
+            null,
+            null,
+            false
+        ],
+        obs_regime: [
+            "S",
+            "General wavelength – Format: word",
+            true,
+            null,
+            GENERAL_WAVELENGTH,
+            false
+        ],
+        data_ucd: [
+            null,
+            "UCD describing data contents",
+            true,
+            null,
+            null,
+            false
+        ],
+        hips_version: [
+            "R",
+            "Number of HiPS version – Format: number",
+            false,
+            "1.4",
+            null,
+            false
+        ],
+        hips_builder: [
+            null,
+            "Name and version of the tool used for building the HiPS – Format: free text",
+            false,
+            null,
+            null,
+            false
+        ],
+        hips_publisher: [
+            null,
+            "Institute or person who built the HiPS – Format: free text – Ex : CDS (T.Boch)",
+            false,
+            null,
+            null,
+            false
+        ],
+        hips_creation_date: [
+            "S",
+            "HiPS first creation date - Format: ISO 8601 => YYYY-mm-ddTHH:MMZ",
+            false,
+            null,
+            null,
+            false
+        ],
+        hips_release_date: [
+            "R",
+            "Last HiPS update date - Format: ISO 8601 => YYYY-mm-ddTHH:MMZ",
+            false,
+            null,
+            null,
+            false
+        ],
+        hips_service_url: [
+            null,
+            "HiPS access url – Format: URL",
+            false,
+            null,
+            null,
+            false
+        ],
+        hips_status: [
+            "R",
+            "HiPS status",
+            false,
+            "public master clonableOnce",
+            null,
+            true
+        ],
+        hips_estsize: [
+            null,
+            "HiPS size estimation – Format: positive integer – Unit : KB",
+            false,
+            null,
+            null,
+            false
+        ],
+        hips_frame: [
+            "R",
+            "Coordinate frame reference",
+            false,
+            null,
+            HIPS_FRAME,
+            false
+        ],
+        hips_order: [
+            "R",
+            "Deepest HiPS order – Format: positive integer",
+            false,
+            null,
+            null,
+            false
+        ],
+        hips_tile_width: [
+            null,
+            "Tiles width in pixels – Format: positive integer",
+            false,
+            512,
+            null,
+            false
+        ],
+        hips_tile_format: [
+            "R",
+            "List of available tile formats. The first one is the default suggested to the client",
+            false,
+            null,
+            HIPS_TILE_FORMAT,
+            true
+        ],
+        hips_pixel_cut: [
+            null,
+            "Suggested pixel display cut range (physical values) – Format: min max",
+            null,
+            null,
+            null,
+            true
+        ],
+        hips_data_range: [
+            null,
+            "Pixel data range taken into account during the HiPS generation (physical values) – Format: min max – Ex : -18.5 510.5",
+            false,
+            null,
+            null,
+            true
+        ],
+        hips_sampling: [
+            null,
+            "Sampling applied for the HiPS generation",
+            false,
+            null,
+            SAMPLING,
+            false
+        ],
+        hips_overlay: [
+            null,
+            "Pixel composition method applied on the image overlay region during HiPS generation",
+            false,
+            null,
+            PIXEL_OVERLAY,
+            false
+        ],
+        hips_skyval: [
+            null,
+            "Sky background subtraction method applied during HiPS generation",
+            false,
+            null,
+            SKY_VAL,
+            false
+        ],
+        hips_pixel_bitpix: [
+            null,
+            "Fits tile BITPIX code",
+            false,
+            null,
+            null,
+            false
+        ],
+        data_pixel_bitpix: [
+            null,
+            "Original data BITPIX code",
+            false,
+            null,
+            null
+        ],
+        dataproduct_type: [
+            "R",
+            "Type of data",
+            false,
+            null,
+            DATA_PRODUCT_TYPE,
+            false
+        ],
+        dataproduct_subtype: [
+            "RD",
+            "Subtype of data",
+            false,
+            null,
+            SUB_TYPE_DATA,
+            false
+        ],
+        hips_progenitor_url: [
+            null,
+            "URL to an associated progenitor HiPS",
+            false,
+            null,
+            null,
+            false
+        ],
+        hips_cat_nrows: [
+            "S",
+            "Number of rows of the HiPS catalog",
+            false,
+            null,
+            null,
+            false
+        ],
+        hips_cube_depth: [
+            "RD",
+            "Number of frames of the HiPS cube",
+            false,
+            null,
+            null,
+            false
+        ],
+        hips_cube_firstframe: [
+            null,
+            "Initial first index frame to display for a HiPS cube",
+            false,
+            0,
+            null,
+            false
+        ],
+        data_cube_crpix3: [
+            null,
+            "Coef for computing physical channel value (see FITS doc)",
+            false,
+            null,
+            null,
+            false
+        ],
+        data_cube_crval3: [
+            null,
+            "Coef for computing physical channel value (see FITS doc)",
+            false,
+            null,
+            null,
+            false
+        ],
+        data_cube_cdelt3: [
+            null,
+            "Coef for computing physical channel value (see FITS doc)",
+            false,
+            null,
+            null,
+            false
+        ],
+        data_cube_bunit3: [
+            null,
+            "Third axis unit (see FITS doc)",
+            false,
+            null,
+            null,
+            false
+        ],
+        hips_initial_ra: [
+            "S",
+            "Default RA display position (ICRS frame) – Unit : degrees",
+            false,
+            null,
+            null,
+            false
+        ],
+        hips_initial_dec: [
+            "S",
+            "Default DEC display position (ICRS frame) – Unit : degrees",
+            false,
+            null,
+            null,
+            false
+        ],
+        hips_initial_fov: [
+            "S",
+            "Default display size – Unit : degrees",
+            false,
+            null,
+            null,
+            false
+        ],
+        hips_pixel_scale: [
+            null,
+            "HiPS pixel angular resolution at the highest order – Unit : degrees",
+            false,
+            null,
+            null,
+            false
+        ],
+        s_pixel_scale: [
+            null,
+            "Best pixel angular resolution of the original images – Unit : degrees",
+            false,
+            null,
+            null,
+            false
+        ],
+        t_min: [
+            "S",
+            "Start time of the observations - Representation: MJD",
+            false,
+            null,
+            null,
+            false
+        ],
+        t_max: [
+            "S",
+            "Stop time of the observations - Representation: MJD",
+            false,
+            null,
+            null,
+            false
+        ],
+        em_min: [
+            "S",
+            "Start in spectral coordinates – Unit: meters",
+            false,
+            null,
+            null,
+            false
+        ],
+        em_max: [
+            "S",
+            "Stop in spectral coordinates – Unit: meters",
+            false,
+            null,
+            null,
+            false
+        ],
+        client_category: [
+            null,
+            "/ separated keywords suggesting a display hierarchy to the client – Ex : Image/InfraRed",
+            false,
+            null,
+            null,
+            false
+        ],
+        client_sort_key: [
+            null,
+            "Sort key suggesting a display order to the client inside a client_category – Sort : alphanumeric",
+            false,
+            null,
+            null,
+            false
+        ],
+        addendum_did: [
+            null,
+            "In case of “live” HiPS, creator_did of the added HiPS",
+            true,
+            null,
+            null,
+            false
+        ],
+        moc_sky_fraction: [
+            null,
+            "Fraction of the sky covers by the MOC associated to the HiPS – Format: real between 0 and 1",
+            false,
+            null,
+            null,
+            false
+        ]
     };
 
     /**
@@ -270,40 +650,94 @@ define(["jquery", "../Utils/Constants", "../Gui/dialog/ErrorDialog"], function (
      * @param requiredKeywordNotFound - Array or required information not found
      * @private
      */
-    function _checkRequiredParameters(hipsMetadata, mandatory, key, description, requiredKeywordNotFound) {
+    function _checkRequiredParameters(
+        hipsMetadata,
+        mandatory,
+        key,
+        description,
+        requiredKeywordNotFound
+    ) {
         if (mandatory === "R" && !hipsMetadata.hasOwnProperty(key)) {
             //Fix for version=1.2
             if (key === "creator_did" && hipsMetadata.hips_version === "1.2") {
                 hipsMetadata.creator_did = hipsMetadata.publisher_did;
-                ErrorDialog.open("<font style='color:orange'>Warning :</font> Deprecated Hips version <b>1.2</b> for <font style='color:orange'><b>"+hipsMetadata.obs_title+"</b></font>, please update it - <font style='color:orange'>use creator_did=publisher_did</font>");
+                ErrorDialog.open(
+                    "<font style='color:orange'>Warning :</font> Deprecated Hips version <b>1.2</b> for <font style='color:orange'><b>" +
+                        hipsMetadata.obs_title +
+                        "</b></font>, please update it - <font style='color:orange'>use creator_did=publisher_did</font>"
+                );
             }
             //Fix for version=1.3
-            else if(key === "creator_did" && hipsMetadata.hips_version === "1.3") {
+            else if (
+                key === "creator_did" &&
+                hipsMetadata.hips_version === "1.3"
+            ) {
                 hipsMetadata.creator_did = hipsMetadata.publisher_did;
-                ErrorDialog.open("<font style='color:orange'>Warning :</font> Deprecated Hips version <b>1.3</b> for <font style='color:orange'><b>"+hipsMetadata.obs_title+"</b></font>, please update it - <font style='color:orange'>use creator_did=publisher_did</font>");
-            } else if(key === "obs_title" && hipsMetadata.hips_version === "1.3") {
+                ErrorDialog.open(
+                    "<font style='color:orange'>Warning :</font> Deprecated Hips version <b>1.3</b> for <font style='color:orange'><b>" +
+                        hipsMetadata.obs_title +
+                        "</b></font>, please update it - <font style='color:orange'>use creator_did=publisher_did</font>"
+                );
+            } else if (
+                key === "obs_title" &&
+                hipsMetadata.hips_version === "1.3"
+            ) {
                 hipsMetadata.obs_title = hipsMetadata.obs_collection;
-                ErrorDialog.open("<font style='color:orange'>Warning :</font> Deprecated Hips version <b>1.3</b> for <font style='color:orange'><b>"+hipsMetadata.obs_title+"</b></font>, please update it - <font style='color:orange'>use obs_title=obs_collection</font>");
+                ErrorDialog.open(
+                    "<font style='color:orange'>Warning :</font> Deprecated Hips version <b>1.3</b> for <font style='color:orange'><b>" +
+                        hipsMetadata.obs_title +
+                        "</b></font>, please update it - <font style='color:orange'>use obs_title=obs_collection</font>"
+                );
             }
             //Fox for version 1.4
-            else if(key === "obs_title" && hipsMetadata.hips_version === "1.4") {
+            else if (
+                key === "obs_title" &&
+                hipsMetadata.hips_version === "1.4"
+            ) {
                 hipsMetadata.obs_title = hipsMetadata.obs_collection;
-                ErrorDialog.open("<font style='color:yellow'>Warning :</font> obs_title not found in v1.4 for <font style='color:yellow'><b>"+hipsMetadata.obs_title+"</b></font>, use obs_title, please fix it");
-            } else if(key === "creator_did" && hipsMetadata.hips_version === "1.4") {
+                ErrorDialog.open(
+                    "<font style='color:yellow'>Warning :</font> obs_title not found in v1.4 for <font style='color:yellow'><b>" +
+                        hipsMetadata.obs_title +
+                        "</b></font>, use obs_title, please fix it"
+                );
+            } else if (
+                key === "creator_did" &&
+                hipsMetadata.hips_version === "1.4"
+            ) {
                 hipsMetadata.creator_did = hipsMetadata.publisher_did;
-                ErrorDialog.open("<font style='color:yellow'>Warning :</font> creator_did not found in v1.4 for <font style='color:yellow'><b>"+hipsMetadata.obs_title+"</b></font>, use creator_did, please fix it");
+                ErrorDialog.open(
+                    "<font style='color:yellow'>Warning :</font> creator_did not found in v1.4 for <font style='color:yellow'><b>" +
+                        hipsMetadata.obs_title +
+                        "</b></font>, use creator_did, please fix it"
+                );
             }
             /// very old version
-            else if(key === "hips_version" && !hipsMetadata.hasOwnProperty('hips_version')) {
+            else if (
+                key === "hips_version" &&
+                !hipsMetadata.hasOwnProperty("hips_version")
+            ) {
                 hipsMetadata.hips_version = "very old one";
-                ErrorDialog.open("<font style='color:orange'>Warning :</font> Deprecated Hips version <b>unknown</b> for <font style='color:orange'><b>"+hipsMetadata.obs_title+"</b></font>, please update it - <font style='color:orange'>use a version in your metadata</font>");
-            } else if(key === "creator_did" && !hipsMetadata.hasOwnProperty('hips_version')) {
+                ErrorDialog.open(
+                    "<font style='color:orange'>Warning :</font> Deprecated Hips version <b>unknown</b> for <font style='color:orange'><b>" +
+                        hipsMetadata.obs_title +
+                        "</b></font>, please update it - <font style='color:orange'>use a version in your metadata</font>"
+                );
+            } else if (
+                key === "creator_did" &&
+                !hipsMetadata.hasOwnProperty("hips_version")
+            ) {
                 hipsMetadata.creator_did = hipsMetadata.publisher_did;
-                ErrorDialog.open("<font style='color:orange'>Warning : </font> Deprecated Hips version <b>unknown</b> for <font style='color:orange'><b>"+hipsMetadata.obs_title+"</b></font>, please update it - <font style='color:orange'>use creator_did = pulisher_did</font>");
+                ErrorDialog.open(
+                    "<font style='color:orange'>Warning : </font> Deprecated Hips version <b>unknown</b> for <font style='color:orange'><b>" +
+                        hipsMetadata.obs_title +
+                        "</b></font>, please update it - <font style='color:orange'>use creator_did = pulisher_did</font>"
+                );
             }
             //Error
             else {
-                requiredKeywordNotFound.push(key + " (" + description + ") is not present. ");
+                requiredKeywordNotFound.push(
+                    key + " (" + description + ") is not present. "
+                );
             }
         }
     }
@@ -330,21 +764,44 @@ define(["jquery", "../Utils/Constants", "../Gui/dialog/ErrorDialog"], function (
      * @param valueNotRight - Wrong value
      * @private
      */
-    function _checkValueAmongEnumeratedList(key, valueArray, description, distinctValue, hipsMetadata, valueNotRight) {
+    function _checkValueAmongEnumeratedList(
+        key,
+        valueArray,
+        description,
+        distinctValue,
+        hipsMetadata,
+        valueNotRight
+    ) {
         if (distinctValue !== null && hipsMetadata.hasOwnProperty(key)) {
             if (valueArray) {
                 for (var val in hipsMetadata[key]) {
                     if (hipsMetadata[key].hasOwnProperty(val)) {
                         var format = hipsMetadata[key][val];
                         if (!distinctValue.hasOwnProperty(format)) {
-                            valueNotRight.push("The value \"" + hipsMetadata[key] + "\" of " + key + " (" + description + ") is not correct. ");
+                            valueNotRight.push(
+                                'The value "' +
+                                    hipsMetadata[key] +
+                                    '" of ' +
+                                    key +
+                                    " (" +
+                                    description +
+                                    ") is not correct. "
+                            );
                             break;
                         }
                     }
                 }
             } else {
                 if (!distinctValue.hasOwnProperty(hipsMetadata[key])) {
-                    valueNotRight.push("The value \"" + hipsMetadata[key] + "\" of " + key + " (" + description + ") is not correct. ");
+                    valueNotRight.push(
+                        'The value "' +
+                            hipsMetadata[key] +
+                            '" of ' +
+                            key +
+                            " (" +
+                            description +
+                            ") is not correct. "
+                    );
                 }
             }
         }
@@ -371,7 +828,13 @@ define(["jquery", "../Utils/Constants", "../Gui/dialog/ErrorDialog"], function (
     function _validateAndFixHips(hipsMetadata) {
         var requiredKeywordNotFound = [];
         var valueNotRight = [];
-        var values, mandatory, description, isMutiple, defaultValue, distinctValue, valueArray;
+        var values,
+            mandatory,
+            description,
+            isMutiple,
+            defaultValue,
+            distinctValue,
+            valueArray;
         for (var key in HipsVersion_1_4) {
             if (HipsVersion_1_4.hasOwnProperty(key)) {
                 values = HipsVersion_1_4[key];
@@ -382,25 +845,54 @@ define(["jquery", "../Utils/Constants", "../Gui/dialog/ErrorDialog"], function (
                 valueArray = values[5];
 
                 // checking the required parameter is here
-                _checkRequiredParameters.call(this, hipsMetadata, mandatory, key, description, requiredKeywordNotFound);
+                _checkRequiredParameters.call(
+                    this,
+                    hipsMetadata,
+                    mandatory,
+                    key,
+                    description,
+                    requiredKeywordNotFound
+                );
 
                 // Transforms a key's value into an array when it is necessary and store the result in hipsMetadata
-                _transformAStringToArray.call(this, valueArray, key, hipsMetadata);
+                _transformAStringToArray.call(
+                    this,
+                    valueArray,
+                    key,
+                    hipsMetadata
+                );
 
                 // checking the value of the parameter among a list of values
                 //_checkValueAmongEnumeratedList.call(this, key, valueArray, description, distinctValue, hipsMetadata, valueNotRight);
 
                 // checking the key is here when a default value exists
-                _fillWithDefaultValue.call(this, key, defaultValue, hipsMetadata);
-
+                _fillWithDefaultValue.call(
+                    this,
+                    key,
+                    defaultValue,
+                    hipsMetadata
+                );
             }
         }
         if (requiredKeywordNotFound.length > 0 || valueNotRight.length > 0) {
-            var name = hipsMetadata.obs_title ? hipsMetadata.obs_title : hipsMetadata.obs_collection;
-            var url = hipsMetadata.hips_service_url ? hipsMetadata.hips_service_url : this.baseUrl;
-            throw new RangeError("unvalid hips metadata for "+ name + " (" + url +"): \n" + requiredKeywordNotFound.toString() + "\n" + valueNotRight.toString(),"HipsMetadata.js");
+            var name = hipsMetadata.obs_title
+                ? hipsMetadata.obs_title
+                : hipsMetadata.obs_collection;
+            var url = hipsMetadata.hips_service_url
+                ? hipsMetadata.hips_service_url
+                : this.baseUrl;
+            throw new RangeError(
+                "unvalid hips metadata for " +
+                    name +
+                    " (" +
+                    url +
+                    "): \n" +
+                    requiredKeywordNotFound.toString() +
+                    "\n" +
+                    valueNotRight.toString(),
+                "HipsMetadata.js"
+            );
         }
-
     }
 
     /**
@@ -416,8 +908,11 @@ define(["jquery", "../Utils/Constants", "../Gui/dialog/ErrorDialog"], function (
             url: baseUrl + "/properties",
             async: false
         }).responseText;
-        if (typeof properties === 'undefined') {
-            throw new ReferenceError("Unable to load the Hips at " + baseUrl,"HipsMetadata.js");
+        if (typeof properties === "undefined") {
+            throw new ReferenceError(
+                "Unable to load the Hips at " + baseUrl,
+                "HipsMetadata.js"
+            );
         }
         var hipsProperties = _parseProperties.call(this, properties);
         _validateAndFixHips.call(this, hipsProperties);
@@ -432,29 +927,34 @@ define(["jquery", "../Utils/Constants", "../Gui/dialog/ErrorDialog"], function (
     function _parseProperties(propertiestext) {
         var propertyMap = {};
         var lines = propertiestext.split(/\r?\n/);
-        var currentLine = '';
-        $.each(lines, function (i, value) {
+        var currentLine = "";
+        $.each(lines, function(i, value) {
             //check if it is a comment line
-            if (!/^\s*(\#|\!|$)/.test(value)) // line is whitespace or first non-whitespace character is '#' or '!'
-            {
-                value = value.replace(/^\s*/, ''); // remove space at start of line
+            if (!/^\s*(\#|\!|$)/.test(value)) {
+                // line is whitespace or first non-whitespace character is '#' or '!'
+                value = value.replace(/^\s*/, ""); // remove space at start of line
                 currentLine += value;
-                if (/(\\\\)*\\$/.test(currentLine)) // line ends with an odd number of '\' (backslash)
-                {
+                if (/(\\\\)*\\$/.test(currentLine)) {
+                    // line ends with an odd number of '\' (backslash)
                     //line ends with continuation character, remember it and don't process further
-                    currentLine = currentLine.replace(/\\$/, '');
-                }
-                else {
-                    /^\s*((?:[^\s:=\\]|\\.)+)\s*[:=\s]\s*(.*)$/.test(currentLine); // sub-matches pick out key and value
+                    currentLine = currentLine.replace(/\\$/, "");
+                } else {
+                    /^\s*((?:[^\s:=\\]|\\.)+)\s*[:=\s]\s*(.*)$/.test(
+                        currentLine
+                    ); // sub-matches pick out key and value
                     var nkey = RegExp.$1;
                     var nvalue = RegExp.$2;
                     if (propertyMap.hasOwnProperty(nkey)) {
-                        propertyMap[nkey] = (propertyMap[nkey].isPrototypeOf(Array)) ? propertyMap[nkey].push(nvalue) : [propertyMap[nkey], nvalue];
+                        propertyMap[nkey] = propertyMap[nkey].isPrototypeOf(
+                            Array
+                        )
+                            ? propertyMap[nkey].push(nvalue)
+                            : [propertyMap[nkey], nvalue];
                     } else {
                         propertyMap[nkey] = nvalue;
                     }
 
-                    currentLine = '';
+                    currentLine = "";
                 }
             }
         });
@@ -470,10 +970,9 @@ define(["jquery", "../Utils/Constants", "../Gui/dialog/ErrorDialog"], function (
      * @param baseUrl
      * @constructor
      */
-    var HipsMetadata = function (baseUrl) {
-        if(baseUrl == null) {
-
-        } else if (typeof (baseUrl) === "string") {
+    var HipsMetadata = function(baseUrl) {
+        if (baseUrl == null) {
+        } else if (typeof baseUrl === "string") {
             this.baseUrl = baseUrl;
             this.hipsMetadata = _loadHipsProperties.call(this, baseUrl);
         } else {
@@ -481,9 +980,12 @@ define(["jquery", "../Utils/Constants", "../Gui/dialog/ErrorDialog"], function (
             // In hips registry, each record must provide at least creator_did, hips_release_date, hips_service_url, hips_status
             try {
                 _validateAndFixHips.call(this, this.hipsMetadata);
-            } catch(e) {
+            } catch (e) {
                 this.baseUrl = this.hipsMetadata.hips_service_url;
-                this.hipsMetadata =  _loadHipsProperties.call(this, this.baseUrl);
+                this.hipsMetadata = _loadHipsProperties.call(
+                    this,
+                    this.baseUrl
+                );
             }
         }
     };
@@ -560,7 +1062,7 @@ define(["jquery", "../Utils/Constants", "../Gui/dialog/ErrorDialog"], function (
      * @returns {HIPS_METADATA}
      * @memberOf HipsMetadata#
      */
-    HipsMetadata.prototype.getHipsMetadata = function () {
+    HipsMetadata.prototype.getHipsMetadata = function() {
         return this.hipsMetadata;
     };
 
@@ -570,10 +1072,9 @@ define(["jquery", "../Utils/Constants", "../Gui/dialog/ErrorDialog"], function (
      * @returns {string} the URL of the Hips
      * @memberOf HipsMetadata#
      */
-    HipsMetadata.prototype.getBaseUrl = function () {
+    HipsMetadata.prototype.getBaseUrl = function() {
         return this.baseUrl;
     };
 
     return HipsMetadata;
-
 });

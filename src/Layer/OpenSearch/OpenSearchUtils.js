@@ -16,12 +16,11 @@
  * You should have received a copy of the GNU General Public License
  * along with MIZAR. If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
-define(function () {
-
+define(function() {
     var OpenSearchUtils = {};
 
     /*************************************************************************************************************/
-        
+
     /**
      * Get the attribute value
      * @function getAttributeValue
@@ -30,18 +29,18 @@ define(function () {
      * @param {String} name Name of the parameter
      * @return {String} Value
      */
-    OpenSearchUtils.getAttributeValue = function (object,name) {
-      var reconstructedName = "_attr"+name;
-      if (typeof object[reconstructedName] !== 'undefined') {
-        if (typeof object[reconstructedName]._value != 'undefined') {
-          return object[reconstructedName]._value;
+    OpenSearchUtils.getAttributeValue = function(object, name) {
+        var reconstructedName = "_attr" + name;
+        if (typeof object[reconstructedName] !== "undefined") {
+            if (typeof object[reconstructedName]._value != "undefined") {
+                return object[reconstructedName]._value;
+            }
         }
-      }
-      return null;
+        return null;
     };
 
     /*************************************************************************************************************/
-        
+
     /**
      * Get the value
      * @function getValue
@@ -50,17 +49,17 @@ define(function () {
      * @param {String} name Name of the parameter
      * @return {String} Value
      */
-    OpenSearchUtils.getValue = function (object,name) {
-      if (typeof object[name] !== 'undefined') {
-        if (typeof object[name]._text !== 'undefined') {
-          return object[name]._text;
+    OpenSearchUtils.getValue = function(object, name) {
+        if (typeof object[name] !== "undefined") {
+            if (typeof object[name]._text !== "undefined") {
+                return object[name]._text;
+            }
         }
-      }
-      return null;
+        return null;
     };
 
     /*************************************************************************************************************/
-        
+
     /**
      * Set the current value of a parameter
      * @function setCurrentValueToParam
@@ -69,20 +68,20 @@ define(function () {
      * @param {String} name Name of the parameter
      * @param {String} value Value to set
      */
-    OpenSearchUtils.setCurrentValueToParam = function (form,name,value) {
-      var param;          // param managed
-      for (var i=0;i<form.parameters.length;i++) {
-          param = form.parameters[i];
-          if (param.name === name) {
-            param.currentValue = value;
-            $("#p_"+name).val(value);
-            break;
-          }
-      }
+    OpenSearchUtils.setCurrentValueToParam = function(form, name, value) {
+        var param; // param managed
+        for (var i = 0; i < form.parameters.length; i++) {
+            param = form.parameters[i];
+            if (param.name === name) {
+                param.currentValue = value;
+                $("#p_" + name).val(value);
+                break;
+            }
+        }
     };
 
     /*************************************************************************************************************/
-        
+
     /**
      * Get the current value of a parameter
      * @function getCurrentValue
@@ -91,43 +90,41 @@ define(function () {
      * @param {String} name Name of the parameter
      * @return {String} Current value
      */
-    OpenSearchUtils.getCurrentValue = function (form,name) {
-      var param;          // param managed
-      for (var i=0;i<form.parameters.length;i++) {
-          param = form.parameters[i];
-          if (param.name === name) {
-            return param.currentValue;
-          }
-      }
+    OpenSearchUtils.getCurrentValue = function(form, name) {
+        var param; // param managed
+        for (var i = 0; i < form.parameters.length; i++) {
+            param = form.parameters[i];
+            if (param.name === name) {
+                return param.currentValue;
+            }
+        }
     };
 
     /*************************************************************************************************************/
-        
+
     /**
      * Init navigation values
      * @function initNavigationValues
      * @memberof OpenSearchUtils#
      * @param {OpenSearchFrom} form Form
      */
-    OpenSearchUtils.initNavigationValues = function (form) {
-      var param;          // param managed
-      for (var i=0;i<form.parameters.length;i++) {
-          param = form.parameters[i];
-          if (param.name === "maxRecords") {
-            param.currentValue = Math.ceil(param.maxInclusive * 0.2);
-            //param.currentValue = Math.ceil(param.maxInclusive * 1);
-            //param.currentValue = 20;
-
-          } else if (param.name === "page") {
-            param.currentValue = 1;
-          } else { 
-            //console.log(param.name,param);
-          }
-
-      }
+    OpenSearchUtils.initNavigationValues = function(form) {
+        var param; // param managed
+        for (var i = 0; i < form.parameters.length; i++) {
+            param = form.parameters[i];
+            if (param.name === "maxRecords") {
+                param.currentValue = Math.ceil(param.maxInclusive * 0.2);
+                //param.currentValue = Math.ceil(param.maxInclusive * 1);
+                //param.currentValue = 20;
+            } else if (param.name === "page") {
+                param.currentValue = 1;
+            } else {
+                //console.log(param.name,param);
+            }
+        }
     };
 
     /*************************************************************************************************************/
-        
+
     return OpenSearchUtils;
 });

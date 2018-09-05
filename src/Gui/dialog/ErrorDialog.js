@@ -21,25 +21,27 @@
 /**
  * Error dialog module
  */
-define(["jquery", "jquery.ui"], function ($) {
+define(["jquery", "jquery.ui"], function($) {
+    // The main div for error
+    var errorDiv =
+        '<div id="errorDiv" style="text-align: left" title="Error"></div>';
 
-// The main div for error
-    var errorDiv = '<div id="errorDiv" style="text-align: left" title="Error"></div>';
-
-// Create the div, use jQuery UI dialog
+    // Create the div, use jQuery UI dialog
 
     var $text = "";
     var $buttonName = "";
 
     var $errorDiv = $(errorDiv)
-        .appendTo('body')
+        .appendTo("body")
         .dialog({
             autoOpen: false,
             width: 500,
             minHeight: 300,
             maxHeight: 500,
-            dialogClass: 'errorBox',
-            beforeClose: function( event, ui ) { $text = ""; }
+            dialogClass: "errorBox",
+            beforeClose: function(event, ui) {
+                $text = "";
+            }
         });
     var $active = false;
     var $displayWarning = false;
@@ -47,18 +49,16 @@ define(["jquery", "jquery.ui"], function ($) {
 
     _recordError = function(html) {
         $text += html + "<br/>";
-        if ($('#warningContainer')) {
-            $('#warningContainer').show();
-            $errorDiv.on('dialogclose', function (event) {
-                if($buttonName) {
+        if ($("#warningContainer")) {
+            $("#warningContainer").show();
+            $errorDiv.on("dialogclose", function(event) {
+                if ($buttonName) {
                     $buttonName.hide();
                 }
             });
         }
         if ($active === true) {
-            $errorDiv
-                .html($text)
-                .dialog("open");
+            $errorDiv.html($text).dialog("open");
             $errorDiv.scrollTop(5000);
         }
     };
@@ -69,8 +69,8 @@ define(["jquery", "jquery.ui"], function ($) {
          *
          *    @param html HTML text
          */
-        open: function (html, debug) {
-            if(debug != null) {
+        open: function(html, debug) {
+            if (debug != null) {
                 debug = false;
             }
             if (debug && $displayDebug) {
@@ -81,30 +81,27 @@ define(["jquery", "jquery.ui"], function ($) {
                 _recordError(html);
             }
         },
-        view: function () {
-            $errorDiv
-                .html($text)
-                .dialog("open");
+        view: function() {
+            $errorDiv.html($text).dialog("open");
 
             $errorDiv.scrollTop(5000);
             $active = true;
         },
-        hide: function () {
+        hide: function() {
             $errorDiv.dialog("close");
             $active = false;
         },
-        isActive: function () {
+        isActive: function() {
             return $active;
         },
-        setDisplayWarning: function (value) {
+        setDisplayWarning: function(value) {
             $displayWarning = value;
         },
-        setDisplayDebug: function (value) {
+        setDisplayDebug: function(value) {
             $displayDebug = value;
         },
-        setIcon : function(buttonName) {
+        setIcon: function(buttonName) {
             $buttonName = $(buttonName);
         }
     };
-
 });

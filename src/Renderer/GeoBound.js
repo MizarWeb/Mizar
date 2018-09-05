@@ -35,8 +35,7 @@
  * along with GlobWeb. If not, see <http://www.gnu.org/licenses/>.
  ***************************************/
 
-define(['../Utils/Constants'], function (Constants) {
-
+define(["../Utils/Constants"], function(Constants) {
     /**************************************************************************************************************/
 
     /**
@@ -49,7 +48,7 @@ define(['../Utils/Constants'], function (Constants) {
      @param {float} n North
      @constructor
      */
-    var GeoBound = function (w, s, e, n) {
+    var GeoBound = function(w, s, e, n) {
         this.south = s;
         this.west = w;
         this.north = n;
@@ -62,10 +61,13 @@ define(['../Utils/Constants'], function (Constants) {
      @memberOf GeoBound.prototype
      @return {float[]} Geo center as array of 2 float
      */
-    GeoBound.prototype.getCenter = function () {
-        return [(this.east + this.west) * 0.5, (this.south + this.north) * 0.5, 0.0];
+    GeoBound.prototype.getCenter = function() {
+        return [
+            (this.east + this.west) * 0.5,
+            (this.south + this.north) * 0.5,
+            0.0
+        ];
     };
-
 
     /**
      Get North
@@ -73,7 +75,7 @@ define(['../Utils/Constants'], function (Constants) {
      @memberOf GeoBound.prototype
      @return {float} North
      */
-    GeoBound.prototype.getNorth = function () {
+    GeoBound.prototype.getNorth = function() {
         return this.north;
     };
 
@@ -83,7 +85,7 @@ define(['../Utils/Constants'], function (Constants) {
      @memberOf GeoBound.prototype
      @param {float} val
      */
-    GeoBound.prototype.setNorth = function (val) {
+    GeoBound.prototype.setNorth = function(val) {
         this.north = val;
     };
 
@@ -93,7 +95,7 @@ define(['../Utils/Constants'], function (Constants) {
      @memberOf GeoBound.prototype
      @return {float} South
      */
-    GeoBound.prototype.getSouth = function () {
+    GeoBound.prototype.getSouth = function() {
         return this.south;
     };
 
@@ -103,7 +105,7 @@ define(['../Utils/Constants'], function (Constants) {
      @memberOf GeoBound.prototype
      @param {float} val
      */
-    GeoBound.prototype.setSouth = function (val) {
+    GeoBound.prototype.setSouth = function(val) {
         this.south = val;
     };
 
@@ -113,7 +115,7 @@ define(['../Utils/Constants'], function (Constants) {
      @memberOf GeoBound.prototype
      @return {float} West
      */
-    GeoBound.prototype.getWest = function () {
+    GeoBound.prototype.getWest = function() {
         return this.west;
     };
 
@@ -123,7 +125,7 @@ define(['../Utils/Constants'], function (Constants) {
      @memberOf GeoBound.prototype
      @param {float} val
      */
-    GeoBound.prototype.setWest = function (val) {
+    GeoBound.prototype.setWest = function(val) {
         this.west = val;
     };
 
@@ -133,7 +135,7 @@ define(['../Utils/Constants'], function (Constants) {
      @memberOf GeoBound.prototype
      @return {float} East
      */
-    GeoBound.prototype.getEast = function () {
+    GeoBound.prototype.getEast = function() {
         return this.east;
     };
 
@@ -143,7 +145,7 @@ define(['../Utils/Constants'], function (Constants) {
      @memberOf GeoBound.prototype
      @param {float} val
      */
-    GeoBound.prototype.setEast = function (val) {
+    GeoBound.prototype.setEast = function(val) {
         this.east = val;
     };
 
@@ -153,7 +155,7 @@ define(['../Utils/Constants'], function (Constants) {
      @memberOf GeoBound.prototype
      @param {float[][]} coordinates Coordinates as bi-dimensionnal array of float
      */
-    GeoBound.prototype.computeFromCoordinates = function (coordinates) {
+    GeoBound.prototype.computeFromCoordinates = function(coordinates) {
         this.west = coordinates[0][0];
         this.east = coordinates[0][0];
         this.south = coordinates[0][1];
@@ -167,25 +169,45 @@ define(['../Utils/Constants'], function (Constants) {
         }
     };
 
-    function transformCoordinates (coordinates, crsID, globeCrs) {
+    function transformCoordinates(coordinates, crsID, globeCrs) {
         var len = coordinates.length,
             convertedCoord = new Array(len); // boost in Safari
-        for (var i=0; i<len; ++i) {
+        for (var i = 0; i < len; ++i) {
             convertedCoord[i] = coordinates[i].slice(0);
         }
 
-        convertedCoord[0][0] = globeCrs.convert(coordinates[0][0], crsID, globeCrs.getGeoideName());
-        convertedCoord[0][1] = globeCrs.convert(coordinates[0][1], crsID, globeCrs.getGeoideName());
+        convertedCoord[0][0] = globeCrs.convert(
+            coordinates[0][0],
+            crsID,
+            globeCrs.getGeoideName()
+        );
+        convertedCoord[0][1] = globeCrs.convert(
+            coordinates[0][1],
+            crsID,
+            globeCrs.getGeoideName()
+        );
         for (var j = 1; j < coordinates.length; j++) {
-            convertedCoord[j][0] = globeCrs.convert(coordinates[j][0], crsID, globeCrs.getGeoideName());
-            convertedCoord[j][1] = globeCrs.convert(coordinates[j][1], crsID, globeCrs.getGeoideName());
+            convertedCoord[j][0] = globeCrs.convert(
+                coordinates[j][0],
+                crsID,
+                globeCrs.getGeoideName()
+            );
+            convertedCoord[j][1] = globeCrs.convert(
+                coordinates[j][1],
+                crsID,
+                globeCrs.getGeoideName()
+            );
         }
         return convertedCoord;
     }
 
-    GeoBound.prototype.computeFromCoordinatesInCrsTo = function (coordinates, crsID, globeCrs) {
+    GeoBound.prototype.computeFromCoordinatesInCrsTo = function(
+        coordinates,
+        crsID,
+        globeCrs
+    ) {
         var coords;
-        if(crsID === globeCrs.getGeoideName()) {
+        if (crsID === globeCrs.getGeoideName()) {
             coords = coordinates;
         } else {
             coords = transformCoordinates(coordinates, crsID, globeCrs);
@@ -201,8 +223,13 @@ define(['../Utils/Constants'], function (Constants) {
      @param {Array} point The point
      @return {Boolean} return the test
      */
-    GeoBound.prototype.isPointInside = function (point) {
-        return point[0] >= this.west && point[0] <= this.east && point[1] >= this.south && point[1] <= this.north;
+    GeoBound.prototype.isPointInside = function(point) {
+        return (
+            point[0] >= this.west &&
+            point[0] <= this.east &&
+            point[1] >= this.south &&
+            point[1] <= this.north
+        );
     };
 
     /**
@@ -212,7 +239,7 @@ define(['../Utils/Constants'], function (Constants) {
      @param {GeoBound} geoBound Geo bound
      @return {Boolean} Intersects ?
      */
-    GeoBound.prototype.intersects = function (geoBound) {
+    GeoBound.prototype.intersects = function(geoBound) {
         if (this.west >= geoBound.east || this.east <= geoBound.west) {
             return false;
         }
@@ -227,7 +254,7 @@ define(['../Utils/Constants'], function (Constants) {
      @param {JSON} geometry GeoJSON geometry
      @return {Boolean} Intersects ?
      */
-    GeoBound.prototype.intersectsGeometry = function (geometry) {
+    GeoBound.prototype.intersectsGeometry = function(geometry) {
         var isIntersected = false;
         var i, j;
         var geoBound = new GeoBound();
@@ -265,5 +292,4 @@ define(['../Utils/Constants'], function (Constants) {
     /**************************************************************************************************************/
 
     return GeoBound;
-
 });

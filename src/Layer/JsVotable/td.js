@@ -16,8 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with JVotable.  If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
-define(["./utils","./abstractNode"], function(Utils, AbstractNode) {
-
+define(["./utils", "./abstractNode"], function(Utils, AbstractNode) {
     /**
      * Construct the Td object.
      *
@@ -46,16 +45,19 @@ define(["./utils","./abstractNode"], function(Utils, AbstractNode) {
      * @constructor
      * @author Jean-Christophe Malapert
      */
-    var Td = function(childNode,options) {
+    var Td = function(childNode, options) {
         AbstractNode.prototype.constructor.call(this, childNode);
         if (options == null) {
-            this.value = (childNode.textContent == null) ? "" : childNode.textContent.trim();
+            this.value =
+                childNode.textContent == null
+                    ? ""
+                    : childNode.textContent.trim();
         } else {
-            this.value = (options == null) ? "" : options.trim();
+            this.value = options == null ? "" : options.trim();
         }
     };
 
-    Utils.inherits(AbstractNode , Td );
+    Utils.inherits(AbstractNode, Td);
 
     /**
      * Returns the encoding value.

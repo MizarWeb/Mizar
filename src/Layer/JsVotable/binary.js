@@ -17,13 +17,16 @@
  * along with JVotable.  If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
 
-define(["./utils","./stream","./abstractData"], function(Utils, Stream, AbstractData) {
-
+define(["./utils", "./stream", "./abstractData"], function(
+    Utils,
+    Stream,
+    AbstractData
+) {
     /**
      * Constructs the Binary object.
      *
      * @example <caption>Binary schema</caption>
-     * {@lang xml}     
+     * {@lang xml}
      *  <xs:complexType name="Binary">
      *      <xs:sequence>
      *          <xs:element name="STREAM" type="Stream"/>
@@ -49,7 +52,11 @@ define(["./utils","./stream","./abstractData"], function(Utils, Stream, Abstract
      */
     var parseBinary = function(childNode) {
         var stream;
-        for(var i = 0; childNode!=null && i< childNode.childNodes.length; i++){
+        for (
+            var i = 0;
+            childNode != null && i < childNode.childNodes.length;
+            i++
+        ) {
             var element = childNode.childNodes[i];
             if (element.nodeType == 1) {
                 var nodeName = element.localName;
@@ -63,14 +70,13 @@ define(["./utils","./stream","./abstractData"], function(Utils, Stream, Abstract
         return stream;
     };
 
-    Utils.inherits(AbstractData , Binary );
-
+    Utils.inherits(AbstractData, Binary);
 
     /**
      * Returns the Stream object.
      * @returns {!Stream} the Stream object
      */
-    Binary.prototype.getStream = function(){
+    Binary.prototype.getStream = function() {
         return this.stream;
     };
 

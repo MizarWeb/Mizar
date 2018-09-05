@@ -16,24 +16,22 @@
  * You should have received a copy of the GNU General Public License
  * along with MIZAR. If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
-define([],
-function () {
-     /**
-      * @name OpenSearchCache
-      * @class
-      * Manage the OpenSearch cache
-      * @memberof module:Layer
-      */
+define([], function() {
+    /**
+     * @name OpenSearchCache
+     * @class
+     * Manage the OpenSearch cache
+     * @memberof module:Layer
+     */
 
-     var OpenSearchCache = function () {
+    var OpenSearchCache = function() {
         this.maxTiles = 120;
         this.tileArray = [];
 
         this.debugMode = false;
 
-        this.debug("[New] "+this.getCacheStatus());
+        this.debug("[New] " + this.getCacheStatus());
     };
-
 
     /**************************************************************************************************************/
 
@@ -42,10 +40,11 @@ function () {
      * @function debug
      * @memberof OpenSearchCache#
      * @param {String} message Message to display
-     */ 
-    OpenSearchCache.prototype.debug = function (message) {
+     */
+
+    OpenSearchCache.prototype.debug = function(message) {
         if (this.debugMode === true) {
-            console.log("Cache:"+message);
+            console.log("Cache:" + message);
         }
     };
 
@@ -56,13 +55,21 @@ function () {
      * @function getCacheStatus
      * @memberof OpenSearchCache#
      * @return {String} Status
-     */ 
-    OpenSearchCache.prototype.getCacheStatus = function () {
+     */
+
+    OpenSearchCache.prototype.getCacheStatus = function() {
         var message = "";
-        message += "Cache : "+this.tileArray.length+"/"+this.maxTiles+ " (size:"+this.getSize()+")";
+        message +=
+            "Cache : " +
+            this.tileArray.length +
+            "/" +
+            this.maxTiles +
+            " (size:" +
+            this.getSize() +
+            ")";
         return message;
     };
-    
+
     /*************************************************************************************************************/
 
     /**
@@ -71,12 +78,20 @@ function () {
      * @memberof OpenSearchCache#
      * @param {Bound} bound Bound
      * @return {String} Key generated
-     */ 
-    OpenSearchCache.prototype.getKey = function (bound) {
-        var key = bound.north+":"+bound.east+":"+bound.south+":"+bound.west;
+     */
+
+    OpenSearchCache.prototype.getKey = function(bound) {
+        var key =
+            bound.north +
+            ":" +
+            bound.east +
+            ":" +
+            bound.south +
+            ":" +
+            bound.west;
         return key;
     };
-    
+
     /*************************************************************************************************************/
 
     /**
@@ -85,18 +100,19 @@ function () {
      * @memberof OpenSearchCache#
      * @param {Array} tiles Array of tiles
      * @return {String} Key generated
-     */ 
-    OpenSearchCache.prototype.getArrayBoundKey = function (tiles) {
+     */
+
+    OpenSearchCache.prototype.getArrayBoundKey = function(tiles) {
         var key = "";
-        if ((tiles === null) || (typeof tiles === "undefined")) {
+        if (tiles === null || typeof tiles === "undefined") {
             return "";
         }
-        for (var i=0;i<tiles.length;i++) {
+        for (var i = 0; i < tiles.length; i++) {
             key += this.getKey(tiles[i].bound);
         }
         return key;
     };
-    
+
     /*************************************************************************************************************/
 
     /**
@@ -105,9 +121,10 @@ function () {
      * @memberof OpenSearchCache#
      * @param {Tile} tile Tile
      * @return {Integer} Number of features associated to the tile
-     */ 
-     OpenSearchCache.prototype.getTileSize = function (tile) {
-       return tile.features.length; 
+     */
+
+    OpenSearchCache.prototype.getTileSize = function(tile) {
+        return tile.features.length;
     };
 
     /*************************************************************************************************************/
@@ -117,15 +134,16 @@ function () {
      * @function getSize
      * @memberof OpenSearchCache#
      * @return {Integer} Number of features associated to the cache
-     */ 
-    OpenSearchCache.prototype.getSize = function () {
+     */
+
+    OpenSearchCache.prototype.getSize = function() {
         var nb = 0;
-        for (var i=0;i<this.tileArray.length;i++) {
+        for (var i = 0; i < this.tileArray.length; i++) {
             nb += this.getTileSize(this.tileArray[i]);
         }
-        return nb; 
-    };   
-     
+        return nb;
+    };
+
     /*************************************************************************************************************/
 
     /**
@@ -135,20 +153,21 @@ function () {
      * @param {Bound} bound Bound
      * @param {Array} features Array of features to add
      * @param {Int} nbFound Total number of features found
-     */ 
-    OpenSearchCache.prototype.addTile = function (bound,features,nbFound) {
-        this.debug("[addTile]"+this.getCacheStatus());
+     */
+
+    OpenSearchCache.prototype.addTile = function(bound, features, nbFound) {
+        this.debug("[addTile]" + this.getCacheStatus());
 
         var key = this.getKey(bound);
         var tile = {
-            "key": key,
-            "features" : features.slice(),
-            "remains" : nbFound
+            key: key,
+            features: features.slice(),
+            remains: nbFound
         };
         // If cache is full, remove first element
         if (this.tileArray.length === this.maxTiles) {
             this.debug("Cache full, remove oldest");
-            this.tileArray.splice(0,1);
+            this.tileArray.splice(0, 1);
         }
         this.tileArray.push(tile);
     };
@@ -161,9 +180,10 @@ function () {
      * @memberof OpenSearchCache#
      * @param {Tile} tile Tile
      * @param {Array} features Array of features to add
-     */ 
-    OpenSearchCache.prototype.updateTile = function (tile,features) {
-        this.debug("[update]"+this.getCacheStatus());
+     */
+
+    OpenSearchCache.prototype.updateTile = function(tile, features) {
+        this.debug("[update]" + this.getCacheStatus());
 
         tile.features = tile.features.concat(features);
     };
@@ -175,15 +195,16 @@ function () {
      * @function getTile
      * @memberof OpenSearchCache#
      * @param {Bound} bound Bound
-     * @return {Json} Cache element 
-     */ 
-    OpenSearchCache.prototype.getTile = function (bound) {
-        this.debug("[getTile]"+this.getCacheStatus());
+     * @return {Json} Cache element
+     */
+
+    OpenSearchCache.prototype.getTile = function(bound) {
+        this.debug("[getTile]" + this.getCacheStatus());
 
         var key = this.getKey(bound);
 
-        
-        for (var i=0;i<this.tileArray.length;i++) { // TODO : try in reverse order, best performance ?
+        for (var i = 0; i < this.tileArray.length; i++) {
+            // TODO : try in reverse order, best performance ?
             if (this.tileArray[i].key === key) {
                 return this.tileArray[i];
             }
@@ -192,13 +213,14 @@ function () {
     };
 
     /*************************************************************************************************************/
-    
+
     /**
      * Reset the cache
      * @function reset
      * @memberof OpenSearchCache#
-     */ 
-    OpenSearchCache.prototype.reset = function () {
+     */
+
+    OpenSearchCache.prototype.reset = function() {
         this.debug("[reset]");
         this.tileArray.length = 0;
     };
