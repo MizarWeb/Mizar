@@ -1,0 +1,73 @@
+<html>
+
+<head>
+    <title>Getting started with navigation</title>
+    <meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
+
+    <!-- mode dev -->
+    <script type="text/javascript" data-main="../src/rconfig.js" src="../node_modules/requirejs/require.js"></script>
+
+    <!-- mode prod -->
+    <!--<script type="text/javascript" src="../Mizar.min.js"></script>-->
+
+    <script type="text/javascript">
+
+        //function start() {
+        require(['Mizar'], function (Mizar) {
+
+            var mizar = new Mizar({
+                canvas: "MizarCanvas",
+                planetContext: {
+                    coordinateSystem: { geoideName: Mizar.CRS.WGS84 }
+                }
+            });
+
+            mizar.createStats({ element: 'fps', verbose: false });
+
+            mizar.addLayer({
+                type: Mizar.LAYER.WMS,
+                name: "Blue Marble",
+                baseUrl: "http://80.158.6.138/mapserv?map=WMS_BLUEMARBLE"
+            }, function (layerID) {
+                mizar.setBackgroundLayerByID(layerID);
+            });
+
+            // mizar.addLayer({
+            //     type: Mizar.LAYER.WCSElevation,
+            //     name: 'Elevation',
+            //     baseUrl: 'http://80.158.6.138/mapserv?map=WMS_SRTM',
+            //     coverage: 'SRTM',
+            //     version: '1.0.0',
+            //     minElevation: -32000,
+            //     scale: 2
+            // }, function (layerID) {
+            //     mizar.setBaseElevationByID(layerID);
+            // });
+
+
+            mizar.addLayer({
+                type: Mizar.LAYER.GroundOverlay,
+                image: "data/mizar.jpg",
+                quad: [[-1, 45], [-2, 46], [0, 48], [1, 47]],
+                opacity: 50,
+                flipY: false
+            });
+
+            mizar.addLayer({
+                type: Mizar.LAYER.GroundOverlay,
+                image: "data/mizar.jpg",
+                quad: [[10, 40], [18, 40], [15, 48], [10, 45]],
+                visible:true
+            });
+
+        });
+    </script>
+</head>
+
+<body style="margin: 0; padding: 0;">
+    <div id="fps" class="statBox ui-widget">FPS : 0</div>
+    <div id="compassDiv"/>
+    <canvas id="MizarCanvas" style="border: none; margin: 0; padding: 0;"></canvas>
+</body>
+
+</html>

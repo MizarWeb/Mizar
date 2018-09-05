@@ -7,7 +7,6 @@
     <link rel="stylesheet" href="css/test.css">
 
     <!-- mode dev -->
-    <script type="text/javascript" src="test.js"></script>
     <script type="text/javascript" data-main="../src/rconfig.js" src="../node_modules/requirejs/require.js"></script>
 
     <!-- mode prod -->
@@ -15,160 +14,55 @@
 
     <script type="text/javascript">
 
-        var seaLevel = [ "0.0m","0.5m","1.0m","1.5m","2.0m","2.5m","3.0m"];
-        var currentSeaLevel = 3;
-
-        function updateSeaLevel() {
-            document.getElementById("sl").value=seaLevel[currentSeaLevel];
-            if (typeof this.palavasLayer !== "undefined") {
-                this.palavasLayer.setParameter("styles",seaLevel[currentSeaLevel]);
-                this.palavasLayer.options.styles = seaLevel[currentSeaLevel];
-                this.mizar.reloadLayer(palavasLayer);
-            }
-        }
-        function init() {
-            document.getElementById("sl").value=seaLevel[currentSeaLevel];
-        }
-        
-        function previousSeaLevel() {
-            if (currentSeaLevel>0) {
-                currentSeaLevel --;
-                updateSeaLevel();
-            }
-        }
-
-        function nextSeaLevel() {
-            if (currentSeaLevel<(seaLevel.length-1)) {
-                currentSeaLevel ++;
-                updateSeaLevel();
-            }
-        }
-    
-        function loadDEMMontBlanc() {
-            mizar.addLayer(demMontBlanc,function (id) {
-                    var cbLayer = mizar.getLayerByID(id);
-                    if (cbLayer.type === Mizar.LAYER.WCSElevation) {
-                        mizar.setBaseElevation(cbLayer.name);
-                    }
-                    
-                });
-        }
-        function unloadDEMMontBlanc() {
-            mizar.setBaseElevation("Elevation");
-        }
-        function setTime() {
-            mizar.setTime("2003-08-21T00:00:00.000Z");
-        }
-
         // mode dev
         require(['Mizar'], function (Mizar) {
-
-            div = "MizarCanvas";
-            mizarDiv = (typeof div === "string") ? document.getElementById(div) : div;
-            mizarConf.canvas = $(mizarDiv)[0];
-            mizarConf.planetContext.coordinateSystem.geoideName = Mizar.CRS.WGS84;
-
-
-            // Create Mizar
-            var mizar =  new Mizar(mizarConf);
-            this.mizar = mizar;
-            // Layers load
-            for (var i = 0; i < context.layers.length; i++) {
-                var layer = context.layers[i];
-
-                mizar.addLayer(layer,function (id) {
-                    var cbLayer = mizar.getLayerByID(id);
-                    if (cbLayer.type === Mizar.LAYER.WCSElevation) {
-                        mizar.setBaseElevation(cbLayer.name);
-                    }
-                    if (cbLayer.name === "Palavas") {
-                        this.palavasLayer = cbLayer;
-                    }
-
-                    if (cbLayer.isBackground() === true) {
-                        //mizar.addLayer(osLayer,function (id) {});
-                        /*setTimeout(function go() {
-                            mizar.activatedContext.navigation.zoomTo(
-                                //[4.025,43.54],
-                                [116.217,29.15],
-                            { "distance" : 500000,
-                              "duration" : 2000 });
-                        },4000);*/
-                    }
-                });
-            }
-
-            for (var i=0;i<climateData.length;i++) {
-                var currentThematicId = climateData[i].thematicId;
-                var currentThematic = null;
-                for (var j=0;j<thematics.length;j++) {
-                    if (thematics[j].id === currentThematicId) {
-                        currentThematic = thematics[j];
-                    }
-                }
-                options.name = currentThematic.name;
-                options.color = currentThematic.color;
-                options.pickingNoDEM = true;
-
-                var climateId = mizar.addLayer(options,function(id) {
-                    var climateLayer = mizar.getLayerByID(id);
-                    climateLayer.addFeatureCollection(climateData[i]);
-                });
-            }
-
-
-            var picking = mizar.getServiceByName(Mizar.SERVICE.PickingManager);
-            mizarDiv.addEventListener('click', (e) => {
-                var pickPoint = mizar.getActivatedContext().getLonLatFromPixel(e.clientX, e.clientY);
-                if (pickPoint !== null) {
-                    var selection = picking.computeFilterPickSelection(pickPoint);
-                    if (selection.length>0) {
-                        // Go on first point
-                        var coord = selection[0].feature.geometry.coordinates;
-                        mizar.activatedContext.navigation.zoomTo(
-                                coord,
-                            { "distance" : 500000,
-                              "duration" : 2000 });
-                        
+            var mizar = new Mizar({
+                canvas: "MizarCanvas",
+                planetContext: {
+                    "type": "Planet",
+                    "name": "Earth",
+                    "coordinateSystem": {
+                        "geoideName": Mizar.CRS.WGS84
+                    },
+                    navigation: {
+                        //longitude, latitude, distance from surface in meter
+                        initTarget: [-1.553621, 47.218371, 30000]
                     }
                 }
             });
 
-            var picking = mizar.getServiceByName(Mizar.SERVICE.PickingManager);
-            mizarDiv.addEventListener('click', (e) => {
-                var pickPoint = mizar.getActivatedContext().getLonLatFromPixel(e.clientX, e.clientY);
-                if (pickPoint !== null) {
-                    var selection = picking.computeFilterPickSelection(pickPoint);
-                    console.log(selection);
-                }
+            mizar.addLayer({
+                "name": "Blue Marble",
+                "type": "WMS",
+                "baseUrl": "http://80.158.6.138/mapserv?map=WMS_BLUEMARBLE",
+                "visible": true,
+                "background": true
             });
+
+            mizar.addLayer({
+                "name": "Erwann",
+                "type": "WMTS",
+                "baseUrl": "http://132.149.129.4:8083/mapcache/wmts?service=WMTS",
+                "visible": true,
+                "layers": "s1_footprint_4326"
+            });
+
+            mizar.addLayer({
+                "name": "Erwann",
+                "type": "WMTS",
+                "baseUrl": "http://132.149.129.4:8083/mapcache/wmts?service=WMTS",
+                "visible": true,
+                "layers": "s1ortho_4326"
+            });
+
         });
     </script>
 </head>
 
-<body style="margin: 0; padding: 0;" onload="init();">
-    <div style="position:absolute; z-index: 10; width:100%;">
-        <input type="button" value="<" onclick="previousSeaLevel()"/>
-        <input id="sl" type="text" value=""/>
-        <input type="button" value=">" onclick="nextSeaLevel()"/>
-        <div id="tracker">
-            <div id="posTracker" style="background-color:white;float:left;"></div>
-        </div>
-        <input type="button" value="load DEM MontBlanc" onclick="loadDEMMontBlanc()"/>
-        <input type="button" value="unload DEM MontBlanc" onclick="unloadDEMMontBlanc()"/>
-        <input type="button" value="setTime" onclick="setTime()"/>
-    </div>
-    <div style="position: absolute; right:8px; z-index: 11; width:116px;">
-        <div id="compassDiv"></div>
-    </div>
-    <div style="position: absolute; right:8px; bottom:50px; z-index: 11; width:116px;">
-        <div id="timeTravelDiv"></div>
-    </div>
-    <div style="position: absolute; right:8px; bottom:10px; z-index: 11; width:116px;">
-        <div id="textTimeTravelDiv"></div>
-    </div>
-    <canvas id="MizarCanvas" onclick="click" style="border: none; margin: 0; padding: 0;">
+<body style="margin: 0; padding: 0;">
+    <canvas id="MizarCanvas">
     </canvas>
 
 </body>
+
 </html>
