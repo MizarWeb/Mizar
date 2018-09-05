@@ -58,7 +58,7 @@ define(["../Utils/Constants",
                     cs = new MollweideProjection(options);
                     break;
                 case Constants.PROJECTION.Plate :
-                    cs = new PlateProjection(cs, options);
+                    cs = new PlateProjection(options);
                     break;
                 default :
                     throw new RangeError("Unable to create the projection " + options.projectionName,"ProjectionFactory.js");
