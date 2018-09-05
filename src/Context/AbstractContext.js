@@ -17,13 +17,13 @@
  * along with MIZAR. If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
 define(["jquery", "underscore-min", "../Utils/Event", "moment", "../Utils/Utils", "../Time/Time", "../Utils/UtilsIntersection", "../Layer/LayerFactory", "../Services/ServiceFactory", "../Utils/Constants",
-        "../Registry/WMSServerRegistryHandler", "../Registry/WMTSServerRegistryHandler", "../Registry/WCSServerRegistryHandler", "../Registry/PendingLayersRegistryHandler", "../Registry/LayerRegistryHandler",
-        "../Gui/Compass", "../Gui/Tracker/PositionTracker", "../Gui/Tracker/ElevationTracker", "../Utils/AttributionHandler", "../Gui/dialog/ErrorDialog",
-        "../Renderer/PointRenderer", "../Renderer/LineStringRenderable", "../Renderer/PolygonRenderer", "../Renderer/LineRenderer",
-        "../Renderer/PointSpriteRenderer", "../Renderer/ConvexPolygonRenderer"],
+    "../Registry/WMSServerRegistryHandler", "../Registry/WMTSServerRegistryHandler", "../Registry/WCSServerRegistryHandler", "../Registry/PendingLayersRegistryHandler", "../Registry/LayerRegistryHandler",
+    "../Gui/Compass", "../Gui/Tracker/PositionTracker", "../Gui/Tracker/ElevationTracker", "../Utils/AttributionHandler", "../Gui/dialog/ErrorDialog",
+    "../Renderer/PointRenderer", "../Renderer/LineStringRenderable", "../Renderer/PolygonRenderer", "../Renderer/LineRenderer",
+    "../Renderer/PointSpriteRenderer", "../Renderer/ConvexPolygonRenderer"],
     function ($, _, Event, Moment, Utils, Time, UtilsIntersection, LayerFactory, ServiceFactory, Constants,
-              WMSServerRegistryHandler, WMTSServerRegistryHandler, WCSServerRegistryHandler, PendingLayersRegistryHandler, LayerRegistryHandler,
-              Compass, PositionTracker, ElevationTracker, AttributionHandler, ErrorDialog) {
+        WMSServerRegistryHandler, WMTSServerRegistryHandler, WCSServerRegistryHandler, PendingLayersRegistryHandler, LayerRegistryHandler,
+        Compass, PositionTracker, ElevationTracker, AttributionHandler, ErrorDialog) {
 
         //TODO : attention de bien garder les ...Renderer dans le define
 
@@ -87,7 +87,7 @@ define(["jquery", "underscore-min", "../Utils/Event", "moment", "../Utils/Utils"
 
             // Link to time travel service
             this.timeTravelService = ctxOptions.timeTravelService;
-            
+
             this.subscribe(Constants.EVENT_MSG.BASE_LAYERS_READY, function (imagery) {
                 // When the background takes time to load, the viewMatrix computed by "computeViewMatrix" is created but
                 // with empty values. Because of that, the globe cannot be displayed without moving the camera.
@@ -106,19 +106,19 @@ define(["jquery", "underscore-min", "../Utils/Event", "moment", "../Utils/Utils"
             try {
                 this.positionTracker = _createTrackerPosition.call(this, this.mizarConfiguration);
             } catch (err) {
-                ErrorDialog.open("<font style='color:orange'>Warning : "+err+".");
+                ErrorDialog.open("<font style='color:orange'>Warning : " + err + ".");
             }
 
             try {
                 this.elevationTracker = _createTrackerElevation.call(this, this.mizarConfiguration, ctxOptions);
             } catch (err) {
-                ErrorDialog.open("<font style='color:orange'>Warning : "+err+".");
+                ErrorDialog.open("<font style='color:orange'>Warning : " + err + ".");
             }
 
             try {
                 this.compass = _createCompass.call(this, this.mizarConfiguration);
             } catch (err) {
-                ErrorDialog.open("<font style='color:orange'>Warning : "+err+".");
+                ErrorDialog.open("<font style='color:orange'>Warning : " + err + ".");
             }
 
         };
@@ -126,7 +126,7 @@ define(["jquery", "underscore-min", "../Utils/Event", "moment", "../Utils/Utils"
         function _initComponentsVisibility(components) {
             // Show UI components depending on its state
             for (var componentId in components) {
-                if(_isDivExist(componentId)) {
+                if (_isDivExist(componentId)) {
                     if (components[componentId]) {
                         $("#" + componentId).fadeIn(1000);
                     } else {
@@ -137,7 +137,7 @@ define(["jquery", "underscore-min", "../Utils/Event", "moment", "../Utils/Utils"
         }
 
         function _isDivExist(divID) {
-            return  $("#" + divID).length;
+            return $("#" + divID).length;
         }
 
         /**
@@ -189,12 +189,12 @@ define(["jquery", "underscore-min", "../Utils/Event", "moment", "../Utils/Utils"
          * @private
          */
         function _createTrackerPosition(mizarConfiguration) {
-            return  new PositionTracker({
-                    element: (mizarConfiguration.positionTracker && mizarConfiguration.positionTracker.element) ?
-                        mizarConfiguration.positionTracker.element : DEFAULT_POSITION_TRACKER_ELT,
-                    isMobile: mizarConfiguration.isMobile,
-                    position: (mizarConfiguration.positionTracker && mizarConfiguration.positionTracker.position) ?
-                        mizarConfiguration.positionTracker.position : DEFAULT_ELEVATION_TRACKER_ELT_POS
+            return new PositionTracker({
+                element: (mizarConfiguration.positionTracker && mizarConfiguration.positionTracker.element) ?
+                    mizarConfiguration.positionTracker.element : DEFAULT_POSITION_TRACKER_ELT,
+                isMobile: mizarConfiguration.isMobile,
+                position: (mizarConfiguration.positionTracker && mizarConfiguration.positionTracker.position) ?
+                    mizarConfiguration.positionTracker.position : DEFAULT_ELEVATION_TRACKER_ELT_POS
             });
         }
 
@@ -233,7 +233,7 @@ define(["jquery", "underscore-min", "../Utils/Event", "moment", "../Utils/Utils"
             return new Compass({
                 element: (mizarConfiguration.compass ? mizarConfiguration.compass : DEFAULT_COMPASS_ELT),
                 ctx: this,
-                isMobile : this.isMobile
+                isMobile: this.isMobile
             });
         }
 
@@ -442,7 +442,7 @@ define(["jquery", "underscore-min", "../Utils/Event", "moment", "../Utils/Utils"
          * @memberOf AbstractContext#
          */
         AbstractContext.prototype.getLayerByName = function (layerName) {
-            return _.findWhere(this.getLayers(), {name: layerName});
+            return _.findWhere(this.getLayers(), { name: layerName });
         };
 
         /**
@@ -475,7 +475,7 @@ define(["jquery", "underscore-min", "../Utils/Event", "moment", "../Utils/Utils"
                         // Take autoFillTimeTravel into account
                         if (layer.autoFillTimeTravel === true) {
                             // Only when visible & time travel service activated and available
-                            if ( (layer.visible === true) && (self.timeTravelService) && (typeof self.timeTravelService !== "undefined") ) {
+                            if ((layer.visible === true) && (self.timeTravelService) && (typeof self.timeTravelService !== "undefined")) {
                                 self.timeTravelService.update(layer.timeTravelValues);
                             }
                         }
@@ -483,7 +483,7 @@ define(["jquery", "underscore-min", "../Utils/Event", "moment", "../Utils/Utils"
                         _addToGlobe.call(self, layer);
 
                         self._fillDataProvider(layer, layerDescription);
-                        if(layer.isVisible()) {
+                        if (layer.isVisible()) {
                             layer.setTime(self.getTime());
                         }
 
@@ -491,7 +491,7 @@ define(["jquery", "underscore-min", "../Utils/Event", "moment", "../Utils/Utils"
                             ServiceFactory.create(Constants.SERVICE.PickingManager).addPickableLayer(layer);
                         }
 
-                       layer.subscribe(Constants.EVENT_MSG.LAYER_VISIBILITY_CHANGED, _handleCameraWhenLayerAdded);
+                        layer.subscribe(Constants.EVENT_MSG.LAYER_VISIBILITY_CHANGED, _handleCameraWhenLayerAdded);
                         var layerEvent = (layer.category === "background") ? Constants.EVENT_MSG.LAYER_BACKGROUND_ADDED : Constants.EVENT_MSG.LAYER_ADDITIONAL_ADDED;
                         self.publish(layerEvent, layer);
 
@@ -505,7 +505,7 @@ define(["jquery", "underscore-min", "../Utils/Event", "moment", "../Utils/Utils"
                     }
                 },
                 function (e) {
-                    if(fallback) {
+                    if (fallback) {
                         fallback(e);
                     }
                 });
@@ -550,9 +550,9 @@ define(["jquery", "underscore-min", "../Utils/Event", "moment", "../Utils/Utils"
                 removedLayer = removedLayers[0];
                 if (removedLayer.autoFillTimeTravel === true) {
                     this.timeTravelService.update({
-                        "remove" :
-                             { "ID" : layerID }
-                   });
+                        "remove":
+                            { "ID": layerID }
+                    });
                 }
                 var tileManager = this.getTileManager();
                 tileManager.abortLayerRequests(removedLayer);
@@ -698,8 +698,7 @@ define(["jquery", "underscore-min", "../Utils/Event", "moment", "../Utils/Utils"
                 this.attributionHandler = new AttributionHandler(
                     this.globe,
                     {
-                        element: (this.mizarConfiguration.attributionHandler && this.mizarConfiguration.attributionHandler.element)
-                            ? this.mizarConfiguration.attributionHandler.element : 'globeAttributions'
+                        element: (this.mizarConfiguration.attributionHandler && this.mizarConfiguration.attributionHandler.element) ? this.mizarConfiguration.attributionHandler.element : 'globeAttributions'
                     }
                 );
 
@@ -1055,7 +1054,7 @@ define(["jquery", "underscore-min", "../Utils/Event", "moment", "../Utils/Utils"
         AbstractContext.prototype.destroy = function () {
             this.hide();
             this.trackerDestroy();
-            if(this.compass) {
+            if (this.compass) {
                 this.compass.destroy();
                 this.compass = null;
             }

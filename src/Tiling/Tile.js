@@ -479,10 +479,10 @@ define(['../Renderer/BoundingBox', '../Renderer/Ray', '../Renderer/glMatrix'],
             } else {
                 var intersection = null;
 
-                for (var i = 0; indices && i < indices.length / 3; ++i) {
-                    const i0 = indices[i*3 + 0] * 3;
-                    const i1 = indices[i*3 + 1] * 3;
-                    const i2 = indices[i*3 + 2] * 3;
+                for (var j = 0; indices && j < indices.length / 3; ++j) {
+                    const i0 = indices[j*3 + 0] * 3;
+                    const i1 = indices[j*3 + 1] * 3;
+                    const i2 = indices[j*3 + 2] * 3;
 
                     var v0 = [this.vertices[i0+0], this.vertices[i0+1], this.vertices[i0+2]];
                     var v1 = [this.vertices[i1+0], this.vertices[i1+1], this.vertices[i1+2]];

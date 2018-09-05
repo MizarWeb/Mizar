@@ -27,13 +27,11 @@ define(["./utils","./abstractNode"], function(Utils, AbstractNode) {
      * @author Jean-Christophe Malapert
      */
     var Description = function(childNode) {
-        AbstractNode.prototype.constructor.call(this, childNode);
-        this.value;
+        AbstractNode.prototype.constructor.call(this, childNode);        
         var element = childNode.childNodes[0];
         if (element!= null && element.nodeType == 3) {
             this.value = (element.textContent == null) ? null : element.textContent.trim();
         }
-
     };
 
     Utils.inherits(AbstractNode , Description);

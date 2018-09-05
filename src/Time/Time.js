@@ -171,7 +171,7 @@ define(["jquery", "moment", "../Utils/Constants", "../Utils/Utils"], function ($
      * @private
      */
     function _isSampling(timeDefinition) {
-        return timeDefinition.indexOf('/') !== -1
+        return timeDefinition.indexOf('/') !== -1;
     }
 
     /**
@@ -197,7 +197,7 @@ define(["jquery", "moment", "../Utils/Constants", "../Utils/Utils"], function ($
         return interval2.from <= interval1.from && interval1.from <= interval2.to ||
                interval2.from <= interval1.to && interval1.to <= interval2.to ||
                interval1.from <= interval2.from && interval2.from <= interval1.to ||
-               interval1.from <= interval2.to && interval2.to <= interval1.to
+               interval1.from <= interval2.to && interval2.to <= interval1.to;
     }
 
     /**
@@ -212,7 +212,7 @@ define(["jquery", "moment", "../Utils/Constants", "../Utils/Utils"], function ($
         return {
             from: Moment(date).startOf(timeResolution),
             to: Moment(date).endOf(timeResolution)
-        }
+        };
     }
 
     function _isIntersect(period1, date2) {
@@ -220,7 +220,7 @@ define(["jquery", "moment", "../Utils/Constants", "../Utils/Utils"], function ($
         return interval2.from <= period1.from && period1.from <= interval2.to ||
             interval2.from <= period1.to && period1.to <= interval2.to ||
             period1.from <= interval2.from && interval2.from <= period1.to ||
-            period1.from <= interval2.to && interval2.to <= period1.to
+            period1.from <= interval2.to && interval2.to <= period1.to;
 
     }
 
@@ -297,7 +297,7 @@ define(["jquery", "moment", "../Utils/Constants", "../Utils/Utils"], function ($
                 to: _convertMoment(to)
             },
             computed: computed
-        }
+        };
     }
 
     function _convertMoment(date) {
@@ -375,7 +375,7 @@ define(["jquery", "moment", "../Utils/Constants", "../Utils/Utils"], function ($
         } else if (_isPeriod(time)) {
             result = _templateTimeTravel(time.from, time.from, time.from, time.to, false);
         } else if (_isOpenedInterval(time)) {
-            result = _templateTimeTravel(time.from, time.from, time.from, Moment(), false)
+            result = _templateTimeTravel(time.from, time.from, time.from, Moment(), false);
         } else if (_isDateString(time)) {
             result = _convertStringDateToTime(time);
         } else if (_isDate(time)) {

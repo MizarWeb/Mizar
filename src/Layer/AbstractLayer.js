@@ -895,7 +895,7 @@ define(["jquery", "underscore-min", "../Utils/Event", "moment", "../Time/Time", 
                     } else if(Time.isSampling(timeDefinition)) {
                         sampleValues.push(timeDefinition);
                     } else {
-                        console.log("This should be refactored if we handle an interval min/max at the server level")
+                        console.log("This should be refactored if we handle an interval min/max at the server level");
                     }
                 }
                 // Add distinct values in time travel

@@ -178,7 +178,7 @@ define(["jquery", "underscore-min", "../Utils/Utils", "./AbstractContext", "../U
                 publishEvent: function (message, object) {
                     self.publish(message, object);
                 }
-            }
+            };
         }
 
         /**

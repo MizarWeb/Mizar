@@ -367,7 +367,7 @@ define(["jquery", "underscore-min", "../Utils/Constants",
                 // Update name resolver properties
                 if(isDefaultNameResolver) {
                     duration = 3000;
-                    zoomFov = 15
+                    zoomFov = 15;
                 } else {
                     duration = context.getContextConfiguration().nameResolver.duration || 3000;
                     zoomFov = context.getContextConfiguration().nameResolver.zoomFov || 15;

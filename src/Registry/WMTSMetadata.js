@@ -3,9 +3,9 @@ define([], function() {
     var WMTSMetadata = function(json) {
         this.serviceIdentification = new ServiceIdentification(json.Capabilities.ServiceIdentification);
         this.serviceProvider = new ServiceProvider(json.Capabilities.ServiceProvider);
-        this.operationsMetadata;
+        //this.operationsMetadata;
         this.contents = new Contents(json.Capabilities.Contents);
-        this.themes;
+        //this.themes;
         this.serviceMetadataURL = WMTSMetadata.getValueTag(json.Capabilities._attrhref);
     };
 

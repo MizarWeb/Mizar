@@ -178,8 +178,8 @@ define(['../Tiling/Tile',
                 // Render tiles
                 this.tileManager.render();
 
-                for (var i=0;i<this.manualRendererlayers.length;i++) {
-                    this.manualRendererlayers[i].render();
+                for (var j=0;j<this.manualRendererlayers.length;j++) {
+                    this.manualRendererlayers[j].render();
                 }
             }
         };

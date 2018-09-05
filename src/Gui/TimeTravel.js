@@ -52,9 +52,9 @@ define(["jquery", "../Utils/Constants", "../Services/TimeTravelCore"],
             // Add compass object to parent element
             // Don't use <object> HTML tag due to cross-origin nature of svg
             if(parentElement == null) {
-                throw new ReferenceError("Can't get the element name from the options parameters")
+                throw new ReferenceError("Can't get the element name from the options parameters");
             } else if (document.getElementById(this.element) == null) {
-                throw new ReferenceError("Can' get the div "+parentElement+" in the web page to insert "+this.constructor.name)
+                throw new ReferenceError("Can' get the div "+parentElement+" in the web page to insert "+this.constructor.name);
             } else {
                 // OK
             }

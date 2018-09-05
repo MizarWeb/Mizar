@@ -5,7 +5,7 @@ define(["underscore-min",'../Layer/LayerFactory'], function(_, LayerFactory) {
             handleRequest: function(layerDescription, callback, fallback){
                 console.log('All strategies exhausted.');
             }
-        }
+        };
 
     } ;
 

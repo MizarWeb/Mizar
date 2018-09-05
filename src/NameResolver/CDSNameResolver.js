@@ -111,7 +111,7 @@ define(["jquery", "underscore-min", "../Utils/Constants", "../Utils/Utils", "./A
                                 name: name,
                                 credits: "Powered by <a href=\"http://cdsweb.u-strasbg.fr/cgi-bin/Sesame\">Sesame API</a> (" + feature.credit + ")"
                             }
-                        })
+                        });
                     });
 
                     // Check if response contains features

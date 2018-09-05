@@ -77,7 +77,7 @@ define(function() {
         }
         this.bufferTabBits = []; // delete old data
 
-        for (var i = 0; i < needBit; i += 1) {
+        for (i = 0; i < needBit; i += 1) {
 
             if (stream.charCodeAt(this.ptrStream) == 10) { // Line Feed (Fin de ligne)
                 i -= 1;
@@ -127,7 +127,7 @@ define(function() {
                 break;
             case 'double':
                 value = bin2double64(tabBits);
-                value = value.toFixed(this.fields[fieldNumber].precision()) // round (arrondi)
+                value = value.toFixed(this.fields[fieldNumber].precision()); // round (arrondi)
                 break;
             case 'unsignedByte':
                 value = bin2ubyte8(tabBits);

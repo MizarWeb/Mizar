@@ -3,7 +3,7 @@ define([], function () {
 
     var JsCSV = function (csv, commonSeparator, headerInfo) {
         csv = checkInputFormat(csv);
-        this.store = parseCSV(csv,commonSeparator,headerInfo)
+        this.store = parseCSV(csv,commonSeparator,headerInfo);
     };
 
     function checkInputFormat(csv) {
@@ -21,7 +21,7 @@ define([], function () {
         var rows = csv.split("\n");
         var lineWithData = 0;
         for (var i = 0; i < rows.length && isUselessRow(rows[i],commonSeparator, headerInfo.name); i++) {
-            lineWithData++
+            lineWithData++;
         }
         return parseRows(rows, lineWithData, commonSeparator, headerInfo);
 

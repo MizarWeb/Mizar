@@ -74,7 +74,6 @@ define(["../Utils/Constants", "./SegmentedAnimation", "./PathAnimation", "./Iner
                 }
                 return obj;
             }
-
-        }
+        };
     });
 

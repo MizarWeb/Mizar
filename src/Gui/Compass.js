@@ -66,7 +66,7 @@ define(["jquery", "../Utils/Constants", "../Services/CompassCore", "../Utils/Uti
             // Add compass object to parent element
             // Don't use <object> HTML tag due to cross-origin nature of svg
             if(this.parentElement == null) {
-                throw new ReferenceError("Can't get the element name from the options parameters")
+                throw new ReferenceError("Can't get the element name from the options parameters");
             } else if (document.getElementById(this.parentElement) === null) {
                 throw new ReferenceError("can't get the Div "+this.parentElement+" to insert the compass");
             } else {
@@ -262,7 +262,7 @@ define(["jquery", "../Utils/Constants", "../Services/CompassCore", "../Utils/Uti
                     });
 
                     self.south.addEventListener("click", function () {
-                        _updateNorthFromSouth(self)
+                        _updateNorthFromSouth(self);
                     });
 
                     self.northText.addEventListener("click", CompassCore._alignWithNorth);
@@ -327,7 +327,7 @@ define(["jquery", "../Utils/Constants", "../Services/CompassCore", "../Utils/Uti
             });
 
             this.south.removeEventListener("click", function () {
-                _updateNorthFromSouth(self)
+                _updateNorthFromSouth(self);
             });
 
             this.northText.removeEventListener("click", CompassCore._alignWithNorth);

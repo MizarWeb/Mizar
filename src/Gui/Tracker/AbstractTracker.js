@@ -35,9 +35,9 @@ define(["jquery", "../../Utils/Utils","../dialog/ErrorDialog"],
             this.navigation = null;
             this.element = options.element;
             if(this.element == null) {
-                throw new ReferenceError("Can't get the element name from the options parameters")
+                throw new ReferenceError("Can't get the element name from the options parameters");
             } else if (document.getElementById(this.element) == null) {
-                throw new ReferenceError("Can' get the div "+this.element+" in the web page to insert "+this.constructor.name)
+                throw new ReferenceError("Can' get the div "+this.element+" in the web page to insert "+this.constructor.name);
             } else {
                     document.getElementById(this.element).innerHTML = "";
                     if (options.position) {

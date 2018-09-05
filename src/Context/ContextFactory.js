@@ -43,24 +43,25 @@ define(["../Utils/Constants", "./PlanetContext", "./SkyContext", "./GroundContex
              * @alias module:Context.ContextFactory.create
              *
              */
-            create : function(type, configuration, options) {
+            create: function (type, configuration, options) {
                 var obj;
                 switch (type) {
-                    case Constants.CONTEXT.Planet :
-                        obj =  new PlanetContext(configuration, options);
+                    case Constants.CONTEXT.Planet:
+                        obj = new PlanetContext(configuration, options);
                         break;
-                    case Constants.CONTEXT.Sky :
+                    case Constants.CONTEXT.Sky:
                         obj = new SkyContext(configuration, options);
                         break;
-                    case Constants.CONTEXT.Ground :
+                    case Constants.CONTEXT.Ground:
                         obj = new GroundContext(configuration, options);
                         break;
                     default:
-                        throw RangeError("The type "+type+" is not allowed, A valid type is included in the list Constants.CONTEXT", "ContextFactory.js");
-                        
+                        throw RangeError("The type " + type + " is not allowed, A valid type is included in the list Constants.CONTEXT", "ContextFactory.js");
+
                 }
                 return obj;
             }
 
-        }});
+        };
+    });
 

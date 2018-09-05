@@ -73,7 +73,7 @@ define(["underscore-min", "../Utils/Utils", "xmltojson", "./WMTSMetadata", "../L
                     layers.push(layer);
                 }
                 callback(layers);
-            }, fallback)
+            }, fallback);
         };
 
 

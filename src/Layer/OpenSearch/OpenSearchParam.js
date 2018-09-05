@@ -78,8 +78,8 @@
       if (paramJson.Option !== undefined) {
         this.options = [];
         if (paramJson.Option.length !== undefined) {
-          for (var i=0;i<paramJson.Option.length;i++) {
-            this.options.push(OpenSearchUtils.getAttributeValue(paramJson.Option[i],"value"));
+          for (var j=0;j<paramJson.Option.length;j++) {
+            this.options.push(OpenSearchUtils.getAttributeValue(paramJson.Option[j],"value"));
           }
         } else {
           this.options.push(OpenSearchUtils.getAttributeValue(paramJson.Option,"value"));

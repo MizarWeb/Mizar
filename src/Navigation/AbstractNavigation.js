@@ -107,7 +107,7 @@ define(['../Utils/Utils', '../Utils/Event', '../Navigation/NavigationHandlerFact
                 inertia.onstop = function() {
                     self.donePanning();
                     self.doneRotating();
-                }
+                };
             } else {
                 inertia = null;
             }
