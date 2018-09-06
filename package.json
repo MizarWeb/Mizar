@@ -1,5 +1,5 @@
 {
-  "name": "Mizar",
+  "name": "mizar",
   "version": "1.0.0",
   "description": "API of geographical and astronomical display and navigation",
   "main": "./Mizar.min.js",
@@ -37,7 +37,7 @@
     "minor-release": "npm version minor && npm publish && git push --follow-tags",
     "major-release": "npm version major && npm publish && git push --follow-tags",
     "develop": "nodangel --ignore node_modules --ignore coverage --exec 'npm run --silent test'",
-    "conventional-changelog": "conventional-changelog -p angular -i CHANGELOG.md -w",
+    "conventional-changelog": "conventional-changelog -p angular -i CHANGELOG.md -s -r 0",
     "conventional-github-releaser": "conventional-github-releaser -p angular"
   },
   "pre-commit": [
