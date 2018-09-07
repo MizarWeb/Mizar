@@ -11,7 +11,8 @@ var mizar = new Mizar({
 
 mizar.addLayer({
     type: Mizar.LAYER.Hips,
-    baseUrl: "http://alasky.unistra.fr/DSS/DSSColor"
+    baseUrl: "http://alasky.unistra.fr/DSS/DSSColor",
+    background:true
 }, function (layerID) {
-    mizar.setBackgroundLayerByID(layerID);
+    //mizar.setBackgroundLayerByID(layerID);
 });
