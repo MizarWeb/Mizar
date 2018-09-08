@@ -11,7 +11,8 @@ mizar.addLayer({
     name: "Blue Marble",
     type: Mizar.LAYER.WMS,
     baseUrl: "http://80.158.6.138/mapserv?map=WMS_BLUEMARBLE",    
-    background: true
+    background: true,
+    visible:true
 });
 
 mizar.getActivatedContext().subscribe(Mizar.EVENT_MSG.LAYER_BACKGROUND_CHANGED, function(layer){
@@ -40,10 +41,11 @@ $("#montpellier").change(function () {
             type: Mizar.LAYER.WMS,
             baseUrl: "http://80.158.6.138/mapserv?map=WMS_PALAVAS",
             layers: "S2_PALAVAS",
-            transparent: true
+            transparent: true,
+            visible:true
         });       
     } else {
-        layer = mizar.getLayerByName("Montpellier");    
+        var layer = mizar.getLayerByName("Montpellier");    
         mizar.removeLayer(layer.ID);        
     }
 });
@@ -71,5 +73,19 @@ $("#europe").change(function () {
     } else {
         layer = mizar.getLayerByName("Europe");    
         mizar.removeLayer(layer.ID);     
+    }
+});
+
+$('#MizarCanvas').keypress(function (event) {
+    var layer = mizar.getLayerByName("Montpellier");
+    var key = String.fromCharCode(event.which);
+    if (key == 'v') {
+        layer.setVisible(!layer.isVisible());
+    }
+    else if (key == 'a') {
+        layer.setOpacity(layer.getOpacity() - 0.1);
+    }
+    else if (key == 'e') {
+        layer.setOpacity(layer.getOpacity() + 0.1);
     }
 });

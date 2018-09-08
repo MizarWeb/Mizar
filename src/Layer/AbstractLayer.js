@@ -145,8 +145,6 @@ define([
         this.baseUrl = this.options.baseUrl || "";
         this.deletable = this.options.deletable || false;
         this.dimension = this.options.dimension;
-        this.getCapabilitiesEnabled = false;
-        this.getCapabilitiesTileManager = null;
         this.callbackContext = null;
         this.linkedTo = this.options.linkedTo || "";
         this.servicesRunningOnCollection = [];
@@ -607,7 +605,6 @@ define([
             url = this.proxify(paramUrl);
             urlRaw = paramUrl;
         }
-        this.getCapabilitiesEnabled = true;
         $.ajax({
             type: "GET",
             url: url,

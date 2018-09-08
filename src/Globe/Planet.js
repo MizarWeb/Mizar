@@ -107,15 +107,7 @@ define([
             this.baseImagery = layer;
             layer.setVisible(true);
         }
-
-        // Modify the tile manager after the layer has been attached
-        if (layer.getCapabilitiesEnabled === true) {
-            // if get capabilities still not loaded, wait...
-            layer.getCapabilitiesTileManager = this.tileManager;
-        } else {
-            // ...else action !
-            this.tileManager.setImageryProvider(layer);
-        }
+        this.tileManager.setImageryProvider(layer);        
     };
 
     /**
@@ -156,20 +148,6 @@ define([
         } else {
             return 0.0;
         }
-    };
-
-    Planet.prototype.addManualRendererLayer = function(layer) {
-        this.manualRendererlayers.push(layer);
-    };
-
-    Planet.prototype.removeManualRendererLayer = function(layer) {
-        var newArray = [];
-        for (var i = 0; i < this.manualRendererlayers.length; i++) {
-            if (this.manualRendererlayers[i].ID !== layer.ID) {
-                newArray.push(this.manualRendererlayers[i]);
-            }
-        }
-        this.manualRendererlayers = newArray;
     };
 
     /**

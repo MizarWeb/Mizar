@@ -11,7 +11,8 @@ mizar.addLayer({
     name: "Blue Marble",
     type: Mizar.LAYER.WMS,
     baseUrl: "http://80.158.6.138/mapserv?map=WMS_BLUEMARBLE",    
-    background: true
+    background: true,
+    visible:true
 });
 
 var layerMontpellier;
@@ -28,8 +29,7 @@ mizar.addLayer({
 var layerEurope;
 mizar.addLayer({
     name: "Europe",
-    type: Mizar.LAYER.GeoJSON,
-    visible: true
+    type: Mizar.LAYER.GeoJSON
 }, function (layerID) {
     // get the empty layer
     layerEurope = mizar.getLayerByID(layerID);        

@@ -101,9 +101,11 @@ define([
 
         if (this.baseImagery) {
             this.removeLayer(this.baseImagery);
-            this.tileManagers[
-                this.baseImagery.tiling.coordinateSystem.getGeoideName()
-            ].setImageryProvider(null);
+            //TODO : pas certain que l'on doit appeler setImageryProvider avec null
+            // car on va détruire le tuillage
+            //this.tileManagers[
+            //    this.baseImagery.tiling.coordinateSystem.getGeoideName()
+            //].setImageryProvider(null);
             this.baseImagery = null;
         }
 
@@ -114,6 +116,7 @@ define([
             layer.visible = true;
             this.addLayer(layer);
             // Modify the tile manager after the layer has been attached
+            // peut etre une optimisation : ne pas appeller si le tuillage existe déjà
             this.tileManagers[
                 layer.tiling.coordinateSystem.getGeoideName()
             ].setImageryProvider(layer);

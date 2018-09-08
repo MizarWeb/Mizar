@@ -341,7 +341,6 @@ define([
         AbstractLayer.prototype._attach.call(this, g);
         this.extId += this.id;
         g.getTileManager().addPostRenderer(this);
-        //g.addManualRendererLayer(this);
     };
 
     /**************************************************************************************************************/
@@ -356,8 +355,6 @@ define([
         this.getGlobe()
             .getTileManager()
             .removePostRenderer(this);
-        //this.globe.vectorRendererManager.removePostRenderer(this);
-        //g.removeManualRendererLayer(this);
         AbstractLayer.prototype._detach.call(this);
     };
 

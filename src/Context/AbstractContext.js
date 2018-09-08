@@ -588,7 +588,6 @@ define([
         callback,
         fallback
     ) {
-        layerDescription.getCapabilitiesTileManager = this.globe.tileManager;
 
         var pendingLayersHandler = new PendingLayersRegistryHandler(
             this.pendingLayers,
@@ -730,7 +729,8 @@ define([
             ServiceFactory.create(
                 Constants.SERVICE.PickingManager
             ).removePickableLayer(removedLayer);
-            removedLayer._detach();
+
+            this.globe.removeLayer(removedLayer);            
         }
         return removedLayer;
     };

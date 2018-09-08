@@ -37,6 +37,12 @@ mizar.addLayer({
     irisLayerID = layerID;
 });
 
+mizar.addLayer({
+    type: Mizar.LAYER.Hips,
+    baseUrl: "http://idoc-herschel.ias.u-psud.fr/sitools/herschelhips/",
+    visible: true
+});
+
 window.onkeypress = function (event) {
     if (mode === "equatorial") {
         mizar.setBackgroundLayerByID(irisLayerID);

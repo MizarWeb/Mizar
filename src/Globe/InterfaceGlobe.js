@@ -87,6 +87,7 @@ Globe.prototype.setBaseElevation = function(layer) {};
 /**
  * Returns the elevation layer.
  * @returns {WMSElevationLayer|WCSElevationLayer|null} the layer used
+ * @implements {Globe}
  */
 Globe.prototype.getBaseElevation = function() {};
 
@@ -100,9 +101,14 @@ Globe.prototype.getBaseElevation = function() {};
  * The layer can be mainly a raster or a set of vectors.<br/>
  * In the vector case, the data is located in the <i>url</i> attribute of the layer object. In addition to the URL,
  * a <i>callback</i> attribute can be applied to the data.
+ * 
+ * A layer can be added as a background or a sub-layer on the background. When a layer is added as a background,
+ * the current layer is replaced by the new one and an [event]{@link Context#backgroundLayer:change} is fired.
+ * When a layer is added as a sub-layer, [event]{@link Context#backgroundLayer:change} is fired.
  *
  * @param {Layer} layer the layer to add
  * @fires Context#layer:add
+ * @fires Context#backgroundLayer:change
  */
 Globe.prototype.addLayer = function(layer) {};
 
@@ -210,7 +216,6 @@ Globe.prototype.getVectorRendererManager = function() {};
  * Renders the globe.
  * The pixel is expressed in the canvas frame, i.e. (0,0) corresponds to the lower-left corner of the pixel
  * (private for now because it is automatically called in requestAnimationFrame)
- * @private
  */
 Globe.prototype.render = function() {};
 

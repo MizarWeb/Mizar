@@ -122,7 +122,7 @@ define([
      * @property {int} tileErrorTreshold - tile error treshold
      * @property {boolean} continuousRendering - continuous rendering
      * @property {renderContext} [renderContext] - Rendering context
-     * @property {AbstractCrs.crsFactory} coordinateSystem - Coordinate reference system of the planet
+     * @property {Crs} coordinateSystem - Coordinate reference system of the planet
      * @property {boolean} lighting = false - Lighting
      * @property {float[]} backgroundColor = [0.0, 0.0, 0.0, 1.0] - Background color
      * @property {int} minFar
@@ -139,7 +139,7 @@ define([
      * @param {int} [options.tileErrorTreshold = 1.5] - Tile error treshold
      * @param {boolean} [options.continuousRendering = true] - continuous rendering
      * @param {renderContext} [options.renderContext] - Rendering context
-     * @param {AbstractCrs.crsFactory} options.coordinateSystem - Coordinate reference system of the planet' ground
+     * @param {Crs} options.coordinateSystem - Coordinate reference system of the planet' ground
      * @param {float} [options.radius = 10.0] - Radius object in vector length
      * @returns {AbstractGlobe.dm_ground} Ground data model.
      * @private

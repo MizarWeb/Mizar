@@ -9,7 +9,8 @@ mizar.addLayer({
     name: "IRIS",
     type: Mizar.LAYER.Hips,
     baseUrl: "http://alasky.unistra.fr/IRISColor",
-    background:true
+    background:true,
+    visible:true
 });
 
 mizar.getActivatedContext().subscribe(Mizar.EVENT_MSG.LAYER_BACKGROUND_CHANGED, function(layer){
@@ -37,7 +38,9 @@ $("#DSS").change(function () {
             name:"DSS",
             type: Mizar.LAYER.Hips,
             baseUrl: "http://alasky.unistra.fr/DSS/DSSColor",
-            visible: true
+            visible: true,
+            transparent: true,
+            opacity: 0.5
         });       
     } else {
         layer = mizar.getLayerByName(DSS);    
@@ -45,3 +48,20 @@ $("#DSS").change(function () {
     }
 });
 
+$("#2MASS").change(function () {
+    var MASS = $(this).val();
+    var checked = document.getElementById('2MASS').checked;
+    if (checked) {
+        mizar.addLayer({
+            name:"2MASS",
+            type: Mizar.LAYER.Hips,
+            baseUrl: "http://alasky.u-strasbg.fr/2MASS/H/",
+            visible: true,
+            transparent: true,
+            opacity: 0.5
+        });       
+    } else {
+        layer = mizar.getLayerByName(MASS);    
+        mizar.removeLayer(layer.ID);        
+    }
+});

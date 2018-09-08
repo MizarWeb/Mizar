@@ -117,7 +117,7 @@ define([
      * @property {int} tileErrorTreshold - tile error treshold
      * @property {boolean} continuousRendering - continuous rendering
      * @property {renderContext} [renderContext] - Rendering context
-     * @property {AbstractCrs.crsFactory} coordinateSystem - Coordinate reference system of the planet
+     * @property {Crs} coordinateSystem - Coordinate reference system of the planet
      * @property {boolean} lighting = false - Lighting
      * @property {float[]} backgroundColor = [0.0, 0.0, 0.0, 1.0] - Background color
      * @property {int} minFar
@@ -195,7 +195,7 @@ define([
      */
     SkyContext.prototype.setCoordinateSystem = function(cs) {
         if (cs.getType() !== this.getMode()) {
-            throw ReferenceError(
+            throw new ReferenceError (
                 "incompatible coordinate reference system with Sky context",
                 "SkyContex.js"
             );

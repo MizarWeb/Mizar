@@ -189,7 +189,7 @@ define([
      * @param {int} [options.tileErrorTreshold = 3] - Tile error treshold
      * @param {boolean} [options.continuousRendering = false] - continuous rendering
      * @param {renderContext} [options.renderContext] - Rendering context
-     * @param {AbstractCrs.crsFactory} options.coordinateSystem - Coordinate reference system of the planet
+     * @param {Crs} options.coordinateSystem - Coordinate reference system of the planet
      * @returns {AbstractGlobe.dm_planet} Planet data model.
      * @private
      */

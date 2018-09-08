@@ -542,6 +542,8 @@ define([
         var final_t;
         if (minChildrenIntersection && minChildrenIntersection >= 0) {
             final_t = minChildrenIntersection;
+        } else if (this.vertices == null) {
+            console.warn("vertices is null");
         } else {
             var intersection = null;
 
