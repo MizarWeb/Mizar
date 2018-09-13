@@ -31,7 +31,7 @@ define(["jquery"], function($) {
      *  Abstract Provider constructor
      * @param {object} options
      * @constructor
-     * @memberOf module:Provider
+     * @memberof module:Provider
      */
     var AbstractProvider = function(options) {
         this.options = options;
@@ -39,14 +39,14 @@ define(["jquery"], function($) {
 
     /**
      * @function loadFiles
-     * @memberOf Provider#
+     * @memberof Provider#
      * @abstract
      */
     AbstractProvider.prototype.loadFiles = function(layer, configuration) {};
 
     /**
      * @function handleFeatures
-     * @memberOf Provider#
+     * @memberof Provider#
      */
     AbstractProvider.prototype.handleFeatures = function(layer) {};
 

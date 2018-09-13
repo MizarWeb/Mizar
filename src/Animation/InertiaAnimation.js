@@ -51,10 +51,7 @@
  * @implements {Animation}
  * @todo Describes here and link to the tutos about Animation
  */
-define(["../Utils/Utils", "./AbstractAnimation"], function(
-    Utils,
-    AbstractAnimation
-) {
+define(["../Utils/Utils", "./AbstractAnimation"], function(Utils,AbstractAnimation) {
     /**************************************************************************************************************/
 
     /**
@@ -106,9 +103,10 @@ define(["../Utils/Utils", "./AbstractAnimation"], function(
      * @augments AbstractAnimation
      * @param {AbstractAnimation.inertia_configuration} options Configuration of the Inertia animation
      * @constructor
-     * @memberOf module:Animation
+     * @memberof module:Animation
      */
-    var InertiaAnimation = function(options) {
+    var InertiaAnimation = function(options) {    
+        Utils.assert(options.nav != null, "nav is required in constructor", "InertiaAnimation.js");
         AbstractAnimation.prototype.constructor.call(this);
         if (options) {
             this.panFactor = options.hasOwnProperty("panFactor")
@@ -138,7 +136,7 @@ define(["../Utils/Utils", "./AbstractAnimation"], function(
     /**
      * Updates the inertia.
      * @function update
-     * @memberOf InertiaAnimation#
+     * @memberof InertiaAnimation#
      */
     InertiaAnimation.prototype.update = function(now) {
         var hasToStop = false;
@@ -185,7 +183,7 @@ define(["../Utils/Utils", "./AbstractAnimation"], function(
      * </ul>
      * @param {int} dx x of inertiaVector Vector of movement in window coordinates(for pan and rotate inertia)
      * @param {int} dy x of inertiaVector Vector of movement in window coordinates(for pan and rotate inertia)
-     * @memberOf InertiaAnimation#
+     * @memberof InertiaAnimation#
      */
     InertiaAnimation.prototype.launch = function(type, dx, dy) {
         // Set first value

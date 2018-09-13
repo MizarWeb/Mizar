@@ -38,7 +38,7 @@ define([
      * @param {AbstractProjection.configuration} [options] - No options.
      * @constructor
      * @see {@link https://en.wikipedia.org/wiki/Mollweide_projection}
-     * @memberOf module:Projection
+     * @memberof module:Projection
      */
     var MollweideProjection = function(options) {
         AbstractProjection.prototype.constructor.call(
@@ -86,7 +86,7 @@ define([
 
     /**
      * @function unProject
-     * @memberOf MollweideProjection#
+     * @memberof MollweideProjection#
      */
     MollweideProjection.prototype.unProject = function(position3d, dest) {
         if (!dest) {
@@ -106,7 +106,7 @@ define([
 
     /**
      * @function project
-     * @memberOf MollweideProjection#
+     * @memberof MollweideProjection#
      */
     MollweideProjection.prototype.project = function(geoPos, dest) {
         if (!dest) {
@@ -130,7 +130,7 @@ define([
 
     /**
      * @function getName
-     * @memberOf MollweideProjection#
+     * @memberof MollweideProjection#
      */
     MollweideProjection.prototype.getName = function() {
         return Constants.PROJECTION.Mollweide;

@@ -20,7 +20,7 @@
 define([
     "./AbstractHipsLayer",
     "../Renderer/FeatureStyle",
-    "../Renderer/VectorRendererManager",
+    "../Renderer/RendererManager",
     "../Utils/Utils",
     "../Renderer/RendererTileData",
     "../Tiling/Tile",
@@ -31,7 +31,7 @@ define([
 ], function(
     AbstractHipsLayer,
     FeatureStyle,
-    VectorRendererManager,
+    RendererManager,
     Utils,
     RendererTileData,
     Tile,
@@ -63,7 +63,7 @@ define([
      * Create a HIPS catalogue
      * @param {AbstractLayer.hipsCat_configuration} options - Hip catalogue configuration
      * @constructor
-     * @memberOf module:Layer
+     * @memberof module:Layer
      * @see {@link http://www.ivoa.net/documents/HiPS/20170406/index.html Hips standard}
      */
     var HipsCatLayer = function(hipsMetadata, options) {
@@ -192,9 +192,9 @@ define([
      * Launches request to the HipsCatLayer service
      * @param tile
      * @param url
-     * @fires Context#startLoad
-     * @fires Context#endLoad
-     * @fires Context#features:added
+     * @fires Layer#startLoad
+     * @fires Layer#endLoad
+     * @fires Layer#features:added
      */
     HipsCatLayer.prototype.launchRequest = function(tile, url) {
         var tileData = tile.extension[this.extId];
@@ -337,7 +337,7 @@ define([
             : this.style;
 
         this.getGlobe()
-            .getVectorRendererManager()
+            .getRendererManager()
             .addGeometryToTile(this, feature.geometry, style, tile);
     };
 
@@ -395,10 +395,10 @@ define([
             for (i = 0; i < featureData.tiles.length; i++) {
                 var tile = featureData.tiles[i];
                 this.getGlobe()
-                    .getVectorRendererManager()
+                    .getRendererManager()
                     .removeGeometryFromTile(feature.geometry, tile);
                 this.getGlobe()
-                    .getVectorRendererManager()
+                    .getRendererManager()
                     .addGeometryToTile(this, feature.geometry, style, tile);
             }
         }

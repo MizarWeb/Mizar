@@ -31,7 +31,7 @@ define([
      *     Plugin to access to IMCCE name resolver
      * @augments AbstractNameResolver
      * @param {Context} options - Context
-     * @memberOf module:NameResolver
+     * @memberof module:NameResolver
      */
     var IMCCENameResolver = function(options) {
         AbstractNameResolver.prototype.constructor.call(this, options);
@@ -47,7 +47,7 @@ define([
      * Queries SSODnet using this URL https://api.ssodnet.imcce.fr/quaero/1/sso?q=<i>objectName</i>
      * and the layers
      * @function handle
-     * @memberOf IMCCENameResolver#
+     * @memberof IMCCENameResolver#
      */
     IMCCENameResolver.prototype.handle = function(options) {
         var objectName = options.objectName;
@@ -208,7 +208,7 @@ define([
 
     /**
      * @function remove
-     * @memberOf IMCCENameResolver#
+     * @memberof IMCCENameResolver#
      */
     IMCCENameResolver.prototype.remove = function() {};
 

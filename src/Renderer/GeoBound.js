@@ -58,7 +58,7 @@ define(["../Utils/Constants"], function(Constants) {
     /**
      Get geo center
      @function getCenter
-     @memberOf GeoBound.prototype
+     @memberof GeoBound.prototype
      @return {float[]} Geo center as array of 2 float
      */
     GeoBound.prototype.getCenter = function() {
@@ -72,7 +72,7 @@ define(["../Utils/Constants"], function(Constants) {
     /**
      Get North
      @function getNorth
-     @memberOf GeoBound.prototype
+     @memberof GeoBound.prototype
      @return {float} North
      */
     GeoBound.prototype.getNorth = function() {
@@ -82,7 +82,7 @@ define(["../Utils/Constants"], function(Constants) {
     /**
      Set North
      @function setNorth
-     @memberOf GeoBound.prototype
+     @memberof GeoBound.prototype
      @param {float} val
      */
     GeoBound.prototype.setNorth = function(val) {
@@ -92,7 +92,7 @@ define(["../Utils/Constants"], function(Constants) {
     /**
      Get South
      @function getSouth
-     @memberOf GeoBound.prototype
+     @memberof GeoBound.prototype
      @return {float} South
      */
     GeoBound.prototype.getSouth = function() {
@@ -102,7 +102,7 @@ define(["../Utils/Constants"], function(Constants) {
     /**
      Set South
      @function setSouth
-     @memberOf GeoBound.prototype
+     @memberof GeoBound.prototype
      @param {float} val
      */
     GeoBound.prototype.setSouth = function(val) {
@@ -112,7 +112,7 @@ define(["../Utils/Constants"], function(Constants) {
     /**
      Get West
      @function getWest
-     @memberOf GeoBound.prototype
+     @memberof GeoBound.prototype
      @return {float} West
      */
     GeoBound.prototype.getWest = function() {
@@ -122,7 +122,7 @@ define(["../Utils/Constants"], function(Constants) {
     /**
      Set West
      @function setWest
-     @memberOf GeoBound.prototype
+     @memberof GeoBound.prototype
      @param {float} val
      */
     GeoBound.prototype.setWest = function(val) {
@@ -132,7 +132,7 @@ define(["../Utils/Constants"], function(Constants) {
     /**
      Get East
      @function getEast
-     @memberOf GeoBound.prototype
+     @memberof GeoBound.prototype
      @return {float} East
      */
     GeoBound.prototype.getEast = function() {
@@ -142,7 +142,7 @@ define(["../Utils/Constants"], function(Constants) {
     /**
      Set East
      @function setEast
-     @memberOf GeoBound.prototype
+     @memberof GeoBound.prototype
      @param {float} val
      */
     GeoBound.prototype.setEast = function(val) {
@@ -152,7 +152,7 @@ define(["../Utils/Constants"], function(Constants) {
     /**
      Compute the geo bound from coordinates
      @function computeFromCoordinates
-     @memberOf GeoBound.prototype
+     @memberof GeoBound.prototype
      @param {float[][]} coordinates Coordinates as bi-dimensionnal array of float
      */
     GeoBound.prototype.computeFromCoordinates = function(coordinates) {
@@ -219,7 +219,7 @@ define(["../Utils/Constants"], function(Constants) {
     /**
      Check if a point is inside the given bound
      @function isPointInside
-     @memberOf GeoBound.prototype
+     @memberof GeoBound.prototype
      @param {Array} point The point
      @return {Boolean} return the test
      */
@@ -235,7 +235,7 @@ define(["../Utils/Constants"], function(Constants) {
     /**
      Intersects this geo bound with another one
      @function intersects
-     @memberOf GeoBound.prototype
+     @memberof GeoBound.prototype
      @param {GeoBound} geoBound Geo bound
      @return {Boolean} Intersects ?
      */
@@ -250,7 +250,7 @@ define(["../Utils/Constants"], function(Constants) {
     /**
      Intersects this geo bound with GeoJSON geometry
      @function intersectsGeometry
-     @memberOf GeoBound.prototype
+     @memberof GeoBound.prototype
      @param {JSON} geometry GeoJSON geometry
      @return {Boolean} Intersects ?
      */

@@ -28,7 +28,7 @@ define([
      * @augments AbstractVectorLayer
      * @param {AbstractLayer.geojson_configuration} options - GeoJsonLayer configuration
      * @constructor
-     * @memberOf module:Layer
+     * @memberof module:Layer
      */
     var GeoJsonLayer = function(options) {
         AbstractVectorLayer.prototype.constructor.call(
@@ -95,7 +95,7 @@ define([
     /**
      * Adds a feature collection, in GeoJSON format
      * @function addFeatureCollection
-     * @memberOf GeoJsonLayer#
+     * @memberof GeoJsonLayer#
      * @param {GeoJSON} featureCollection Feature Collection
      * @throws {ReferenceError} Error, featureCollection is null
      */
@@ -129,7 +129,7 @@ define([
     /**
      * Set data type of the GeoJSON : Point or LineString
      * @param feature
-     * @memberOf GeoJsonLayer#
+     * @memberof GeoJsonLayer#
      * @private
      */
     GeoJsonLayer.prototype._setDataType = function(feature) {
@@ -146,7 +146,7 @@ define([
     /**
      * Add a feature to the layer
      * @function addFeature
-     * @memberOf GeoJsonLayer.prototype
+     * @memberof GeoJsonLayer.prototype
      * @param {GeoJSON} feature Feature
      */
     GeoJsonLayer.prototype.addFeature = function(feature, globalCrs) {

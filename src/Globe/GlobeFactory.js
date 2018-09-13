@@ -20,7 +20,7 @@
  * @name GlobeFactory
  * @class
  * Factory to create a globe.
- * @memberOf module:Globe
+ * @memberof module:Globe
  */
 define(["./Planet", "./Sky", "../Utils/Constants"], function(
     Planet,

@@ -35,7 +35,7 @@ define([
      * @param {object} options
      * @augments AbstractProvider
      * @constructor
-     * @memberOf module:Provider
+     * @memberof module:Provider
      */
     var CraterProvider = function(options) {
         AbstractProvider.prototype.constructor.call(this, options);
@@ -51,7 +51,7 @@ define([
      * @param {Layer} layer - mizar Layer
      * @param {Object} configuration - configuration
      * @param {string} configuration.url - URL of the GeoJSON file
-     * @memberOf CraterProvider#
+     * @memberof CraterProvider#
      */
     CraterProvider.prototype.loadFiles = function(layer, configuration) {
         $.ajax({
@@ -70,7 +70,7 @@ define([
     /**
      * @function handleFeatures
      * @param {Layer} layer - mizar layer
-     * @memberOf CraterProvider#
+     * @memberof CraterProvider#
      */
     CraterProvider.prototype.handleFeatures = function(layer) {
         var crs = featureCollection.crs;

@@ -92,7 +92,7 @@ define([
      * @property {string} [time] - Time dimension
      * @property {string} [format = "image/png"] - output image format
      * @constructor
-     * @memberOf module:Layer
+     * @memberof module:Layer
      * @see {@link http://www.opengeospatial.org/standards/wmts WMTS} standard
      * @see {@link http://www.opengeospatial.org/standards/sld SLD} standard
      */
@@ -183,7 +183,7 @@ define([
     /**
      * Returns an url for the given tile
      * @function getUrl
-     * @memberOf WMTSLayer#
+     * @memberof WMTSLayer#
      * @param {Tile} tile Tile
      * @return {String} Url
      */

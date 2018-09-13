@@ -57,10 +57,14 @@ define([
      * @augments AbstractAnimation
      * @param {AbstractAnimation.path_configuration} options Configuration of the animation
      * @constructor
-     * @memberOf module:Animation
+     * @memberof module:Animation
      * @todo Create a tutorial with a simple PathAnimation on Mars
      */
     var PathAnimation = function(options) {
+        Utils.assert(Array.isArray(options.coords) 
+        && typeof(options.speed)==="number"
+        && typeof(options.setter)==="function"
+        && options.globe != null, "Missing required arguments in constructor", "PathAnimation.js");
         var i;
         var vec1, vec2;
         var dx, dy, dz;
@@ -197,7 +201,7 @@ define([
     /**
      * Sets the speed.
      * @function setSpeed
-     * @memberOf PathAnimation#
+     * @memberof PathAnimation#
      * @param {float} val Speed
      */
     PathAnimation.prototype.setSpeed = function(val) {
@@ -213,7 +217,7 @@ define([
     /**
      * Returns the speed.
      * @function getSpeed
-     * @memberOf PathAnimation#
+     * @memberof PathAnimation#
      * @return {float} Speed
      */
     PathAnimation.prototype.getSpeed = function() {
@@ -230,7 +234,7 @@ define([
     /**
      * Sets the altitude offset.
      * @function setAltitudeOffset
-     * @memberOf PathAnimation#
+     * @memberof PathAnimation#
      * @param {float} val Altitude offset
      */
     PathAnimation.prototype.setAltitudeOffset = function(val) {
@@ -240,7 +244,7 @@ define([
     /**
      * Returns the altitude offset.
      * @function getAltitudeOffset
-     * @memberOf PathAnimation#
+     * @memberof PathAnimation#
      * @return {float} Altitude offset
      */
     PathAnimation.prototype.getAltitudeOffset = function() {
@@ -250,8 +254,8 @@ define([
     /**
      * Sets the direction angle.
      * @function setDirectionAngle
-     * @memberOf PathAnimation#
-     * @param {float} vertical Direction angle
+     * @memberof PathAnimation#
+     * @param {float} vertical Direction angle in degree
      */
     PathAnimation.prototype.setDirectionAngle = function(vertical) {
         this.centerOffset = Math.tan((parseFloat(vertical) * Math.PI) / 180.0);
@@ -260,7 +264,7 @@ define([
     /**
      * Starts the animation.
      * @function start
-     * @memberOf PathAnimation#
+     * @memberof PathAnimation#
      */
     PathAnimation.prototype.start = function() {
         var previousStartTime = -1;
@@ -280,7 +284,7 @@ define([
     /**
      * Updates the animation.
      * @function update
-     * @memberOf PathAnimation
+     * @memberof PathAnimation
      * @param {float} now the date now
      */
     PathAnimation.prototype.update = function(now) {

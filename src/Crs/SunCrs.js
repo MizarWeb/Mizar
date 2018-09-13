@@ -62,7 +62,7 @@ define([
      * @augments AbstractCrs
      * @param options - No option to give.
      * @constructor
-     * @memberOf module:Crs
+     * @memberof module:Crs
      */
     var SunCrs = function(options) {
         AbstractCrs.prototype.constructor.call(this, {
@@ -83,7 +83,7 @@ define([
     /**
      * Formats coordinates as (x.xxx N, y.yyy E).
      * @function formatCoordinates
-     * @memberOf SunCrs
+     * @memberof SunCrs
      * @param {float[]} geo the spatial position in degree
      * @return {string[]} the coordinates as xx.xxx S/N xx.xxx E/W
      */
@@ -100,7 +100,7 @@ define([
 
     /**
      * @function getLongitudeLabel
-     * @memberOf SunCrs#
+     * @memberof SunCrs#
      */
     SunCrs.prototype.getLongitudeLabel = function() {
         return LONGITUDE_LABEL;
@@ -108,7 +108,7 @@ define([
 
     /**
      * @function getLatitudeLabel
-     * @memberOf SunCrs#
+     * @memberof SunCrs#
      */
     SunCrs.prototype.getLatitudeLabel = function() {
         return LATITUDE_LABEL;
@@ -117,7 +117,7 @@ define([
     /**
      * Do nothing
      * @function _setupPosAfterTrans
-     * @memberOf SunCrs#
+     * @memberof SunCrs#
      * @private
      */
     SunCrs.prototype._setupPosAfterTrans = function(posWorld) {
@@ -127,7 +127,7 @@ define([
     /**
      * Do nothing
      * @function _setupPosBeforeTrans
-     * @memberOf SunCrs#
+     * @memberof SunCrs#
      * @private
      */
     SunCrs.prototype._setupPosBeforeTrans = function(posWorld) {
@@ -136,7 +136,7 @@ define([
 
     /**
      * @function getName
-     * @memberOf SunCrs#
+     * @memberof SunCrs#
      */
     SunCrs.prototype.getName = function() {
         return Constants.CRS.Sun;
@@ -144,7 +144,7 @@ define([
 
     /**
      * @function getDescription
-     * @memberOf SunCrs#
+     * @memberof SunCrs#
      */
     SunCrs.prototype.getDescription = function() {
         return DESCRIPTION;

@@ -60,7 +60,7 @@ define([
      * @param {Mizar.configuration} mizarConfiguration - mizar configuration
      * @param {AbstractContext.skyContext} options - skyContext configuration
      * @constructor
-     * @memberOf module:Context
+     * @memberof module:Context
      */
     var SkyContext = function(mizarConfiguration, options) {
         AbstractContext.prototype.constructor.call(
@@ -106,7 +106,7 @@ define([
                 );
             }
         } catch (err) {
-            this._showUpError(this, err);
+            this._showUpError(err);
         }
     };
 
@@ -171,7 +171,7 @@ define([
 
     /**
      * @function setTimeTravelVisible
-     * @memberOf SkyContext#
+     * @memberof SkyContext#
      */
     SkyContext.prototype.setTimeTravelVisible = function(divName, visible) {
         if (visible) {
@@ -190,7 +190,7 @@ define([
 
     /**
      * @function setCoordinateSystem
-     * @memberOf SkyContext#
+     * @memberof SkyContext#
      * @throws ReferenceError - incompatible coordinate reference system with Sky context
      */
     SkyContext.prototype.setCoordinateSystem = function(cs) {
@@ -206,7 +206,7 @@ define([
 
     /**
      * @function destroy
-     * @memberOf SkyContext#
+     * @memberof SkyContext#
      */
     SkyContext.prototype.destroy = function() {
         //this.setTimeTravelVisible(false);

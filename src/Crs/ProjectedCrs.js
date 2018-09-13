@@ -38,7 +38,7 @@ define([
      * @param {Crs} cs - coordinate reference system
      * @param {AbstractProjection.configuration|AbstractProjection.azimuth_configuration|AbstractProjection.mercator_configuration} options - projection configuration
      * @constructor
-     * @memberOf module:Crs
+     * @memberof module:Crs
      * @throws {ReferenceError} Will throw when options.projectionName is not defined
      * @throws {RangeError} Will throw when options.projectionName is not part of {@link PROJECTION}
      */
@@ -67,7 +67,7 @@ define([
     /**
      * Formats the coordinates
      * @function formatCoordinates
-     * @memberOf ProjectedCrs
+     * @memberof ProjectedCrs
      * @param geo the spatial position in degrees
      * @return {string[]} the format coordinates of the geoide given in parameter
      */
@@ -77,7 +77,7 @@ define([
 
     /**
      * @function getLongitudeLabel
-     * @memberOf ProjectedCrs#
+     * @memberof ProjectedCrs#
      */
     ProjectedCrs.prototype.getLongitudeLabel = function() {
         return this.cs.getLongitudeLabel();
@@ -85,7 +85,7 @@ define([
 
     /**
      * @function getLatitudeLabel
-     * @memberOf ProjectedCrs#
+     * @memberof ProjectedCrs#
      */
     ProjectedCrs.prototype.getLatitudeLabel = function() {
         return this.cs.getLatitudeLabel();
@@ -94,7 +94,7 @@ define([
     /**
      * Returns the physical position in degrees.
      * @function getWorldFrom3D
-     * @memberOf ProjectedCrs
+     * @memberof ProjectedCrs
      * @param position3d the position in 3D
      * @param {float[]} dest the physical position
      * @return {float[]} the physical position
@@ -129,7 +129,7 @@ define([
     /**
      * Returns the local transformation
      * @function getLocalTransform
-     * @memberOf ProjectedCrs#
+     * @memberof ProjectedCrs#
      * @param {Array} geo
      * @param {Array} dest
      * @return {Array} dest Matrix as 16 values
@@ -147,7 +147,7 @@ define([
     /**
      * Returns the LHV transformation
      * @function getLHVTransform
-     * @memberOf ProjectedCrs
+     * @memberof ProjectedCrs
      * @param {Array} geo
      * @param {Array} dest
      * @return {Array} dest Matrix as 16 values
@@ -168,7 +168,7 @@ define([
     /**
      * Returns the projection.
      * @function getProjection
-     * @memberOf ProjectedCrs
+     * @memberof ProjectedCrs
      * @returns {AbstractProjection} the used projection
      */
     ProjectedCrs.prototype.getProjection = function() {
@@ -177,7 +177,7 @@ define([
 
     /**
      * @function getName
-     * @memberOf ProjectedCrs#
+     * @memberof ProjectedCrs#
      */
     ProjectedCrs.prototype.getName = function() {
         return this.cs.getName();
@@ -185,7 +185,7 @@ define([
 
     /**
      * @function getDescription
-     * @memberOf ProjectedCrs#
+     * @memberof ProjectedCrs#
      */
     ProjectedCrs.prototype.getDescription = function() {
         return this.cs.getDescription();
@@ -193,8 +193,8 @@ define([
 
     /**
      * @function isProjected
-     * @memberOf ProjectedCrs#
-     * @return {boolean} True.
+     * @memberof ProjectedCrs#
+     * @return {boolean} true.
      */
     ProjectedCrs.prototype.isProjected = function() {
         return true;

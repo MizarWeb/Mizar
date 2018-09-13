@@ -144,7 +144,7 @@ define([
      * @param {float} v - value
      * @param {float} min - min value
      * @param {float} max - max value
-     * @return {boolean} True when v is between min and max otherwise False
+     * @return {boolean} true when v is between min and max otherwise false
      */
     Utils.isValueBetween = function(v, min, max) {
         return v >= min && v <= max;
@@ -570,6 +570,23 @@ define([
             passiveSupported = false;
         }
         return passiveSupported;
+    };
+
+    /**
+     * Assert function.
+     * @param {Boolean} condition test condition
+     * @param {string} message Output when the assert is not true
+     * @param {string} [filename] where the error occurs 
+     * @throws {Error} sent message when the condition is false 
+     */
+    Utils.assert = function(condition, message, filename) {
+        if (!condition) {            
+            if (filename == null) {
+                message = filename+": "+message;    
+            }            
+            throw new Error("Assert failed" + (typeof message !== "undefined" ? " - " + message : ""));
+        }
+
     };
 
     return Utils;

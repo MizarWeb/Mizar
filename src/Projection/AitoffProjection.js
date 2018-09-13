@@ -80,7 +80,7 @@ define([
      * @augments AbstractProjection
      * @param {AbstractProjection.configuration} [options] - Aitoff projection configuration.
      * @constructor
-     * @memberOf module:Projection
+     * @memberof module:Projection
      */
     var AitoffProjection = function(options) {
         AbstractProjection.prototype.constructor.call(
@@ -106,7 +106,7 @@ define([
 
     /**
      * @function unProject
-     * @memberOf AitoffProjection#
+     * @memberof AitoffProjection#
      */
     AitoffProjection.prototype.unProject = function(position3d, dest) {
         if (!dest) {
@@ -181,7 +181,7 @@ define([
 
     /**
      * @function project
-     * @memberOf AitoffProjection#
+     * @memberof AitoffProjection#
      */
     AitoffProjection.prototype.project = function(geoPos, dest) {
         if (!dest) {
@@ -208,7 +208,7 @@ define([
 
     /**
      * @function getName
-     * @memberOf AitoffProjection#
+     * @memberof AitoffProjection#
      */
     AitoffProjection.prototype.getName = function() {
         return Constants.PROJECTION.Aitoff;

@@ -62,7 +62,7 @@ define([
      * @augments AbstractCrs
      * @param options - No option to give.
      * @constructor
-     * @memberOf module:Crs
+     * @memberof module:Crs
      */
     var Mars2000Crs = function(options) {
         AbstractCrs.prototype.constructor.call(this, {
@@ -83,7 +83,7 @@ define([
     /**
      * Formats coordinates as (x.xxx N, y.yyy E).
      * @function formatCoordinates
-     * @memberOf Mars2000Crs
+     * @memberof Mars2000Crs
      * @param {float[]} geo the spatial position in degree
      * @return {string[]} the coordinates as xx.xxx S/N xx.xxx E/W
      */
@@ -100,7 +100,7 @@ define([
 
     /**
      * @function getLongitudeLabel
-     * @memberOf Mars2000Crs#
+     * @memberof Mars2000Crs#
      */
     Mars2000Crs.prototype.getLongitudeLabel = function() {
         return LONGITUDE_LABEL;
@@ -108,7 +108,7 @@ define([
 
     /**
      * @function getLatitudeLabel
-     * @memberOf Mars2000Crs#
+     * @memberof Mars2000Crs#
      */
     Mars2000Crs.prototype.getLatitudeLabel = function() {
         return LATITUDE_LABEL;
@@ -117,7 +117,7 @@ define([
     /**
      * Do nothing
      * @function _setupPosAfterTrans
-     * @memberOf Mars2000Crs
+     * @memberof Mars2000Crs
      * @private
      */
     Mars2000Crs.prototype._setupPosAfterTrans = function(posWorld) {
@@ -127,7 +127,7 @@ define([
     /**
      * Do nothing
      * @function _setupPosBeforeTrans
-     * @memberOf Mars2000Crs
+     * @memberof Mars2000Crs
      * @private
      */
     Mars2000Crs.prototype._setupPosBeforeTrans = function(posWorld) {
@@ -136,7 +136,7 @@ define([
 
     /**
      * @function getName
-     * @memberOf Mars2000Crs#
+     * @memberof Mars2000Crs#
      */
     Mars2000Crs.prototype.getName = function() {
         return Constants.CRS.Mars_2000;
@@ -144,7 +144,7 @@ define([
 
     /**
      * @function getDescription
-     * @memberOf Mars2000Crs#
+     * @memberof Mars2000Crs#
      */
     Mars2000Crs.prototype.getDescription = function() {
         return DESCRIPTION;

@@ -56,11 +56,11 @@ define([
      * @augments AbstractHipsLayer
      * @param {HipsMetadata} hipsMetadata
      * @param {AbstractHipsLayer.graphic_configuration} options - HipsGraphic configuration
-     * @memberOf module:Layer
+     * @memberof module:Layer
      * @see {@link http://www.ivoa.net/documents/HiPS/20170406/index.html Hips standard}
-     * @fires Context#baseLayersError
+     * @fires Layer#baseLayersError
      */
-    var HipsGraphicLayer = function(hipsMetadata, options) {
+    var HipsGraphicLayer = function(hipsMetadata, options) {        
         //options.format = options.format || "jpg";
         AbstractHipsLayer.prototype.constructor.call(
             this,
@@ -68,13 +68,16 @@ define([
             options
         );
 
+        this._ready = false;
+        
+
         // allsky
         this.levelZeroImage = new Image();
         var self = this;
         this.levelZeroImage.crossOrigin = "";
         this.levelZeroImage.onload = function() {
             self._ready = true;
-
+            console.log("ready ok");
             // Call callback if set
             if (options.onready && options.onready instanceof Function) {
                 options.onready(self);
@@ -97,7 +100,6 @@ define([
             console.error("Cannot load " + self.levelZeroImage.src);
         };
 
-        this._ready = false;
     };
 
     /**************************************************************************************************************/
@@ -109,7 +111,7 @@ define([
     /**
      * Attaches the raster layer to the planet.
      * @function _attach
-     * @memberOf HipsGraphicLayer#
+     * @memberof HipsGraphicLayer#
      * @param g Globe
      * @private
      */
@@ -117,18 +119,27 @@ define([
         AbstractHipsLayer.prototype._attach.call(this, g);
 
         // Load level zero image now, only for background
-        if (!this._overlay && this.isVisible()) {
+        this.loadOverview();
+    };
+
+    /**
+     * Loads image overview
+     * @function loadOverview
+     * @memberof HipsGraphicLayer
+     */
+    HipsGraphicLayer.prototype.loadOverview = function() {
+        if (this.isBackground()) {
             this.levelZeroImage.src =
                 this.proxify(this.baseUrl) + "/Norder3/Allsky." + this.format;
         }
-    };
+    }
 
     /**************************************************************************************************************/
 
     /**
      * Returns an url from a given tile.
      * @function getUrl
-     * @memberOf HipsGraphicLayer#
+     * @memberof HipsGraphicLayer#
      * @param {Tile} tile Tile
      * @return {String} Url
      */
@@ -154,7 +165,7 @@ define([
     /**
      * Generates the level0 texture for the tiles.
      * @function generateLevel0Textures
-     * @memberOf HipsGraphicLayer
+     * @memberof HipsGraphicLayer
      * @param {Tile} tiles
      * @param {TilePool} tilePool
      */

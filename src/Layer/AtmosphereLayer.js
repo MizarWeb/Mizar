@@ -91,7 +91,7 @@ define([
      * @augments AbstractLayer
      * @param {AbstractLayer.atmosphere_configuration} options - Atmosphere configuration.
      * @constructor
-     * @memberOf module:Layer
+     * @memberof module:Layer
      */
     var AtmosphereLayer = function(options) {
         var currentDate = new Date();
@@ -165,9 +165,17 @@ define([
     }
 
     /**
+     * @function getInformationType
+     * @memberof AtmosphereLayer#
+     */
+    AtmosphereLayer.prototype.getInformationType = function() {
+        return Constants.INFORMATION_TYPE.ATMOSPHERE;
+    }    
+
+    /**
      * Attaches the atmosphere layer to the planet.
      * @function _attach
-     * @memberOf AtmosphereLayer#
+     * @memberof AtmosphereLayer#
      * @param {Planet} g Planet
      * @private
      */
@@ -293,7 +301,7 @@ define([
     /**
      * Initializes uniforms.
      * @function _initUniforms
-     * @memberOf AtmosphereLayer#
+     * @memberof AtmosphereLayer#
      * @param uniforms
      * @private
      */

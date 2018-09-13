@@ -22,7 +22,7 @@ define(["jquery", "moment", "../Utils/Constants", "../Utils/Utils"], function(
      * Get the start date
      * @function getStart
      * @return {Date} Start date
-     * @memberOf TimeSample#
+     * @memberof TimeSample#
      */
     TimeSample.prototype.getStart = function() {
         return this.start;
@@ -34,7 +34,7 @@ define(["jquery", "moment", "../Utils/Constants", "../Utils/Utils"], function(
      * Set the start date of sample
      * @function setStart
      * @param {Date} date Start date
-     * @memberOf TimeSample#
+     * @memberof TimeSample#
      */
     TimeSample.prototype.setStart = function(date) {
         this.start = Moment.utc(date);
@@ -46,7 +46,7 @@ define(["jquery", "moment", "../Utils/Constants", "../Utils/Utils"], function(
      * Get the end date
      * @function getEnd
      * @return {Date} End date
-     * @memberOf TimeSample#
+     * @memberof TimeSample#
      */
     TimeSample.prototype.getEnd = function() {
         return this.end;
@@ -58,7 +58,7 @@ define(["jquery", "moment", "../Utils/Constants", "../Utils/Utils"], function(
      * Set the end date
      * @function setEnd
      * @param {Date} date End date
-     * @memberOf TimeSample#
+     * @memberof TimeSample#
      */
     TimeSample.prototype.setEnd = function(date) {
         this.end = Moment.utc(date);
@@ -70,7 +70,7 @@ define(["jquery", "moment", "../Utils/Constants", "../Utils/Utils"], function(
      * Get the step value
      * @function getStepValue
      * @return {Integer} Step value
-     * @memberOf TimeSample#
+     * @memberof TimeSample#
      */
     TimeSample.prototype.getStepValue = function() {
         return this.stepValue;
@@ -82,7 +82,7 @@ define(["jquery", "moment", "../Utils/Constants", "../Utils/Utils"], function(
      * Set the step value
      * @function setStepValue
      * @param {Integer} stepValue Step value
-     * @memberOf TimeSample#
+     * @memberof TimeSample#
      */
     TimeSample.prototype.setStepValue = function(stepValue) {
         this.stepValue = stepValue;
@@ -94,7 +94,7 @@ define(["jquery", "moment", "../Utils/Constants", "../Utils/Utils"], function(
      * Get the step kind
      * @function getStepKind
      * @return {String} Step kind
-     * @memberOf TimeSample#
+     * @memberof TimeSample#
      */
     TimeSample.prototype.getStepKind = function() {
         return this.stepKind;
@@ -106,7 +106,7 @@ define(["jquery", "moment", "../Utils/Constants", "../Utils/Utils"], function(
      * Set the step kind
      * @function setStepKind
      * @param {String} stepKind Step kind
-     * @memberOf TimeSample#
+     * @memberof TimeSample#
      */
     TimeSample.prototype.setStepKind = function(stepKind) {
         this.stepKind = stepKind;
@@ -118,7 +118,7 @@ define(["jquery", "moment", "../Utils/Constants", "../Utils/Utils"], function(
      * Set the layer ID
      * @function setLayerID
      * @param {String} layerID Layer ID
-     * @memberOf TimeSample#
+     * @memberof TimeSample#
      */
     TimeSample.prototype.setLayerID = function(layerID) {
         this.layerID = layerID;
@@ -130,7 +130,7 @@ define(["jquery", "moment", "../Utils/Constants", "../Utils/Utils"], function(
      * Get the layer ID
      * @function getLayerID
      * @return {String} Layer ID
-     * @memberOf TimeSample#
+     * @memberof TimeSample#
      */
     TimeSample.prototype.getLayerID = function() {
         return this.layerID;
@@ -142,7 +142,7 @@ define(["jquery", "moment", "../Utils/Constants", "../Utils/Utils"], function(
      * Get next date
      * @function getNextDate
      * @return {Date} Next date
-     * @memberOf TimeSample#
+     * @memberof TimeSample#
      */
     TimeSample.prototype.getNextDate = function(date) {
         var nextDate = null;
@@ -159,7 +159,7 @@ define(["jquery", "moment", "../Utils/Constants", "../Utils/Utils"], function(
      * Get previous date
      * @function getPreviousDate
      * @return {Date} Previous date
-     * @memberOf TimeSample#
+     * @memberof TimeSample#
      */
     TimeSample.prototype.getPreviousDate = function(date) {
         var previousDate = null;
@@ -176,7 +176,7 @@ define(["jquery", "moment", "../Utils/Constants", "../Utils/Utils"], function(
      * Get first date AFTER a specified date
      * @function getFirstDateAfter
      * @param {Date} date Date
-     * @memberOf TimeSample#
+     * @memberof TimeSample#
      */
     TimeSample.prototype.getFirstDateAfter = function(date) {
         var foundDate = null;
@@ -232,7 +232,7 @@ define(["jquery", "moment", "../Utils/Constants", "../Utils/Utils"], function(
      * Get first date BEFORE a specified date
      * @function getFirstDateBefore
      * @param {Date} date Date
-     * @memberOf TimeSample#
+     * @memberof TimeSample#
      */
     TimeSample.prototype.getFirstDateBefore = function(date) {
         var foundDate = null;
@@ -289,7 +289,7 @@ define(["jquery", "moment", "../Utils/Constants", "../Utils/Utils"], function(
      * Get min date
      * @function getMinDate
      * @return {Date} Min date or null
-     * @memberOf TimeSample#
+     * @memberof TimeSample#
      */
     TimeSample.prototype.getMinDate = function() {
         return this.getStart();
@@ -301,7 +301,7 @@ define(["jquery", "moment", "../Utils/Constants", "../Utils/Utils"], function(
      * Get max date
      * @function getMaxDate
      * @return {Date} Max date or null
-     * @memberOf TimeSample#
+     * @memberof TimeSample#
      */
     TimeSample.prototype.getMaxDate = function() {
         return this.getEnd();
@@ -313,7 +313,7 @@ define(["jquery", "moment", "../Utils/Constants", "../Utils/Utils"], function(
      * Get string representation
      * @function toString
      * @return {String} String representation
-     * @memberOf TimeSample#
+     * @memberof TimeSample#
      */
     TimeSample.prototype.toString = function() {
         return (

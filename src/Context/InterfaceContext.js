@@ -18,108 +18,6 @@
  ******************************************************************************/
 
 /**
- * Camera view event.<br/>
- * Called when the view of the camera has changed (pan, rotate, ...)
- * @event Context#modifiedNavigation
- */
-
-/**
- * Start navigation.<br/>
- * Called when navigation is started (by the user or through animation)
- * @event Context#startNavigation
- */
-
-/**
- * End navigation.<br/>
- * Called when navigation is ended (by the user or through animation)
- * @event Context#endNavigation
- */
-
-/**
- * startLoad.<br/>
- * Called when a layer start to be loaded
- * @event Context#startLoad
- * @type {Layer}
- */
-
-/**
- * endLoad.<br/>
- * Called when layer end loading
- * @event Context#endLoad
- * @type {Layer}
- */
-
-/**
- * backgroundLayer.<br/>
- * Called when a layer is loaded as background
- * @event Context#backgroundLayer
- * @type {Layer}
- */
-
-/**
- * baseLayersError.<br/>
- *
- * @event Context#baseLayersError
- * @type {Layer}
- */
-
-/**
- * baseLayersReady.<br/>
- *
- * @event Context#baseLayersReady
- * @type {Layer|boolean}
- */
-
-/**
- * startBackgroundLoad.<br/>
- * Called when background layers (imagery and/or elevation) start to be loaded
- * @event Context#startBackgroundLoad
- */
-
-/**
- * endBackgroundLoad.<br/>
- * Called when background layers (imagery and/or elevation) end loading
- * @event Context#endBackgroundLoad
- */
-
-/**
- * visibility:changed.<br/>
- * Called when the visibility of a layer changes
- * @event Layer#visibility:changed
- * @type {Layer}
- */
-
-/**
- * opacity:changed.<br/>
- * Called when the opacity of a layer changes
- * @event Layer#opacity:changed
- * @type {Layer}
- */
-
-/**
- * features:added.<br/>
- * Called when data coming from a GeoJSON are added
- * @event Context#features:added
- * @type {Object}
- * @property {Layer} layer
- * @property {Object} features
- */
-
-/**
- * layer:add.<br/>
- * Called when a layer is added
- * @event Context#layer:add
- * @see {@link Layer}
- */
-
-/**
- * layer:remove.<br/>
- * Called when a layer is removed
- * @event Context#layer:remove
- * @see {@link Layer}
- */
-
-/**
  * modifiedCrs.<br/>
  * Called when a CRS changes
  * @event Context#modifiedCrs
@@ -212,7 +110,7 @@ Context.prototype.setTimeTravelVisible = function(divName, visible) {};
 /**
  * Sets the UI component visibility.
  * @param {string} componentId - Id of the component
- * @param {boolean} isVisible - Sets to True when the component must be visible
+ * @param {boolean} isVisible - Sets to true when the component must be visible
  */
 Context.prototype.setComponentVisibility = function(componentId, isVisible) {};
 
@@ -314,14 +212,16 @@ Context.prototype.getLayerByName = function(layerName) {};
  * Sets the background survey.
  * @param {string} survey The name of the layer
  * @return {Layer|undefined} the layer which has been added to the background
- * @fires Context#backgroundLayer:change
+ * @fires Layer#backgroundLayer:error
  */
 Context.prototype.setBackgroundLayer = function(survey) {};
+
 
 /**
  * Sets the background survey by layer ID.
  * @param {string} surveyID The name of the layer
  * @return {Layer|undefined} the layer which has been added to the background
+ * @fires Layer#backgroundLayer:error 
  */
 Context.prototype.setBackgroundLayerByID = function(surveyID) {};
 

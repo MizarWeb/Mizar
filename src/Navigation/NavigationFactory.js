@@ -20,7 +20,7 @@
  * @name NavigationFactory
  * @class
  * Factory to control the camera.
- * @memberOf module:Navigation
+ * @memberof module:Navigation
  */
 define([
     "./PlanetNavigation",

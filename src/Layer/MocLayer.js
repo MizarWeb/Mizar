@@ -67,7 +67,7 @@ define([
      * This layer draws a MOC data
      * @augments AbstractLayer
      * @param {AbstractLayer.moc_configuration} options - Moc layer configuration
-     * @memberOf module:Layer
+     * @memberof module:Layer
      * @see {@link http://www.ivoa.net/documents/MOC/20140602/index.html Moc}
      */
     var MocLayer = function(options) {
@@ -112,9 +112,17 @@ define([
     /**************************************************************************************************************/
 
     /**
+     * @function getInformationType
+     * @memberof MocLayer#
+     */
+    MocLayer.prototype.getInformationType = function() {
+        return Constants.INFORMATION_TYPE.VECTOR;
+    }
+
+    /**
      * Attaches the layer to the planet
      * @function _attach
-     * @memberOf MocLayer#
+     * @memberof MocLayer#
      * @param g Planet
      * @protected
      */
@@ -197,7 +205,7 @@ define([
     /**
      * Generates moc data on tiles.
      * @function generate
-     * @memberOf MocLayer#
+     * @memberof MocLayer#
      * @param {Tile} tile Tile
      */
     MocLayer.prototype.generate = function(tile) {
@@ -206,7 +214,7 @@ define([
             if (geometries) {
                 for (var i = 0; i < geometries.length; i++) {
                     this.getGlobe()
-                        .getVectorRendererManager()
+                        .getRendererManager()
                         .addGeometryToTile(
                             this,
                             geometries[i],
@@ -223,7 +231,7 @@ define([
     /**
      * Renders
      * @function render
-     * @memberOf MocLayer#
+     * @memberof MocLayer#
      */
     MocLayer.prototype.render = function() {
         // No rendering
@@ -234,7 +242,7 @@ define([
     /**
      * Detaches the layer from the planet
      * @function _detach
-     * @memberOf MocLayer#
+     * @memberof MocLayer#
      * @private
      */
     MocLayer.prototype._detach = function() {
@@ -245,7 +253,7 @@ define([
                 ];
                 for (var i = 0; i < this.featuresSet[tileIndex].length; i++) {
                     this.getGlobe()
-                        .getVectorRendererManager()
+                        .getRendererManager()
                         .removeGeometryFromTile(
                             this.featuresSet[tileIndex][i],
                             tile
@@ -266,7 +274,7 @@ define([
     /**
      * Returns children indices of starting tiling order.
      * @function findChildIndices
-     * @memberOf MocLayer#
+     * @memberof MocLayer#
      * @param index Parent index
      * @param order Parent order
      */
@@ -292,7 +300,7 @@ define([
     /**
      * Returns index of parent of starting tiling order.
      * @function findParentIndex
-     * @memberOf MocLayer#
+     * @memberof MocLayer#
      * @param index Child index
      * @param order Child order
      */
@@ -307,7 +315,7 @@ define([
     /**
      * Handles MOC response.
      * @function handleDistribution
-     * @memberOf MocLayer#
+     * @memberof MocLayer#
      * @param response MOC response
      */
     MocLayer.prototype.handleDistribution = function(response) {
@@ -428,7 +436,7 @@ define([
 
                     this.featuresSet[parentIndex].push(geometry);
                     this.getGlobe()
-                        .getVectorRendererManager()
+                        .getRendererManager()
                         .addGeometryToTile(
                             this,
                             geometry,

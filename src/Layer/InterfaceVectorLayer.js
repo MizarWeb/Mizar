@@ -87,7 +87,7 @@ AbstractVectorLayer.prototype._addFeatureToRenderers = function(feature) {};
 /**
  * Removes a feature from renderers.
  * @param {GeoJSON} feature Feature
- * @returns {boolean} True when the feature is removed from the globe otherwise False
+ * @returns {boolean} true when the feature is removed from the globe otherwise false
  * @private
  */
 AbstractVectorLayer.prototype._removeFeatureFromRenderers = function(

@@ -62,7 +62,7 @@ define([
      * @augments AbstractCrs
      * @param options - No option to give.
      * @constructor
-     * @memberOf module:Crs
+     * @memberof module:Crs
      */
     var HorizontalLocalCrs = function(options) {
         AbstractCrs.prototype.constructor.call(this, {
@@ -83,7 +83,7 @@ define([
     /**
      * Formats coordinates as (x.xxx N, y.yyy E).
      * @function formatCoordinates
-     * @memberOf HorizontalLocalCrs
+     * @memberof HorizontalLocalCrs
      * @param {float[]} geo the spatial position in degree
      * @return {string[]} the coordinates as xx.xxx S/N xx.xxx E/W
      */
@@ -100,7 +100,7 @@ define([
 
     /**
      * @function getLongitudeLabel
-     * @memberOf HorizontalLocalCrs#
+     * @memberof HorizontalLocalCrs#
      */
     HorizontalLocalCrs.prototype.getLongitudeLabel = function() {
         return LONGITUDE_LABEL;
@@ -108,7 +108,7 @@ define([
 
     /**
      * @function getLatitudeLabel
-     * @memberOf HorizontalLocalCrs#
+     * @memberof HorizontalLocalCrs#
      */
     HorizontalLocalCrs.prototype.getLatitudeLabel = function() {
         return LATITUDE_LABEL;
@@ -117,7 +117,7 @@ define([
     /**
      * Do nothing
      * @function _setupPosAfterTrans
-     * @memberOf HorizontalLocalCrs
+     * @memberof HorizontalLocalCrs
      * @private
      */
     HorizontalLocalCrs.prototype._setupPosAfterTrans = function(posWorld) {
@@ -131,7 +131,7 @@ define([
     /**
      * Do nothing
      * @function _setupPosBeforeTrans
-     * @memberOf HorizontalLocalCrs
+     * @memberof HorizontalLocalCrs
      * @private
      */
     HorizontalLocalCrs.prototype._setupPosBeforeTrans = function(posWorld) {
@@ -144,7 +144,7 @@ define([
 
     /**
      * @function getName
-     * @memberOf HorizontalLocalCrs#
+     * @memberof HorizontalLocalCrs#
      */
     HorizontalLocalCrs.prototype.getName = function() {
         return Constants.CRS.HorizontalLocal;
@@ -152,7 +152,7 @@ define([
 
     /**
      * @function getDescription
-     * @memberOf HorizontalLocalCrs#
+     * @memberof HorizontalLocalCrs#
      */
     HorizontalLocalCrs.prototype.getDescription = function() {
         return DESCRIPTION;

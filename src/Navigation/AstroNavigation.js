@@ -159,7 +159,7 @@ define([
      * @param {SkyContext} ctx - Sky context
      * @param {AbstractNavigation.astro_configuration} options - navigation configuration
      * @constructor
-     * @memberOf module:Navigation
+     * @memberof module:Navigation
      */
     var AstroNavigation = function(ctx, options) {
         AbstractNavigation.prototype.constructor.call(
@@ -344,7 +344,8 @@ define([
      * @param {number} destDistance - Final zooming distance in meter
      * @param {Object} [options] - options
      * @param {Object} [options.callback] - Callback function to call when it is defined.
-     * @private
+     * @private  
+     * @fires Navigation#navigation:changedDistance       
      */
     function _addStop(animation, ctx, destDistance, options) {
         animation.onstop = function() {
@@ -393,7 +394,7 @@ define([
     /**
      * Returns the center of the navigation.
      * @function getCenter
-     * @memberOf AstroNavigation#
+     * @memberof AstroNavigation#
      * @return {float[]}
      */
     AstroNavigation.prototype.getCenter = function() {
@@ -415,7 +416,7 @@ define([
      * @param {float} [options.fov = DEFAULT_FINAL_FOV] - field of view in degree
      * @param {int} [options.duration = DEFAULT_DURATION_ZOOM] - duration of the animation in milliseconds
      * @param {navigationCallback} [options.callback] - Called at the end of navigation
-     * @memberOf AstroNavigation#
+     * @memberof AstroNavigation#
      */
     AstroNavigation.prototype.zoomTo = function(geoPos, options) {
         var navigation = this;
@@ -475,7 +476,7 @@ define([
     /**
      * Moves up vector.
      * @function moveUpTo
-     * @memberOf AstroNavigation#
+     * @memberof AstroNavigation#
      * @param {float[]} vec Vector
      * @param {int} [duration = DEFAULT_DURATION_NORTH] - Duration of animation in milliseconds
      */
@@ -501,7 +502,7 @@ define([
     /**
      * Computes the view matrix
      * @function computeViewMatrix
-     * @memberOf AstroNavigation#
+     * @memberof AstroNavigation#
      */
     AstroNavigation.prototype.computeViewMatrix = function() {
         vec3.normalize(this.center3d);
@@ -515,7 +516,7 @@ define([
     /**
      * Event handler for mouse wheel
      * @function zoom
-     * @memberOf AstroNavigation#
+     * @memberof AstroNavigation#
      * @param {float} delta Delta zoom
      * @param {float} scale Scale
      */
@@ -539,7 +540,7 @@ define([
     /**
      * Pan the navigation by computing the difference between 3D centers
      * @function pan
-     * @memberOf AstroNavigation#
+     * @memberof AstroNavigation#
      * @param {int} dx Window delta x
      * @param {int} dy Window delta y
      */
@@ -562,7 +563,7 @@ define([
     /**
      * Rotates the navigation
      * @function rotate
-     * @memberOf AstroNavigation#
+     * @memberof AstroNavigation#
      * @param {float} dx Window delta x
      */
     AstroNavigation.prototype.rotate = function(dx) {
@@ -576,7 +577,7 @@ define([
     /**
      * Clamping of fov
      * @function _clampFov
-     * @memberOf AstroNavigation#
+     * @memberof AstroNavigation#
      * @private
      */
     AstroNavigation.prototype._clampFov = function() {
@@ -591,7 +592,7 @@ define([
     /**
      * Destroy
      * @function destroy
-     * @memberOf AstroNavigation#
+     * @memberof AstroNavigation#
      */
     AstroNavigation.prototype.destroy = function() {
         AbstractNavigation.prototype.destroy.call(this);

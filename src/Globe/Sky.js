@@ -53,7 +53,7 @@ define([
      * @augments AbstractGlobe
      * @param {AbstractGlobe.configuration} options - Sky configuration
      * @constructor
-     * @memberOf module:Globe
+     * @memberof module:Globe
      */
     var Sky = function(options) {
         AbstractGlobe.prototype.constructor.call(
@@ -61,7 +61,6 @@ define([
             Constants.GLOBE.Sky,
             options
         );
-        this.sky = true;
         this.tilePool = new TilePool(this.renderContext);
 
         this.tileManagers = {
@@ -79,55 +78,64 @@ define([
 
     /**
      * @function dispose
-     * @memberOf Sky#
+     * @memberof Sky#
      */
     Sky.prototype.dispose = function() {
         for (var x in this.tileManagers) {
             if (this.tileManagers.hasOwnProperty(x)) {
-                this.tileManagers[x].tilePool.disposeAll();
                 this.tileManagers[x].reset();
+                this.tileManagers[x].tilePool.disposeAll();
             }
         }
     };
 
     /**
      * @function setBaseImagery
-     * @memberOf Sky#
+     * @memberof Sky#
+     * @throws {RangeError} Layer must be set
      **/
     Sky.prototype.setBaseImagery = function(layer) {
+
+        if (layer == null) {
+            throw new RangeError(
+                "layer must be exist.",
+                "Sky.js"
+            );
+        }
+
         if (this.baseImagery === layer) {
             return;
         }
 
         if (this.baseImagery) {
-            this.removeLayer(this.baseImagery);
-            //TODO : pas certain que l'on doit appeler setImageryProvider avec null
-            // car on va détruire le tuillage
-            //this.tileManagers[
-            //    this.baseImagery.tiling.coordinateSystem.getGeoideName()
-            //].setImageryProvider(null);
+            this.tileManagers[
+                this.baseImagery.tiling.coordinateSystem.getGeoideName()
+            ].setImageryProvider(null);
             this.baseImagery = null;
         }
 
-        // Attach the layer to the globe
-        if (layer) {
-            layer._overlay = false;
-            layer.background = true;
-            layer.visible = true;
+        layer.loadOverview();
+        
+        // Attach the layer to the globe      
+        this.definedBackgound = true;
+        if (layer.isDetached()) {
             this.addLayer(layer);
-            // Modify the tile manager after the layer has been attached
-            // peut etre une optimisation : ne pas appeller si le tuillage existe déjà
-            this.tileManagers[
-                layer.tiling.coordinateSystem.getGeoideName()
-            ].setImageryProvider(layer);
-            this.baseImagery = layer;
-            layer.setVisible(true);
         }
+        this.tileManagers[
+            layer.tiling.coordinateSystem.getGeoideName()
+        ].setImageryProvider(layer);
+        this.baseImagery = layer;
+        this.publishEvent(
+            Constants.EVENT_MSG.LAYER_BACKGROUND_CHANGED,
+            layer
+        );
+        layer.setVisible(true);
+    
     };
 
     /**
      * @function render
-     * @memberOf Sky#
+     * @memberof Sky#
      */
     Sky.prototype.render = function() {
         // Render tiles manager
@@ -139,12 +147,12 @@ define([
 
     /**
      * @function destroy
-     * @memberOf Sky#
+     * @memberof Sky#
      */
     Sky.prototype.destroy = function() {
         AbstractGlobe.prototype.destroy.call(this);
-        this.tileManagers.Galactic.tilePool.disposeAll();
         this.tileManagers.Galactic.reset();
+        this.tileManagers.Galactic.tilePool.disposeAll();
         this.tileManagers = null;
     };
 

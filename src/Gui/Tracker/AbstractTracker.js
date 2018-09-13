@@ -58,7 +58,7 @@ define(["jquery", "../../Utils/Utils", "../dialog/ErrorDialog"], function(
     /**
      * Returns the navigation.
      * @function _getNavigation
-     * @memberOf AbstractTracker#
+     * @memberof AbstractTracker#
      */
     AbstractTracker.prototype._getNavigation = function() {
         return this.navigation;
@@ -67,7 +67,7 @@ define(["jquery", "../../Utils/Utils", "../dialog/ErrorDialog"], function(
     /**
      * Sets the navigation
      * @function _setNavigation
-     * @memberOf AbstractTracker#
+     * @memberof AbstractTracker#
      */
     AbstractTracker.prototype._setNavigation = function(navigation) {
         this.navigation = navigation;
@@ -76,7 +76,7 @@ define(["jquery", "../../Utils/Utils", "../dialog/ErrorDialog"], function(
     /**
      * Returns the globe.
      * @function _getGlobe
-     * @memberOf AbstractTracker#
+     * @memberof AbstractTracker#
      */
     AbstractTracker.prototype._getGlobe = function() {
         return this.globe;
@@ -85,7 +85,7 @@ define(["jquery", "../../Utils/Utils", "../dialog/ErrorDialog"], function(
     /**
      * Sets the globe
      * @function _setGlobe
-     * @memberOf AbstractTracker#
+     * @memberof AbstractTracker#
      */
     AbstractTracker.prototype._setGlobe = function(globe) {
         this.globe = globe;
@@ -94,7 +94,7 @@ define(["jquery", "../../Utils/Utils", "../dialog/ErrorDialog"], function(
     /**
      * Returns the DIV element in which the result is written.
      * @function _getElement
-     * @memberOf AbstractTracker#
+     * @memberof AbstractTracker#
      */
     AbstractTracker.prototype._getElement = function() {
         return this.element;
@@ -103,7 +103,7 @@ define(["jquery", "../../Utils/Utils", "../dialog/ErrorDialog"], function(
     /**
      * Updates the tracker.
      * @function update
-     * @memberOf AbstractTracker#
+     * @memberof AbstractTracker#
      * @abstract
      */
     AbstractTracker.prototype.update = function(event) {
@@ -115,7 +115,7 @@ define(["jquery", "../../Utils/Utils", "../dialog/ErrorDialog"], function(
 
     /**
      * @function compute
-     * @memberOf AbstractTracker#
+     * @memberof AbstractTracker#
      * @abstract
      */
     AbstractTracker.prototype.compute = function(geoPosition) {
@@ -128,7 +128,7 @@ define(["jquery", "../../Utils/Utils", "../dialog/ErrorDialog"], function(
     /**
      * Attachs the tracker to the globe.
      * @function attachTo
-     * @memberOf AbstractTracker#
+     * @memberof AbstractTracker#
      */
     AbstractTracker.prototype.attachTo = function(context) {
         this._setGlobe(context._getGlobe());
@@ -151,7 +151,7 @@ define(["jquery", "../../Utils/Utils", "../dialog/ErrorDialog"], function(
     /**
      * Detachs the tracker from the globe.
      * @function detach
-     * @memberOf AbstractTracker#
+     * @memberof AbstractTracker#
      */
     AbstractTracker.prototype.detach = function() {
         document.getElementById(this._getElement()).innerHTML = "";
@@ -168,7 +168,7 @@ define(["jquery", "../../Utils/Utils", "../dialog/ErrorDialog"], function(
     /**
      * Destroys the elements.
      * @function destroy
-     * @memberOf AbstractTracker#
+     * @memberof AbstractTracker#
      */
     AbstractTracker.prototype.destroy = function() {
         document.getElementById(this._getElement()).innerHTML = "";

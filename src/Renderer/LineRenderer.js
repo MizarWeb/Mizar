@@ -40,7 +40,7 @@ define([
     "../Utils/Utils",
     "../Utils/Numeric",
     "./VectorRenderer",
-    "./VectorRendererManager",
+    "./RendererManager",
     "./Program",
     "./BatchRenderable"
 ], function(
@@ -48,7 +48,7 @@ define([
     Utils,
     Numeric,
     VectorRenderer,
-    VectorRendererManager,
+    RendererManager,
     Program,
     BatchRenderable
 ) {
@@ -445,7 +445,7 @@ define([
     /**************************************************************************************************************/
 
     // Register the renderer
-    VectorRendererManager.factory.push(function(globe) {
+    RendererManager.factory.push(function(globe) {
         return new LineRenderer(globe);
     });
 });

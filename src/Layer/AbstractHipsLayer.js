@@ -129,18 +129,6 @@ define([
             options
         );
 
-        // TODO : attention au cas où background:true est spécifié directement dans la description du layer
-        // dans ce cas, on n'a plus de besoin de passer par setBackgroundLayer. C'est backgroundLayer qui met
-        //_overlay à false. _overlay est utilisé dans AbstractRaster
-        // De plus, la grille galactique ne peut être utilisée qu'en mode background. Lorsque l'on utilise
-        // l'annuaire HIPS, on détecte les couches qui possèdent le CRS galactique et on leur ajoute le
-        // background:true
-        this._overlay = !options.background; // a ne pas mettre sinon on ne charge Allsky.jpg
-        //AllSky.jpg est téléchargé mais n'est pas affiché
-        // La couche IRIS (en mode galactique) ne fonctionne plus. Elle est affichée 1 seconde puis plus aucune image
-
-        //TODO : le fichier allsky
-
         this.fitsSupported = _.contains(
             this.hipsMetadata.hips_tile_format,
             "fits"
@@ -264,7 +252,7 @@ define([
     /**
      * Returns the Metadata related to Hips protocol.
      * @return {Object}
-     * @memberOf AbstractHipsLayer#
+     * @memberof AbstractHipsLayer#
      */
     AbstractHipsLayer.prototype.getHipsMetadata = function() {
         return this.hipsMetadata;

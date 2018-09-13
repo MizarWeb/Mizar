@@ -19,6 +19,27 @@
 /*global define: false */
 
 /**
+ * globalTime:set.<br/>
+ * Called when the time is set
+ * @event TimeTravel#globalTime:set
+ * @type {Context}
+ */
+
+ /**
+ * globalTime:rewind.<br/>
+ * Called when the time is set to rewind
+ * @event TimeTravel#globalTime:rewind
+ * @type {Context}
+ */
+
+ /**
+ * globalTime:forward.<br/>
+ * Called when the time is set to forward
+ * @event TimeTravel#globalTime:forward
+ * @type {Context}
+ */
+
+/**
  * Compass module : map control with "north" composant
  */
 define(["jquery", "../Utils/Constants", "../Services/TimeTravelCore"], function(
@@ -46,7 +67,9 @@ define(["jquery", "../Utils/Constants", "../Services/TimeTravelCore"], function(
      * @throws {ReferenceError} Can't get the Div to insert the time tracker
      * @throws {ReferenceError} Can't get the element name
      * @constructor
-     * @fires AbstractContext#GLOBAL_TIME_CHANGED
+     * @fires TimeTravel#globalTime:set
+     * @fires TimeTravel#globalTime:rewind
+     * @fires TimeTravel#globalTime:forward
      */
     var TimeTravel = function(options) {
         parentElement = options.element;
@@ -58,7 +81,7 @@ define(["jquery", "../Utils/Constants", "../Services/TimeTravelCore"], function(
             throw new ReferenceError(
                 "Can't get the element name from the options parameters"
             );
-        } else if (document.getElementById(this.element) == null) {
+        } else if (document.getElementById(options.element) == null) {
             throw new ReferenceError(
                 "Can' get the div " +
                     parentElement +
@@ -206,7 +229,7 @@ define(["jquery", "../Utils/Constants", "../Services/TimeTravelCore"], function(
      * Update display date and send current date to context
      * @function updateDisplayDate
      * @param {Time.configuration} date Time configuration
-     * @memberOf TimeTravel#
+     * @memberof TimeTravel#
      */
     TimeTravel.prototype.updateDisplayDate = function(date) {
         if (document.getElementById("textTimeTravelDiv") !== null) {

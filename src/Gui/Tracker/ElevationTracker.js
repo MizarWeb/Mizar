@@ -92,7 +92,7 @@ define([
     /**
      * Compute elevation from a specific point
      * @function compute
-     * @memberOf AbstractTracker.prototype
+     * @memberof AbstractTracker.prototype
      * @param geoPosition
      * @returns {number} elevation
      */
@@ -102,7 +102,7 @@ define([
 
     /**
      * @function attachTo
-     * @memberOf ElevationTracker#
+     * @memberof ElevationTracker#
      */
     ElevationTracker.prototype.attachTo = function(context) {
         AbstractTracker.prototype.attachTo.call(this, context);
@@ -111,7 +111,7 @@ define([
 
     /**
      * @function detach
-     * @memberOf ElevationTracker#
+     * @memberof ElevationTracker#
      */
     ElevationTracker.prototype.detach = function() {
         AbstractTracker.prototype.detach.call(this);
@@ -121,7 +121,7 @@ define([
     /**
      * Destroy the elevation tracker.
      * @function destroy
-     * @memberOf AbstractTracker.prototype
+     * @memberof AbstractTracker.prototype
      */
     ElevationTracker.prototype.destroy = function() {
         this.detach.call(this);

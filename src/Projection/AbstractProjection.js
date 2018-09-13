@@ -53,7 +53,7 @@ define(["../Renderer/GeoBound"], function(GeoBound) {
 
     /**
      * @function getProjectionCenter
-     * @memberOf AbstractProjection#
+     * @memberof AbstractProjection#
      */
     AbstractProjection.prototype.getProjectionCenter = function() {
         return this.projectionCenter;
@@ -61,7 +61,7 @@ define(["../Renderer/GeoBound"], function(GeoBound) {
 
     /**
      * @function getGeoBound
-     * @memberOf AbstractProjection#
+     * @memberof AbstractProjection#
      */
     AbstractProjection.prototype.getGeoBound = function() {
         return this.geoBound;
@@ -69,7 +69,7 @@ define(["../Renderer/GeoBound"], function(GeoBound) {
 
     /**
      * @function unProject
-     * @memberOf AbstractProjection#
+     * @memberof AbstractProjection#
      * @abstract
      */
     AbstractProjection.prototype.unProject = function(position3d, dest) {
@@ -81,7 +81,7 @@ define(["../Renderer/GeoBound"], function(GeoBound) {
 
     /**
      * @function project
-     * @memberOf AbstractProjection#
+     * @memberof AbstractProjection#
      * @abstract
      */
     AbstractProjection.prototype.project = function(geoPos, dest) {
@@ -93,7 +93,7 @@ define(["../Renderer/GeoBound"], function(GeoBound) {
 
     /**
      * @function getName
-     * @memberOf AbstractProjection#
+     * @memberof AbstractProjection#
      * @abstract
      */
     AbstractProjection.prototype.getName = function() {

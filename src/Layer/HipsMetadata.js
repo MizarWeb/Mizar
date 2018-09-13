@@ -993,7 +993,7 @@ define(["jquery", "../Utils/Constants", "../Gui/dialog/ErrorDialog"], function(
     /**
      * @name setMetadata
      * @param metadata
-     * @memberOf HipsMetadata#
+     * @memberof HipsMetadata#
      */
     HipsMetadata.prototype.setMetadata = function(metadata) {
         this.hipsMetadata = metadata;
@@ -1003,56 +1003,56 @@ define(["jquery", "../Utils/Constants", "../Gui/dialog/ErrorDialog"], function(
     /**
      * Supported {@link GENERAL_WAVELENGTH wavelength}
      * @name GeneralWavelength
-     * @memberOf HipsMetadata#
+     * @memberof HipsMetadata#
      */
     HipsMetadata.prototype.GeneralWavelength = GENERAL_WAVELENGTH;
 
     /**
      * Supported {@link HIPS_FRAME Hips frame}
      * @name HipsFrame
-     * @memberOf HipsMetadata#
+     * @memberof HipsMetadata#
      */
     HipsMetadata.prototype.HipsFrame = HIPS_FRAME;
 
     /**
      * Supported {@link HIPS_TILE_FORMAT Hips tile format}
      * @name HipsTileFormat
-     * @memberOf HipsMetadata#
+     * @memberof HipsMetadata#
      */
     HipsMetadata.prototype.HipsTileFormat = HIPS_TILE_FORMAT;
 
     /**
      * Supported {@link SAMPLING Sampling}
      * @name Sampling
-     * @memberOf HipsMetadata#
+     * @memberof HipsMetadata#
      */
     HipsMetadata.prototype.Sampling = SAMPLING;
 
     /**
      * Supported {@link PIXEL_OVERLAY pixel overlay}
      * @name PixelOverlay
-     * @memberOf HipsMetadata#
+     * @memberof HipsMetadata#
      */
     HipsMetadata.prototype.PixelOverlay = PIXEL_OVERLAY;
 
     /**
      * Supported {@link SKY_VAL SkyVal}
      * @name SkyVal
-     * @memberOf HipsMetadata#
+     * @memberof HipsMetadata#
      */
     HipsMetadata.prototype.SkyVal = SKY_VAL;
 
     /**
      * Supported {@link DATA_PRODUCT_TYPE DataProductType}
      * @name DataProductType
-     * @memberOf HipsMetadata#
+     * @memberof HipsMetadata#
      */
     HipsMetadata.prototype.DataProductType = DATA_PRODUCT_TYPE;
 
     /**
      * Supported {@link SUB_TYPE_DATA SubTypeData}
      * @name SubTypeData
-     * @memberOf HipsMetadata#
+     * @memberof HipsMetadata#
      */
     HipsMetadata.prototype.SubTypeData = SUB_TYPE_DATA;
 
@@ -1060,7 +1060,7 @@ define(["jquery", "../Utils/Constants", "../Gui/dialog/ErrorDialog"], function(
      * Returns the Hips metadata.
      * @function getHipsMetadata
      * @returns {HIPS_METADATA}
-     * @memberOf HipsMetadata#
+     * @memberof HipsMetadata#
      */
     HipsMetadata.prototype.getHipsMetadata = function() {
         return this.hipsMetadata;
@@ -1070,7 +1070,7 @@ define(["jquery", "../Utils/Constants", "../Gui/dialog/ErrorDialog"], function(
      * Returns base URL
      * @function getBaseUrl
      * @returns {string} the URL of the Hips
-     * @memberOf HipsMetadata#
+     * @memberof HipsMetadata#
      */
     HipsMetadata.prototype.getBaseUrl = function() {
         return this.baseUrl;

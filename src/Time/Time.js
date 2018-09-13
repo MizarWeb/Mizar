@@ -35,7 +35,7 @@ define(["jquery", "moment", "../Utils/Constants", "../Utils/Utils"], function(
     /**
      * Tests if the time input parameter is based on TimeTravel.
      * @param {Time.time} value time
-     * @return {boolean} True when TimeTravel parameter is used otherwise False
+     * @return {boolean} true when TimeTravel parameter is used otherwise false
      * @private
      */
     function _isTimeTravel(value) {
@@ -49,7 +49,7 @@ define(["jquery", "moment", "../Utils/Constants", "../Utils/Utils"], function(
     /**
      * Tests if the time input parameter is based on a period
      * @param {Time.period} value time
-     * @return {boolean} True when period parameter is used otherwise False
+     * @return {boolean} true when period parameter is used otherwise false
      * @private
      */
     function _isPeriod(value) {
@@ -59,7 +59,7 @@ define(["jquery", "moment", "../Utils/Constants", "../Utils/Utils"], function(
     /**
      * Tests if the time input parameter is based on a semi-period (to not defined)
      * @param {Time.period} value time
-     * @return {boolean} True when period parameter is used otherwise False
+     * @return {boolean} true when period parameter is used otherwise false
      * @private
      */
     function _isOpenedInterval(value) {
@@ -69,7 +69,7 @@ define(["jquery", "moment", "../Utils/Constants", "../Utils/Utils"], function(
     /**
      * Tests if the time input parameter is based on a string
      * @param {string} value time
-     * @return {boolean} True when a string is used to define the date
+     * @return {boolean} true when a string is used to define the date
      * @private
      */
     function _isDateString(value) {
@@ -79,7 +79,7 @@ define(["jquery", "moment", "../Utils/Constants", "../Utils/Utils"], function(
     /**
      * Tests if the time input parameter is based on a Date object
      * @param {Date} value time
-     * @return {boolean} True when a Date object is used to define the date
+     * @return {boolean} true when a Date object is used to define the date
      * @private
      */
     function _isDate(value) {
@@ -89,7 +89,7 @@ define(["jquery", "moment", "../Utils/Constants", "../Utils/Utils"], function(
     /**
      * Tests is value is a numeric value.
      * @param value value to test
-     * @return {boolean} True when value is a numeric otherwise False
+     * @return {boolean} true when value is a numeric otherwise false
      * @private
      */
     function _isNumeric(value) {
@@ -177,7 +177,7 @@ define(["jquery", "moment", "../Utils/Constants", "../Utils/Utils"], function(
     /**
      * Tests if the time definition is a sampling (min/max/step)
      * @param {string} timeDefinition
-     * @return {boolean} True when timeDefinition is a sampling
+     * @return {boolean} true when timeDefinition is a sampling
      * @private
      */
     function _isSampling(timeDefinition) {
@@ -187,7 +187,7 @@ define(["jquery", "moment", "../Utils/Constants", "../Utils/Utils"], function(
     /**
      * Tests if the time definition is a single value
      * @param {string} timeDefinition
-     * @return {boolean} True when timeDefinition is a discrete value
+     * @return {boolean} true when timeDefinition is a discrete value
      * @private
      */
     function _isDistinctValue(timeDefinition) {
@@ -200,7 +200,7 @@ define(["jquery", "moment", "../Utils/Constants", "../Utils/Utils"], function(
      * Tests if two dates are equals
      * @param {moment} date1
      * @param {moment} date2
-     * @return {boolean} True when dates are equals otherwise False
+     * @return {boolean} true when dates are equals otherwise false
      * @private
      */
     function _isEqual(date1, date2) {
@@ -248,7 +248,7 @@ define(["jquery", "moment", "../Utils/Constants", "../Utils/Utils"], function(
      * @param {moment} startTime start date
      * @param {int} nbValues number of value between startDate/stopDate
      * @param {{step,unit}} timeResolution time resolution
-     * @return {number} -1 when the requestedTime is not find in the binarySearch otherwise False
+     * @return {number} -1 when the requestedTime is not find in the binarySearch otherwise false
      */
     function _binarySearch(
         requestedTime,
@@ -310,7 +310,7 @@ define(["jquery", "moment", "../Utils/Constants", "../Utils/Utils"], function(
      * @param {string} display the real value from the server
      * @param {string} from start date
      * @param {string} to stop date
-     * @param {boolean} computed True when we do not find the real date from the server
+     * @param {boolean} computed true when we do not find the real date from the server
      * @return {{date: *, display: *, period: {from: *, to: *}, computed: *}}
      * @private
      */
@@ -374,7 +374,7 @@ define(["jquery", "moment", "../Utils/Constants", "../Utils/Utils"], function(
     /**
      * Tests if the time definition is a sampling (min/max/step)
      * @param {string} timeDefinition
-     * @return {boolean} True when timeDefinition is a sampling
+     * @return {boolean} true when timeDefinition is a sampling
      */
     Time.isSampling = function(timeDefinition) {
         return _isSampling(timeDefinition);
@@ -383,7 +383,7 @@ define(["jquery", "moment", "../Utils/Constants", "../Utils/Utils"], function(
     /**
      * Tests if the time definition is a single value
      * @param {string} timeDefinition
-     * @return {boolean} True when timeDefinition is a discrete value
+     * @return {boolean} true when timeDefinition is a discrete value
      */
     Time.isDistinctValue = function(timeDefinition) {
         return _isDistinctValue(timeDefinition);
@@ -433,7 +433,7 @@ define(["jquery", "moment", "../Utils/Constants", "../Utils/Utils"], function(
     /**
      * Tests if the singleDefinition is equal to the time object.
      * @param {string} singleTimeDefinition
-     * @return {boolean} True when the singleDefinition is equal to the time object otherwise False
+     * @return {boolean} true when the singleDefinition is equal to the time object otherwise false
      */
     Time.prototype.isEqual = function(singleTimeDefinition) {
         var singleTimeMoment = _convertMoment(singleTimeDefinition);
@@ -448,7 +448,7 @@ define(["jquery", "moment", "../Utils/Constants", "../Utils/Utils"], function(
     /**
      * Tests if the samplingDefinition is in the sample.
      * @param {string} samplingTimeDefinition
-     * @return {boolean} True when the samplingDefinition is in the sample otherwise False.
+     * @return {boolean} true when the samplingDefinition is in the sample otherwise false.
      */
     Time.prototype.isInSampling = function(samplingTimeDefinition) {
         samplingTimeDefinition = samplingTimeDefinition.trim();
@@ -485,7 +485,7 @@ define(["jquery", "moment", "../Utils/Constants", "../Utils/Utils"], function(
      * Tests if the timeDefinition is in Time definition.
      * TimeDefinition can be a sample of discrete values and/or start/stop/resolution
      * @param {string} timeDefinition
-     * @return {boolean} True when the timeDefinition is in Time definition otherwise False
+     * @return {boolean} true when the timeDefinition is in Time definition otherwise false
      */
     Time.prototype.isInTimeDefinition = function(timeDefinition) {
         timeDefinition = timeDefinition.trim();

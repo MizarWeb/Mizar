@@ -43,7 +43,7 @@ define([
      * @augments AbstractProjection
      * @param {AbstractProjection.azimuth_configuration} [options] - Azimuthal projection configuration.
      * @constructor
-     * @memberOf module:Projection
+     * @memberof module:Projection
      */
     var AzimuthProjection = function(options) {
         this.pole = (options && options.pole) || "north";
@@ -73,7 +73,7 @@ define([
 
     /**
      * @function unProject
-     * @memberOf AzimuthProjection#
+     * @memberof AzimuthProjection#
      */
     AzimuthProjection.prototype.unProject = function(position3d, dest) {
         var p = Math.sqrt(
@@ -99,7 +99,7 @@ define([
 
     /**
      * @function project
-     * @memberOf AzimuthProjection#
+     * @memberof AzimuthProjection#
      */
     AzimuthProjection.prototype.project = function(geoPos, dest) {
         if (!dest) {
@@ -118,7 +118,7 @@ define([
 
     /**
      * @function getName
-     * @memberOf AzimuthProjection#
+     * @memberof AzimuthProjection#
      */
     AzimuthProjection.prototype.getName = function() {
         return Constants.PROJECTION.Azimuth;

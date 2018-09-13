@@ -39,7 +39,7 @@ define([
     "../Utils/Constants",
     "../Utils/Utils",
     "./VectorRenderer",
-    "./VectorRendererManager",
+    "./RendererManager",
     "./FeatureStyle",
     "./Program",
     "./BatchRenderable",
@@ -49,7 +49,7 @@ define([
     Constants,
     Utils,
     VectorRenderer,
-    VectorRendererManager,
+    RendererManager,
     FeatureStyle,
     Program,
     BatchRenderable,
@@ -622,7 +622,7 @@ define([
     /**************************************************************************************************************/
 
     // Register the renderer
-    VectorRendererManager.factory.push(function(globe) {
+    RendererManager.factory.push(function(globe) {
         return new PolygonRenderer(globe);
     });
 });

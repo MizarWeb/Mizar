@@ -73,9 +73,17 @@ define([
     /**************************************************************************************************************/
 
     /**
+     * @function getInformationType
+     * @memberof AbstractVectorLayer#
+     */
+    AbstractVectorLayer.prototype.getInformationType = function() {
+        return Constants.INFORMATION_TYPE.VECTOR;
+    }
+
+    /**
      * Returns the min level for which the vector is displayed.
      * @function getMinLevel
-     * @memberOf AbstractVectorLayer#
+     * @memberof AbstractVectorLayer#
      * @returns {int} Returns the min level for which the vector is displayed.
      */
     AbstractVectorLayer.prototype.getMinLevel = function() {
@@ -85,7 +93,7 @@ define([
     /**
      * Returns the max level for which the vector is not displayed.
      * @function getMaxLevel
-     * @memberOf AbstractVectorLayer#
+     * @memberof AbstractVectorLayer#
      * @returns {int} Returns the max level for which the vector is not displayed.
      */
     AbstractVectorLayer.prototype.getMaxLevel = function() {
@@ -95,7 +103,7 @@ define([
     /**
      * Returns the URL to get the vector data.
      * @function getUrl
-     * @memberOf AbstractVectorLayer#
+     * @memberof AbstractVectorLayer#
      * @returns {String} the URL to get the vector data
      */
     AbstractVectorLayer.prototype.getUrl = function() {
@@ -105,7 +113,7 @@ define([
     /**
      * Attach the vector layer to the globe
      * @function _attach
-     * @memberOf AbstractVectorLayer#
+     * @memberof AbstractVectorLayer#
      * @param {AbstractGlobe} g globe
      * @private
      */
@@ -121,7 +129,7 @@ define([
     /**
      * Detach the vector layer from the globe
      * @function _detach
-     * @memberOf AbstractVectorLayer#
+     * @memberof AbstractVectorLayer#
      * @private
      */
     AbstractVectorLayer.prototype._detach = function() {
@@ -136,7 +144,7 @@ define([
     /**
      * Adds a feature collection, in GeoJSON format
      * @function addFeatureCollection
-     * @memberOf AbstractVectorLayer#
+     * @memberof AbstractVectorLayer#
      * @param {GeoJSON} featureCollection Feature Collection
      */
     AbstractVectorLayer.prototype.addFeatureCollection = function(
@@ -154,7 +162,7 @@ define([
     /**
      * Removes a feature collection, in GeoJSON format
      * @function removeFeatureCollection
-     * @memberOf AbstractVectorLayer#
+     * @memberof AbstractVectorLayer#
      * @param {GeoJSON} featureCollection Feature Collection
      */
     AbstractVectorLayer.prototype.removeFeatureCollection = function(
@@ -172,7 +180,7 @@ define([
     /**
      * Add a feature to renderers.
      * @function _addFeatureToRenderers
-     * @memberOf AbstractVectorLayer#
+     * @memberof AbstractVectorLayer#
      * @param {GeoJSON} feature Feature
      * @private
      */
@@ -194,13 +202,13 @@ define([
             var geoms = geometry.geometries;
             for (var i = 0; i < geoms.length; i++) {
                 this.getGlobe()
-                    .getVectorRendererManager()
+                    .getRendererManager()
                     .addGeometry(this, geoms[i], style);
             }
         } else {
             // Add geometry to renderers
             this.getGlobe()
-                .getVectorRendererManager()
+                .getRendererManager()
                 .addGeometry(this, geometry, style);
         }
     };
@@ -208,9 +216,9 @@ define([
     /**
      * Removes a feature from renderers.
      * @function _removeFeatureFromRenderers
-     * @memberOf AbstractVectorLayer#
+     * @memberof AbstractVectorLayer#
      * @param {GeoJSON} feature Feature
-     * @returns {boolean} True when the feature is removed from the globe otherwise False
+     * @returns {boolean} true when the feature is removed from the globe otherwise false
      * @private
      */
     AbstractVectorLayer.prototype._removeFeatureFromRenderers = function(
@@ -222,12 +230,12 @@ define([
         // Manage geometry collection
         if (geometry.type === "GeometryCollection") {
             var geoms = geometry.geometries;
-            if (this.getGlobe() && this.getGlobe().getVectorRendererManager()) {
+            if (this.getGlobe() && this.getGlobe().getRendererManager()) {
                 for (var i = 0; i < geoms.length; i++) {
                     isRemoved =
                         isRemoved &&
                         this.getGlobe()
-                            .getVectorRendererManager()
+                            .getRendererManager()
                             .removeGeometry(geoms[i], this);
                 }
             } else {
@@ -235,10 +243,10 @@ define([
             }
         } else if (
             this.getGlobe() &&
-            this.getGlobe().getVectorRendererManager()
+            this.getGlobe().getRendererManager()
         ) {
             isRemoved = this.getGlobe()
-                .getVectorRendererManager()
+                .getRendererManager()
                 .removeGeometry(geometry, this);
         } else {
             isRemoved = false;
@@ -249,7 +257,7 @@ define([
     /**
      * Add a feature to the layer
      * @function addFeature
-     * @memberOf AbstractVectorLayer#
+     * @memberof AbstractVectorLayer#
      * @param {GeoJSON} feature Feature
      */
     AbstractVectorLayer.prototype.addFeature = function(feature) {
@@ -274,7 +282,7 @@ define([
     /**
      * Removes a feature from the layer.
      * @function removeFeature
-     * @memberOf AbstractVectorLayer#
+     * @memberof AbstractVectorLayer#
      * @param {GeoJSON} feature Feature
      */
     AbstractVectorLayer.prototype.removeFeature = function(feature) {
@@ -293,7 +301,7 @@ define([
     /**
      * Removes all features from the layer.
      * @function removeAllFeatures
-     * @memberOf AbstractVectorLayer#
+     * @memberof AbstractVectorLayer#
      */
     AbstractVectorLayer.prototype.removeAllFeatures = function() {
         // Remove feature from renderers
@@ -315,7 +323,7 @@ define([
     /**
      * Modifies the feature style for a specific feature.
      * @function modifyFeatureStyle
-     * @memberOf AbstractVectorLayer#
+     * @memberof AbstractVectorLayer#
      * @param {GeoJson} feature feature for which the feature style is modified
      * @param {FeatureStyle} style Feature style
      */
@@ -332,7 +340,7 @@ define([
     /**
      * Modifies the feature style for all features.
      * @function modifyStyle
-     * @memberOf AbstractVectorLayer#
+     * @memberof AbstractVectorLayer#
      * @param {FeatureStyle} style Feature style
      */
     AbstractVectorLayer.prototype.modifyStyle = function(style) {

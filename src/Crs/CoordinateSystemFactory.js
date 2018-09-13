@@ -20,7 +20,7 @@
  * @name CoordinateSystemFactory
  * @class
  * Factory to create a coordinate reference system
- * @memberOf module:Crs
+ * @memberof module:Crs
  */
 define([
     "../Utils/Constants",
@@ -48,7 +48,7 @@ define([
      * @param {CRS} geoideName
      * @param {AbstractCrs.crsFactory} options - options to create a coordinate reference system
      * @returns {Crs} the created coordinate reference system
-     * @throws {RangeError} Will throw an error when options.geoideName  is not part of {@link CRS}
+     * @throws {RangeError} Will throw an error when geoideName  is not part of {@link CRS}
      * @private
      */
     function _createCrs(geoideName, options) {
@@ -85,7 +85,7 @@ define([
             // Unknown geoide name
             default:
                 throw new RangeError(
-                    "Datum " + options.geoideName + " not implemented",
+                    "Datum " + geoideName + " not implemented",
                     "CoordinateSystemFactory.js"
                 );
         }

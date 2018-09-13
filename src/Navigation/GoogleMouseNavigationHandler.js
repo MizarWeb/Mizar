@@ -35,7 +35,7 @@
  * along with GlobWeb. If not, see <http://www.gnu.org/licenses/>.
  ***************************************/
 
-define(["../Utils/Constants"], function(Constants) {
+define(["../Utils/Constants"], function(Constants) {    
     /**
      * Google mouse navigation handler configuration
      * @typedef {Object} AbstractNavigation.googleMouse_configuration
@@ -47,7 +47,7 @@ define(["../Utils/Constants"], function(Constants) {
      * GoogleMouseNavigationHandler constructor
      * @param {AbstractNavigation.googleMouse_configuration} options
      * @constructor
-     * @memberOf module:Navigation
+     * @memberof module:Navigation
      */
     var GoogleMouseNavigationHandler = function(options) {
         /**************************************************************************************************************/
@@ -80,9 +80,9 @@ define(["../Utils/Constants"], function(Constants) {
          * @param event Event
          * @returns {boolean}
          * @private
-         * @memberOf GoogleMouseNavigationHandler#
-         * @fires Context#startNavigation
-         * @fires Context#endNavigation
+         * @memberof GoogleMouseNavigationHandler#
+         * @fires Navigation#startNavigation
+         * @fires Navigation#endNavigation
          */
         var _handleMouseWheel = function(event) {
             _navigation.ctx.publish(Constants.EVENT_MSG.NAVIGATION_STARTED);
@@ -155,7 +155,7 @@ define(["../Utils/Constants"], function(Constants) {
          * @param event
          * @returns {boolean}
          * @private
-         * @memberOf GoogleMouseNavigationHandler#
+         * @memberof GoogleMouseNavigationHandler#
          */
         var _handleMouseDown = function(event) {
             _pressedButton = event.button;
@@ -215,7 +215,8 @@ define(["../Utils/Constants"], function(Constants) {
          * @param event
          * @returns {boolean}
          * @private
-         * @memberOf GoogleMouseNavigationHandler#
+         * @memberof GoogleMouseNavigationHandler#
+         * @fires Navigation#endNavigation
          */
         var _handleMouseUp = function(event) {
             // No button pressed anymore
@@ -261,9 +262,9 @@ define(["../Utils/Constants"], function(Constants) {
          * @param event
          * @returns {boolean}
          * @private
-         * @memberOf GoogleMouseNavigationHandler#
-         * @fires Context#startNavigation
-         * @fires Context#endNavigation
+         * @memberof GoogleMouseNavigationHandler#
+         * @fires Navigation#startNavigation
+         * @fires Navigation#endNavigation
          */
         var _handleMouseMove = function(event) {
             // No button pressed
@@ -415,7 +416,7 @@ define(["../Utils/Constants"], function(Constants) {
          * @function _handleMouseDblClick
          * @param event
          * @private
-         * @memberOf GoogleMouseNavigationHandler#
+         * @memberof GoogleMouseNavigationHandler#
          */
         var _handleMouseDblClick = function(event) {
             if (event.button === 0) {
@@ -435,7 +436,7 @@ define(["../Utils/Constants"], function(Constants) {
          * @function _handleContextMenu
          * @param event
          * @private
-         * @memberOf GoogleMouseNavigationHandler#
+         * @memberof GoogleMouseNavigationHandler#
          */
         var _handleContextMenu = function(event) {
             // Need this so browser's context menu won't show up when using right click zooming
@@ -453,7 +454,7 @@ define(["../Utils/Constants"], function(Constants) {
          * Setup the default event handlers for the _navigation
          * @function install
          * @param nav
-         * @memberOf GoogleMouseNavigationHandler#
+         * @memberof GoogleMouseNavigationHandler#
          */
         this.install = function(nav) {
             _navigation = nav;
@@ -479,7 +480,7 @@ define(["../Utils/Constants"], function(Constants) {
         /**
          * Remove the default event handlers for the _navigation
          * @function uninstall
-         * @memberOf GoogleMouseNavigationHandler#
+         * @memberof GoogleMouseNavigationHandler#
          */
         this.uninstall = function() {
             // Setup the mouse event handlers

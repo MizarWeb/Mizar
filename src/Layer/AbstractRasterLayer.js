@@ -87,7 +87,6 @@ define([
         }
 
         // Internal
-        this._overlay = true;
         this._ready = true; // Ready is use by TileManager
     };
 
@@ -98,9 +97,29 @@ define([
     /**************************************************************************************************************/
 
     /**
+     * @function getInformationType
+     * @memberof AbstractRasterLayer#
+     */
+    AbstractRasterLayer.prototype.getInformationType = function() {
+        return Constants.INFORMATION_TYPE.RASTER;
+    }
+
+    /**
+     * Loads a global overview if available.
+     * Only use for sky rendering currently
+     * @function loadOverview
+     * @memberof AbstractRasterLayer#     
+     */
+    AbstractRasterLayer.prototype.loadOverview = function() {
+
+    }
+
+
+    /**
      * Returns the URL to query the raster.
      * @param {Tile} tile for which the URL is created
      * @returns {string} the URL
+     * @memberof AbstractRasterLayer#     
      */
     AbstractRasterLayer.prototype.getUrl = function(tile) {
         throw new SyntaxError(
@@ -113,6 +132,7 @@ define([
      * Returns the proxified Url when the tile level is between [minLevel, maxLevel]
      * @param url url
      * @returns {Boolean} the proxified Url when the tile level is between [minLevel, maxLevel]
+     * @memberof AbstractRasterLayer#     
      */
     AbstractRasterLayer.prototype.proxify = function(url, level) {
         var proxifyUrl;
@@ -125,9 +145,10 @@ define([
     };
 
     /**
-     * Returns True when the tile is defined between [minLevel,maxLevel] otherwise False.
+     * Returns true when the tile is defined between [minLevel,maxLevel] otherwise false.
      * @param level level of the tile
-     * @returns {Boolean} True when the tile level is defined between [minLevel,maxLevel] otherwise False.
+     * @returns {Boolean} true when the tile level is defined between [minLevel,maxLevel] otherwise false.
+     * @memberof AbstractRasterLayer#     
      */
     AbstractRasterLayer.prototype.isBetweenMinMaxLevel = function(level) {
         var isInside;
@@ -147,23 +168,23 @@ define([
     /**
      * Attach the raster layer to the planet
      * @function _attach
-     * @memberOf AbstractRasterLayer#
+     * @memberof AbstractRasterLayer#
      * @param {Globe} g - globe
      * @private
      */
     AbstractRasterLayer.prototype._attach = function(g) {
-        if (!this._overlay) {
+        if (this.isBackground()) {
             // Override id of background layer because of unicity of background not overlayed layer
             //TODO : check if it is still needed
             this.id = 0;
         }
 
         AbstractLayer.prototype._attach.call(this, g);
-        if (this._overlay) {
+        if (!this.isBackground()) {
             // Create the renderer if needed
             if (!g.rasterOverlayRenderer) {
                 var renderer = new RasterOverlayRenderer(g);
-                g.getVectorRendererManager().renderers.push(renderer);
+                g.getRendererManager().renderers.push(renderer);
                 g.rasterOverlayRenderer = renderer;
             }
             g.rasterOverlayRenderer.addOverlay(this);
@@ -175,12 +196,12 @@ define([
     /**
      * Detach the raster layer from the planet
      * @function _detach
-     * @memberOf AbstractRasterLayer
+     * @memberof AbstractRasterLayer#
      * @private
      */
     AbstractRasterLayer.prototype._detach = function() {
         // Remove raster from overlay renderer if needed
-        if (this._overlay && this.getGlobe().rasterOverlayRenderer) {
+        if (!this.isBackground() && this.getGlobe().rasterOverlayRenderer) {
             this.getGlobe().rasterOverlayRenderer.removeOverlay(this);
         }
 

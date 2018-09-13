@@ -142,7 +142,7 @@ define([
      * At initialisation, the distance of the camera is maxDistance
      * @param {PlanetContext} ctx -  Planet context
      * @param {AbstractNavigation.planet_configuration} options - Planet navigation configuration
-     * @memberOf module:Navigation
+     * @memberof module:Navigation
      */
     var PlanetNavigation = function(ctx, options) {
         AbstractNavigation.prototype.constructor.call(
@@ -278,7 +278,7 @@ define([
     /**
      * Returns the center of the navigation.
      * @function getCenter
-     * @memberOf PlanetNavigation#
+     * @memberof PlanetNavigation#
      * @return {float[]}
      */
     PlanetNavigation.prototype.getCenter = function() {
@@ -292,7 +292,7 @@ define([
     /**
      * Saves the current navigation state.
      * @function save
-     * @memberOf PlanetNavigation#
+     * @memberof PlanetNavigation#
      * @return {{geoCenter: *, heading: *, tilt: *, distance: *}} a JS object containing the navigation state
      */
     PlanetNavigation.prototype.save = function() {
@@ -307,7 +307,7 @@ define([
     /**
      * Restores the navigation state.
      * @function restore
-     * @memberOf PlanetNavigation#
+     * @memberof PlanetNavigation#
      * @param {Object} state - a JS object containing the navigation state
      * @param {float[]} state.geoCenter - Target of the camera (longitude, latitude)
      * @param state.heading
@@ -325,7 +325,7 @@ define([
     /**
      * Zoom to a geographic position
      * @function zoomTo
-     * @memberOf PlanetNavigation#
+     * @memberof PlanetNavigation#
      * @param {float[]} geoPos Array of two floats corresponding to final Longitude and Latitude(in this order) to zoom
      * @param {Object} [options] - Options
      * @param {int} [options.distance] - Final zooming distance in meters - if not set, this is the current distance
@@ -507,7 +507,7 @@ define([
     /**
      * Applies to rotation matrix
      * @function applyLocalRotation
-     * @memberOf Navigation#
+     * @memberof Navigation#
      */
     PlanetNavigation.prototype.applyLocalRotation = function(matrix) {
         mat4.rotate(matrix, Numeric.toRadian(this.heading), [0.0, 0.0, 1.0]);
@@ -517,7 +517,7 @@ define([
     /**
      * Computes the view matrix
      * @function computeViewMatrix
-     * @memberOf Navigation#
+     * @memberof Navigation#
      */
     PlanetNavigation.prototype.computeViewMatrix = function() {
         const oldMatrix = Array.from(this.renderContext.getViewMatrix());
@@ -535,7 +535,7 @@ define([
     /**
      * Compute the inverse view matrix
      * @function computeInverseViewMatrix
-     * @memberOf PlanetNavigation#
+     * @memberof PlanetNavigation#
      */
     PlanetNavigation.prototype.computeInverseViewMatrix = function() {
         this.ctx
@@ -548,7 +548,7 @@ define([
     /**
      * Zoom to the current observed location
      * @function zoom
-     * @memberOf PlanetNavigation#
+     * @memberof PlanetNavigation#
      * @param {float} delta Delta zoom
      * @param {float} scale Scale
      */
@@ -572,7 +572,7 @@ define([
     /**
      * Pans the camera
      * @function pan
-     * @memberOf PlanetNavigation#
+     * @memberof PlanetNavigation#
      * @param {int} dx Window delta x
      * @param {int} dy Window delta y
      */
@@ -640,7 +640,7 @@ define([
     /**
      * Rotates the navigation
      * @function rotate
-     * @memberOf PlanetNavigation#
+     * @memberof PlanetNavigation#
      * @param {int} dx Window delta x
      * @param {int} dy Window delta y
      */
@@ -659,7 +659,7 @@ define([
     /**
      * Check for collision
      * @function hasCollision
-     * @memberOf PlanetNavigation#
+     * @memberof PlanetNavigation#
      * @return {Boolean} collision detected ?
      */
     PlanetNavigation.prototype.hasCollision = function() {
@@ -739,7 +739,7 @@ define([
     /**
      * Destroy
      * @function destroy
-     * @memberOf PlanetNavigation#
+     * @memberof PlanetNavigation#
      */
     PlanetNavigation.prototype.destroy = function() {
         AbstractNavigation.prototype.destroy.call(this);
@@ -755,7 +755,8 @@ define([
     /**
      * Update the navigator inner values
      * @function update
-     * @memberOf PlanetNavigation#
+     * @memberof PlanetNavigation#
+     * @fires Navigation#navigation:changedDistance
      */
     PlanetNavigation.prototype.update = function() {
         if (!this.ctx.globe.tileManager.level0TilesLoaded) {
@@ -802,7 +803,7 @@ define([
     /**
      * Clamp the tilt value between 5 and 90 degrees
      * @function clampTilt
-     * @memberOf PlanetNavigation#
+     * @memberof PlanetNavigation#
      */
     PlanetNavigation.prototype.clampTilt = function() {
         this.tilt = Math.min(Math.max(this.tilt, MIN_TILT), MAX_TILT);
@@ -819,7 +820,7 @@ define([
     /**
      * Moves up vector.
      * @function moveUpTo
-     * @memberOf PlanetNavigation#
+     * @memberof PlanetNavigation#
      * @param {float[]} vec Vector
      * @param {int} [duration = 1000] - Duration of animation in milliseconds
      */

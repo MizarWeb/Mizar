@@ -300,7 +300,6 @@ define(function() {
      * @property {String} MIZAR_MODE_TOGGLE - Mizar mode, one value among {Constants.CONTEXT}
      * @property {String} LAYER_BACKGROUND_ADDED - Background Layer added
      * @property {String} LAYER_BACKGROUND_CHANGED - Background Layer changed
-     * @property {String} LAYER_ADDITIONAL_ADDED - Additional Layer added
      * @property {String} LAYER_ADDED - Layer added
      * @property {String} LAYER_REMOVED - Layer removed
      * @property {String} LAYER_VISIBILITY_CHANGED - Visibility Layer changed
@@ -308,13 +307,10 @@ define(function() {
      * @property {String} LAYER_START_LOAD - Overlay rasters or vectors start to load
      * @property {String} LAYER_END_LOAD - Overlay rasters  or vectors finish to load
      * @property {String} LAYER_START_BACKGROUND_LOAD - Background rasters start to load
-     * @property {String} LAYER_FORCE_REFRESH - Force refresh of a layer
-     * @property {String} LAYER_TIME_CHANGED - Time layer changer
-     * @property {String} LAYERS_TIME_CHANGED - Time changed for ALL layers
      * @property {String} LAYER_END_BACKGROUND_LOAD - Background rasters finish to load
      * @property {String} BASE_LAYERS_ERROR - Error at the initialisation of layer to render
      * @property {String} BASE_LAYERS_READY - Initialisation of the rendering is fine
-     * @property {String} CRS_MODIFIED - Coordinate reference system modified
+     * @property {String} CRS_MODIFIED - Coordinate reference system is modified
      * @property {String} NAVIGATION_STARTED - Navigation started
      * @property {String} NAVIGATION_ENDED - Navigation ended
      * @property {String} NAVIGATION_MODIFIED - Navigation modified
@@ -323,14 +319,20 @@ define(function() {
      * @property {String} IMAGE_REMOVED - Image removed
      * @property {String} IMAGE_ADDED - Image added
      * @property {String} FEATURED_ADDED - Feature added
+     * @property {String} GLOBAL_TIME_REWIND - global time is rewinded
+     * @property {String} GLOBAL_TIME_FORWARD - global time is forwarded
+     * @property {String} GLOBAL_TIME_SET - global time is set,
+     * @property {String} GLOBAL_TIME_CHANGED - global time has changed
+
      */
     Constants.EVENT_MSG = {
         PLUGIN_NOT_FOUND: "plugin:not_found",
         MIZAR_MODE_TOGGLE: "mizarMode:toggle",
+        LAYER_BACKGROUND_ERROR: "backgroundLayer:error",
         LAYER_BACKGROUND_ADDED: "backgroundLayer:add",
-        LAYER_BACKGROUND_CHANGED: "backgroundLayer:change",
-        LAYER_ADDITIONAL_ADDED: "additionalLayer:add",
-        LAYER_REMOVED: "layer:remove",
+        LAYER_BACKGROUND_CHANGED: "backgroundLayer:changed",
+        LAYER_ADDED: "layer:added",
+        LAYER_REMOVED: "layer:removed",
         LAYER_VISIBILITY_CHANGED: "visibility:changed",
         LAYER_OPACITY_CHANGED: "opacity:changed",
         LAYER_START_LOAD: "startLoad",
@@ -339,16 +341,6 @@ define(function() {
         LAYER_END_BACKGROUND_LOAD: "endBackgroundLoad",
         LAYER_UPDATE_STATS_ATTRIBUTES: "updateStatsAttribute",
         LAYER_TOGGLE_WMS: "toggleWMS",
-        LAYER_FORCE_REFRESH: "layer:forceRefresh",
-        LAYER_TIME_CHANGED: "layer:time:changed",
-        LAYERS_TIME_CHANGED: "layers:time:changed",
-        TIME_TRAVEL_UPDATED: "timeTravel:updated",
-        /** json object like : 
-         { "date" : the current time,
-           "display" : the current date as string for display,
-           "period" : { "from" : , "to" : } <-- if null , no period managed
-         }
-        */
         BASE_LAYERS_ERROR: "baseLayersError",
         BASE_LAYERS_READY: "baseLayersReady",
         CRS_MODIFIED: "modifiedCrs",
@@ -356,15 +348,14 @@ define(function() {
         NAVIGATION_ENDED: "endNavigation",
         NAVIGATION_MODIFIED: "modifiedNavigation",
         NAVIGATION_CHANGED_DISTANCE: "navigation:changedDistance",
-        IMAGE_DOWNLOADED: "image:download",
-        IMAGE_REMOVED: "image:remove",
-        IMAGE_ADDED: "image:add",
+        IMAGE_DOWNLOADED: "image:downloaded",
+        IMAGE_REMOVED: "image:removed",
+        IMAGE_ADDED: "image:added",
         FEATURED_ADDED: "features:added",
         GLOBAL_TIME_REWIND: "globalTime:rewind",
         GLOBAL_TIME_FORWARD: "globalTime:forward",
         GLOBAL_TIME_SET: "globalTime:set",
-        GLOBAL_TIME_CHANGED: "globalTime:changed", // temporary, need to be link to LAYERS_TIME_CHANGED after dev
-        GLOBAL_TIME_INIT: "globalTime:init"
+        GLOBAL_TIME_CHANGED: "globalTime:changed" // temporary, need to be link to LAYERS_TIME_CHANGED after dev
     };
 
     /**
@@ -386,6 +377,33 @@ define(function() {
         SERVICE_VECTOR: 40
     };
 
+    /**
+     * @namespace
+     * INFORMATION_TYPE
+     * @property {String} ATMOSPHERE - atmosphere data
+     * @property {String} RASTER - raster data
+     * @property {String} VECTOR - vector data
+     */
+    Constants.INFORMATION_TYPE = {
+        ATMOSPHERE: "ATMOSPHERE",
+        RASTER: "RASTER",
+        VECTOR: "VECTOR"
+    };
+
+    /**
+     * @namespace
+     * TIME_STEP
+     * @property {String} YEAR - years
+     * @property {String} QUARTER - quarters
+     * @property {String} MONTH - months
+     * @property {String} WEEK - weeks
+     * @property {String} DAY - days
+     * @property {String} HOUR - hours
+     * @property {String} MINUTE - minutes
+     * @property {String} SECOND - seconds
+     * @property {String} MILLISECOND - milliseconds
+     * @property {String} ENUMERATED - null                                
+     */
     Constants.TIME_STEP = {
         YEAR: "years",
         QUARTER: "quarters",
@@ -399,6 +417,16 @@ define(function() {
         ENUMERATED: null
     };
 
+    /**
+     * @namespace
+     * TIME_MOMENT_STEP
+     * @property {String} YEAR - year
+     * @property {String} MONTH - month
+     * @property {String} DAY - day
+     * @property {String} HOUR - hour
+     * @property {String} MINUTE - minute
+     * @property {String} SECOND - second      
+     */    
     Constants.TIME_MOMENT_STEP = {
         YEAR: "year",
         MONTH: "month",
@@ -408,6 +436,16 @@ define(function() {
         SECOND: "second"
     };
 
+    /**
+     * @namespace
+     * UNIT_TIME_WMS
+     * @property {String} YEAR - Y
+     * @property {String} MONTH - M
+     * @property {String} DAY - D
+     * @property {String} HOUR - H
+     * @property {String} MINUTE - M
+     * @property {String} SECOND - S      
+     */     
     Constants.UNIT_TIME_WMS = {
         YEAR: "Y",
         MONTH: "M",
@@ -417,11 +455,22 @@ define(function() {
         SECONDE: "S"
     };
 
+    /**
+     * @namespace
+     * UNIT_RESOLUTION_WMS
+     * @property {String} TIME - PT
+     * @property {String} NOT_TIME - P    
+     */    
     Constants.UNIT_RESOLUTION_WMS = {
         TIME: "PT",
         NOT_TIME: "P"
     };
 
+    /**
+     * @namespace
+     * TIME
+     * @property {String} DEFAULT_FORMAT - Do MMM Y HH:mm
+     */     
     Constants.TIME = {
         DEFAULT_FORMAT: "Do MMM Y HH:mm"
     };

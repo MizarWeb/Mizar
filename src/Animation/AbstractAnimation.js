@@ -52,7 +52,7 @@ define(function() {
 
     /**
      * @function getRenderContext
-     * @memberOf AbstractAnimation#
+     * @memberof AbstractAnimation#
      */
     AbstractAnimation.prototype.getRenderContext = function() {
         return this.renderContext;
@@ -61,7 +61,7 @@ define(function() {
     /**
      * Unregisters animation.
      * @function _unregisterActive
-     * @memberOf AbstractAnimation#
+     * @memberof AbstractAnimation#
      * @private
      */
     AbstractAnimation.prototype._unregisterActive = function() {
@@ -73,7 +73,7 @@ define(function() {
 
     /**
      * @function getStatus
-     * @memberOf AbstractAnimation#
+     * @memberof AbstractAnimation#
      */
     AbstractAnimation.prototype.getStatus = function() {
         if (this.startTime === -1) {
@@ -85,7 +85,7 @@ define(function() {
 
     /**
      * @function start
-     * @memberOf AbstractAnimation#
+     * @memberof AbstractAnimation#
      */
     AbstractAnimation.prototype.start = function() {
         if (!this.renderContext) {
@@ -110,7 +110,7 @@ define(function() {
 
     /**
      * @function pause
-     * @memberOf AbstractAnimation#
+     * @memberof AbstractAnimation#
      */
     AbstractAnimation.prototype.pause = function() {
         if (!this.renderContext) {
@@ -125,7 +125,7 @@ define(function() {
 
     /**
      * @function stop
-     * @memberOf AbstractAnimation#
+     * @memberof AbstractAnimation#
      */
     AbstractAnimation.prototype.stop = function() {
         this.startTime = -1;

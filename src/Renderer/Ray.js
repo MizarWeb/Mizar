@@ -153,9 +153,9 @@ define(["./glMatrix"], function() {
      *	Compute intersection between a plan and ray
      * @function planeIntersect
      * @memberof Ray.prototype
-     * @param pt
-     * @param normal
-     * @return The nearest intersection, < 0 if no intersection
+     * @param {vec3} pt
+     * @param {vec3} normal
+     * @return {number}The nearest intersection, < 0 if no intersection
      */
     Ray.prototype.planeIntersect = function(pt, normal) {
         // Assuming vectors are all normalized

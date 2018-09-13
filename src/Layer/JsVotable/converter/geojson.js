@@ -259,7 +259,7 @@ define(["../utils"], function(Utils) {
          * Search a criteria in an array.
          * @param arr array
          * @param criteria criteria
-         * @return {boolean} True when the criteria is found
+         * @return {boolean} true when the criteria is found
          */
         function filter(arr, criteria) {
             var result = arr.filter(function(obj) {

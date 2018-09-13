@@ -159,7 +159,7 @@ define(["./Numeric", "../Tiling/HEALPixBase"], function(Numeric, HEALPixBase) {
      * @param {float} v - value
      * @param {float} min - min value
      * @param {float} max - max value
-     * @return {boolean} True when v is between min and max otherwise False
+     * @return {boolean} true when v is between min and max otherwise talse
      */
     UtilsIntersection.isValueBetween = function(v, min, max) {
         return v >= min && v <= max;
@@ -170,7 +170,7 @@ define(["./Numeric", "../Tiling/HEALPixBase"], function(Numeric, HEALPixBase) {
      * @function boundsIntersects
      * @param {{west:float, north:float, east:float, south:float}} a - bounding box
      * @param {{west:float, north:float, east:float, south:float}} b - bounding box
-     * @return {boolean} True when the two bounding boxes intersect otherwise False
+     * @return {boolean} true when the two bounding boxes intersect otherwise false
      */
     UtilsIntersection.boundsIntersects = function(a, b) {
         if (a === null || b === null) {
@@ -202,7 +202,7 @@ define(["./Numeric", "../Tiling/HEALPixBase"], function(Numeric, HEALPixBase) {
      * @function isCrossDateLine
      * @param {float} minLong - min longitude
      * @param {float} maxLong - max longitude
-     * @return {boolean} True when the coordinates cross the date line otherwise False
+     * @return {boolean} true when the coordinates cross the date line otherwise false
      */
     UtilsIntersection.isCrossDateLine = function(minLong, maxLong) {
         return Math.abs(minLong - maxLong) > 180;

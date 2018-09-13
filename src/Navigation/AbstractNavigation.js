@@ -75,7 +75,7 @@ define([
      * @see {@link module:Navigation.NavigationHandlerFactory NavigationHandlerFactory} the possible handlers
      * @see {@link module:Navigation.MouseNavigationHandler MouseNavigationHandler} for its options when it is set by default
      * @see {@link module:Navigation.KeyboardNavigationHandler KeyboardNavigationHandler} for its options when it is set by default
-     * @see {@link module:Navigation.TouchNavigationHandler TouchNavigationHandler} for its options when isMobile is set to True
+     * @see {@link module:Navigation.TouchNavigationHandler TouchNavigationHandler} for its options when isMobile is set to true
      * @implements {Navigation}
      *
      */
@@ -194,7 +194,7 @@ define([
     /**
      * Initializes the touch navigation handler.
      * @function initTouchNavigation
-     * @memberOf AbstractContext#
+     * @memberof AbstractContext#
      */
     AbstractNavigation.prototype.initTouchNavigation = function() {
         this.options.touch = {
@@ -216,7 +216,7 @@ define([
      * The type can take one of the following value : AstroNavigation, FlatNavigation, PlanetNavigation
      * @function getType
      * @return {string} the name of the navigation class, which is used
-     * @memberOf AbstractNavigation#
+     * @memberof AbstractNavigation#
      */
     AbstractNavigation.prototype.getType = function() {
         return this.type;
@@ -226,7 +226,7 @@ define([
      * Returns the navigation's options given at the initialisation.
      * @function getOptions
      * @return {Object} Options
-     * @memberOf AbstractNavigation#
+     * @memberof AbstractNavigation#
      */
     AbstractNavigation.prototype.getOptions = function() {
         return this.options;
@@ -235,7 +235,7 @@ define([
     /**
      * Starts the navigation.
      * @function start
-     * @memberOf AbstractNavigation#
+     * @memberof AbstractNavigation#
      */
     AbstractNavigation.prototype.start = function() {
         // Install handlers
@@ -247,7 +247,7 @@ define([
     /**
      * Stops the navigation.
      * @function stop
-     * @memberOf AbstractNavigation#
+     * @memberof AbstractNavigation#
      */
     AbstractNavigation.prototype.stop = function() {
         // Uninstall handlers
@@ -259,7 +259,7 @@ define([
     /**
      * Stops the animations.
      * @function stopAnimations
-     * @memberOf AbstractNavigation#
+     * @memberof AbstractNavigation#
      */
     AbstractNavigation.prototype.stopAnimations = function() {
         if (this.inertia) {
@@ -275,7 +275,7 @@ define([
      * Returns the field of view in decimal degree.
      * @function getFov
      * @return {float[]} the Field of view [fov along width, fov along height]
-     * @memberOf AbstractNavigation#
+     * @memberof AbstractNavigation#
      */
     AbstractNavigation.prototype.getFov = function() {
         return [this.renderContext.getFov(), this.renderContext.getFov()];
@@ -284,7 +284,7 @@ define([
     /**
      * Moves up vector.
      * @function moveUpTo
-     * @memberOf AbstractNavigation#
+     * @memberof AbstractNavigation#
      * @param {float[]} vec Vector
      * @param {int} [duration = 1000] - Duration of animation in milliseconds
      * @abstract
@@ -300,7 +300,7 @@ define([
      * Returns the center of the field of view.
      * @function getCenter
      * @return {float[]} the center in decimal degree of the field of view [longitude, latitude]
-     * @memberOf AbstractNavigation#
+     * @memberof AbstractNavigation#
      */
     AbstractNavigation.prototype.getCenter = function() {
         return this.ctx.getLonLatFromPixel(
@@ -315,7 +315,7 @@ define([
      * @param {float} dx Window delta x
      * @param {float} dy Window delta y
      * @abstract
-     * @memberOf AbstractNavigation#
+     * @memberof AbstractNavigation#
      */
     AbstractNavigation.prototype.rotate = function(dx, dy) {
         throw new SyntaxError(
@@ -330,7 +330,7 @@ define([
      * @param {float} dx Window direction left/right
      * @param {float} dy Window direction up/down
      * @abstract
-     * @memberOf AbstractNavigation#
+     * @memberof AbstractNavigation#
      */
     AbstractNavigation.prototype.pan = function(dx, dy) {
         throw new SyntaxError(
@@ -345,7 +345,7 @@ define([
      * @param {float} delta Delta zoom
      * @param {float} scale Scale
      * @abstract
-     * @memberOf AbstractNavigation#
+     * @memberof AbstractNavigation#
      */
     AbstractNavigation.prototype.zoom = function(delta, scale) {
         throw new SyntaxError(
@@ -360,7 +360,7 @@ define([
      * @param {float[]} geoPos - spatial position in decimal degree [longitude, latitude]
      * @param {Object} options - options for zoomTo
      * @abstract
-     * @memberOf AbstractNavigation#
+     * @memberof AbstractNavigation#
      */
     AbstractNavigation.prototype.zoomTo = function(geoPos, options) {
         throw new SyntaxError(
@@ -372,7 +372,7 @@ define([
     /**
      * Computes the view matrix
      * @function computeViewMatrix
-     * @memberOf AbstractNavigation#
+     * @memberof AbstractNavigation#
      * @abstract
      */
     AbstractNavigation.prototype.computeViewMatrix = function() {
@@ -394,7 +394,7 @@ define([
      * @param {int} fov Final zooming fov in degrees
      * @param {int} duration Duration of animation in milliseconds
      * @param {navigationCallback} callback Callback at the end of animation
-     * @memberOf AbstractNavigation#
+     * @memberof AbstractNavigation#
      */
     AbstractNavigation.prototype.toViewMatrix = function(
         mat,
@@ -474,7 +474,7 @@ define([
      * Returns the rendering context.
      * @function getRenderContext
      * @returns {RenderContext} the rendering context
-     * @memberOf AbstractNavigation#
+     * @memberof AbstractNavigation#
      */
     AbstractNavigation.prototype.getRenderContext = function() {
         return this.renderContext;
@@ -484,7 +484,7 @@ define([
      * Sets the rendering context
      * @function setRenderContext
      * @param {RenderContext} renderContext - the rendering context to set
-     * @memberOf AbstractNavigation#
+     * @memberof AbstractNavigation#
      */
     AbstractNavigation.prototype.setRenderContext = function(renderContext) {
         this.renderContext = renderContext;
@@ -493,7 +493,7 @@ define([
     /**
      * Destroys the navigation.
      * @function destroy
-     * @memberOf AbstractNavigation#
+     * @memberof AbstractNavigation#
      */
     AbstractNavigation.prototype.destroy = function() {
         this.renderContext.cameraUpdateFunction = null;
@@ -508,7 +508,7 @@ define([
     /**
      * Update the navigation values if computations are needed.
      * @function update
-     * @memberOf AbstractNavigation#
+     * @memberof AbstractNavigation#
      */
     AbstractNavigation.prototype.update = function() {
         // Does nothing by default
@@ -518,7 +518,7 @@ define([
      * Called by mouse and keyboard handler when pan interactions are finished.
      * This is useful to, e.g.,  fetch the new focus point of the navigator.
      * @function donePanning
-     * @memberOf AbstractNavigation#
+     * @memberof AbstractNavigation#
      */
     AbstractNavigation.prototype.donePanning = function() {
         // Does nothing by default
@@ -528,7 +528,7 @@ define([
      * Called by mouse and keyboard handler when rotate interactions are finished.
      * This is useful to, e.g.,  fetch the new focus point of the navigator.
      * @function doneRotating
-     * @memberOf AbstractNavigation#
+     * @memberof AbstractNavigation#
      */
     AbstractNavigation.prototype.doneRotating = function() {
         // Does nothing by default

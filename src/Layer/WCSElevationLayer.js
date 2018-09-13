@@ -67,7 +67,7 @@ define([
      * @augments AbstractRasterLayer
      * @param {AbstractLayer.wcsElevation_configuration} options - WCSElevation Configuration
      * @constructor
-     * @memberOf module:Layer
+     * @memberof module:Layer
      */
     var WCSElevationLayer = function(options) {
         options.tilePixelSize = options.tilePixelSize || 33;
@@ -153,7 +153,7 @@ define([
     /**
      * Parse a elevation response
      * @function parseElevations
-     * @memberOf WCSElevationLayer#
+     * @memberof WCSElevationLayer#
      * @param {String} text Response as text
      */
     WCSElevationLayer.prototype.parseElevations = function(text) {
@@ -174,7 +174,7 @@ define([
     /**
      * Fallback elevations when no data was returned
      * @function _returnZeroElevations
-     * @memberOf WCSElevationLayer#
+     * @memberof WCSElevationLayer#
      * @returns {float[]} Array of float
      * @private
      */
@@ -193,7 +193,7 @@ define([
     /**
      * Parse a elevation response from AAIGrid
      * @function _parseAAIGrid
-     * @memberOf WCSElevationLayer#
+     * @memberof WCSElevationLayer#
      * @param {String} text Response as text
      * @private
      */
@@ -241,7 +241,7 @@ define([
     /**
      * Get an url for the given tile
      * @function getUrl
-     * @memberOf WCSElevationLayer#
+     * @memberof WCSElevationLayer#
      * @param {Tile} tile Tile
      * @return {String} Url
      */

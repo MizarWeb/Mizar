@@ -46,7 +46,7 @@ define([
      * @param {AbstractProjection.mercator_configuration} [options] - Mercator projection configuration.
      * @see {@link https://en.wikipedia.org/wiki/Mercator_projection}
      * @constructor
-     * @memberOf module:Projection
+     * @memberof module:Projection
      */
     var MercatorProjection = function(options) {
         AbstractProjection.prototype.constructor.call(
@@ -74,7 +74,7 @@ define([
 
     /**
      * @function unProject
-     * @memberOf MercatorProjection#
+     * @memberof MercatorProjection#
      */
     MercatorProjection.prototype.unProject = function(position3d, dest) {
         if (!dest) {
@@ -92,7 +92,7 @@ define([
 
     /**
      * @function project
-     * @memberOf MercatorProjection#
+     * @memberof MercatorProjection#
      */
     MercatorProjection.prototype.project = function(geoPos, dest) {
         if (!dest) {
@@ -121,7 +121,7 @@ define([
 
     /**
      * @function getName
-     * @memberOf MercatorProjection#
+     * @memberof MercatorProjection#
      */
     MercatorProjection.prototype.getName = function() {
         return Constants.PROJECTION.Mercator;

@@ -30,7 +30,7 @@ define([
      *  Plugin to access to default name resolver
      * @augments AbstractNameResolver
      * @param {Context} options - Context
-     * @memberOf module:NameResolver
+     * @memberof module:NameResolver
      */
     var DefaultNameResolver = function(options) {
         AbstractNameResolver.prototype.constructor.call(this, options);
@@ -45,7 +45,7 @@ define([
     /**
      * Convert passed url into an url understandable by the service (input transformer)
      * @function handle
-     * @memberOf DefaultNameResolver#
+     * @memberof DefaultNameResolver#
      */
     DefaultNameResolver.prototype.handle = function(options) {
         var context = this.ctx;
@@ -96,7 +96,7 @@ define([
 
     /**
      * @function remove
-     * @memberOf DefaultNameResolver#
+     * @memberof DefaultNameResolver#
      */
     DefaultNameResolver.prototype.remove = function() {};
 

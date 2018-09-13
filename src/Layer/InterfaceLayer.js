@@ -18,6 +18,65 @@
  ******************************************************************************/
 
 /**
+ * visibility:changed.<br/>
+ * Called when the visibility of a layer changes
+ * @event Layer#visibility:changed
+ * @type {Layer}
+ */
+
+ /**
+ * opacity:changed.<br/>
+ * Called when the opacity of a layer changes
+ * @event Layer#opacity:changed
+ * @type {Layer}
+ */
+
+  /**
+ * Background error event.
+ * Called when an error occurs with abstractContext
+ *
+ * @event Layer#backgroundLayer:error
+ * @type {string}  
+ */
+
+/**
+ * startLoad.<br/>
+ * Called when a layer start to be loaded
+ * @event Layer#startLoad
+ * @type {Layer}
+ */
+
+/**
+ * endLoad.<br/>
+ * Called when layer end loading
+ * @event Layer#endLoad
+ * @type {Layer}
+ */
+
+/**
+ * visibility:changed.<br/>
+ * Called when the visibility of a layer changes
+ * @event Layer#visibility:changed
+ * @type {Layer}
+ */
+
+/**
+ * opacity:changed.<br/>
+ * Called when the opacity of a layer changes
+ * @event Layer#opacity:changed
+ * @type {Layer}
+ */
+
+/**
+ * features:added.<br/>
+ * Called when data coming from a GeoJSON are added
+ * @event Layer#features:added
+ * @type {Object}
+ * @property {Layer} layer
+ * @property {Object} features
+ */
+ 
+/**
  * Layer is an interface to get access to the layer data model.
  *
  * In addition to the classes, a {@link module:Layer.LayerFactory factory} is available to help for creating
@@ -59,6 +118,12 @@ Layer.prototype.getID = function() {};
 Layer.prototype.getName = function() {};
 
 /**
+ * Returns the information type of the layer.
+ * @return {INFORMATION_TYPE}
+ */
+Layer.prototype.getInformationType = function() {};
+
+/**
  * Returns the attribution
  * @return {string}
  */
@@ -95,7 +160,7 @@ Layer.prototype.setOnTheTop = function() {};
 
 /**
  * Sets visible the layer.
- * @param {Boolean} arg - True when the layer is displayed on the globe otherwise false
+ * @param {Boolean} arg - true when the layer is displayed on the globe otherwise false
  * @fires Layer#visibility:changed
  * @throws {TypeError} Will throw an error when arg is not a boolean
  */
@@ -191,14 +256,14 @@ Layer.prototype.setStyle = function(arg) {};
 
 /**
  * Returns true when the layer is set as background otherwise false.
- * @returns {Boolean} True when the layer is set as background otherwise False
+ * @returns {Boolean} true when the layer is set as background otherwise false
  */
 Layer.prototype.isBackground = function() {};
 
 /**
- * Returns True when at least on service related to this whole layer is loaded otherwise False.
+ * Returns true when at least on service related to this whole layer is loaded otherwise false.
  * A service is a layer which is created from this layer.
- * @returns {Boolean} True when at least on service related to this whole layer is loaded otherwise False
+ * @returns {Boolean} true when at least on service related to this whole layer is loaded otherwise false
  */
 Layer.prototype.hasServicesRunningOnCollection = function() {};
 
@@ -212,22 +277,22 @@ Layer.prototype.getServicesRunningOnCollection = function() {};
 /**
  * Adds a reference to loaded service related to the collection.
  * @param {String|Array<String>} layerIDs services related to the collection
- * @returns {Boolean} True when the references are added otherwise False
+ * @returns {Boolean} true when the references are added otherwise false
  * @protected
  */
 Layer.prototype.addServicesRunningOnCollection = function(layerIDs) {};
 
 /**
  * Removes all loaded services on collection.
- * @returns {Boolean} True when all loaded services on the collection are unloaded otherwise False
+ * @returns {Boolean} frue when all loaded services on the collection are unloaded otherwise false
  * @protected
  */
 Layer.prototype.removeServicesRunningOnCollection = function() {};
 
 /**
- * Returns True when at least one service related to a record of this layer is loaded otherwise False.
+ * Returns true when at least one service related to a record of this layer is loaded otherwise false.
  * A service is a layer which is created from this layer.
- * @returns {Boolean} True when at least one service related to a record of this layer is loaded otherwise False
+ * @returns {Boolean} true when at least one service related to a record of this layer is loaded otherwise false
  */
 Layer.prototype.hasServicesRunningOnRecords = function() {};
 
@@ -240,16 +305,16 @@ Layer.prototype.getServicesRunningOnRecords = function() {};
 
 /**
  * Removes all loaded services on records.
- * @returns {Boolean} True when all loaded services on records are unloaded otherwise False
+ * @returns {Boolean} true when all loaded services on records are unloaded otherwise false
  * @protected
  */
 Layer.prototype.removeServicesRunningOnRecords = function() {};
 
 /**
- * Returns True when at least one service is related to a record otherwise False.
+ * Returns true when at least one service is related to a record otherwise false.
  * A service is a layer which is created from this layer.
  * @param {String} featureID Record ID
- * @returns {Boolean} True when when at least one service is related to a featureID otherwise False
+ * @returns {Boolean} true when when at least one service is related to a featureID otherwise false
  */
 Layer.prototype.hasServicesRunningOnRecord = function(featureID) {};
 
@@ -264,7 +329,7 @@ Layer.prototype.getServicesRunningOnRecord = function(featureID) {};
  * Adds a reference to loaded services related to a record
  * @param {String} featureID record ID from which services are loaded
  * @param {String|Array<String>} layerIDs services related to a record
- * @returns {Boolean} True when the references are added otherwise False
+ * @returns {Boolean} true when the references are added otherwise false
  * @protected
  */
 Layer.prototype.addServicesRunningOnRecord = function(featureID, layerIDs) {};
@@ -272,14 +337,14 @@ Layer.prototype.addServicesRunningOnRecord = function(featureID, layerIDs) {};
 /**
  * Removes loaded services on a record.
  * @param {String} featureID
- * @returns {Boolean} True when all loaded services related to a record are unloaded otherwise False
+ * @returns {Boolean} true when all loaded services related to a record are unloaded otherwise false
  * @protected
  */
 Layer.prototype.removeServicesRunningOnRecord = function(featureID) {};
 
 /**
- * Returns True when the layer is a vector otherwise False when this is a raster.
- * @returns {Boolean} True when the layer is a vector otherwise False when this is a raster.
+ * Returns true when the layer is a vector otherwise false when this is a raster.
+ * @returns {Boolean} true when the layer is a vector otherwise false when this is a raster.
  */
 Layer.prototype.isVectorLayer = function() {};
 

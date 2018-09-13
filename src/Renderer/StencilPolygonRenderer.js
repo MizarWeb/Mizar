@@ -39,7 +39,7 @@ define([
     "../Utils/Utils",
     "./RenderContext",
     "./VectorRenderer",
-    "./VectorRendererManager",
+    "./RendererManager",
     "./FeatureStyle",
     "./Program",
     "./pnltri"
@@ -47,7 +47,7 @@ define([
     Utils,
     RenderContext,
     VectorRenderer,
-    VectorRendererManager,
+    RendererManager,
     FeatureStyle,
     Program,
     PNLTRI
@@ -450,7 +450,7 @@ define([
     RenderContext.contextAttributes.stencil = true;
 
     // Register the renderer
-    VectorRendererManager.factory.push(function(globe) {
+    RendererManager.factory.push(function(globe) {
         return new StencilPolygonRenderer(globe);
     });
 });

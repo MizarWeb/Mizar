@@ -20,7 +20,8 @@
  * @name AnimationFactory
  * @class
  * Factory to create an animation
- * @memberOf module:Animation
+ * @memberof module:Animation
+ * @throws {RangeError} the animation type is unknown
  */
 define([
     "../Utils/Constants",

@@ -73,7 +73,7 @@ function Crs() {}
  * Checks when the CRS is a {@link ProjectedCrs}.
  * A {@link ProjectedCrs} projects data on a 2D map.
  *
- * @returns True when the CRS is 2D otherwise False
+ * @returns true when the CRS is 2D otherwise false
  */
 Crs.prototype.isFlat = function() {};
 
@@ -271,7 +271,7 @@ Crs.prototype.getName = function() {};
 Crs.prototype.getDescription = function() {};
 
 /**
- * Returns True when the CRS is bases on a projection otherwise False
+ * Returns true when the CRS is bases on a projection otherwise false
  * @return {boolean} the CRS name
  */
 Crs.prototype.isProjected = function() {};

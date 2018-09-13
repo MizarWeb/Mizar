@@ -20,7 +20,7 @@
  * @name NavigationHandlerFactory
  * @class
  * Factory to create a device for the control of the camera.
- * @memberOf module:Navigation
+ * @memberof module:Navigation
  */
 define([
     "../Utils/Constants",

@@ -158,7 +158,7 @@ define([
      * @augments AbstractLayer
      * @param {AbstractLayer.coordinateGrid_configuration} options - coordinate grid layer configuration
      * @constructor
-     * @memberOf module:Layer
+     * @memberof module:Layer
      */
     var CoordinateGridLayer = function(options) {
         AbstractLayer.prototype.constructor.call(
@@ -203,9 +203,17 @@ define([
     /**************************************************************************************************************/
 
     /**
+     * @function getInformationType
+     * @memberof CoordinateGridLayer#
+     */
+    CoordinateGridLayer.prototype.getInformationType = function() {
+        return Constants.INFORMATION_TYPE.VECTOR;
+    }
+
+    /**
      * Generates an image data from text.
      * @function generateImageData
-     * @memberOf CoordinateGridLayer#
+     * @memberof CoordinateGridLayer#
      * @param {String} text Text generated in canvas
      * @return {Object} Context of 2D canvas
      */
@@ -235,7 +243,7 @@ define([
     /**
      * Attaches the layer to the globe.
      * @function _attach
-     * @memberOf CoordinateGridLayer#
+     * @memberof CoordinateGridLayer#
      * @param {Planet} g Planet
      * @private
      */
@@ -405,7 +413,7 @@ define([
     /**
      * Detaches the layer from the globe.
      * @function _detach
-     * @memberOf CoordinateGridLayer#
+     * @memberof CoordinateGridLayer#
      * @private
      */
     CoordinateGridLayer.prototype._detach = function() {
@@ -431,7 +439,7 @@ define([
     /**
      * Clamps the geoBound to longitude/latitude samples.
      * @function clampGeoBound
-     * @memberOf CoordinateGridLayer#
+     * @memberof CoordinateGridLayer#
      * @param {GeoBound} geoBound Bbox
      * @return {GeoBound} Bbox clamped
      */
@@ -454,7 +462,7 @@ define([
     /**
      * Renders the grid.
      * @function render
-     * @memberOf CoordinateGridLayer#
+     * @memberof CoordinateGridLayer#
      * @param {Array} tiles Tiles
      */
     CoordinateGridLayer.prototype.render = function(tiles) {
@@ -601,7 +609,7 @@ define([
     /**
      * Get/Set visibility of the layer.
      * @function setVisible
-     * @memberOf CoordinateGridLayer#
+     * @memberof CoordinateGridLayer#
      * @param {boolean} arg Visibility or not
      */
     CoordinateGridLayer.prototype.setVisible = function(arg) {
@@ -624,7 +632,7 @@ define([
     /**
      * Computes samples depending on geoBound.
      * @function computeSamples
-     * @memberOf CoordinateGridLayer#
+     * @memberof CoordinateGridLayer#
      */
     CoordinateGridLayer.prototype.computeSamples = function() {
         var dlong = this.geoBound.east - this.geoBound.west;
@@ -654,7 +662,7 @@ define([
     /**
      * Generates buffers object of the grid.
      * @function generateGridBuffers
-     * @memberOf CoordinateGridLayer#
+     * @memberof CoordinateGridLayer#
      */
     CoordinateGridLayer.prototype.generateGridBuffers = function() {
         var phiStart, phiStop;
@@ -794,7 +802,7 @@ define([
     /**
      * Builds the angle representation.
      * @function buildAngle
-     * @memberOf CoordinateGridLayer#
+     * @memberof CoordinateGridLayer#
      * @param {String} format The building format("HMS", "DMS" or "Deg")
      * @param {float} angle The angle to build
      * @return {String} Label
@@ -827,7 +835,7 @@ define([
     /**
      * Computes the geographic center of canvas in grid's coordinate system
      * @function computeGeoCenter
-     * @memberOf CoordinateGridLayer#
+     * @memberof CoordinateGridLayer#
      * @return {Array} Geocenter as array of float
      */
     CoordinateGridLayer.prototype.computeGeoCenter = function() {
@@ -867,7 +875,7 @@ define([
     /**
      * Updates 3D position of a given label.
      * @function updateLabel
-     * @memberOf CoordinateGridLayer#
+     * @memberof CoordinateGridLayer#
      * @param {String} label The label id in labels object
      * @param {float[]} posGeo Updated geographic position of label
      */
@@ -895,7 +903,7 @@ define([
     /**
      * Updates the position of all labels.
      * @function updateLabels
-     * @memberOf CoordinateGridLayer.prototype
+     * @memberof CoordinateGridLayer.prototype
      */
     CoordinateGridLayer.prototype.updateLabels = function() {
         var geoCenter = this.computeGeoCenter();
@@ -918,7 +926,7 @@ define([
     /**
      * Generates labels of the grid.
      * @function generateLabels
-     * @memberOf CoordinateGridLayer#
+     * @memberof CoordinateGridLayer#
      */
     CoordinateGridLayer.prototype.generateLabels = function() {
         var phiStop, phiStart;
@@ -1003,7 +1011,7 @@ define([
     /*
          * Builds a texture from an image and store in a renderable
          * @function _buildTextureFromImage
-         * @memberOf CoordinateGridLayer#
+         * @memberof CoordinateGridLayer#
          * @param {boolean} renderable Is renderable ?
          * @param {Object} image Image object
          */

@@ -237,7 +237,7 @@ define([
         if (!bucket) {
             bucket = this.createBucket(layer, style);
             bucket.renderer = this;
-            bucket.id = this.globe.vectorRendererManager.bucketId++;
+            bucket.id = this.globe.getRendererManager().bucketId++;
             this.buckets.push(bucket);
         }
         return bucket;
@@ -284,7 +284,7 @@ define([
         var tileData = tile.extension.renderer;
         if (!tileData) {
             tileData = tile.extension.renderer = new RendererTileData(
-                this.globe.vectorRendererManager
+                this.globe.getRendererManager()
             );
         }
 

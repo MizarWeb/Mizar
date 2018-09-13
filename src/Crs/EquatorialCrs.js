@@ -118,7 +118,7 @@ define([
      * @param {Object} options - No option to give
      * @constructor
      * @see {@link https://en.wikipedia.org/wiki/Equatorial_coordinate_system Wikipedia}
-     * @memberOf module:Crs
+     * @memberof module:Crs
      */
     var EquatorialCrs = function(options) {
         AbstractCrs.prototype.constructor.call(this, {
@@ -138,7 +138,7 @@ define([
 
     /**
      * @function transformVec
-     * @memberOf EquatorialCrs#
+     * @memberof EquatorialCrs#
      */
     EquatorialCrs.prototype.transformVec = function(vec) {
         var transformMatrix = this.computeTransformMatrix();
@@ -149,7 +149,7 @@ define([
 
     /**
      * @function computeTransformMatrix
-     * @memberOf EquatorialCrs#
+     * @memberof EquatorialCrs#
      */
     EquatorialCrs.prototype.computeTransformMatrix = function() {
         var transformMatrix = [];
@@ -197,7 +197,7 @@ define([
 
     /**
      * @function formatCoordinates
-     * @memberOf EquatorialCrs#
+     * @memberof EquatorialCrs#
      */
     EquatorialCrs.prototype.formatCoordinates = function(geo) {
         var sexa = this.getSexagesimalFromDeg(geo);
@@ -209,7 +209,7 @@ define([
 
     /**
      * @function getLongitudeLabel
-     * @memberOf EquatorialCrs#
+     * @memberof EquatorialCrs#
      */
     EquatorialCrs.prototype.getLongitudeLabel = function() {
         return LONGITUDE_LABEL;
@@ -217,7 +217,7 @@ define([
 
     /**
      * @function getLatitudeLabel
-     * @memberOf EquatorialCrs#
+     * @memberof EquatorialCrs#
      */
     EquatorialCrs.prototype.getLatitudeLabel = function() {
         return LATITUDE_LABEL;
@@ -225,7 +225,7 @@ define([
 
     /**
      * @function _setupPosAfterTrans
-     * @memberOf EquatorialCrs#
+     * @memberof EquatorialCrs#
      * @private
      */
     EquatorialCrs.prototype._setupPosAfterTrans = function(posWorld) {
@@ -236,7 +236,7 @@ define([
 
     /**
      * @function _setupPosBeforeTrans
-     * @memberOf EquatorialCrs#
+     * @memberof EquatorialCrs#
      * @private
      */
     EquatorialCrs.prototype._setupPosBeforeTrans = function(posWorld) {
@@ -247,7 +247,7 @@ define([
 
     /**
      * @function getName
-     * @memberOf EquatorialCrs#
+     * @memberof EquatorialCrs#
      */
     EquatorialCrs.prototype.getName = function() {
         return Constants.CRS.Equatorial;
@@ -255,7 +255,7 @@ define([
 
     /**
      * @function getDescription
-     * @memberOf EquatorialCrs#
+     * @memberof EquatorialCrs#
      * @abstract
      */
     EquatorialCrs.prototype.getDescription = function() {

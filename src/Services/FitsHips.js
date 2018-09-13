@@ -1,6 +1,11 @@
-define([], function() {
-    var mizarAPI;
+define(['../Utils/Constants'], function(Constants) {
+    var mizarAPI;   
 
+    /**
+     * Creates a fits layer
+     * @param {Layer} layer
+     * @fires Globe#backgroundLayer:changed
+     */
     function _createFitsLayer(layer) {
         var isCreated;
         try {
@@ -27,7 +32,7 @@ define([], function() {
             isCreated = true;
             mizarAPI
                 .getActivatedContext()
-                .publish("backgroundLayer:change", fitsLayer);
+                .publish(Constants.EVENT_MSG.LAYER_BACKGROUND_CHANGED, fitsLayer);
         } catch (e) {
             isCreated = false;
         }

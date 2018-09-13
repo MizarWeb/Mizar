@@ -70,7 +70,7 @@ define(["jquery", "jquery.ui"], function($) {
          *    @param html HTML text
          */
         open: function(html, debug) {
-            if (debug != null) {
+            if (debug == null) {
                 debug = false;
             }
             if (debug && $displayDebug) {
@@ -102,6 +102,12 @@ define(["jquery", "jquery.ui"], function($) {
         },
         setIcon: function(buttonName) {
             $buttonName = $(buttonName);
+        },
+        hasError : function() {
+            return $text.length > 0;
+        },
+        getTxt : function() {
+            return $text;
         }
     };
 });

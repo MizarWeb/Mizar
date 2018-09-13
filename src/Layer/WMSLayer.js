@@ -98,7 +98,7 @@ define([
      * @augments AbstractRasterLayer
      * @param {AbstractRasterLayer.wms_configuration} options - WMS Configuration
      * @constructor
-     * @memberOf module:Layer
+     * @memberof module:Layer
      * @see {@link http://www.opengeospatial.org/standards/wms WMS} standard
      */
     var WMSLayer = function(options) {
@@ -147,7 +147,7 @@ define([
     /**
      * Static part of the URL to query the WMS/WMS-T server.
      * @function _queryImage
-     * @memberOf WMSLayer#
+     * @memberof WMSLayer#
      * @param {string} baseUrl - Base URL of the WMS/WMS-Time server
      * @param {int} xTilePixelSize - Number of pixels along X for the output image
      * @param {int} yTilePixelSize - Number of pixels along Y for the output image
@@ -205,10 +205,10 @@ define([
     /**
      * Checks whether the footprint (that represents the restricted zone area) intersects with the tile
      * @function _tileIsIntersectedFootprint
-     * @memberOf WMSLayer#
+     * @memberof WMSLayer#
      * @param {{west:float, north:float, east:float, south:float}} tile - Tile
      * @param {{west:float, north:float, east:float, south:float}} footprint - restricted zone area
-     * @return {boolean} True when the tile intersects with the footprint otherwise False
+     * @return {boolean} true when the tile intersects with the footprint otherwise false
      * @private
      */
     function _tileIsIntersectedFootprint(tile, footprint) {
@@ -225,7 +225,7 @@ define([
     /**
      * Sets the time to query
      * @function setTime
-     * @memberOf WMSLayer#
+     * @memberof WMSLayer#
      * @param {Time.configuration} time - time to query
      */
     WMSLayer.prototype.setTime = function(time) {
@@ -236,7 +236,7 @@ define([
     /**
      * Returns the legend from the WMS/WMS-T server
      * @function getLegend
-     * @memberOf WMSLayer#
+     * @memberof WMSLayer#
      * @return {{title:string, format:string, url:string, size:string}} the legend information
      */
     WMSLayer.prototype.getLegend = function() {
@@ -318,8 +318,8 @@ define([
      * Sets visible/hidden the layer and the legend related to the layer.
      * To make visible the legend, a <div id="legendDiv"/> must be set in the HTML file.
      * @function setVisible
-     * @memberOf WMSLayer#
-     * @param arg True when the layer must be visible otherwise False
+     * @memberof WMSLayer#
+     * @param arg true when the layer must be visible otherwise false
      */
     WMSLayer.prototype.setVisible = function(arg) {
         AbstractRasterLayer.prototype.setVisible.call(this, arg);
@@ -350,7 +350,7 @@ define([
      * an image - in this case, we do not want to make the request to the server when we know the request does not
      * intersect the image's footprint)
      * @function getUrl
-     * @memberOf WMSLayer#
+     * @memberof WMSLayer#
      * @param {Tile} tile Tile
      * @return {String} Url
      */
@@ -395,7 +395,7 @@ define([
      * Set a parameter and add it to the static query parameters.
      * The parameter is added according to some [use cases]{@link AbstractLayer#_hasToBeRefreshed} with the time.
      * @function setParameter
-     * @memberOf WMSLayer#
+     * @memberof WMSLayer#
      * @param paramName parameter name
      * @param value value name
      */

@@ -39,7 +39,7 @@ define([
     "../Utils/Utils",
     "../Utils/Constants",
     "./VectorRenderer",
-    "./VectorRendererManager",
+    "./RendererManager",
     "./FeatureStyle",
     "./Program",
     "./GeoBound"
@@ -47,7 +47,7 @@ define([
     Utils,
     Constants,
     VectorRenderer,
-    VectorRendererManager,
+    RendererManager,
     FeatureStyle,
     Program,
     GeoBound
@@ -264,7 +264,7 @@ define([
     /**
      * Add a geometry to the renderable
      * @function add
-     * @memberOf PointRenderable.prototype
+     * @memberof PointRenderable.prototype
      * @param geometry
      * @return {Boolean} If the geometry has been successfully added to the renderable
      */
@@ -592,7 +592,7 @@ define([
     /**************************************************************************************************************/
 
     // Register the renderer
-    VectorRendererManager.factory.push(function(globe) {
+    RendererManager.factory.push(function(globe) {
         return new PointRenderer(globe);
     });
 

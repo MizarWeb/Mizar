@@ -311,7 +311,7 @@ define([
      * Tests if the layer must be refreshed.
      * @param {string} param parameter
      * @param value value
-     * @return {boolean} True when the layer must be refreshed otherwise False
+     * @return {boolean} true when the layer must be refreshed otherwise false
      * @private
      */
     AbstractLayer.prototype._hasToBeRefreshed = function(param, value) {
@@ -355,7 +355,7 @@ define([
     /**
      * return short name
      * @function getShortName
-     * @memberOf AbstractLayer#
+     * @memberof AbstractLayer#
      * @return {String} Short name
      */
     AbstractLayer.prototype.getShortName = function() {
@@ -373,7 +373,7 @@ define([
 
     /**
      * @function hasServicesRunningOnCollection
-     * @memberOf AbstractLayer#
+     * @memberof AbstractLayer#
      */
     AbstractLayer.prototype.hasServicesRunningOnCollection = function() {
         return this.servicesRunningOnCollection.length > 0;
@@ -383,7 +383,7 @@ define([
 
     /**
      * @function postProcessDateTime
-     * @memberOf AbstractLayer#
+     * @memberof AbstractLayer#
      */
     /*        AbstractLayer.prototype.postProcessTime = function (time) {
          return time;
@@ -393,7 +393,7 @@ define([
 
     /**
      * @function setDateTime
-     * @memberOf AbstractLayer#
+     * @memberof AbstractLayer#
      * @param {Time.configuration} time configuration
      */
     AbstractLayer.prototype.setTime = function(time) {
@@ -404,7 +404,7 @@ define([
 
     /**
      * @function forceRefresh
-     * @memberOf AbstractLayer#
+     * @memberof AbstractLayer#
      */
     AbstractLayer.prototype.forceRefresh = function() {
         var tileManager = this.getGlobe().getTileManager();
@@ -414,7 +414,7 @@ define([
 
     /**
      * @function getServicesRunningOnCollection
-     * @memberOf AbstractLayer#
+     * @memberof AbstractLayer#
      */
     AbstractLayer.prototype.getServicesRunningOnCollection = function() {
         var layers = [];
@@ -430,7 +430,7 @@ define([
 
     /**
      * @function removeServicesRunningOnCollection
-     * @memberOf AbstractLayer#
+     * @memberof AbstractLayer#
      */
     AbstractLayer.prototype.removeServicesRunningOnCollection = function() {
         for (var layerIndex in this.servicesRunningOnCollection) {
@@ -442,7 +442,7 @@ define([
 
     /**
      * @function hasServicesRunningOnRecords
-     * @memberOf AbstractLayer#
+     * @memberof AbstractLayer#
      */
     AbstractLayer.prototype.hasServicesRunningOnRecords = function() {
         return Object.keys(this.servicesRunningOnRecords).length > 0;
@@ -450,7 +450,7 @@ define([
 
     /**
      * @function getServicesRunningOnRecords
-     * @memberOf AbstractLayer#
+     * @memberof AbstractLayer#
      */
     AbstractLayer.prototype.getServicesRunningOnRecords = function() {
         var layers = [];
@@ -463,7 +463,7 @@ define([
 
     /**
      * @function removeServicesRunningOnRecords
-     * @memberOf AbstractLayer#
+     * @memberof AbstractLayer#
      */
     AbstractLayer.prototype.removeServicesRunningOnRecords = function() {
         for (var featureID in this.servicesRunningOnRecords) {
@@ -474,7 +474,7 @@ define([
 
     /**
      * @function hasServicesRunningOnRecord
-     * @memberOf AbstractLayer#
+     * @memberof AbstractLayer#
      */
     AbstractLayer.prototype.hasServicesRunningOnRecord = function(featureID) {
         return this.servicesRunningOnRecords.hasOwnProperty(featureID);
@@ -482,7 +482,7 @@ define([
 
     /**
      * @function getServicesRunningOnRecord
-     * @memberOf AbstractLayer#
+     * @memberof AbstractLayer#
      */
     AbstractLayer.prototype.getServicesRunningOnRecord = function(featureID) {
         var layers = [];
@@ -503,7 +503,7 @@ define([
 
     /**
      * @function addServicesRunningOnRecord
-     * @memberOf AbstractLayer#
+     * @memberof AbstractLayer#
      */
     AbstractLayer.prototype.addServicesRunningOnRecord = function(
         featureID,
@@ -528,7 +528,7 @@ define([
 
     /**
      * @function removeServicesRunningOnRecord
-     * @memberOf AbstractLayer#
+     * @memberof AbstractLayer#
      */
     AbstractLayer.prototype.removeServicesRunningOnRecord = function(
         featureID
@@ -550,7 +550,7 @@ define([
 
     /**
      * @function addServicesRunningOnCollection
-     * @memberOf AbstractLayer#
+     * @memberof AbstractLayer#
      */
     AbstractLayer.prototype.addServicesRunningOnCollection = function(
         layerIDs
@@ -573,7 +573,7 @@ define([
     /**
      * Get getCapabilities url
      * @function getGetCapabilitiesUrl
-     * @memberOf AbstractLayer#
+     * @memberof AbstractLayer#
      * @return {String} url
      */
     AbstractLayer.prototype.getGetCapabilitiesUrl = function() {
@@ -585,7 +585,7 @@ define([
     /**
      * Load the getCapabilities into json variable
      * @function loadGetCapabilities
-     * @memberOf AbstractLayer
+     * @memberof AbstractLayer
      * @param {function} callback Callback function
      * @param {String} paramUrl url (if ommited, reconstructed with getCapabilitiesUrl)
      * @param {Object} sourceObject source object
@@ -635,7 +635,7 @@ define([
     /**
      * Proxify an url
      * @function proxify
-     * @memberOf AbstractLayer#
+     * @memberof AbstractLayer#
      * @param {String} url - URL
      * @return {String} Url proxified
      */
@@ -645,7 +645,7 @@ define([
 
     /**
      * @function getMetadataAPI
-     * @memberOf AbstractLayer#
+     * @memberof AbstractLayer#
      */
     AbstractLayer.prototype.getMetadataAPI = function() {
         return this.metadataAPI;
@@ -653,7 +653,7 @@ define([
 
     /**
      * @function getGlobe
-     * @memberOf AbstractLayer#
+     * @memberof AbstractLayer#
      */
     AbstractLayer.prototype.getGlobe = function() {
         return this.globe;
@@ -661,7 +661,7 @@ define([
 
     /**
      * @function getID
-     * @memberOf AbstractLayer#
+     * @memberof AbstractLayer#
      */
     AbstractLayer.prototype.getID = function() {
         return this.ID;
@@ -669,15 +669,27 @@ define([
 
     /**
      * @function getName
-     * @memberOf AbstractLayer#
+     * @memberof AbstractLayer#
      */
     AbstractLayer.prototype.getName = function() {
         return this.name;
     };
 
     /**
+     * @function getInformationType
+     * @memberof AbstractLayer#
+     * @abstract
+     */
+    AbstractLayer.prototype.getInformationType = function() {
+        throw new SyntaxError(
+            "getInformationType not implemented",
+            "AbstractLayer.js"
+        );
+    }
+
+    /**
      * @function getAttribution
-     * @memberOf AbstractLayer#
+     * @memberof AbstractLayer#
      */
     AbstractLayer.prototype.getAttribution = function() {
         return this.attribution;
@@ -685,7 +697,7 @@ define([
 
     /**
      * @function getCopyrightUrl
-     * @memberOf AbstractLayer#
+     * @memberof AbstractLayer#
      */
     AbstractLayer.prototype.getCopyrightUrl = function() {
         return this.copyrightUrl;
@@ -693,7 +705,7 @@ define([
 
     /**
      * @function getAck
-     * @memberOf AbstractLayer#
+     * @memberof AbstractLayer#
      */
     AbstractLayer.prototype.getAck = function() {
         return this.ack;
@@ -701,7 +713,7 @@ define([
 
     /**
      * @function getDescription
-     * @memberOf AbstractLayer#
+     * @memberof AbstractLayer#
      */
     AbstractLayer.prototype.getDescription = function() {
         return this.description;
@@ -709,7 +721,7 @@ define([
 
     /**
      * @function isVisible
-     * @memberOf AbstractLayer#
+     * @memberof AbstractLayer#
      */
     AbstractLayer.prototype.isVisible = function() {
         return this.visible;
@@ -717,16 +729,16 @@ define([
 
     /**
      * @function setOnTheTop
-     * @memberOf AbstractLayer#
+     * @memberof AbstractLayer#
      */
     AbstractLayer.prototype.setOnTheTop = function() {
-        var manager = this.getGlobe().getVectorRendererManager();
+        var manager = this.getGlobe().getRendererManager();
         manager.setSelectedRasterBucket(this);
     };
 
     /**
      * @function setVisible
-     * @memberOf AbstractLayer#
+     * @memberof AbstractLayer#
      * @throws {TypeError} - The parameter of setVisible should be a boolean
      */
     AbstractLayer.prototype.setVisible = function(arg) {
@@ -778,7 +790,7 @@ define([
 
     /**
      * @function getOpacity
-     * @memberOf AbstractLayer#
+     * @memberof AbstractLayer#
      */
     AbstractLayer.prototype.getOpacity = function() {
         return this.getStyle().getOpacity();
@@ -786,7 +798,7 @@ define([
 
     /**
      * @function setOpacity
-     * @memberOf AbstractLayer#
+     * @memberof AbstractLayer#
      * @throws {RangeError} opacity - opacity value should be a value in [0..1]
      */
     AbstractLayer.prototype.setOpacity = function(arg) {
@@ -800,7 +812,7 @@ define([
 
     /**
      * @function getProperties
-     * @memberOf AbstractLayer#
+     * @memberof AbstractLayer#
      */
     AbstractLayer.prototype.getProperties = function() {
         return this.properties;
@@ -808,7 +820,7 @@ define([
 
     /**
      * @function getType
-     * @memberOf AbstractLayer#
+     * @memberof AbstractLayer#
      */
     AbstractLayer.prototype.getType = function() {
         return this.type;
@@ -816,7 +828,7 @@ define([
 
     /**
      * @function isPickable
-     * @memberOf AbstractLayer#
+     * @memberof AbstractLayer#
      */
     AbstractLayer.prototype.isPickable = function() {
         return this.pickable;
@@ -824,7 +836,7 @@ define([
 
     /**
      * @function isType
-     * @memberOf AbstractLayer#
+     * @memberof AbstractLayer#
      */
     AbstractLayer.prototype.isType = function(type) {
         return this.type === type;
@@ -832,7 +844,7 @@ define([
 
     /**
      * @function getServices
-     * @memberOf AbstractLayer#
+     * @memberof AbstractLayer#
      */
     AbstractLayer.prototype.getServices = function() {
         return this.services;
@@ -840,15 +852,31 @@ define([
 
     /**
      * @function getCoordinateSystem
-     * @memberOf AbstractLayer#
+     * @memberof AbstractLayer#
      */
     AbstractLayer.prototype.getCoordinateSystem = function() {
         return this.coordinateSystem;
     };
 
     /**
+     * @function isAttached
+     * @memberof AbstractLayer#
+     */
+    AbstractLayer.prototype.isAttached = function() {
+        return !this.isDetached;
+    };
+    
+    /**
+     * @function isDetached
+     * @memberof AbstractLayer#
+     */
+    AbstractLayer.prototype.isDetached = function() {
+        return this.globe == null;
+    };
+
+    /**
      * @function _attach
-     * @memberOf AbstractLayer#
+     * @memberof AbstractLayer#
      */
     AbstractLayer.prototype._attach = function(g) {
         this.globe = g;
@@ -863,7 +891,7 @@ define([
 
     /**
      * @function _detach
-     * @memberOf AbstractLayer#
+     * @memberof AbstractLayer#
      */
     AbstractLayer.prototype._detach = function() {
         if (this.attribution && this.globe.attributionHandler) {
@@ -874,7 +902,7 @@ define([
 
     /**
      * @function getBaseUrl
-     * @memberOf AbstractLayer#
+     * @memberof AbstractLayer#
      */
     AbstractLayer.prototype.getBaseUrl = function() {
         return this.baseUrl;
@@ -882,7 +910,7 @@ define([
 
     /**
      * @function getDataType
-     * @memberOf AbstractLayer#
+     * @memberof AbstractLayer#
      */
     AbstractLayer.prototype.getDataType = function() {
         return this.dataType;
@@ -890,7 +918,7 @@ define([
 
     /**
      * @function getFormat
-     * @memberOf AbstractLayer#
+     * @memberof AbstractLayer#
      */
     AbstractLayer.prototype.getFormat = function() {
         return this.format;
@@ -898,7 +926,7 @@ define([
 
     /**
      * @function isDeletable
-     * @memberOf AbstractLayer#
+     * @memberof AbstractLayer#
      */
     AbstractLayer.prototype.isDeletable = function() {
         return this.deletable;
@@ -906,7 +934,7 @@ define([
 
     /**
      * @function getStyle
-     * @memberOf AbstractLayer#
+     * @memberof AbstractLayer#
      */
     AbstractLayer.prototype.getStyle = function() {
         return this.style;
@@ -915,7 +943,7 @@ define([
     /**
      * Sets the vector layer style.
      * @function setStyle
-     * @memberOf AbstractLayer#
+     * @memberof AbstractLayer#
      * @param {FeatureStyle} arg Feature style
      */
     AbstractLayer.prototype.setStyle = function(arg) {
@@ -924,7 +952,7 @@ define([
 
     /**
      * @function isBackground
-     * @memberOf AbstractLayer#
+     * @memberof AbstractLayer#
      */
     AbstractLayer.prototype.isBackground = function() {
         return this.background;
@@ -932,7 +960,7 @@ define([
 
     /**
      * @function isVectorLayer
-     * @memberOf AbstractLayer#
+     * @memberof AbstractLayer#
      */
     AbstractLayer.prototype.isVectorLayer = function() {
         return this.vectorLayer;
@@ -942,7 +970,7 @@ define([
      * Decrypt time range to generate time travel informations
      * @function generateTimeTravel
      * @param {String} timeDetails Details of time range
-     * @memberOf AbstractLayer#
+     * @memberof AbstractLayer#
      */
     AbstractLayer.prototype.generateTimeTravel = function(timeDetails) {
         if (timeDetails) {

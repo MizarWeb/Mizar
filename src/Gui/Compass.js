@@ -36,7 +36,7 @@ define([
      * @throws {ReferenceError} can't get the div to insert the compass
      * @throws {ReferenceError} Can't get the element name
      * @constructor
-     * @fires AbstractContext#modifiedNavigation
+     * @fires Navigation#modifiedNavigation
      */
     var Compass = function(options) {
         /**
@@ -215,7 +215,7 @@ define([
     /**
      * Attachs the compass to the context.
      * @function attachTo
-     * @memberOf Compass#
+     * @memberof Compass#
      */
     Compass.prototype.attachTo = function(context) {
         var self = this;
@@ -323,7 +323,6 @@ define([
                 );
 
                 // Publish modified event to update compass north
-                //self.ctx.publish(Constants.EVENT_MSG.NAVIGATION_MODIFIED);
                 $("#" + self.parentElement).css("display", "block");
             },
             "xml"
@@ -333,7 +332,7 @@ define([
     /**
      * Detaches the tracker from the context.
      * @function detach
-     * @memberOf Compass#
+     * @memberof Compass#
      */
     Compass.prototype.detach = function() {
         var self = this;
@@ -406,7 +405,7 @@ define([
     /**
      * Destroys the elements.
      * @function destroy
-     * @memberOf Compass#
+     * @memberof Compass#
      */
     Compass.prototype.destroy = function() {
         this.detach();

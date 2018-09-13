@@ -41,7 +41,7 @@ define([
     "./VectorRenderer",
     "./Program",
     "./FeatureStyle",
-    "./VectorRendererManager",
+    "./RendererManager",
     "../Tiling/Triangulator",
     "./glMatrix"
 ], function(
@@ -50,7 +50,7 @@ define([
     VectorRenderer,
     Program,
     FeatureStyle,
-    VectorRendererManager,
+    RendererManager,
     Triangulator
 ) {
     /**
@@ -809,7 +809,7 @@ define([
 
     /**************************************************************************************************************/
 
-    VectorRendererManager.factory.push(function(globe) {
+    RendererManager.factory.push(function(globe) {
         return new ConvexPolygonRenderer(globe);
     });
 

@@ -96,7 +96,7 @@ define([
      * @param {Mizar.configuration} mizarConfiguration - mizar configuration
      * @param {AbstractContext.planetContext} options - planet context configuration
      * @constructor
-     * @memberOf module:Context
+     * @memberof module:Context
      */
     var PlanetContext = function(mizarConfiguration, options) {
         AbstractContext.prototype.constructor.call(
@@ -144,7 +144,7 @@ define([
                 );
             }
         } catch (err) {
-            this._showUpError(this, err);
+            this._showUpError(err);
         }
     };
 
@@ -252,8 +252,8 @@ define([
      * Updates the navigation according to the new coordinate reference system and the current settings
      * of the previous coordinate reference system
      * @param {Crs} newCrs -  the new coordinate reference system
-     * @param geoCenter - Current geo center of the camera in the previous coordinate reference system
-     * @param geoDistance - Distance from the globe's surface of the camera in the previous coordinate reference system
+     * @param {float[]} geoCenter - Current geo center of the camera in the previous coordinate reference system
+     * @param {float} geoDistance - Distance from the globe's surface of the camera in the previous coordinate reference system
      * @param {Object} navOptions - Navigation's options
      * @param {boolean} [navOptions.inertia=false] - Inertia
      * @param {Object} [navOptions.mouse] - Mouse's configuration
@@ -287,7 +287,7 @@ define([
 
     /**
      * @function setTimeTravelVisible
-     * @memberOf PlanetContext#
+     * @memberof PlanetContext#
      */
     PlanetContext.prototype.setTimeTravelVisible = function(divName, visible) {
         if (visible) {
@@ -306,8 +306,8 @@ define([
 
     /**
      * @function setBaseElevation
-     * @memberOf PlanetContext#
-     * @throws TypeError : The provided error is not a WCSElevation or a WMSElevation
+     * @memberof PlanetContext#
+     * @throws {TypeError} The provided error is not a WCSElevation or a WMSElevation
      */
     PlanetContext.prototype.setBaseElevation = function(layer) {
         if (
@@ -331,7 +331,7 @@ define([
 
     /**
      * @function setBaseElevationByID
-     * @memberOf PlanetContext#
+     * @memberof PlanetContext#
      */
     PlanetContext.prototype.setBaseElevationByID = function(layerID) {
         // Find the layer by name among all the layers
@@ -344,7 +344,7 @@ define([
 
     /**
      * @function getBaseElevation
-     * @memberOf PlanetContext#
+     * @memberof PlanetContext#
      */
     PlanetContext.prototype.getBaseElevation = function() {
         return this.globe.getBaseElevation();
@@ -352,7 +352,7 @@ define([
 
     /**
      * @function setCoordinateSystem
-     * @memberOf PlanetContext#
+     * @memberof PlanetContext#
      */
     PlanetContext.prototype.setCoordinateSystem = function(newCrs) {
         if (newCrs.getType() !== this.getMode()) {
@@ -404,7 +404,7 @@ define([
                 navOptions
             );
         } catch (err) {
-            this._showUpError(this, err);
+            this._showUpError(err);
         }
 
         if (this.positionTracker) {
@@ -423,7 +423,7 @@ define([
 
     /**
      * @function destroy
-     * @memberOf PlanetContext#
+     * @memberof PlanetContext#
      */
     PlanetContext.prototype.destroy = function() {
         //this.setTimeTravelVisible(false);

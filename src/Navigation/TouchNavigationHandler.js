@@ -61,7 +61,7 @@ define(["../Utils/Utils"], function(Utils) {
      * TouchNavigationHandler constructor
      * @param {AbstractNavigation.touch_configuration} options - Touch navigation configuration
      * @constructor
-     * @memberOf module:Navigation
+     * @memberof module:Navigation
      */
     var TouchNavigationHandler = function(options) {
         /**************************************************************************************************************/

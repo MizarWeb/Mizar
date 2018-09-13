@@ -37,7 +37,7 @@ define([
      *   Plugin to access to CDS name resolver
      * @augments AbstractNameResolver
      * @param {Context} options - Context
-     * @memberOf module:NameResolver
+     * @memberof module:NameResolver
      */
     var CDSNameResolver = function(options) {
         AbstractNameResolver.prototype.constructor.call(this, options);
@@ -53,7 +53,7 @@ define([
      * Queries CDS using this URL : http://cdsweb.u-strasbg.fr/cgi-bin/nph-sesame/-oxp/A?<i>objectName</i>
      * and the layers
      * @function handle
-     * @memberOf CDSNameResolver#
+     * @memberof CDSNameResolver#
      */
     CDSNameResolver.prototype.handle = function(options) {
         var context = this.ctx;
@@ -161,7 +161,7 @@ define([
 
     /**
      * @function remove
-     * @memberOf CDSNameResolver#
+     * @memberof CDSNameResolver#
      */
     CDSNameResolver.prototype.remove = function() {};
 

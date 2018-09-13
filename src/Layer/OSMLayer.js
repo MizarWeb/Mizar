@@ -57,7 +57,7 @@ define([
      * create a free editable map of the world
      * @augments AbstractRasterLayer
      * @param {AbstractRasterLayer.osm_configuration} options - OSM Configuration
-     * @memberOf module:Layer
+     * @memberof module:Layer
      */
     var OSMLayer = function(options) {
         options.tilePixelSize = options.tilePixelSize || 256;

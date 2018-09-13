@@ -109,7 +109,7 @@ define([], function() {
      * @param {vec3} a First vector
      * @param {vec3} b Second vector
      *
-     * @returns {Boolean} True if a is equivalent to b
+     * @returns {Boolean} true if a is equivalent to b
      */
     vec3.equal = function(a, b) {
         return (
@@ -761,7 +761,7 @@ define([], function() {
      * @param {mat4} a First matrix
      * @param {mat4} b Second matrix
      *
-     * @returns {Boolean} True if a is equivalent to b
+     * @returns {Boolean} true if a is equivalent to b
      */
     mat4.equal = function(a, b) {
         return (
@@ -2008,7 +2008,7 @@ define([], function() {
      * @param {quat4} a First vector
      * @param {quat4} b Second vector
      *
-     * @returns {Boolean} True if a is equivalent to b
+     * @returns {Boolean} true if a is equivalent to b
      */
     quat4.equal = function(a, b) {
         return (

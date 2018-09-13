@@ -112,7 +112,7 @@ define([
      * @param {GroundContext} ctx - ground context
      * @param {AbstractNavigation.astro_configuration} options - navigation configuration
      * @constructor
-     * @memberOf module:Navigation
+     * @memberof module:Navigation
      */
     var GroundNavigation = function(ctx, options) {
         AbstractNavigation.prototype.constructor.call(
@@ -301,6 +301,7 @@ define([
      * @param {Object} [options] - options
      * @param {Object} [options.callback] - Callback function to call when it is defined.
      * @private
+     * @fires Navigation#navigation:changedDistance
      */
     function _addStop(animation, ctx, destDistance, options) {
         animation.onstop = function() {
@@ -349,7 +350,7 @@ define([
     /**
      * Returns the center of the navigation.
      * @function getCenter
-     * @memberOf GroundNavigation#
+     * @memberof GroundNavigation#
      * @return {float[]}
      */
     GroundNavigation.prototype.getCenter = function() {
@@ -371,7 +372,7 @@ define([
      * @param {float} [options.fov = DEFAULT_FINAL_FOV] - field of view in degree
      * @param {int} [options.duration = DEFAULT_DURATION_ZOOM] - duration of the animation in milliseconds
      * @param {navigationCallback} [options.callback] - Called at the end of navigation
-     * @memberOf GroundNavigation#
+     * @memberof GroundNavigation#
      */
     GroundNavigation.prototype.zoomTo = function(geoPos, options) {
         var navigation = this;
@@ -446,10 +447,10 @@ define([
     };
 
     /**
-         Compute the view matrix
-         @function computeViewMatrix
-         @memberOf GroundNavigation#
-         */
+    * Compute the view matrix
+    * @function computeViewMatrix
+    * @memberof GroundNavigation#
+    */
     GroundNavigation.prototype.computeViewMatrix = function() {
         var eye = [];
         vec3.normalize(this.center3d);
@@ -472,7 +473,7 @@ define([
          Event handler for mouse wheel
          @function zoom
          @param delta Delta zoom
-         @memberOf GroundNavigation#
+         @memberof GroundNavigation#
          */
     GroundNavigation.prototype.zoom = function(delta, scale) {
         // TODO : improve zoom, using scale or delta ? We should use scale always
@@ -498,7 +499,7 @@ define([
          @function pan
          @param dx Window delta x
          @param dy Window delta y
-         @memberOf GroundNavigation#
+         @memberof GroundNavigation#
          */
     GroundNavigation.prototype.pan = function(dx, dy) {
         var x = this.renderContext.canvas.width / 2.0;
@@ -523,7 +524,7 @@ define([
          @function rotate
          @param dx Window delta x
          @param dy Window delta y
-         @memberOf GroundNavigation#
+         @memberof GroundNavigation#
          */
     GroundNavigation.prototype.rotate = function(dx, dy) {
         var angle = dx * DELTA_HEADING;
@@ -537,7 +538,7 @@ define([
 
     /**
          @function getHeading
-         @memberOf GroundNavigation#
+         @memberof GroundNavigation#
          */
     GroundNavigation.prototype.getHeading = function() {
         return this.heading;

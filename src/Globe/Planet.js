@@ -58,7 +58,7 @@ define([
     "../Utils/Utils",
     "./AbstractGlobe",
     "../Utils/Constants"
-], function(Tile, Event, Utils, AbstractGlobe, Constants) {
+], function (Tile, Event, Utils, AbstractGlobe, Constants) {
     /**
      * @name Planet
      * @class
@@ -66,15 +66,14 @@ define([
      * @augments AbstractGlobe
      * @param {AbstractGlobe.configuration} options - Planet configuration
      * @constructor
-     * @memberOf module:Globe
+     * @memberof module:Globe
      */
-    var Planet = function(options) {
+    var Planet = function (options) {
         AbstractGlobe.prototype.constructor.call(
             this,
             Constants.GLOBE.Planet,
             options
         );
-        this.sky = false;
         this.manualRendererlayers = [];
     };
 
@@ -87,49 +86,60 @@ define([
     /**
      * Sets the base imagery layer for the Planet.
      * @function setBaseImagery
-     * @memberOf Planet#
+     * @memberof Planet#
      * @param {AbstractRasterLayer} layer the layer to use
+     * @throws {RangeError} layer must be set.
      */
-    Planet.prototype.setBaseImagery = function(layer) {
-        if (this.baseImagery === layer) {
+    Planet.prototype.setBaseImagery = function (layer) {
+        if (layer == null) {
+            throw new RangeError(
+                "layer must be exist.",
+                "Planet.js"
+            );
+        }
+
+        if (layer === this.baseImagery) {
             return;
         }
 
-        if (this.baseImagery) {
-            this.removeLayer(this.baseImagery);
+        if (this.baseImagery) {        
+            this.tileManager.setImageryProvider(null);
             this.baseImagery = null;
         }
-        // Attach the layer to the globe
-        if (layer) {
-            layer._overlay = false;
-            layer.background = true;
+
+        // Attach the layer to the globe      
+        this.definedBackgound = true;
+        layer.background = true;
+        if (layer.isDetached()) {
             this.addLayer(layer);
-            this.baseImagery = layer;
-            layer.setVisible(true);
         }
-        this.tileManager.setImageryProvider(layer);        
+        this.tileManager.setImageryProvider(layer);
+        this.baseImagery = layer;
+        this.publishEvent(
+            Constants.EVENT_MSG.LAYER_BACKGROUND_CHANGED,
+            layer
+        );
     };
 
     /**
      * @function setBaseElevation
-     * @memberOf Planet#
+     * @memberof Planet#
      */
-    Planet.prototype.setBaseElevation = function(layer) {
+    Planet.prototype.setBaseElevation = function (layer) {
         if (this.tileManager.elevationProvider) {
             this.removeLayer(this.tileManager.elevationProvider);
         }
         this.tileManager.setElevationProvider(layer);
         if (layer) {
-            layer._overlay = false;
             this.addLayer(layer);
         }
     };
 
     /**
-     * @function
-     * @memberOf Planet#
+     * @function getElevation
+     * @memberof Planet#
      */
-    Planet.prototype.getElevation = function(lon, lat) {
+    Planet.prototype.getElevation = function (lon, lat) {
         // Use imagery provider tiling if defined, otherwise use globe default one
         var tiling = this.tileManager.tiling;
         if (this.baseImagery) {
@@ -150,12 +160,11 @@ define([
         }
     };
 
-    /**
-     * @private
+    /**     
      * @function render
-     * @memberOf AbstractGlobe#
+     * @memberof Planet#
      */
-    Planet.prototype.render = function() {
+    Planet.prototype.render = function () {
         if (this.isEnabled()) {
             // Call pre-renderers (only in 3D mode, no atmosphere for 2D)
             if (!this.coordinateSystem.isFlat()) {
@@ -165,14 +174,14 @@ define([
             }
             // Render tiles
             this.tileManager.render();
-
-            for (var j = 0; j < this.manualRendererlayers.length; j++) {
-                this.manualRendererlayers[j].render();
-            }
         }
     };
 
-    Planet.prototype.hasMesh = function() {
+    /**
+     * @function hashMesh
+     * @memberof Planet#
+     */
+    Planet.prototype.hasMesh = function () {
         return true;
     };
 

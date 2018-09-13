@@ -31,7 +31,7 @@ define([
      *   Plugin to access to Default reverse name resolver
      * @augments AbstractReverseNameResolver
      * @param {Context} options - Context
-     * @memberOf module:ReverseNameResolver
+     * @memberof module:ReverseNameResolver
      */
     var DefaultReverseNameResolver = function(options) {
         AbstractReverseNameResolver.prototype.constructor.call(this, options);
@@ -45,7 +45,7 @@ define([
 
     /**
      * @function handle
-     * @memberOf DefaultReverseNameResolver#
+     * @memberof DefaultReverseNameResolver#
      * @param {Object} options
      */
     DefaultReverseNameResolver.prototype.handle = function(options) {
@@ -82,7 +82,7 @@ define([
 
     /**
      * @function remove
-     * @memberOf DefaultReverseNameResolver#
+     * @memberof DefaultReverseNameResolver#
      */
     DefaultReverseNameResolver.prototype.remove = function(options) {};
 

@@ -20,7 +20,7 @@
  * @name ProjectionFactory
  * @class
  * Factory to create a projection
- * @memberOf module:Projection
+ * @memberof module:Projection
  */
 define([
     "../Utils/Constants",

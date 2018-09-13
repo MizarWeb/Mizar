@@ -37,7 +37,7 @@ define([
      * @augments AbstractVectorLayer
      * @param {AbstractLayer.vector_configuration} options - Vector configuration
      * @constructor
-     * @memberOf module:Layer
+     * @memberof module:Layer
      */
     var VectorLayer = function(options) {
         AbstractVectorLayer.prototype.constructor.call(

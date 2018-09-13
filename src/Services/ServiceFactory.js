@@ -51,6 +51,28 @@ define([
     ReverseNameResolver,
     TimeTravelCore
 ) {
+
+    /**
+     * image:added
+     * Called when an image has been added
+     * @event Service#image:added
+     * @type {json}
+     */ 
+
+    /**
+     * image:removed.<br/>
+     * Called when an image has been removed
+     * @event Service#image:removed
+     * @type {json}
+     */      
+
+    /**
+     * image:downloaded.<br/>
+     * Called when an image has been downloaded
+     * @event Service#image:downloaded
+     * @type {json}
+     */      
+
     return {
         create: function(serviceType, userOptions) {
             var obj;

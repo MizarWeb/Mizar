@@ -42,17 +42,17 @@ define(["../Utils/Constants", "./RasterOverlayRenderer"], function(
     /**************************************************************************************************************/
 
     /**
-     @name VectorRendererManager
+     @name RendererManager
      @class
-         VectorRendererManager constructor
+         RendererManager constructor
      @param {AbstractGlobe} globe AbstractGlobe
      @constructor
      */
-    var VectorRendererManager = function(globe) {
+    var RendererManager = function(globe) {
         // Create the registered renderers
         this.renderers = [];
-        for (var i = 0; i < VectorRendererManager.factory.length; i++) {
-            this.renderers.push(VectorRendererManager.factory[i](globe));
+        for (var i = 0; i < RendererManager.factory.length; i++) {
+            this.renderers.push(RendererManager.factory[i](globe));
         }
 
         // The array of renderables used during rendering
@@ -67,17 +67,17 @@ define(["../Utils/Constants", "./RasterOverlayRenderer"], function(
     /**
      The factory for renderers
      */
-    VectorRendererManager.factory = [];
+    RendererManager.factory = [];
 
     /**************************************************************************************************************/
 
     /**
      * Set the selected layer on the top.
      * @function setSelectedRasterBucket
-     * @memberOf VectorRendererManager.prototype
+     * @memberof RendererManager.prototype
      * @param selectedLayer Layer to draw on the top
      */
-    VectorRendererManager.prototype.setSelectedRasterBucket = function(
+    RendererManager.prototype.setSelectedRasterBucket = function(
         selectedLayer
     ) {
         var rendererIdx = this.renderers.length;
@@ -110,12 +110,12 @@ define(["../Utils/Constants", "./RasterOverlayRenderer"], function(
     /**
      * Get a renderer
      * @function getRenderer
-     * @memberOf VectorRendererManager.prototype
+     * @memberof RendererManager.prototype
      * @param geometry
      * @param style
      * @return Renderer
      */
-    VectorRendererManager.prototype.getRenderer = function(geometry, style) {
+    RendererManager.prototype.getRenderer = function(geometry, style) {
         for (var i = 0; i < this.renderers.length; i++) {
             if (this.renderers[i].canApply(geometry.type, style)) {
                 return this.renderers[i];
@@ -130,10 +130,10 @@ define(["../Utils/Constants", "./RasterOverlayRenderer"], function(
     /**
      *    Generate the tile data
      * @function generate
-     * @memberof VectorRendererManager.prototype
+     * @memberof RendererManager.prototype
      * @param {Tile} tile Tile
      */
-    VectorRendererManager.prototype.generate = function(tile) {
+    RendererManager.prototype.generate = function(tile) {
         var i;
         if (!tile.parent) {
             for (i = 0; i < this.renderers.length; i++) {
@@ -161,12 +161,12 @@ define(["../Utils/Constants", "./RasterOverlayRenderer"], function(
     /**
      * Add a geometry to the renderer
      * @function addGeometry
-     * @memberof VectorRendererManager.prototype
+     * @memberof RendererManager.prototype
      * @param layer
      * @param geometry
      * @param style
      */
-    VectorRendererManager.prototype.addGeometry = function(
+    RendererManager.prototype.addGeometry = function(
         layer,
         geometry,
         style
@@ -175,7 +175,7 @@ define(["../Utils/Constants", "./RasterOverlayRenderer"], function(
         if (renderer) {
             renderer.addGeometry(layer, geometry, style);
         } else {
-            console.error("No renderer for VectorRendererManager");
+            console.error("No renderer for RendererManager");
         }
     };
 
@@ -184,12 +184,12 @@ define(["../Utils/Constants", "./RasterOverlayRenderer"], function(
     /**
      * Remove a geometry from the renderer
      * @function removeGeometry
-     * @memberof VectorRendererManager.prototype
+     * @memberof RendererManager.prototype
      * @param geometry
      * @param layer
      * @return {Boolean}
      */
-    VectorRendererManager.prototype.removeGeometry = function(geometry, layer) {
+    RendererManager.prototype.removeGeometry = function(geometry, layer) {
         var bucket = geometry._bucket;
         if (bucket && bucket.layer === layer) {
             /*if (layer.type === "OpenSearch") {
@@ -209,13 +209,13 @@ define(["../Utils/Constants", "./RasterOverlayRenderer"], function(
     /**
      * Add a geometry to a tile
      * @function addGeometryToTile
-     * @memberof VectorRendererManager.prototype
+     * @memberof RendererManager.prototype
      * @param layer
      * @param geometry
      * @param style
      * @param {Tile} tile Tile
      */
-    VectorRendererManager.prototype.addGeometryToTile = function(
+    RendererManager.prototype.addGeometryToTile = function(
         layer,
         geometry,
         style,
@@ -230,11 +230,11 @@ define(["../Utils/Constants", "./RasterOverlayRenderer"], function(
     /**
      * Remove a geometry from a tile
      * @function removeGeometryFromTile
-     * @memberof VectorRendererManager.prototype
+     * @memberof RendererManager.prototype
      * @param geometry
      * @param {Tile} tile Tile
      */
-    VectorRendererManager.prototype.removeGeometryFromTile = function(
+    RendererManager.prototype.removeGeometryFromTile = function(
         geometry,
         tile
     ) {
@@ -261,9 +261,9 @@ define(["../Utils/Constants", "./RasterOverlayRenderer"], function(
     /**
      * Render all
      * @function render
-     * @memberof VectorRendererManager.prototype
+     * @memberof RendererManager.prototype
      */
-    VectorRendererManager.prototype.render = function() {
+    RendererManager.prototype.render = function() {
         // Add main renderables
         var i, j;
         for (j = 0; j < this.renderers.length; j++) {
@@ -307,5 +307,5 @@ define(["../Utils/Constants", "./RasterOverlayRenderer"], function(
 
     /**************************************************************************************************************/
 
-    return VectorRendererManager;
+    return RendererManager;
 });

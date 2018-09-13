@@ -60,7 +60,7 @@ define([
      * @param {object} options
      * @augments AbstractProvider
      * @constructor
-     * @memberOf module:Provider
+     * @memberof module:Provider
      * @see Search Catalogue of the Brightest Stars (Ochsenbein+ 1988) in VizieR database for more details
      */
     var StarProvider = function(options) {
@@ -77,7 +77,7 @@ define([
     /**
      * Asynchronous requests to load star database
      * @function loadFiles
-     * @memberOf StarProvider.prototype
+     * @memberof StarProvider.prototype
      * @param {Layer} mizarLayer - Mizar layer
      * @param {Object} configuration - Configuration options
      * @param {string} configuration.nameUrl - Url providing the stars name data
@@ -125,7 +125,7 @@ define([
     /**
      * Handle features on layer
      * @function handleFeatures
-     * @memberOf StarProvider#
+     * @memberof StarProvider#
      * @param {Layer} mizarLayer
      */
     StarProvider.prototype.handleFeatures = function(mizarLayer) {

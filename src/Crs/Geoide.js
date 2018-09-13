@@ -32,7 +32,7 @@ define([], function() {
      * @param {AbstractCrs.geoide_configuration} options - Options for Geoide
      * @constructor
      * @throws {ReferenceError} Will throw an error when options.realPlanetRadius or options.radius are not defined
-     * @memberOf module:Crs
+     * @memberof module:Crs
      * @todo add flattening parameter
      */
     var Geoide = function(options) {
@@ -54,7 +54,7 @@ define([], function() {
     /**
      * Get real planet radius in meter
      * @function getRealPlanetRadius
-     * @memberOf Geoide#
+     * @memberof Geoide#
      * @return {float} Real planet radius
      */
     Geoide.prototype.getRealPlanetRadius = function() {
@@ -64,7 +64,7 @@ define([], function() {
     /**
      * Get radius in vector length
      * @function getRadius
-     * @memberOf Geoide#
+     * @memberof Geoide#
      * @return {float} Radius
      */
     Geoide.prototype.getRadius = function() {
@@ -74,7 +74,7 @@ define([], function() {
     /**
      * Get height scale = 1/realPlanetRadius
      * @function getHeightScale
-     * @memberOf Geoide#
+     * @memberof Geoide#
      * @return {float} Height scale
      */
     Geoide.prototype.getHeightScale = function() {

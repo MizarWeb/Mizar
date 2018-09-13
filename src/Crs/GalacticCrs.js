@@ -78,7 +78,7 @@ define([
      * @param options - no option to give.
      * @constructor
      * @see {@link https://en.wikipedia.org/wiki/Galactic_coordinate_system Wikipedia}
-     * @memberOf module:Crs
+     * @memberof module:Crs
      */
     var GalacticCrs = function(options) {
         AbstractCrs.prototype.constructor.call(this, {
@@ -98,7 +98,7 @@ define([
 
     /**
      * @function formatCoordinates
-     * @memberOf GalacticCrs#
+     * @memberof GalacticCrs#
      */
     GalacticCrs.prototype.formatCoordinates = function(geo) {
         var astro = [];
@@ -113,7 +113,7 @@ define([
 
     /**
      * @function getLongitudeLabel
-     * @memberOf GalacticCrs#
+     * @memberof GalacticCrs#
      */
     GalacticCrs.prototype.getLongitudeLabel = function() {
         return LONGITUDE_LABEL;
@@ -121,7 +121,7 @@ define([
 
     /**
      * @function getLatitudeLabel
-     * @memberOf GalacticCrs#
+     * @memberof GalacticCrs#
      */
     GalacticCrs.prototype.getLatitudeLabel = function() {
         return LATITUDE_LABEL;
@@ -129,7 +129,7 @@ define([
 
     /**
      * @function _setupPosAfterTrans
-     * @memberOf GalacticCrs#
+     * @memberof GalacticCrs#
      * @private
      */
     GalacticCrs.prototype._setupPosAfterTrans = function(posWorld) {
@@ -145,7 +145,7 @@ define([
 
     /**
      * @function _setupPosBeforeTrans
-     * @memberOf GalacticCrs#
+     * @memberof GalacticCrs#
      * @rpivate
      */
     GalacticCrs.prototype._setupPosBeforeTrans = function(posWorld) {
@@ -161,7 +161,7 @@ define([
 
     /**
      * @function getName
-     * @memberOf GalacticCrs#
+     * @memberof GalacticCrs#
      */
     GalacticCrs.prototype.getName = function() {
         return Constants.CRS.Galactic;
@@ -169,7 +169,7 @@ define([
 
     /**
      * @function getName
-     * @memberOf GalacticCrs#
+     * @memberof GalacticCrs#
      */
     GalacticCrs.prototype.getDescription = function() {
         return DESCRIPTION;

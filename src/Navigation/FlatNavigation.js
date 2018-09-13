@@ -126,7 +126,7 @@ define([
      * @param {PlanetContext} ctx - Planet context
      * @param {AbstractNavigation.flat_configuration} options - Flat navigation configuration
      * @constructor
-     * @memberOf module:Navigation
+     * @memberof module:Navigation
      */
     var FlatNavigation = function(ctx, options) {
         AbstractNavigation.prototype.constructor.call(
@@ -337,6 +337,7 @@ define([
      * @param {Object} [options] - options
      * @param {Object} [options.callback] - Callback function to call when it is defined.
      * @private
+     * @fires Navigation#navigation:changedDistance
      */
     function _addStop(zoomToAnimation, ctx, destDistance, options) {
         zoomToAnimation.onstop = function() {
@@ -379,7 +380,7 @@ define([
 
     /**
      * @function getCenter
-     * @memberOf FlatNavigation#
+     * @memberof FlatNavigation#
      * @return {float[]} Returns the central position of the camera
      */
     FlatNavigation.prototype.getCenter = function() {
@@ -393,7 +394,7 @@ define([
     /**
      * Saves the current navigation state.
      * @function save
-     * @memberOf FlatNavigation#
+     * @memberof FlatNavigation#
      * @return {{center: *, distance: *, up: *}} a JS object containing the navigation state
      */
     FlatNavigation.prototype.save = function() {
@@ -407,7 +408,7 @@ define([
     /**
      * Restores the navigation state.
      * @function restore
-     * @memberOf FlatNavigation#
+     * @memberof FlatNavigation#
      * @param {Object} state a JS object containing the navigation state
      * @param {float[]} state.center - Center of the camera's field of view in decimal degree as [longitude, latitude]
      * @param {int} state.distance - Distance in meters from the surface of the globe to the camera
@@ -422,7 +423,7 @@ define([
     /**
      * Computes the view matrix.
      * @function computeViewMatrix
-     * @memberOf FlatNavigation#
+     * @memberof FlatNavigation#
      */
     FlatNavigation.prototype.computeViewMatrix = function() {
         var vm = this.renderContext.getViewMatrix();
@@ -437,7 +438,7 @@ define([
      * Zooms to a geographic position by creating an animation.
      *
      * @function zoomTo
-     * @memberOf FlatNavigation#
+     * @memberof FlatNavigation#
      * @param {float[]} geoPos Array of two floats corresponding to final Longitude and Latitude(in this order) to zoom
      * @param {Object} options - options
      * @param {int} [options.distance] - Final zooming distance in meters. By default, the distance does not change
@@ -505,7 +506,7 @@ define([
     /**
      * Zoom to the current observed location
      * @function zoom
-     * @memberOf FlatNavigation#
+     * @memberof FlatNavigation#
      * @param {float} delta Delta zoom
      * @param {float} scale Scale
      */
@@ -538,7 +539,7 @@ define([
     /**
      * Pans the camera
      * @function pan
-     * @memberOf FlatNavigation#
+     * @memberof FlatNavigation#
      * @param {int} dx Window delta x
      * @param {int} dy Window delta y
      */
@@ -592,7 +593,7 @@ define([
     /**
      * Camera heading.
      * @function rotate
-     * @memberOf FlatNavigation#
+     * @memberof FlatNavigation#
      * @param {int} dx Window delta x
      */
     FlatNavigation.prototype.rotate = function(dx) {
@@ -607,7 +608,7 @@ define([
     /**
      * Returns the distance in meters.
      * @function getDistance
-     * @memberOf FlatNavigation#
+     * @memberof FlatNavigation#
      * @return {float} the distance in meters from the surface of the globe
      */
     FlatNavigation.prototype.getDistance = function() {
@@ -623,7 +624,7 @@ define([
     /**
      * Returns the heading of the camera.
      * @function getHeading
-     * @memberOf FlatNavigation#
+     * @memberof FlatNavigation#
      * @return {number} the heading angle between [0, 360]
      */
     FlatNavigation.prototype.getHeading = function() {
@@ -633,7 +634,7 @@ define([
     /**
      * Moves up vector.
      * @function moveUpTo
-     * @memberOf FlatNavigation#
+     * @memberof FlatNavigation#
      * @param {float[]} vec Vector
      * @param {int} [duration = DEFAULT_DURATION_NORTH] - Duration of animation in milliseconds
      */
@@ -667,7 +668,7 @@ define([
     /**
      * Destroy
      * @function destroy
-     * @memberOf FlatNavigation#
+     * @memberof FlatNavigation#
      */
     FlatNavigation.prototype.destroy = function() {
         AbstractNavigation.prototype.destroy.call(this);

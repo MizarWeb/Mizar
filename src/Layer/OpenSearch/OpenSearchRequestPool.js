@@ -315,7 +315,7 @@ o     * Check if there is any remaining query in the pool
      * @function isQueryStillWanted
      * @memberof OpenSearchRequestPool#
      * @param {String} key Key of the query
-     * @return {Boolean} True if query is still in pool
+     * @return {Boolean} true if query is still in pool
      */
     OpenSearchRequestPool.prototype.isQueryStillWanted = function(
         key,

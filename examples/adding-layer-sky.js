@@ -21,7 +21,7 @@ mizar.getActivatedContext().subscribe(Mizar.EVENT_MSG.LAYER_BACKGROUND_ADDED, fu
     document.getElementById("message").innerHTML="background has been added: "+layer.name;
 });
 
-mizar.getActivatedContext().subscribe(Mizar.EVENT_MSG.LAYER_ADDITIONAL_ADDED, function(layer){
+mizar.getActivatedContext().subscribe(Mizar.EVENT_MSG.LAYER_ADDED, function(layer){
     document.getElementById("message").innerHTML="added layer: "+layer.name;
 });
 
@@ -39,9 +39,13 @@ $("#DSS").change(function () {
             type: Mizar.LAYER.Hips,
             baseUrl: "http://alasky.unistra.fr/DSS/DSSColor",
             visible: true,
-            transparent: true,
-            opacity: 0.5
-        });       
+            transparent: true            
+        }, function(layerID){
+            //var layer = mizar.getLayerByID(layerID);
+            //layer._ready = true;
+            //mizar.getActivatedContext().globe.tileManagers[layer.tiling.coordinateSystem.getGeoideName()].setImageryProvider(layer);  
+        });
+             
     } else {
         layer = mizar.getLayerByName(DSS);    
         mizar.removeLayer(layer.ID);        

@@ -50,7 +50,7 @@ define(["../Utils/Utils", "./WMSLayer"], function(Utils, WMSLayer) {
      * @augments WMSLayer
      * @param {AbstractLayer.wmsElevation_configuration} options - WMSElevation configuration
      * @constructor
-     * @memberOf module:Layer
+     * @memberof module:Layer
      */
     var WMSElevationLayer = function(options) {
         options.format = "image/x-aaigrid";
@@ -67,7 +67,7 @@ define(["../Utils/Utils", "./WMSLayer"], function(Utils, WMSLayer) {
     /**
      * Parse a elevation response
      * @function parseElevations
-     * @memberOf WMSElevationLayer#
+     * @memberof WMSElevationLayer#
      * @param {String} text Response as text
      * @return {float[]} Array of float
      */

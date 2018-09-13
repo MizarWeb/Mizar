@@ -41,7 +41,7 @@ define(function() {
      * @typedef {Object} AbstractNavigation.keyboard_configuration
      * @property {float} [panFactor = 10.0] - Factor for panning within the scene
      * @property {float} [zoomFactor = 1.0] - Factor for zooming into the scene
-     * @property {boolean} [installOnDocument = false] -True to install the event listener on the document and not on the canvas
+     * @property {boolean} [installOnDocument = false] -true to install the event listener on the document and not on the canvas
      */
 
     /**
@@ -65,7 +65,7 @@ define(function() {
      *
      * @param {AbstractNavigation.keyboard_configuration} options - Keyboard navigation configuration
      * @constructor
-     * @memberOf module:Navigation
+     * @memberof module:Navigation
      */
     var KeyboardNavigationHandler = function(options) {
         /**************************************************************************************************************/

@@ -57,7 +57,7 @@ define([
      * @augments AbstractLayer
      * @param {AbstractLayer.groundOverlay_configuration} options - Ground overlay configuration
      * @constructor
-     * @memberOf module:Layer
+     * @memberof module:Layer
      */
     var GroundOverlayLayer = function(options) {
         AbstractLayer.prototype.constructor.call(
@@ -103,6 +103,23 @@ define([
     Utils.inherits(AbstractLayer, GroundOverlayLayer);
 
     /**************************************************************************************************************/
+
+    /**
+     * @function getInformationType
+     * @memberof GroundOverlayLayer#
+     */
+    GroundOverlayLayer.prototype.getInformationType = function() {
+        return Constants.INFORMATION_TYPE.RASTER;
+    }
+
+    /**
+     * Loads a global overview if available. Only use for sky rendering currently
+     * @function loadOverview
+     * @memberof GroundOverlayLayer#     
+     */
+    GroundOverlayLayer.prototype.loadOverview = function() {
+
+    }    
 
     /**
      * Attaches layer to the globe.
@@ -190,7 +207,7 @@ define([
      * Computes the inverse transform from unit square to geo position
      * Code taken from QTransform
      * @function computeInverse
-     * @memberOf GroundOverlayLayer#
+     * @memberof GroundOverlayLayer#
      */
     GroundOverlayLayer.prototype.computeInverse = function() {
         var det =
@@ -252,7 +269,7 @@ define([
      * Computes the transform from geo position to unit square
      * Code taken from QTransform
      * @function computeTransform
-     * @memberOf GroundOverlayLayer#
+     * @memberof GroundOverlayLayer#
      */
     GroundOverlayLayer.prototype.computeTransform = function() {
         if (this.quad === null) {

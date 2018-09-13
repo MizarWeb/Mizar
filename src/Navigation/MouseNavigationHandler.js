@@ -64,7 +64,7 @@ define(["../Utils/Utils"], function(Utils) {
      * </ul>
      * @param {AbstractNavigation.mouse_configuration} options - Mouse navigation configuration
      * @constructor
-     * @memberOf module:Navigation
+     * @memberof module:Navigation
      */
     var MouseNavigationHandler = function(options) {
         /**************************************************************************************************************/

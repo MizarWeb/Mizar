@@ -41,7 +41,7 @@ define([
     "../Utils/Constants",
     "../Renderer/Program",
     "../Tiling/Tile"
-], function(Utils, AbstractLayer, Constants, Program, Tile) {
+], function (Utils, AbstractLayer, Constants, Program, Tile) {
     /**
      * TileWireFrameLayer configuration
      * @typedef {AbstractLayer.configuration} AbstractLayer.tileWireFrame_configuration
@@ -54,10 +54,10 @@ define([
      *    This layer draws an TileWireframe  layer
      * @augments AbstractLayer
      * @param {AbstractLayer.tileWireFrame_configuration} options - TileWireFrame configuration
-     * @memberOf module:Layer
+     * @memberof module:Layer
      * @constructor
      */
-    var TileWireframeLayer = function(options) {
+    var TileWireframeLayer = function (options) {
         options.zIndex = Constants.DISPLAY.RENDERING;
         AbstractLayer.prototype.constructor.call(
             this,
@@ -78,11 +78,19 @@ define([
     /**************************************************************************************************************/
 
     /**
+     * @function getInformationType
+     * @memberof TileWireframeLayer#
+     */
+    TileWireframeLayer.prototype.getInformationType = function () {
+        return Constants.INFORMATION_TYPE.VECTOR;
+    }
+
+    /**
      * Build the index buffer
      * @function buildIndexBuffer
      * @memberof TileWireframeLayer#
      */
-    TileWireframeLayer.prototype.buildIndexBuffer = function() {
+    TileWireframeLayer.prototype.buildIndexBuffer = function () {
         var gl = this.getGlobe().getRenderContext().gl;
         var size = this.getGlobe().getTileManager().tileConfig.tesselation;
         var indices = [];
@@ -174,7 +182,7 @@ define([
      * @param {AbstractGlobe} g globe
      * @private
      */
-    TileWireframeLayer.prototype._attach = function(g) {
+    TileWireframeLayer.prototype._attach = function (g) {
         AbstractLayer.prototype._attach.call(this, g);
 
         if (this.isVisible()) {
@@ -216,7 +224,7 @@ define([
      * @memberof TileWireframeLayer#
      * @private
      */
-    TileWireframeLayer.prototype._detach = function() {
+    TileWireframeLayer.prototype._detach = function () {
         this.getGlobe()
             .getTileManager()
             .removePostRenderer(this);
@@ -231,7 +239,7 @@ define([
      * @memberof TileWireframeLayer#
      * @param {Array} tiles Array of Tile
      */
-    TileWireframeLayer.prototype.render = function(tiles) {
+    TileWireframeLayer.prototype.render = function (tiles) {
         var rc = this.getGlobe().getRenderContext();
         var gl = rc.gl;
 
@@ -309,7 +317,7 @@ define([
      * @memberof TileWireframeLayer#
      * @param {boolean} arg Visiblity
      */
-    TileWireframeLayer.prototype.setVisible = function(arg) {
+    TileWireframeLayer.prototype.setVisible = function (arg) {
         AbstractLayer.prototype.setVisible.call(this, arg);
 
         if (typeof arg === "boolean") {

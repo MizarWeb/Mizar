@@ -81,7 +81,7 @@ define([
               Plugin to access to the dictionary name resolver
           @augments AbstractNameResolver
           @param {Context} options - Configuration properties
-          @memberOf module:NameResolver
+          @memberof module:NameResolver
           */
     var DictionaryNameResolver = function(options) {
         AbstractNameResolver.prototype.constructor.call(this, options);
@@ -245,7 +245,7 @@ define([
     /**
      * Queries the GeoJSON passed in parameter in the Mizar options
      * @function handle
-     * @memberOf DictionaryNameResolver#
+     * @memberof DictionaryNameResolver#
      */
     DictionaryNameResolver.prototype.handle = function(options) {
         var context = this.ctx;

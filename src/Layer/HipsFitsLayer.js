@@ -72,7 +72,7 @@ define([
      * @augments AbstractHipsLayer
      * @param {Object} hipsMetadata - HIPS Metadata
      * @param {AbstractHipsLayer.hipsFits_configuration} options - HipsFits configuration
-     * @memberOf module:Layer
+     * @memberof module:Layer
      * @see {@link http://www.ivoa.net/documents/HiPS/20170406/index.html Hips standard}
      */
     var HipsFitsLayer = function(hipsMetadata, options) {
@@ -225,7 +225,7 @@ define([
                 }
             },
             /**
-             * @fires Context#baseLayersError
+             * @fires Layer#baseLayersError
              */
             failCallback: function() {
                 if (self.globe) {

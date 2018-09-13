@@ -36,7 +36,7 @@ define([
      * @param {AbstractProjection.configuration} [options] - No options.
      * @constructor
      * @see {@link https://en.wikipedia.org/wiki/Mollweide_projection}
-     * @memberOf module:Projection
+     * @memberof module:Projection
      */
     var PlateProjection = function(options) {
         AbstractProjection.prototype.constructor.call(
@@ -55,7 +55,7 @@ define([
 
     /**
      * @function unProject
-     * @memberOf PlateProjection#
+     * @memberof PlateProjection#
      */
     PlateProjection.prototype.unProject = function(position3d, dest) {
         if (!dest) {
@@ -70,7 +70,7 @@ define([
 
     /**
      * @function project
-     * @memberOf PlateProjection#
+     * @memberof PlateProjection#
      */
     PlateProjection.prototype.project = function(geoPos, dest) {
         if (!dest) {
@@ -84,7 +84,7 @@ define([
 
     /**
      * @function getName
-     * @memberOf PlateProjection#
+     * @memberof PlateProjection#
      */
     PlateProjection.prototype.getName = function() {
         return Constants.PROJECTION.Plate;

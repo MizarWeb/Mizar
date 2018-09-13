@@ -26,7 +26,7 @@
     "license": "license-checker --production --relativeLicensePath | awk 'NR > 5' > licenses-3rd/npm/LICENSES",
     "build:prod": "r.js -o build/buildMizar.js && uglifyjs Mizar.min > Mizar.min.js && rm Mizar.min",
     "build:dev": "r.js -o build/buildMizar.js && mv Mizar.min Mizar.min.js",
-    "jshin:": "jshint -c ./.jshintrc  src/*",
+    "jshint": "jshint -c ./.jshintrc  src/*",
     "test": "echo \"Error: no test specified\" && exit 1",
     "push": "git push --follow-tags",
     "push:git": "git push --tags origin HEAD:master",

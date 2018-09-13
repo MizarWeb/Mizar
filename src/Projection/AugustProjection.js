@@ -35,7 +35,7 @@ define([
      * @augments AbstractProjection
      * @param {AbstractProjection.configuration} [options] - August projection configuration.
      * @constructor
-     * @memberOf module:Projection
+     * @memberof module:Projection
      */
     var AugustProjection = function(options) {
         AbstractProjection.prototype.constructor.call(
@@ -54,7 +54,7 @@ define([
 
     /**
      * @function unProject
-     * @memberOf AugustProjection#
+     * @memberof AugustProjection#
      * @throws "must be implemented"
      */
     AugustProjection.prototype.unProject = function(position3d, dest) {
@@ -63,7 +63,7 @@ define([
 
     /**
      * @function project
-     * @memberOf AugustProjection#
+     * @memberof AugustProjection#
      */
     AugustProjection.prototype.project = function(geoPos, dest) {
         if (!dest) {
@@ -89,7 +89,7 @@ define([
 
     /**
      * @function getName
-     * @memberOf AugustProjection#
+     * @memberof AugustProjection#
      */
     AugustProjection.prototype.getName = function() {
         return Constants.PROJECTION.August;

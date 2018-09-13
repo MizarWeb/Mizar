@@ -42,7 +42,7 @@ define([
      *   Plugin to access to CDS reverse name resolver
      * @augments AbstractReverseNameResolver
      * @param {Context} options - Context
-     * @memberOf module:ReverseNameResolver
+     * @memberof module:ReverseNameResolver
      */
     var CDSReverseNameResolver = function(options) {
         AbstractReverseNameResolver.prototype.constructor.call(this, options);
@@ -57,7 +57,7 @@ define([
     /**
      * Queries the CDS reverse name resolver
      * @function handle
-     * @memberOf CDSReverseNameResolver#
+     * @memberof CDSReverseNameResolver#
      * @param {Object} options - parameters
      * @param {int} options.maxOrder - Max Hips order
      * @param {float[]} options.pos - position
@@ -211,7 +211,7 @@ define([
     /**
      * Parse RA.
      * @function _parseRa
-     * @memberOf CDSReverseNameResolver#
+     * @memberof CDSReverseNameResolver#
      * @param hours
      * @param min
      * @param sec
@@ -234,7 +234,7 @@ define([
     /**
      * Parse dec
      * @function _parseDec
-     * @memberOf CDSReverseNameResolver#
+     * @memberof CDSReverseNameResolver#
      * @param degrees
      * @param min
      * @param sec
@@ -257,7 +257,7 @@ define([
 
     /**
      * @function remove
-     * @memberOf CDSReverseNameResolver#
+     * @memberof CDSReverseNameResolver#
      */
     CDSReverseNameResolver.prototype.remove = function() {};
 

@@ -45,9 +45,9 @@ RasterLayer.prototype.getUrl = function(tile) {};
 RasterLayer.prototype.proxify = function(url, level) {};
 
 /**
- * Returns True when the tile is defined between [minLevel,maxLevel] otherwise False.
+ * Returns true when the tile is defined between [minLevel,maxLevel] otherwise false.
  * @param level level of the tile
- * @returns {Boolean} True when the tile level is defined between [minLevel,maxLevel] otherwise False.
+ * @returns {Boolean} true when the tile level is defined between [minLevel,maxLevel] otherwise false.
  */
 RasterLayer.prototype.isBetweenMinMaxLevel = function(level) {};
 

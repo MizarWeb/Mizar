@@ -26,7 +26,7 @@ mizar.getActivatedContext().subscribe(Mizar.EVENT_MSG.LAYER_BACKGROUND_ADDED, fu
     document.getElementById("message").innerHTML="background has been added: "+layer.name;
 });
 
-mizar.getActivatedContext().subscribe(Mizar.EVENT_MSG.LAYER_ADDITIONAL_ADDED, function(layer){
+mizar.getActivatedContext().subscribe(Mizar.EVENT_MSG.LAYER_ADDED, function(layer){
     elt = document.getElementById("layers").innerHTML + "<div>";
     elt = elt + '<input type="checkbox" id="'+layer.ID+'" name="layer" value="'+layer.ID+'" onclick="toggle(\''+layer.ID+'\');"/>';
     elt = elt + '<label for="'+layer.ID+'">'+layer.name+'</label>';

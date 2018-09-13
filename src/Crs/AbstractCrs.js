@@ -68,7 +68,7 @@ define([
 
     /**
      * @function isFlat
-     * @memberOf AbstractCrs#
+     * @memberof AbstractCrs#
      */
     AbstractCrs.prototype.isFlat = function() {
         return this.flat;
@@ -76,7 +76,7 @@ define([
 
     /**
      * @function getVerticalAt3D
-     * @memberOf AbstractCrs#
+     * @memberof AbstractCrs#
      */
     AbstractCrs.prototype.getVerticalAt3D = function(pos, dest) {
         if (!dest) {
@@ -94,7 +94,7 @@ define([
 
     /**
      * @function fromGeoTo3D
-     * @memberOf AbstractCrs#
+     * @memberof AbstractCrs#
      */
     AbstractCrs.prototype.fromGeoTo3D = function(geo, dest) {
         if (!dest) {
@@ -124,7 +124,7 @@ define([
 
     /**
      * @function from3DToGeo
-     * @memberOf AbstractCrs#
+     * @memberof AbstractCrs#
      */
     AbstractCrs.prototype.from3DToGeo = function(position3d, dest) {
         if (!dest) {
@@ -147,7 +147,7 @@ define([
 
     /**
      * @function getLocalTransform
-     * @memberOf AbstractCrs#
+     * @memberof AbstractCrs#
      */
     AbstractCrs.prototype.getLocalTransform = function(geo, dest) {
         if (!dest) {
@@ -191,7 +191,7 @@ define([
 
     /**
      * @function getLHVTransform
-     * @memberOf AbstractCrs#
+     * @memberof AbstractCrs#
      */
     AbstractCrs.prototype.getLHVTransform = function(geo, dest) {
         if (!dest) {
@@ -237,7 +237,7 @@ define([
 
     /**
      * @function getSideVector
-     * @memberOf AbstractCrs#
+     * @memberof AbstractCrs#
      */
     AbstractCrs.prototype.getSideVector = function(matrix, v) {
         v[0] = matrix[0];
@@ -248,7 +248,7 @@ define([
 
     /**
      * @function getFrontVector
-     * @memberOf AbstractCrs#
+     * @memberof AbstractCrs#
      */
     AbstractCrs.prototype.getFrontVector = function(matrix, v) {
         v[0] = matrix[4];
@@ -260,7 +260,7 @@ define([
 
     /**
      * @function getUpVector
-     * @memberOf AbstractCrs#
+     * @memberof AbstractCrs#
      */
     AbstractCrs.prototype.getUpVector = function(matrix, v) {
         v[0] = matrix[8];
@@ -272,7 +272,7 @@ define([
 
     /**
      * @function formatCoordinates
-     * @memberOf AbstractCrs#
+     * @memberof AbstractCrs#
      * @abstract
      */
     AbstractCrs.prototype.formatCoordinates = function(geo) {
@@ -281,7 +281,7 @@ define([
 
     /**
      * @function getGeoide
-     * @memberOf AbstractCrs#
+     * @memberof AbstractCrs#
      */
     AbstractCrs.prototype.getGeoide = function() {
         return this.geoide;
@@ -289,7 +289,7 @@ define([
 
     /**
      * @function getGeoideName
-     * @memberOf AbstractCrs#
+     * @memberof AbstractCrs#
      */
     AbstractCrs.prototype.getGeoideName = function() {
         return this.geoideName;
@@ -297,7 +297,7 @@ define([
 
     /**
      * @function getType
-     * @memberOf AbstractCrs#
+     * @memberof AbstractCrs#
      */
     AbstractCrs.prototype.getType = function() {
         return this.type;
@@ -305,7 +305,7 @@ define([
 
     /**
      * @function getElevation
-     * @memberOf AbstractCrs#
+     * @memberof AbstractCrs#
      */
     AbstractCrs.prototype.getElevation = function(globe, geoPos) {
         return globe.getElevation(geoPos.coordinates[0], geoPos.coordinates[1]);
@@ -313,7 +313,7 @@ define([
 
     /**
      * @function getWorldFrom3D
-     * @memberOf AbstractCrs#
+     * @memberof AbstractCrs#
      */
     AbstractCrs.prototype.getWorldFrom3D = function(position3d, dest) {
         if (!dest) {
@@ -329,7 +329,7 @@ define([
 
     /**
      * @function get3DFromWorld
-     * @memberOf AbstractCrs#
+     * @memberof AbstractCrs#
      */
     AbstractCrs.prototype.get3DFromWorld = function(posWorld, dest) {
         if (!dest) {
@@ -343,7 +343,7 @@ define([
 
     /**
      * @function get3DFromWorldInCrs
-     * @memberOf AbstractCrs#
+     * @memberof AbstractCrs#
      */
     AbstractCrs.prototype.get3DFromWorldInCrs = function(
         posWorld,
@@ -364,7 +364,7 @@ define([
 
     /**
      * @function getSexagesimalFromDeg
-     * @memberOf AbstractCrs#
+     * @memberof AbstractCrs#
      */
     AbstractCrs.prototype.getSexagesimalFromDeg = function(degPos, dest) {
         dest = dest || [];
@@ -383,7 +383,7 @@ define([
 
     /**
      * @function getDecimalDegFromSexagesimal
-     * @memberOf AbstractCrs#
+     * @memberof AbstractCrs#
      */
     AbstractCrs.prototype.getDecimalDegFromSexagesimal = function(
         sexagesimalPos,
@@ -417,7 +417,7 @@ define([
 
     /**
      * @function convert
-     * @memberOf AbstractCrs#
+     * @memberof AbstractCrs#
      */
     AbstractCrs.prototype.convert = function(geo, from, to) {
         // No conversion needed
@@ -480,7 +480,7 @@ define([
 
     /**
      * @function fromDegreesToHMS
-     * @memberOf AbstractCrs#
+     * @memberof AbstractCrs#
      */
     AbstractCrs.prototype.fromDegreesToHMS = function(degree) {
         var localDegree = degree / 15;
@@ -503,7 +503,7 @@ define([
 
     /**
      * @function fromDegreesToDMS
-     * @memberOf AbstractCrs#
+     * @memberof AbstractCrs#
      */
     AbstractCrs.prototype.fromDegreesToDMS = function(degree) {
         function stringSign(val) {
@@ -530,7 +530,7 @@ define([
 
     /**
      * @function _setupPosBeforeTrans
-     * @memberOf AbstractCrs#
+     * @memberof AbstractCrs#
      * @abstract
      */
     AbstractCrs.prototype._setupPosBeforeTrans = function(posWorld) {
@@ -539,7 +539,7 @@ define([
 
     /**
      * @function _setupPosAfterTrans
-     * @memberOf AbstractCrs#
+     * @memberof AbstractCrs#
      * @bastract
      */
     AbstractCrs.prototype._setupPosAfterTrans = function(posWorld) {
@@ -548,7 +548,7 @@ define([
 
     /**
      * @function getGeoBound
-     * @memberOf AbstractCrs#
+     * @memberof AbstractCrs#
      */
     AbstractCrs.prototype.getGeoBound = function() {
         return this.geoBound;
@@ -556,7 +556,7 @@ define([
 
     /**
      * @function getName
-     * @memberOf AbstractCrs#
+     * @memberof AbstractCrs#
      * @abstract
      */
     AbstractCrs.prototype.getName = function() {
@@ -565,7 +565,7 @@ define([
 
     /**
      * @function getDescription
-     * @memberOf AbstractCrs#
+     * @memberof AbstractCrs#
      * @abstract
      */
     AbstractCrs.prototype.getDescription = function() {
@@ -574,7 +574,7 @@ define([
 
     /**
      * @function getLongitudeLabel
-     * @memberOf AbstractCrs#
+     * @memberof AbstractCrs#
      * @abstract
      */
     AbstractCrs.prototype.getLongitudeLabel = function() {
@@ -583,7 +583,7 @@ define([
 
     /**
      * @function getLatitudeLabel
-     * @memberOf AbstractCrs#
+     * @memberof AbstractCrs#
      * @abstract
      */
     AbstractCrs.prototype.getLatitudeLabel = function() {
@@ -592,8 +592,8 @@ define([
 
     /**
      * @function isProjected
-     * @memberOf AbstractCrs#
-     * @return {boolean} True when the Crs is projected in 2D otherwise false.
+     * @memberof AbstractCrs#
+     * @return {boolean} true when the Crs is projected in 2D otherwise false.
      */
     AbstractCrs.prototype.isProjected = function() {
         return false;
@@ -601,7 +601,7 @@ define([
 
     /**
      * @function destroy
-     * @memberOf AbstractCrs#
+     * @memberof AbstractCrs#
      */
     AbstractCrs.prototype.destroy = function() {
         this.flat = null;

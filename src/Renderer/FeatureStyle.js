@@ -442,7 +442,7 @@ define(["../Utils/Constants"], function(Constants) {
     /**
      * Get extrusion scale
      * @function getExtrusionScale
-     * @memberOf FeatureStyle.prototype
+     * @memberof FeatureStyle.prototype
      *
      * @return {float} Extrusion scale
      */
@@ -453,7 +453,7 @@ define(["../Utils/Constants"], function(Constants) {
     /**
      * Set extrusion scale
      * @function setExtrusionScale
-     * @memberOf FeatureStyle.prototype
+     * @memberof FeatureStyle.prototype
      *
      * @param {float} value Extrusion scale
      */

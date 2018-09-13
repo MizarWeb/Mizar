@@ -52,7 +52,7 @@ define([
     /**
      * Updates the tracker's position.
      * @function update
-     * @memberOf PositionTracker#
+     * @memberof PositionTracker#
      * @param {object} event
      */
     PositionTracker.prototype.update = function(event) {
@@ -85,7 +85,7 @@ define([
     /**
      * Formats the coordinates from the position for displaying the coordinates on the screen.
      * @function compute
-     * @memberOf PositionTracker#
+     * @memberof PositionTracker#
      * @param geoPosition
      * @returns {number} coordinates
      */
@@ -103,7 +103,7 @@ define([
      * is enabled on the <i>#posTrackerInfoButton</i> ID
      *
      * @function attachTo
-     * @memberOf PositionTracker#
+     * @memberof PositionTracker#
      * @param {AbstractContext} context
      * @see {@link CrsDialog}
      * @see {@link AbstrackTracker#attachTo}
@@ -131,7 +131,7 @@ define([
      * event is removed and the CrsDialog is destroyed as well.
      *
      * @function detach
-     * @memberOf PositionTracker#
+     * @memberof PositionTracker#
      */
     PositionTracker.prototype.detach = function() {
         $("#posTrackerInfoButton").off("click");
@@ -144,7 +144,7 @@ define([
     /**
      * Destroys the position tracker.
      * @function destroy
-     * @memberOf AbstractTracker.prototype
+     * @memberof AbstractTracker.prototype
      */
     PositionTracker.prototype.destroy = function() {
         this.detach(this);

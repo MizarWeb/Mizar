@@ -20,7 +20,7 @@
  * @name ContextFactory
  * @class
  * Factory to create a context
- * @memberOf module:Context
+ * @memberof module:Context
  */
 define([
     "../Utils/Constants",
@@ -59,7 +59,7 @@ define([
                     obj = new GroundContext(configuration, options);
                     break;
                 default:
-                    throw RangeError(
+                    throw new RangeError(
                         "The type " +
                             type +
                             " is not allowed, A valid type is included in the list Constants.CONTEXT",

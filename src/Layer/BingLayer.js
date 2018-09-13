@@ -267,7 +267,7 @@ define([
      * @augments AbstractRasterLayer
      * @param {AbstractRasterLayer.bing_configuration} options -Bing Layer configuration
      * @see {@link https://en.wikipedia.org/wiki/Bing_Maps}
-     * @memberOf module:Layer
+     * @memberof module:Layer
      */
     var BingLayer = function(options) {
         // Call ancestor
@@ -327,7 +327,7 @@ define([
     /**
      * Returns an url for the given tile.
      * @function getUrl
-     * @memberOf BingLayer#
+     * @memberof BingLayer#
      * @param {Tile} tile Tile
      * @returns {string} Url
      */

@@ -127,7 +127,7 @@ define([
      * @param {object} options
      * @augments AbstractProvider
      * @constructor
-     * @memberOf module:Provider
+     * @memberof module:Provider
      */
     var ConstellationProvider = function(options) {
         AbstractProvider.prototype.constructor.call(this, options);
@@ -143,7 +143,7 @@ define([
     /**
      * Asynchronous request to load constellation data
      * @function loadFiles
-     * @memberOf ConstellationProvider#
+     * @memberof ConstellationProvider#
      * @param {Layer} layer - Mizar layer
      * @param {Object} configuration - Configuration options
      * @param {string} configuration.nameUrl - Url providing the constellations name data

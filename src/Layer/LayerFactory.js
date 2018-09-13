@@ -20,7 +20,7 @@
  * @name LayerFactory
  * @class
  * Factory to create a layer
- * @memberOf module:Layer
+ * @memberof module:Layer
  */
 define([
     "jquery",
@@ -188,7 +188,7 @@ define([
          Create and get a MOC Layer
          @function createMoc
          @private
-         @memberOf LayerFactory.prototype
+         @memberof LayerFactory.prototype
          @param options Configuration properties for the MOC layer. See {@link MocLayer} for properties
          @return {MocLayer} layer
          */
@@ -205,7 +205,7 @@ define([
          Create and get an OpenSearch Layer
          @function createOpenSearch
          @private
-         @memberOf LayerFactory.prototype
+         @memberof LayerFactory.prototype
          @param options Configuration properties for the OpenSearch layer. See {@link OpenSearchLayer} for properties
          @return {OpenSearchLayer} layer
          */

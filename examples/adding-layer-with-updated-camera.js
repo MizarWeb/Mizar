@@ -51,7 +51,7 @@ mizar.getActivatedContext().subscribe(Mizar.EVENT_MSG.LAYER_BACKGROUND_ADDED, fu
     document.getElementById("message").innerHTML="background has been added: "+layer.name;
 });
 
-mizar.getActivatedContext().subscribe(Mizar.EVENT_MSG.LAYER_ADDITIONAL_ADDED, function(layer){
+mizar.getActivatedContext().subscribe(Mizar.EVENT_MSG.LAYER_ADDED, function(layer){
     document.getElementById("message").innerHTML="added layer: "+layer.name;
 });
 

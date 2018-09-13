@@ -44,7 +44,7 @@ define(["../Utils/Utils", "./AbstractAnimation", "../Utils/Numeric"], function(
      * Segmented animation configuration
      * @typedef  {Object} AbstractAnimation.segmented_configuration
      * @param {float} duration - duration of the animation
-     * @param {Object} valueSetter - the function used to set the value.
+     * @param {function} valueSetter - the function used to set the value.
      */
 
     /**
@@ -60,9 +60,11 @@ define(["../Utils/Utils", "./AbstractAnimation", "../Utils/Numeric"], function(
      * @augments AbstractAnimation
      * @param {AbstractAnimation.segmented_configuration} options - Configuration of the animation
      * @constructor
-     * @memberOf module:Animation
+     * @memberof module:Animation
      */
     var SegmentedAnimation = function(options) {
+        Utils.assert(typeof(options.duration)==="number" 
+        && typeof(options.valueSetter)==="function", "Missing required parameters in constructor", "SegmentedAnimation.js");
         // Call ancestor constructor
         AbstractAnimation.prototype.constructor.call(this);
 
@@ -101,7 +103,7 @@ define(["../Utils/Utils", "./AbstractAnimation", "../Utils/Numeric"], function(
      * startValue, endValue are animation values at 't'=start and 't'=end<br/>
      * interpolator is the function that will be called to interpolate bewteen startValue and endValue.
      * @function addSegment
-     * @memberOf SegmentedAnimation
+     * @memberof SegmentedAnimation
      * @param {float} start - t value at which the segment will be the current segment
      * @param {float} startValue - value at t=start
      * @param {float} end - value at which the segment will be the current segment
@@ -131,7 +133,7 @@ define(["../Utils/Utils", "./AbstractAnimation", "../Utils/Numeric"], function(
     /**
      * Animation update method
      * @function update
-     * @memberOf SegmentedAnimation#
+     * @memberof SegmentedAnimation#
      * @param {float} now - Now
      */
     SegmentedAnimation.prototype.update = function(now) {

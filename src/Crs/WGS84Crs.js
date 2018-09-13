@@ -60,7 +60,7 @@ define([
      * @augments AbstractCrs
      * @param options - No option to give.
      * @constructor
-     * @memberOf module:Crs
+     * @memberof module:Crs
      */
     var WGS84Crs = function(options) {
         AbstractCrs.prototype.constructor.call(this, {
@@ -81,7 +81,7 @@ define([
     /**
      * Formats the coordinates (longitude, latitude) as (x.xxx&deg, y.yyy&deg).
      * @function formatCoordinates
-     * @memberOf WGS84Crs#
+     * @memberof WGS84Crs#
      * @param {float[]} geo the spatial position in degree
      * @return {string[]} the formatted chain
      */
@@ -98,7 +98,7 @@ define([
 
     /**
      * @function getLongitudeLabel
-     * @memberOf WGS84Crs#
+     * @memberof WGS84Crs#
      */
     WGS84Crs.prototype.getLongitudeLabel = function() {
         return LONGITUDE_LABEL;
@@ -106,7 +106,7 @@ define([
 
     /**
      * @function getLatitudeLabel
-     * @memberOf WGS84Crs#
+     * @memberof WGS84Crs#
      */
     WGS84Crs.prototype.getLatitudeLabel = function() {
         return LATITUDE_LABEL;
@@ -114,7 +114,7 @@ define([
 
     /**
      * @function _setupPosAfterTrans
-     * @memberOf WGS84Crs#
+     * @memberof WGS84Crs#
      * Do nothing
      * @param posWorld
      * @private
@@ -126,7 +126,7 @@ define([
     /**
      * Do nothing
      * @function _setupPosBeforeTrans
-     * @memberOf WGS84Crs#
+     * @memberof WGS84Crs#
      * @param posWorld
      * @private
      */
@@ -136,7 +136,7 @@ define([
 
     /**
      * @function getName
-     * @memberOf WGS84Crs#
+     * @memberof WGS84Crs#
      */
     WGS84Crs.prototype.getName = function() {
         return Constants.CRS.WGS84;
@@ -144,7 +144,7 @@ define([
 
     /**
      * @function getDescription
-     * @memberOf WGS84Crs#
+     * @memberof WGS84Crs#
      */
     WGS84Crs.prototype.getDescription = function() {
         return DESCRIPTION;

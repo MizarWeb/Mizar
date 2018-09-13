@@ -39,7 +39,7 @@ define([
     "../Utils/Constants",
     "../Utils/Utils",
     "./FeatureStyle",
-    "./VectorRendererManager",
+    "./RendererManager",
     "../Tiling/TiledVectorRenderable",
     "../Tiling/TiledVectorRenderer",
     "../Utils/Numeric"
@@ -47,7 +47,7 @@ define([
     Constants,
     Utils,
     FeatureStyle,
-    VectorRendererManager,
+    RendererManager,
     TiledVectorRenderable,
     TiledVectorRenderer,
     Numeric
@@ -392,7 +392,7 @@ define([
     /**************************************************************************************************************/
 
     // Register the renderer
-    VectorRendererManager.factory.push(function(globe) {
+    RendererManager.factory.push(function(globe) {
         return new PlanetPolygonRenderer(globe);
     });
 

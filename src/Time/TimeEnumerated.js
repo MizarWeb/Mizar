@@ -32,7 +32,7 @@ define(["jquery", "moment", "../Utils/Constants", "../Utils/Utils"], function(
      * Get the current index
      * @function getCurrentIndex
      * @return Integer Current index
-     * @memberOf TimeEnumerated#
+     * @memberof TimeEnumerated#
      */
     TimeEnumerated.prototype.getCurrentIndex = function() {
         return this.currentIndex;
@@ -45,7 +45,7 @@ define(["jquery", "moment", "../Utils/Constants", "../Utils/Utils"], function(
      * @function parseDate
      * @param {String} value Date to parse
      * @return {Json} date { "date", "display", "period" { "from", "to" } }
-     * @memberOf TimeEnumerated#
+     * @memberof TimeEnumerated#
      */
     TimeEnumerated.prototype.parseDate = function(value) {
         value = value.trim();
@@ -103,7 +103,7 @@ define(["jquery", "moment", "../Utils/Constants", "../Utils/Utils"], function(
      * @function addDateToEnumeratedValues
      * @param {Json} date Date
      * @param {String} ID Id
-     * @memberOf TimeEnumerated#
+     * @memberof TimeEnumerated#
      * @private
      */
     TimeEnumerated.prototype.addDateToEnumeratedValues = function(date, ID) {
@@ -135,7 +135,7 @@ define(["jquery", "moment", "../Utils/Constants", "../Utils/Utils"], function(
      * Remove enumerated values for ID
      * @function removeEnumeratedValuesForID
      * @param {String} ID Id
-     * @memberOf TimeEnumerated#
+     * @memberof TimeEnumerated#
      * @private
      */
     TimeEnumerated.prototype.removeEnumeratedValuesForID = function(ID) {
@@ -167,7 +167,7 @@ define(["jquery", "moment", "../Utils/Constants", "../Utils/Utils"], function(
      * @function addEnumeratedValuesForID
      * @param {Array<String>} values Array of enumerated values
      * @param {String} ID Id
-     * @memberOf TimeEnumerated#
+     * @memberof TimeEnumerated#
      * @private
      */
     TimeEnumerated.prototype.addEnumeratedValuesForID = function(values, ID) {
@@ -199,7 +199,7 @@ define(["jquery", "moment", "../Utils/Constants", "../Utils/Utils"], function(
      * Get first date AFTER a specified date
      * @function getFirstDateAfter
      * @param Date date date
-     * @memberOf TimeEnumerated#
+     * @memberof TimeEnumerated#
      */
     TimeEnumerated.prototype.getFirstDateAfter = function(date) {
         var foundDate = null;
@@ -212,7 +212,7 @@ define(["jquery", "moment", "../Utils/Constants", "../Utils/Utils"], function(
      * Get first date BEFORE a specified date
      * @function getFirstDateBefore
      * @param Date date date
-     * @memberOf TimeEnumerated#
+     * @memberof TimeEnumerated#
      */
     TimeEnumerated.prototype.getFirstDateBefore = function(date) {
         var foundDate = null;
@@ -225,7 +225,7 @@ define(["jquery", "moment", "../Utils/Constants", "../Utils/Utils"], function(
      * Get first date AFTER a specified date
      * @function getFirstDateAfter
      * @param {Date} date Date
-     * @memberOf TimeEnumerated#
+     * @memberof TimeEnumerated#
      */
     TimeEnumerated.prototype.getFirstDateAfter = function(date) {
         var foundDate = null;
@@ -275,7 +275,7 @@ define(["jquery", "moment", "../Utils/Constants", "../Utils/Utils"], function(
      * Get first date BEFORE a specified date
      * @function getFirstDateBefore
      * @param {Date} date Date
-     * @memberOf TimeEnumerated#
+     * @memberof TimeEnumerated#
      */
     TimeEnumerated.prototype.getFirstDateBefore = function(date) {
         var foundDate = null;
@@ -334,7 +334,7 @@ define(["jquery", "moment", "../Utils/Constants", "../Utils/Utils"], function(
      * Get string representation
      * @function toString
      * @return {String} String representation
-     * @memberOf TimeEnumerated#
+     * @memberof TimeEnumerated#
      */
     TimeEnumerated.prototype.toString = function() {
         var res = "";
@@ -352,7 +352,7 @@ define(["jquery", "moment", "../Utils/Constants", "../Utils/Utils"], function(
      * Is empty ?
      * @function isEmpty
      * @return {Boolean} is empty ?
-     * @memberOf TimeEnumerated#
+     * @memberof TimeEnumerated#
      */
     TimeEnumerated.prototype.isEmpty = function() {
         return !(this.enumeratedValues && this.enumeratedValues.length > 0);
@@ -364,7 +364,7 @@ define(["jquery", "moment", "../Utils/Constants", "../Utils/Utils"], function(
      * Get min date
      * @function getMinDate
      * @return {Date} Min date or null
-     * @memberOf TimeEnumerated#
+     * @memberof TimeEnumerated#
      */
     TimeEnumerated.prototype.getMinDate = function() {
         var result = null;
@@ -380,7 +380,7 @@ define(["jquery", "moment", "../Utils/Constants", "../Utils/Utils"], function(
      * Get max date
      * @function getMaxDate
      * @return {Date} Max date or null
-     * @memberOf TimeEnumerated#
+     * @memberof TimeEnumerated#
      */
     TimeEnumerated.prototype.getMaxDate = function() {
         var result = null;

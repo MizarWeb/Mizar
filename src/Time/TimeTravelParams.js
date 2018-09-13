@@ -19,6 +19,23 @@
 /*global define: false */
 
 /**
+ * globalTime:changed.<br/>
+ * Called when the time has changed
+ * @event TimeTravel#globalTime:changed
+ * @type {TimeTravelParams~details}
+ */
+
+/**
+* The time object.
+* @typedef {object} TimeTravelParams~details
+* @property {date|moment} date - the current time.
+* @property {string} display - the current date as string for display.
+* @property {object} [period] - time period.
+* @property {moment} [period.from] - start date.
+* @property {moment} [period.to] - stop date.
+*/
+
+/**
  * Time travel module : time control
  */
 define([
@@ -27,13 +44,13 @@ define([
     "./TimeSample",
     "./TimeEnumerated",
     "../Utils/Constants"
-], function($, Moment, TimeSample, TimeEnumerated, Constants) {
+], function ($, Moment, TimeSample, TimeEnumerated, Constants) {
     /**
      * @name TimeTravelParams
      * @class
      * Management of time travel
      */
-    var TimeTravelParams = function() {
+    var TimeTravelParams = function () {
         this.currentDate = new Date();
 
         this.currentPeriod = {
@@ -63,9 +80,9 @@ define([
      * Set the context
      * @function setContext
      * @param ctx Context context
-     * @memberOf TimeTravelParams#
+     * @memberof TimeTravelParams#
      */
-    TimeTravelParams.prototype.setContext = function(ctx) {
+    TimeTravelParams.prototype.setContext = function (ctx) {
         this.ctx = ctx;
         this.apply();
     };
@@ -76,9 +93,9 @@ define([
      * Set the current date
      * @function setCurrentDate
      * @param date Date current date
-     * @memberOf TimeTravelParams#
+     * @memberof TimeTravelParams#
      */
-    TimeTravelParams.prototype.setCurrentDate = function(date) {
+    TimeTravelParams.prototype.setCurrentDate = function (date) {
         this.currentDate = Moment.utc(date);
     };
 
@@ -88,9 +105,9 @@ define([
      * Get the current date
      * @function getCurrentDate
      * @return Date current date
-     * @memberOf TimeTravelParams#
+     * @memberof TimeTravelParams#
      */
-    TimeTravelParams.prototype.getCurrentDate = function() {
+    TimeTravelParams.prototype.getCurrentDate = function () {
         return this.currentDate;
     };
 
@@ -100,9 +117,9 @@ define([
      * Get the current period
      * @function getCurrentPeriod
      * @return {Json} period { "from", "to" }
-     * @memberOf TimeTravelParams#
+     * @memberof TimeTravelParams#
      */
-    TimeTravelParams.prototype.getCurrentPeriod = function() {
+    TimeTravelParams.prototype.getCurrentPeriod = function () {
         return this.currentPeriod;
     };
 
@@ -116,9 +133,9 @@ define([
      * @param {String} stepKind Step kind
      * @param {Integer} stepValue Step value
      * @param {String} ID Layer ID
-     * @memberOf TimeTravelParams#
+     * @memberof TimeTravelParams#
      */
-    TimeTravelParams.prototype.addSample = function(
+    TimeTravelParams.prototype.addSample = function (
         start,
         end,
         stepKind,
@@ -140,9 +157,9 @@ define([
      * Add values
      * @function add values
      * @param {Json} parameters Parameters
-     * @memberOf TimeTravelParams#
+     * @memberof TimeTravelParams#
      */
-    TimeTravelParams.prototype.addValues = function(parameters) {
+    TimeTravelParams.prototype.addValues = function (parameters) {
         if (!parameters) {
             return;
         }
@@ -185,9 +202,9 @@ define([
      * Remove values
      * @function remove values
      * @param {Json} parameters Parameters
-     * @memberOf TimeTravelParams#
+     * @memberof TimeTravelParams#
      */
-    TimeTravelParams.prototype.removeValues = function(parameters) {
+    TimeTravelParams.prototype.removeValues = function (parameters) {
         if (!parameters) {
             return;
         }
@@ -215,9 +232,9 @@ define([
      * Get next date
      * @function getNextDate
      * @return {Date} Date
-     * @memberOf TimeTravelParams#
+     * @memberof TimeTravelParams#
      */
-    TimeTravelParams.prototype.getNextDate = function(date) {
+    TimeTravelParams.prototype.getNextDate = function (date) {
         var minDate = {
             date: null
         };
@@ -254,9 +271,9 @@ define([
      * Get previous date
      * @function getNextDate
      * @return {Date} Date
-     * @memberOf TimeTravelParams#
+     * @memberof TimeTravelParams#
      */
-    TimeTravelParams.prototype.getPreviousDate = function(date) {
+    TimeTravelParams.prototype.getPreviousDate = function (date) {
         var minDate = {
             date: null
         };
@@ -298,9 +315,9 @@ define([
      * Set to nearest value (call only for enumerated)
      * @function setToNearestValue
      * @param {Date} date date
-     * @memberOf TimeTravelParams#
+     * @memberof TimeTravelParams#
      */
-    TimeTravelParams.prototype.setToNearestValue = function(date) {
+    TimeTravelParams.prototype.setToNearestValue = function (date) {
         var previousExistingDate = this.getPreviousDate(date);
         var nextExistingDate = this.getNextDate(date);
 
@@ -350,9 +367,9 @@ define([
      * Update
      * @function update
      * @param {Json} parameters Parameters
-     * @memberOf TimeTravelParams#
+     * @memberof TimeTravelParams#
      */
-    TimeTravelParams.prototype.update = function(parameters) {
+    TimeTravelParams.prototype.update = function (parameters) {
         if (!parameters) {
             return;
         }
@@ -378,9 +395,10 @@ define([
     /**
      * Apply current date to IHM (launch event)
      * @function apply
-     * @memberOf TimeTravelParams#
+     * @memberof TimeTravelParams#
+     * @fires TimeTravelParams#globalTime:changed
      */
-    TimeTravelParams.prototype.apply = function() {
+    TimeTravelParams.prototype.apply = function () {
         var details = {
             date: this.currentDate,
             display: this.currentDisplayDate,
@@ -394,9 +412,9 @@ define([
     /**
      * Rewind to previous time step
      * @function rewind
-     * @memberOf TimeTravelParams#
+     * @memberof TimeTravelParams#
      */
-    TimeTravelParams.prototype.rewind = function() {
+    TimeTravelParams.prototype.rewind = function () {
         if (!this.isEmpty()) {
             var previousDate = this.getPreviousDate(
                 Moment(this.currentDate).subtract(
@@ -418,9 +436,9 @@ define([
     /**
      * Forward to next time step
      * @function forward
-     * @memberOf TimeTravelParams#
+     * @memberof TimeTravelParams#
      */
-    TimeTravelParams.prototype.forward = function() {
+    TimeTravelParams.prototype.forward = function () {
         if (!this.isEmpty()) {
             var nextDate = this.getNextDate(
                 Moment(this.currentDate).add(1, Constants.TIME_STEP.MILLISECOND)
@@ -441,9 +459,9 @@ define([
      * @function getDateFormated
      * @param {Date} date Date
      * @return String Date formated
-     * @memberOf TimeTravelParams#
+     * @memberof TimeTravelParams#
      */
-    TimeTravelParams.prototype.getDateFormated = function(date) {
+    TimeTravelParams.prototype.getDateFormated = function (date) {
         // Check with STEP kind value
         var formatPattern = "LLLL";
         if (this.stepKind === Constants.TIME_STEP.YEAR) {
@@ -478,9 +496,9 @@ define([
      * Return date to display on IHM
      * @function getCurrentDisplayDate
      * @return String Date formated
-     * @memberOf TimeTravelParams#
+     * @memberof TimeTravelParams#
      */
-    TimeTravelParams.prototype.getCurrentDisplayDate = function() {
+    TimeTravelParams.prototype.getCurrentDisplayDate = function () {
         return this.currentDisplayDate;
         /*
         var result = null;
@@ -503,9 +521,9 @@ define([
      * Is current date the first ?
      * @function isCurrentDateTheFirst
      * @return boolean If the current date is the first of range
-     * @memberOf TimeTravelParams#
+     * @memberof TimeTravelParams#
      */
-    TimeTravelParams.prototype.isCurrentDateTheFirst = function() {
+    TimeTravelParams.prototype.isCurrentDateTheFirst = function () {
         if (this.isEmpty() === true) {
             this.isFirstDate = true;
         } else {
@@ -526,9 +544,9 @@ define([
      * Is current date the last ?
      * @function isCurrentDateTheLast
      * @return boolean If the current date is the last of range
-     * @memberOf TimeTravelParams#
+     * @memberof TimeTravelParams#
      */
-    TimeTravelParams.prototype.isCurrentDateTheLast = function() {
+    TimeTravelParams.prototype.isCurrentDateTheLast = function () {
         if (this.isEmpty() === true) {
             this.isLastDate = true;
         } else {
@@ -546,9 +564,9 @@ define([
      * Get min date
      * @function getMinDate
      * @return {Date} Min date or null
-     * @memberOf TimeTravelParams#
+     * @memberof TimeTravelParams#
      */
-    TimeTravelParams.prototype.getMinDate = function() {
+    TimeTravelParams.prototype.getMinDate = function () {
         var result = null;
 
         var allDates = [];
@@ -573,9 +591,9 @@ define([
      * Get max date
      * @function getMaxDate
      * @return {Date} Max date or null
-     * @memberOf TimeTravelParams#
+     * @memberof TimeTravelParams#
      */
-    TimeTravelParams.prototype.getMaxDate = function() {
+    TimeTravelParams.prototype.getMaxDate = function () {
         var result = null;
 
         var allDates = [];
@@ -600,44 +618,44 @@ define([
      * Is time travel empty ?
      * @function toString
      * @return {Boolean} Is time travel empty
-     * @memberOf TimeTravelParams#
+     * @memberof TimeTravelParams#
      */
-    TimeTravelParams.prototype.isEmpty = function() {
+    TimeTravelParams.prototype.isEmpty = function () {
         var hasSamples = this.samples && this.samples.length > 0;
         return !hasSamples && this.enumeratedValues.isEmpty();
     };
 
     /**************************************************************************************************************/
 
-    /**
-     * Get all steps
-     * @function toString
-     * @return {String} String representation
-     * @memberOf TimeTravelParams#
-     */
-    TimeTravelParams.prototype.getAllSteps = function() {
-        throw "TimeTravelParams.getAllSteps : deactivated because too long to execute";
+    // /**
+    //  * Get all steps
+    //  * @function toString
+    //  * @return {String} String representation
+    //  * @memberof TimeTravelParams#
+    //  */
+    // TimeTravelParams.prototype.getAllSteps = function () {
+    //     throw "TimeTravelParams.getAllSteps : deactivated because too long to execute";
 
-        var res = [];
-        var aDate = this.minDate;
-        res.push(aDate);
-        var nextDate = this.getNextDate(
-            Moment(aDate).add(1, Constants.TIME_STEP.MILLISECOND)
-        );
+    //     var res = [];
+    //     var aDate = this.minDate;
+    //     res.push(aDate);
+    //     var nextDate = this.getNextDate(
+    //         Moment(aDate).add(1, Constants.TIME_STEP.MILLISECOND)
+    //     );
 
-        while (nextDate.date !== null) {
-            aDate = nextDate.date;
-            res.push(aDate);
-            if (res.length % 500 === 0) {
-                console.log(res.length);
-            }
-            nextDate = this.getNextDate(
-                Moment(aDate).add(1, Constants.TIME_STEP.MILLISECOND)
-            );
-        }
+    //     while (nextDate.date !== null) {
+    //         aDate = nextDate.date;
+    //         res.push(aDate);
+    //         if (res.length % 500 === 0) {
+    //             console.log(res.length);
+    //         }
+    //         nextDate = this.getNextDate(
+    //             Moment(aDate).add(1, Constants.TIME_STEP.MILLISECOND)
+    //         );
+    //     }
 
-        return res;
-    };
+    //     return res;
+    // };
 
     /**************************************************************************************************************/
 
@@ -645,9 +663,9 @@ define([
      * Get string representation
      * @function toString
      * @return {String} String representation
-     * @memberOf TimeTravelParams#
+     * @memberof TimeTravelParams#
      */
-    TimeTravelParams.prototype.toString = function() {
+    TimeTravelParams.prototype.toString = function () {
         var res = "";
 
         res += "Metadata : \n";

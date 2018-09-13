@@ -78,7 +78,7 @@ define([
         this.fragmentShader += "	gl_FragColor.a *= opacity; \n";
         this.fragmentShader += "}\n";
 
-        this.rendererManager = globe.vectorRendererManager;
+        this.rendererManager = globe.getRendererManager();
         this.tileManager = globe.tileManager;
 
         this.programs = [];
@@ -162,7 +162,7 @@ define([
      * @function onRequestStarted
      * @memberof RasterOverlayRenderable.prototype
      * @param {String}request Request
-     * @fires Context#startLoad
+     * @fires Layer#startLoad
      */
     RasterOverlayRenderable.prototype.onRequestStarted = function(request) {
         this.request = request;
@@ -184,7 +184,7 @@ define([
      * @function onRequestFinished
      * @memberof RasterOverlayRenderable.prototype
      * @param completed
-     * @fires Context#endLoad
+     * @fires Layer#endLoad
      */
     RasterOverlayRenderable.prototype.onRequestFinished = function(completed) {
         this.request = null;

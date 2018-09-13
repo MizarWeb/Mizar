@@ -55,6 +55,6 @@ Animation.prototype.start = function() {};
 Animation.prototype.pause = function() {};
 
 /**
- * Stops the animation and unregisters the animation.#
+ * Stops the animation and unregisters the animation.
  */
 Animation.prototype.stop = function() {};

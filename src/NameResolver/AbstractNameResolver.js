@@ -35,7 +35,7 @@ define([], function() {
 
     /**
      * @function handle
-     * @memberOf AbstractNameResolver#
+     * @memberof AbstractNameResolver#
      * @abstract
      */
     AbstractNameResolver.prototype.handle = function(options) {
@@ -47,7 +47,7 @@ define([], function() {
 
     /**
      * @function remove
-     * @memberOf AbstractNameResolver#
+     * @memberof AbstractNameResolver#
      * @abstract
      */
     AbstractNameResolver.prototype.remove = function() {

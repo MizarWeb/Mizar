@@ -22,7 +22,7 @@ define(["./OpenSearchUtils"], function(OpenSearchUtils) {
      * @class
      * All informations describing a parameter in an OpenSearch form
      * @param {Object} a json object describing the param
-     * @memberOf module:Layer
+     * @memberof module:Layer
      */
     var OpenSearchParam = function(paramJson) {
         // init all values

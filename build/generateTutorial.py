@@ -38,15 +38,10 @@ def getMeta(doc):
         meta_description = meta_description_element[0].get('content').strip()
 
     node = doc.xpath("//html/body/*")
-    if len(node) != 0:
-        body = etree.tostring(node[0]).strip()
-        scripts = doc.xpath("//script")
-        for script in scripts:
-            script_txt = etree.tostring(script).strip()
-            body = body.replace(script_txt+"\n","")
-    else:
-        body=""
-
+    body=""
+    for nodeElt in node:
+        if nodeElt.tag != "script":
+            body = body+etree.tostring(nodeElt).strip()
     return [meta_title, meta_description, childrens, body]
 
 def createHtmlPages(htmlFile, jsFile, meta_title, meta_desc, body, dst="../tutorials/"):

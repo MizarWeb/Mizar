@@ -418,7 +418,7 @@ define([
      * @param {Object} options
      * @augments AbstractProvider
      * @constructor
-     * @memberOf module:Provider
+     * @memberof module:Provider
      * @see http://www.abecedarical.com/javascript/script_planet_orbits.html
      */
 
@@ -432,7 +432,7 @@ define([
      * @param {Layer} layer - Mizar layer
      * @param {Object} configuration - configuration
      * @param {int} [configuration.interval = 60000] - Recomputes planet position every minute if not defined
-     * @memberOf PlanetProvider#
+     * @memberof PlanetProvider#
      */
     PlanetProvider.prototype.loadFiles = function(layer, configuration) {
         interval = configuration.interval ? configuration.interval : 60000;
@@ -442,7 +442,7 @@ define([
     /**
      * Calculate planets position and add them to the passed layer
      * @function handleFeatures
-     * @memberOf PlanetProvider#
+     * @memberof PlanetProvider#
      * @param {Layer} layer
      */
     PlanetProvider.prototype.handleFeatures = function(layer) {

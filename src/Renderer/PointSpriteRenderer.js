@@ -40,14 +40,14 @@ define([
     "./VectorRenderer",
     "./Program",
     "./FeatureStyle",
-    "./VectorRendererManager",
+    "./RendererManager",
     "../Utils/Constants"
 ], function(
     Utils,
     VectorRenderer,
     Program,
     FeatureStyle,
-    VectorRendererManager,
+    RendererManager,
     Constants
 ) {
     /**************************************************************************************************************/
@@ -468,7 +468,7 @@ define([
     /**************************************************************************************************************/
 
     // Register the renderer
-    VectorRendererManager.factory.push(function(globe) {
+    RendererManager.factory.push(function(globe) {
         return new PointSpriteRenderer(globe);
     });
     return PointSpriteRenderer;
