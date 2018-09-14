@@ -17,15 +17,16 @@
     "output": "./website"
   },
   "scripts": {
-    "jsdoc": "rm -rf api_doc && rm -rf tutorials && cd build && python generateTutorial.py && cd .. && jsdoc --readme ./README.md -c jsdoc.conf  && cp -r ./tutorials/resources ./api_doc && cp -r ./tutorials/data ./api_doc",
+    "jc": "echo $npm_package_version",
+    "jsdoc": "rm -rf api_doc && rm -rf tutorials && cd build && python generateTutorial.py && cd .. && jsdoc --readme ./README.md -c jsdoc.conf && cp -r ./tutorials/resources ./api_doc && cp -r ./tutorials/data ./api_doc",
     "deploy:web": "npm run build && npm run jsdoc && mkdir -p $npm_package_config_output && cp Mizar.min.js $npm_package_config_output && cp README.md $npm_package_config_output && cp mizar.png $npm_package_config_output && cp -r api_doc $npm_package_config_output",
     "deploy:web:tmp": "npm run deploy:web --Mizar:output=/tmp/website",
     "doc:create": "npm run jsdoc",
     "doc:open": "firefox ./api_doc/index.html",
     "start": "http-server -d -o",
     "license": "license-checker --production --relativeLicensePath | awk 'NR > 5' > licenses-3rd/npm/LICENSES",
-    "build:prod": "r.js -o build/buildMizar.js && uglifyjs Mizar.min > Mizar.min.js && rm Mizar.min",
-    "build:dev": "r.js -o build/buildMizar.js && mv Mizar.min Mizar.min.js",
+    "build:prod": "r.js -o build/buildMizar.js api_version=$npm_package_version && uglifyjs Mizar.min > Mizar.min.js && rm Mizar.min",
+    "build:dev": "r.js -o build/buildMizar.js api_version=$npm_package_version && mv Mizar.min Mizar.min.js",
     "jshint": "jshint -c ./.jshintrc  src/*",
     "test": "echo \"Error: no test specified\" && exit 1",
     "push": "git push --follow-tags",
@@ -40,8 +41,7 @@
     "conventional-changelog": "conventional-changelog -p angular -i CHANGELOG.md -s -r 0",
     "conventional-github-releaser": "conventional-github-releaser -p angular"
   },
-  "pre-commit": [
-  ],
+  "pre-commit": [],
   "repository": {
     "type": "git",
     "url": "http://github.com/MizarWeb"
