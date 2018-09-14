@@ -1,0 +1,32 @@
+/**
+    @overview Replaces the tokens [TOKEN_NAME] with its value defined in the jsdoc config.
+    @module plugins/tokenizer
+    @author Vishal Monpara
+ */
+'use strict';
+
+var env = require('jsdoc/env');
+
+var tokens = env.conf.tokenizer || {};
+
+exports.handlers = {
+    ///
+    /// Replaces [TOKEN_NAME] with its value from config
+    /// @param e
+    /// @param e.filename
+    /// @param e.source
+    ///
+    beforeParse: function(e) {
+		var content = e.source;
+		for(var token in tokens) {
+			if(!tokens.hasOwnProperty(token)) {
+				continue;
+			}
+			var regex = new RegExp('\\[' + token + '\\]','gi');
+			content = content.replace(regex, tokens[token]);
+		}
+		e.source = content;
+    }
+};
+
+

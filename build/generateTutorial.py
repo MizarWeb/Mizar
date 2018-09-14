@@ -37,19 +37,26 @@ def getMeta(doc):
     else:
         meta_description = meta_description_element[0].get('content').strip()
 
+    css_element = doc.xpath("//html/head/style")
+    if len(css_element) == 0:
+        css = ""
+    else:
+        css = etree.tostring(css_element[0]).strip()
+
     node = doc.xpath("//html/body/*")
     body=""
     for nodeElt in node:
         if nodeElt.tag != "script":
             body = body+etree.tostring(nodeElt).strip()
-    return [meta_title, meta_description, childrens, body]
+    return [meta_title, meta_description, childrens, css, body]
 
-def createHtmlPages(htmlFile, jsFile, meta_title, meta_desc, body, dst="../tutorials/"):
+def createHtmlPages(htmlFile, jsFile, meta_title, meta_desc, css, body, dst="../tutorials/"):
     js = open(jsFile).read()
     d={
         'title':meta_title,
         'article':meta_desc,
         'script_js':js,
+        'css':css,
         'body':body
     }
     result = src.substitute(d)
@@ -84,8 +91,8 @@ for jsFile in jsFiles:
         htmlFile = jsFile.replace(".js",".html")
         htmlContent= open(htmlFile).read()
         doc = html.document_fromstring(htmlContent)
-        meta_title, meta_desc, childrens, body = getMeta(doc)
-        createHtmlPages(htmlFile, jsFile, meta_title, meta_desc, body)
+        meta_title, meta_desc, childrens, css, body = getMeta(doc)
+        createHtmlPages(htmlFile, jsFile, meta_title, meta_desc, css, body)
         createNavigation(htmlFile, meta_title, childrens)
     except Exception as message:
         print("Error with "+jsFile+" : "+str(message)) 
