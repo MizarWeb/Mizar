@@ -110,6 +110,8 @@ define([
         // Attach the layer to the globe      
         this.definedBackgound = true;
         layer.background = true;
+        layer.visible = true;
+        //setImageryProvider needs visible=true and we cannit
         if (layer.isDetached()) {
             this.addLayer(layer);
         }
@@ -118,7 +120,7 @@ define([
         this.publishEvent(
             Constants.EVENT_MSG.LAYER_BACKGROUND_CHANGED,
             layer
-        );
+        );                
     };
 
     /**

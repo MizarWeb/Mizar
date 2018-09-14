@@ -18,7 +18,7 @@
  ******************************************************************************/
 /**
  * @fileOverview Entry point for the {@link Mizar MIZAR API}
- * @version 1.0.0
+ * @version [VERSION_API]
  * @author CNES
  */
 define([
@@ -74,7 +74,7 @@ define([
      * @constant
      * @type {string}
      */
-    const API_VERSION = "1.0.0";
+    const API_VERSION = Constants.API.version;
 
     /**
      * @constant

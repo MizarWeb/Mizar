@@ -21,6 +21,15 @@ define(function() {
 
     /**
      * @namespace
+     * API
+     * @property {String} version - API version
+     */
+    Constants.API = {
+        version: "[VERSION_API]"
+    }
+
+    /**
+     * @namespace
      * ANIMATION
      * @property {String} Inertia - Inertia animation
      * @property {String} Interpolated - Interpolated animation

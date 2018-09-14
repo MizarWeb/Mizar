@@ -124,6 +124,7 @@ define([
             this.dataProviders = {};
             this.canvas = mizarConfiguration.canvas;
             this.isMobile = ctxOptions.isMobile;
+            this.isEnableCtx = true;
 
             // Link to time travel service
             this.timeTravelService = ctxOptions.timeTravelService;
@@ -363,7 +364,7 @@ define([
          * @private
          */
         function _addToGlobe(layer) {
-            if (!this._getGlobe().hasDefinedBackground() && layer.isBackground() && layer.isVisible()) {
+            if (!this._getGlobe().hasDefinedBackground() && layer.isBackground()) {
                 this._getGlobe().setBaseImagery(layer);
             } else {
                 this._getGlobe().addLayer(layer);
@@ -377,9 +378,11 @@ define([
          * the layer had background = false as attribute , so it was add it as a simple overlay. 
          * To add the layer as background, first we need to remove it from rasterOverlayRenderer.
          * @param {Layer} layer
-         * @private 
+         * @private           
          */
         function _removeRasterOverlay(layer) {
+            // todo : when added a layer without background = true and then using setBackgroundLayer
+            // the screen blink. It seems, this is due to the removeOverlay
             if (layer.getInformationType() === Constants.INFORMATION_TYPE.RASTER 
             && !layer.isBackground()) {
                 this._getGlobe().rasterOverlayRenderer.removeOverlay(layer);
@@ -937,6 +940,22 @@ define([
         /**************************************************************************************************************/
 
         /**
+         * @function isEnabled
+         * @memberof AbstractContext#
+         */
+        AbstractContext.prototype.isEnabled = function() {
+            return this.isEnableCtx;
+        };
+
+        /**
+         * @function isDisabled
+         * @memberof AbstractContext#
+         */        
+        AbstractContext.prototype.isDisabled = function() {
+            return !this.isEnabled();
+        }
+
+        /**
          * @function show
          * @memberof AbstractContext#
          */
@@ -1135,6 +1154,7 @@ define([
                     renderers[j].disable();
                 }
             }
+            this.isEnableCtx = false;
         };
 
         /**
@@ -1166,6 +1186,7 @@ define([
                     renderers[i].enable();
                 }
             }
+            this.isEnableCtx = true;
         };
 
         /**

@@ -77,7 +77,7 @@ define([
         this.levelZeroImage.crossOrigin = "";
         this.levelZeroImage.onload = function() {
             self._ready = true;
-            console.log("ready ok");
+
             // Call callback if set
             if (options.onready && options.onready instanceof Function) {
                 options.onready(self);

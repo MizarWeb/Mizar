@@ -396,3 +396,13 @@ Context.prototype.disable = function() {};
  * Enables the globe of the current context.
  */
 Context.prototype.enable = function() {};
+
+/**
+ * Checks whether the context is enabled.
+ */
+Context.prototype.isEnabled = function() {};
+   
+/**
+ * Checks whether the context is disabled.
+ */
+Context.prototype.isDisabled = function() {};
