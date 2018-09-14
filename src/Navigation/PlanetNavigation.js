@@ -335,7 +335,6 @@ define([
      * @param {navigationCallback} [options.callback] - Callback at the end of animation
      */
     PlanetNavigation.prototype.zoomTo = function(geoPos, options) {
-        this.ctx.publish(Constants.EVENT_MSG.NAVIGATION_CHANGED_DISTANCE);
         var navigation = this;
 
         var destDistance =
