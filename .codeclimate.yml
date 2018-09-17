@@ -34,6 +34,7 @@ exclude_paths:
   - src/Renderer/glMatrix.js
   - src/Renderer/pnltri.js
   - src/SceneGraph/**/*
+  - src/Renderer/pnltri.min.js  
   - Mizar.min.js
   - "**.png"
   - "**.jpg"
