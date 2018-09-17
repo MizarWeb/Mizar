@@ -145,8 +145,8 @@ define([
          * @property {float} [longitudeSample=15] - Longitude sampling in decimal degree
          * @property {float} [latitudeSample=10] - Latitude sampling in decimal degree
          * @property {AbstractProjection.configuration|AbstractProjection.azimuth_configuration|AbstractProjection.mercator_configuration} coordinateSystem - The coordinate system of the grid
-         * @property {String} [longFormat="Deg"] Representation of longitude axe(HMS, DMS, Deg)
-         * @property {String} [latFormat="Deg"] Representation of latitude axe(HMS, DMS, Deg)
+         * @property {string} [longFormat="Deg"] Representation of longitude axe(HMS, DMS, Deg)
+         * @property {string} [latFormat="Deg"] Representation of latitude axe(HMS, DMS, Deg)
          * @property {Integer} [tesselation=2] Tesselation order (only for latitude bands currently)
          
          * 
@@ -214,7 +214,7 @@ define([
      * Generates an image data from text.
      * @function generateImageData
      * @memberof CoordinateGridLayer#
-     * @param {String} text Text generated in canvas
+     * @param {string} text Text generated in canvas
      * @return {Object} Context of 2D canvas
      */
     CoordinateGridLayer.prototype.generateImageData = function(text) {
@@ -803,9 +803,9 @@ define([
      * Builds the angle representation.
      * @function buildAngle
      * @memberof CoordinateGridLayer#
-     * @param {String} format The building format("HMS", "DMS" or "Deg")
+     * @param {string} format The building format("HMS", "DMS" or "Deg")
      * @param {float} angle The angle to build
-     * @return {String} Label
+     * @return {string} Label
      */
     CoordinateGridLayer.prototype.buildAngle = function(format, angle) {
         var label;
@@ -876,7 +876,7 @@ define([
      * Updates 3D position of a given label.
      * @function updateLabel
      * @memberof CoordinateGridLayer#
-     * @param {String} label The label id in labels object
+     * @param {string} label The label id in labels object
      * @param {float[]} posGeo Updated geographic position of label
      */
     CoordinateGridLayer.prototype.updateLabel = function(label, posGeo) {

@@ -460,6 +460,12 @@ define([
         self.elevations.push(pointElevation);
     }
 
+    /**
+     * Updates Mizar context
+     * @param {Mizar} mizar 
+     * @fires Context#backgroundLayer:added
+     * @fires Context#layer:added    
+     */
     function updateContext(mizar) {
         mizarAPI = mizar;
         navigation = mizarAPI.getActivatedContext().getNavigation();

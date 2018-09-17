@@ -68,7 +68,7 @@ define(["../Utils/Utils", "./WMSLayer"], function(Utils, WMSLayer) {
      * Parse a elevation response
      * @function parseElevations
      * @memberof WMSElevationLayer#
-     * @param {String} text Response as text
+     * @param {string} text Response as text
      * @return {float[]} Array of float
      */
     WMSElevationLayer.prototype.parseElevations = function(text) {

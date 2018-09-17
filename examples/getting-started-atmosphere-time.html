@@ -22,16 +22,34 @@
     Look at the code and change it to test it.
     <br/>
     '>
+    <style>
+        .slidecontainer {
+            position:absolute;
+            bottom:20px;
+            color:white;
+            width:200px;
+            font-size:x-small;
+        }
+    </style>
 </head>
 
-<body style="margin: 0; padding: 0;">
+<body style="margin: 0; padding: 0; overflow: hidden;">
+    <!-- Logo -->
     <div>
-        <a href="https://www.cnes.fr" target="_blank"><img src="../logo-cnes.jpg" style="position:absolute;right:5px;bottom:10px;width:100px;"
-            /></a>
+        <a href="https://www.cnes.fr" target="_blank"><img src="../logo-cnes.jpg" style="position:absolute;right:5px;bottom:10px;width:100px;" /></a>
     </div>
+    <!-- Time -->
+    <div class="slidecontainer">
+        <fieldset>
+            <legend>Time settings</legend>
+            <label for="time">Time: </label> <span id="timeVal">0h</span>
+            <input type="range" id="start" name="time" min="0" max="24" step="1" value="0" oninput="sliderChange(this.value)" />
+        </fieldset>
+    </div>
+    <!-- Mizar canvas -->
     <canvas id="MizarCanvas" style="border: none; margin: 0; padding: 0;"></canvas>
     <script type="text/javascript" src="../Mizar.min.js"></script>
-    <script type="text/javascript" src="getting-started-earth.js"></script>
+    <script type="text/javascript" src="getting-started-atmosphere-time.js"></script>
 </body>
 
 </html>

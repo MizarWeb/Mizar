@@ -39,7 +39,7 @@ define([], function() {
      * Debug information
      * @function debug
      * @memberof OpenSearchCache#
-     * @param {String} message Message to display
+     * @param {string} message Message to display
      */
 
     OpenSearchCache.prototype.debug = function(message) {
@@ -54,7 +54,7 @@ define([], function() {
      * Get cache status
      * @function getCacheStatus
      * @memberof OpenSearchCache#
-     * @return {String} Status
+     * @return {string} Status
      */
 
     OpenSearchCache.prototype.getCacheStatus = function() {
@@ -77,7 +77,7 @@ define([], function() {
      * @function getKey
      * @memberof OpenSearchCache#
      * @param {Bound} bound Bound
-     * @return {String} Key generated
+     * @return {string} Key generated
      */
 
     OpenSearchCache.prototype.getKey = function(bound) {
@@ -99,7 +99,7 @@ define([], function() {
      * @function getArrayBoundKey
      * @memberof OpenSearchCache#
      * @param {Array} tiles Array of tiles
-     * @return {String} Key generated
+     * @return {string} Key generated
      */
 
     OpenSearchCache.prototype.getArrayBoundKey = function(tiles) {

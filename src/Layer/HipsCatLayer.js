@@ -192,9 +192,9 @@ define([
      * Launches request to the HipsCatLayer service
      * @param tile
      * @param url
-     * @fires Layer#startLoad
-     * @fires Layer#endLoad
-     * @fires Layer#features:added
+     * @fires Context#startLoad
+     * @fires Context#endLoad
+     * @fires Context#features:added
      */
     HipsCatLayer.prototype.launchRequest = function(tile, url) {
         var tileData = tile.extension[this.extId];

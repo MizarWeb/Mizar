@@ -150,7 +150,7 @@ define([
      * @function update
      * @memberof GroundOverlayLayer#
      * @param {JSon} quad Quad coordinates
-     * @param {String} url Url of image
+     * @param {string} url Url of image
      */
     GroundOverlayLayer.prototype.update = function(quad, url) {
         this.getGlobe().groundOverlayRenderer.enabled = true;

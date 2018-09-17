@@ -36,7 +36,7 @@ define(["../utils"], function(Utils) {
     /**
      * Retrieves a GeoJson.
      * @param {Boolean} option sets to true to get a pretty output of the GeoJSON. By default, option is set to false
-     * @returns {String} the GeoJson output of the VOTable
+     * @returns {string} the GeoJson output of the VOTable
      */
     GeoJson.prototype.getGeoJSon = function(option) {
         var pretty = option | false;

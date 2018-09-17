@@ -4,7 +4,10 @@ define(['../Utils/Constants'], function(Constants) {
     /**
      * Creates a fits layer
      * @param {Layer} layer
-     * @fires Globe#backgroundLayer:changed
+     * @fires Context#backgroundLayer:changed
+     * @fires Context#backgroundLayer:added
+     * @fires Context#layer:added  
+     * @fires Layer#visibility:changed         
      */
     function _createFitsLayer(layer) {
         var isCreated;

@@ -22,12 +22,12 @@ define(["underscore-min", "../Layer/LayerFactory"], function(_, LayerFactory) {
         pendingLayers,
         layers
     ) {
+        //TODO : I loose the callback of pendingLayers
         for (var i = 0; i < layers.length && pendingLayers.length !== 0; i++) {
             var layer = layers[i];
             if (
                 pendingLayers.length != 0 &&
-                layer.isBackground() &&
-                layer.isVisible()
+                layer.isBackground()
             ) {
                 var j = pendingLayers.length;
                 while (j > 0) {
@@ -40,6 +40,7 @@ define(["underscore-min", "../Layer/LayerFactory"], function(_, LayerFactory) {
                         pendingLayers.splice(j, 1);
                     } catch (RangeError) {}
                 }
+                break;
             }
         }
     };

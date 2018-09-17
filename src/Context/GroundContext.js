@@ -91,17 +91,20 @@ define([
                 Constants.GLOBE.Sky,
                 groundOptions
             );
+            // create the navigation
             this.navigation = NavigationFactory.create(
                 Constants.NAVIGATION.GroundNavigation,
                 this,
                 options.navigation ? options.navigation : options
             );
+            // init the globe
             this.initGlobeEvents(this.globe);
+            // adding picking manager
             ServiceFactory.create(Constants.SERVICE.PickingManager).init(this);
             try {
                 this.setTimeTravelVisible(
-                    options.timeTravel && this.components.timeTravelDiv
-                        ? options.timeTravel
+                    mizarConfiguration.timeTravel && mizarConfiguration.timeTravel.element
+                        ? mizarConfiguration.timeTravel.element
                         : "timeTravelDiv",
                     true
                 );
@@ -136,8 +139,8 @@ define([
     /**
      * Creates planet configuration
      * @param {Object} options
-     * @param {int} [options.tileErrorTreshold = 1.5] - Tile error treshold
-     * @param {boolean} [options.continuousRendering = true] - continuous rendering
+     * @param {int} [options.tileErrorTreshold = 3] - Tile error treshold
+     * @param {boolean} [options.continuousRendering = false] - continuous rendering
      * @param {renderContext} [options.renderContext] - Rendering context
      * @param {Crs} options.coordinateSystem - Coordinate reference system of the planet' ground
      * @param {float} [options.radius = 10.0] - Radius object in vector length
@@ -172,7 +175,7 @@ define([
 
     /**
      * @function setTimeTravelVisible
-     * @memberof GroundContext#
+     * @memberof GroundContext#    
      */
     GroundContext.prototype.setTimeTravelVisible = function(divName, visible) {
         if (visible) {

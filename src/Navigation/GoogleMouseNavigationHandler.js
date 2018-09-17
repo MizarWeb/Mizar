@@ -81,8 +81,8 @@ define(["../Utils/Constants"], function(Constants) {
          * @returns {boolean}
          * @private
          * @memberof GoogleMouseNavigationHandler#
-         * @fires Navigation#startNavigation
-         * @fires Navigation#endNavigation
+         * @fires Context#startNavigation
+         * @fires Context#endNavigation
          */
         var _handleMouseWheel = function(event) {
             _navigation.ctx.publish(Constants.EVENT_MSG.NAVIGATION_STARTED);
@@ -216,7 +216,7 @@ define(["../Utils/Constants"], function(Constants) {
          * @returns {boolean}
          * @private
          * @memberof GoogleMouseNavigationHandler#
-         * @fires Navigation#endNavigation
+         * @fires Context#endNavigation
          */
         var _handleMouseUp = function(event) {
             // No button pressed anymore
@@ -263,8 +263,8 @@ define(["../Utils/Constants"], function(Constants) {
          * @returns {boolean}
          * @private
          * @memberof GoogleMouseNavigationHandler#
-         * @fires Navigation#startNavigation
-         * @fires Navigation#endNavigation
+         * @fires Context#startNavigation
+         * @fires Context#endNavigation
          */
         var _handleMouseMove = function(event) {
             // No button pressed
@@ -455,6 +455,8 @@ define(["../Utils/Constants"], function(Constants) {
          * @function install
          * @param nav
          * @memberof GoogleMouseNavigationHandler#
+         * @fires Context#startNavigation
+         * @fires Context#endNavigation         
          */
         this.install = function(nav) {
             _navigation = nav;

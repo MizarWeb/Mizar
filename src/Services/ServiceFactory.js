@@ -55,21 +55,21 @@ define([
     /**
      * image:added
      * Called when an image has been added
-     * @event Service#image:added
+     * @event Mizar#image:added
      * @type {json}
      */ 
 
     /**
      * image:removed.<br/>
      * Called when an image has been removed
-     * @event Service#image:removed
+     * @event Mizar#image:removed
      * @type {json}
      */      
 
     /**
      * image:downloaded.<br/>
      * Called when an image has been downloaded
-     * @event Service#image:downloaded
+     * @event Mizar#image:downloaded
      * @type {json}
      */      
 

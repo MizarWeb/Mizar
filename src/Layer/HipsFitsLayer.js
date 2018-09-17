@@ -225,7 +225,7 @@ define([
                 }
             },
             /**
-             * @fires Layer#baseLayersError
+             * @fires Context#baseLayersError
              */
             failCallback: function() {
                 if (self.globe) {
@@ -593,7 +593,7 @@ define([
      *    able to revert from fits
      * @function setFormat
      * @memberof HipsFitsLayer#
-     * @param {String} format Format
+     * @param {string} format Format
      */
     HipsFitsLayer.prototype.setFormat = function(format) {
         this.format = isFits ? "fits" : "jpg";

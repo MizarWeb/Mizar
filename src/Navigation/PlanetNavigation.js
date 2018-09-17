@@ -755,7 +755,7 @@ define([
      * Update the navigator inner values
      * @function update
      * @memberof PlanetNavigation#
-     * @fires Navigation#navigation:changedDistance
+     * @fires Context#navigation:changedDistance
      */
     PlanetNavigation.prototype.update = function() {
         if (!this.ctx.globe.tileManager.level0TilesLoaded) {

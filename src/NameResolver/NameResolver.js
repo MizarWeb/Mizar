@@ -408,6 +408,8 @@ define([
              *    Set context
              *    @alias module:NameResolver.NameResolver.setContext
              *    @listens Context#modifiedNavigation
+             *    @fires Context#backgroundLayer:added
+             *    @fires Context#layer:added             
              */
             setContext: function (ctx) {
                 // Remove previous context

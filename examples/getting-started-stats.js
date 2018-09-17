@@ -15,7 +15,7 @@ var mizar = new Mizar({
     }
 });
 
-mizar.createStats({ element: 'fps', verbose: false });
+mizar.createStats({ element: 'fps', verbose: true });
 
 mizar.addLayer({
     type: Mizar.LAYER.Hips,

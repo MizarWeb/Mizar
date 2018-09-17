@@ -96,19 +96,9 @@ define([
 
     /**
      * Input Mizar parameters
-     * @typedef {Object} Mizar.inputParameters
-     * @property {Object|string} canvas - div ID or div element
-     * @property {Mizar.inputConfiguration} [configuration] - Mizar global configuration
-     * @property {AbstractContext.skyContext} [skyContext] - Sky context configuration
-     * @property {AbstractContext.planetContext} [planetContext] - Planet context configuration
-     * @property {AbstractContext.groundContext} [groundContext] - Ground context configuration
-     */
-
-    /**
-     * Mizar parameters
-     * @typedef {Object} Mizar.parameters
-     * @property {Object|string} canvas - div ID or div element
-     * @property {Mizar.configuration} [configuration] - Mizar global configuration
+     * @typedef {Object} Mizar_inputParameters
+     * @property {Object|string} canvas - canvas ID or canvas element
+     * @property {Mizar_inputConfiguration} [configuration] - Mizar global configuration
      * @property {AbstractContext.skyContext} [skyContext] - Sky context configuration
      * @property {AbstractContext.planetContext} [planetContext] - Planet context configuration
      * @property {AbstractContext.groundContext} [groundContext] - Ground context configuration
@@ -116,29 +106,60 @@ define([
 
     /**
      * Mizar configuration
-     * @typedef {Object} Mizar.inputConfiguration
+     * @typedef {Object} Mizar_inputConfiguration
      * @property {string} [mizarBaseUrl] - Used to access to MizarWidget resources
      * @property {boolean} [debug = false] - Debug mode
      * @property {boolean} [isMobile = false] - Mobile support
-     * @property {AbstractTracker.position_configuration} [positionTracker] - Position tracker configuration
-     * @property {AbstractTracker.elevation_configuration} [elevationTracker] - Elevation tracker configuration
+     * @property {AbstractTracker_position_configuration} [positionTracker] - Position tracker configuration
+     * @property {AbstractTracker_elevation_configuration} [elevationTracker] - Elevation tracker configuration
+     * @property {TimeTravel_position_configuration} [timeTravel] - Time travel GUI
      * @property {Object} [registry] - Hips service registry
      * @property {string} registry.hips - Hips Registry
      * @property {boolean} [proxyUse=false] - Uses a proxy to send request
      * @property {string} [proxyUrl] - Proxy URL to use when proxyUse is true. This is used to avoid CORS errors.
      */
+    /**
+     * Time traval configuration
+     * @typedef {Object} TimeTravel_position_configuration
+     * @property {string} [element = timeTravelDiv] - tracker div element
+     */ 
+
+    /**
+     * Position tracker configuration
+     * @typedef {Object} AbstractTracker_position_configuration
+     * @property {string} [element = posTracker] - tracker div element
+     * @property {string}  [position = bottom] - tracker position in the GUI
+     */     
+    
+    /**
+     * Elevation tracker configuration
+     * @typedef {Object} AbstractTracker_elevation_configuration
+     * @property {string} [element = elevTracker] - tracker div element
+     * @property {string}  [position = bottom] - tracker position in the GUI
+     * @property {Layer} [elevationLayer] - elevationLayer
+     */     
 
     /**
      * Mizar configuration
-     * @typedef {Mizar.inputConfiguration} Mizar.configuration
+     * @typedef {Mizar_inputConfiguration} Mizar.configuration
      * @property {string} mizarAPIUrl - URL of this script, used to reference shaders and CSS of Mizar API
      */
+
+    /**
+     * Mizar parameters
+     * @typedef {Object} Mizar_parameters
+     * @property {Object|string} canvas - canvas ID or canvas element
+     * @property {Mizar.configuration} [configuration] - Mizar global configuration
+     * @property {AbstractContext.skyContext} [skyContext] - Sky context configuration
+     * @property {AbstractContext.planetContext} [planetContext] - Planet context configuration
+     * @property {AbstractContext.groundContext} [groundContext] - Ground context configuration
+     */     
 
     /**
      * @name Mizar
      * @class
      * Creates an instance of the Mizar API.
-     * @param {Mizar.inputParameters} options - Configuration for Mizar
+     * @param {Mizar_inputParameters} options - Configuration for Mizar
      * @throws {ReferenceError} No option found
      * @throws {TypeError} Canvas not defined
      * @constructor
@@ -411,7 +432,7 @@ define([
     /**
      * Checks inputs from user and creates the mizar configuration
      * @param {Mizar.inputParameters} options inputs from user
-     * @returns {Mizar.parameters} mizar configuration.
+     * @returns {Mizar_parameters} mizar configuration.
      * @function _createConfiguration
      * @memberof Mizar#
      * @private
@@ -530,6 +551,13 @@ define([
      * Saves the atmosphere state and disable it when 2D is used
      * @function _disableAtmosphere
      * @memberof Mizar#
+     * @fires Context#startLoad
+     * @fires Context#endLoad
+     * @fires Context#baseLayersReady
+     * @fires Context#baseLayersError
+     * @fires Context#startBackgroundLoad
+     * @fires Context#endBackgroundLoad 
+     * @fires Context#features:added      
      * @private
      */
     function _disableAtmosphere() {
@@ -546,6 +574,13 @@ define([
      * Retrieves the atmosphere and enable it when 3D is used
      * @function _enableAtmosphere
      * @memberof Mizar#
+     * @fires Context#startLoad
+     * @fires Context#endLoad
+     * @fires Context#baseLayersReady
+     * @fires Context#baseLayersError
+     * @fires Context#startBackgroundLoad
+     * @fires Context#endBackgroundLoad 
+     * @fires Context#features:added    
      * @private
      */
     function _enableAtmosphere() {
@@ -563,6 +598,13 @@ define([
      * Switch 2D to 3D.
      * @function _switch2Dto3D
      * @memberof Mizar#
+     * @fires Context#startLoad
+     * @fires Context#endLoad
+     * @fires Context#baseLayersReady
+     * @fires Context#baseLayersError
+     * @fires Context#startBackgroundLoad
+     * @fires Context#endBackgroundLoad 
+     * @fires Context#features:added      
      * @private
      */
     function _switch2Dto3D() {
@@ -1012,7 +1054,7 @@ define([
      * @function getOptions
      * @memberof Mizar#
      * @throws ReferenceError - Will throw an exception when no context has been created.
-     * @returns {Mizar.parameters} - Mizar's options
+     * @returns {Mizar_parameters} - Mizar's options
      */
     Mizar.prototype.getOptions = function() {
         return this.options;
@@ -1155,6 +1197,13 @@ define([
      * @returns {boolean} true when toggle works otherwise false
      * @function toggleDimension
      * @memberof Mizar#
+     * @fires Context#startLoad
+     * @fires Context#endLoad
+     * @fires Context#baseLayersReady
+     * @fires Context#baseLayersError
+     * @fires Context#startBackgroundLoad
+     * @fires Context#endBackgroundLoad 
+     * @fires Context#features:added     
      */
     Mizar.prototype.toggleDimension = function() {
         var result;
@@ -1783,6 +1832,13 @@ define([
      * @returns {boolean} true when the canvas is rendered otherwise false
      * @function render
      * @memberof Mizar#
+     * @fires Context#startLoad
+     * @fires Context#endLoad
+     * @fires Context#baseLayersReady
+     * @fires Context#baseLayersError
+     * @fires Context#startBackgroundLoad
+     * @fires Context#endBackgroundLoad 
+     * @fires Context#features:added 
      */
     Mizar.prototype.render = function() {
         var result;

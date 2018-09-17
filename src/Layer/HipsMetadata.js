@@ -25,14 +25,14 @@ define(["jquery", "../Utils/Constants", "../Gui/dialog/ErrorDialog"], function(
     /**
      * @namespace
      * GENERAL_WAVELENGTH
-     * @property {String} Radio - Radio
-     * @property {String} Millimeter - Millimeter
-     * @property {String} Infrared - Infrared
-     * @property {String} Optical - Optical
-     * @property {String} UV - UV
-     * @property {String} EUV - EUV
-     * @property {String} X-ray - X-ray
-     * @property {String} Gamma-ray - Gamma-ray
+     * @property {string} Radio - Radio
+     * @property {string} Millimeter - Millimeter
+     * @property {string} Infrared - Infrared
+     * @property {string} Optical - Optical
+     * @property {string} UV - UV
+     * @property {string} EUV - EUV
+     * @property {string} X-ray - X-ray
+     * @property {string} Gamma-ray - Gamma-ray
      */
     var GENERAL_WAVELENGTH = {
         Radio: "Radio",
@@ -48,10 +48,10 @@ define(["jquery", "../Utils/Constants", "../Gui/dialog/ErrorDialog"], function(
     /**
      * @namespace
      * HIPS_FRAME
-     * @property {String} equatorial - equatorial
-     * @property {String} galactic - galactic
-     * @property {String} ecliptic - ecliptic
-     * @property {String} horizontalLocal - horizontalLocal
+     * @property {string} equatorial - equatorial
+     * @property {string} galactic - galactic
+     * @property {string} ecliptic - ecliptic
+     * @property {string} horizontalLocal - horizontalLocal
      */
     var HIPS_FRAME = {
         equatorial: Constants.CRS.Equatorial,
@@ -63,10 +63,10 @@ define(["jquery", "../Utils/Constants", "../Gui/dialog/ErrorDialog"], function(
     /**
      * @namespace
      * HIPS_TILE_FORMAT
-     * @property {String} jpeg - jpeg
-     * @property {String} png - png
-     * @property {String} fits - fits
-     * @property {String} tsv - tsv
+     * @property {string} jpeg - jpeg
+     * @property {string} png - png
+     * @property {string} fits - fits
+     * @property {string} tsv - tsv
      */
     var HIPS_TILE_FORMAT = {
         jpeg: "jpeg",
@@ -78,9 +78,9 @@ define(["jquery", "../Utils/Constants", "../Gui/dialog/ErrorDialog"], function(
     /**
      * @namespace
      * SAMPLING
-     * @property {String} none - none
-     * @property {String} nearest - nearest
-     * @property {String} bilinear - bilinear
+     * @property {string} none - none
+     * @property {string} nearest - nearest
+     * @property {string} bilinear - bilinear
      */
     var SAMPLING = {
         none: "non",
@@ -91,11 +91,11 @@ define(["jquery", "../Utils/Constants", "../Gui/dialog/ErrorDialog"], function(
     /**
      * @namespace
      * PIXEL_OVERLAY
-     * @property {String} add - add
-     * @property {String} mean - mean
-     * @property {String} first - first
-     * @property {String} border_fading - border_fading
-     * @property {String} custom - custom
+     * @property {string} add - add
+     * @property {string} mean - mean
+     * @property {string} first - first
+     * @property {string} border_fading - border_fading
+     * @property {string} custom - custom
      */
     var PIXEL_OVERLAY = {
         add: "add",
@@ -108,9 +108,9 @@ define(["jquery", "../Utils/Constants", "../Gui/dialog/ErrorDialog"], function(
     /**
      * @namespace
      * SKY_VAL
-     * @property {String} none - none
-     * @property {String} hips_estimation - hips_estimation
-     * @property {String} fits_keyword - fits_keyword
+     * @property {string} none - none
+     * @property {string} hips_estimation - hips_estimation
+     * @property {string} fits_keyword - fits_keyword
      */
     var SKY_VAL = {
         none: "none",
@@ -121,10 +121,10 @@ define(["jquery", "../Utils/Constants", "../Gui/dialog/ErrorDialog"], function(
     /**
      * @namespace
      * DATA_PRODUCT_TYPE
-     * @property {String} image - image
-     * @property {String} cube - cube
-     * @property {String} catalog - catalog
-     * @property {String} meta - meta
+     * @property {string} image - image
+     * @property {string} cube - cube
+     * @property {string} catalog - catalog
+     * @property {string} meta - meta
      */
     var DATA_PRODUCT_TYPE = {
         image: "image",
@@ -136,8 +136,8 @@ define(["jquery", "../Utils/Constants", "../Gui/dialog/ErrorDialog"], function(
     /**
      * @namespace
      * SUB_TYPE_DATA
-     * @property {String} color - color
-     * @property {String} live - live
+     * @property {string} color - color
+     * @property {string} live - live
      */
     var SUB_TYPE_DATA = {
         color: "color",
@@ -149,48 +149,48 @@ define(["jquery", "../Utils/Constants", "../Gui/dialog/ErrorDialog"], function(
      * Mandatory, description, isMultiple, default value, distinctvalue, isArray
      * @namespace
      * HIPS_METADATA
-     * @property {String} creator_did - Unique ID of the HiPS - Format: IVOID - Ex : ivo://CDS/P/2MASS/J
-     * @property {String} [publisher_id] - Unique ID of the HiPS publisher – Format: IVOID - Ex : ivo://CDS
-     * @property {String} [obs_collection] - Short name of original data set – Format: one word – Ex : 2MASS
-     * @property {String} obs_title - Data set title – Format: free text, one line – Ex : HST F110W observations
-     * @property {String} [obs_description] - Data set description – Format: free text, longer free text description of the dataset
-     * @property {String} [obs_ack] - Acknowledgment mention"
-     * @property {String} [prov_progenitor] - Provenance of the original data – Format: free text
-     * @property {String} [bib_reference] - Bibliographic reference
-     * @property {String} [bib_reference_url] - URL to bibliographic reference
-     * @property {String} [obs_copyright] - Copyright mention – Format: free text
-     * @property {String} [obs_copyright_url] - URL to a copyright mention
+     * @property {string} creator_did - Unique ID of the HiPS - Format: IVOID - Ex : ivo://CDS/P/2MASS/J
+     * @property {string} [publisher_id] - Unique ID of the HiPS publisher – Format: IVOID - Ex : ivo://CDS
+     * @property {string} [obs_collection] - Short name of original data set – Format: one word – Ex : 2MASS
+     * @property {string} obs_title - Data set title – Format: free text, one line – Ex : HST F110W observations
+     * @property {string} [obs_description] - Data set description – Format: free text, longer free text description of the dataset
+     * @property {string} [obs_ack] - Acknowledgment mention"
+     * @property {string} [prov_progenitor] - Provenance of the original data – Format: free text
+     * @property {string} [bib_reference] - Bibliographic reference
+     * @property {string} [bib_reference_url] - URL to bibliographic reference
+     * @property {string} [obs_copyright] - Copyright mention – Format: free text
+     * @property {string} [obs_copyright_url] - URL to a copyright mention
      * @property {GENERAL_WAVELENGTH} [obs_regime] - General wavelength
-     * @property {String} [data_ucd] - UCD describing data contents
-     * @property {String} hips_version="1.4" - Number of HiPS version – Format: number
-     * @property {String} [hips_builder] - Name and version of the tool used for building the HiPS – Format: free text
-     * @property {String} [hips_publisher] - Institute or person who built the HiPS – Format: free text – Ex : CDS (T.Boch)
-     * @property {String} [hips_creation_date] - HiPS first creation date - Format: ISO 8601 => YYYY-mm-ddTHH:MMZ
-     * @property {String} hips_release_date - Last HiPS update date - Format: ISO 8601 => YYYY-mm-ddTHH:MMZ
-     * @property {String} [hips_service_url] - HiPS access url – Format: URL
-     * @property {String} hips_status - HiPS status
-     * @property {String} [hips_estsize] - HiPS size estimation – Format: positive integer – Unit : KB
+     * @property {string} [data_ucd] - UCD describing data contents
+     * @property {string} hips_version="1.4" - Number of HiPS version – Format: number
+     * @property {string} [hips_builder] - Name and version of the tool used for building the HiPS – Format: free text
+     * @property {string} [hips_publisher] - Institute or person who built the HiPS – Format: free text – Ex : CDS (T.Boch)
+     * @property {string} [hips_creation_date] - HiPS first creation date - Format: ISO 8601 => YYYY-mm-ddTHH:MMZ
+     * @property {string} hips_release_date - Last HiPS update date - Format: ISO 8601 => YYYY-mm-ddTHH:MMZ
+     * @property {string} [hips_service_url] - HiPS access url – Format: URL
+     * @property {string} hips_status - HiPS status
+     * @property {string} [hips_estsize] - HiPS size estimation – Format: positive integer – Unit : KB
      * @property {HIPS_FRAME} hips_frame - Coordinate frame reference
      * @property {int} hips_order - Deepest HiPS order – Format: positive integer
      * @property {int} [hips_tile_width=512] - Tiles width in pixels – Format: positive integer
      * @property {HIPS_TILE_FORMAT} hips_tile_format - List of available tile formats
-     * @property {String} [hips_pixel_cut] - Suggested pixel display cut range (physical values) – Format: min max
-     * @property {String} [hips_data_range] - Pixel data range taken into account during the HiPS generation (physical values) – Format: min max – Ex : -18.5 510.5
+     * @property {string} [hips_pixel_cut] - Suggested pixel display cut range (physical values) – Format: min max
+     * @property {string} [hips_data_range] - Pixel data range taken into account during the HiPS generation (physical values) – Format: min max – Ex : -18.5 510.5
      * @property {SAMPLING} [hips_sampling] - Sampling applied for the HiPS generation
      * @property {PIXEL_OVERLAY} [hips_overlay] - Pixel composition method applied on the image overlay region during HiPS generation
      * @property {SKY_VAL} [hips_skyval] - Sky background subtraction method applied during HiPS generation
-     * @property {String} [hips_pixel_bitpix] - Fits tile BITPIX code
-     * @property {String} [data_pixel_bitpix] - Original data BITPIX code
+     * @property {string} [hips_pixel_bitpix] - Fits tile BITPIX code
+     * @property {string} [data_pixel_bitpix] - Original data BITPIX code
      * @property {DATA_PRODUCT_TYPE} dataproduct_type - Type of data
      * @property {SUB_TYPE_DATA} [dataproduct_subtype] - Subtype of data
-     * @property {String} [hips_progenitor_url] - URL to an associated progenitor HiPS
+     * @property {string} [hips_progenitor_url] - URL to an associated progenitor HiPS
      * @property {int} [hips_cat_nrows] -  Number of rows of the HiPS catalog
      * @property {int} [hips_cube_depth] - Number of frames of the HiPS cube
      * @property {int} [hips_cube_firstframe=0] - Initial first index frame to display for a HiPS cube
      * @property {float} [data_cube_crpix3] - Coef for computing physical channel value
      * @property {float} [data_cube_crval3] - Coef for computing physical channel value
      * @property {float} [data_cube_cdelt3] - Coef for computing physical channel value
-     * @property {String} [data_cube_bunit3] - Third axis unit
+     * @property {string} [data_cube_bunit3] - Third axis unit
      * @property {float} [hips_initial_ra] - Default RA display position (ICRS frame) – Unit : degrees
      * @property {float} [hips_initial_dec] - Default DEC display position (ICRS frame) – Unit : degrees
      * @property {float} [hips_initial_fov] - Default display size – Unit : degrees
@@ -200,9 +200,9 @@ define(["jquery", "../Utils/Constants", "../Gui/dialog/ErrorDialog"], function(
      * @property {float} [t_max] - Stop time of the observations - Representation: MJD
      * @property {float} [em_min] - Start in spectral coordinates – Unit: meters
      * @property {float} [em_max] - Stop in spectral coordinates – Unit: meters
-     * @property {String} [client_category] - / separated keywords suggesting a display hierarchy to the client – Ex : Image/InfraRed
-     * @property {String} [client_sort_key] - Sort key suggesting a display order to the client inside a client_category – Sort : alphanumeric
-     * @property {String} [addendum_did] - In case of “live” HiPS, creator_did of the added HiPS
+     * @property {string} [client_category] - / separated keywords suggesting a display hierarchy to the client – Ex : Image/InfraRed
+     * @property {string} [client_sort_key] - Sort key suggesting a display order to the client inside a client_category – Sort : alphanumeric
+     * @property {string} [addendum_did] - In case of “live” HiPS, creator_did of the added HiPS
      * @property {float} [moc_sky_fraction] - Fraction of the sky covers by the MOC associated to the HiPS – Format: real between 0 and 1
      */
     var HipsVersion_1_4 = {

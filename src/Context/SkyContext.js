@@ -95,8 +95,8 @@ define([
 
             try {
                 this.setTimeTravelVisible(
-                    options.timeTravel && this.components.timeTravelDiv
-                        ? options.timeTravel
+                    mizarConfiguration.timeTravel && mizarConfiguration.timeTravel.element
+                        ? mizarConfiguration.timeTravel.element
                         : "timeTravelDiv",
                     true
                 );

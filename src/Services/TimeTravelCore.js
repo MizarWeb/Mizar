@@ -38,26 +38,31 @@ define(["jquery", "../Time/TimeTravelParams", "../Utils/Constants"], function(
     /**************************************************************************************************************/
 
     /**
-     *    Go Rewind
-     *
+     * Go Rewind
+     * @fires Context#globalTime:changed
      */
     function goRewind() {
         params.rewind();
     }
 
     /**
-     *    Go Forward
-     *
+     * Go Forward
+     * @fires Context#globalTime:changed
      */
     function goForward() {
         params.forward();
     }
 
     /**
-     *    Choose time
+     * Choose time
      *
      */
-    function chooseTime() {}
+    function chooseTime(date) {
+        if(date instanceof Date || typeof(date) === 'string')
+        {
+            params.setCurrentDate(date);
+        }
+    }
 
     /**************************************************************************************************************/
 

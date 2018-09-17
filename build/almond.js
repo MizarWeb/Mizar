@@ -25,10 +25,10 @@ var requirejs, require, define;
     /**
      * Given a relative module name, like ./something, normalize it to
      * a real name that can be mapped to a path.
-     * @param {String} name the relative name
-     * @param {String} baseName a real name that the name arg is relative
+     * @param {string} name the relative name
+     * @param {string} baseName a real name that the name arg is relative
      * to.
-     * @returns {String} normalized name
+     * @returns {string} normalized name
      */
     function normalize(name, baseName) {
         var nameParts, nameSegment, mapValue, foundMap,

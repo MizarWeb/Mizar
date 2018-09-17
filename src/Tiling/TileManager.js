@@ -56,27 +56,27 @@ define([
         /**
          * baseLayersError.
          *
-         * @event TileManager#baseLayersError
+         * @event Context#baseLayersError
          * @type {Layer}
          */
 
         /**
          * baseLayersReady.
          *
-         * @event TileManager#baseLayersReady
+         * @event Context#baseLayersReady
          * @type {Layer}
          */
 
         /**
          * startBackgroundLoad.
          * Called when background layers (imagery and/or elevation) start to be loaded
-         * @event TileManager#startBackgroundLoad
+         * @event Context#startBackgroundLoad
          */
 
         /**
          * endBackgroundLoad.<br/>
          * Called when background layers (imagery and/or elevation) end loading
-         * @event TileManager#endBackgroundLoad
+         * @event Context#endBackgroundLoad
          */         
 
         /** @constructor
@@ -450,8 +450,8 @@ define([
 
         /**
          * Traverse tiless tiles
-         * @fires TileManager#baseLayersReady
-         * @fires TileManager#baseLayersError
+         * @fires Context#baseLayersReady
+         * @fires Context#baseLayersError
         */
         TileManager.prototype.traverseTiles = function () {
             this.tilesToRender.length = 0;
@@ -600,7 +600,7 @@ define([
 
         /**
         * Generate tiles
-        * @fires TileManager#endBackgroundLoad
+        * @fires Context#endBackgroundLoad
         */
         TileManager.prototype.generateReceivedTiles = function () {
             while (this.completedRequests.length > 0) {
@@ -806,7 +806,7 @@ define([
 
         /**
         * Request tiles
-        * @fires TileManager#startBackgroundLoad
+        * @fires Context#startBackgroundLoad
         */
         TileManager.prototype.launchRequests = function () {
             // Process request
@@ -839,7 +839,10 @@ define([
 
         /**
         * Render the tiles
-        * @fires TileManager#baseLayersReady
+        * @fires Context#baseLayersReady
+        * @fires Context#baseLayersError
+        * @fires Context#startBackgroundLoad
+        * @fires Context#endBackgroundLoad
         */
         TileManager.prototype.render = function () {
             /*           console.log("TileManager.prototype.render",this.tileConfig.coordSystem);

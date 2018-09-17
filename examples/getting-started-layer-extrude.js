@@ -68,8 +68,6 @@ mizar.addLayer({
     style: mizar.UtilityFactory.create(Mizar.UTILITY.CreateStyle, {
         extrude: extrude, // Extrude max value
         extrusionScale: extrusionScale,
-        //                            strokeColor : [1.0, 0.0, 0.0, 1.0],
-        //                            fillColor : [1.0, 0.0, 0.0, 1.0],
         fillColor: [1., 1., 1., 1.],
         strokeColor: [0, 0, 0, 1],
         fill: true // If true, it does not work

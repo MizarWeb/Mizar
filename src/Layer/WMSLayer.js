@@ -352,7 +352,7 @@ define([
      * @function getUrl
      * @memberof WMSLayer#
      * @param {Tile} tile Tile
-     * @return {String} Url
+     * @return {string} Url
      */
     WMSLayer.prototype.getUrl = function(tile) {
         // Just add the bounding box to the GetMap URL

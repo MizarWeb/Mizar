@@ -21,7 +21,7 @@
 /**
  * globalTime:changed.<br/>
  * Called when the time has changed
- * @event TimeTravel#globalTime:changed
+ * @event Context#globalTime:changed
  * @type {TimeTravelParams~details}
  */
 
@@ -130,9 +130,9 @@ define([
      * @function addSample
      * @param {Date} start Start date
      * @param {Date} end End date
-     * @param {String} stepKind Step kind
+     * @param {string} stepKind Step kind
      * @param {Integer} stepValue Step value
-     * @param {String} ID Layer ID
+     * @param {string} ID Layer ID
      * @memberof TimeTravelParams#
      */
     TimeTravelParams.prototype.addSample = function (
@@ -396,7 +396,7 @@ define([
      * Apply current date to IHM (launch event)
      * @function apply
      * @memberof TimeTravelParams#
-     * @fires TimeTravelParams#globalTime:changed
+     * @fires Context#globalTime:changed
      */
     TimeTravelParams.prototype.apply = function () {
         var details = {
@@ -413,6 +413,7 @@ define([
      * Rewind to previous time step
      * @function rewind
      * @memberof TimeTravelParams#
+     * @fires Context#globalTime:changed
      */
     TimeTravelParams.prototype.rewind = function () {
         if (!this.isEmpty()) {
@@ -437,6 +438,7 @@ define([
      * Forward to next time step
      * @function forward
      * @memberof TimeTravelParams#
+     * @fires Context#globalTime:changed     
      */
     TimeTravelParams.prototype.forward = function () {
         if (!this.isEmpty()) {
@@ -630,7 +632,7 @@ define([
     // /**
     //  * Get all steps
     //  * @function toString
-    //  * @return {String} String representation
+    //  * @return {string} String representation
     //  * @memberof TimeTravelParams#
     //  */
     // TimeTravelParams.prototype.getAllSteps = function () {
@@ -662,7 +664,7 @@ define([
     /**
      * Get string representation
      * @function toString
-     * @return {String} String representation
+     * @return {string} String representation
      * @memberof TimeTravelParams#
      */
     TimeTravelParams.prototype.toString = function () {

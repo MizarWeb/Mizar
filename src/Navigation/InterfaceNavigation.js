@@ -20,26 +20,26 @@
 /**
  * Start navigation.<br/>
  * Called when navigation is started (by the user or through animation)
- * @event Navigation#startNavigation
+ * @event Context#startNavigation
  */
 
 /**
  * End navigation.<br/>
  * Called when navigation is ended (by the user or through animation)
- * @event Navigation#endNavigation
+ * @event Context#endNavigation
  */
 
 /**
  * navigation:changedDistance.<br/>
  * Called when the distance taget/camera has changed
- * @event Navigation#navigation:changedDistance
+ * @event Context#navigation:changedDistance
  * @type {float}
  */
 
 /**
  * Camera view event.<br/>
  * Called when the view of the camera has changed (pan, rotate, ...)
- * @event Navigation#modifiedNavigation
+ * @event Context#modifiedNavigation
  */
 
 /**
@@ -138,14 +138,14 @@ Navigation.prototype.zoom = function(delta, scale) {};
  * Zooms to a 2D position (longitude, latitude).
  * @param {float[]} geoPos - spatial position in decimal degree [longitude, latitude]
  * @param {Object} options - options for the selected navigation
- * @fires Navigation#navigation:changedDistance
+ * @fires Context#navigation:changedDistance
  */
 Navigation.prototype.zoomTo = function(geoPos, options) {};
 
 /**
  * Computes the view matrix
  * @memberof Navigation#
- * @fires Navigation#modifiedNavigation
+ * @fires Context#modifiedNavigation
  */
 Navigation.prototype.computeViewMatrix = function() {};
 

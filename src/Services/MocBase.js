@@ -37,6 +37,7 @@ define([
      *    Create moc sublayer
      *
      *    @param layer Parent layer
+     *    @fires Context#layer:add
      */
     function createMocSublayer(layer, successCallback, errorCallback) {
         var ID;
@@ -66,6 +67,8 @@ define([
      *
      *    @param layer Parent layer
      *    @param mocServiceUrl Url to moc service
+     *    @fires Context#backgroundLayer:added
+     *    @fires Context#layer:added       
      */
     function handleMocLayer(layer, mocServiceUrl) {
         var style;

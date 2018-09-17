@@ -33,7 +33,8 @@ define([
     var gid = 0;
 
     /**
-     *    Handle services of feature
+     * Handle services of feature
+     * @fires Context#layer:add
      */
     function handleServices(gwLayer, feature) {
         for (var x in feature.services) {
@@ -71,6 +72,7 @@ define([
          *
          *    @param gwLayer Layer of feature
          *    @param featureCollection GeoJSON FeatureCollection
+         *    @fires Context#layer:add
          *
          */
         handleFeatureCollection: function(gwLayer, featureCollection) {

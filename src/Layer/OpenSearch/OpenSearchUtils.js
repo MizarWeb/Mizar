@@ -26,8 +26,8 @@ define(function() {
      * @function getAttributeValue
      * @memberof OpenSearchUtils#
      * @param {Object} object Object describing the parameter
-     * @param {String} name Name of the parameter
-     * @return {String} Value
+     * @param {string} name Name of the parameter
+     * @return {string} Value
      */
     OpenSearchUtils.getAttributeValue = function(object, name) {
         var reconstructedName = "_attr" + name;
@@ -46,8 +46,8 @@ define(function() {
      * @function getValue
      * @memberof OpenSearchUtils#
      * @param {Object} object Object describing the parameter
-     * @param {String} name Name of the parameter
-     * @return {String} Value
+     * @param {string} name Name of the parameter
+     * @return {string} Value
      */
     OpenSearchUtils.getValue = function(object, name) {
         if (typeof object[name] !== "undefined") {
@@ -65,8 +65,8 @@ define(function() {
      * @function setCurrentValueToParam
      * @memberof OpenSearchUtils#
      * @param {OpenSearchFrom} form Form
-     * @param {String} name Name of the parameter
-     * @param {String} value Value to set
+     * @param {string} name Name of the parameter
+     * @param {string} value Value to set
      */
     OpenSearchUtils.setCurrentValueToParam = function(form, name, value) {
         var param; // param managed
@@ -87,8 +87,8 @@ define(function() {
      * @function getCurrentValue
      * @memberof OpenSearchUtils#
      * @param {OpenSearchFrom} form Form
-     * @param {String} name Name of the parameter
-     * @return {String} Current value
+     * @param {string} name Name of the parameter
+     * @return {string} Current value
      */
     OpenSearchUtils.getCurrentValue = function(form, name) {
         var param; // param managed

@@ -34,6 +34,7 @@ define([
                 );
                 var self = this;
                 wmtsServer.createLayers(function(layers) {
+                    //TODO : I loose the callback of pendingLayers
                     self._handlePendingLayers(self.pendingLayers, layers);
                     callback(layers);
                 }, fallback);

@@ -43,7 +43,7 @@ define(["jquery", "moment", "../Utils/Constants", "../Utils/Utils"], function(
     /**
      * Parse date
      * @function parseDate
-     * @param {String} value Date to parse
+     * @param {string} value Date to parse
      * @return {Json} date { "date", "display", "period" { "from", "to" } }
      * @memberof TimeEnumerated#
      */
@@ -102,7 +102,7 @@ define(["jquery", "moment", "../Utils/Constants", "../Utils/Utils"], function(
      * Add date to enumerated values (check if still present)
      * @function addDateToEnumeratedValues
      * @param {Json} date Date
-     * @param {String} ID Id
+     * @param {string} ID Id
      * @memberof TimeEnumerated#
      * @private
      */
@@ -134,7 +134,7 @@ define(["jquery", "moment", "../Utils/Constants", "../Utils/Utils"], function(
     /**
      * Remove enumerated values for ID
      * @function removeEnumeratedValuesForID
-     * @param {String} ID Id
+     * @param {string} ID Id
      * @memberof TimeEnumerated#
      * @private
      */
@@ -166,7 +166,7 @@ define(["jquery", "moment", "../Utils/Constants", "../Utils/Utils"], function(
      * Add enumerated values for ID
      * @function addEnumeratedValuesForID
      * @param {Array<String>} values Array of enumerated values
-     * @param {String} ID Id
+     * @param {string} ID Id
      * @memberof TimeEnumerated#
      * @private
      */
@@ -333,7 +333,7 @@ define(["jquery", "moment", "../Utils/Constants", "../Utils/Utils"], function(
     /**
      * Get string representation
      * @function toString
-     * @return {String} String representation
+     * @return {string} String representation
      * @memberof TimeEnumerated#
      */
     TimeEnumerated.prototype.toString = function() {

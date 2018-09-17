@@ -115,7 +115,7 @@ define([
          * This layer draws an OpenSearch dynamic layer
          * @augments AbstractLayer
          * @param {Object} options Configuration properties for the layer. See {@link AbstractLayer} for base properties
-         * @param {String} options.serviceUrl Url of OpenSearch description XML file
+         * @param {string} options.serviceUrl Url of OpenSearch description XML file
          * @param {int} [options.minOrder=5] Starting order for OpenSearch requests
          * @param {int} [options.maxRequests=2] Max request
          * @param {Boolean} [options.invertY=false] a boolean, if set all the image data of current layer is flipped along the vertical axis
@@ -244,7 +244,7 @@ define([
         /**
          * @function setParameter
          * @memberof OpenSearchLayer#
-         * @param {String} paramName Name of parameter
+         * @param {string} paramName Name of parameter
          * @param {Time.configuration} value Time configuration
          */
         OpenSearchLayer.prototype.setParameter = function (paramName, value) {
@@ -422,10 +422,10 @@ define([
          * @function launchRequest
          * @memberof OpenSearchLayer#
          * @param {Tile} tile Tile
-         * @param {String} url Url
-         * @fires Layer#startLoad
-         * @fires Layer#endLoad
-         * @fires Layer#features:added
+         * @param {string} url Url
+         * @fires Context#startLoad
+         * @fires Context#endLoad
+         * @fires Context#features:added
          */
         OpenSearchLayer.prototype.launchRequest = function (tile, url) {
             var key = this.cache.getKey(tile.bound);
@@ -701,7 +701,7 @@ define([
          *  (called when it's sure to have to remove feature)
          * @function removeFeature
          * @memberof OpenSearchLayer#
-         * @param {String} featureId Feature id
+         * @param {string} featureId Feature id
          */
         OpenSearchLayer.prototype.removeFeature = function (featureId) {
             var featureIndex = this.getFeatureIndexById(featureId);
@@ -730,7 +730,7 @@ define([
          * @function loadQuicklook
          * @memberof OpenSearchLayer#
          * @param {Feature} feature Feature
-         * @param {String} url Url of image
+         * @param {string} url Url of image
          */
         OpenSearchLayer.prototype.loadQuicklook = function (feature, url) {
             // Save coordinates
@@ -864,7 +864,7 @@ define([
          * @function buildUrl
          * @memberof OpenSearchLayer#
          * @param {Bound} bound Bound
-         * @return {String} Url
+         * @return {string} Url
          */
         OpenSearchLayer.prototype.buildUrl = function (bound) {
             //var url = this.serviceUrl + "/search?order=" + tile.order + "&healpix=" + tile.pixelIndex;
@@ -927,7 +927,10 @@ define([
          * Render function
          * @function render
          * @memberof OpenSearchLayer#
-         * @param tiles The array of tiles to render
+         * @param {Tile[]} tiles The array of tiles to render
+         * @fires Context#startLoad
+         * @fires Context#endLoad
+         * @fires Context#features:added         
          */
         OpenSearchLayer.prototype.render = function (tiles) {
             if (!this.isVisible()) {
@@ -1273,7 +1276,7 @@ define([
          * Check is feature still added to global render
          * @function featureStillAdded
          * @memberof OpenSearchLayer#
-         * @param {String} featureId Feature id
+         * @param {string} featureId Feature id
          * @private
          */
         OpenSearchLayer.prototype.featureStillAdded = function (featureId) {
@@ -1286,7 +1289,7 @@ define([
          * Check is feature still added to tile
          * @function featureStillAddedToTile
          * @memberof OpenSearchLayer#
-         * @param {String} featureId Feature id
+         * @param {string} featureId Feature id
          * @param {Tile} tile Tile
          * @private
          */
@@ -1311,6 +1314,8 @@ define([
          * @memberof OpenSearchLayer#
          * @param {Json} selectedData Selected data
          * @fires OpenSearchLayer#toggleWMS
+         * @fires Context#backgroundLayer:added
+         * @fires Context#layer:added           
          */
         OpenSearchLayer.prototype.loadWMS = function (selectedData) {
             var extent = this.getGeometryExtent(selectedData.feature.geometry);

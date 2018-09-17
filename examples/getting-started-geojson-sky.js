@@ -12,8 +12,6 @@ var mizar = new Mizar({
     }
 });
 
-mizar.createStats({ element: 'fps', verbose: false });
-
 mizar.addLayer({
     type: Mizar.LAYER.Hips,
     baseUrl: "http://alasky.unistra.fr/DSS/DSSColor"

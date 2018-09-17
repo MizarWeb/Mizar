@@ -19,7 +19,7 @@ define([
         var hasBackground = false;
         for (var i = 0; i < this.layers.length; i++) {
             var layer = this.layers[i];
-            if (layer.isBackground() && layer.isVisible()) {
+            if (layer.isBackground()) {
                 hasBackground = true;
                 break;
             }

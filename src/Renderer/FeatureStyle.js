@@ -237,7 +237,7 @@ define(["../Utils/Constants"], function(Constants) {
      Convert a color from a string to RGB
      @function fromStringToColor
      @memberof FeatureStyle
-     @param {String} color_string Color string
+     @param {string} color_string Color string
      @return {float[]} array with [r,g,b,alpha]
      */
     FeatureStyle.fromStringToColor = function(color_string) {
@@ -298,7 +298,7 @@ define(["../Utils/Constants"], function(Constants) {
      @function fromColorToString
      @memberof FeatureStyle
      @param {float[]} color array with [r,g,b]
-     @return {String}Color string
+     @return {string}Color string
      */
     FeatureStyle.fromColorToString = function(color) {
         var hashColor = "#";

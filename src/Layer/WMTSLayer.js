@@ -185,7 +185,7 @@ define([
      * @function getUrl
      * @memberof WMTSLayer#
      * @param {Tile} tile Tile
-     * @return {String} Url
+     * @return {string} Url
      */
     WMTSLayer.prototype.getUrl = function(tile) {
         var url;

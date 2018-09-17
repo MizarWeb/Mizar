@@ -249,8 +249,8 @@ define([
      * @typedef {AbstractRasterLayer.configuration} AbstractRasterLayer.bing_configuration
      * @property {int} [baseLevel=2]
      * @property {onreadyCallback} [onready] - CallBack function.
-     * @property {String} imageSet the image set to use, can be Aerial, Road
-     * @property {String} key the bing key to use
+     * @property {string} imageSet the image set to use, can be Aerial, Road
+     * @property {string} key the bing key to use
      */
 
     /**

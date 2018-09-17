@@ -25,7 +25,7 @@ define(["./OpenSearchParam", "./OpenSearchUtils"], function(
      * @class
      * All informations describing an OpenSearch form
      * @param {Object} paramsJson a json object describing the form
-     * @param {String} type form to load (application/json or application/atom+xml)
+     * @param {string} type form to load (application/json or application/atom+xml)
      * @memberof module:Layer
      */
     var OpenSearchForm = function(paramsJson, type) {
@@ -89,7 +89,7 @@ define(["./OpenSearchParam", "./OpenSearchUtils"], function(
      * Get a string representation of the form
      * @function toString
      * @memberof OpenSearchForm#
-     * @return {String} String representation of the form
+     * @return {string} String representation of the form
      */
     OpenSearchForm.prototype.toString = function() {
         var res = "";
@@ -109,7 +109,7 @@ define(["./OpenSearchParam", "./OpenSearchUtils"], function(
      * @function parseJson
      * @memberof OpenSearchForm#
      * @param {Object} paramsJson Parameteres
-     * @param {String} type Type
+     * @param {string} type Type
      */
     OpenSearchForm.prototype.parseJson = function(paramsJson, type) {
         if (typeof paramsJson.length !== "undefined") {

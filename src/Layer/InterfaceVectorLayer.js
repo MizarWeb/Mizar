@@ -44,7 +44,7 @@ AbstractVectorLayer.prototype.getMaxLevel = function() {};
 
 /**
  * Returns the URL to get the vector data.
- * @returns {String} the URL to get the vector data
+ * @returns {string} the URL to get the vector data
  */
 AbstractVectorLayer.prototype.getUrl = function() {};
 

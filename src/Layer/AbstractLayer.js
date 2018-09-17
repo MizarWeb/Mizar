@@ -64,12 +64,12 @@ define([
     /**
      * AbstractLayer configuration
      * @typedef {Object} AbstractLayer.configuration
-     * @property {String} [name=""] - Layer name
-     * @property {String} [attribution=""] - Attribution
-     * @property {String} [copyrightUrl=""] - Copyright URL
-     * @property {String} [ack=""] - ack
-     * @property {String} [icon=a default image] - An icon to represent the layer
-     * @property {String} [description=""] - A description
+     * @property {string} [name=""] - Layer name
+     * @property {string} [attribution=""] - Attribution
+     * @property {string} [copyrightUrl=""] - Copyright URL
+     * @property {string} [ack=""] - ack
+     * @property {string} [icon=a default image] - An icon to represent the layer
+     * @property {string} [description=""] - A description
      * @property {boolean} [visible=true] - A boolean flag to display the layer
      * @property {Object} [properties={}] properties
      * @property {boolean} [pickable=false] - Sets to true to make the layer pickable
@@ -356,7 +356,7 @@ define([
      * return short name
      * @function getShortName
      * @memberof AbstractLayer#
-     * @return {String} Short name
+     * @return {string} Short name
      */
     AbstractLayer.prototype.getShortName = function() {
         var shortName = Utils.formatId(this.name);
@@ -407,9 +407,11 @@ define([
      * @memberof AbstractLayer#
      */
     AbstractLayer.prototype.forceRefresh = function() {
-        var tileManager = this.getGlobe().getTileManager();
-        tileManager.updateVisibleTiles(this);
-        this.getGlobe().refresh();
+        if(this.getGlobe()) {
+            var tileManager = this.getGlobe().getTileManager();
+            tileManager.updateVisibleTiles(this);
+            this.getGlobe().refresh();
+        }
     };
 
     /**
@@ -574,7 +576,7 @@ define([
      * Get getCapabilities url
      * @function getGetCapabilitiesUrl
      * @memberof AbstractLayer#
-     * @return {String} url
+     * @return {string} url
      */
     AbstractLayer.prototype.getGetCapabilitiesUrl = function() {
         return this.proxify(this.getCapabilitiesUrl);
@@ -587,7 +589,7 @@ define([
      * @function loadGetCapabilities
      * @memberof AbstractLayer
      * @param {function} callback Callback function
-     * @param {String} paramUrl url (if ommited, reconstructed with getCapabilitiesUrl)
+     * @param {string} paramUrl url (if ommited, reconstructed with getCapabilitiesUrl)
      * @param {Object} sourceObject source object
      * @return {JSON} data loaded
      */
@@ -636,8 +638,8 @@ define([
      * Proxify an url
      * @function proxify
      * @memberof AbstractLayer#
-     * @param {String} url - URL
-     * @return {String} Url proxified
+     * @param {string} url - URL
+     * @return {string} Url proxified
      */
     AbstractLayer.prototype.proxify = function(url) {
         return Utils.proxify(url, this.options.proxy);
@@ -969,7 +971,7 @@ define([
     /**
      * Decrypt time range to generate time travel informations
      * @function generateTimeTravel
-     * @param {String} timeDetails Details of time range
+     * @param {string} timeDetails Details of time range
      * @memberof AbstractLayer#
      */
     AbstractLayer.prototype.generateTimeTravel = function(timeDetails) {

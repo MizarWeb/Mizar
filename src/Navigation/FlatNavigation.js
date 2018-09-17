@@ -337,7 +337,7 @@ define([
      * @param {Object} [options] - options
      * @param {Object} [options.callback] - Callback function to call when it is defined.
      * @private
-     * @fires Navigation#navigation:changedDistance
+     * @fires Context#navigation:changedDistance
      */
     function _addStop(zoomToAnimation, ctx, destDistance, options) {
         zoomToAnimation.onstop = function() {

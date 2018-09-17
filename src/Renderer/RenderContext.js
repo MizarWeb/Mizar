@@ -205,6 +205,13 @@ define(["./Frustum", "./glMatrix"], function(Frustum) {
      * Frame of the application
      * @function frame
      * @memberof RenderContext.prototype
+     * @fires Context#startLoad
+     * @fires Context#endLoad
+     * @fires Context#baseLayersReady
+     * @fires Context#baseLayersError
+     * @fires Context#startBackgroundLoad
+     * @fires Context#endBackgroundLoad 
+     * @fires Context#features:added                  
      */
     RenderContext.prototype.frame = function() {
         if (this.isActive) {

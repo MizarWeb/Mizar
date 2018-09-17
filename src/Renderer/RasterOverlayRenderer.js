@@ -161,8 +161,8 @@ define([
      * Called when a request is started
      * @function onRequestStarted
      * @memberof RasterOverlayRenderable.prototype
-     * @param {String}request Request
-     * @fires Layer#startLoad
+     * @param {string}request Request
+     * @fires Context#startLoad
      */
     RasterOverlayRenderable.prototype.onRequestStarted = function(request) {
         this.request = request;
@@ -184,7 +184,7 @@ define([
      * @function onRequestFinished
      * @memberof RasterOverlayRenderable.prototype
      * @param completed
-     * @fires Layer#endLoad
+     * @fires Context#endLoad
      */
     RasterOverlayRenderable.prototype.onRequestFinished = function(completed) {
         this.request = null;

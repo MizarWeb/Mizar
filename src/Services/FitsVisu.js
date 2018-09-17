@@ -36,9 +36,9 @@ define([
     /**
      *    Send XHR request for FITS file
      *    @param featureData Feature data(layer,feature)
-     *    @param {String} url Url of fits file
+     *    @param {string} url Url of fits file
      *    @param {Function} preprocessing function if needed
-     *    @fires Service#image:downloaded
+     *    @fires Mizar#image:downloaded
      */
     function computeFits(featureData, url, preprocessing) {
         // Store xhr on feature data object to cancel it if needed
@@ -60,8 +60,8 @@ define([
     /**
      *    Send XHR request for quicklook file
      *    @param featureData Feature data(layer,feature)
-     *    @param {String} url Url of quicklook file
-     *    @fires Service#image:downloaded
+     *    @param {string} url Url of quicklook file
+     *    @fires Mizar#image:downloaded
      */
     function computeQuicklook(featureData, url) {
         handleQuicklook(featureData, url);
@@ -228,7 +228,7 @@ define([
         /**
          * Remove image from renderer
          * @param {Feature} featureData
-         * @fires Service#image:removed
+         * @fires Mizar#image:removed
          */
         removeImage: function(featureData) {
             // Publish event that the image of the given feature will be removed
@@ -259,7 +259,7 @@ define([
         /**
          *    Start download of texture
          *    @param {Feature} featureData
-         *    @fires Service#image:added
+         *    @fires Mizar#image:added
          */
         addImage: function(featureData) {
             var feature = featureData.feature;

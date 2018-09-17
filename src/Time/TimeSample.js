@@ -93,7 +93,7 @@ define(["jquery", "moment", "../Utils/Constants", "../Utils/Utils"], function(
     /**
      * Get the step kind
      * @function getStepKind
-     * @return {String} Step kind
+     * @return {string} Step kind
      * @memberof TimeSample#
      */
     TimeSample.prototype.getStepKind = function() {
@@ -105,7 +105,7 @@ define(["jquery", "moment", "../Utils/Constants", "../Utils/Utils"], function(
     /**
      * Set the step kind
      * @function setStepKind
-     * @param {String} stepKind Step kind
+     * @param {string} stepKind Step kind
      * @memberof TimeSample#
      */
     TimeSample.prototype.setStepKind = function(stepKind) {
@@ -117,7 +117,7 @@ define(["jquery", "moment", "../Utils/Constants", "../Utils/Utils"], function(
     /**
      * Set the layer ID
      * @function setLayerID
-     * @param {String} layerID Layer ID
+     * @param {string} layerID Layer ID
      * @memberof TimeSample#
      */
     TimeSample.prototype.setLayerID = function(layerID) {
@@ -129,7 +129,7 @@ define(["jquery", "moment", "../Utils/Constants", "../Utils/Utils"], function(
     /**
      * Get the layer ID
      * @function getLayerID
-     * @return {String} Layer ID
+     * @return {string} Layer ID
      * @memberof TimeSample#
      */
     TimeSample.prototype.getLayerID = function() {
@@ -312,7 +312,7 @@ define(["jquery", "moment", "../Utils/Constants", "../Utils/Utils"], function(
     /**
      * Get string representation
      * @function toString
-     * @return {String} String representation
+     * @return {string} String representation
      * @memberof TimeSample#
      */
     TimeSample.prototype.toString = function() {

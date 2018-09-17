@@ -16,11 +16,11 @@
  * You should have received a copy of the GNU General Public License
  * along with MIZAR. If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
-define([], function() {
+define(['../../Utils/Constants'], function(Constants) {
     /**
      * @name OpenSearchRequestPool
      * @class
-     * This class manage the request pool of OpenSearch
+     * This class manages the request pool of OpenSearch
      * @memberof module:Layer
      */
     var OpenSearchRequestPool = function() {
@@ -57,7 +57,7 @@ define([], function() {
      * Debug information
      * @function debug
      * @memberof OpenSearchRequestPool#
-     * @param {String} message Message to display
+     * @param {string} message Message to display
      */
 
     OpenSearchRequestPool.prototype.debug = function(message) {
@@ -72,7 +72,7 @@ define([], function() {
      * Return the pool status
      * @function getPoolStatus
      * @memberof OpenSearchRequestPool#
-     * @return {String} Pool status
+     * @return {string} Pool status
      */
 
     OpenSearchRequestPool.prototype.getPoolsStatus = function() {
@@ -120,9 +120,9 @@ define([], function() {
      *  Note : Query is ALWAYS ADDED at the end of the pool, the it's a FILO queue
      * @function addQuery
      * @memberof OpenSearchRequestPool#
-     * @param {String} url Url query to get
+     * @param {string} url Url query to get
      * @param {Tile} tile Tile associated with the query
-     * @param {String} key Key of the tile
+     * @param {string} key Key of the tile
      */
     OpenSearchRequestPool.prototype.addQuery = function(url, tile, key, layer) {
         this.debug("[addQuery]");
@@ -177,7 +177,7 @@ define([], function() {
                     response.features !== null &&
                     response.features.length > 0
                 ) {
-                    xhr.layer.getGlobe().publishEvent("features:added", {
+                    xhr.layer.getGlobe().publishEvent(Constants.EVENT_MSG.FEATURED_ADDED, {
                         layer: xhr.layer,
                         features: response.features
                     });
@@ -219,7 +219,7 @@ o     * Check if there is any remaining query in the pool
                 }
             }
             // no request running, stop ihm indicator
-            current.getGlobe().publishEvent("endLoad", current);
+            current.getGlobe().publishEvent(Constants.EVENT_MSG.LAYER_END_LOAD, current);
         }
     };
 
@@ -257,7 +257,7 @@ o     * Check if there is any remaining query in the pool
             this.runningRequests.push(xhr);
 
             // Start ihm indicator
-            xhr.layer.getGlobe().publishEvent("startLoad", xhr.layer);
+            xhr.layer.getGlobe().publishEvent(Constants.EVENT_MSG.LAYER_START_LOAD, xhr.layer);
 
             // Launch request
             xhr.send();
@@ -314,7 +314,7 @@ o     * Check if there is any remaining query in the pool
      * Check if query (based on bound) is still wanted (in pool or running)
      * @function isQueryStillWanted
      * @memberof OpenSearchRequestPool#
-     * @param {String} key Key of the query
+     * @param {string} key Key of the query
      * @return {Boolean} true if query is still in pool
      */
     OpenSearchRequestPool.prototype.isQueryStillWanted = function(

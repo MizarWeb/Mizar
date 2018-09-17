@@ -21,21 +21,21 @@
 /**
  * globalTime:set.<br/>
  * Called when the time is set
- * @event TimeTravel#globalTime:set
+ * @event Context#globalTime:set
  * @type {Context}
  */
 
  /**
  * globalTime:rewind.<br/>
  * Called when the time is set to rewind
- * @event TimeTravel#globalTime:rewind
+ * @event Context#globalTime:rewind
  * @type {Context}
  */
 
  /**
  * globalTime:forward.<br/>
  * Called when the time is set to forward
- * @event TimeTravel#globalTime:forward
+ * @event Context#globalTime:forward
  * @type {Context}
  */
 
@@ -67,9 +67,9 @@ define(["jquery", "../Utils/Constants", "../Services/TimeTravelCore"], function(
      * @throws {ReferenceError} Can't get the Div to insert the time tracker
      * @throws {ReferenceError} Can't get the element name
      * @constructor
-     * @fires TimeTravel#globalTime:set
-     * @fires TimeTravel#globalTime:rewind
-     * @fires TimeTravel#globalTime:forward
+     * @fires Context#globalTime:set
+     * @fires Context#globalTime:rewind
+     * @fires Context#globalTime:forward
      */
     var TimeTravel = function(options) {
         parentElement = options.element;

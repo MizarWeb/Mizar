@@ -471,7 +471,7 @@ define([
      * Adds a zero before the number < 10
      * @function _pad2Digits
      * @param number number to format
-     * @returns {String}
+     * @returns {string}
      * @private
      */
     AbstractCrs.prototype._pad2Digits = function(number) {

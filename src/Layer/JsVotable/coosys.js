@@ -65,7 +65,7 @@ define(["./utils", "./abstractNode"], function(Utils, AbstractNode) {
     /**
      * Parses the CoordinateSystem node.
      * @param {NodeList} childNode the CoordinateSystem node
-     * @returns {String} the content of CoordinateSysem node
+     * @returns {string} the content of CoordinateSysem node
      */
     var parseCoordinateSystem = function(childNode) {
         var value;
@@ -123,7 +123,7 @@ define(["./utils", "./abstractNode"], function(Utils, AbstractNode) {
 
     /**
      * Returns the content of CoordinateSystem.
-     * @returns {String} the content of CoordinateSystem.
+     * @returns {string} the content of CoordinateSystem.
      */
     Coosys.prototype.getContent = function() {
         return this.value;

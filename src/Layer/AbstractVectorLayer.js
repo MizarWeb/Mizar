@@ -104,7 +104,7 @@ define([
      * Returns the URL to get the vector data.
      * @function getUrl
      * @memberof AbstractVectorLayer#
-     * @returns {String} the URL to get the vector data
+     * @returns {string} the URL to get the vector data
      */
     AbstractVectorLayer.prototype.getUrl = function() {
         return this.proxify(this.url);

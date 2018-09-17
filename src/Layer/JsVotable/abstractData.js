@@ -20,7 +20,7 @@ define(["./utils", "./abstractNode"], function(Utils, AbstractNode) {
     /**
      * Stores the name of the data implementation
      * @param {NodeList} childNode XML node
-     * @param {String} name name of the data implementation
+     * @param {string} name name of the data implementation
      * @exports AbstractData
      * @augments AbstractNode
      * @constructor

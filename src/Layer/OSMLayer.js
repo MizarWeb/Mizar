@@ -81,7 +81,7 @@ define([
      * @function getUrl
      * @memberof OSMLayer#
      * @param {Tile} tile Tile
-     * @return {String} Url
+     * @return {string} Url
      */
     OSMLayer.prototype.getUrl = function(tile) {
         var url =

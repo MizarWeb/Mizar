@@ -143,7 +143,7 @@ define(["./OpenSearchUtils"], function(OpenSearchUtils) {
      * Return string representation
      * @function toString
      * @memberof OpenSearchParam#
-     * @return {String} String representation
+     * @return {string} String representation
      */
 
     OpenSearchParam.prototype.toString = function() {
@@ -189,7 +189,7 @@ define(["./OpenSearchUtils"], function(OpenSearchUtils) {
      * Get current value transformed (from IHM to Request)
      * @function currentValueTransformed
      * @memberof OpenSearchParam#
-     * @return {String} Current value transformed
+     * @return {string} Current value transformed
      */
 
     OpenSearchParam.prototype.currentValueTransformed = function() {

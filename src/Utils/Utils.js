@@ -219,10 +219,10 @@ define([
     /**
      * Add parameter to
      * @function addParameterTo
-     * @param {String} url - parameter url
-     * @param {String} name - parameter name
-     * @param {String} value - parameter value
-     * @return {String} url updated
+     * @param {string} url - parameter url
+     * @param {string} name - parameter name
+     * @param {string} value - parameter value
+     * @return {string} url updated
      */
     Utils.addParameterTo = function(url, name, value) {
         var separator = "&";

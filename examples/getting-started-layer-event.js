@@ -9,8 +9,7 @@ mizar.addLayer({
     name: "IRIS",
     type: Mizar.LAYER.Hips,
     baseUrl: "http://alasky.unistra.fr/IRISColor",
-    background:true,
-    visible:true
+    background:true
 });
 
 mizar.getActivatedContext().subscribe(Mizar.EVENT_MSG.LAYER_BACKGROUND_CHANGED, function(layer){
@@ -38,8 +37,7 @@ $("#DSS").change(function () {
             name:"DSS",
             type: Mizar.LAYER.Hips,
             baseUrl: "http://alasky.unistra.fr/DSS/DSSColor",
-            visible: true,
-            transparent: true            
+            visible: true
         }, function(layerID){
             //var layer = mizar.getLayerByID(layerID);
             //layer._ready = true;

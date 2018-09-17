@@ -56,7 +56,7 @@ define(function() {
 
     /**
      * Add an entry to the cache.
-     * @param {String} id the identifier of the VOTable element
+     * @param {string} id the identifier of the VOTable element
      * @param {AbstractNode} node VOTable element
      */
     Cache.prototype.addEntryID = function(id, node) {
@@ -65,7 +65,7 @@ define(function() {
 
     /**
      * Add an entry to the cache.
-     * @param {String} name the identifier of the VOTable element
+     * @param {string} name the identifier of the VOTable element
      * @param {AbstractNode} node VOTable element
      */
     Cache.prototype.addEntryName = function(name, node) {

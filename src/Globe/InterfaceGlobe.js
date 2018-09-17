@@ -19,21 +19,21 @@
 /**
  * layer:add.<br/>
  * Called when a layer is added in the globe
- * @event Globe#layer:add
+ * @event Context#layer:add
  * @type {Layer}
  */
 
 /**
  * layer:remove.<br/>
  * Called when a layer is removed from the globe
- * @event Globe#layer:remove
+ * @event Context#layer:removed
  * @type {Layer}
  */
 
  /**
  * layer:remove.<br/>
  * Called when the a layer has replaced another layer as background
- * @event Globe#backgroundLayer:change
+ * @event Context#backgroundLayer:changed
  * @type {Layer}
  */
 
@@ -100,7 +100,9 @@ Globe.prototype.hasDefinedBackground = function() {};
  * Registers the layer as a background raster and attach it to the globe.<br/>
  * When a raster layer is already set, this layer is replaced by the new one.
  * @param {AbstractRasterLayer} layer - raster layer to use
- * @fires Globe#backgroundLayer:change
+ * @fires Context#backgroundLayer:changed
+ * @fires Context#backgroundLayer:added
+ * @fires Context#layer:added  
  * @throws {Error} layer must be a Layer object
  */
 Globe.prototype.setBaseImagery = function(layer) {};
@@ -115,6 +117,7 @@ Globe.prototype.getBaseImagery = function() {};
  * Registers the elevation layer and attach it to the globe.<br/>
  * When an elevation layer is already set, this layer is replaced by the new one
  * @returns {WMSElevationLayer|WCSElevationLayer} the used layer
+ * @fires Context#layer:removed
  */
 Globe.prototype.setBaseElevation = function(layer) {};
 
@@ -137,7 +140,8 @@ Globe.prototype.getBaseElevation = function() {};
  * 
  *
  * @param {Layer} layer the layer to add
- * @fires Globe#layer:add
+ * @fires Context#backgroundLayer:added
+ * @fires Context#layer:added  
  * @throws {Error} layer must be a {@link Layer} object
  */
 Globe.prototype.addLayer = function(layer) {};
@@ -149,7 +153,7 @@ Globe.prototype.addLayer = function(layer) {};
  * The globe is rendered to remove the layer from the globe.
  *
  * @param {Layer} layer - the layer to remove
- * @fires Globe#layer:remove
+ * @fires Context#layer:removed
  * @throws {Error} layer must be a {@link Layer} object
  */
 Globe.prototype.removeLayer = function(layer) {};
@@ -262,6 +266,12 @@ Globe.prototype.getRendererManager = function() {};
  * Renders the globe.
  * The pixel is expressed in the canvas frame, i.e. (0,0) corresponds to the lower-left corner of the pixel
  * (private for now because it is automatically called in requestAnimationFrame)
+ * @fires Context#startLoad
+ * @fires Context#endLoad
+ * @fires Context#baseLayersReady
+ * @fires Context#baseLayersError
+ * @fires Context#startBackgroundLoad
+ * @fires Context#endBackgroundLoad 
  */
 Globe.prototype.render = function() {};
 

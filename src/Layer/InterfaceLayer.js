@@ -31,25 +31,17 @@
  * @type {Layer}
  */
 
-  /**
- * Background error event.
- * Called when an error occurs with abstractContext
- *
- * @event Layer#backgroundLayer:error
- * @type {string}  
- */
-
 /**
  * startLoad.<br/>
  * Called when a layer start to be loaded
- * @event Layer#startLoad
+ * @event Context#startLoad
  * @type {Layer}
  */
 
 /**
  * endLoad.<br/>
  * Called when layer end loading
- * @event Layer#endLoad
+ * @event Context#endLoad
  * @type {Layer}
  */
 
@@ -70,7 +62,7 @@
 /**
  * features:added.<br/>
  * Called when data coming from a GeoJSON are added
- * @event Layer#features:added
+ * @event Context#features:added
  * @type {Object}
  * @property {Layer} layer
  * @property {Object} features
@@ -200,7 +192,7 @@ Layer.prototype.isPickable = function() {};
 
 /**
  * Check the type of the layer
- * @param {String} type Type to check
+ * @param {string} type Type to check
  * @return {boolean} Result
  */
 Layer.prototype.isType = function(type) {};
@@ -286,6 +278,7 @@ Layer.prototype.addServicesRunningOnCollection = function(layerIDs) {};
  * Removes all loaded services on collection.
  * @returns {Boolean} frue when all loaded services on the collection are unloaded otherwise false
  * @protected
+ * @fires Context#layer:removed
  */
 Layer.prototype.removeServicesRunningOnCollection = function() {};
 
@@ -313,21 +306,21 @@ Layer.prototype.removeServicesRunningOnRecords = function() {};
 /**
  * Returns true when at least one service is related to a record otherwise false.
  * A service is a layer which is created from this layer.
- * @param {String} featureID Record ID
+ * @param {string} featureID Record ID
  * @returns {Boolean} true when when at least one service is related to a featureID otherwise false
  */
 Layer.prototype.hasServicesRunningOnRecord = function(featureID) {};
 
 /**
  * Returns an array of layerID related to a record.
- * @param {String} featureID Record ID
+ * @param {string} featureID Record ID
  * @returns {Array<Layer>} layers related to the featureID
  */
 Layer.prototype.getServicesRunningOnRecord = function(featureID) {};
 
 /**
  * Adds a reference to loaded services related to a record
- * @param {String} featureID record ID from which services are loaded
+ * @param {string} featureID record ID from which services are loaded
  * @param {String|Array<String>} layerIDs services related to a record
  * @returns {Boolean} true when the references are added otherwise false
  * @protected
@@ -336,7 +329,7 @@ Layer.prototype.addServicesRunningOnRecord = function(featureID, layerIDs) {};
 
 /**
  * Removes loaded services on a record.
- * @param {String} featureID
+ * @param {string} featureID
  * @returns {Boolean} true when all loaded services related to a record are unloaded otherwise false
  * @protected
  */

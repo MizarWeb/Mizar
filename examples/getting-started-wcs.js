@@ -30,7 +30,7 @@ mizar.addLayer({
     coverage: 'SRTM',
     version: '1.0.0',
     minElevation: -32000,
-    scale: 2,
+    scale: 6,
     visible: true
 }, function (layerID) {
     mizar.setBaseElevationByID(layerID);

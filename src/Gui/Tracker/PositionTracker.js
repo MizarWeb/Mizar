@@ -24,20 +24,13 @@ define([
 ], function($, AbstractTracker, CrsDialog, Utils) {
     var self;
     var posTrackerInfoHTML = '<input type="button" id="posTrackerInfoButton"/>';
-    /**
-     * Position tracker configuration
-     * @typedef {Object} AbstractTracker.position_configuration
-     * @property {string} element - tracker div element
-     * @property {string} position - tracker position in the GUI
-     * @property {boolean} [isMobile = false] - Mobile device
-     */
 
     /**
      * @name PositionTracker
      * @class
      *    PositionTracker constructor
      * @augments AbstractTracker
-     * @param {AbstractTracker.position_configuration} options - Position tracker configuration
+     * @param {AbstractTracker_position_configuration} options - Position tracker configuration
      * @constructor
      */
     var PositionTracker = function(options) {

@@ -154,7 +154,7 @@ define([
      * Parse a elevation response
      * @function parseElevations
      * @memberof WCSElevationLayer#
-     * @param {String} text Response as text
+     * @param {string} text Response as text
      */
     WCSElevationLayer.prototype.parseElevations = function(text) {
         if (text === null || text.match("ServiceExceptionReport") != null) {
@@ -194,7 +194,7 @@ define([
      * Parse a elevation response from AAIGrid
      * @function _parseAAIGrid
      * @memberof WCSElevationLayer#
-     * @param {String} text Response as text
+     * @param {string} text Response as text
      * @private
      */
     WCSElevationLayer.prototype._parseAAIGrid = function(text) {
@@ -243,7 +243,7 @@ define([
      * @function getUrl
      * @memberof WCSElevationLayer#
      * @param {Tile} tile Tile
-     * @return {String} Url
+     * @return {string} Url
      */
     WCSElevationLayer.prototype.getUrl = function(tile) {
         var geoBound = tile.geoBound;

@@ -175,7 +175,7 @@ define(["../Utils/Utils", "./AbstractAnimation"], function(Utils,AbstractAnimati
     /**
      * Launches the animation.
      * @function launch
-     * @param {String} type Type of inertia
+     * @param {string} type Type of inertia
      * <ul>
      *   <li>pan</li>
      *   <li>rotate</li>

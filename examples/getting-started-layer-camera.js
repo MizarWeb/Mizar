@@ -43,23 +43,6 @@ mizar.addLayer({
 
 });
 
-mizar.getActivatedContext().subscribe(Mizar.EVENT_MSG.LAYER_BACKGROUND_CHANGED, function(layer){
-    document.getElementById("message").innerHTML="background has changed: "+layer.name;
-});
-
-mizar.getActivatedContext().subscribe(Mizar.EVENT_MSG.LAYER_BACKGROUND_ADDED, function(layer){
-    document.getElementById("message").innerHTML="background has been added: "+layer.name;
-});
-
-mizar.getActivatedContext().subscribe(Mizar.EVENT_MSG.LAYER_ADDED, function(layer){
-    document.getElementById("message").innerHTML="added layer: "+layer.name;
-});
-
-mizar.getActivatedContext().subscribe(Mizar.EVENT_MSG.LAYER_REMOVED, function(layer){
-    document.getElementById("message").innerHTML="removed layer: "+layer.name;
-});
-
-
 $("#montpellier").change(function () {
     var montpellier = $(this).val();
     var checked = document.getElementById('montpellier').checked;

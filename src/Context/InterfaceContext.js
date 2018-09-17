@@ -25,6 +25,14 @@
  */
 
 /**
+ * Background error event.
+ * Called when an error occurs with abstractContext
+ *
+ * @event Context#backgroundLayer:error
+ * @type {string}  
+ */
+
+/**
  * Context is an interface to handle a context, which allows {@link Mizar}  :
  * <ul>
  *     <li>to handle a {@link Globe}</li>
@@ -60,6 +68,9 @@
  * context. Once the context is created, the client can handle it by the use of its {@link Context interface}.
  * @see {@link module:Context the context package}
  * @interface
+ * @fires Context#globalTime:set
+ * @fires Context#globalTime:rewind
+ * @fires Context#globalTime:forward  
  */
 function Context() {}
 
@@ -104,6 +115,9 @@ Context.prototype.setCompassVisible = function(divName, visible) {};
  * Sets the time travel to visible or not.
  * @param {string} divName - Name of the time travel div
  * @param {boolean} visible - Visible or not
+ * @fires Context#globalTime:set
+ * @fires Context#globalTime:rewind
+ * @fires Context#globalTime:forward  
  */
 Context.prototype.setTimeTravelVisible = function(divName, visible) {};
 
@@ -212,7 +226,7 @@ Context.prototype.getLayerByName = function(layerName) {};
  * Sets the background survey.
  * @param {string} survey The name of the layer
  * @return {Layer|undefined} the layer which has been added to the background
- * @fires Layer#backgroundLayer:error
+ * @fires Context#backgroundLayer:error
  */
 Context.prototype.setBackgroundLayer = function(survey) {};
 
@@ -221,7 +235,7 @@ Context.prototype.setBackgroundLayer = function(survey) {};
  * Sets the background survey by layer ID.
  * @param {string} surveyID The name of the layer
  * @return {Layer|undefined} the layer which has been added to the background
- * @fires Layer#backgroundLayer:error 
+ * @fires Context#backgroundLayer:error 
  */
 Context.prototype.setBackgroundLayerByID = function(surveyID) {};
 
@@ -236,12 +250,13 @@ Context.prototype.getAdditionalLayers = function() {};
  *
  * Adds a layer to the globe.
  * According to the attributes of the layer, the layer is either added as background or
- * as additional layer.
+ * as additional layer.r
  * @param {Object} mizarDescription - See the base properties {@link AbstractLayer.configuration} and specific properties for specific layers
  * @return {Layer} the created layer
  * @throws {RangeError} Unable to create the layer
- * @fires Context#backgroundLayer:add
- * @fires Context#additionalLayer:add
+ * @fires Context#backgroundLayer:changed
+ * @fires Context#backgroundLayer:added
+ * @fires Context#layer:added  
  */
 Context.prototype.addLayer = function(mizarDescription, callback, fallback) {};
 
@@ -249,11 +264,13 @@ Context.prototype.addLayer = function(mizarDescription, callback, fallback) {};
  * Removes a layer based on its identifier
  * @param {string} layerID - the layer identifier
  * @return {Layer} the removed layer
+ * @fires Context#layer:removed
  */
 Context.prototype.removeLayer = function(layerID) {};
 
 /**
  * Removes all layers.
+ * @fires Context#layer:removed
  */
 Context.prototype.removeAllLayers = function() {};
 
@@ -265,12 +282,15 @@ Context.prototype.removeAllLayers = function() {};
  * A temporary draw is used to create a subLayer or a simple draw. This added layer is not searchable and does not
  * subscribe to "visibility:changed" by configuration
  * @param {Layer} layer
+ * @fires Context#backgroundLayer:added
+ * @fires Context#layer:added 
  */
 Context.prototype.addDraw = function(layer) {};
 
 /**
  * Removes the temporary draw on the globe.
  * @param {Layer} layer
+ * @fires Context#layer:removed
  */
 Context.prototype.removeDraw = function(layer) {};
 
@@ -287,6 +307,12 @@ Context.prototype.getRenderContext = function() {};
  * Renders the Planet.
  * The pixel is expressed in the canvas frame, i.e. (0,0) corresponds to the lower-left corner of the pixel
  * (private for now because it is automatically called in requestAnimationFrame)
+ * @fires Context#startLoad
+ * @fires Context#endLoad 
+ * @fires Context#baseLayersReady
+ * @fires Context#baseLayersError
+ * @fires Context#startBackgroundLoad
+ * @fires Context#endBackgroundLoad
  * @private
  */
 Context.prototype.render = function() {};

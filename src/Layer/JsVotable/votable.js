@@ -304,7 +304,7 @@ define([
 
     /**
      * Returns the VOTable elements by its name.
-     * @param {String} name name of the VOTable element
+     * @param {string} name name of the VOTable element
      * @returns {AbstractNode[]} the VOTable elements or null when the name is not found.
      */
     Votable.prototype.getVotableEltsByName = function(name) {
@@ -314,7 +314,7 @@ define([
     /**
      * Converts the VOTable to GeoJSON.
      * @param {Boolean} option sets to true to get a pretty output of the GeoJSON. By default, option is set to false
-     * @returns {String} the GeoJson output of the VOTable
+     * @returns {string} the GeoJson output of the VOTable
      */
     Votable.prototype.convertToGeoJSon = function(option) {
         var geoJson = new GeoJson(this);

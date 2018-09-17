@@ -25,17 +25,12 @@ define([
     var self;
 
     /**
-     * Elevation tracker configuration
-     * @typedef {AbstractTracker.position_configuration} AbstractTracker.elevation_configuration
-     * @property {Layer} [elevationLayer] - elevationLayer
-     */
-
-    /**
      * @name ElevationTracker
      * @class
      *   ElevationTracker context constructor
      * @augments AbstractTracker
-     * @param {AbstractTracker.elevation_configuration} options - Elevation tracker configuration
+     * @param {AbstractTracker_elevation_configuration} options - Elevation tracker configuration
+     * @param {boolean} [options.isMobile = false] - Touch capabilities     
      * @constructor
      */
     var ElevationTracker = function(options) {

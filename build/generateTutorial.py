@@ -2,6 +2,7 @@ import os
 from lxml import html
 from lxml import etree
 from distutils.dir_util import copy_tree
+from shutil import copyfile
 from string import Template
 import os.path
 import json
@@ -81,6 +82,7 @@ def createNavigation(htmlFile, meta_title, childrens, dst="../tutorials/"):
 createTutoDirectory()
 copyDirectory()
 copyDirectory("../examples/resources", "../tutorials/resources")
+copyfile("../favicon.ico", "../tutorials/favicon.ico")
 
 filein = open( 'templateCodeMirror.tmpl' )
 src = Template( filein.read() )

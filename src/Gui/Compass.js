@@ -36,7 +36,7 @@ define([
      * @throws {ReferenceError} can't get the div to insert the compass
      * @throws {ReferenceError} Can't get the element name
      * @constructor
-     * @fires Navigation#modifiedNavigation
+     * @fires Context#modifiedNavigation
      */
     var Compass = function(options) {
         /**

@@ -58,7 +58,7 @@ define([
      * @param {AbstractHipsLayer.graphic_configuration} options - HipsGraphic configuration
      * @memberof module:Layer
      * @see {@link http://www.ivoa.net/documents/HiPS/20170406/index.html Hips standard}
-     * @fires Layer#baseLayersError
+     * @fires Context#baseLayersError
      */
     var HipsGraphicLayer = function(hipsMetadata, options) {        
         //options.format = options.format || "jpg";
@@ -141,7 +141,7 @@ define([
      * @function getUrl
      * @memberof HipsGraphicLayer#
      * @param {Tile} tile Tile
-     * @return {String} Url
+     * @return {string} Url
      */
     HipsGraphicLayer.prototype.getUrl = function(tile) {
         var url = this.proxify(this.baseUrl);

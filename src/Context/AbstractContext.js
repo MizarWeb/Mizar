@@ -97,6 +97,28 @@ define([
          * @default
          */
         const DEFAULT_COMPASS_ELT = "compassDiv";
+        /**
+         * @constant
+         * @type {string}
+         * @default
+         */
+        const DEFAULT_ATTRIBUTION_ELT = "globeAttributions";
+
+        /**
+         * @constant
+         * @type{{RA:{string},DEC:{String}}}
+         */
+        const TARGET_POS = {
+            RA: "initialRa",
+            DEC : "initialDec"
+        }
+
+        /**
+         * @constant
+         * @type {number}
+         * @default
+         */
+        const DEFAULT_ZOOM_DURATION = 3000
 
         /**
          * @name AbstractContext
@@ -182,7 +204,7 @@ define([
                 ErrorDialog.open(
                     "<font style='color:orange'>Warning : " + err + "."
                 );
-            }
+            }              
         };
 
         function _initComponentsVisibility(components) {
@@ -212,8 +234,8 @@ define([
                 layer.isVisible() &&
                 layer.getProperties() &&
                 !layer.isBackground() &&
-                layer.getProperties().hasOwnProperty("initialRa") &&
-                layer.getProperties().hasOwnProperty("initialDec")
+                layer.getProperties().hasOwnProperty(TARGET_POS.RA) &&
+                layer.getProperties().hasOwnProperty(TARGET_POS.DEC)
             ) {
                 var fov = layer.getProperties().initialFov
                     ? layer.getProperties().initialFov
@@ -233,7 +255,7 @@ define([
                             ],
                             {
                                 fov: fov,
-                                duration: 3000
+                                duration: DEFAULT_ZOOM_DURATION
                             }
                         );
                         break;
@@ -305,7 +327,7 @@ define([
                     mizarConfiguration.positionTracker &&
                         mizarConfiguration.positionTracker.position
                         ? mizarConfiguration.positionTracker.position
-                        : DEFAULT_ELEVATION_TRACKER_ELT_POS
+                        : DEFAULT_POSITION_TRACKER_ELT_POS
             });
         }
 
@@ -361,7 +383,10 @@ define([
         /**
          * Adds to the globe either as background or as additional layer
          * @param {Layer} layer - layer to add.
-         * @private
+         * @fires Context#backgroundLayer:changed
+         * @fires Context#backgroundLayer:added
+         * @fires Context#layer:added          
+         * @private         
          */
         function _addToGlobe(layer) {
             if (!this._getGlobe().hasDefinedBackground() && layer.isBackground()) {
@@ -896,7 +921,7 @@ define([
                         this.mizarConfiguration.attributionHandler &&
                             this.mizarConfiguration.attributionHandler.element
                             ? this.mizarConfiguration.attributionHandler.element
-                            : "globeAttributions"
+                            : DEFAULT_ATTRIBUTION_ELT
                 });
 
                 if (this.positionTracker != null) {
@@ -912,6 +937,8 @@ define([
                 if (this.compass != null) {
                     this.compass.attachTo(this);
                 }
+
+                
             } else {
                 console.warn("Globe is null in initGlobeEvents");
             }
@@ -1073,8 +1100,6 @@ define([
          * @memberof AbstractContext#
          */
         AbstractContext.prototype.setBackgroundLayer = function (survey) {
-            //var globe = this.globe;
-
             // Find the layer by name among all the layers
             var gwLayer = this.getLayerByName(survey);
             if (gwLayer) {
@@ -1327,6 +1352,7 @@ define([
                     self.getNavigation().computeViewMatrix();
                 }
             });
+
             if (this.navigation) {
                 this.navigation.destroy();
                 this.navigation = null;
