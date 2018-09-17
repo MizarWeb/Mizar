@@ -167,6 +167,11 @@ define([
         this.up = [0.0, 1.0, 0.0];
         _setInitTarget.call(this, this.options.initTarget);
 
+        const rc = this.ctx.getRenderContext();
+        if (rc) {
+            rc.near = 0.001;
+        }
+
         this.computeViewMatrix();
     };
 
