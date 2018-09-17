@@ -27,6 +27,8 @@
     "license": "license-checker --production --relativeLicensePath | awk 'NR > 5' > licenses-3rd/npm/LICENSES",
     "build:prod": "r.js -o build/buildMizar.js api_version=$npm_package_version && uglifyjs Mizar.min > Mizar.min.js && rm Mizar.min",
     "build:dev": "r.js -o build/buildMizar.js api_version=$npm_package_version && mv Mizar.min Mizar.min.js",
+    "build:prod_win": "r.js.cmd -o build/buildMizar.js api_version=$npm_package_version && uglifyjs Mizar.min > Mizar.min.js && rm Mizar.min",
+    "build:dev_win": "r.js.cmd -o build/buildMizar.js api_version=$npm_package_version && mv Mizar.min Mizar.min.js",
     "eslint": "eslint --fix src/",
     "test": "echo \"Error: no test specified\" && exit 1",
     "push": "git push --follow-tags",
