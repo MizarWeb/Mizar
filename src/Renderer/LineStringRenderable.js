@@ -321,7 +321,12 @@ define([
         if (this.globe.isSky()) {
             return false;
         }
-        var result =
+
+        if (!style.onTerrain) {
+            return false;
+        }
+
+        result =
             (type === Constants.GEOMETRY.LineString ||
                 type === Constants.GEOMETRY.MultiLineString ||
                 (!style.fill &&

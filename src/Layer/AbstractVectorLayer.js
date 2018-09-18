@@ -206,6 +206,27 @@ define([
     };
 
     /**
+     * Check whether a feature can be considered on terrain
+     */
+    AbstractVectorLayer.prototype._isOnTerrain = function(feature) {
+        var onTerrain  = true;
+
+        const coords = feature.geometry.coordinates;
+        if (coords && coords[0] && coords[0][0]) {
+            if (coords[0][0].length === 3) {
+                const props = feature.properties || {};
+                const style = props.style || {};
+
+                if (!style.rendererHint || style.rendererHint !== "Tiled") {
+                    onTerrain = false;
+                }
+            }
+        }
+
+        return onTerrain;
+    }
+
+    /**
      * Add a feature to renderers.
      * @function _addFeatureToRenderers
      * @memberof AbstractVectorLayer#
@@ -224,6 +245,7 @@ define([
             style = this.style;
         }
         style.zIndex = this.zIndex;
+        style.onTerrain = this._isOnTerrain(feature);
 
         // Manage geometry collection
         if (geometry.type === "GeometryCollection") {
