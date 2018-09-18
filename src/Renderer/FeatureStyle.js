@@ -223,6 +223,7 @@ define(["../Utils/Constants"], function(Constants) {
         this.opacity = 1.0;
         this.zIndex = Constants.DISPLAY.DEFAULT_RASTER;
         this.extrusionScale = 1.0;
+        this.onTerrain = true;
 
         if (style) {
             for (var s in style) {
@@ -459,6 +460,14 @@ define(["../Utils/Constants"], function(Constants) {
      */
     FeatureStyle.prototype.setExtrusionScale = function(value) {
         this.extrusionScale = value;
+    };
+
+    FeatureStyle.prototype.isOnTerrain = function(value) {
+        return this.onTerrain;
+    };
+
+    FeatureStyle.prototype.setOnTerrain = function(value) {
+        this.onTerrain = value;
     };
 
     /**************************************************************************************************************/
