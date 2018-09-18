@@ -242,7 +242,7 @@ define([
         if (props && props.style) {
             style = props.style;
         } else {
-            style = this.style;
+            style = Object.assign({}, this.style);
         }
         style.zIndex = this.zIndex;
         style.onTerrain = this._isOnTerrain(feature);
