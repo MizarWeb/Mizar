@@ -180,13 +180,9 @@ define([
          * Initialize ImageManagerCore
          * @param m
          * @param configuration
-         *      <ul>
-         *          <li>sitoolsBaseUrl : the base sitools url used as proxy here
-         *      </ul>
          */
         init: function(m, configuration) {
             mizarAPI = m;
-            sitoolsBaseUrl = configuration.sitoolsBaseUrl;
             // Enable float texture extension to have higher luminance range
             var ext = mizarAPI
                 .getRenderContext()

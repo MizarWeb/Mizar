@@ -56,7 +56,11 @@ define([
      */
     CraterProvider.prototype.loadFiles = function(layer, configuration) {
         Utils.requestUrl(configuration.url, 'text', 'text/plain', null, function(response) {
-            featureCollection = response;
+            if(typeof response === 'string') {
+                featureCollection = JSON.parse(response);
+            } else {
+                featureCollection = response;
+            }            
             self.handleFeatures(layer);        
         }, function(err) {
             ErrorDialog.open(Constants.LEVEL.ERROR, 'Failed ot request '+configuration.url, err);
