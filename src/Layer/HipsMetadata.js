@@ -661,11 +661,7 @@ define(["jquery", "../Utils/Constants", "../Gui/dialog/ErrorDialog"], function(
             //Fix for version=1.2
             if (key === "creator_did" && hipsMetadata.hips_version === "1.2") {
                 hipsMetadata.creator_did = hipsMetadata.publisher_did;
-                ErrorDialog.open(
-                    "<font style='color:orange'>Warning :</font> Deprecated Hips version <b>1.2</b> for <font style='color:orange'><b>" +
-                        hipsMetadata.obs_title +
-                        "</b></font>, please update it - <font style='color:orange'>use creator_did=publisher_did</font>"
-                );
+                ErrorDialog.open(Constants.LEVEL.WARNING, "Deprecated Hips version <b>1.2</b> for "+hipsMetadata.obs_title, "please update it - <i>use creator_did=publisher_did</i>");                   
             }
             //Fix for version=1.3
             else if (
@@ -673,21 +669,13 @@ define(["jquery", "../Utils/Constants", "../Gui/dialog/ErrorDialog"], function(
                 hipsMetadata.hips_version === "1.3"
             ) {
                 hipsMetadata.creator_did = hipsMetadata.publisher_did;
-                ErrorDialog.open(
-                    "<font style='color:orange'>Warning :</font> Deprecated Hips version <b>1.3</b> for <font style='color:orange'><b>" +
-                        hipsMetadata.obs_title +
-                        "</b></font>, please update it - <font style='color:orange'>use creator_did=publisher_did</font>"
-                );
+                ErrorDialog.open(Constants.LEVEL.WARNING, "Deprecated Hips version <b>1.3</b> for "+hipsMetadata.obs_title, "please update it - <i>use creator_did=publisher_did</i>");                   
             } else if (
                 key === "obs_title" &&
                 hipsMetadata.hips_version === "1.3"
             ) {
                 hipsMetadata.obs_title = hipsMetadata.obs_collection;
-                ErrorDialog.open(
-                    "<font style='color:orange'>Warning :</font> Deprecated Hips version <b>1.3</b> for <font style='color:orange'><b>" +
-                        hipsMetadata.obs_title +
-                        "</b></font>, please update it - <font style='color:orange'>use obs_title=obs_collection</font>"
-                );
+                ErrorDialog.open(Constants.LEVEL.WARNING, "Deprecated Hips version <b>1.3</b> for "+hipsMetadata.obs_title, "please update it - <i>use obs_title=obs_collection</i>");                   
             }
             //Fox for version 1.4
             else if (
@@ -695,21 +683,13 @@ define(["jquery", "../Utils/Constants", "../Gui/dialog/ErrorDialog"], function(
                 hipsMetadata.hips_version === "1.4"
             ) {
                 hipsMetadata.obs_title = hipsMetadata.obs_collection;
-                ErrorDialog.open(
-                    "<font style='color:yellow'>Warning :</font> obs_title not found in v1.4 for <font style='color:yellow'><b>" +
-                        hipsMetadata.obs_title +
-                        "</b></font>, use obs_title, please fix it"
-                );
+                ErrorDialog.open(Constants.LEVEL.WARNING, "obs_title not found in v1.4 for "+hipsMetadata.obs_title, "use obs_title, please fix it");                   
             } else if (
                 key === "creator_did" &&
                 hipsMetadata.hips_version === "1.4"
             ) {
                 hipsMetadata.creator_did = hipsMetadata.publisher_did;
-                ErrorDialog.open(
-                    "<font style='color:yellow'>Warning :</font> creator_did not found in v1.4 for <font style='color:yellow'><b>" +
-                        hipsMetadata.obs_title +
-                        "</b></font>, use creator_did, please fix it"
-                );
+                ErrorDialog.open(Constants.LEVEL.WARNING, "creator_did not found in v1.4 for "+hipsMetadata.obs_title, "use creator_did, please fix it");                   
             }
             /// very old version
             else if (
@@ -717,21 +697,13 @@ define(["jquery", "../Utils/Constants", "../Gui/dialog/ErrorDialog"], function(
                 !hipsMetadata.hasOwnProperty("hips_version")
             ) {
                 hipsMetadata.hips_version = "very old one";
-                ErrorDialog.open(
-                    "<font style='color:orange'>Warning :</font> Deprecated Hips version <b>unknown</b> for <font style='color:orange'><b>" +
-                        hipsMetadata.obs_title +
-                        "</b></font>, please update it - <font style='color:orange'>use a version in your metadata</font>"
-                );
+                ErrorDialog.open(Constants.LEVEL.WARNING, "Deprecated Hips version <b>unknown</b> for "+hipsMetadata.obs_title, "please update it - <i>use a version in your metadata</i>");
             } else if (
                 key === "creator_did" &&
                 !hipsMetadata.hasOwnProperty("hips_version")
             ) {
                 hipsMetadata.creator_did = hipsMetadata.publisher_did;
-                ErrorDialog.open(
-                    "<font style='color:orange'>Warning : </font> Deprecated Hips version <b>unknown</b> for <font style='color:orange'><b>" +
-                        hipsMetadata.obs_title +
-                        "</b></font>, please update it - <font style='color:orange'>use creator_did = pulisher_did</font>"
-                );
+                ErrorDialog.open(Constants.LEVEL.WARNING, "Deprecated Hips version <b>unknown</b> for "+hipsMetadata.obs_title, "please update it - <i>use creator_did = pulisher_did</i>");
             }
             //Error
             else {
@@ -906,7 +878,10 @@ define(["jquery", "../Utils/Constants", "../Gui/dialog/ErrorDialog"], function(
         var properties = $.ajax({
             type: "GET",
             url: baseUrl + "/properties",
-            async: false
+            async: false,
+            beforeSend(xhr) {
+                xhr.setRequestHeader("Accept", "text/plain");
+            }, 
         }).responseText;
         if (typeof properties === "undefined") {
             throw new ReferenceError(

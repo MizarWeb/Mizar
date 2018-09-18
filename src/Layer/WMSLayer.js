@@ -291,7 +291,7 @@ define([
     //        url = Utils.addParameterTo(url, param, params[param]);
     //    }
     //
-    //    Utils.requestUrl(url, "text", null,
+    //    Utils.requestUrl(url, "text", 'text/plain', null,
     //        function(response, options) {
     //            var lines = response.trim().split('\n');
     //            var featuresInfo = {};

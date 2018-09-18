@@ -26,6 +26,7 @@ define([
     "../Crs/CoordinateSystemFactory",
     "../Renderer/RenderContext",
     "../Utils/Constants",
+    "../Gui/dialog/ErrorDialog",
     "../Renderer/glMatrix"
 ], function (
     Event,
@@ -36,7 +37,8 @@ define([
     GeoBound,
     CoordinateSystemFactory,
     RenderContext,
-    Constants
+    Constants,
+    ErrorDialog
 ) {
         /**
          * AbstractGlobe configuration
@@ -284,9 +286,14 @@ define([
             Utils.assert(layer != null, "layer must be an AbstractLayer object in addLayer for "+this.constructor.name, "AbstractGlobe.js");
             var globe = this;
             if (layer.isVectorLayer()) {
-                $.ajax({
-                    url: layer.getUrl(),
-                    success: function (data) {
+                if (layer.isForDataProvider() || layer.isDraw()) {
+                    layer.id = globe.nbCreatedLayers;
+                    layer._attach(globe);
+                    globe.refresh();
+                    globe.nbCreatedLayers++;                    
+                } else {    
+                    // normal case            
+                    Utils.requestUrl(layer.getUrl(),'json', 'application/json', function(data) {
                         layer.addFeatureCollection(data);
                         layer.id = globe.nbCreatedLayers;
                         layer._attach(globe);
@@ -295,8 +302,10 @@ define([
                         if (layer.callback) {
                             layer.callback(data);
                         }
-                    }
-                });
+                    }, null, function(err) {
+                        ErrorDialog.open(Constants.LEVEL.ERROR, "Failed to request "+layer.getUrl(), err);                   
+                    });
+                }          
             } else {
                 if(!layer.id) {
                     layer.id = this.nbCreatedLayers;

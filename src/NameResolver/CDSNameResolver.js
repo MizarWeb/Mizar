@@ -67,94 +67,88 @@ define([
         var url =
             "http://cdsweb.u-strasbg.fr/cgi-bin/nph-sesame/-oxp/A?" +
             objectName;
-        $.ajax({
-            type: "GET",
-            url: url,
-            dataType: "xml",
-            success: function(xmlResponse) {
-                var target = $(xmlResponse).find("Target");
-                var name = $(target)
-                    .find("name")
-                    .text();
-                var features = [];
 
-                $(target)
-                    .find("Resolver")
-                    .each(function(index) {
-                        var resolver = this;
-                        var ra = $(resolver).find("jradeg");
-                        var dec = $(resolver).find("jdedeg");
+        Utils.requestUrl(url, 'xml', 'application/xml', null, function(xmlResponse) {
+            var target = $(xmlResponse).find("Target");
+            var name = $(target)
+                .find("name")
+                .text();
+            var features = [];
 
-                        if (!_.isEmpty(ra.text()) && !_.isEmpty(dec.text())) {
-                            ra = parseFloat(ra.text());
-                            dec = parseFloat(dec.text());
-                            var feature = {};
-                            feature.ra = ra;
-                            feature.dec = dec;
-                            feature.credit = $(resolver).attr("name");
-                            features.push(feature);
-                        }
-                    });
+            $(target)
+                .find("Resolver")
+                .each(function(index) {
+                    var resolver = this;
+                    var ra = $(resolver).find("jradeg");
+                    var dec = $(resolver).find("jdedeg");
 
-                var response = {
-                    totalResults: features.length,
-                    type: "FeatureCollection",
-                    features: []
-                };
-
-                _.each(features, function(feature) {
-                    response.features.push({
-                        type: "Feature",
-                        geometry: {
-                            coordinates: [feature.ra, feature.dec],
-                            type: Constants.GEOMETRY.Point,
-                            crs: {
-                                type: "name",
-                                properties: {
-                                    name: Constants.CRS.Equatorial
-                                }
-                            }
-                        },
-                        properties: {
-                            identifier: "CDS0",
-                            name: name,
-                            credits:
-                                'Powered by <a href="http://cdsweb.u-strasbg.fr/cgi-bin/Sesame">Sesame API</a> (' +
-                                feature.credit +
-                                ")"
-                        }
-                    });
+                    if (!_.isEmpty(ra.text()) && !_.isEmpty(dec.text())) {
+                        ra = parseFloat(ra.text());
+                        dec = parseFloat(dec.text());
+                        var feature = {};
+                        feature.ra = ra;
+                        feature.dec = dec;
+                        feature.credit = $(resolver).attr("name");
+                        features.push(feature);
+                    }
                 });
 
-                // Check if response contains features
-                if (
-                    response.type === "FeatureCollection" &&
-                    response.features.length > 0
-                ) {
-                    var firstFeature = response.features[0];
-                    var zoomToCallback = function() {
-                        searchLayer(objectName, onSuccess, onError, response);
-                    };
-                    zoomTo(
-                        firstFeature.geometry.coordinates[0],
-                        firstFeature.geometry.coordinates[1],
-                        null,
-                        Constants.CRS.Equatorial,
-                        zoomToCallback,
-                        response
-                    );
-                } else {
+            var response = {
+                totalResults: features.length,
+                type: "FeatureCollection",
+                features: []
+            };
+
+            _.each(features, function(feature) {
+                response.features.push({
+                    type: "Feature",
+                    geometry: {
+                        coordinates: [feature.ra, feature.dec],
+                        type: Constants.GEOMETRY.Point,
+                        crs: {
+                            type: "name",
+                            properties: {
+                                name: Constants.CRS.Equatorial
+                            }
+                        }
+                    },
+                    properties: {
+                        identifier: "CDS0",
+                        name: name,
+                        credits:
+                            'Powered by <a href="http://cdsweb.u-strasbg.fr/cgi-bin/Sesame">Sesame API</a> (' +
+                            feature.credit +
+                            ")"
+                    }
+                });
+            });
+
+            // Check if response contains features
+            if (
+                response.type === "FeatureCollection" &&
+                response.features.length > 0
+            ) {
+                var firstFeature = response.features[0];
+                var zoomToCallback = function() {
                     searchLayer(objectName, onSuccess, onError, response);
-                }
-            },
-            error: function(xhr) {
-                searchLayer(objectName, onSuccess, onError);
-                console.error(xhr.responseText);
-            },
-            complete: function(xhr, textStatus) {
-                if (onComplete) {
-                    onComplete(xhr);
-                }
+                };
+                zoomTo(
+                    firstFeature.geometry.coordinates[0],
+                    firstFeature.geometry.coordinates[1],
+                    null,
+                    Constants.CRS.Equatorial,
+                    zoomToCallback,
+                    response
+                );
+            } else {
+                searchLayer(objectName, onSuccess, onError, response);
+            }
+
+        }, function(err) {
+            searchLayer(objectName, onSuccess, onError);
+        }, function(xhr, textStatus){
+            if (onComplete) {
+                onComplete(xhr);
             }
         });
     };

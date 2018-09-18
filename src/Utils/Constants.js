@@ -30,6 +30,17 @@ define(function() {
 
     /**
      * @namespace
+     * LEVEL
+     * @property {string} WARNING - Warning level
+     * @property {string} ERROR - Error level     
+     */
+    Constants.LEVEL = {
+        WARNING : "warning",
+        ERROR : "error"
+    }
+
+    /**
+     * @namespace
      * ANIMATION
      * @property {string} Inertia - Inertia animation
      * @property {string} Interpolated - Interpolated animation
@@ -341,7 +352,7 @@ define(function() {
         LAYER_BACKGROUND_ADDED: "backgroundLayer:added",
         LAYER_BACKGROUND_CHANGED: "backgroundLayer:changed",
         LAYER_ADDED: "layer:added",
-        LAYER_REMOVED: "layer:removed",
+        LAYER_REMOVED: "layer:removed",        
         LAYER_VISIBILITY_CHANGED: "visibility:changed",
         LAYER_OPACITY_CHANGED: "opacity:changed",
         LAYER_START_LOAD: "startLoad",

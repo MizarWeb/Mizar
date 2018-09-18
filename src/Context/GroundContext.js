@@ -109,9 +109,7 @@ define([
                     true
                 );
             } catch (err) {
-                ErrorDialog.open(
-                    "<font style='color:orange'>Warning : " + err + "."
-                );
+                ErrorDialog.open(Constants.LEVEL.ERROR, "Cannot create the Time travel", err);
             }
         } catch (err) {
             this._showUpError(err);

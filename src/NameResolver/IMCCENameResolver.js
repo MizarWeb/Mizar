@@ -21,8 +21,9 @@ define([
     "underscore-min",
     "../Utils/Utils",
     "./AbstractNameResolver",
-    "../Utils/Constants"
-], function($, _, Utils, AbstractNameResolver, Constants) {
+    "../Utils/Constants",
+    "../Gui/dialog/ErrorDialog"
+], function($, _, Utils, AbstractNameResolver, Constants, ErrorDialog) {
     /**************************************************************************************************************/
 
     /**
@@ -50,6 +51,7 @@ define([
      * @memberof IMCCENameResolver#
      */
     IMCCENameResolver.prototype.handle = function(options) {
+        //TODO refactor AJAX request
         var objectName = options.objectName;
         var onError = options.onError;
         var onComplete = options.onComplete;
@@ -64,6 +66,9 @@ define([
             type: "GET",
             url: url,
             dataType: "json",
+            beforeSend(xhr) {
+                xhr.setRequestHeader("Accept", "application/json");
+            },             
             success: function(jsonResponse) {
                 var data = jsonResponse.data;
                 parseResponse(data, createsGeoJsonResponse);
@@ -106,32 +111,25 @@ define([
                             "https://api.ssodnet.imcce.fr/quaero/1/sso/" +
                             id +
                             "/resolver";
-                        $.ajax({
-                            type: "GET",
-                            url: url,
-                            dataType: "json",
-                            success: function(data) {
-                                var coordinates = data.geometry.coordinates;
-                                var ra = (coordinates[0] * 360) / 24;
-                                var dec = coordinates[1];
-                                if (_.isNumber(ra) && _.isNumber(dec)) {
-                                    ra = parseFloat(ra);
-                                    dec = parseFloat(dec);
-                                    var feature = {};
-                                    feature.ra = ra;
-                                    feature.dec = dec;
-                                    feature.credits =
-                                        'Powered by <a href="http://vo.imcce.fr/webservices/ssodnet/?quaero" target="_blank">SsODNet/Quaero API</a>.';
-                                    feature.id = id;
-                                    feature.type = type;
-                                    feature.name = name;
-                                    callback(feature);
-                                }
-                            },
-                            error: function(xhr) {
-                                //TODO : Network problem
-                                console.error(xhr.responseText);
+                        Utils.requestUrl(url, 'json', 'application/json', null, function(data){
+                            var coordinates = data.geometry.coordinates;
+                            var ra = (coordinates[0] * 360) / 24;
+                            var dec = coordinates[1];
+                            if (_.isNumber(ra) && _.isNumber(dec)) {
+                                ra = parseFloat(ra);
+                                dec = parseFloat(dec);
+                                var feature = {};
+                                feature.ra = ra;
+                                feature.dec = dec;
+                                feature.credits =
+                                    'Powered by <a href="http://vo.imcce.fr/webservices/ssodnet/?quaero" target="_blank">SsODNet/Quaero API</a>.';
+                                feature.id = id;
+                                feature.type = type;
+                                feature.name = name;
+                                callback(feature);
                             }
+                        }, function(err){
+                            ErrorDialog.open(Constants.LEVEL.ERROR, 'Failed ot request '+url, err);
                         });
                     } else {
                         callback();

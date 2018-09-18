@@ -181,9 +181,7 @@ define([
                     this.mizarConfiguration
                 );
             } catch (err) {
-                ErrorDialog.open(
-                    "<font style='color:orange'>Warning : " + err + "."
-                );
+                ErrorDialog.open(Constants.LEVEL.ERROR,"Cannot create position tracker", err);
             }
 
             try {
@@ -193,17 +191,13 @@ define([
                     ctxOptions
                 );
             } catch (err) {
-                ErrorDialog.open(
-                    "<font style='color:orange'>Warning : " + err + "."
-                );
+                ErrorDialog.open(Constants.LEVEL.ERROR,"Cannot create elevation tracker", err);
             }
 
             try {
                 this.compass = _createCompass.call(this, this.mizarConfiguration);
             } catch (err) {
-                ErrorDialog.open(
-                    "<font style='color:orange'>Warning : " + err + "."
-                );
+                ErrorDialog.open(Constants.LEVEL.ERROR,"Cannot create compass tracker", err);
             }              
         };
 
@@ -797,6 +791,8 @@ define([
          * @memberof AbstractContext#
          */
         AbstractContext.prototype.addDraw = function (layer) {
+            Utils.assert(layer.type === Constants.LAYER.Vector, "layer must be a vector layer in addDraw", "AbstractContext.js");
+            layer.setDraw(true);
             this._getGlobe().addLayer(layer);
         };
 
@@ -951,16 +947,7 @@ define([
                 $(self.canvas.parentElement)
                     .find("#loading")
                     .hide();
-                //JSON.stringify(layer)
-                ErrorDialog.open(
-                    "Cannot add the layer <font style='color:yellow'><b>" +
-                    layer.getName() +
-                    "</b></font><font color='grey'><i>(" +
-                    layer.getBaseUrl() +
-                    " - reason : " +
-                    layer.message +
-                    ")</i></font>."
-                );
+                ErrorDialog.open(Constants.LEVEL.ERROR, "Cannot add the layer "+layer.getName() + "from "+ layer.getBaseUrl(), layer.message);            
             });
         };
 

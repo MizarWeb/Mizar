@@ -281,7 +281,7 @@ Context.prototype.removeAllLayers = function() {};
  * Adds a temporary draw as a layer on the globe.<br/>
  * A temporary draw is used to create a subLayer or a simple draw. This added layer is not searchable and does not
  * subscribe to "visibility:changed" by configuration
- * @param {Layer} layer
+ * @param {VectorLayer} layer
  * @fires Context#backgroundLayer:added
  * @fires Context#layer:added 
  */

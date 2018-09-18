@@ -40,8 +40,9 @@ define([
     "./AbstractProvider",
     "../Renderer/FeatureStyle",
     "../Utils/Utils",
-    "../Utils/Constants"
-], function($, AbstractProvider, FeatureStyle, Utils, Constants) {
+    "../Utils/Constants",
+    "../Gui/dialog/ErrorDialog"
+], function($, AbstractProvider, FeatureStyle, Utils, Constants, ErrorDialog) {
     var namesFile;
     var catalogueFile;
     var self;
@@ -50,7 +51,7 @@ define([
          * 	Failure function
          */
     function failure() {
-        console.error("Failed to load files");
+        ErrorDialog.open(Constants.LEVEL.ERROR, 'Failed ot load files in StarProvider');
     }
 
     /**
@@ -92,7 +93,7 @@ define([
                     namesFile = response;
                 },
                 error: function(xhr, ajaxOptions, thrownError) {
-                    console.error(xhr.responseText);
+                    ErrorDialog.open(Constants.LEVEL.ERROR, 'Failed ot request '+configuration.nameUrl, xhr.responseText);
                 }
             };
 
@@ -103,7 +104,7 @@ define([
                     catalogueFile = response;
                 },
                 error: function(xhr, ajaxOptions, thrownError) {
-                    console.error(xhr.responseText);
+                    ErrorDialog.open(Constants.LEVEL.ERROR, 'Failed ot request '+configuration.catalogueUrl, xhr.responseText);
                 }
             };
 

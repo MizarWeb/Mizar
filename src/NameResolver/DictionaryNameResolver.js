@@ -23,7 +23,8 @@ define([
     "./AbstractNameResolver",
     "../Layer/VectorLayer",
     "../Renderer/FeatureStyle",
-    "../Utils/Constants"
+    "../Utils/Constants",
+    "../Gui/dialog/ErrorDialog"
 ], function(
     $,
     _,
@@ -31,7 +32,8 @@ define([
     AbstractNameResolver,
     VectorLayer,
     FeatureStyle,
-    Constants
+    Constants,
+    ErrorDialog
 ) {
     var dictionary;
 
@@ -48,27 +50,13 @@ define([
             // Dictionary as json
             var marsResolverUrl = context.getContextConfiguration().nameResolver
                 .baseUrl; //.replace('mizar_gui', 'mizar_lite');
-            $.ajax({
-                type: "GET",
-                dataType: "json",
-                url: marsResolverUrl,
-                success: function(response) {
-                    dictionary = response;
-                    //nameResolverLayer = new VectorLayer();
-                    //for (var i = 0; i < response.features.length; i++) {
-                    //    var feature = response.features[i];
-                    //    feature.properties.style = new FeatureStyle({
-                    //        label: feature.properties.Name,
-                    //        fillColor: [1, 0.7, 0, 1]
-                    //    });
-                    //}
-                    //nameResolverLayer.addFeatureCollection(response);
-                    //context.globe.addLayer(nameResolverLayer);
-                },
-                error: function(thrownError) {
-                    console.error(thrownError);
-                }
-            });
+
+            Utils.requestUrl(marsResolverUrl,'json','application/json',null, function(response){
+                dictionary = response;
+            }, function(err) {
+                ErrorDialog.open(Constants.LEVEL.ERROR, 'Failed ot request '+marsResolverUrl, err);
+            })
+
         } else {
             dictionary = null;
         }

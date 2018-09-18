@@ -274,15 +274,20 @@ define([
      * @function requestUrl
      * @param {string} url - URL to request
      * @param {string} datatype - datatype of the response
-     * @param {Object} options - options
+     * @param {string} acceptDatatype - value for the Accept keyword in the header
+     * @param {Object} options - options for callback (set to null if no options)
      * @param {Utils~requestCallback} callback - The callback that handles the response.
-     * @param {Utils~requestFallback} fallBack - The fallback that handles the error.
+     * @param {Utils~requestFallback} [fallBack] - The fallback that handles the error.
+     * @param {Utils~requestComplete} [complete] - The completeback that is executed afet the callback/fallback
      */
-    Utils.requestUrl = function(url, datatype, options, callback, fallBack) {
+    Utils.requestUrl = function(url, datatype, acceptDatatype, options, callback, fallBack, complete) {        
         $.ajax({
             type: "GET",
             url: url,
             dataType: datatype,
+            beforeSend(xhr) {
+                xhr.setRequestHeader("Accept", acceptDatatype);
+            }, 
             success: function(response) {
                 if (callback) {
                     callback(response, options);
@@ -297,11 +302,19 @@ define([
                         url;
                     code = 0;
                 } else {
-                    message = thrownError.message;
-                    code = thrownError.code;
+                    message = thrownError.message ? thrownError.message : thrownError;
+                    code = thrownError.code ? thrownError.code : -1;
+                    if (typeof(ajaxOptions)==='string') {
+                        message = ajaxOptions+": "+message;
+                    }
                 }
                 if (fallBack) {
                     fallBack(new NetworkError(message, "Utils.js", code));
+                }
+            },
+            complete: function(xhr, textSatus) {
+                if (complete) {
+                    complete(xhr, textSatus);
                 }
             }
         });
@@ -317,11 +330,18 @@ define([
     /**
      * This fallback process the error of the server.
      * @callback Utils~requestFallback
-     * @param {Object} request - the request to the server
-     * @param {int} status - status code
-     * @param {Object} error - error
-     * @param {Object} options - options
+     * @param {string} error
      */
+
+    /**
+     * A function to be called when the request finishes (after success and error callbacks are executed).
+     * The function gets passed two arguments: The jqXHR (in jQuery 1.4.x, XMLHTTPRequest) object and a 
+     * string categorizing the status of the request ("success", "notmodified", "nocontent", "error", 
+     * "timeout", "abort", or "parsererror").
+     * @callback Utils~requestComplete
+     * @param {Object} xhr - xhr object
+     * @param {string} status - status text
+     */     
 
     /**
      * Proxifies an URL according to a proxy configuration.

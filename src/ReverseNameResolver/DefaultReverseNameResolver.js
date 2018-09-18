@@ -64,18 +64,13 @@ define([
             ";" +
             maxOrder;
 
-        $.ajax({
-            type: "GET",
-            url: requestUrl,
-            success: function(response) {
-                if (options && options.success) {
-                    options.success(response);
-                }
-            },
-            error: function(xhr, ajaxOptions, thrownError) {
-                if (options && options.error) {
-                    options.error(xhr);
-                }
+        Utils.requestUrl(requestUrl, 'text', 'text/plain', null, function(response){
+            if (options && options.success) {
+                options.success(response);
+            }
+        }, function(err) {
+            if (options && options.error) {
+                options.error(xhr);
             }
         });
     };

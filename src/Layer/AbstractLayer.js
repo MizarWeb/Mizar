@@ -586,6 +586,8 @@ define([
 
     /**
      * Load the getCapabilities into json variable
+     * use only for openSearch 
+     * TODO : refactor
      * @function loadGetCapabilities
      * @memberof AbstractLayer
      * @param {function} callback Callback function
@@ -612,6 +614,9 @@ define([
             url: url,
             dataType: "text",
             async: false,
+            beforeSend(xhr) {
+                xhr.setRequestHeader("Accept", "application/xml");
+            },            
             success: function(response) {
                 var myOptions = {
                     mergeCDATA: true,

@@ -61,10 +61,7 @@ define([
             "/" +
             objectName +
             "/EQUATORIAL";
-        $.ajax({
-            type: "GET",
-            url: url,
-            success: function(response) {
+        Utils.requestUrl(url, 'text', 'text/plain', null, function(response){
                 // Check if response contains features
                 if (response.type === "FeatureCollection") {
                     var firstFeature = response.features[0];
@@ -81,15 +78,11 @@ define([
                 } else {
                     onError();
                 }
-            },
-            error: function(xhr) {
-                searchLayer(objectName, onSuccess, onError);
-                console.error(xhr.responseText);
-            },
-            complete: function(xhr, textStatus) {
-                if (onComplete) {
-                    onComplete(xhr);
-                }
+        }, function(err) {
+            searchLayer(objectName, onSuccess, onError);
+        }, function(xhr, textStatus){
+            if (onComplete) {
+                onComplete(xhr);
             }
         });
     };

@@ -21,8 +21,9 @@ define([
     "./AbstractProvider",
     "../Utils/Utils",
     "../Renderer/FeatureStyle",
-    "../Utils/Constants"
-], function($, AbstractProvider, Utils, FeatureStyle, Constants) {
+    "../Utils/Constants",
+    "../Gui/dialog/ErrorDialog"
+], function($, AbstractProvider, Utils, FeatureStyle, Constants, ErrorDialog) {
     const DEFAULT_STROKE_COLOR = [1.0, 1.0, 1.0, 1.0];
 
     var self;
@@ -54,17 +55,12 @@ define([
      * @memberof CraterProvider#
      */
     CraterProvider.prototype.loadFiles = function(layer, configuration) {
-        $.ajax({
-            type: "GET",
-            url: configuration.url,
-            success: function(response) {
-                featureCollection = response;
-                self.handleFeatures(layer);
-            },
-            error: function(xhr, ajaxOptions, thrownError) {
-                console.error(xhr.responseText);
-            }
-        });
+        Utils.requestUrl(configuration.url, 'text', 'text/plain', null, function(response) {
+            featureCollection = response;
+            self.handleFeatures(layer);        
+        }, function(err) {
+            ErrorDialog.open(Constants.LEVEL.ERROR, 'Failed ot request '+configuration.url, err);
+        })
     };
 
     /**

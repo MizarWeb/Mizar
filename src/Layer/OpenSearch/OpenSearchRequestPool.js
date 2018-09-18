@@ -185,6 +185,7 @@ define(['../../Utils/Constants'], function(Constants) {
             }
         };
         xhr.open("GET", url);
+        xhr.setRequestHeader("Accept", "application/json");
 
         // Add request to pooling (last position)
         this.poolingRequests.push(xhr);

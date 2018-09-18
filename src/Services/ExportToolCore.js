@@ -265,9 +265,7 @@ define([
                         numberOfImages--;
                         if (numberOfImages == 0) {
                             if (imageNotFound) {
-                                ErrorDialog.open(
-                                    "Some images not found. Change zoom level and retry downloading"
-                                );
+                                ErrorDialog.open(Constants.LEVEL.WARNING, 'Some images not found', 'Change zoom level and retry download');
                             }
 
                             self.downloadArchive(zip);

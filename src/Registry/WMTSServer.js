@@ -42,7 +42,7 @@ define([
                 use: this.proxyUse,
                 url: this.proxyUrl
             }),
-            "text",
+            "text", "application/xml",
             {},
             function(response) {
                 var myOptions = {

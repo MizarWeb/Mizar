@@ -43,7 +43,8 @@ define([
     "../Renderer/FeatureStyle",
     "../Utils/Utils",
     "../Tiling/HEALPixBase",
-    "./FitsLoader"
+    "./FitsLoader",
+    "../Gui/dialog/ErrorDialog"
 ], function(
     $,
     _,
@@ -52,7 +53,8 @@ define([
     FeatureStyle,
     Utils,
     HEALPixBase,
-    FitsLoader
+    FitsLoader,
+    ErrorDialog
 ) {
     /**
      * MocLayer configuration
@@ -180,20 +182,14 @@ define([
                 delete fits;
             });
         } catch (e) {
-            $.ajax({
-                type: "GET",
-                url: self.baseUrl,
-                dataType: "json",
-                success: function(response) {
-                    self.handleDistribution(response);
-                },
-                error: function(xhr, ajaxOptions, thrownError) {
-                    $("#addLayer_" + self.id)
-                        .find("label")
-                        .css("color", "red");
-                    console.error(xhr.responseText);
-                }
-            });
+            Utils.requestUrl(self.baseUrl, 'json', 'application/json', null, function(response) {
+                self.handleDistribution(response);
+            }, function(err){
+                $("#addLayer_" + self.id)
+                .find("label")
+                .css("color", "red");
+                ErrorDialog.open(Constants.LEVEL.ERROR, 'Failed ot request '+self.baseUrl, err);
+            }) 
         }
 
         // As post renderer, moc layer will regenerate data on tiles in case of base imagery change

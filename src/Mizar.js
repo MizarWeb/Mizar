@@ -740,21 +740,11 @@ define([
         }
         var url = hipsServiceUrlArray.shift();
 
-        $.ajax({
-            type: "GET",
-            url: _proxify(url) + "/properties",
-            dataType: "text"
-            //context: layerManager,
-            //timeout: 10000
+        Utils.requestUrl( _proxify(url) + "/properties", 'text', 'text/plain', null, function(data){
+            callback(url);
+        }, function(err) {
+            _checkHipsServiceIsAvailable(hipsServiceUrlArray, callback);
         })
-            .done(function(data, status, xhr) {
-                if (xhr.status === 200) {
-                    return callback(url);
-                }
-            })
-            .error(function() {
-                _checkHipsServiceIsAvailable(hipsServiceUrlArray, callback);
-            });
     }
 
     /**
@@ -773,62 +763,48 @@ define([
             options.hasOwnProperty("registry") &&
             options.registry.hasOwnProperty("hips")
         ) {
-            $.ajax({
-                type: "GET",
-                url: _proxify(options.registry.hips),
-                context: Mizar,
-                dataType: "json"
-            })
-                .fail(function(XMLHttpRequest, textStatus, errorThrown) {
-                    ErrorDialog.open(
-                        "<font style='color:orange'>Warning : Cannot connect to <b>" +
-                            options.registry.hips +
-                            "</b></font>"
-                    );
-                })
-                .done(function(hipsLayersJSON) {
-                    _.each(
-                        hipsLayersJSON,
-                        function(hipsLayer) {
-                            var hipsServiceUrlArray = _getHipsServiceUrlArray(
-                                hipsLayer
-                            );
-                            var hipsUrl = _checkHipsServiceIsAvailable(
-                                hipsServiceUrlArray,
-                                function(hipsServiceUrl) {
-                                    if (typeof hipsServiceUrl === "undefined") {
-                                        var text = "";
-                                        if (
-                                            typeof hipsLayer.obs_title ===
-                                            "undefined"
-                                        ) {
-                                            text =
-                                                "with ID <b>" +
-                                                hipsLayer.ID +
-                                                "</b>";
-                                        } else {
-                                            text =
-                                                "with title <b>" +
-                                                hipsLayer.obs_title +
-                                                "</b>";
-                                        }
-                                        ErrorDialog.open(
-                                            "<font style='color:orange'>Warning : Cannot add layer <b>" +
-                                                text +
-                                                "</b> no mirror available</font>"
-                                        );
-                                        return;
+
+            Utils.requestUrl(_proxify(options.registry.hips), 'json','application/json',null, function(hipsLayersJSON) {
+                _.each(
+                    hipsLayersJSON,
+                    function(hipsLayer) {
+                        var hipsServiceUrlArray = _getHipsServiceUrlArray(
+                            hipsLayer
+                        );
+                        var hipsUrl = _checkHipsServiceIsAvailable(
+                            hipsServiceUrlArray,
+                            function(hipsServiceUrl) {
+                                if (typeof hipsServiceUrl === "undefined") {
+                                    var text = "";
+                                    if (
+                                        typeof hipsLayer.obs_title ===
+                                        "undefined"
+                                    ) {
+                                        text =
+                                            "with ID <b>" +
+                                            hipsLayer.ID +
+                                            "</b>";
+                                    } else {
+                                        text =
+                                            "with title <b>" +
+                                            hipsLayer.obs_title +
+                                            "</b>";
                                     }
-                                    $.proxy(_createHips, Mizar)(
-                                        hipsLayer,
-                                        hipsServiceUrl
-                                    );
+                                    ErrorDialog.open(Constants.LEVEL.ERROR, ' Cannot add layer '+text, "no mirror available");
+                                    return;
                                 }
-                            );
-                        },
-                        Mizar
-                    );
-                });
+                                $.proxy(_createHips, Mizar)(
+                                    hipsLayer,
+                                    hipsServiceUrl
+                                );
+                            }
+                        );
+                    },
+                    Mizar
+                );
+            }, function(err) {
+                ErrorDialog.open(Constants.LEVEL.WARNING, 'Cannot connect to '+options.registry.hips, err.message);
+            });
         }
     }
 
@@ -857,16 +833,7 @@ define([
             var name = hipsLayer.obs_title
                 ? hipsLayer.obs_title
                 : hipsLayer.obs_collection;
-            ErrorDialog.open(
-                "Hips layer <font style='color:yellow'><b>" +
-                    name +
-                    "</b></font>  not valid <font color='grey'><i>(" +
-                    hipsLayer.hips_service_url +
-                    " - reason : " +
-                    e.message +
-                    ")</i></font>",
-                true
-            );
+            ErrorDialog.open(Constants.LEVEL.ERROR, 'Hips layer '+name+' not valid for '+hipsLayer.hips_service_url, e.message);
         }
     }
 
@@ -970,12 +937,7 @@ define([
                 }
             }
         } catch (e) {
-            ErrorDialog.open(
-                "Cannot get the context : <font style='color:orange'><b>" +
-                    e.message +
-                    "</b></font>",
-                true
-            );
+            ErrorDialog.open(Constants.LEVEL.ERROR, 'Cannot get the context', e.message);
         }
         return this.activatedContext;
     };
@@ -1006,12 +968,7 @@ define([
                 break;
             default:
                 result = false;
-                ErrorDialog.open(
-                    "Cannot set the context : <font style='color:orange'><b>" +
-                        contextMode +
-                        " is not supported</b></font>",
-                    true
-                );
+                ErrorDialog.open(Constants.LEVEL.ERROR, 'Cannot set the context to '+contextMode);
         }
     };
 
@@ -1181,12 +1138,7 @@ define([
         } catch (e) {
             console.error("Error", e);
             result = false;
-            ErrorDialog.open(
-                "Cannot create the context : <font style='color:orange'><b>" +
-                    e.message +
-                    "</b></font>",
-                true
-            );
+            ErrorDialog.open(Constants.LEVEL.ERROR, 'Cannot create the context', e.message);
         }
         return result;
     };
@@ -1220,12 +1172,7 @@ define([
             result = true;
         } catch (e) {
             result = false;
-            ErrorDialog.open(
-                "Cannot toggle the dimension : <font style='color:orange'><b>" +
-                    e.message +
-                    "</b></font>",
-                true
-            );
+            ErrorDialog.open(Constants.LEVEL.ERROR, 'Cannot toggle the dimension', e.message);
         }
         return result;
     };
@@ -1252,12 +1199,7 @@ define([
             result = true;
         } catch (e) {
             result = false;
-            ErrorDialog.open(
-                "Cannot toggle the context : <font style='color:orange'><b>" +
-                    e.message +
-                    "</b></font>",
-                true
-            );
+            ErrorDialog.open(Constants.LEVEL.ERROR, 'Cannot toggle the context', e.message);
         }
         return result;
     };
@@ -1332,12 +1274,7 @@ define([
             result = _getContext.call(this, mode).getLayers();
         } catch (e) {
             result = null;
-            ErrorDialog.open(
-                "Cannot get the layers : <font style='color:orange'><b>" +
-                    e.message +
-                    "</b></font>",
-                true
-            );
+            ErrorDialog.open(Constants.LEVEL.ERROR, 'Cannot get the layers', e.message);
         }
         return result;
     };
@@ -1357,12 +1294,7 @@ define([
             result = true;
         } else {
             result = false;
-            ErrorDialog.open(
-                "Cannot set the layer on the top : <font style='color:orange'><b>" +
-                    layerID +
-                    " does not exist</b></font>",
-                true
-            );
+            ErrorDialog.open(Constants.LEVEL.ERROR, 'Cannot set the layer on the top', layerID+" does not exist");
         }
         return result;
     };
@@ -1396,12 +1328,7 @@ define([
             result = _getContext.call(this, mode).getLayerByID(layerID);
         } catch (e) {
             result = null;
-            ErrorDialog.open(
-                "Cannot get the layer by ID : <font style='color:orange'><b>" +
-                    e.message +
-                    "</b></font>",
-                true
-            );
+            ErrorDialog.open(Constants.LEVEL.ERROR, 'Cannot get the layer by ID', e.message);
         }
         return result;
     };
@@ -1424,12 +1351,7 @@ define([
             result = _getContext.call(this, mode).getLayerByName(layerName);
         } catch (e) {
             result = null;
-            ErrorDialog.open(
-                "Cannot get the layer by name : <font style='color:orange'><b>" +
-                    e.message +
-                    "</b></font>",
-                true
-            );
+            ErrorDialog.open(Constants.LEVEL.ERROR, 'Cannot get the layer by name', e.message);
         }
         return result;
     };
@@ -1512,12 +1434,7 @@ define([
             result = typeof removedLayer !== "undefined";
         } catch (e) {
             result = false;
-            ErrorDialog.open(
-                "Cannot remove the layer : <font style='color:orange'><b>" +
-                    e.message +
-                    "</b></font>",
-                true
-            );
+            ErrorDialog.open(Constants.LEVEL.ERROR, 'Cannot remove the layer', e.message);
         }
         return result;
     };
@@ -1544,12 +1461,7 @@ define([
             result = typeof gwLayer !== "undefined";
         } catch (e) {
             result = false;
-            ErrorDialog.open(
-                "Cannot set the background : <font style='color:orange'><b>" +
-                    e.message +
-                    "</b></font>",
-                true
-            );
+            ErrorDialog.open(Constants.LEVEL.ERROR, 'Cannot set the background', e.message);
         }
         return result;
     };
@@ -1575,12 +1487,7 @@ define([
             result = typeof gwLayer !== "undefined";
         } catch (e) {
             result = false;
-            ErrorDialog.open(
-                "Cannot set the backgorund by ID : <font style='color:orange'><b>" +
-                    e.message +
-                    "</b></font>",
-                true
-            );
+            ErrorDialog.open(Constants.LEVEL.ERROR, 'Cannot set the backgorund by ID', e.message);
         }
         return result;
     };
@@ -1605,12 +1512,7 @@ define([
             result = typeof gwLayer !== "undefined";
         } catch (e) {
             result = false;
-            ErrorDialog.open(
-                "Cannot set the base elevation : <font style='color:orange'><b>" +
-                    e.message +
-                    "</b></font>",
-                true
-            );
+            ErrorDialog.open(Constants.LEVEL.ERROR, 'Cannot set the base elevation', e.message);
         }
         return result;
     };
@@ -1650,12 +1552,7 @@ define([
             result = typeof gwLayer !== "undefined";
         } catch (e) {
             result = false;
-            ErrorDialog.open(
-                "Cannot set the base elevation by ID : <font style='color:orange'><b>" +
-                    e.message +
-                    "</b></font>",
-                true
-            );
+            ErrorDialog.open(Constants.LEVEL.ERROR, 'Cannot set the base elevation by ID', e.message);
         }
         return result;
     };
@@ -1749,12 +1646,7 @@ define([
             result = true;
         } catch (e) {
             result = false;
-            ErrorDialog.open(
-                "Cannot register the data provider : <font style='color:orange'><b>" +
-                    e.message +
-                    "</b></font>",
-                true
-            );
+            ErrorDialog.open(Constants.LEVEL.ERROR, 'Cannot register the data provider', e.message);
         }
         return result;
     };
@@ -1788,12 +1680,7 @@ define([
             result = ServiceFactory.create(serviceName, options);
         } catch (e) {
             result = null;
-            ErrorDialog.open(
-                "Cannot get the service by name: <font style='color:orange'><b>" +
-                    e.message +
-                    "</b></font>",
-                true
-            );
+            ErrorDialog.open(Constants.LEVEL.ERROR, 'Cannot get the service by name', e.message);
         }
         return result;
     };

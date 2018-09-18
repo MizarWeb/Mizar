@@ -21,7 +21,7 @@
 /**
  * Error dialog module
  */
-define(["jquery", "jquery.ui"], function($) {
+define(["../../Utils/Constants", "jquery", "jquery.ui"], function(Constants, $) {
     // The main div for error
     var errorDiv =
         '<div id="errorDiv" style="text-align: left" title="Error"></div>';
@@ -44,8 +44,6 @@ define(["jquery", "jquery.ui"], function($) {
             }
         });
     var $active = false;
-    var $displayWarning = false;
-    var $displayDebug = false;
 
     _recordError = function(html) {
         $text += html + "<br/>";
@@ -68,22 +66,33 @@ define(["jquery", "jquery.ui"], function($) {
          *    Open dialog
          *
          *    @param html HTML text
+         *    
          */
-        open: function(html, debug) {
-            if (debug == null) {
-                debug = false;
+        open: function(LEVEL, title, description) {
+            var message = "";
+            if (LEVEL === Constants.LEVEL.WARNING) {
+                message = message+"<font style='color:orange'>Warning : " + title+"</font>";
+            } else if (LEVEL === Constants.LEVEL.ERROR) {
+                message = message+"<font style='color:red'>Error : " + title+"</font>";
+            } else {
+                message = "";
             }
-            if (debug && $displayDebug) {
-                // debug mode for developers
-                _recordError(html);
-            } else if (!debug && $displayWarning === true) {
-                //user mode : user needs to known when a problem happens with data
-                _recordError(html);
-            }
+
+            if(description != null) {
+                message = message +" - <font style='color:white'>"
+                if (typeof(description) === 'object') {
+                    message = message + JSON.stringify(description);        
+                } else {
+                    message = message + description;
+                }
+                
+                message = message +"</font>";
+            }     
+    
+            _recordError(message);
         },
         view: function() {
             $errorDiv.html($text).dialog("open");
-
             $errorDiv.scrollTop(5000);
             $active = true;
         },
@@ -94,12 +103,7 @@ define(["jquery", "jquery.ui"], function($) {
         isActive: function() {
             return $active;
         },
-        setDisplayWarning: function(value) {
-            $displayWarning = value;
-        },
-        setDisplayDebug: function(value) {
-            $displayDebug = value;
-        },
+
         setIcon: function(buttonName) {
             $buttonName = $(buttonName);
         },

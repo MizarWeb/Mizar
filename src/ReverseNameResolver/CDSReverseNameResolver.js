@@ -130,80 +130,75 @@ define([
         );
         requestUrl = requestUrl.replace("{radius}", radius);
 
-        $.ajax({
-            type: "GET",
-            url: requestUrl,
-            success: function(response) {
-                lastCallTime = Date.now();
+        Utils.requestUrl(requestUrl, 'text', 'text/plain', null, function(response){
+            lastCallTime = Date.now();
 
-                // we parse the message that is returned by the server
-                var posParenthesis = response.indexOf("(");
-                var posComma = response.indexOf(",");
-                var posSlash = response.indexOf("/");
-                var position = response.substring(0, posSlash);
-                var name = response.substring(posSlash + 1, posParenthesis);
+            // we parse the message that is returned by the server
+            var posParenthesis = response.indexOf("(");
+            var posComma = response.indexOf(",");
+            var posSlash = response.indexOf("/");
+            var position = response.substring(0, posSlash);
+            var name = response.substring(posSlash + 1, posParenthesis);
 
-                var magnitude = parseFloat(
-                    response.substring(posParenthesis + 1, posComma)
-                );
-                var objectType = response.substring(
-                    posComma + 1,
-                    response.length - 2
-                );
+            var magnitude = parseFloat(
+                response.substring(posParenthesis + 1, posComma)
+            );
+            var objectType = response.substring(
+                posComma + 1,
+                response.length - 2
+            );
 
-                var positionElts = position.split(" ");
+            var positionElts = position.split(" ");
 
-                //GET HMS
-                var hours = parseFloat(positionElts[0]);
-                var min = parseFloat(positionElts[1]);
-                var sec = parseFloat(positionElts[2]);
+            //GET HMS
+            var hours = parseFloat(positionElts[0]);
+            var min = parseFloat(positionElts[1]);
+            var sec = parseFloat(positionElts[2]);
 
-                var degrees = parseFloat(positionElts[3]);
-                var min2 = parseFloat(positionElts[4]);
-                var sec2 = parseFloat(positionElts[5]);
+            var degrees = parseFloat(positionElts[3]);
+            var min2 = parseFloat(positionElts[4]);
+            var sec2 = parseFloat(positionElts[5]);
 
-                var ra = self._parseRa(hours, min, sec);
-                var dec = self._parseDec(degrees, min2, sec2);
+            var ra = self._parseRa(hours, min, sec);
+            var dec = self._parseDec(degrees, min2, sec2);
 
-                var features = {
-                    totalResults: 1,
-                    type: "FeatureCollection",
-                    features: [
-                        {
-                            type: "Feature",
-                            geometry: {
-                                coordinates: [ra, dec],
-                                type: Constants.GEOMETRY.Point,
-                                crs: {
-                                    type: "name",
-                                    properties: {
-                                        name: Constants.CRS.Equatorial
-                                    }
+            var features = {
+                totalResults: 1,
+                type: "FeatureCollection",
+                features: [
+                    {
+                        type: "Feature",
+                        geometry: {
+                            coordinates: [ra, dec],
+                            type: Constants.GEOMETRY.Point,
+                            crs: {
+                                type: "name",
+                                properties: {
+                                    name: Constants.CRS.Equatorial
                                 }
-                            },
-                            properties: {
-                                title: name,
-                                magnitude: magnitude,
-                                credits: "CDS",
-                                seeAlso:
-                                    "http://simbad.u-strasbg.fr/simbad/sim-id?Ident=" +
-                                    name,
-                                type: objectType,
-                                identifier: name
                             }
+                        },
+                        properties: {
+                            title: name,
+                            magnitude: magnitude,
+                            credits: "CDS",
+                            seeAlso:
+                                "http://simbad.u-strasbg.fr/simbad/sim-id?Ident=" +
+                                name,
+                            type: objectType,
+                            identifier: name
                         }
-                    ]
-                };
+                    }
+                ]
+            };
 
-                if (options && options.success) {
-                    options.success(features);
-                }
-                //END OF SPECIFIC PROCESSING
-            },
-            error: function(xhr, ajaxOptions, thrownError) {
-                if (options && options.error) {
-                    options.error(xhr);
-                }
+            if (options && options.success) {
+                options.success(features);
+            }
+            //END OF SPECIFIC PROCESSING
+        }, function(err){
+            if (options && options.error) {
+                options.error(err);
             }
         });
     };

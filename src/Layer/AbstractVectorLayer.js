@@ -47,6 +47,7 @@ define([
 
         this.vectorLayer = true;
         this.url = options.url;
+        this.draw = false;
 
         if (options && options.callback) {
             this.callback = options.callback;
@@ -101,14 +102,37 @@ define([
     };
 
     /**
-     * Returns the URL to get the vector data.
      * @function getUrl
      * @memberof AbstractVectorLayer#
-     * @returns {string} the URL to get the vector data
      */
     AbstractVectorLayer.prototype.getUrl = function() {
         return this.proxify(this.url);
     };
+
+    /**
+     * @function isForDataProvider
+     * @memberof AbstractVectorLayer#
+     */
+    AbstractVectorLayer.prototype.isForDataProvider = function() {
+        return this.getUrl() === undefined;
+    };
+
+    /**
+     * @function isDraw
+     * @memberof AbstractVectorLayer#
+     */
+    AbstractVectorLayer.prototype.isDraw = function() {
+        return this.draw;
+    };
+    
+    /**
+     * @function isDraw
+     * @memberof AbstractVectorLayer#
+     */
+    AbstractVectorLayer.prototype.setDraw = function(value) {
+        Utils.assert(typeof(value) === 'boolean', "value is not a boolean : "+value, "AbstractVectorLayer.js");        
+        this.draw = value;
+    };    
 
     /**
      * Attach the vector layer to the globe

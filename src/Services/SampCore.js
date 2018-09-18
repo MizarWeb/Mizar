@@ -73,9 +73,7 @@ define([
                 //    sampLayer.addFeatureCollection(response);
                 //});
             } else {
-                ErrorDialog.open(
-                    "votable2geojson plugin base url isn't defined"
-                );
+                ErrorDialog.open(Constants.LEVEL.ERROR, "votable2geojson plugin base url isn't defined");
             }
         };
 

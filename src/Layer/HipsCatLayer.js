@@ -85,6 +85,7 @@ define([
         this.invertY = options.invertY || false;
         var xhr = UtilsJsVotable.makeHttpObject();
         xhr.open("GET", this.proxify(options.baseUrl) + "/metadata.xml", false);
+        xhr.setRequestHeader("Accept", "application/xml");
         xhr.send(null);
         var jsVotable = new JsVotable.Votable(xhr.responseXML);
         var resource = jsVotable.getResources()[0];
@@ -138,6 +139,7 @@ define([
         var i;
         var xhr = new XMLHttpRequest();
         xhr.open("GET", url, false);
+        xhr.setRequestHeader("Accept", "text/plain");
         xhr.send();
         var content = xhr.responseText;
         content.trim();
@@ -218,6 +220,7 @@ define([
         var xhr = this.freeRequests.pop();
         var self = this;
         xhr.open("GET", url);
+        xhr.setRequestHeader("Accept", "application/xml");
         xhr.send(null);
         xhr.onreadystatechange = function(e) {
             if (xhr.readyState === 4) {
