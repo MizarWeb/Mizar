@@ -41,8 +41,9 @@ define([
     "../Renderer/PolygonRenderer",
     "../Renderer/LineRenderer",
     "../Renderer/PointSpriteRenderer",
-    "../Renderer/ConvexPolygonRenderer"
-], function(
+    "../Renderer/ConvexPolygonRenderer",
+    "../Renderer/PolyLineRenderer"
+], function (
     $,
     _,
     Event,
