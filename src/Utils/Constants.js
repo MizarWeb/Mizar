@@ -173,6 +173,7 @@ define(function() {
      * @property {string} Moon_2000 - IAU2000:30101 coordinate reference system
      * @property {string} Moon_2000_old - IAU2000:30100 coordinate reference system
      * @property {string} HorizontalLocal - Local reference system based on horizontal coordinates
+     * @property {string} Sun - Sun Coordinate reference system     
      */
     Constants.CRS = {
         Equatorial: "Equatorial",
@@ -185,6 +186,31 @@ define(function() {
         HorizontalLocal: "HorizontalLocal",
         Sun: "IAU:Sun"
     };
+
+    /**
+     * @namespace
+     * CRS_TO_CONTEXT
+     * @property {string} Equatorial - Sky context
+     * @property {string} Galactic - Sky context
+     * @property {string} WGS84 - Planet context
+     * @property {string} Mars_2000 - Planet context
+     * @property {string} Mars_2000_old - Planet context
+     * @property {string} Moon_2000 - Planet context
+     * @property {string} Moon_2000_old - Planet context
+     * @property {string} HorizontalLocal - Ground context 
+     * @property {string} Sun - Sun Coordinate reference system          
+     */
+    Constants.CRS_TO_CONTEXT = {
+        "Equatorial" : "Sky",
+        "Galactic": "Sky",
+        "CRS:84": "Planet",
+        "IAU2000:49901": "Planet",
+        "IAU2000:49900": "Planet",
+        "IAU2000:30101": "Planet",
+        "IAU2000:30100": "Planet",
+        "HorizontalLocal": "Ground",
+        "IAU:Sun": "Planet"
+    }
 
     /**
      * @namespace

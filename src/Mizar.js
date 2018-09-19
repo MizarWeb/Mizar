@@ -95,9 +95,9 @@ define([
     const MIZAR_NAME_DEV = "Mizar.";
 
     /**
-     * Input Mizar parameters
+     *  Mizar input parameters
      * @typedef {Object} Mizar_inputParameters
-     * @property {Object|string} canvas - canvas ID or canvas element
+     * @property {Object|string} canvas - canvas ID or canvas element in which Mizar is running
      * @property {Mizar_inputConfiguration} [configuration] - Mizar global configuration
      * @property {AbstractContext.skyContext} [skyContext] - Sky context configuration
      * @property {AbstractContext.planetContext} [planetContext] - Planet context configuration
@@ -119,7 +119,7 @@ define([
      * @property {string} [proxyUrl] - Proxy URL to use when proxyUse is true. This is used to avoid CORS errors.
      */
     /**
-     * Time traval configuration
+     * Time travel configuration
      * @typedef {Object} TimeTravel_position_configuration
      * @property {string} [element = timeTravelDiv] - tracker div element
      */ 
@@ -207,14 +207,14 @@ define([
         this.AnimationFactory = AnimationFactory;
 
         /**
-         * Creates a service
+         * Creates a {@link module:Services.ServiceFactory service}
          * @name ServiceFactory
          * @memberof Mizar#
          */
         this.ServiceFactory = ServiceFactory;
 
         /**
-         * Creates an utility
+         * Creates an {@link module:Utils.UtilityFactory utility}
          * @name UtilityFactory
          * @memberof Mizar#
          * @private
@@ -222,7 +222,7 @@ define([
         this.UtilityFactory = UtilityFactory;
 
         /**
-         * Creates a provider
+         * Creates a {@link module:Provider.ProviderFactory provider}
          * @name ProviderFactory
          * @memberof Mizar#
          */
@@ -329,6 +329,11 @@ define([
      * @memberof Mizar#
      */
     Mizar.CRS = Constants.CRS;
+
+    /**
+     * Static variable, supported {@link CRS_TO_CONTEXT crs/context mapping}
+     */
+    Mizar.CRS_TO_CONTEXT = Constants.CRS_TO_CONTEXT;
 
     /**
      * Static variable, supported {@link DISPLAY display} order
