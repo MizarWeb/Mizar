@@ -24,7 +24,6 @@ define([], function() {
      * @class
      * Abstract Wrapper constructor
      * @param {Context} options - Context
-     * @constructor
      * @implements {NameResolver}
      */
     var AbstractNameResolver = function(options) {

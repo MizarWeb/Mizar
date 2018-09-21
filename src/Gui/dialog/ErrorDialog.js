@@ -63,10 +63,10 @@ define(["../../Utils/Constants", "jquery", "jquery.ui"], function(Constants, $) 
 
     return {
         /**
-         *    Open dialog
-         *
-         *    @param html HTML text
-         *    
+         * Open dialog
+         * @param {LEVEL} LEVEL Log level
+         * @param {string} title error title
+         * @param {string} description error description   
          */
         open: function(LEVEL, title, description) {
             var message = "";
@@ -79,7 +79,7 @@ define(["../../Utils/Constants", "jquery", "jquery.ui"], function(Constants, $) 
             }
 
             if(description != null) {
-                message = message +" - <font style='color:white'>"
+                message = message +" - <font style='color:white'>";
                 if (typeof(description) === 'object') {
                     message = message + JSON.stringify(description);        
                 } else {
@@ -91,25 +91,46 @@ define(["../../Utils/Constants", "jquery", "jquery.ui"], function(Constants, $) 
     
             _recordError(message);
         },
+        /**
+         * View the messages in the GUI.
+         */
         view: function() {
             $errorDiv.html($text).dialog("open");
             $errorDiv.scrollTop(5000);
             $active = true;
         },
+        /**
+         * Hides the GUI
+         */
         hide: function() {
             $errorDiv.dialog("close");
             $active = false;
         },
+        /**
+         * GUI is active ?
+         * @return {boolean} true when the GUI is shown otherwise false
+         */
         isActive: function() {
             return $active;
         },
-
+        /**
+         * Sets the icon.
+         * @param {string} ID
+         */
         setIcon: function(buttonName) {
             $buttonName = $(buttonName);
         },
+        /**
+         * Has error.
+         * @returns {boolean} true when error otherise false
+         */
         hasError : function() {
             return $text.length > 0;
         },
+        /**
+         * Returns the message
+         * @returns {string} the message
+         */
         getTxt : function() {
             return $text;
         }

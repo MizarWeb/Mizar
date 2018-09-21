@@ -16,7 +16,21 @@
  * You should have received a copy of the GNU General Public License
  * along with SITools2. If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
-define([
+
+/**
+ * Tracker to display on the screen :
+ * <ul>
+ *     <li>{@link module:Tracker.PositionTracker PositionTracker}: Displays the coordinates</li>
+ *     <li>{@link module:Tracker.ElevationTracker ElevationTracker} : Displays the elevation</li>
+ * </ul>
+ * 
+ * See {@tutorial getting-started-tracker} for an example of tracker position.
+ *
+ * @module Tracker
+ * @implements {Tracker}
+ * 
+ */
+ define([
     "jquery",
     "./AbstractTracker",
     "../dialog/CrsDialog",
@@ -28,10 +42,11 @@ define([
     /**
      * @name PositionTracker
      * @class
-     *    PositionTracker constructor
+     *    Position Tracker
      * @augments AbstractTracker
      * @param {AbstractTracker_position_configuration} options - Position tracker configuration
      * @constructor
+     * @memberof module:Tracker
      */
     var PositionTracker = function(options) {
         AbstractTracker.prototype.constructor.call(this, options);
@@ -43,10 +58,8 @@ define([
     /**************************************************************************************************************/
 
     /**
-     * Updates the tracker's position.
      * @function update
      * @memberof PositionTracker#
-     * @param {object} event
      */
     PositionTracker.prototype.update = function(event) {
         if (event.type.search("touch") >= 0) {
@@ -75,12 +88,9 @@ define([
         }
     };
 
-    /**
-     * Formats the coordinates from the position for displaying the coordinates on the screen.
+    /**     
      * @function compute
      * @memberof PositionTracker#
-     * @param geoPosition
-     * @returns {number} coordinates
      */
     PositionTracker.prototype.compute = function(geoPosition) {
         return this._getGlobe()
@@ -97,7 +107,7 @@ define([
      *
      * @function attachTo
      * @memberof PositionTracker#
-     * @param {AbstractContext} context
+     * @param {Context} context context
      * @see {@link CrsDialog}
      * @see {@link AbstrackTracker#attachTo}
      */

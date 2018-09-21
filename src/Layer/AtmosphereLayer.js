@@ -170,7 +170,7 @@ define([
      */
     AtmosphereLayer.prototype.getInformationType = function() {
         return Constants.INFORMATION_TYPE.ATMOSPHERE;
-    }    
+    };    
 
     /**
      * Attaches the atmosphere layer to the planet.

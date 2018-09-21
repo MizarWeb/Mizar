@@ -5,6 +5,7 @@ define(["jquery", "moment", "../Utils/Constants", "../Utils/Utils"], function(
     Utils
 ) {
     /**
+     * @class
      * Stock time sample
      * @constructor
      */
@@ -21,6 +22,8 @@ define(["jquery", "moment", "../Utils/Constants", "../Utils/Utils"], function(
      * @function sortTime
      * @param {Date} a First date
      * @param {Date} b Second date
+     * @memberof TimeEnumerated#
+     * @private
      */
     function sortTime(a, b) {
         return a.date > b.date ? 1 : -1;

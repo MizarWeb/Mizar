@@ -19,6 +19,7 @@
 
 /**
  * API allowing to search object name and zoom to it
+ * @see {@link module:NameResolver the NameResolver package}
  * @interface
  */
 function NameResolver() {}

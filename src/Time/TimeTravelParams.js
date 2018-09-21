@@ -26,6 +26,7 @@
  */
 
 /**
+ * @class
 * The time object.
 * @typedef {object} TimeTravelParams~details
 * @property {date|moment} date - the current time.

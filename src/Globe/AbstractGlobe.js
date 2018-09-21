@@ -66,7 +66,6 @@ define([
          * @throws {ReferenceError} Will throw an error when the options.coordinateSystem is not defined.
          * @throws {Error} Will throw an error when options.coordinateSystem.geoideName  is not part of {@link CRS}
          * @see {@link module:Crs.CoordinateSystemFactory}
-         * @constructor
          * @implements {Globe}
          */
         var AbstractGlobe = function (type, options) {

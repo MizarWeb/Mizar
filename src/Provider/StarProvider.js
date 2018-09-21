@@ -118,16 +118,14 @@ define([
                 )
             );
         } else {
-            console.error("Not valid options");
-            return null;
+            ErrorDialog.open(Contants.LEVEL.WARNING, "Not valid options for StarProvider", "nameUrl and catalogueUrl attributes must be passed"); 
+            return false;
         }
     };
 
     /**
-     * Handle features on layer
      * @function handleFeatures
      * @memberof StarProvider#
-     * @param {Layer} mizarLayer
      */
     StarProvider.prototype.handleFeatures = function(mizarLayer) {
         // Extract the table data

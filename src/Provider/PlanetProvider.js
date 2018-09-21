@@ -35,6 +35,23 @@
  * along with GlobWeb. If not, see <http://www.gnu.org/licenses/>.
  ***************************************/
 
+ /**
+ * Mizar is able to load a whole file as GeoJson format for vectorial data. If the data format is not in GeoJson then a Provider must be applied.
+ * <ul>
+ *     <li>{@link module:Provider.ConstellationProvider ConstellationProvider}: Loads constellation data</li>
+ *     <li>{@link module:Provider.CraterProvider CraterProvider} : Loads craters</li>
+ *     <li>{@link module:Provider.PlanetProvider PlanetProvider} : Loads planets position on the sky</li>
+ *     <li>{@link module:Provider.StarProvider StarProvider} : Loads stars name on the sky</li>
+ *     <li>{@link module:Provider.TrajectoryProvider TrajectoryProvider} : Loads a file to display a trajectory</li>
+ * </ul>
+ *
+ * In addition to the classes, a {@link module:Provider.ProviderFactory factory} is available to help for creating
+ * provider. Once the provider is created, the client can handle it by the use of its {@link Provider interface}.
+ *
+ * @module Provider
+ * @implements {Provider}
+ * @todo Describes here and link to the tutos about Animation
+ */
 define([
     "jquery",
     "./AbstractProvider",
@@ -79,8 +96,8 @@ define([
     }
 
     /*
-         * Json template for a point
-         */
+     * Json template for a point
+    */
     function poiDesc(mizarLayer, type, name, obj) {
         var style;
         if (type === Constants.GEOMETRY.Point) {
@@ -421,7 +438,6 @@ define([
      * @memberof module:Provider
      * @see http://www.abecedarical.com/javascript/script_planet_orbits.html
      */
-
     var PlanetProvider = function(options) {
         AbstractProvider.prototype.constructor.call(this, options);
         self = this;
@@ -453,6 +469,11 @@ define([
         }, interval);
     };
 
+    /**
+     * Returns the Sun position at the date.
+     * @param {date} date 
+     * @returns {float[]} the Sun position
+     */
     PlanetProvider.prototype.getSunPosition = function(date) {
         var year = date.getUTCFullYear();
         var month = date.getUTCMonth() + 1;

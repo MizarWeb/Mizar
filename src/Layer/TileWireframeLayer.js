@@ -83,7 +83,7 @@ define([
      */
     TileWireframeLayer.prototype.getInformationType = function () {
         return Constants.INFORMATION_TYPE.VECTOR;
-    }
+    };
 
     /**
      * Build the index buffer

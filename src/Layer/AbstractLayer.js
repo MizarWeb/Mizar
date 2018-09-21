@@ -75,7 +75,7 @@ define([
      * @property {boolean} [pickable=false] - Sets to true to make the layer pickable
      * @property {boolean} [service=[]] - List of services related to the layer
      * @property {GEOMETRY} dataType - the data type for vector layers
-     * @property background
+     * @property {boolean} [background = false] -Set to true to render the layer as a background
      * @property category
      * @param {Crs} coordinateSystem
      * @param {string} [format=""]
@@ -692,7 +692,7 @@ define([
             "getInformationType not implemented",
             "AbstractLayer.js"
         );
-    }
+    };
 
     /**
      * @function getAttribution

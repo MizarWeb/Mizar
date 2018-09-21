@@ -140,17 +140,15 @@ define([
     /**************************************************************************************************************/
 
     /**
-         * CoordinateGridLayer configuration
-         * @typedef {AbstractLayer.configuration} AbstractLayer.coordinateGrid_configuration
-         * @property {float} [longitudeSample=15] - Longitude sampling in decimal degree
-         * @property {float} [latitudeSample=10] - Latitude sampling in decimal degree
-         * @property {AbstractProjection.configuration|AbstractProjection.azimuth_configuration|AbstractProjection.mercator_configuration} coordinateSystem - The coordinate system of the grid
-         * @property {string} [longFormat="Deg"] Representation of longitude axe(HMS, DMS, Deg)
-         * @property {string} [latFormat="Deg"] Representation of latitude axe(HMS, DMS, Deg)
-         * @property {Integer} [tesselation=2] Tesselation order (only for latitude bands currently)
-         
-         * 
-         */
+     * CoordinateGridLayer configuration
+     * @typedef {AbstractLayer.configuration} AbstractLayer.coordinateGrid_configuration
+     * @property {float} [longitudeSample=15] - Longitude sampling in decimal degree
+     * @property {float} [latitudeSample=10] - Latitude sampling in decimal degree
+     * @property {AbstractProjection.configuration|AbstractProjection.azimuth_configuration|AbstractProjection.mercator_configuration} coordinateSystem - The coordinate system of the grid
+     * @property {string} [longFormat="Deg"] Representation of longitude axe(HMS, DMS, Deg)
+     * @property {string} [latFormat="Deg"] Representation of latitude axe(HMS, DMS, Deg)
+     * @property {Integer} [tesselation=2] Tesselation order (only for latitude bands currently)     
+     */
     /**
      * @name CoordinateGridLayer
      * @class
@@ -208,7 +206,7 @@ define([
      */
     CoordinateGridLayer.prototype.getInformationType = function() {
         return Constants.INFORMATION_TYPE.VECTOR;
-    }
+    };
 
     /**
      * Generates an image data from text.

@@ -132,7 +132,7 @@ define([
             this.levelZeroImage.src =
                 this.proxify(this.baseUrl) + "/Norder3/Allsky." + this.format;
         }
-    }
+    };
 
     /**************************************************************************************************************/
 

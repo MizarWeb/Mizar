@@ -102,7 +102,7 @@ define([
      */
     AbstractRasterLayer.prototype.getInformationType = function() {
         return Constants.INFORMATION_TYPE.RASTER;
-    }
+    };
 
     /**
      * Loads a global overview if available.
@@ -112,8 +112,7 @@ define([
      */
     AbstractRasterLayer.prototype.loadOverview = function() {
 
-    }
-
+    };
 
     /**
      * Returns the URL to query the raster.

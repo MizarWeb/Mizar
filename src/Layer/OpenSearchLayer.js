@@ -229,7 +229,7 @@ define([
          */
         OpenSearchLayer.prototype.getInformationType = function () {
             return Constants.INFORMATION_TYPE.VECTOR;
-        }
+        };
 
         /**
          * @function setTime

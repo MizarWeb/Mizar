@@ -68,36 +68,42 @@ define([
         //TODO : attention de bien garder les ...Renderer dans le define
 
         /**
+         * Default ID for position tracker
          * @constant
          * @type {string}
          * @default
          */
         const DEFAULT_POSITION_TRACKER_ELT = "posTracker";
         /**
+         * Default position for position tracker
          * @constant
          * @type {string}
          * @default
          */
         const DEFAULT_POSITION_TRACKER_ELT_POS = "bottom";
         /**
+         * Default ID for elevation tracker
          * @constant
          * @type {string}
          * @default
          */
         const DEFAULT_ELEVATION_TRACKER_ELT = "elevTracker";
         /**
+         * Default position for elevation tracker         
          * @constant
          * @type {string}
          * @default
          */
         const DEFAULT_ELEVATION_TRACKER_ELT_POS = "bottom";
         /**
+         * Default ID for compass         
          * @constant
          * @type {string}
          * @default
          */
         const DEFAULT_COMPASS_ELT = "compassDiv";
         /**
+         * Default ID for attribution         
          * @constant
          * @type {string}
          * @default
@@ -111,27 +117,24 @@ define([
         const TARGET_POS = {
             RA: "initialRa",
             DEC : "initialDec"
-        }
+        };
 
         /**
          * @constant
          * @type {number}
          * @default
          */
-        const DEFAULT_ZOOM_DURATION = 3000
+        const DEFAULT_ZOOM_DURATION = 3000;
 
         /**
          * @name AbstractContext
          * @class
-         * The active context object can normally be obtained from the {@link module:Context.ContextManager ContextManager}
-         * class of the Mizar instance.<br/>
          * A context is the main webGL object that contains its own coordinate reference system,
          * its own data, its own navigation and its own GUI.<br/>
          * Client implementations should not normally instantiate this class directly.
          * @param {Mizar.configuration} mizarConfiguration - Mizar configuration
          * @param {CONTEXT} mode - the type of context
          * @param {AbstractContext.skyContext|AbstractContext.planetContext} ctxOptions - sky or planet options
-         * @constructor
          * @implements {Context}
          * @listens Layer#baseLayersReady
          */
@@ -967,7 +970,7 @@ define([
          */        
         AbstractContext.prototype.isDisabled = function() {
             return !this.isEnabled();
-        }
+        };
 
         /**
          * @function show

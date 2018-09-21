@@ -16,6 +16,21 @@
  * You should have received a copy of the GNU General Public License
  * along with MIZAR. If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
+
+/**
+ * NameResolver is used to get the coordinate of a target. When the target is found, the camera is redirected to this point:
+ * <ul>
+ *     <li>{@link module:NameResolver.CDSNameResolver CDSNameResolver}: Name resolver from CDS</li>
+ *     <li>{@link module:NameResolver.DefaultNameResolver DefaultNameResolver} : Deprecated</li>
+ *     <li>{@link module:NameResolver.DictionaryNameResolver DictionaryNameResolver} : Name resolver on a GeoJson file</li>
+ *     <li>{@link module:NameResolver.IMCCENameResolver IMCCENameResolver} : Name resolver from IMCCE</li>
+ *     <li>{@link module:NameResolver.NameResolver NameResolver} : NameResolver object</li> 
+ * </ul>
+ *
+ * @module NameResolver
+ * @implements {NameResolver}
+ */
+
 define([
     "jquery",
     "underscore-min",
@@ -31,6 +46,7 @@ define([
      * @augments AbstractNameResolver
      * @param {Context} options - Context
      * @memberof module:NameResolver
+     * @constructor     
      */
     var DefaultNameResolver = function(options) {
         AbstractNameResolver.prototype.constructor.call(this, options);

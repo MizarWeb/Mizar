@@ -64,12 +64,11 @@ define([
             self.handleFeatures(layer);        
         }, function(err) {
             ErrorDialog.open(Constants.LEVEL.ERROR, 'Failed ot request '+configuration.url, err);
-        })
+        });
     };
 
     /**
      * @function handleFeatures
-     * @param {Layer} layer - mizar layer
      * @memberof CraterProvider#
      */
     CraterProvider.prototype.handleFeatures = function(layer) {

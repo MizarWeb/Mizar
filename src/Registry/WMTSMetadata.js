@@ -1,4 +1,29 @@
+/*******************************************************************************
+ * Copyright 2017-2018 CNES - CENTRE NATIONAL d'ETUDES SPATIALES
+ *
+ * This file is part of MIZAR.
+ *
+ * MIZAR is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * MIZAR is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with MIZAR. If not, see <http://www.gnu.org/licenses/>.
+ ******************************************************************************/
 define([], function() {
+    /**
+     * @class
+     * WMTS metadata from capabilities.
+     * @param {string} json 
+     * @constructor
+     * @memberof module:Registry
+     */
     var WMTSMetadata = function(json) {
         this.serviceIdentification = new ServiceIdentification(
             json.Capabilities.ServiceIdentification
@@ -14,6 +39,13 @@ define([], function() {
         );
     };
 
+    /**
+     * @class
+     * Creates ServiceIdentification object. 
+     * @param {string} json 
+     * @constructor
+     * @memberof WMTSMetadata#     
+     */
     var ServiceIdentification = function(json) {
         if (json === undefined) {
             this.version = null;
@@ -36,6 +68,13 @@ define([], function() {
         }
     };
 
+    /**
+     * @class
+     * Creates ServiceProvider object.
+     * @param {string} json 
+     * @constructor
+     * @memberof WMTSMetadata#     
+     */    
     var ServiceProvider = function(json) {
         if (json === undefined) {
             this.providerName = null;
@@ -48,6 +87,13 @@ define([], function() {
         }
     };
 
+    /**
+     * @class
+     * Creates ServiceContact object. 
+     * @param {string} json 
+     * @constructor
+     * @memberof WMTSMetadata#    
+     */    
     var ServiceContact = function(json) {
         if (json === undefined) {
             this.individualName = null;
@@ -62,6 +108,13 @@ define([], function() {
         }
     };
 
+    /**
+     * @class
+     * Creates ContactInfo object. 
+     * @param {string} json 
+     * @constructor
+     * @memberof WMTSMetadata#     
+     */    
     var ContactInfo = function(json) {
         if (json === undefined) {
             this.phone = null;
@@ -80,6 +133,13 @@ define([], function() {
         }
     };
 
+    /**
+     * @class
+     * Create Phone object 
+     * @param {string} json 
+     * @constructor
+     * @memberof WMTSMetadata#     
+     */    
     var Phone = function(json) {
         if (json === undefined) {
             this.voice = null;
@@ -90,6 +150,13 @@ define([], function() {
         }
     };
 
+    /**
+     * @class
+     * Create Address object 
+     * @param {string} json 
+     * @constructor
+     * @memberof WMTSMetadata#     
+     */    
     var Address = function(json) {
         if (json === undefined) {
             this.deliveryPoint = null;
@@ -112,6 +179,13 @@ define([], function() {
         }
     };
 
+    /**
+     * @class
+     * Create Contents object 
+     * @param {string} json 
+     * @constructor
+     * @memberof WMTSMetadata#     
+     */    
     var Contents = function(json) {
         if (json === undefined) {
             this.layers = null;
@@ -122,49 +196,13 @@ define([], function() {
         }
     };
 
-    WMTSMetadata.parseLayer = function(json) {
-        var layers = [];
-        if (json === undefined) {
-        } else if (Array.isArray(json)) {
-            for (var i = 0; i < json.length; i++) {
-                layers.push(new Layer(json[i]));
-            }
-        } else {
-            layers.push(new Layer(json));
-        }
-        return layers;
-    };
-
-    WMTSMetadata.parseTileMatrixSetLink = function(json) {
-        var tileMatrixSetLink = [];
-        if (json === undefined) {
-        } else if (Array.isArray(json)) {
-            for (var i = 0; i < json.length; i++) {
-                tileMatrixSetLink.push(
-                    WMTSMetadata.getValueTag(json.TileMatrixSet[i])
-                );
-            }
-        } else {
-            tileMatrixSetLink.push(
-                WMTSMetadata.getValueTag(json.TileMatrixSet)
-            );
-        }
-        return tileMatrixSetLink;
-    };
-
-    WMTSMetadata.parseFormat = function(json) {
-        var formats = [];
-        if (json === undefined) {
-        } else if (Array.isArray(json)) {
-            for (var i = 0; i < json.length; i++) {
-                formats.push(WMTSMetadata.getValueTag(json.Format[i]));
-            }
-        } else {
-            formats.push(WMTSMetadata.getValueTag(json));
-        }
-        return formats;
-    };
-
+    /**
+     * @class
+     * Create Layer object
+     * @param {string} json 
+     * @constructor
+     * @memberof WMTSMetadata#     
+     */
     var Layer = function(json) {
         if (json === undefined) {
             this.identifier = null;
@@ -203,8 +241,15 @@ define([], function() {
             this.dimension = null;
             this.resourceURL = null;
         }
-    };
-
+    };   
+    
+    /**
+     * @class
+     * Create TileMatrixSet object
+     * @param {string} json 
+     * @constructor
+     * @memberof WMTSMetadata#     
+     */    
     var TileMatrixSet = function(json) {
         this.identifier = null;
         this.supportedCRS = null;
@@ -212,6 +257,13 @@ define([], function() {
         this.tileMatrix = null;
     };
 
+    /**
+     * @class
+     * Create TileMatrix object
+     * @param {string} json 
+     * @constructor
+     * @memberof WMTSMetadata#
+     */     
     var TileMatrix = function(json) {
         this.identifier = null;
         this.scaleDenominator = null;
@@ -220,8 +272,83 @@ define([], function() {
         this.tileHeight = null;
         this.matrixWidth = null;
         this.matrixHeight = null;
+    };    
+
+    /**
+     * Parses layer element 
+     * @param {string} json 
+     * @returns {Layer[]} Returns Array of Layer object
+     * @function parseLayer
+     * @memberof WMTSMetadata# 
+     * @private      
+     */    
+    WMTSMetadata.parseLayer = function(json) {
+        var layers = [];
+        if (json === undefined) {
+        } else if (Array.isArray(json)) {
+            for (var i = 0; i < json.length; i++) {
+                layers.push(new Layer(json[i]));
+            }
+        } else {
+            layers.push(new Layer(json));
+        }
+        return layers;
     };
 
+    /**
+     * Parses TileMatrixSetLink element 
+     * @param {string} json 
+     * @returns {string[]} Returns array of parseTileMatrixSetLink value.
+     * @function parseTileMatrixSetLink
+     * @memberof WMTSMetadata# 
+     * @private      
+     */    
+    WMTSMetadata.parseTileMatrixSetLink = function(json) {
+        var tileMatrixSetLink = [];
+        if (json === undefined) {
+        } else if (Array.isArray(json)) {
+            for (var i = 0; i < json.length; i++) {
+                tileMatrixSetLink.push(
+                    WMTSMetadata.getValueTag(json.TileMatrixSet[i])
+                );
+            }
+        } else {
+            tileMatrixSetLink.push(
+                WMTSMetadata.getValueTag(json.TileMatrixSet)
+            );
+        }
+        return tileMatrixSetLink;
+    };
+
+    /**
+     * Parses Format element
+     * @param {string} json 
+     * @returns {string[]} Array of format.
+     * @function parseFormat
+     * @memberof WMTSMetadata# 
+     * @private      
+     */
+    WMTSMetadata.parseFormat = function(json) {
+        var formats = [];
+        if (json === undefined) {
+        } else if (Array.isArray(json)) {
+            for (var i = 0; i < json.length; i++) {
+                formats.push(WMTSMetadata.getValueTag(json.Format[i]));
+            }
+        } else {
+            formats.push(WMTSMetadata.getValueTag(json));
+        }
+        return formats;
+    };
+
+    /**
+     * Get Value
+     * @param {string} json
+     * @returns {string} Returns the value 
+     * @function getValueTag
+     * @memberof WMTSMetadata# 
+     * @private      
+     */     
     WMTSMetadata.getValueTag = function(json) {
         var result;
         if (json !== undefined) {
@@ -234,14 +361,38 @@ define([], function() {
         return result;
     };
 
+    /**
+     * Get Text
+     * @param {string} json 
+     * @return {string} Returns the text
+     * @function getText
+     * @memberof WMTSMetadata# 
+     * @private     
+     */     
     WMTSMetadata.getText = function(keyword) {
         return keyword._text;
     };
 
+    /**
+     * Get Value
+     * @param {string} json 
+     * @returns {string} Returns the value
+     * @function getValue
+     * @memberof WMTSMetadata# 
+     * @private       
+     */ 
     WMTSMetadata.getValue = function(keyword) {
         return keyword._value;
     };
 
+    /**
+     * Parses keyword list
+     * @param {string} json 
+     * @returns {string[]} Returns the array of keyword.
+     * @function parseKeywordList
+     * @memberof WMTSMetadata# 
+     * @private      
+     */     
     WMTSMetadata.parseKeywordList = function(keywordsJson) {
         var keywords = [];
         if (
@@ -261,6 +412,14 @@ define([], function() {
         return keywords;
     };
 
+    /**
+     * Parses Voice
+     * @param {string} json
+     * @returns {string[]} Returns the array of voice 
+     * @function parseVoice
+     * @memberof WMTSMetadata# 
+     * @private     
+     */     
     WMTSMetadata.parseVoice = function(json) {
         var voices = [];
         if (json !== undefined && json.hasOwnProperty("Voice")) {
@@ -275,6 +434,14 @@ define([], function() {
         return voices;
     };
 
+    /**
+     * Parses Fac simile element
+     * @param {string} json
+     * @returns {string[]} Returns the array of Facsimile 
+     * @function parseFacsimile
+     * @memberof WMTSMetadata# 
+     * @private      
+     */     
     WMTSMetadata.parseFacsimile = function(json) {
         var phones = [];
         if (json !== undefined && json.hasOwnProperty("Facsimile")) {
@@ -289,6 +456,14 @@ define([], function() {
         return phones;
     };
 
+    /**
+     * Parses AccessConstraints element
+     * @param {string} json 
+     * @return {string[]} Returns the array of AccessConstraints
+     * @function parseAccessConstraints
+     * @memberof WMTSMetadata# 
+     * @private      
+     */    
     WMTSMetadata.parseAccessConstraints = function(json) {
         var acccessConstraints = [];
         if (json !== undefined && json.hasOwnProperty("AccessConstraints")) {
@@ -307,6 +482,14 @@ define([], function() {
         return acccessConstraints;
     };
 
+    /**
+     * Parses WGS84BoundingBox element
+     * @param {string} json
+     * @returns {string[]} Returns the WGS84 bounding box 
+     * @function parseWGS84BoundingBox
+     * @memberof WMTSMetadata# 
+     * @private      
+     */     
     WMTSMetadata.parseWGS84BoundingBox = function(wgs84BoundingBoxJson) {
         var wgs84BoundingBox = [];
         if (wgs84BoundingBoxJson !== undefined) {
@@ -333,6 +516,14 @@ define([], function() {
         return wgs84BoundingBox;
     };
 
+    /**
+     * Parses BoundingBox element
+     * @param {string} json 
+     * @return {string[]} Returns the bounding box 
+     * @function parseBoundingBox
+     * @memberof WMTSMetadata# 
+     * @private       
+     */     
     WMTSMetadata.parseBoundingBox = function(BoundingBoxJson) {
         //TODO crs dimensions
         var boundingBox = [];

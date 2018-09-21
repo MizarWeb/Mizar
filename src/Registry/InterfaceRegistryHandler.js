@@ -17,11 +17,37 @@
  * along with MIZAR. If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
 
-function InterfaceRegistryHandler() {}
+ /**
+  * Chain of responsability to process the layer description.
+  * @interface
+  */
+function RegistryHandler() {}
 
-InterfaceRegistryHandler.prototype.setNext = function(next) {};
+/**
+ * Sets the Next Server to make a list/chain of Handlers
+ * @param {RegistryHandler} next Next handler
+ */
+RegistryHandler.prototype.setNext = function(next) {};
 
-InterfaceRegistryHandler.prototype.handleRequest = function(
+/**
+ * This callback allows to process layers.
+ * @callback serverLayerCallback
+ * @param {Layer[]} list of layers
+ */
+
+/**
+ * This fallback allows to process the error related to the layers.
+ * @callback serverLayerFallback
+ * @param {Object} error
+ */
+
+/**
+ * Handle requests to process a layer description
+ * @param {AbstractLayer.atmosphere_configuration|AbstractLayer.coordinateGrid_configuration|AbstractLayer.groundOverlay_configuration|AbstractLayer.hipsCat_configuration|AbstractLayer.moc_configuration|AbstractLayer.tileWireFrame_configuration|AbstractLayer.vector_configuration|AbstractRasterLayer.wms_configuration|AbstractRasterLayer.bing_configuration|AbstractLayer.geojson_configuration|AbstractHipsLayer.hipsFits_configuration|AbstractRasterLayer.osm_configuration|AbstractRasterLayer.wcsElevation_configuration|AbstractRasterLayer.wmts_configuration} layerDescription 
+ * @param {serverLayerCallback} callback 
+ * @param {serverLayerFallback} fallback 
+ */
+RegistryHandler.prototype.handleRequest = function(
     layerDescription,
     callback,
     fallback

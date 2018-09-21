@@ -26,7 +26,7 @@ define(function() {
      */
     Constants.API = {
         version: "[VERSION_API]"
-    }
+    };
 
     /**
      * @namespace
@@ -37,7 +37,7 @@ define(function() {
     Constants.LEVEL = {
         WARNING : "warning",
         ERROR : "error"
-    }
+    };
 
     /**
      * @namespace
@@ -210,7 +210,7 @@ define(function() {
         "IAU2000:30100": "Planet",
         "HorizontalLocal": "Ground",
         "IAU:Sun": "Planet"
-    }
+    };
 
     /**
      * @namespace

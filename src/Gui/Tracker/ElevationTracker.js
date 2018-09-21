@@ -27,11 +27,11 @@ define([
     /**
      * @name ElevationTracker
      * @class
-     *   ElevationTracker context constructor
+     *   Elevation Tracker
      * @augments AbstractTracker
      * @param {AbstractTracker_elevation_configuration} options - Elevation tracker configuration
-     * @param {boolean} [options.isMobile = false] - Touch capabilities     
      * @constructor
+     * @memberof module:Tracker     
      */
     var ElevationTracker = function(options) {
         AbstractTracker.prototype.constructor.call(this, options);
@@ -49,17 +49,15 @@ define([
 
     /**
      * Sets the scale layer taken from the elevationLayer
-     * @param elevationLayer
+     * @param {WCSElevationLayer}elevationLayer
      */
     ElevationTracker.prototype.setScaleLayer = function(elevationLayer) {
         this.scale = elevationLayer.getScale();
     };
 
     /**
-     * Update the tracker
      * @function update
      * @memberof AbstractTracker.prototype
-     * @param {object} event
      */
     ElevationTracker.prototype.update = function(event) {
         if (event.type.search("touch") >= 0) {
@@ -85,11 +83,8 @@ define([
     /**************************************************************************************************************/
 
     /**
-     * Compute elevation from a specific point
      * @function compute
-     * @memberof AbstractTracker.prototype
-     * @param geoPosition
-     * @returns {number} elevation
+     * @memberof ElevationTracker#
      */
     ElevationTracker.prototype.compute = function(geoPosition) {
         return this._getGlobe().getElevation(geoPosition[0], geoPosition[1]);
@@ -114,9 +109,8 @@ define([
     };
 
     /**
-     * Destroy the elevation tracker.
      * @function destroy
-     * @memberof AbstractTracker.prototype
+     * @memberof ElevationTracker#
      */
     ElevationTracker.prototype.destroy = function() {
         this.detach.call(this);

@@ -40,8 +40,9 @@ define([
     "./AbstractProvider",
     "../Renderer/FeatureStyle",
     "../Utils/Utils",
-    "../Utils/Constants"
-], function($, AbstractProvider, FeatureStyle, Utils, Constants) {
+    "../Utils/Constants",
+    "../Gui/dialog/ErrorDialog"
+], function($, AbstractProvider, FeatureStyle, Utils, Constants, ErrorDialog) {
     /**************************************************************************************************************/
 
     var namesFile;
@@ -114,10 +115,10 @@ define([
     }
 
     /*
-         * 	Failure function
-         */
+     * 	Failure function
+     */
     function failure() {
-        console.error("Failed to load files");
+        ErrorDialog.open(Contants.LEVEL.ERROR, "Failed to load files");
     }
 
     /**
@@ -161,7 +162,7 @@ define([
                     namesFile = response;
                 },
                 error: function(xhr, ajaxOptions, thrownError) {
-                    console.error(xhr.responseText);
+                    ErrorDialog.open(Contants.LEVEL.ERROR, "Failed to request "+configuration.nameUrl,xhr.responseText);
                 }
             };
 
@@ -172,7 +173,7 @@ define([
                     catalogueFile = response;
                 },
                 error: function(xhr, ajaxOptions, thrownError) {
-                    console.error(xhr.responseText);
+                    ErrorDialog.open(Contants.LEVEL.ERROR, "Failed to request "+configuration.catalogueUr,xhr.responseText);
                 }
             };
 
@@ -185,11 +186,15 @@ define([
                 failure
             );
         } else {
-            console.error("Not valid options");
+            ErrorDialog.open(Contants.LEVEL.WARNING, "Not valid options for ContellationProvider", "nameUrl and catalogueUrl attributes must be passed"); 
             return false;
         }
     };
 
+    /**
+     * @function handleFeatures
+     * @memberof ConstellationProvider#
+     */    
     ConstellationProvider.prototype.handleFeatures = function(mizarLayer) {
         var constellationNamesFeatures = [];
         var constellationShapesFeatures = [];

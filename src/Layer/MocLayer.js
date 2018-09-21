@@ -119,7 +119,7 @@ define([
      */
     MocLayer.prototype.getInformationType = function() {
         return Constants.INFORMATION_TYPE.VECTOR;
-    }
+    };
 
     /**
      * Attaches the layer to the planet
@@ -189,7 +189,7 @@ define([
                 .find("label")
                 .css("color", "red");
                 ErrorDialog.open(Constants.LEVEL.ERROR, 'Failed ot request '+self.baseUrl, err);
-            }) 
+            }); 
         }
 
         // As post renderer, moc layer will regenerate data on tiles in case of base imagery change

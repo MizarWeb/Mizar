@@ -55,7 +55,7 @@ define([
                 dictionary = response;
             }, function(err) {
                 ErrorDialog.open(Constants.LEVEL.ERROR, 'Failed ot request '+marsResolverUrl, err);
-            })
+            });
 
         } else {
             dictionary = null;
@@ -64,13 +64,14 @@ define([
 
     /**************************************************************************************************************/
     /**
-          @name DictionaryNameResolver
-          @class
-              Plugin to access to the dictionary name resolver
-          @augments AbstractNameResolver
-          @param {Context} options - Configuration properties
-          @memberof module:NameResolver
-          */
+    * @name DictionaryNameResolver
+    * @class
+    *      Plugin to access to the dictionary name resolver
+    * @augments AbstractNameResolver
+    * @param {Context} options - Configuration properties
+    * @memberof module:NameResolver
+    * @constructor          
+    */
     var DictionaryNameResolver = function(options) {
         AbstractNameResolver.prototype.constructor.call(this, options);
         dictionary = retrieveDictionary(options);

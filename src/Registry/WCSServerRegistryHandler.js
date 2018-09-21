@@ -1,10 +1,40 @@
+/*******************************************************************************
+ * Copyright 2017-2018 CNES - CENTRE NATIONAL d'ETUDES SPATIALES
+ *
+ * This file is part of MIZAR.
+ *
+ * MIZAR is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * MIZAR is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with MIZAR. If not, see <http://www.gnu.org/licenses/>.
+ ******************************************************************************/
 define([
     "underscore-min",
     "../Utils/Utils",
     "./AbstractRegistryHandler",
     "../Utils/Constants",
-    "./WCSServer"
-], function(_, Utils, AbstractRegistryHandler, Constants, WCSServer) {
+    "./WCSServer",
+    "../Gui/dialog/ErrorDialog"
+], function(_, Utils, AbstractRegistryHandler, Constants, WCSServer, ErrorDialog) {
+
+    /**
+     * @class
+     * Creates a WCS Server Handler
+     * @param {*} layers 
+     * @param {*} mizarConfiguration 
+     * @param {*} pendingLayers
+     * @augments AbstractRegistryHandler
+     * @memberof module:Registry
+     * @constructor
+     */
     var WCSServerRegistryHandler = function(
         layers,
         mizarConfiguration,
@@ -25,9 +55,11 @@ define([
 
     /**
      * Moves an elements of the array to another index
-     * @param {[]} array array
+     * @param {Array} array array
      * @param {number} from index where the element to move is located
      * @param {number} to index where the element must be gone.
+     * @function _moveArrayEltFromTo
+     * @memberof WCSServerRegistryHandler#
      * @private
      */
     function _moveArrayEltFromTo(array, from, to) {
@@ -38,7 +70,9 @@ define([
     /**
      * Destroys the TileWireFrame if it exists and returns its layer description.
      * @param layers list of layers to load
-     * @private
+     * @function _destroyTileWireFrame
+     * @memberof WCSServerRegistryHandler#
+     * @private     
      */
     function _destroyTileWireFrame(layers) {
         var i, layerDescription;
@@ -65,7 +99,9 @@ define([
      * @param AbstractRegistryHandler Registry
      * @param callback callback
      * @param fallback fallback
-     * @private
+     * @function _moveTileWireFrameLayer
+     * @memberof WCSServerRegistryHandler#
+     * @private  
      */
     function _moveTileWireFrameLayer(
         layers,
@@ -83,6 +119,10 @@ define([
         }
     }
 
+    /**
+     * @function handleRequest
+     * @memberof WCSServerRegistryHandler#
+     */     
     WCSServerRegistryHandler.prototype.handleRequest = function(
         layerDescription,
         callback,
@@ -114,7 +154,7 @@ define([
             if (fallback) {
                 fallback(e);
             } else {
-                console.error(e);
+                ErrorDialog.open(Constants.LEVEL.ERROR, e);
             }
         }
     };

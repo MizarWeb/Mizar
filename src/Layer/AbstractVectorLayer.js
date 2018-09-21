@@ -79,7 +79,7 @@ define([
      */
     AbstractVectorLayer.prototype.getInformationType = function() {
         return Constants.INFORMATION_TYPE.VECTOR;
-    }
+    };
 
     /**
      * Returns the min level for which the vector is displayed.

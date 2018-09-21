@@ -110,7 +110,7 @@ define([
      */
     GroundOverlayLayer.prototype.getInformationType = function() {
         return Constants.INFORMATION_TYPE.RASTER;
-    }
+    };
 
     /**
      * Loads a global overview if available. Only use for sky rendering currently
@@ -119,7 +119,7 @@ define([
      */
     GroundOverlayLayer.prototype.loadOverview = function() {
 
-    }    
+    };    
 
     /**
      * Attaches layer to the globe.

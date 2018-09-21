@@ -1,3 +1,21 @@
+/*******************************************************************************
+ * Copyright 2017-2018 CNES - CENTRE NATIONAL d'ETUDES SPATIALES
+ *
+ * This file is part of MIZAR.
+ *
+ * MIZAR is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * MIZAR is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with MIZAR. If not, see <http://www.gnu.org/licenses/>.
+ ******************************************************************************/
 define([
     "jquery",
     "underscore-min",
@@ -6,6 +24,19 @@ define([
     "../Layer/LayerFactory",
     "wms-capabilities"
 ], function($, _, Utils, XmlToJson, LayerFactory, WMSCapabilities) {
+
+    /**
+     * @class
+     * Creates an instance of WMS server
+     * A WMS server exposes a set of {@link WMTLayer WMT} layers.
+     * @param {boolean} proxyUse  true for using the poxy
+     * @param {string} proxyUrl proxy url
+     * @param {Options} options Options
+     * @param {string} [options.baseUrl] Base URL of the getCapabilities
+     * @param {string} [options.getCapabilities] GetCapabilities 
+     * @memberof module:Registry
+     * @constructor
+     */
     var WMSServer = function(proxyUse, proxyUrl, options) {
         if (options.getCapabilities) {
             options.baseUrl = Utils.computeBaseUrlFromCapabilities(
@@ -28,6 +59,15 @@ define([
         this.options = options;
     };
 
+    /**
+     * Skip when the current layer is not included in the list of defined layers (layersFromConf)  
+     * @param {string[]} layersFromConf List of user-defined layer
+     * @param {string} currentLayer
+     * @returns {boolean} true wen the currentLayer is not included in the list of user-defined layers otherwise false 
+     * @function _mustBeSkipped
+     * @memberof WMSServer#
+     * @private
+     */    
     function _mustBeSkipped(layersFromConf, currentLayerName) {
         return (
             layersFromConf.length !== 0 &&
@@ -35,10 +75,27 @@ define([
         );
     }
 
+    /**
+     * Capabilities has a group ?
+     * @param {string} jsonLayer layer
+     * @returns  {boolean} true when layers are grouped otherwise false
+     * @function _hasGroup
+     * @memberof WMSServer#
+     * @private     
+     */
     function _hasGroup(jsonLayer) {
         return Array.isArray(jsonLayer.Layer);
     }
 
+    /**
+     * Computes attribution from capabilities
+     * @param {string} layerDescription User-defined layer description
+     * @param {string} jsonLayers Metadata on the layers
+     * @param {string} jsonLayer layer description from capabilities
+     * @function _computeAttribution
+     * @memberof WMSServer#
+     * @private      
+     */
     function _computeAttribution(layerDescription, jsonLayers, jsonLayer) {
         var attribution, logo, title;
         if (layerDescription.attribution) {
@@ -73,6 +130,15 @@ define([
         return attribution;
     }
 
+    /**
+     * Computes copyright
+     * @param {string} layerDescription User-defined layer description 
+     * @param {string} jsonLayers Metadata on the layers
+     * @param {string} jsonLayer layer description from capabilities
+     * @function _computeCopyrightURL
+     * @memberof WMSServer#
+     * @private        
+     */
     function _computeCopyrightURL(layerDescription, jsonLayers, jsonLayer) {
         var copyrightURL;
         if (layerDescription.copyrightUrl) {
@@ -93,6 +159,15 @@ define([
         return copyrightURL;
     }
 
+    /**
+     * Computes the bbox center.
+     * if bbox is null then center is defined as [0,0, 100000]
+     * @param {bbox_type|null} bbox
+     * @returns {center_type} the central position of the camera and the distance from which the bbox is embedded
+     * @function _computeCenterBbox
+     * @memberof WMSServer#
+     * @private     
+     */    
     function _computeCenterBbox(bbox) {
         var centerLong = 0.5 * (bbox[0] + bbox[2]);
         var centerLat = 0.5 * (bbox[1] + bbox[3]);
@@ -105,6 +180,14 @@ define([
         return [centerLong, centerLat];
     }
 
+    /**
+     * Converts a bbox string to an array of float.
+     * @param {string[]} jsonBbox. bbox as string. First element is the lower left corner. 2nd element is the upper right corner
+     * @returns {bbox_type} bbox as an array  
+     * @function _bbox
+     * @memberof WMSServer#
+     * @private       
+     */    
     function _bbox(jsonLayer) {
         var bbox = jsonLayer.EX_GeographicBoundingBox;
         var result;
@@ -118,6 +201,14 @@ define([
         return result;
     }
 
+    /**
+     * Boox for grouped layer
+     * @param {string} jsonLayer layer from capabilities
+     * @returns  {bbox_type} bbox as an array 
+     * @function _bboxGroup
+     * @memberof WMSServer#
+     * @private        
+     */
     function _bboxGroup(jsonLayer) {
         var result;
         if (_hasGroup.call(this, jsonLayer)) {
@@ -141,6 +232,13 @@ define([
         return result;
     }
 
+    /**
+     * Returns the metadata
+     * @param {metadata~requestCallback} callback 
+     * @param {serverLayerFallback} fallback 
+     * @function getMetadata
+     * @memberof WMSServer#      
+     */      
     WMSServer.prototype.getMetadata = function(callback, fallback) {
         var self = this;
         Utils.requestUrl(
@@ -163,6 +261,25 @@ define([
         );
     };
 
+    /**
+     * The dimension.
+     * @typedef {Object} dimension_type
+     * @property {string} units - Units of the dimension.
+     * @property {string} unitSymbol - Unit symbol.
+     * @property {string} default - default value.
+     * @property {string} multipleValues - multiples values.
+     * @property {string} nearestValue - nearest vlaue.     
+     * @property {string} value - value.          
+     */
+
+    /**
+     * Parses the dimension from capabilities
+     * @param {Array.<dimension_type>} dimension 
+     * @returns {{}} a hash of name => dimension
+     * @function _parseDimension
+     * @memberof WMSServer#
+     * @private       
+     */
     function _parseDimension(dimension) {
         if (dimension == null) {
             return null;
@@ -183,6 +300,16 @@ define([
         return dim;
     }
 
+    /**
+     * Create a layer
+     * @param {*} layerDescription 
+     * @param {*} jsonLayers 
+     * @param {*} jsonLayer 
+     * @returns {Layer} the layer
+     * @function _createLayer
+     * @memberof WMSServer#
+     * @private       
+     */
     function _createLayer(layerDescription, jsonLayers, jsonLayer) {
         var attribution = [];
         if (_hasGroup.call(this, jsonLayer)) {
@@ -237,6 +364,15 @@ define([
         return LayerFactory.create(layerDesc);
     }
 
+    /**
+     * Create layers
+     * @param {*} layerDescription 
+     * @param {*} layersFromConf 
+     * @param {*} jsonLayers 
+     * @function _createLayers
+     * @memberof WMSServer#
+     * @private     
+     */
     function _createLayers(layerDescription, layersFromConf, jsonLayers) {
         var layers = [];
         for (var i = 0; i < jsonLayers.Layer.length; i++) {
@@ -256,6 +392,13 @@ define([
         return layers;
     }
 
+    /**
+     * Create WMS layers from WMS capabilities
+     * @param {serverLayerCallback} callback 
+     * @param {serverLayerFallback} fallback 
+     * @function createLayers
+     * @memberof WMSServer#      
+     */    
     WMSServer.prototype.createLayers = function(callback, fallback) {
         this.getMetadata(function(layerDescription, metadata) {
             var layersFromConf = layerDescription.hasOwnProperty("layers")
@@ -271,6 +414,15 @@ define([
         }, fallback);
     };
 
+    /**
+     * Returns the capabilities
+     * @param {string} baseUrl GetCapabilities URL
+     * @param {Object} options
+     * @param {string} [options.version = 1.0.0] WCS version 
+     * @function getCapabilitiesFromBaseURL
+     * @memberof WMSServer#     
+     * @returns {string} describeCoverage URL      
+     */
     WMSServer.getCapabilitiesFromBaseURl = function(baseUrl, options) {
         var getCapabilitiesUrl = baseUrl;
         getCapabilitiesUrl = Utils.addParameterTo(

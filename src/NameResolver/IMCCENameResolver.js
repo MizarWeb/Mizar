@@ -33,6 +33,7 @@ define([
      * @augments AbstractNameResolver
      * @param {Context} options - Context
      * @memberof module:NameResolver
+     * @constructor
      */
     var IMCCENameResolver = function(options) {
         AbstractNameResolver.prototype.constructor.call(this, options);

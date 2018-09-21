@@ -1,23 +1,64 @@
-define(["underscore-min", "../Layer/LayerFactory"], function(_, LayerFactory) {
+/*******************************************************************************
+ * Copyright 2017-2018 CNES - CENTRE NATIONAL d'ETUDES SPATIALES
+ *
+ * This file is part of MIZAR.
+ *
+ * MIZAR is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * MIZAR is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with MIZAR. If not, see <http://www.gnu.org/licenses/>.
+ ******************************************************************************/
+define(["underscore-min", "../Layer/LayerFactory", "../Utils/Constants", "../Gui/dialog/ErrorDialog"], function(_, LayerFactory, Constants, ErrorDialog) {
+
+    /**
+     * @name AbstractRegistryHandler
+     * @class
+     *  Abstract Registry Handler
+     * @param {object} options
+     * @implements {RegistryHandler}
+     */    
     var AbstractRegistryHandler = function() {
         this.next = {
             handleRequest: function(layerDescription, callback, fallback) {
-                console.log("All strategies exhausted.");
+                ErrorDialog.open(Constants.LEVEL.WARNING, "All strategies exhausted.");
             }
         };
     };
 
+    /**
+     * @function setNext
+     * @memberof AbstractRegistryHandler#
+     */
     AbstractRegistryHandler.prototype.setNext = function(next) {
         this.next = next;
         return next;
     };
 
+    /**
+     * @function handleRequest
+     * @memberof AbstractRegistryHandler#
+     */    
     AbstractRegistryHandler.prototype.handleRequest = function(
         layerDescription,
         callback,
         fallback
     ) {};
 
+    /**
+     * Handles pending layers.
+     * @function _handlePendingLayers
+     * @memberof AbstractRegistryHandler#
+     * @param {Layer[]} pendingLayers Pending layers
+     * @param {Layer[]} List pf layers
+     */  
     AbstractRegistryHandler.prototype._handlePendingLayers = function(
         pendingLayers,
         layers

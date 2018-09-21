@@ -17,11 +17,6 @@
  * along with GlobWeb. If not, see <http://www.gnu.org/licenses/>.
  ***************************************/
 
-/**
- * Provider
- * @module Provider
- * @implements {Provider}
- */
 define(["jquery"], function($) {
     /**************************************************************************************************************/
 
@@ -30,8 +25,7 @@ define(["jquery"], function($) {
      * @class
      *  Abstract Provider constructor
      * @param {object} options
-     * @constructor
-     * @memberof module:Provider
+     * @implements {Provider}
      */
     var AbstractProvider = function(options) {
         this.options = options;

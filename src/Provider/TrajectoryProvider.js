@@ -40,11 +40,17 @@ define([
     var url;
     var data;
 
+    /**
+     * Parses the files
+     * @param {string} response  response
+     * @returns {Object} the points of the trafectory
+     */
     function _parseFile(response) {
         var pois = [];
         var lines = response.split("\n");
         for (var i = 0; i < lines.length; i++) {
             var line = lines[i];
+            // skip comments
             if (line.startsWith("#")) {
                 continue;
             }
@@ -59,6 +65,11 @@ define([
         return pois;
     }
 
+    /**
+     * Ceates lines from the set of points
+     * @param {Object} pois pois
+     * @returns {string} the geometry 
+     */
     function _createLines(pois) {
         var geom = [];
         for (var j = 1; j < pois.length; j++) {
@@ -70,12 +81,21 @@ define([
         return geom;
     }
 
+    /**
+     * ExtractDates from the set of points
+     * @param {Object} Set of points 
+     * @returns Object range date as [date min, date max]     
+     */
     function _extractDates(pois) {
         var dateMin = pois[0][2];
         var dateMax = pois[pois.length - 1][2];
         return [dateMin, dateMax];
     }
 
+    /**
+     * Computes the trajectory.
+     * @param {Layer} mizarLayer 
+     */
     var computePositions = function(mizarLayer) {
         Utils.requestUrl(url, 'text', 'plain/text', null, function(response){
             var pois = _parseFile(response);
@@ -130,8 +150,9 @@ define([
     };
 
     /*
-         * Json template for a point
-         */
+     * Json template for a point
+     * @param 
+     */
     function createTrajectory(mizarLayer, type, name, obj) {
         function _computeDistance(trajectory) {
             var distance = 0;
@@ -165,6 +186,15 @@ define([
         };
     }
 
+    /**
+     * @name TrajectoryProvider
+     * @class
+     *    Create a trajectory, which can be refreshed
+     * @param {object} options
+     * @augments AbstractProvider
+     * @constructor
+     * @memberof module:Provider
+     */
     var TrajectoryProvider = function(options) {
         AbstractProvider.prototype.constructor.call(this, options);
         self = this;
@@ -176,6 +206,15 @@ define([
 
     /**************************************************************************************************************/
 
+    /**
+     * Asynchronous requests to reload trajectory at some time interval
+     * @function loadFiles
+     * @memberof TrajectoryProvider#
+     * @param {Layer} mizarLayer - Mizar layer
+     * @param {Object} configuration - Configuration options
+     * @param {string} configuration.url - Url providing the trajectory
+     * @param {string} configuration.interval - time in ms where the trajectory is reloaded
+     */    
     TrajectoryProvider.prototype.loadFiles = function(layer, configuration) {
         data = configuration;
         interval = configuration.interval ? configuration.interval : 60000;
@@ -183,6 +222,10 @@ define([
         self.handleFeatures(layer);
     };
 
+    /**
+     * @function handleFeatures
+     * @memberof TrajectoryProvider#
+     */        
     TrajectoryProvider.prototype.handleFeatures = function(layer) {
         computePositions(layer);
         setInterval(function() {

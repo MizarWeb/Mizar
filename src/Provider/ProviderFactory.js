@@ -32,6 +32,34 @@ define([
     Constants
 ) {
     return {
+        /**
+         * Factory to create a provider.
+         *
+         * Creates a provider based on :
+         * <ul>
+         *     <li>the provider type {@link PROVIDER},</li>
+         *     <li>the options for the specific provider</li>
+         * </ul>
+         *
+         * Severals providers can be created :
+         * <ul>
+         *     <li>{@link module:Provider.ConstellationProvider ConstellationProvider}</li>
+         *     <li>{@link module:Provider.CraterProvider CraterProvider}</li>
+         *     <li>{@link module:Provider.PlanetProvider PlanetProvider}</li>
+         *     <li>{@link module:Provider.StarProvider StarProvider}</li>
+         *     <li>{@link module:Provider.TrajectoryProvider TrajectoryProvider}</li>         
+         * </ul>
+         * @param {PROVIDER} type - Type of provider.
+         * @param {Object} options - See the options for each animation for further information
+         * @return {Provider} - the interface to handle an animation
+         * @throws {RangeError} Type not valid - a valid type is included in the list {@link PROVIDER}
+         * @alias module:Provider.ProviderFactory.create
+         * @see {@link module:Provider.ConstellationProvider ConstellationProvider} Loads constellations
+         * @see {@link module:Provider.CraterProvider CraterProvider} Loads Craters
+         * @see {@link module:Provider.PlanetProvider PlanetProvider} Loads planets position
+         * @see {@link module:Provider.TrajectoryProvider TrajectoryProvider} Loads trajectory
+         *
+         */        
         create: function(type, options) {
             var obj;
             switch (type) {

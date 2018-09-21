@@ -58,11 +58,6 @@ define([
     HipsMetadata,
     Time
 ) {
-    //TODO bug : shortest path
-    //TODO : charger cratere Mars et l'afficher à un certain niveau de zoom => fonctionne par FeatureStyle
-    //TODO : calculer le getFov pour la navigation de type "Planet" pour en déduire le FOV en fonction du level de Geotiling
-    //TODO : Elevation KO quand projection 2D
-
     /**
      * mizarMode:toggle.<br/>
      * Called when Mizar switches from a context to another context
@@ -71,12 +66,14 @@ define([
      */
 
     /**
+     * API version
      * @constant
      * @type {string}
      */
     const API_VERSION = Constants.API.version;
 
     /**
+     * Angle from pole to camera
      * @constant
      * @type {number}
      */
@@ -267,7 +264,7 @@ define([
      **********************************************************************************************************/
 
     /**
-     * Static variable, API version.<br/>
+     * API {@link VERSION version}
      * [SemVer]{@link http://semver.org/} concept is used for versioning
      * @name VERSION
      * @memberof Mizar#
@@ -275,103 +272,112 @@ define([
     Mizar.VERSION = API_VERSION;
 
     /**
-     * Static variable, supported {@link ANIMATION animation} type
+     * List of supported values for {@link ANIMATION animation}* 
      * @name ANIMATION
      * @memberof Mizar#
+     * @see {@link module:Animation animation package} for further information.
      */
     Mizar.ANIMATION = Constants.ANIMATION;
 
     /**
-     * Static variable, supported {@link LAYER layer} type
+     * List of supported values for {@link LAYER layer}
      * @name LAYER
-     * @memberof Mizar#//
+     * @memberof Mizar#
+     * @see {@link module:Layer layer package} for further information.     
      */
     Mizar.LAYER = Constants.LAYER;
 
     /**
-     * Static variable, supported {@link INFORMATION_TYPE information} type
+     * List of supported values for {@link INFORMATION_TYPE information}
      * @name INFORMATION_TYPE
      * @memberof Mizar#
      */    
     Mizar.INFORMATION_TYPE = Constants.INFORMATION_TYPE;
 
     /**
-     * Static variable, supported {@link GEOMETRY geometry} type
+     * List of supported values for {@link GEOMETRY geometry}
      * @name GEOMETRY
      * @memberof Mizar#
      */
     Mizar.GEOMETRY = Constants.GEOMETRY;
 
     /**
-     * Static variable, supported {@link NAVIGATION navigation} type
+     * List of supported values for {@link NAVIGATION navigation}
      * @name NAVIGATION
      * @memberof Mizar#
+     * @see {@link module:Navigation navigation package} for further information.          
      */
     Mizar.NAVIGATION = Constants.NAVIGATION;
 
     /**
-     * Static variable, supported {@link CONTEXT context} type
+     * List of supported values for {@link CONTEXT context}
      * @name CONTEXT
      * @memberof Mizar#
+     * @see {@link module:Context context package} for further information.               
      */
     Mizar.CONTEXT = Constants.CONTEXT;
 
     /**
-     * Static variable, supported {@link PROJECTION projection} type
+     * List of supported values for {@link PROJECTION projection}
      * @name PROJECTION
      * @memberof Mizar#
+     * @see {@link module:Projection projection package} for further information.               
      */
     Mizar.PROJECTION = Constants.PROJECTION;
 
     /**
-     * Static variable, supported {@link CRS coordinate reference system} type
+     * List of supported values for {@link CRS coordinate reference system}
      * @name CRS
      * @memberof Mizar#
+     * @see {@link module:Crs coordinate system package} for further information.               
      */
     Mizar.CRS = Constants.CRS;
 
     /**
-     * Static variable, supported {@link CRS_TO_CONTEXT crs/context mapping}
+     * List of supported values for {@link CRS_TO_CONTEXT crs/context mapping}
+     * @name CRS_TO_CONTEXT
+     * @memberof Mizar#     
      */
     Mizar.CRS_TO_CONTEXT = Constants.CRS_TO_CONTEXT;
 
     /**
-     * Static variable, supported {@link DISPLAY display} order
+     * List of supported values {@link DISPLAY display}
      * @name DISPLAY
      * @memberof Mizar#
      */
     Mizar.DISPLAY = Constants.DISPLAY;
 
     /**
-     * Static variable, supported {@link SERVICE service} type
+     * List of supported values for {@link SERVICE service}
      * @name SERVICE
      * @memberof Mizar#
      */
     Mizar.SERVICE = Constants.SERVICE;
 
     /**
-     * Static variable, supported {@link UTILITY utility} type
+     * List of supported values for {@link UTILITY utility}
      * @name UTILITY
      * @memberof Mizar#
      */
     Mizar.UTILITY = Constants.UTILITY;
 
     /**
-     * Static variable, supported {@link PROVIDER provider} type
+     * List of supported values for {@link PROVIDER provider}
      * @name PROVIDER
      * @memberof Mizar#
+     * @see {@link module:Provider provider package} for further information.                    
      */
     Mizar.PROVIDER = Constants.PROVIDER;
 
     /**
-     * Static variable, supported {@link EVENT_MSG event} type
+     * List of supported values for {@link EVENT_MSG event}
      * @name EVENT_MSG
      * @memberof Mizar#
      */
     Mizar.EVENT_MSG = Constants.EVENT_MSG;
 
     /**
-     * Static variable, supported {@link TIME_STEP constants} type
+     * List of supported valaues for {@link TIME_STEP time step} 
      * @name TIME_STEP
      * @memberof Mizar#
      */
@@ -472,7 +478,8 @@ define([
      * Switch to a context
      * @param {AbstractContext} context - Target context
      * @param {Object} [options] - options management for the source context
-     * @param {boolean} options.mustBeDestroyed=false - options management for the source context
+     * @param {boolean} [options.mustBeDestroyed=false] - options management for the source context : destroy it
+     * @param {boolean} [options.mustBeHidden=false] - options management for the source context : hidden it    
      * @function _switchToContext
      * @memberof Mizar#
      * @private
@@ -749,7 +756,7 @@ define([
             callback(url);
         }, function(err) {
             _checkHipsServiceIsAvailable(hipsServiceUrlArray, callback);
-        })
+        });
     }
 
     /**
@@ -851,8 +858,6 @@ define([
     /**************************************************************************************************************
      *                                          Public methods
      **************************************************************************************************************/
-
-    //               ***************************** Members *****************************
 
     /**
      * Returns the sky context.
@@ -1015,7 +1020,6 @@ define([
      * Returns the options
      * @function getOptions
      * @memberof Mizar#
-     * @throws ReferenceError - Will throw an exception when no context has been created.
      * @returns {Mizar_parameters} - Mizar's options
      */
     Mizar.prototype.getOptions = function() {
@@ -1029,8 +1033,8 @@ define([
      * @returns {Crs|null} the coordinate reference system or null when no created context
      * @function getCrs
      * @memberof Mizar#
-     * @see {@link Mizar#setActivatedContext}
-     * @see {@link Mizar#createContext}
+     * @see {@link Mizar#setActivatedContext} to select a context
+     * @see {@link Mizar#createContext} to create a context
      */
     Mizar.prototype.getCrs = function() {
         var result;
@@ -1077,7 +1081,7 @@ define([
 
     /**
      * Sets the current or integrated time of the application
-     * @param time single, multiple or range of values
+     * @param {Time.configuration} time single, multiple or range of values
      * @function setTime
      * @memberof Mizar#
      */
@@ -1087,7 +1091,7 @@ define([
 
     /**
      * Returns the current or integrated time.
-     * @returns {string} the simple, multiple or range of values
+     * @returns {Time.configuration} the simple, multiple or range of values
      * @function getTime
      * @memberof Mizar#
      */
@@ -1141,7 +1145,6 @@ define([
             this.renderContext = ctx.getRenderContext();
             result = true;
         } catch (e) {
-            console.error("Error", e);
             result = false;
             ErrorDialog.open(Constants.LEVEL.ERROR, 'Cannot create the context', e.message);
         }
@@ -1183,10 +1186,11 @@ define([
     };
 
     /**
-     * Switches To a context.
+     * Switches to a context.
      * @param {AbstractContext} context - target context
      * @param {Object} [options] - options management for the source context
-     * @param {boolean} options.mustBeDestroyed=false - options management for the source context
+     * @param {boolean} [options.mustBeDestroyed=false] - options management for the source context
+     * @param {boolean} [options.mustBeHidden=false] - options management for the source context     
      * @param {Function} callback - Call at the end of the toggle
      * @fires Mizar#mizarMode:toggle
      * @function toggleToContext
@@ -1270,8 +1274,8 @@ define([
      * @returns {Layer[]} the layers
      * @memberof Mizar#
      * @throws {RangeError} Will throw an error when the mode is not part of {@link CONTEXT}
-     * @see {@link Mizar#setActivatedContext}
-     * @see {@link Mizar#createContext}
+     * @see {@link Mizar#setActivatedContext} to select a context
+     * @see {@link Mizar#createContext} to create a context
      */
     Mizar.prototype.getLayers = function(mode) {
         var result;
@@ -1287,7 +1291,7 @@ define([
     /**
      * Draws the layer on the top.
      * @function setLayerOnTheTop
-     * @param layerID
+     * @param {string} layerID Layer ID
      * @return {boolean} Returns true when the layer is drawn on the top otherwise false.
      * @memberof Mizar#
      */
@@ -1324,8 +1328,8 @@ define([
      * @param {CONTEXT|undefined} mode - Context on which the function is applied
      * @returns {Layer|undefined|null} The layer or undefined when the layer is not found
      * @memberof Mizar#
-     * @see {@link Mizar#setActivatedContext}
-     * @see {@link Mizar#createContext}
+     * @see {@link Mizar#setActivatedContext} to select a context
+     * @see {@link Mizar#createContext} to create a context
      */
     Mizar.prototype.getLayerByID = function(layerID, mode) {
         var result;
@@ -1347,8 +1351,8 @@ define([
      * @param {CONTEXT|undefined} mode - Context on which the function is applied
      * @returns {Layer|undefined|null} the layer or undefined when the layer is not found
      * @memberof Mizar#
-     * @see {@link Mizar#setActivatedContext}
-     * @see {@link Mizar#createContext}
+     * @see {@link Mizar#setActivatedContext} to select a context
+     * @see {@link Mizar#createContext} to create a context
      */
     Mizar.prototype.getLayerByName = function(layerName, mode) {
         var result;
@@ -1427,8 +1431,8 @@ define([
      * @param {CONTEXT|undefined} mode - Context on which the function is applied
      * @returns {boolean} true when the layer is added otherwise false
      * @memberof Mizar#
-     * @see {@link Mizar#setActivatedContext}
-     * @see {@link Mizar#createContext}
+     * @see {@link Mizar#setActivatedContext} to select a context
+     * @see {@link Mizar#createContext} to create a context
      */
     Mizar.prototype.removeLayer = function(layerID, mode) {
         var result;
@@ -1454,8 +1458,8 @@ define([
      * @param {CONTEXT|undefined} mode - Context on which the function is applied
      * @returns {boolean} true when the layer is set as background otherwise false
      * @memberof Mizar#
-     * @see {@link Mizar#setActivatedContext}
-     * @see {@link Mizar#createContext}
+     * @see {@link Mizar#setActivatedContext} to select a context
+     * @see {@link Mizar#createContext} to create a context
      */
     Mizar.prototype.setBackgroundLayer = function(layerName, mode) {
         var result;
@@ -1480,8 +1484,8 @@ define([
      * @param {CONTEXT|undefined} mode - Context on which the function is applied.
      * @returns {boolean} true when the layer is set as background otherwise false
      * @memberof Mizar#
-     * @see {@link Mizar#setActivatedContext}
-     * @see {@link Mizar#createContext}
+     * @see {@link Mizar#setActivatedContext} to select a context
+     * @see {@link Mizar#createContext} to create a context
      */
     Mizar.prototype.setBackgroundLayerByID = function(layerID, mode) {
         var result;
@@ -1691,14 +1695,15 @@ define([
     };
 
     /**
-         * Creates and get Stats Object
-         * @function createStats
-         * @param {Object} options - Configuration properties for stats. See {@link Stats} for options
-         * @returns {boolean} true when context fors tats exist otherwise false
-         * @return {Stats}
-         * @memberof Mizar#
-
-         */
+     * Creates and get Stats Object
+     * @function createStats
+     * @param {Object} options - Configuration properties for stats.
+     * @param {string|object} options.element div ID ou jquery element in wich the stats are written 
+     * @param {boolean} [options.verbose=false] detailled display when verbose=true
+     * @return {Stats}
+     * @memberof Mizar#
+     * @see {@link Stats} 
+     */
     Mizar.prototype.createStats = function(options) {
         var result;
         if (this.skyContext) {
@@ -1747,7 +1752,9 @@ define([
     //               ***************************** Memory management *****************************
 
     /**
-     * Disposes the Mizar's contexts (planet, sky and ground)
+     * Disposes the Mizar's contexts (planet, sky and ground).
+     * 
+     * Reset the {@link TileManager} and delete texture for each defined context.
      * @function dispose
      * @memberof Mizar#
      */
@@ -1776,12 +1783,13 @@ define([
             layer._detach(ctx.globe);
             layer._attach(ctx.globe);
         } else {
-            console.error("Context not yet available");
+            ErrorDialog.open(Constants.LEVEL.WARNING, "Context not yet available");
         }
     };
 
     /**
      * Destroys Mizar
+     * 
      * @function destroy
      * @memberof Mizar#
      */

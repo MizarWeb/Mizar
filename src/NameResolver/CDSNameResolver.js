@@ -17,11 +17,6 @@
  * along with MIZAR. If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
 
-/**
- * Name resolver module : API allowing to search object name and zoom to it
- * @module NameResolver
- * @implements {NameResolver}
- */
 define([
     "jquery",
     "underscore-min",
@@ -34,10 +29,11 @@ define([
     /**
      * @name CDSNameResolver
      * @class
-     *   Plugin to access to CDS name resolver
+     *  Plugin to access to CDS name resolver
      * @augments AbstractNameResolver
      * @param {Context} options - Context
      * @memberof module:NameResolver
+     * @constructor     
      */
     var CDSNameResolver = function(options) {
         AbstractNameResolver.prototype.constructor.call(this, options);

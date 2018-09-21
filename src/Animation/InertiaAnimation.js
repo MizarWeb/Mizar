@@ -46,10 +46,12 @@
  *
  * In addition to the classes, a {@link module:Animation.AnimationFactory factory} is available to help for creating
  * animation. Once the animation is created, the client can handle it by the use of its {@link Animation interface}.
+ * 
+ * See {@tutorial getting-started-layer-extrude} for an example of sgmented animation.
  *
  * @module Animation
  * @implements {Animation}
- * @todo Describes here and link to the tutos about Animation
+ * 
  */
 define(["../Utils/Utils", "./AbstractAnimation"], function(Utils,AbstractAnimation) {
     /**************************************************************************************************************/

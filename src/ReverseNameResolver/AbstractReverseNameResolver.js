@@ -21,10 +21,10 @@ define([], function() {
     /**************************************************************************************************************/
 
     /**
-     *   Abstract Wrapper constructor
-     *   @param {Context} options - context
-     *   @constructor
-     *   @implements {ReverseNameResolver}
+     * @class
+     * Abstract Wrapper constructor
+     * @param {Context} options - context
+     * @implements {ReverseNameResolver}
      */
     var AbstractReverseNameResolver = function(options) {
         this.ctx = options;

@@ -5,6 +5,7 @@ define(["jquery", "moment", "../Utils/Constants", "../Utils/Utils"], function(
     Utils
 ) {
     /**
+     * @class
      * Store time sample
      * @constructor
      */

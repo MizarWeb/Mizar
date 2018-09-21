@@ -43,7 +43,6 @@ define([
      * A coordinate system is a set of mathematical rules for specifying how coordinates are to be assigned to points
      * @param {AbstractCrs.configuration} options - Options for the coordinate reference system.
      * @throws {ReferenceError} Will throw when option.geoideName, options.geoBound and options.type are not defined
-     * @constructor
      * @implements {Crs}
      */
     var AbstractCrs = function(options) {

@@ -22,6 +22,7 @@ define(["jquery", "moment", "../Utils/Constants", "../Utils/Utils"], function(
     const REGEXP_YEAR = /^\d{4}$/;
 
     /**
+     * @class
      * Handles time.
      * @param {Time.time} time
      * @constructor
@@ -36,7 +37,9 @@ define(["jquery", "moment", "../Utils/Constants", "../Utils/Utils"], function(
      * Tests if the time input parameter is based on TimeTravel.
      * @param {Time.time} value time
      * @return {boolean} true when TimeTravel parameter is used otherwise false
-     * @private
+     * @function _isTimeTravel
+     * @memberof Time#
+     * @private     
      */
     function _isTimeTravel(value) {
         return (
@@ -50,6 +53,8 @@ define(["jquery", "moment", "../Utils/Constants", "../Utils/Utils"], function(
      * Tests if the time input parameter is based on a period
      * @param {Time.period} value time
      * @return {boolean} true when period parameter is used otherwise false
+     * @function _isPeriod     
+     * @memberof Time#     
      * @private
      */
     function _isPeriod(value) {
@@ -60,6 +65,8 @@ define(["jquery", "moment", "../Utils/Constants", "../Utils/Utils"], function(
      * Tests if the time input parameter is based on a semi-period (to not defined)
      * @param {Time.period} value time
      * @return {boolean} true when period parameter is used otherwise false
+     * @function _isOpenedInterval          
+     * @memberof Time#     
      * @private
      */
     function _isOpenedInterval(value) {
@@ -70,6 +77,8 @@ define(["jquery", "moment", "../Utils/Constants", "../Utils/Utils"], function(
      * Tests if the time input parameter is based on a string
      * @param {string} value time
      * @return {boolean} true when a string is used to define the date
+     * @function _isDateString               
+     * @memberof Time#     
      * @private
      */
     function _isDateString(value) {
@@ -80,6 +89,8 @@ define(["jquery", "moment", "../Utils/Constants", "../Utils/Utils"], function(
      * Tests if the time input parameter is based on a Date object
      * @param {Date} value time
      * @return {boolean} true when a Date object is used to define the date
+     * @function _isDate                    
+     * @memberof Time#     
      * @private
      */
     function _isDate(value) {
@@ -90,6 +101,8 @@ define(["jquery", "moment", "../Utils/Constants", "../Utils/Utils"], function(
      * Tests is value is a numeric value.
      * @param value value to test
      * @return {boolean} true when value is a numeric otherwise false
+     * @function _isNumeric                         
+     * @memberof Time#     
      * @private
      */
     function _isNumeric(value) {
@@ -100,6 +113,8 @@ define(["jquery", "moment", "../Utils/Constants", "../Utils/Utils"], function(
      * Returns the unit (year, mont, day) of the date
      * @param {UNIT_TIME_WMS} unit
      * @return {TIME_STEP} the unit
+     * @function _unitWithoutTime     
+     * @memberof Time#     
      * @private
      */
     function _unitWithoutTime(unit) {
@@ -124,6 +139,8 @@ define(["jquery", "moment", "../Utils/Constants", "../Utils/Utils"], function(
      * Returns the unit (hour, minute, second) of the time.
      * @param {UNIT_TIME_WMS} unit unit of the time
      * @return {TIME_STEP} Unit of the time
+     * @function _unitWithTime          
+     * @memberof Time#     
      * @private
      */
     function _unitWithTime(unit) {
@@ -148,6 +165,8 @@ define(["jquery", "moment", "../Utils/Constants", "../Utils/Utils"], function(
      * Parses the resolution returned by the server side.
      * @param resolution
      * @return {{step: *, unit: *}} The resolution of the temporal step
+     * @function _timeResolution               
+     * @memberof Time#     
      * @private
      */
     function _timeResolution(resolution) {
@@ -178,6 +197,8 @@ define(["jquery", "moment", "../Utils/Constants", "../Utils/Utils"], function(
      * Tests if the time definition is a sampling (min/max/step)
      * @param {string} timeDefinition
      * @return {boolean} true when timeDefinition is a sampling
+     * @function _isSampling                    
+     * @memberof Time#     
      * @private
      */
     function _isSampling(timeDefinition) {
@@ -188,6 +209,8 @@ define(["jquery", "moment", "../Utils/Constants", "../Utils/Utils"], function(
      * Tests if the time definition is a single value
      * @param {string} timeDefinition
      * @return {boolean} true when timeDefinition is a discrete value
+     * @function _isDistinctValue                         
+     * @memberof Time#     
      * @private
      */
     function _isDistinctValue(timeDefinition) {
@@ -201,6 +224,8 @@ define(["jquery", "moment", "../Utils/Constants", "../Utils/Utils"], function(
      * @param {moment} date1
      * @param {moment} date2
      * @return {boolean} true when dates are equals otherwise false
+     * @function _isEqual                              
+     * @memberof Time#     
      * @private
      */
     function _isEqual(date1, date2) {
@@ -220,6 +245,8 @@ define(["jquery", "moment", "../Utils/Constants", "../Utils/Utils"], function(
      * Create a period from a given date
      * @param {moment} date
      * @return {{from, to}} the period
+     * @function _createPeriod                                   
+     * @memberof Time#     
      * @private
      */
     function _createPeriod(date) {
@@ -231,6 +258,14 @@ define(["jquery", "moment", "../Utils/Constants", "../Utils/Utils"], function(
         };
     }
 
+    /**
+     * 
+     * @param {*} period1 
+     * @param {*} date2 
+     * @function _isIntersect                                        
+     * @memberof Time#   
+     * @private  
+     */
     function _isIntersect(period1, date2) {
         var interval2 = _createPeriod(date2);
         return (
@@ -249,6 +284,9 @@ define(["jquery", "moment", "../Utils/Constants", "../Utils/Utils"], function(
      * @param {int} nbValues number of value between startDate/stopDate
      * @param {{step,unit}} timeResolution time resolution
      * @return {number} -1 when the requestedTime is not find in the binarySearch otherwise false
+     * @function _binarySearch                                             
+     * @memberof Time#   
+     * @private  
      */
     function _binarySearch(
         requestedTime,
@@ -283,6 +321,8 @@ define(["jquery", "moment", "../Utils/Constants", "../Utils/Utils"], function(
      * @param {string} format
      * @return The time moment unit
      * @private
+     * @function _lowestFormatResolution
+     * @memberof Time#     
      */
     function _lowestFormatResolution(format) {
         var timeResolution;
@@ -313,6 +353,8 @@ define(["jquery", "moment", "../Utils/Constants", "../Utils/Utils"], function(
      * @param {boolean} computed true when we do not find the real date from the server
      * @return {{date: *, display: *, period: {from: *, to: *}, computed: *}}
      * @private
+     * @function _templateTimeTravel     
+     * @memberof Time#     
      */
     function _templateTimeTravel(date, display, from, to, computed) {
         return {
@@ -326,6 +368,12 @@ define(["jquery", "moment", "../Utils/Constants", "../Utils/Utils"], function(
         };
     }
 
+    /**
+     * 
+     * @param {*} date
+     * @memberof Time#  
+     * @function _convertMoment              
+     */
     function _convertMoment(date) {
         var time;
         if (REGEXP_YEAR.test(date)) {
@@ -343,6 +391,8 @@ define(["jquery", "moment", "../Utils/Constants", "../Utils/Utils"], function(
      * @param {string} time
      * @return {{date, display, period, computed}|{date: *, display: *, period: {from: *, to: *}, computed: *}}
      * @private
+     * @function _convertStringDateToTime                   
+     * @memberof Time#     
      */
     function _convertStringDateToTime(time) {
         var timeRequested = _convertMoment(time);
@@ -356,7 +406,7 @@ define(["jquery", "moment", "../Utils/Constants", "../Utils/Utils"], function(
     /**
      * Lowest format resolution.
      * @param {string} format
-     * @return The time moment unit
+     * @return The time moment unit   
      */
     Time.lowestFormatResolution = function(format) {
         return _lowestFormatResolution(format);
@@ -365,7 +415,7 @@ define(["jquery", "moment", "../Utils/Constants", "../Utils/Utils"], function(
     /**
      * Parses the resolution returned by the server side.
      * @param resolution
-     * @return {{step: *, unit: *}} The resolution of the temporal step
+     * @return {{step: *, unit: *}} The resolution of the temporal step   
      */
     Time.timeResolution = function(resolution) {
         return _timeResolution(resolution);
@@ -374,7 +424,7 @@ define(["jquery", "moment", "../Utils/Constants", "../Utils/Utils"], function(
     /**
      * Tests if the time definition is a sampling (min/max/step)
      * @param {string} timeDefinition
-     * @return {boolean} true when timeDefinition is a sampling
+     * @return {boolean} true when timeDefinition is a sampling     
      */
     Time.isSampling = function(timeDefinition) {
         return _isSampling(timeDefinition);
@@ -383,7 +433,7 @@ define(["jquery", "moment", "../Utils/Constants", "../Utils/Utils"], function(
     /**
      * Tests if the time definition is a single value
      * @param {string} timeDefinition
-     * @return {boolean} true when timeDefinition is a discrete value
+     * @return {boolean} true when timeDefinition is a discrete value    
      */
     Time.isDistinctValue = function(timeDefinition) {
         return _isDistinctValue(timeDefinition);
@@ -392,7 +442,7 @@ define(["jquery", "moment", "../Utils/Constants", "../Utils/Utils"], function(
     /**
      * Parses the date and returns Time.
      * @param {Time.time|Time.period|string|Date} time
-     * @return {Time} time object
+     * @return {Time} time object   
      */
     Time.parse = function(time) {
         var result;
@@ -434,6 +484,8 @@ define(["jquery", "moment", "../Utils/Constants", "../Utils/Utils"], function(
      * Tests if the singleDefinition is equal to the time object.
      * @param {string} singleTimeDefinition
      * @return {boolean} true when the singleDefinition is equal to the time object otherwise false
+     * @function isEqual                                            
+     * @memberof Time#     
      */
     Time.prototype.isEqual = function(singleTimeDefinition) {
         var singleTimeMoment = _convertMoment(singleTimeDefinition);
@@ -449,6 +501,8 @@ define(["jquery", "moment", "../Utils/Constants", "../Utils/Utils"], function(
      * Tests if the samplingDefinition is in the sample.
      * @param {string} samplingTimeDefinition
      * @return {boolean} true when the samplingDefinition is in the sample otherwise false.
+     * @function isInSampling                                                 
+     * @memberof Time#     
      */
     Time.prototype.isInSampling = function(samplingTimeDefinition) {
         samplingTimeDefinition = samplingTimeDefinition.trim();
@@ -486,6 +540,8 @@ define(["jquery", "moment", "../Utils/Constants", "../Utils/Utils"], function(
      * TimeDefinition can be a sample of discrete values and/or start/stop/resolution
      * @param {string} timeDefinition
      * @return {boolean} true when the timeDefinition is in Time definition otherwise false
+     * @function isInTimeDefinition                                                      
+     * @memberof Time#     
      */
     Time.prototype.isInTimeDefinition = function(timeDefinition) {
         timeDefinition = timeDefinition.trim();
@@ -508,6 +564,8 @@ define(["jquery", "moment", "../Utils/Constants", "../Utils/Utils"], function(
     /**
      * Returns the real value coming from the server.
      * @return {string} the real value coming from the server
+     * @function getDisplayValue                                                           
+     * @memberof Time#     
      */
     Time.prototype.getDisplayValue = function() {
         return this.display;
