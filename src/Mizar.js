@@ -172,7 +172,6 @@ define([
          * Creates a {@link module:Context.ContextFactory Context}
          * @name ContextFactory
          * @memberof Mizar#
-         * @private
          */
         this.ContextFactory = ContextFactory;
 
@@ -180,7 +179,6 @@ define([
          * Creates a {@link module:Layer.LayerFactory Layer}
          * @name LayerFactory
          * @memberof Mizar#
-         * @private
          */
         this.LayerFactory = LayerFactory;
 
@@ -199,14 +197,12 @@ define([
         /**
          * Creates an {@link module:Animation.AnimationFactory animation}
          * @name AnimationFactory
-         * @memberof Mizar#
          */
         this.AnimationFactory = AnimationFactory;
 
         /**
          * Creates a {@link module:Services.ServiceFactory service}
          * @name ServiceFactory
-         * @memberof Mizar#
          */
         this.ServiceFactory = ServiceFactory;
 
@@ -214,7 +210,6 @@ define([
          * Creates an {@link module:Utils.UtilityFactory utility}
          * @name UtilityFactory
          * @memberof Mizar#
-         * @private
          */
         this.UtilityFactory = UtilityFactory;
 
@@ -229,7 +224,6 @@ define([
          * Access to time.
          * @name TimeUtility
          * @memberof Mizar#
-         * @private
          */
         this.TimeUtility = Time;
 

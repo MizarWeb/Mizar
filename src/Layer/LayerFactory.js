@@ -226,7 +226,7 @@ define([
         /**
          * Factory for Layer.
          * @param {Object} options - See the base properties {@link AbstractLayer.configuration} and specific properties for specific layers
-         * @param {string} options.type - one of the following value {Constants.Layer}
+         * @param {string} options.type - one of the following value {@link LAYER}
          * @return {AbstractLayer} - Object to handle Layer
          * @alias module:Layer.LayerFactory.create
          * @throws RangeError - "Unable to create the layer"

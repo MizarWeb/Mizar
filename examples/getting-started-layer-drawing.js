@@ -29,89 +29,90 @@ mizar.addLayer({
     mizar.setBaseElevationByID(layerID);
 });
 
-mizar.addLayer({
-    type: Mizar.LAYER.GeoJSON,
+var vectorLayer = mizar.LayerFactory.create({
+    type: Mizar.LAYER.Vector,
     visible: true
-}, function (vectorLayerID) {
-    var vectorLayer = mizar.getLayerByID(vectorLayerID);
-    var startPoint, endPoint;
-    var started = false;
-    var activated = false;
+});
 
-    var feature = {
-        id: '0',
-        type: 'Feature',
-        geometry: {
-            type: 'Polygon',
-            coordinates: []
-        }
-    };
+mizar.getActivatedContext().addDraw(vectorLayer);
 
-    // Update the feature used to represent the rectangle
-    function updateFeature(pt1, pt2) {
-        var minX = Math.min(pt1[0], pt2[0]);
-        var maxX = Math.max(pt1[0], pt2[0]);
-        var minY = Math.min(pt1[1], pt2[1]);
-        var maxY = Math.max(pt1[1], pt2[1]);
+var startPoint, endPoint;
+var started = false;
+var activated = false;
 
-        feature.bbox = [minX, minY, maxX, maxY];
-        feature.geometry.coordinates = [[[minX, minY],
-        [maxX, minY],
-        [maxX, maxY],
-        [minX, maxY],
-        [minX, minY]
-        ]];
-        vectorLayer.removeFeature(feature);
-        vectorLayer.addFeature(feature);
+var feature = {
+    id: '0',
+    type: 'Feature',
+    geometry: {
+        type: 'Polygon',
+        coordinates: []
     }
+};
 
-    // Called when left mouse button is pressed : start drawing the rectangle
-    function onMouseDown(event) {
-        if (activated && event.button == 0) {
-            startPoint = mizar.getActivatedContext().getLonLatFromPixel(event.clientX, event.clientY);
-            updateFeature(startPoint, startPoint);
-            started = true;
-        }
+// Update the feature used to represent the rectangle
+function updateFeature(pt1, pt2) {
+    var minX = Math.min(pt1[0], pt2[0]);
+    var maxX = Math.max(pt1[0], pt2[0]);
+    var minY = Math.min(pt1[1], pt2[1]);
+    var maxY = Math.max(pt1[1], pt2[1]);
+
+    feature.bbox = [minX, minY, maxX, maxY];
+    feature.geometry.coordinates = [[[minX, minY],
+    [maxX, minY],
+    [maxX, maxY],
+    [minX, maxY],
+    [minX, minY]
+    ]];
+    vectorLayer.removeFeature(feature);
+    vectorLayer.addFeature(feature);
+}
+
+// Called when left mouse button is pressed : start drawing the rectangle
+function onMouseDown(event) {
+    if (activated && event.button == 0) {
+        startPoint = mizar.getActivatedContext().getLonLatFromPixel(event.clientX, event.clientY);
+        updateFeature(startPoint, startPoint);
+        started = true;
     }
+}
 
-    // Called when mouse is moved  : update the rectangle
-    function onMouseMove(event) {
-        if (started && event.button == 0) {
-            var endPoint = mizar.getActivatedContext().getLonLatFromPixel(event.clientX, event.clientY);
-            updateFeature(startPoint, endPoint);
-        }
+// Called when mouse is moved  : update the rectangle
+function onMouseMove(event) {
+    if (started && event.button == 0) {
+        var endPoint = mizar.getActivatedContext().getLonLatFromPixel(event.clientX, event.clientY);
+        updateFeature(startPoint, endPoint);
     }
+}
 
-    // Called when left mouse button is release  : end drawing the rectangle
-    function onMouseUp(event) {
-        if (started && event.button == 0) {
-            var endPoint = mizar.getActivatedContext().getLonLatFromPixel(event.clientX, event.clientY);
-            updateFeature(startPoint, endPoint);
-            started = false;
-        }
+// Called when left mouse button is release  : end drawing the rectangle
+function onMouseUp(event) {
+    if (started && event.button == 0) {
+        var endPoint = mizar.getActivatedContext().getLonLatFromPixel(event.clientX, event.clientY);
+        updateFeature(startPoint, endPoint);
+        started = false;
     }
+}
 
-    $('#MizarCanvas').mousedown(onMouseDown);
-    $('#MizarCanvas').mousemove(onMouseMove);
-    $('#MizarCanvas').mouseup(onMouseUp);
+$('#MizarCanvas').mousedown(onMouseDown);
+$('#MizarCanvas').mousemove(onMouseMove);
+$('#MizarCanvas').mouseup(onMouseUp);
 
-    $('#MizarCanvas').keypress(function () {
+$('#MizarCanvas').keypress(function () {
 
 
-        if (activated) {
-            mizar.getActivatedContext().getNavigation().start();
-        }
-        else {
-            mizar.getActivatedContext().getNavigation().stop();
-            feature = {
-                id: '0',
-                type: 'Feature',
-                geometry: {
-                    type: 'Polygon',
-                    coordinates: []
-                }
-            };
-        }
-        activated = !activated;
-    });
+    if (activated) {
+        mizar.getActivatedContext().getNavigation().start();
+    }
+    else {
+        mizar.getActivatedContext().getNavigation().stop();
+        feature = {
+            id: '0',
+            type: 'Feature',
+            geometry: {
+                type: 'Polygon',
+                coordinates: []
+            }
+        };
+    }
+    activated = !activated;
 });
