@@ -53,6 +53,8 @@ define([
      * @property {Array} [backgroundColor=[0.0, 0.0, 0.0, 1.0]] - Option for RenderContext : color for background
      * @property {int} [minFar=0] - Option for RenderContext : When 0 , no limit on far
      * @property {Array} [defaultColor=[200, 200, 200, 255]] - Option for TileManager : pixel default color
+     * @property {Number} [subdivisionLength=10000] - The targetted length of a segment subdivision
+     * @property {Number} [maxSubdivisionCount=128] - The max number of subdivisions for a segment
      *
      */
     /**
@@ -90,7 +92,6 @@ define([
                 this.constructor.name,
             "AbastractGlobe.js"
         );
-
         this.type = type;
 
         this.coordinateSystem = CoordinateSystemFactory.create(
@@ -114,6 +115,8 @@ define([
         this.preRenderers = [];
         this.nbCreatedLayers = 0;
         this.definedBackgound = false;
+            this.subdivisionLength = options.subdivisionLength || 10000;
+            this.maxSubdivisionCount = options.maxSubdivisionCount || 128;
 
         this.tileManager.addPostRenderer(this.rendererManager);
 
@@ -700,6 +703,38 @@ define([
     AbstractGlobe.prototype.hasMesh = function() {
         return false;
     };
+
+    /**
+     * @function getSubdivisionLength
+     * @member AbstractGlobe#
+     */
+    AbstractGlobe.prototype.getSubdivisionLength = function() {
+        return this.subdivisionLength;
+    }
+
+    /**
+     * @function setSubdivisionLength
+     * @member AbstractGlobe#
+     */
+    AbstractGlobe.prototype.setSubdivisionLength = function(value) {
+        this.subdivisionLength = value;
+    }
+
+    /**
+     * @function getMaxSubdivisionCount
+     * @member AbstractGlobe#
+     */
+    AbstractGlobe.prototype.getMaxSubdivisionCount = function() {
+        return this.maxSubdivisionCount;
+    }
+
+    /**
+     * @function setMaxSubdivisionCount
+     * @member AbstractGlobe#
+     */
+    AbstractGlobe.prototype.setMaxSubdivisionCount = function(value) {
+        this.maxSubdivisionCount = value;
+    }
 
     return AbstractGlobe;
 });

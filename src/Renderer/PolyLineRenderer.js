@@ -110,6 +110,52 @@ define([
 
     /**************************************************************************************************************/
 
+    Renderable.prototype._subdivideSegment = function(p0, p1, crsName) {
+        const globe = this.bucket.renderer.globe;
+        const cs = globe.getCoordinateSystem();
+        const scale = cs.getGeoide().getHeightScale();
+        const subdivisionLength = globe.getSubdivisionLength() * scale;
+        const maxSubdivisionCount = globe.getMaxSubdivisionCount();
+
+        var p0in3d = vec3.create(); cs.get3DFromWorldInCrs(p0, crsName, p0in3d);
+        var p1in3d = vec3.create(); cs.get3DFromWorldInCrs(p1, crsName, p1in3d);
+
+        const d = vec3.dist(p0in3d, p1in3d);
+        const subdivisionCount = Math.min(Math.floor(d / subdivisionLength), maxSubdivisionCount);
+        const alt0 = p0[2];
+        const alt1 = p1[2];
+
+        const result = [];
+        const step = 1.0 / subdivisionCount;
+        for (var i = 0; i <= subdivisionCount; ++i) {
+            const t = i * step;
+
+            var p = vec3.create(); vec3.lerp(p0in3d, p1in3d, t, p);
+            var pInGeo = vec3.create(); cs.getWorldFrom3D(p, pInGeo);
+            pInGeo[2] = (1 - t) * alt0 + t * alt1;
+            result.push(pInGeo);
+        }
+
+        return result;
+    }
+
+    /**************************************************************************************************************/
+
+    /**
+     * Subdivide a line to follow planet curvature
+     */
+    Renderable.prototype._subdivideLine = function(line, crsName) {
+        var result = [];
+
+        for (var i = 0; i < line.length - 1; ++i) {
+            result = result.concat(this._subdivideSegment(line[i], line[i + 1], crsName));
+        }
+
+        return result;
+    }
+
+    /**************************************************************************************************************/
+
     /**
      * Add a geometry to the renderbale
      * Vertex buffer : geometry|extrude
@@ -168,13 +214,16 @@ define([
                 indexCount: -1
             };
 
-            for (var coords of line) {
+            // First, subdivide the line
+            const finalLine = this._subdivideLine(line, crsName);
+
+            for (var coords of finalLine) {
                 cs.get3DFromWorldInCrs(coords, crsName, pos3d);
                 for (var i = 0; i < 3; ++i) this.vertices.push(pos3d[i] - origin[i]);
                 this.indices.push(lastIndex++);
             }
 
-            lineInfos.indexCount = lastIndex;
+            lineInfos.indexCount = lastIndex - lineInfos.startIndex;
             this.lines.push(lineInfos);
         }
 
@@ -207,7 +256,8 @@ define([
 
             this.ibo = gl.createBuffer();
             gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.ibo);
-            gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(this.indices), gl.STATIC_DRAW);
+            gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint32Array(this.indices), gl.STATIC_DRAW);
+            this.dirty = false;
         }
 
         gl.bindBuffer(gl.ARRAY_BUFFER, this.vbo);
@@ -223,10 +273,10 @@ define([
      @param layer
      @constructor
     */
-    var Bucket = function(layer) {
+    var Bucket = function(layer, style) {
         this.layer = layer;
         this.renderer = null;
-        this.style = layer.style;
+        this.style = new FeatureStyle(style);
         this.mainRenderable = new Renderable(this);
         this.id = -1;
     };
@@ -234,7 +284,7 @@ define([
     /**************************************************************************************************************/
 
     PolyLineRenderer.prototype.addGeometry = function(layer, geometry, style) {
-        var bucket = new Bucket(layer);
+        var bucket = new Bucket(layer, style);
         bucket.renderer = this;
         bucket.id = this.globe.getRendererManager().bucketId++;
         bucket.mainRenderable.build(geometry);
@@ -247,7 +297,12 @@ define([
     /**************************************************************************************************************/
 
     PolyLineRenderer.prototype.removeGeometry = function(layer, geometry) {
-        console.error("todo");
+        var bucket = geometry._bucket;
+        if (bucket.mainRenderable) {
+            // Cleanup opengl resources
+            bucket.mainRenderable.dispose();
+            bucket.mainRenderable = null;
+        }
     }
 
     /**************************************************************************************************************/
@@ -320,8 +375,8 @@ define([
                 gl.drawElements(
                     gl.LINE_STRIP,
                     line.indexCount,
-                    gl.UNSIGNED_SHORT,
-                    line.startIndex
+                    gl.UNSIGNED_INT,
+                    line.startIndex * 4 // * sizeof(int)
                 );
             }
         }
