@@ -164,7 +164,7 @@ define([
      * @constructor
      */
     var Mizar = function(options) {
-        Event.prototype.constructor.call(this);        
+        Event.prototype.constructor.call(this);
 
         _checkConfiguration(options);
         this.options = _createConfiguration(options);
@@ -187,10 +187,11 @@ define([
         this.LayerFactory = LayerFactory;
 
         // Proxy settings
-        Proxy.setProxyUse(
-            this.options.configuration.proxyUse == null ? false : this.options.configuration.proxyUse
-        );
-        Proxy.setProxyUrl(this.options.configuration.proxyUrl);
+        const proxyUse = this.options.configuration.proxyUse || false;
+        Proxy.setProxyUse(proxyUse);
+        if (proxyUse) {
+            Proxy.setProxyUrl(this.options.configuration.proxyUrl);
+        }
 
         /**
          * Creates an {@link module:Animation.AnimationFactory animation}
