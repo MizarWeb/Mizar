@@ -17,7 +17,7 @@
  * along with GlobWeb. If not, see <http://www.gnu.org/licenses/>.
  ***************************************/
 
-define(["../Renderer/BoundingBox"], function(BoundingBox) {
+define(["../Renderer/BoundingBox", "../../Utils/Proxy"], function(BoundingBox, Proxy) {
     // Namespace for SceneGraph
     var SceneGraph = {};
 
@@ -185,7 +185,7 @@ define(["../Renderer/BoundingBox"], function(BoundingBox) {
         this.image.onerror = function() {
             console.error("Cannot load texture " + url);
         };
-        this.image.src = url;
+        this.image.src = Proxy.proxify(url);
     };
 
     var _isPowerOfTwo = function(x) {

@@ -44,6 +44,7 @@ define([
     "./FeatureStyle",
     "./RendererManager",
     "../Tiling/Triangulator",
+    "../Utils/Proxy",
     "./glMatrix"
 ], function(
     Utils,
@@ -53,6 +54,7 @@ define([
     Program,
     FeatureStyle,
     RendererManager,
+    Proxy,
     Triangulator
 ) {
     /**
@@ -574,7 +576,7 @@ define([
                     ErrorDialog.open(Constants.LEVEL.WARNING, "Cannot load " + image.src);
                 };
 
-                image.src = style.fillTextureUrl;
+                image.src = Proxy.proxify(style.fillTextureUrl);
                 hasTexture = true;
             } else if (style.fillTexture) {
                 bucket.texture = style.fillTexture;

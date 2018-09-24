@@ -28,8 +28,9 @@ define([
     "jszip",
     "saveAs",
     "../Gui/dialog/ErrorDialog",
-    "../Utils/Constants"
-], function($, _, JSZip, saveAs, ErrorDialog, Constants) {
+    "../Utils/Constants",
+    "../Utils/Proxy"
+], function($, _, JSZip, saveAs, ErrorDialog, Constants, Proxy) {
     var self, mizarAPI, layers, availableLayers;
 
     /**************************************************************************************************************/
@@ -273,7 +274,7 @@ define([
                             self.downloadArchive(zip);
                         }
                     };
-                    image.src = url;
+                    image.src = Proxy.proxify(url);
                 }
             });
         }

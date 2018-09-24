@@ -41,14 +41,16 @@ define([
     "./Program",
     "./FeatureStyle",
     "./RendererManager",
-    "../Utils/Constants"
+    "../Utils/Constants",
+    "../Utils/Proxy"
 ], function(
     Utils,
     VectorRenderer,
     Program,
     FeatureStyle,
     RendererManager,
-    Constants
+    Constants,
+    Proxy
 ) {
     /**************************************************************************************************************/
 
@@ -358,7 +360,7 @@ define([
             image.onerror = function() {
                 self._buildDefaultTexture(bucket);
             };
-            image.src = style.iconUrl;
+            image.src = Proxy.proxify(style.iconUrl);
         } else if (style.icon) {
             this._buildTextureFromImage(bucket, style.icon);
         } else {

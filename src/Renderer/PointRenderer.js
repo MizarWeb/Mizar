@@ -42,7 +42,8 @@ define([
     "./RendererManager",
     "./FeatureStyle",
     "./Program",
-    "./GeoBound"
+    "./GeoBound",
+    "../Utils/Proxy"
 ], function(
     Utils,
     Constants,
@@ -50,7 +51,8 @@ define([
     RendererManager,
     FeatureStyle,
     Program,
-    GeoBound
+    GeoBound,
+    Proxy
 ) {
     /**************************************************************************************************************/
 
@@ -413,7 +415,7 @@ define([
             image.onerror = function() {
                 self._buildDefaultTexture(bucket);
             };
-            image.src = style.iconUrl;
+            image.src = Proxy.proxify(style.iconUrl);
         } else if (style.icon) {
             this._buildTextureFromImage(bucket, style.icon);
         } else {
