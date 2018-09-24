@@ -35,7 +35,7 @@
  * along with GlobWeb. If not, see <http://www.gnu.org/licenses/>.
  ***************************************/
 
-define(["../Utils/Constants"], function(Constants) {    
+define(["../Utils/Constants"], function(Constants) {
     /**
      * Google mouse navigation handler configuration
      * @typedef {Object} AbstractNavigation.googleMouse_configuration
@@ -456,7 +456,7 @@ define(["../Utils/Constants"], function(Constants) {
          * @param nav
          * @memberof GoogleMouseNavigationHandler#
          * @fires Context#startNavigation
-         * @fires Context#endNavigation         
+         * @fires Context#endNavigation
          */
         this.install = function(nav) {
             _navigation = nav;

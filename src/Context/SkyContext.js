@@ -95,13 +95,18 @@ define([
 
             try {
                 this.setTimeTravelVisible(
-                    mizarConfiguration.timeTravel && mizarConfiguration.timeTravel.element
+                    mizarConfiguration.timeTravel &&
+                    mizarConfiguration.timeTravel.element
                         ? mizarConfiguration.timeTravel.element
                         : "timeTravelDiv",
                     true
                 );
             } catch (err) {
-                ErrorDialog.open(Constants.LEVEL.ERROR, "Cannot create the Time travel", err);
+                ErrorDialog.open(
+                    Constants.LEVEL.DEBUG,
+                    "Cannot create the Time travel",
+                    err
+                );
             }
         } catch (err) {
             this._showUpError(err);
@@ -193,7 +198,7 @@ define([
      */
     SkyContext.prototype.setCoordinateSystem = function(cs) {
         if (cs.getType() !== this.getMode()) {
-            throw new ReferenceError (
+            throw new ReferenceError(
                 "incompatible coordinate reference system with Sky context",
                 "SkyContex.js"
             );

@@ -45,7 +45,8 @@ define([
     "./FitsLoader",
     "gzip",
     "../Utils/ImageRequest",
-    "./FitsRequest"
+    "./FitsRequest",
+    "../Gui/dialog/ErrorDialog"
 ], function(
     Contants,
     Utils,
@@ -55,7 +56,8 @@ define([
     DynamicImage,
     FitsLoader,
     gZip,
-    ImageRequest
+    ImageRequest,
+    ErrorDialog
 ) {
     /**************************************************************************************************************/
 
@@ -182,12 +184,10 @@ define([
                     } catch (err) {
                         if (err !== "Not a GZIP file") {
                             // G-zip error
-                            console.error(err);
                             this.failCallback();
                             return;
                         } else {
                             // Image isn't g-zipped, handle image as fits
-                            console.log("not gzipped");
                             data = null;
                         }
                     }
@@ -266,7 +266,7 @@ define([
 
         if (!ext) {
             // TODO
-            console.error("no OES_texture_float");
+            ErrorDialog(Constants.LEVEL.DEBUG, "HipsFitsLayer.js", "no OES_texture_float");
             this.fitsSupported = false;
             //return;
         }
@@ -312,7 +312,7 @@ define([
         url += tile.pixelIndex;
         url += "." + this.format;
 
-        return this.proxify(url);
+        return this.allowRequest(url);
     };
 
     /**************************************************************************************************************/
@@ -582,21 +582,6 @@ define([
 
         this.levelZeroImage = null;
         this.levelZeroTexture = null;
-    };
-
-    /**************************************************************************************************************/
-
-    /**
-     *    Sets the format
-     *    (currently never used)
-     *    TODO: store basic format(could be 'png' or 'jpg'), to be
-     *    able to revert from fits
-     * @function setFormat
-     * @memberof HipsFitsLayer#
-     * @param {string} format Format
-     */
-    HipsFitsLayer.prototype.setFormat = function(format) {
-        this.format = isFits ? "fits" : "jpg";
     };
 
     /**************************************************************************************************************/

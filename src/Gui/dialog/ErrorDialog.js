@@ -17,14 +17,20 @@
  * along with SITools2. If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
 /*global define: false */
+/*eslint no-console: ["error", { allow: ["warn", "error","log"] }] */
 
 /**
  * Error dialog module
  */
-define(["../../Utils/Constants", "jquery", "jquery.ui"], function(Constants, $) {
+define(["../../Utils/Constants", "jquery", "jquery.ui"], function(
+    Constants,
+    $
+) {
+    var isDebug = false;
+
     // The main div for error
     var errorDiv =
-        '<div id="errorDiv" style="text-align: left" title="Error"></div>';
+        "<div id=\"errorDiv\" style=\"text-align: left\" title=\"Error\"></div>";
 
     // Create the div, use jQuery UI dialog
 
@@ -45,7 +51,25 @@ define(["../../Utils/Constants", "jquery", "jquery.ui"], function(Constants, $) 
         });
     var $active = false;
 
-    _recordError = function(html) {
+    var _consoleError = function(txt) {
+        if (isDebug) {            
+            console.error(txt);
+        }
+    };
+
+    var _consoleWarn = function(txt) {
+        if (isDebug) {
+            console.warn(txt);
+        }
+    };  
+    
+    var _consoleLog = function(txt) {
+        if (isDebug) {
+            console.log(txt);
+        }
+    };      
+
+    var _recordError = function(html) {
         $text += html + "<br/>";
         if ($("#warningContainer")) {
             $("#warningContainer").show();
@@ -61,35 +85,63 @@ define(["../../Utils/Constants", "jquery", "jquery.ui"], function(Constants, $) 
         }
     };
 
+    var _computeMessageHTML = function(message, description) {
+        if (description != null && message != null) {
+            message = message + " - <font style='color:white'>";
+            if (typeof description === "object") {
+                message = message + JSON.stringify(description);
+            } else {
+                message = message + description;
+            }
+
+            message = message + "</font>";
+        }  
+        return message;      
+    };
+
+    var _computeMessageASCII = function(message, description) {
+        if (description != null && message != null) {            
+            if (typeof description === "object") {
+                message = message + JSON.stringify(description);
+            } else {
+                message = message + description;
+            }
+        }  
+        return message;      
+    };  
+
+
     return {
         /**
          * Open dialog
          * @param {LEVEL} LEVEL Log level
          * @param {string} title error title
-         * @param {string} description error description   
+         * @param {string} description error description
          */
         open: function(LEVEL, title, description) {
             var message = "";
             if (LEVEL === Constants.LEVEL.WARNING) {
-                message = message+"<font style='color:orange'>Warning : " + title+"</font>";
+                message =
+                    message +
+                    "<font style='color:orange'>Warning : " +
+                    title +
+                    "</font>";
+                _consoleWarn(_computeMessageASCII(title, description));
+                _recordError(_computeMessageHTML(message, description));                
             } else if (LEVEL === Constants.LEVEL.ERROR) {
-                message = message+"<font style='color:red'>Error : " + title+"</font>";
+                message =
+                    message +
+                    "<font style='color:red'>Error : " +
+                    title +
+                    "</font>";
+                _consoleError(_computeMessageASCII(title, description));
+                _recordError(_computeMessageHTML(message, description));
+            } else if (LEVEL === Constants.LEVEL.DEBUG) {
+                _consoleLog(_computeMessageASCII(title, description));
             } else {
-                message = "";
+                throw new TypeError("LEVEL must be set with a valid value", "ErrorDialog.js");
             }
-
-            if(description != null) {
-                message = message +" - <font style='color:white'>";
-                if (typeof(description) === 'object') {
-                    message = message + JSON.stringify(description);        
-                } else {
-                    message = message + description;
-                }
-                
-                message = message +"</font>";
-            }     
-    
-            _recordError(message);
+                      
         },
         /**
          * View the messages in the GUI.
@@ -124,15 +176,24 @@ define(["../../Utils/Constants", "jquery", "jquery.ui"], function(Constants, $) 
          * Has error.
          * @returns {boolean} true when error otherise false
          */
-        hasError : function() {
+        hasError: function() {
             return $text.length > 0;
         },
         /**
          * Returns the message
          * @returns {string} the message
          */
-        getTxt : function() {
+        getTxt: function() {
             return $text;
+        },
+        /**
+         * Sets debug enable/disable.
+         * By default debug is disable.
+         * @param {boolean} debug Set to true to show debug message in the console otherwise False 
+         */
+        setDebug(debug) {
+            isDebug = debug;
         }
+
     };
 });

@@ -35,7 +35,7 @@
  * along with GlobWeb. If not, see <http://www.gnu.org/licenses/>.
  ***************************************/
 
-define(["../Utils/Utils"], function(Utils) {
+define(["../Utils/Utils", "../Utils/Constants", "../Gui/dialog/ErrorDialog"], function(Utils, Constants, ErrorDialog) {
     /**************************************************************************************************************/
 
     /**
@@ -141,8 +141,7 @@ define(["../Utils/Utils"], function(Utils) {
                 var dx = event.touches[0].clientX - event.touches[1].clientX;
                 var dy = event.touches[0].clientY - event.touches[1].clientY;
                 _lastFingerDistance = Math.sqrt(dx * dx + dy * dy);
-                console.log("Finger distance : " + _lastFingerDistance);
-
+                ErrorDialog.open(Constants.LEVEL.DEBUG, "TouchNavigationHandler.js","Finger distance : " + _lastFingerDistance);
                 _lastAngle = _getRotation(_startTouches, event.touches);
             }
 
@@ -262,11 +261,11 @@ define(["../Utils/Utils"], function(Utils) {
                     // Pan
                     _navigation.inertia.launch("pan", _dx, _dy);
                 } else if (hitIndex === Type.ROTATE) {
-                    console.error("Rotate not implemented in navigation");
+                    ErrorDialog.open(Constants.LEVEL.DEBUG, "TouchNavigationHandler.js","Rotate not implemented in navigation");
                     // Rotate
                     //_navigation.inertia.launch("rotate", _rotation, 0);
                 } else if (hitIndex === Type.TILT) {
-                    console.error("Tilt not implemented in navigation");
+                    ErrorDialog.open(Constants.LEVEL.DEBUG, "TouchNavigationHandler.js","Tilt not implemented in navigation");
                     // No inertia for tilt
                 }
             }

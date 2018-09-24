@@ -68,7 +68,7 @@ define([
      *    @param layer Parent layer
      *    @param mocServiceUrl Url to moc service
      *    @fires Context#backgroundLayer:added
-     *    @fires Context#layer:added       
+     *    @fires Context#layer:added
      */
     function handleMocLayer(layer, mocServiceUrl) {
         var style;
@@ -132,7 +132,7 @@ define([
         }
 
         // Create intersection MOC layer
-        intersectionLayer = new MocLayer({
+        var intersectionLayer = new MocLayer({
             name: "Intersection( " + layerNames + " )",
             serviceUrl: url + "&media=json",
             style: new FeatureStyle({

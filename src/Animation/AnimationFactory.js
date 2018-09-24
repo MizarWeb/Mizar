@@ -67,25 +67,25 @@ define([
         create: function(type, options) {
             var obj;
             switch (type) {
-                case Constants.ANIMATION.Inertia:
-                    obj = new InertiaAnimation(options);
-                    break;
-                case Constants.ANIMATION.Interpolated:
-                    obj = new InterpolatedAnimation(options);
-                    break;
-                case Constants.ANIMATION.Path:
-                    obj = new PathAnimation(options);
-                    break;
-                case Constants.ANIMATION.Segmented:
-                    obj = new SegmentedAnimation(options);
-                    break;
-                default:
-                    throw RangeError(
-                        "The type " +
+            case Constants.ANIMATION.Inertia:
+                obj = new InertiaAnimation(options);
+                break;
+            case Constants.ANIMATION.Interpolated:
+                obj = new InterpolatedAnimation(options);
+                break;
+            case Constants.ANIMATION.Path:
+                obj = new PathAnimation(options);
+                break;
+            case Constants.ANIMATION.Segmented:
+                obj = new SegmentedAnimation(options);
+                break;
+            default:
+                throw RangeError(
+                    "The type " +
                             type +
                             " is not allowed, A valid type is included in the list Constants.ANIMATION",
-                        "AnimationFactory.js"
-                    );
+                    "AnimationFactory.js"
+                );
             }
             return obj;
         }

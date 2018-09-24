@@ -61,10 +61,14 @@ define([
      * @todo Create a tutorial with a simple PathAnimation on Mars
      */
     var PathAnimation = function(options) {
-        Utils.assert(Array.isArray(options.coords) 
-        && typeof(options.speed)==="number"
-        && typeof(options.setter)==="function"
-        && options.globe != null, "Missing required arguments in constructor", "PathAnimation.js");
+        Utils.assert(
+            Array.isArray(options.coords) &&
+                typeof options.speed === "number" &&
+                typeof options.setter === "function" &&
+                options.globe != null,
+            "Missing required arguments in constructor",
+            "PathAnimation.js"
+        );
         var i;
         var vec1, vec2;
         var dx, dy, dz;

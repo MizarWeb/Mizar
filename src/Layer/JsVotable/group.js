@@ -84,25 +84,25 @@ define([
             if (element.nodeType == 1) {
                 var nodeName = element.localName;
                 switch (nodeName) {
-                    case "DESCRIPTION":
-                        description = new Description(element);
-                        break;
-                    case "FIELDref":
-                        fieldrefs.push(new Fieldref(element));
-                        break;
-                    case "PARAMref":
-                        paramrefs.push(new Paramref(element));
-                        break;
-                    case "PARAM":
-                        params.push(new Param(element));
-                        break;
-                    case "GROUP":
-                        groups.push(new Group(element));
-                        break;
-                    default:
-                        this.getCache().addWarning(
-                            "unknown element " + nodeName + " in Group node"
-                        );
+                case "DESCRIPTION":
+                    description = new Description(element);
+                    break;
+                case "FIELDref":
+                    fieldrefs.push(new Fieldref(element));
+                    break;
+                case "PARAMref":
+                    paramrefs.push(new Paramref(element));
+                    break;
+                case "PARAM":
+                    params.push(new Param(element));
+                    break;
+                case "GROUP":
+                    groups.push(new Group(element));
+                    break;
+                default:
+                    this.getCache().addWarning(
+                        "unknown element " + nodeName + " in Group node"
+                    );
                 }
             }
         }

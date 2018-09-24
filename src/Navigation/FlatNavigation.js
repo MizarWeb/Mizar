@@ -644,7 +644,7 @@ define([
         var endValue = this.up;
         endValue[0] = Numeric.toDegree(endValue[0]);
         endValue[1] = Numeric.toDegree(endValue[1]);
-        endValue[2] = endValue[2];
+        //endValue[2] = endValue[2];
 
         this.ctx.getCoordinateSystem().getWorldFrom3D(vec, startValue);
 

@@ -43,9 +43,11 @@ define([
     "../Time/Time",
     "../Utils/Utils",
     "../Utils/Constants",
+    "../Gui/dialog/ErrorDialog",
     "../Utils/UtilityFactory",
     "xmltojson",
-    "../Error/NetworkError"
+    "../Error/NetworkError",
+    "../Utils/Proxy"
 ], function(
     $,
     _,
@@ -54,9 +56,11 @@ define([
     Time,
     Utils,
     Constants,
+    ErrorDialog,
     UtilityFactory,
     XmlToJson,
-    NetworkError
+    NetworkError,
+    Proxy
 ) {
     const DEFAULT_ICON =
         "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAAXNSR0IArs4c6QAAAAZiS0dEAAAAAAAA+UO7fwAAAAlwSFlzAAALEwAACxMBAJqcGAAAAAd0SU1FB9wMBQkVBRMIQtMAAAAZdEVYdENvbW1lbnQAQ3JlYXRlZCB3aXRoIEdJTVBXgQ4XAAAAvklEQVQY012QMWpCURBFz3yfG7CIwSatpLGwsJJsQEHssr2UttapkkK0zRJEFPKLj5UYPGme8vgDt5l7uNwZKEYNdaZO1FR6VQkBT8AbMAGe1e7dTwXUB8bAFPgF9sBWPUXENbWgBTAELkCTw7bqMdR5kTQCehlogB/gE/iqcs9OVhT9I8v7EZU6UJfqh3pWa3WlvqsvakoRcVOPwCYnvQI1sM67Q0T8JYAWvAEOwDewj4jr4z0teJdf84AA/gF1uG92uhcfoAAAAABJRU5ErkJggg==";
@@ -291,8 +295,8 @@ define([
                 options.color instanceof Array
                     ? options.color
                     : UtilityFactory.create(
-                          Constants.UTILITY.FeatureStyle
-                      ).fromStringToColor(options.color);
+                        Constants.UTILITY.FeatureStyle
+                    ).fromStringToColor(options.color);
         } else {
             // Generate random color
             var rgb = Utils.generateColor();
@@ -407,7 +411,7 @@ define([
      * @memberof AbstractLayer#
      */
     AbstractLayer.prototype.forceRefresh = function() {
-        if(this.getGlobe()) {
+        if (this.getGlobe()) {
             var tileManager = this.getGlobe().getTileManager();
             tileManager.updateVisibleTiles(this);
             this.getGlobe().refresh();
@@ -579,14 +583,14 @@ define([
      * @return {string} url
      */
     AbstractLayer.prototype.getGetCapabilitiesUrl = function() {
-        return this.proxify(this.getCapabilitiesUrl);
+        return this.getCapabilitiesUrl;
     };
 
     /**************************************************************************************************************/
 
     /**
      * Load the getCapabilities into json variable
-     * use only for openSearch 
+     * use only for openSearch
      * TODO : refactor
      * @function loadGetCapabilities
      * @memberof AbstractLayer
@@ -606,17 +610,17 @@ define([
             url = this.getGetCapabilitiesUrl();
             urlRaw = this.getCapabilitiesUrl;
         } else {
-            url = this.proxify(paramUrl);
+            url = paramUrl;
             urlRaw = paramUrl;
         }
         $.ajax({
             type: "GET",
-            url: url,
+            url: Proxy.proxify(url),
             dataType: "text",
             async: false,
-            beforeSend(xhr) {
+            beforeSend:function(xhr) {
                 xhr.setRequestHeader("Accept", "application/xml");
-            },            
+            },
             success: function(response) {
                 var myOptions = {
                     mergeCDATA: true,
@@ -638,17 +642,6 @@ define([
     };
 
     /**************************************************************************************************************/
-
-    /**
-     * Proxify an url
-     * @function proxify
-     * @memberof AbstractLayer#
-     * @param {string} url - URL
-     * @return {string} Url proxified
-     */
-    AbstractLayer.prototype.proxify = function(url) {
-        return Utils.proxify(url, this.options.proxy);
-    };
 
     /**
      * @function getMetadataAPI
@@ -872,7 +865,7 @@ define([
     AbstractLayer.prototype.isAttached = function() {
         return !this.isDetached;
     };
-    
+
     /**
      * @function isDetached
      * @memberof AbstractLayer#
@@ -996,9 +989,7 @@ define([
                 } else if (Time.isSampling(timeDefinition)) {
                     sampleValues.push(timeDefinition);
                 } else {
-                    console.log(
-                        "This should be refactored if we handle an interval min/max at the server level"
-                    );
+                    ErrorDialog.open(Constants.LEVEL.WARNING, "Case not handle by Mizar for timeDefinition "+timeDefinition);
                 }
             }
             // Add distinct values in time travel

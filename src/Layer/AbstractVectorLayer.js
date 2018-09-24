@@ -106,7 +106,7 @@ define([
      * @memberof AbstractVectorLayer#
      */
     AbstractVectorLayer.prototype.getUrl = function() {
-        return this.proxify(this.url);
+        return this.url;
     };
 
     /**
@@ -124,15 +124,19 @@ define([
     AbstractVectorLayer.prototype.isDraw = function() {
         return this.draw;
     };
-    
+
     /**
      * @function isDraw
      * @memberof AbstractVectorLayer#
      */
     AbstractVectorLayer.prototype.setDraw = function(value) {
-        Utils.assert(typeof(value) === 'boolean', "value is not a boolean : "+value, "AbstractVectorLayer.js");        
+        Utils.assert(
+            typeof value === "boolean",
+            "value is not a boolean : " + value,
+            "AbstractVectorLayer.js"
+        );
         this.draw = value;
-    };    
+    };
 
     /**
      * Attach the vector layer to the globe
@@ -178,7 +182,7 @@ define([
         var features = featureCollection.features;
         if (features) {
             for (var i = 0; i < features.length; i++) {
-                this.addFeature(feature[i]);
+                this.addFeature(features[i]);
             }
         }
     };
@@ -265,10 +269,7 @@ define([
             } else {
                 isRemoved = false;
             }
-        } else if (
-            this.getGlobe() &&
-            this.getGlobe().getRendererManager()
-        ) {
+        } else if (this.getGlobe() && this.getGlobe().getRendererManager()) {
             isRemoved = this.getGlobe()
                 .getRendererManager()
                 .removeGeometry(geometry, this);

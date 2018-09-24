@@ -26,8 +26,9 @@ define([
     "jquery",
     "../Utils/Constants",
     "./DefaultReverseNameResolver",
-    "./CDSReverseNameResolver"
-], function($, Constants, DefaultReverseNameResolver) {
+    "./CDSReverseNameResolver",
+    "../Gui/dialog/ErrorDialog"
+], function($, Constants, DefaultReverseNameResolver, ErrorDialog) {
     var mizarAPI;
     var context;
 
@@ -81,7 +82,7 @@ define([
                     );
                 }
             } else {
-                console.error("Not implemented yet");
+                ErrorDialog.open(Constants.LEVEL.DEBUG,"ReverseNameResolver.js","Not implemented yet");
                 if (options && options.error) {
                     options.error();
                 }

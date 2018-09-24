@@ -344,8 +344,8 @@ define([
      * @param {number} destDistance - Final zooming distance in meter
      * @param {Object} [options] - options
      * @param {Object} [options.callback] - Callback function to call when it is defined.
-     * @fires Context#navigation:changedDistance     
-     * @private         
+     * @fires Context#navigation:changedDistance
+     * @private
      */
     function _addStop(animation, ctx, destDistance, options) {
         animation.onstop = function() {

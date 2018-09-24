@@ -40,8 +40,9 @@ define([
     "./AbstractLayer",
     "../Utils/Constants",
     "../Renderer/GeoBound",
-    "../Renderer/GroundOverlayRenderer"
-], function(Utils, AbstractLayer, Constants, GeoBound, GroundOverlayRenderer) {
+    "../Renderer/GroundOverlayRenderer",
+    "../Utils/Proxy"
+], function(Utils, AbstractLayer, Constants, GeoBound, GroundOverlayRenderer, Proxy) {
     /**
      * GroundOverlay Layer configuration
      * @typedef {AbstractLayer.configuration} AbstractLayer.groundOverlay_configuration
@@ -87,7 +88,7 @@ define([
         if (typeof options.image === "string") {
             this.image = new Image();
             this.image.crossOrigin = "";
-            this.image.src = options.image;
+            this.image.src = Proxy.proxify(options.image);
         } else if (options.image instanceof HTMLImageElement) {
             this.image = options.image;
         }
@@ -115,11 +116,9 @@ define([
     /**
      * Loads a global overview if available. Only use for sky rendering currently
      * @function loadOverview
-     * @memberof GroundOverlayLayer#     
+     * @memberof GroundOverlayLayer#
      */
-    GroundOverlayLayer.prototype.loadOverview = function() {
-
-    };    
+    GroundOverlayLayer.prototype.loadOverview = function() {};
 
     /**
      * Attaches layer to the globe.
@@ -164,7 +163,7 @@ define([
         this.image = new Image();
 
         this.image.crossOrigin = "";
-        this.image.src = url;
+        this.image.src = Proxy.proxify(url);
         this.image.layer = this;
 
         this.computeTransform();
@@ -274,7 +273,6 @@ define([
     GroundOverlayLayer.prototype.computeTransform = function() {
         if (this.quad === null) {
             // Sleeping mode, no compute
-            console.log("return");
             return;
         }
 

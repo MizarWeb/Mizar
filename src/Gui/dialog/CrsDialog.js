@@ -24,7 +24,7 @@
 define(["jquery", "jquery.ui"], function($) {
     // The main div for error
     var crsInfo =
-        '<div id="crsInfo" style="text-align: left" title="Coordinate Reference System information"></div>';
+        "<div id=\"crsInfo\" style=\"text-align: left\" title=\"Coordinate Reference System information\"></div>";
 
     // Create the div, use jQuery UI dialog
 

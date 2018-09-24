@@ -32,7 +32,7 @@ define(["wcs"], function(wcs) {
         var fitsData = hdu.data;
 
         // Create mapper
-        wcs = new WCS.Mapper(hdu.header);
+        var wcs = new WCS.Mapper(hdu.header);
         var coords = [];
 
         // Find coordinates of coming fits

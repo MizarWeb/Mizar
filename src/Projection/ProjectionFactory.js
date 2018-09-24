@@ -50,29 +50,29 @@ define([
     function _createProjection(projectionName, options) {
         var cs;
         switch (projectionName) {
-            case Constants.PROJECTION.Aitoff:
-                cs = new AitoffProjection(options);
-                break;
-            case Constants.PROJECTION.August:
-                cs = new AugustProjection(options);
-                break;
-            case Constants.PROJECTION.Azimuth:
-                cs = new AzimuthProjection(options);
-                break;
-            case Constants.PROJECTION.Mercator:
-                cs = new MercatorProjection(options);
-                break;
-            case Constants.PROJECTION.Mollweide:
-                cs = new MollweideProjection(options);
-                break;
-            case Constants.PROJECTION.Plate:
-                cs = new PlateProjection(options);
-                break;
-            default:
-                throw new RangeError(
-                    "Unable to create the projection " + options.projectionName,
-                    "ProjectionFactory.js"
-                );
+        case Constants.PROJECTION.Aitoff:
+            cs = new AitoffProjection(options);
+            break;
+        case Constants.PROJECTION.August:
+            cs = new AugustProjection(options);
+            break;
+        case Constants.PROJECTION.Azimuth:
+            cs = new AzimuthProjection(options);
+            break;
+        case Constants.PROJECTION.Mercator:
+            cs = new MercatorProjection(options);
+            break;
+        case Constants.PROJECTION.Mollweide:
+            cs = new MollweideProjection(options);
+            break;
+        case Constants.PROJECTION.Plate:
+            cs = new PlateProjection(options);
+            break;
+        default:
+            throw new RangeError(
+                "Unable to create the projection " + options.projectionName,
+                "ProjectionFactory.js"
+            );
         }
         return cs;
     }

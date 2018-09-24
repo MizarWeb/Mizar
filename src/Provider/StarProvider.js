@@ -51,7 +51,10 @@ define([
          * 	Failure function
          */
     function failure() {
-        ErrorDialog.open(Constants.LEVEL.ERROR, 'Failed ot load files in StarProvider');
+        ErrorDialog.open(
+            Constants.LEVEL.ERROR,
+            "Failed ot load files in StarProvider"
+        );
     }
 
     /**
@@ -93,7 +96,11 @@ define([
                     namesFile = response;
                 },
                 error: function(xhr, ajaxOptions, thrownError) {
-                    ErrorDialog.open(Constants.LEVEL.ERROR, 'Failed ot request '+configuration.nameUrl, xhr.responseText);
+                    ErrorDialog.open(
+                        Constants.LEVEL.ERROR,
+                        "Failed ot request " + configuration.nameUrl,
+                        xhr.responseText
+                    );
                 }
             };
 
@@ -104,7 +111,11 @@ define([
                     catalogueFile = response;
                 },
                 error: function(xhr, ajaxOptions, thrownError) {
-                    ErrorDialog.open(Constants.LEVEL.ERROR, 'Failed ot request '+configuration.catalogueUrl, xhr.responseText);
+                    ErrorDialog.open(
+                        Constants.LEVEL.ERROR,
+                        "Failed ot request " + configuration.catalogueUrl,
+                        xhr.responseText
+                    );
                 }
             };
 
@@ -118,7 +129,11 @@ define([
                 )
             );
         } else {
-            ErrorDialog.open(Contants.LEVEL.WARNING, "Not valid options for StarProvider", "nameUrl and catalogueUrl attributes must be passed"); 
+            ErrorDialog.open(
+                Constants.LEVEL.DEBUG,
+                "Not valid options for StarProvider",
+                "nameUrl and catalogueUrl attributes must be passed"
+            );
             return false;
         }
     };

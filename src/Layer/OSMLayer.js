@@ -93,7 +93,7 @@ define([
             "/" +
             tile.y +
             ".png";
-        return this.proxify(url, tile.level);
+        return this.allowRequest(url, tile.level);
     };
 
     /**************************************************************************************************************/

@@ -46,14 +46,17 @@
  *
  * In addition to the classes, a {@link module:Animation.AnimationFactory factory} is available to help for creating
  * animation. Once the animation is created, the client can handle it by the use of its {@link Animation interface}.
- * 
+ *
  * See {@tutorial getting-started-layer-extrude} for an example of sgmented animation.
  *
  * @module Animation
  * @implements {Animation}
- * 
+ *
  */
-define(["../Utils/Utils", "./AbstractAnimation"], function(Utils,AbstractAnimation) {
+define(["../Utils/Utils", "./AbstractAnimation"], function(
+    Utils,
+    AbstractAnimation
+) {
     /**************************************************************************************************************/
 
     /**
@@ -107,8 +110,12 @@ define(["../Utils/Utils", "./AbstractAnimation"], function(Utils,AbstractAnimati
      * @constructor
      * @memberof module:Animation
      */
-    var InertiaAnimation = function(options) {    
-        Utils.assert(options.nav != null, "nav is required in constructor", "InertiaAnimation.js");
+    var InertiaAnimation = function(options) {
+        Utils.assert(
+            options.nav != null,
+            "nav is required in constructor",
+            "InertiaAnimation.js"
+        );
         AbstractAnimation.prototype.constructor.call(this);
         if (options) {
             this.panFactor = options.hasOwnProperty("panFactor")
@@ -144,26 +151,26 @@ define(["../Utils/Utils", "./AbstractAnimation"], function(Utils,AbstractAnimati
         var hasToStop = false;
 
         switch (this.type) {
-            case "pan":
-                this.navigation.pan(this.dx, this.dy);
-                this.dx *= this.panFactor;
-                this.dy *= this.panFactor;
-                hasToStop =
+        case "pan":
+            this.navigation.pan(this.dx, this.dy);
+            this.dx *= this.panFactor;
+            this.dy *= this.panFactor;
+            hasToStop =
                     Math.abs(this.dx) < EPSILON && Math.abs(this.dy) < EPSILON;
-                break;
-            case "rotate":
-                this.navigation.rotate(this.dx, this.dy);
-                this.dx *= this.rotateFactor;
-                this.dy *= this.rotateFactor;
-                hasToStop =
+            break;
+        case "rotate":
+            this.navigation.rotate(this.dx, this.dy);
+            this.dx *= this.rotateFactor;
+            this.dy *= this.rotateFactor;
+            hasToStop =
                     Math.abs(this.dx) < EPSILON && Math.abs(this.dy) < EPSILON;
-                break;
-            case "zoom":
-                this.navigation.zoom(this.dx);
-                this.dx *= this.zoomFactor;
-                hasToStop = Math.abs(this.dx) < EPSILON;
-                break;
-            default:
+            break;
+        case "zoom":
+            this.navigation.zoom(this.dx);
+            this.dx *= this.zoomFactor;
+            hasToStop = Math.abs(this.dx) < EPSILON;
+            break;
+        default:
         }
         this.navigation.getRenderContext().requestFrame();
 

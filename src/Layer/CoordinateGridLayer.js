@@ -41,20 +41,20 @@ define([
     "../Renderer/Ray",
     "../Renderer/Program",
     "../Tiling/Mesh",
-    "../Crs/AstroCoordTransform",
     "../Renderer/FeatureStyle",
     "../Utils/Constants",
-    "../Crs/CoordinateSystemFactory"
+    "../Crs/CoordinateSystemFactory",
+    "../Gui/dialog/ErrorDialog"
 ], function(
     AbstractLayer,
     Utils,
     Ray,
     Program,
     Mesh,
-    AstroCoordTransform,
     FeatureStyle,
     Constants,
-    CoordinateSystemFactory
+    CoordinateSystemFactory,
+    ErrorDialog
 ) {
     /**
      *    GL Textures pool
@@ -147,7 +147,7 @@ define([
      * @property {AbstractProjection.configuration|AbstractProjection.azimuth_configuration|AbstractProjection.mercator_configuration} coordinateSystem - The coordinate system of the grid
      * @property {string} [longFormat="Deg"] Representation of longitude axe(HMS, DMS, Deg)
      * @property {string} [latFormat="Deg"] Representation of latitude axe(HMS, DMS, Deg)
-     * @property {Integer} [tesselation=2] Tesselation order (only for latitude bands currently)     
+     * @property {Integer} [tesselation=2] Tesselation order (only for latitude bands currently)
      */
     /**
      * @name CoordinateGridLayer
@@ -755,6 +755,7 @@ define([
 
         var indexData = [];
         var longitudeBands = (phiStop - phiStart) / this.longitudeSample + 1;
+        var longNumber;
 
         // Tesselation
         longitudeBands *= this.tesselation;
@@ -808,22 +809,22 @@ define([
     CoordinateGridLayer.prototype.buildAngle = function(format, angle) {
         var label;
         switch (format) {
-            case "Deg":
-                label = angle + "°";
-                break;
-            case "HMS":
-                label = this.getGlobe()
-                    .getCoordinateSystem()
-                    .fromDegreesToHMS(angle);
-                break;
-            case "DMS":
-                label = this.getGlobe()
-                    .getCoordinateSystem()
-                    .fromDegreesToDMS(angle);
-                break;
-            default:
-                console.error(format + " : format not supported");
-                return null;
+        case "Deg":
+            label = angle + "°";
+            break;
+        case "HMS":
+            label = this.getGlobe()
+                .getCoordinateSystem()
+                .fromDegreesToHMS(angle);
+            break;
+        case "DMS":
+            label = this.getGlobe()
+                .getCoordinateSystem()
+                .fromDegreesToDMS(angle);
+            break;
+        default:
+            ErrorDialog.open(Constants.LEVEL.ERROR, "Format not supported");
+            return null;
         }
         return label;
     };
@@ -966,8 +967,8 @@ define([
         }
 
         // TODO <!> Adaptative rendering isn't totally implemented for theta due to difficulty to compute extrem latitude using geoBound <!>
-        thetaStart = Math.min(this.geoBound.north, this.geoBound.south);
-        thetaStop = Math.max(this.geoBound.north, this.geoBound.south);
+        var thetaStart = Math.min(this.geoBound.north, this.geoBound.south);
+        var thetaStop = Math.max(this.geoBound.north, this.geoBound.south);
 
         for (
             theta = thetaStart;

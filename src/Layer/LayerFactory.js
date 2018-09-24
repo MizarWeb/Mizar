@@ -67,15 +67,9 @@ define([
     GeoJsonLayer,
     OpenSearchRequestPool
 ) {
-    this.proxy = {
-        url: null,
-        use: false
-    };
-
     this.openSearchRequestPool = new OpenSearchRequestPool();
 
     function createHips(hipsMetadata, options) {
-        options.proxy = this.proxy;
         var hipsProperties;
         if (typeof hipsMetadata === "undefined") {
             hipsProperties = new HipsMetadata(options.baseUrl);
@@ -98,69 +92,69 @@ define([
         var layer;
 
         switch (dataProducts) {
-            case hipsProperties.DataProductType.catalog:
-                layer = createHipsCats(metadata, options);
-                break;
-            case hipsProperties.DataProductType.cube:
-                throw new RangeError(
-                    "Hips : cannot handle cube dataproduct",
-                    "LayerFactor.js"
-                );
-            case hipsProperties.DataProductType.image:
-                options.category = options.hasOwnProperty("category")
-                    ? options.category
-                    : "Image";
-                var hasPNG =
+        case hipsProperties.DataProductType.catalog:
+            layer = createHipsCats(metadata, options);
+            break;
+        case hipsProperties.DataProductType.cube:
+            throw new RangeError(
+                "Hips : cannot handle cube dataproduct",
+                "LayerFactor.js"
+            );
+        case hipsProperties.DataProductType.image:
+            options.category = options.hasOwnProperty("category")
+                ? options.category
+                : "Image";
+            var hasPNG =
                     $.inArray(hipsProperties.HipsTileFormat.png, formats) !==
                     -1;
-                var hasJPEG =
+            var hasJPEG =
                     $.inArray(hipsProperties.HipsTileFormat.jpeg, formats) !==
                     -1;
-                var hasFits =
+            var hasFits =
                     $.inArray(hipsProperties.HipsTileFormat.fits, formats) !==
                     -1;
-                if (options.format) {
-                    switch (options.format) {
-                        case hipsProperties.HipsTileFormat.png:
-                            layer = createHipsGraphic(metadata, options);
-                            break;
-                        case "jpg":
-                            layer = createHipsGraphic(metadata, options);
-                            break;
-                        case hipsProperties.HipsTileFormat.fits:
-                            layer = createHipsFits(metadata, options);
-                            break;
-                        default:
-                            // try to get one by default => try jpeg ... maybe I am lucky
-                            layer = createHipsGraphic(metadata, options);
-                    }
-                } else {
-                    if (hasPNG) {
-                        options.format = hipsProperties.HipsTileFormat.png;
-                        layer = createHipsGraphic(metadata, options);
-                    } else if (hasJPEG) {
-                        options.format = "jpg"; // the right extension should be "jpeg" but jpg is used
-                        layer = createHipsGraphic(metadata, options);
-                    } else if (hasFits) {
-                        options.format = hipsProperties.HipsTileFormat.fits;
-                        layer = createHipsFits(metadata, options);
-                    } else {
-                        // try to get one by default => it happens for old Hips version ... maybe I am lucky
-                        options.format = "jpg";
-                        layer = createHipsGraphic(metadata, options);
-                    }
+            if (options.format) {
+                switch (options.format) {
+                case hipsProperties.HipsTileFormat.png:
+                    layer = createHipsGraphic(metadata, options);
+                    break;
+                case "jpg":
+                    layer = createHipsGraphic(metadata, options);
+                    break;
+                case hipsProperties.HipsTileFormat.fits:
+                    layer = createHipsFits(metadata, options);
+                    break;
+                default:
+                    // try to get one by default => try jpeg ... maybe I am lucky
+                    layer = createHipsGraphic(metadata, options);
                 }
-                break;
-            case hipsProperties.DataProductType.meta:
-                throw new RangeError(
-                    "Hips : cannot handle META dataproduct",
-                    "LayerFactor.js"
-                );
-            default:
-                throw new RangeError(
-                    "Hips : Unknown dataproduct type",
-                    "LayerFactor.js"
-                );
+            } else {
+                if (hasPNG) {
+                    options.format = hipsProperties.HipsTileFormat.png;
+                    layer = createHipsGraphic(metadata, options);
+                } else if (hasJPEG) {
+                    options.format = "jpg"; // the right extension should be "jpeg" but jpg is used
+                    layer = createHipsGraphic(metadata, options);
+                } else if (hasFits) {
+                    options.format = hipsProperties.HipsTileFormat.fits;
+                    layer = createHipsFits(metadata, options);
+                } else {
+                    // try to get one by default => it happens for old Hips version ... maybe I am lucky
+                    options.format = "jpg";
+                    layer = createHipsGraphic(metadata, options);
+                }
+            }
+            break;
+        case hipsProperties.DataProductType.meta:
+            throw new RangeError(
+                "Hips : cannot handle META dataproduct",
+                "LayerFactor.js"
+            );
+        default:
+            throw new RangeError(
+                "Hips : Unknown dataproduct type",
+                "LayerFactor.js"
+            );
         }
         //if(fileExists(options.baseUrl+"/Moc.fits") === 200) {
         //    options.serviceUrl = options.baseUrl+"/Moc.fits";
@@ -170,17 +164,14 @@ define([
     }
 
     function createHipsFits(hipsMetadata, options) {
-        options.proxy = this.proxy;
         return new HipsFitsLayer(hipsMetadata, options);
     }
 
     function createHipsGraphic(hipsMetadata, options) {
-        options.proxy = this.proxy;
         return new HipsGraphicLayer(hipsMetadata, options);
     }
 
     function createHipsCats(hipsMetadata, options) {
-        options.proxy = this.proxy;
         return new HipsCatLayer(hipsMetadata, options);
     }
 
@@ -193,7 +184,6 @@ define([
          @return {MocLayer} layer
          */
     function createMoc(options) {
-        options.proxy = this.proxy;
         options.style.fill = true;
         options.style.fillColor[3] = 0.3; // make transparent
         var layer = new MocLayer(options);
@@ -210,7 +200,6 @@ define([
          @return {OpenSearchLayer} layer
          */
     function createOpenSearch(options) {
-        options.proxy = this.proxy;
         options.openSearchRequestPool = this.openSearchRequestPool;
         var layer = new OpenSearchLayer(options);
         if (options.displayProperties) {
@@ -250,73 +239,71 @@ define([
          * @see {@link module:Layer.WMTSLayer WMTSLayer} : A layer to draw predefined tiles coming from a WMTS server
          */
         create: function(options) {
-            var proxy = this.proxy;
-            options.proxy = this.proxy;
             var layer;
             switch (options.type) {
-                case Constants.LAYER.WMS:
-                    layer = new WMSLayer(options);
-                    break;
-                case Constants.LAYER.WMTS:
-                    layer = new WMTSLayer(options);
-                    break;
-                case Constants.LAYER.WMSElevation:
-                    layer = new WMSElevationLayer(options);
-                    break;
-                case Constants.LAYER.WCSElevation:
-                    layer = new WCSElevationLayer(options);
-                    break;
-                case Constants.LAYER.GeoJSON:
-                    layer = new GeoJsonLayer(options);
-                    layer.pickable = options.hasOwnProperty("pickable")
-                        ? options.pickable
-                        : true;
-                    break;
-                case Constants.LAYER.Vector:
-                    layer = new VectorLayer(options);
-                    layer.pickable = options.hasOwnProperty("pickable")
-                        ? options.pickable
-                        : true;
-                    layer.deletable = options.hasOwnProperty("deletable")
-                        ? options.deletable
-                        : false;
-                    break;
-                case Constants.LAYER.Atmosphere:
-                    layer = new AtmosphereLayer(options);
-                    break;
-                case Constants.LAYER.Bing:
-                    layer = new BingLayer(options);
-                    break;
-                case Constants.LAYER.GroundOverlay:
-                    layer = new GroundOverlayLayer(options);
-                    break;
-                case Constants.LAYER.OSM:
-                    layer = new OSMLayer(options);
-                    break;
-                case Constants.LAYER.HipsGrid:
-                case Constants.LAYER.TileWireframe:
-                    layer = new TileWireframeLayer(options);
-                    break;
-                case Constants.LAYER.HipsCat:
-                    layer = new HipsCatLayer(options.hipsMetadata, options);
-                    break;
-                case Constants.LAYER.CoordinateGrid:
-                    layer = new CoordinateGridLayer(options);
-                    break;
-                case Constants.LAYER.Hips:
-                    layer = createHips(options.hipsMetadata, options);
-                    break;
-                case Constants.LAYER.Moc:
-                    layer = createMoc(options);
-                    break;
-                case Constants.LAYER.OpenSearch:
-                    layer = createOpenSearch(options);
-                    break;
-                default:
-                    throw new RangeError(
-                        "Unable to create the layer " + options.type,
-                        "LayerFactor.js"
-                    );
+            case Constants.LAYER.WMS:
+                layer = new WMSLayer(options);
+                break;
+            case Constants.LAYER.WMTS:
+                layer = new WMTSLayer(options);
+                break;
+            case Constants.LAYER.WMSElevation:
+                layer = new WMSElevationLayer(options);
+                break;
+            case Constants.LAYER.WCSElevation:
+                layer = new WCSElevationLayer(options);
+                break;
+            case Constants.LAYER.GeoJSON:
+                layer = new GeoJsonLayer(options);
+                layer.pickable = options.hasOwnProperty("pickable")
+                    ? options.pickable
+                    : true;
+                break;
+            case Constants.LAYER.Vector:
+                layer = new VectorLayer(options);
+                layer.pickable = options.hasOwnProperty("pickable")
+                    ? options.pickable
+                    : true;
+                layer.deletable = options.hasOwnProperty("deletable")
+                    ? options.deletable
+                    : false;
+                break;
+            case Constants.LAYER.Atmosphere:
+                layer = new AtmosphereLayer(options);
+                break;
+            case Constants.LAYER.Bing:
+                layer = new BingLayer(options);
+                break;
+            case Constants.LAYER.GroundOverlay:
+                layer = new GroundOverlayLayer(options);
+                break;
+            case Constants.LAYER.OSM:
+                layer = new OSMLayer(options);
+                break;
+            case Constants.LAYER.HipsGrid:
+            case Constants.LAYER.TileWireframe:
+                layer = new TileWireframeLayer(options);
+                break;
+            case Constants.LAYER.HipsCat:
+                layer = new HipsCatLayer(options.hipsMetadata, options);
+                break;
+            case Constants.LAYER.CoordinateGrid:
+                layer = new CoordinateGridLayer(options);
+                break;
+            case Constants.LAYER.Hips:
+                layer = createHips(options.hipsMetadata, options);
+                break;
+            case Constants.LAYER.Moc:
+                layer = createMoc(options);
+                break;
+            case Constants.LAYER.OpenSearch:
+                layer = createOpenSearch(options);
+                break;
+            default:
+                throw new RangeError(
+                    "Unable to create the layer " + options.type,
+                    "LayerFactor.js"
+                );
             }
             return layer;
         }

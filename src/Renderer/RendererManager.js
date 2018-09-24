@@ -35,9 +35,10 @@
  * along with GlobWeb. If not, see <http://www.gnu.org/licenses/>.
  ***************************************/
 
-define(["../Utils/Constants", "./RasterOverlayRenderer"], function(
+define(["../Utils/Constants", "./RasterOverlayRenderer", "../Gui/dialog/ErrorDialog"], function(
     Constants,
-    RasterOverlayRenderer
+    RasterOverlayRenderer,
+    ErrorDialog
 ) {
     /**************************************************************************************************************/
 
@@ -166,16 +167,12 @@ define(["../Utils/Constants", "./RasterOverlayRenderer"], function(
      * @param geometry
      * @param style
      */
-    RendererManager.prototype.addGeometry = function(
-        layer,
-        geometry,
-        style
-    ) {
+    RendererManager.prototype.addGeometry = function(layer, geometry, style) {
         var renderer = this.getRenderer(geometry, style);
         if (renderer) {
             renderer.addGeometry(layer, geometry, style);
         } else {
-            console.error("No renderer for RendererManager");
+            ErrorDialog.open(Constants.LEVEL.DEBUG, "RendererManager.js", "No renderer for RendererManager");
         }
     };
 

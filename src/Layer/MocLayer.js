@@ -80,7 +80,7 @@ define([
             options
         );
 
-        this.baseUrl = this.proxify(options.baseUrl);
+        this.baseUrl = this.allowRequest(options.baseUrl);
         this.startOrder = options.startOrder || 2;
 
         if (options.coordinateSystem && options.coordinateSystem.geoideName) {
@@ -179,17 +179,29 @@ define([
                 }
                 self.moc = healpixMoc;
                 self.handleDistribution(healpixMoc);
-                delete fits;
+                fits = null;
+                //delete fits;
             });
         } catch (e) {
-            Utils.requestUrl(self.baseUrl, 'json', 'application/json', null, function(response) {
-                self.handleDistribution(response);
-            }, function(err){
-                $("#addLayer_" + self.id)
-                .find("label")
-                .css("color", "red");
-                ErrorDialog.open(Constants.LEVEL.ERROR, 'Failed ot request '+self.baseUrl, err);
-            }); 
+            Utils.requestUrl(
+                self.baseUrl,
+                "json",
+                "application/json",
+                null,
+                function(response) {
+                    self.handleDistribution(response);
+                },
+                function(err) {
+                    $("#addLayer_" + self.id)
+                        .find("label")
+                        .css("color", "red");
+                    ErrorDialog.open(
+                        Constants.LEVEL.ERROR,
+                        "Failed ot request " + self.baseUrl,
+                        err
+                    );
+                }
+            );
         }
 
         // As post renderer, moc layer will regenerate data on tiles in case of base imagery change

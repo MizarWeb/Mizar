@@ -35,7 +35,7 @@
  * along with GlobWeb. If not, see <http://www.gnu.org/licenses/>.
  ***************************************/
 
-define(function() {
+define(["../Utils/Constants", "../Gui/dialog/ErrorDialog", "../Utils/Proxy"],function(Constants, ErrorDialog, Proxy) {
     /**************************************************************************************************************/
 
     /**
@@ -69,10 +69,8 @@ define(function() {
         gl.shaderSource(shader, source);
         gl.compileShader(shader);
         if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
-            console.error(
-                "Shader compilation error: " + gl.getShaderInfoLog(shader)
-            );
-            console.error(source);
+            ErrorDialog.open(Constants.LEVEL.DEBUG, "Program.js", "Shader compilation error: " + gl.getShaderInfoLog(shader));
+            ErrorDialog.open(Constants.LEVEL.DEBUG, "Program.js", source);
             gl.deleteShader(shader);
             return null;
         }
@@ -116,9 +114,7 @@ define(function() {
         // Link and test the program is ok
         gl.linkProgram(this.glProgram);
         if (!gl.getProgramParameter(this.glProgram, gl.LINK_STATUS)) {
-            console.log(
-                "Program link error: " + gl.getProgramInfoLog(this.glProgram)
-            );
+            ErrorDialog.open(Constants.LEVEL.DEBUG, "Program.js", "Program link error: " + gl.getProgramInfoLog(this.glProgram));
             gl.deleteShader(vertexShader);
             gl.deleteShader(fragmentShader);
             gl.deleteProgram(this.glProgram);
@@ -170,11 +166,11 @@ define(function() {
      */
     Program.prototype.loadFromFile = function(vertexFile, fragmentFile) {
         var xhr = new XMLHttpRequest();
-        xhr.open("get", this.renderContext.shadersPath + vertexFile, false);
+        xhr.open("get", Proxy.proxify(this.renderContext.shadersPath + vertexFile), false);
         xhr.send(null);
 
         var vertexSource = xhr.responseText;
-        xhr.open("get", this.renderContext.shadersPath + fragmentFile, false);
+        xhr.open("get", Proxy.proxify(this.renderContext.shadersPath + fragmentFile), false);
         xhr.send(null);
         var fragmentSource = xhr.responseText;
 

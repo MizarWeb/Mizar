@@ -64,15 +64,22 @@ define([
             ";" +
             maxOrder;
 
-        Utils.requestUrl(requestUrl, 'text', 'text/plain', null, function(response){
-            if (options && options.success) {
-                options.success(response);
+        Utils.requestUrl(
+            requestUrl,
+            "text",
+            "text/plain",
+            null,
+            function(response) {
+                if (options && options.success) {
+                    options.success(response);
+                }
+            },
+            function(err) {
+                if (options && options.error) {
+                    options.error(err);
+                }
             }
-        }, function(err) {
-            if (options && options.error) {
-                options.error(xhr);
-            }
-        });
+        );
     };
 
     /**

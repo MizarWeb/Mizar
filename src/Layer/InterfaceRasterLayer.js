@@ -38,11 +38,11 @@ function RasterLayer() {}
 RasterLayer.prototype.getUrl = function(tile) {};
 
 /**
- * Returns the proxified Url when the tile level is between [minLevel, maxLevel]
+ * Returns the Url when the tile level is between [minLevel, maxLevel]
  * @param url url
- * @returns {Boolean} the proxified Url when the tile level is between [minLevel, maxLevel]
+ * @returns {string} the Url when the tile level is between [minLevel, maxLevel]
  */
-RasterLayer.prototype.proxify = function(url, level) {};
+RasterLayer.prototype.allowRequest = function(url, level) {};
 
 /**
  * Returns true when the tile is defined between [minLevel,maxLevel] otherwise false.
@@ -64,4 +64,4 @@ RasterLayer.prototype._attach = function(g) {};
  * Detaches the raster layer from the globe and removes the overlay is needed
  * @private
  */
-AbstractRasterLayer.prototype._detach = function() {};
+RasterLayer.prototype._detach = function() {};

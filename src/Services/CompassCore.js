@@ -142,20 +142,20 @@ define(["jquery", "../Utils/Constants"], function($, Constants) {
     function updateNorth() {
         var mode = ctx.getMode();
         switch (mode) {
-            case Constants.CONTEXT.Sky:
-                updateNorthSky();
-                break;
-            case Constants.CONTEXT.Planet:
-                updateNorthPlanet();
-                break;
-            case Constants.CONTEXT.Ground:
-                updateNorthAzimuth();
-                break;
-            default:
-                throw new RangeError(
-                    "CompassCore is not supported for this context",
-                    "CompassCore.js"
-                );
+        case Constants.CONTEXT.Sky:
+            updateNorthSky();
+            break;
+        case Constants.CONTEXT.Planet:
+            updateNorthPlanet();
+            break;
+        case Constants.CONTEXT.Ground:
+            updateNorthAzimuth();
+            break;
+        default:
+            throw new RangeError(
+                "CompassCore is not supported for this context",
+                "CompassCore.js"
+            );
         }
     }
 

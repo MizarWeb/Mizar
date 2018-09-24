@@ -19,7 +19,7 @@
 
 /*global define: false */
 
-define(["../Utils/ImageRequest"], function(ImageRequest) {
+define(["../Utils/ImageRequest", "../Utils/Constants", "../Gui/dialog/ErrorDialog", "../Utils/Proxy"], function(ImageRequest, Constants, ErrorDialog, Proxy) {
     /**************************************************************************************************************/
 
     /*
@@ -46,7 +46,7 @@ define(["../Utils/ImageRequest"], function(ImageRequest) {
                     } else {
                         if (xhr.status !== 0) {
                             // Fail
-                            console.error("Error while loading " + url);
+                            ErrorDialog.open(Constants.LEVEL.ERROR, "Error while loading " + url);
                             if (self.failCallback) {
                                 self.failCallback(self);
                             }
@@ -63,7 +63,7 @@ define(["../Utils/ImageRequest"], function(ImageRequest) {
                 self.xhr = null;
             };
 
-            xhr.open("GET", url);
+            xhr.open("GET", Proxy.proxify(url));
             xhr.responseType = "arraybuffer";
             xhr.send();
             this.xhr = xhr;
@@ -84,7 +84,7 @@ define(["../Utils/ImageRequest"], function(ImageRequest) {
                     self.failCallback(self);
                 }
             };
-            this.image.src = url;
+            this.image.src = Proxy.proxify(url);
         }
     };
 

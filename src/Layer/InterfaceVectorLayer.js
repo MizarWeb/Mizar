@@ -52,7 +52,7 @@ VectorLayer.prototype.getMaxLevel = function() {};
 VectorLayer.prototype.getUrl = function() {};
 
 /**
- * Returns true when data must bil filled by a {@link InterfaceProvider provider}. 
+ * Returns true when data must bil filled by a {@link InterfaceProvider provider}.
  * A provider only fills the data in {@link InterfaceContext#addLayer} method.
  * @returns {boolean} true when data must be filled by a data provider otherwise false
  */
@@ -66,7 +66,7 @@ VectorLayer.prototype.isForDataProvider = function() {};
 VectorLayer.prototype.isDraw = function() {};
 
 /**
- * Sets the vector as a draw. 
+ * Sets the vector as a draw.
  * @param {boolean} value
  */
 VectorLayer.prototype.setDraw = function(value) {};
@@ -88,17 +88,13 @@ VectorLayer.prototype._detach = function() {};
  * {@link addFeature Adds a feature} collection, in GeoJSON format
  * @param {GeoJSON} featureCollection Feature Collection
  */
-VectorLayer.prototype.addFeatureCollection = function(
-    featureCollection
-) {};
+VectorLayer.prototype.addFeatureCollection = function(featureCollection) {};
 
 /**
  * {@link removeFeature Removes a feature} collection, in GeoJSON format
  * @param {GeoJSON} featureCollection Feature Collection
  */
-VectorLayer.prototype.removeFeatureCollection = function(
-    featureCollection
-) {};
+VectorLayer.prototype.removeFeatureCollection = function(featureCollection) {};
 
 /**
  * Add a feature to renderers.
@@ -113,9 +109,7 @@ VectorLayer.prototype._addFeatureToRenderers = function(feature) {};
  * @returns {boolean} true when the feature is removed from the globe otherwise false
  * @private
  */
-VectorLayer.prototype._removeFeatureFromRenderers = function(
-    feature
-) {};
+VectorLayer.prototype._removeFeatureFromRenderers = function(feature) {};
 
 /**
  * Add a feature to the layer

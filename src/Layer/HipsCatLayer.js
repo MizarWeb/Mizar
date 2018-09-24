@@ -27,7 +27,9 @@ define([
     "./JsVotable/JsVotable",
     "./JsVotable/utils",
     "./JsCSV/csv",
-    "../Utils/Constants"
+    "../Utils/Constants",
+    "../Gui/dialog/ErrorDialog",
+    "../Utils/Proxy"
 ], function(
     AbstractHipsLayer,
     FeatureStyle,
@@ -38,7 +40,9 @@ define([
     JsVotable,
     UtilsJsVotable,
     CSV,
-    Constants
+    Constants,
+    ErrorDialog,
+    Proxy
 ) {
     /**************************************************************************************************************/
 
@@ -74,17 +78,17 @@ define([
         );
         var i;
         var propertiesObj = new Properties(
-            this.proxify(options.baseUrl) + "/properties"
+            this.allowRequest(options.baseUrl) + "/properties"
         );
         var properties = propertiesObj.getProperties();
         var hips_order = properties.hips_order;
-        this.serviceUrl = this.proxify(options.baseUrl);
+        this.serviceUrl = this.allowRequest(options.baseUrl);
         this.minOrder = options.minOrder || 2;
         this.maxOrder = Number.parseInt(hips_order, 10);
         this.maxRequests = options.maxRequests || 4;
         this.invertY = options.invertY || false;
         var xhr = UtilsJsVotable.makeHttpObject();
-        xhr.open("GET", this.proxify(options.baseUrl) + "/metadata.xml", false);
+        xhr.open("GET", Proxy.proxify(this.allowRequest(options.baseUrl + "/metadata.xml")), false);
         xhr.setRequestHeader("Accept", "application/xml");
         xhr.send(null);
         var jsVotable = new JsVotable.Votable(xhr.responseXML);
@@ -138,7 +142,7 @@ define([
         this.properties = {};
         var i;
         var xhr = new XMLHttpRequest();
-        xhr.open("GET", url, false);
+        xhr.open("GET", Proxy.proxify(url), false);
         xhr.setRequestHeader("Accept", "text/plain");
         xhr.send();
         var content = xhr.responseText;
@@ -219,7 +223,7 @@ define([
 
         var xhr = this.freeRequests.pop();
         var self = this;
-        xhr.open("GET", url);
+        xhr.open("GET", Proxy.proxify(url));
         xhr.setRequestHeader("Accept", "application/xml");
         xhr.send(null);
         xhr.onreadystatechange = function(e) {
@@ -363,9 +367,7 @@ define([
         if (tileIndex >= 0) {
             featureIt.tiles.splice(tileIndex, 1);
         } else {
-            console.error(
-                "HipsCatLayer internal error : tile not found when removing feature"
-            );
+            ErrorDialog.open(Constants.LEVEL.DEBUG, "HipsCatLayer internal error : tile not found when removing feature");
         }
 
         if (featureIt.tiles.length === 0) {
@@ -552,7 +554,7 @@ define([
      * @returns {*}
      */
     HipsCatLayer.prototype.getUrl = function(tile) {
-        return this.proxify(this.buildUrl(tile));
+        return this.allowRequest(this.buildUrl(tile));
     };
 
     /**************************************************************************************************************/

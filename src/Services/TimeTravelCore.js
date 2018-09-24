@@ -58,8 +58,7 @@ define(["jquery", "../Time/TimeTravelParams", "../Utils/Constants"], function(
      *
      */
     function chooseTime(date) {
-        if(date instanceof Date || typeof(date) === 'string')
-        {
+        if (date instanceof Date || typeof date === "string") {
             params.setCurrentDate(date);
         }
     }

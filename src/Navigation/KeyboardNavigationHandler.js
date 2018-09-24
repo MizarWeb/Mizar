@@ -113,75 +113,75 @@ define(function() {
          */
         var _handleKeyDown = function(event) {
             switch (event.keyCode) {
-                case 32:
-                    // space bar
-                    // Stop all animations when an event is received
-                    _navigation.stopAnimations();
-                    break;
-                case 187:
+            case 32:
+                // space bar
+                // Stop all animations when an event is received
+                _navigation.stopAnimations();
+                break;
+            case 187:
                 // + on Safari
                 // falls through
-                case 61:
+            case 61:
                 // +(=) on Firefox and Opera
                 // falls through
-                case 107:
-                    // + on other
-                    _navigation.zoom(-self.zoomFactor);
-                    break;
-                case 189:
+            case 107:
+                // + on other
+                _navigation.zoom(-self.zoomFactor);
+                break;
+            case 189:
                 // - on Safari
                 // falls through
-                case 54:
+            case 54:
                 // -(6) on Firefox and Opera
                 // falls through
-                case 109:
-                    // - on other
-                    _navigation.zoom(self.zoomFactor);
-                    break;
-                case 81:
+            case 109:
+                // - on other
+                _navigation.zoom(self.zoomFactor);
+                break;
+            case 81:
                 // q
                 // falls through
-                case 37:
-                    // Left arrow
-                    if (event.shiftKey) {
-                        _navigation.rotate(self.panFactor, 0);
-                    } else {
-                        _navigation.pan(self.panFactor, 0);
-                    }
-                    break;
-                case 90:
+            case 37:
+                // Left arrow
+                if (event.shiftKey) {
+                    _navigation.rotate(self.panFactor, 0);
+                } else {
+                    _navigation.pan(self.panFactor, 0);
+                }
+                break;
+            case 90:
                 // z
                 // falls through
-                case 38:
-                    // Up arrow
-                    if (event.shiftKey) {
-                        _navigation.rotate(0, self.panFactor);
-                    } else {
-                        _navigation.pan(0, self.panFactor);
-                    }
-                    break;
-                case 68:
+            case 38:
+                // Up arrow
+                if (event.shiftKey) {
+                    _navigation.rotate(0, self.panFactor);
+                } else {
+                    _navigation.pan(0, self.panFactor);
+                }
+                break;
+            case 68:
                 // d
                 // falls through
-                case 39:
-                    // Right arrow
-                    if (event.shiftKey) {
-                        _navigation.rotate(-self.panFactor, 0);
-                    } else {
-                        _navigation.pan(-self.panFactor, 0);
-                    }
-                    break;
-                case 83:
+            case 39:
+                // Right arrow
+                if (event.shiftKey) {
+                    _navigation.rotate(-self.panFactor, 0);
+                } else {
+                    _navigation.pan(-self.panFactor, 0);
+                }
+                break;
+            case 83:
                 // s
                 // falls through
-                case 40:
-                    // Down arrow
-                    if (event.shiftKey) {
-                        _navigation.rotate(0, -self.panFactor);
-                    } else {
-                        _navigation.pan(0, -self.panFactor);
-                    }
-                    break;
+            case 40:
+                // Down arrow
+                if (event.shiftKey) {
+                    _navigation.rotate(0, -self.panFactor);
+                } else {
+                    _navigation.pan(0, -self.panFactor);
+                }
+                break;
             }
         };
 

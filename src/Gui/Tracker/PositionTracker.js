@@ -23,21 +23,21 @@
  *     <li>{@link module:Tracker.PositionTracker PositionTracker}: Displays the coordinates</li>
  *     <li>{@link module:Tracker.ElevationTracker ElevationTracker} : Displays the elevation</li>
  * </ul>
- * 
+ *
  * See {@tutorial getting-started-tracker} for an example of tracker position.
  *
  * @module Tracker
  * @implements {Tracker}
- * 
+ *
  */
- define([
+define([
     "jquery",
     "./AbstractTracker",
     "../dialog/CrsDialog",
     "../../Utils/Utils"
 ], function($, AbstractTracker, CrsDialog, Utils) {
     var self;
-    var posTrackerInfoHTML = '<input type="button" id="posTrackerInfoButton"/>';
+    var posTrackerInfoHTML = "<input type=\"button\" id=\"posTrackerInfoButton\"/>";
 
     /**
      * @name PositionTracker
@@ -88,7 +88,7 @@
         }
     };
 
-    /**     
+    /**
      * @function compute
      * @memberof PositionTracker#
      */
@@ -113,7 +113,7 @@
      */
     PositionTracker.prototype.attachTo = function(context) {
         AbstractTracker.prototype.attachTo.call(this, context);
-        $posTrackerInfo = $(posTrackerInfoHTML).appendTo(
+        var $posTrackerInfo = $(posTrackerInfoHTML).appendTo(
             "#" + this._getElement() + "Info"
         );
         CrsDialog.open(context._getGlobe().getCoordinateSystem());

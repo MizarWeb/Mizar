@@ -40,8 +40,9 @@ define([
     "./AbstractLayer",
     "./AbstractRasterLayer",
     "../Utils/Constants",
-    "../Tiling/GeoTiling"
-], function(Utils, AbstractLayer, AbstractRasterLayer, Constants, GeoTiling) {
+    "../Tiling/GeoTiling",
+    "../Gui/dialog/ErrorDialog"
+], function(Utils, AbstractLayer, AbstractRasterLayer, Constants, GeoTiling, ErrorDialog) {
     /**
      * WCSElevation configuration
      * @typedef {AbstractRasterLayer.configuration} AbstractRasterLayer.wcsElevation_configuration
@@ -105,30 +106,30 @@ define([
         url = Utils.addParameterTo(url, "request", "GetCoverage");
 
         switch (options.version.substring(0, 3)) {
-            case "2.0":
-                url = Utils.addParameterTo(url, "outputCRS", options.crs);
-                url = Utils.addParameterTo(
-                    url,
-                    "size",
-                    "x(" + options.tilePixelSize + ")"
-                );
-                url = Utils.addParameterTo(
-                    url,
-                    "size",
-                    "y(" + options.tilePixelSize + ")"
-                );
-                url = Utils.addParameterTo(url, "coverageid", options.coverage);
-                break;
-            case "1.0":
-                url = Utils.addParameterTo(url, "width", options.tilePixelSize);
-                url = Utils.addParameterTo(
-                    url,
-                    "height",
-                    options.tilePixelSize
-                );
-                url = Utils.addParameterTo(url, "crs", options.crs);
-                url = Utils.addParameterTo(url, "coverage", options.coverage);
-                break;
+        case "2.0":
+            url = Utils.addParameterTo(url, "outputCRS", options.crs);
+            url = Utils.addParameterTo(
+                url,
+                "size",
+                "x(" + options.tilePixelSize + ")"
+            );
+            url = Utils.addParameterTo(
+                url,
+                "size",
+                "y(" + options.tilePixelSize + ")"
+            );
+            url = Utils.addParameterTo(url, "coverageid", options.coverage);
+            break;
+        case "1.0":
+            url = Utils.addParameterTo(url, "width", options.tilePixelSize);
+            url = Utils.addParameterTo(
+                url,
+                "height",
+                options.tilePixelSize
+            );
+            url = Utils.addParameterTo(url, "crs", options.crs);
+            url = Utils.addParameterTo(url, "coverage", options.coverage);
+            break;
         }
         url = Utils.addParameterTo(url, "format", options.format);
 
@@ -161,13 +162,11 @@ define([
             return this._returnZeroElevations();
         }
         switch (this.options.format) {
-            case "image/x-aaigrid":
-                return this._parseAAIGrid(text);
-            default:
-                console.log(
-                    "WARN: Format '" + this.format + "' could not be parsed."
-                );
-                return this._returnZeroElevations();
+        case "image/x-aaigrid":
+            return this._parseAAIGrid(text);
+        default:
+            ErrorDialog.open(Constants.LEVEL.WARNING,"Format '" + this.format + "' could not be parsed.");
+            return this._returnZeroElevations();
         }
     };
 
@@ -291,7 +290,7 @@ define([
         } else {
             url = null;
         }
-        return this.proxify(url, tile.level);
+        return this.allowRequest(url, tile.level);
     };
 
     WCSElevationLayer.prototype.setParameter = function(paramName, value) {

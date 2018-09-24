@@ -159,31 +159,31 @@ define([
             if (element.nodeType == 1) {
                 var nodeName = element.localName;
                 switch (nodeName) {
-                    case "DEFINITIONS":
-                        definitions = new Definitions(element);
-                        break;
-                    case "INFO":
-                        infos.push(new Info(element));
-                        break;
-                    case "RESOURCE":
-                        resources.push(new Resource(element));
-                        break;
-                    case "DESCRIPTION":
-                        description = new Description(element);
-                        break;
-                    case "COOSYS":
-                        coosyss.push(new Coosys(element));
-                        break;
-                    case "GROUP":
-                        groups.push(new Group(element));
-                        break;
-                    case "PARAM":
-                        params.push(new Param(element));
-                        break;
-                    default:
-                        this.getCache().addWarning(
-                            "unknown element " + nodeName + " in Votable node"
-                        );
+                case "DEFINITIONS":
+                    definitions = new Definitions(element);
+                    break;
+                case "INFO":
+                    infos.push(new Info(element));
+                    break;
+                case "RESOURCE":
+                    resources.push(new Resource(element));
+                    break;
+                case "DESCRIPTION":
+                    description = new Description(element);
+                    break;
+                case "COOSYS":
+                    coosyss.push(new Coosys(element));
+                    break;
+                case "GROUP":
+                    groups.push(new Group(element));
+                    break;
+                case "PARAM":
+                    params.push(new Param(element));
+                    break;
+                default:
+                    this.getCache().addWarning(
+                        "unknown element " + nodeName + " in Votable node"
+                    );
                 }
             }
         }

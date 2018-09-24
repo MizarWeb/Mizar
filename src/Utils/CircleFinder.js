@@ -43,13 +43,13 @@ define([], function() {
     var CircleFinder = function(point) {
         //CircleFinder.prototype.constructor.call(this, point);
 
-        np = point.length;
+        var np = point.length;
         //HealpixUtils.check(np >= 3, "too few points");
 
         center = vec3.add2(point[0], point[1]);
         center = vec3.normalize2(center);
         cosrad = vec3.dot2(point[0], center);
-        for (i = 2; i < np; ++i) {
+        for (var i = 2; i < np; ++i) {
             if (vec3.dot2(point[i], center) < cosrad) {
                 // point outside the current circle
                 this.getCircle(point, i);
@@ -63,7 +63,7 @@ define([], function() {
         center = vec3.add2(point[q1], point[q2]);
         center = vec3.normalize2(center);
         cosrad = vec3.dot2(point[q1], center);
-        for (i = 0; i < q1; ++i) {
+        for (var i = 0; i < q1; ++i) {
             if (vec3.dot2(point[i], center) < cosrad) {
                 // point outside the current circle
                 var subPoint = vec3.subtract2(point[q1], point[i]);
@@ -85,7 +85,7 @@ define([], function() {
         center = vec3.add2(point[0], point[q]);
         center = vec3.normalize2(center);
         cosrad = vec3.dot2(point[0], center);
-        for (i = 1; i < q; ++i) {
+        for (var i = 1; i < q; ++i) {
             if (vec3.dot2(point[i], center) < cosrad) {
                 // point outside the current circle
                 this.getCircle(point, i, q);

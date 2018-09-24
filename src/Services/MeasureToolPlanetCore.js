@@ -462,9 +462,9 @@ define([
 
     /**
      * Updates Mizar context
-     * @param {Mizar} mizar 
+     * @param {Mizar} mizar
      * @fires Context#backgroundLayer:added
-     * @fires Context#layer:added    
+     * @fires Context#layer:added
      */
     function updateContext(mizar) {
         mizarAPI = mizar;

@@ -31,7 +31,7 @@ define([
      * @augments AbstractTracker
      * @param {AbstractTracker_elevation_configuration} options - Elevation tracker configuration
      * @constructor
-     * @memberof module:Tracker     
+     * @memberof module:Tracker
      */
     var ElevationTracker = function(options) {
         AbstractTracker.prototype.constructor.call(this, options);

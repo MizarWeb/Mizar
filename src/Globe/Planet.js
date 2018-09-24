@@ -58,7 +58,7 @@ define([
     "../Utils/Utils",
     "./AbstractGlobe",
     "../Utils/Constants"
-], function (Tile, Event, Utils, AbstractGlobe, Constants) {
+], function(Tile, Event, Utils, AbstractGlobe, Constants) {
     /**
      * @name Planet
      * @class
@@ -68,7 +68,7 @@ define([
      * @constructor
      * @memberof module:Globe
      */
-    var Planet = function (options) {
+    var Planet = function(options) {
         AbstractGlobe.prototype.constructor.call(
             this,
             Constants.GLOBE.Planet,
@@ -90,24 +90,21 @@ define([
      * @param {AbstractRasterLayer} layer the layer to use
      * @throws {RangeError} layer must be set.
      */
-    Planet.prototype.setBaseImagery = function (layer) {
+    Planet.prototype.setBaseImagery = function(layer) {
         if (layer == null) {
-            throw new RangeError(
-                "layer must be exist.",
-                "Planet.js"
-            );
+            throw new RangeError("layer must be exist.", "Planet.js");
         }
 
         if (layer === this.baseImagery) {
             return;
         }
 
-        if (this.baseImagery) {        
+        if (this.baseImagery) {
             this.tileManager.setImageryProvider(null);
             this.baseImagery = null;
         }
 
-        // Attach the layer to the globe      
+        // Attach the layer to the globe
         this.definedBackgound = true;
         layer.background = true;
         layer.visible = true;
@@ -117,17 +114,14 @@ define([
         }
         this.tileManager.setImageryProvider(layer);
         this.baseImagery = layer;
-        this.publishEvent(
-            Constants.EVENT_MSG.LAYER_BACKGROUND_CHANGED,
-            layer
-        );                
+        this.publishEvent(Constants.EVENT_MSG.LAYER_BACKGROUND_CHANGED, layer);
     };
 
     /**
      * @function setBaseElevation
      * @memberof Planet#
      */
-    Planet.prototype.setBaseElevation = function (layer) {
+    Planet.prototype.setBaseElevation = function(layer) {
         if (this.tileManager.elevationProvider) {
             this.removeLayer(this.tileManager.elevationProvider);
         }
@@ -141,7 +135,7 @@ define([
      * @function getElevation
      * @memberof Planet#
      */
-    Planet.prototype.getElevation = function (lon, lat) {
+    Planet.prototype.getElevation = function(lon, lat) {
         // Use imagery provider tiling if defined, otherwise use globe default one
         var tiling = this.tileManager.tiling;
         if (this.baseImagery) {
@@ -162,11 +156,11 @@ define([
         }
     };
 
-    /**     
+    /**
      * @function render
      * @memberof Planet#
      */
-    Planet.prototype.render = function () {
+    Planet.prototype.render = function() {
         if (this.isEnabled()) {
             // Call pre-renderers (only in 3D mode, no atmosphere for 2D)
             if (!this.coordinateSystem.isFlat()) {
@@ -183,7 +177,7 @@ define([
      * @function hashMesh
      * @memberof Planet#
      */
-    Planet.prototype.hasMesh = function () {
+    Planet.prototype.hasMesh = function() {
         return true;
     };
 

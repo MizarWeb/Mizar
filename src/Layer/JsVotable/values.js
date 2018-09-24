@@ -82,19 +82,19 @@ define(["./utils", "./abstractNode", "./min", "./max", "./option"], function(
             if (element.nodeType == 1) {
                 var nodeName = element.localName;
                 switch (nodeName) {
-                    case "MIN":
-                        min = new Min(element);
-                        break;
-                    case "MAX":
-                        max = new Max(element);
-                        break;
-                    case "OPTION":
-                        options.push(new Option(element));
-                        break;
-                    default:
-                        this.getCache().addWarning(
-                            "unknown element " + nodeName + " in Values node"
-                        );
+                case "MIN":
+                    min = new Min(element);
+                    break;
+                case "MAX":
+                    max = new Max(element);
+                    break;
+                case "OPTION":
+                    options.push(new Option(element));
+                    break;
+                default:
+                    this.getCache().addWarning(
+                        "unknown element " + nodeName + " in Values node"
+                    );
                 }
             }
         }

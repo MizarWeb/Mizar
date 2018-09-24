@@ -91,19 +91,19 @@ define([
             if (element.nodeType == 1) {
                 var nodeName = element.localName;
                 switch (nodeName) {
-                    case "DESCRIPTION":
-                        description = new Description(element);
-                        break;
-                    case "VALUES":
-                        values = new Values(element);
-                        break;
-                    case "LINK":
-                        links.push(new Link(element));
-                        break;
-                    default:
-                        this.getCache().addWarning(
-                            "unknown element " + nodeName + " in Field node"
-                        );
+                case "DESCRIPTION":
+                    description = new Description(element);
+                    break;
+                case "VALUES":
+                    values = new Values(element);
+                    break;
+                case "LINK":
+                    links.push(new Link(element));
+                    break;
+                default:
+                    this.getCache().addWarning(
+                        "unknown element " + nodeName + " in Field node"
+                    );
                 }
             }
         }

@@ -29,7 +29,7 @@
  * Called when an error occurs with abstractContext
  *
  * @event Context#backgroundLayer:error
- * @type {string}  
+ * @type {string}
  */
 
 /**
@@ -70,7 +70,7 @@
  * @interface
  * @fires Context#globalTime:set
  * @fires Context#globalTime:rewind
- * @fires Context#globalTime:forward  
+ * @fires Context#globalTime:forward
  */
 function Context() {}
 
@@ -117,7 +117,7 @@ Context.prototype.setCompassVisible = function(divName, visible) {};
  * @param {boolean} visible - Visible or not
  * @fires Context#globalTime:set
  * @fires Context#globalTime:rewind
- * @fires Context#globalTime:forward  
+ * @fires Context#globalTime:forward
  */
 Context.prototype.setTimeTravelVisible = function(divName, visible) {};
 
@@ -230,12 +230,11 @@ Context.prototype.getLayerByName = function(layerName) {};
  */
 Context.prototype.setBackgroundLayer = function(survey) {};
 
-
 /**
  * Sets the background survey by layer ID.
  * @param {string} surveyID The name of the layer
  * @return {Layer|undefined} the layer which has been added to the background
- * @fires Context#backgroundLayer:error 
+ * @fires Context#backgroundLayer:error
  */
 Context.prototype.setBackgroundLayerByID = function(surveyID) {};
 
@@ -256,7 +255,7 @@ Context.prototype.getAdditionalLayers = function() {};
  * @throws {RangeError} Unable to create the layer
  * @fires Context#backgroundLayer:changed
  * @fires Context#backgroundLayer:added
- * @fires Context#layer:added  
+ * @fires Context#layer:added
  */
 Context.prototype.addLayer = function(mizarDescription, callback, fallback) {};
 
@@ -283,7 +282,7 @@ Context.prototype.removeAllLayers = function() {};
  * subscribe to "visibility:changed" by configuration
  * @param {VectorLayer} layer
  * @fires Context#backgroundLayer:added
- * @fires Context#layer:added 
+ * @fires Context#layer:added
  */
 Context.prototype.addDraw = function(layer) {};
 
@@ -308,7 +307,7 @@ Context.prototype.getRenderContext = function() {};
  * The pixel is expressed in the canvas frame, i.e. (0,0) corresponds to the lower-left corner of the pixel
  * (private for now because it is automatically called in requestAnimationFrame)
  * @fires Context#startLoad
- * @fires Context#endLoad 
+ * @fires Context#endLoad
  * @fires Context#baseLayersReady
  * @fires Context#baseLayersError
  * @fires Context#startBackgroundLoad
@@ -427,7 +426,7 @@ Context.prototype.enable = function() {};
  * Checks whether the context is enabled.
  */
 Context.prototype.isEnabled = function() {};
-   
+
 /**
  * Checks whether the context is disabled.
  */

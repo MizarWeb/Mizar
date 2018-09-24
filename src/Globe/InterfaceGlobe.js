@@ -30,7 +30,7 @@
  * @type {Layer}
  */
 
- /**
+/**
  * layer:remove.<br/>
  * Called when the a layer has replaced another layer as background
  * @event Context#backgroundLayer:changed
@@ -102,7 +102,7 @@ Globe.prototype.hasDefinedBackground = function() {};
  * @param {AbstractRasterLayer} layer - raster layer to use
  * @fires Context#backgroundLayer:changed
  * @fires Context#backgroundLayer:added
- * @fires Context#layer:added  
+ * @fires Context#layer:added
  * @throws {Error} layer must be a Layer object
  */
 Globe.prototype.setBaseImagery = function(layer) {};
@@ -137,11 +137,11 @@ Globe.prototype.getBaseElevation = function() {};
  * The layer can be mainly a raster or a set of vectors.<br/>
  * In the vector case, the data is located in the <i>url</i> attribute of the layer object. In addition to the URL,
  * a <i>callback</i> attribute can be applied to the data.
- * 
+ *
  *
  * @param {Layer} layer the layer to add
  * @fires Context#backgroundLayer:added
- * @fires Context#layer:added  
+ * @fires Context#layer:added
  * @throws {Error} layer must be a {@link Layer} object
  */
 Globe.prototype.addLayer = function(layer) {};
@@ -168,7 +168,7 @@ Globe.prototype.addAnimation = function(anim) {};
 /**
  * Removes an animation.
  * @param {Animation} anim - the animation to remove
- * @throws {Error} anim must be a {@link Animation} object 
+ * @throws {Error} anim must be a {@link Animation} object
  */
 Globe.prototype.removeAnimation = function(anim) {};
 
@@ -177,7 +177,7 @@ Globe.prototype.removeAnimation = function(anim) {};
  * @param {number} lon - the longitude in degree
  * @param {number} lat - the latitude in degree
  * @return {number} the elevation in meter at the position [lon,lat]
- * @throws {Error} lon lat must be numbers 
+ * @throws {Error} lon lat must be numbers
  */
 Globe.prototype.getElevation = function(lon, lat) {};
 
@@ -226,9 +226,9 @@ Globe.prototype.getCoordinateSystem = function() {};
 /**
  * Computes the position that intersects between a ray and a sphere or a ray and a plane (according to the CRS).
  * @param {Ray} ray
- * @returns {float[]|null} the position 
+ * @returns {float[]|null} the position
  */
-Globe.prototype.computeIntersection = function (ray) {};
+Globe.prototype.computeIntersection = function(ray) {};
 
 /**
  * Displays some rendering statistics.
@@ -271,7 +271,7 @@ Globe.prototype.getRendererManager = function() {};
  * @fires Context#baseLayersReady
  * @fires Context#baseLayersError
  * @fires Context#startBackgroundLoad
- * @fires Context#endBackgroundLoad 
+ * @fires Context#endBackgroundLoad
  */
 Globe.prototype.render = function() {};
 
@@ -303,7 +303,7 @@ Globe.prototype.isEnabled = function() {};
 
 /**
  * Enables the globe.
- * 
+ *
  * This is used to enable the sky when we use the sphere to map the data. In this way,
  * we see the globe and the sky in the same time.
  */
@@ -321,4 +321,3 @@ Globe.prototype.disable = function() {};
  * TODO : text
  */
 Globe.prototype.hasMesh = function() {};
-

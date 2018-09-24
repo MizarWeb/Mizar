@@ -23,19 +23,16 @@ define([
     "./WMTSMetadata",
     "../Layer/LayerFactory"
 ], function(_, Utils, XmlToJson, WMTSMetadata, LayerFactory) {
-
     /**
      * @class
      * Creates an instance of WMTS server
      * A WMTS server exposes a set of {@link WMTSLayer WMTS} layers.
-     * @param {boolean} proxyUse  true for using the poxy
-     * @param {string} proxyUrl proxy url
      * @param {Options} options Options
      * @param {string} [options.baseUrl] Base URL of the getCapabilities
-     * @param {string} [options.getCapabilities] GetCapabilities 
+     * @param {string} [options.getCapabilities] GetCapabilities
      * @memberof module:Registry
      */
-    var WMTSServer = function(proxyUse, proxyUrl, options) {
+    var WMTSServer = function(options) {
         if (options.getCapabilities) {
             options.baseUrl = Utils.computeBaseUrlFromCapabilities(
                 options.getCapabilities,
@@ -52,20 +49,19 @@ define([
                 "WMSLayer.js"
             );
         }
-        this.proxyUse = proxyUse;
-        this.proxyUrl = proxyUrl;
         this.options = options;
     };
 
     /**
-     * Skip when the current layer is not included in the list of defined layers (layersFromConf)  
+     * Skip when the current layer is not included in the list of defined layers (layersFromConf)
      * @param {string[]} layersFromConf List of user-defined layer
      * @param {string} currentLayer
-     * @returns {boolean} true wen the currentLayer is not included in the list of user-defined layers otherwise false 
+     * @returns {boolean} true wen the currentLayer is not included in the list of user-defined layers otherwise false
      * @function _mustBeSkipped
-     * @memberof WMTSServer# 
-     * @private    
-     */    
+     * @memberof WMTSServer#
+     * @private
+     */
+
     function _mustBeSkipped(layersFromConf, currentLayer) {
         return (
             (layersFromConf.length !== 0 &&
@@ -76,19 +72,18 @@ define([
 
     /**
      * Returns the metadata
-     * @param {metadata~requestCallback} callback 
-     * @param {serverLayerFallback} fallback 
+     * @param {metadata~requestCallback} callback
+     * @param {serverLayerFallback} fallback
      * @function getMetadata
-     * @memberof WMTSServer#      
-     */      
+     * @memberof WMTSServer#
+     */
+
     WMTSServer.prototype.getMetadata = function(callback, fallback) {
         var self = this;
         Utils.requestUrl(
-            Utils.proxify(this.options.getCapabilities, {
-                use: this.proxyUse,
-                url: this.proxyUrl
-            }),
-            "text", "application/xml",
+            this.options.getCapabilities,
+            "text",
+            "application/xml",
             {},
             function(response) {
                 var myOptions = {
@@ -112,11 +107,12 @@ define([
 
     /**
      * Create WMS layers from WMS capabilities
-     * @param {serverLayerCallback} callback 
-     * @param {serverLayerFallback} fallback 
+     * @param {serverLayerCallback} callback
+     * @param {serverLayerFallback} fallback
      * @function createLayers
-     * @memberof WMTSServer#      
-     */    
+     * @memberof WMTSServer#
+     */
+
     WMTSServer.prototype.createLayers = function(callback, fallback) {
         this.getMetadata(function(layerDescription, metadata) {
             var layersFromConf = layerDescription.hasOwnProperty("layers")
@@ -157,14 +153,15 @@ define([
     };
 
     /**
-     * Returns the capabilities     
+     * Returns the capabilities
      * @param {string} baseUrl GetCapabilities URL
      * @param {Object} options
-     * @param {string} [options.version = 1.0.0] WCS version 
+     * @param {string} [options.version = 1.0.0] WCS version
      * @function getCapabilitiesFromBaseURL
-     * @memberof WMTServer#     
-     * @returns {string} describeCoverage URL      
-     */    
+     * @memberof WMTServer#
+     * @returns {string} describeCoverage URL
+     */
+
     WMTSServer.getCapabilitiesFromBaseURl = function(baseUrl, options) {
         var getCapabilitiesUrl = baseUrl;
         getCapabilitiesUrl = Utils.addParameterTo(

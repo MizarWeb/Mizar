@@ -23,13 +23,18 @@ define([
     "../Utils/Constants",
     "./WCSServer",
     "../Gui/dialog/ErrorDialog"
-], function(_, Utils, AbstractRegistryHandler, Constants, WCSServer, ErrorDialog) {
-
+], function(
+    _,
+    Utils,
+    AbstractRegistryHandler,
+    Constants,
+    WCSServer,
+    ErrorDialog
+) {
     /**
      * @class
      * Creates a WCS Server Handler
-     * @param {*} layers 
-     * @param {*} mizarConfiguration 
+     * @param {*} layers
      * @param {*} pendingLayers
      * @augments AbstractRegistryHandler
      * @memberof module:Registry
@@ -37,14 +42,11 @@ define([
      */
     var WCSServerRegistryHandler = function(
         layers,
-        mizarConfiguration,
         pendingLayers
     ) {
         AbstractRegistryHandler.prototype.constructor.call();
         this.layers = layers;
         this.pendingLayers = pendingLayers;
-        this.proxyUse = mizarConfiguration.proxyUse;
-        this.proxyUrl = mizarConfiguration.proxyUrl;
     };
 
     /**************************************************************************************************************/
@@ -72,7 +74,7 @@ define([
      * @param layers list of layers to load
      * @function _destroyTileWireFrame
      * @memberof WCSServerRegistryHandler#
-     * @private     
+     * @private
      */
     function _destroyTileWireFrame(layers) {
         var i, layerDescription;
@@ -101,7 +103,7 @@ define([
      * @param fallback fallback
      * @function _moveTileWireFrameLayer
      * @memberof WCSServerRegistryHandler#
-     * @private  
+     * @private
      */
     function _moveTileWireFrameLayer(
         layers,
@@ -122,7 +124,8 @@ define([
     /**
      * @function handleRequest
      * @memberof WCSServerRegistryHandler#
-     */     
+     */
+
     WCSServerRegistryHandler.prototype.handleRequest = function(
         layerDescription,
         callback,
@@ -131,8 +134,6 @@ define([
         try {
             if (layerDescription.type === Constants.LAYER.WCSElevation) {
                 var wcsServer = new WCSServer(
-                    this.proxyUse,
-                    this.proxyUrl,
                     layerDescription
                 );
                 var self = this;
@@ -154,7 +155,7 @@ define([
             if (fallback) {
                 fallback(e);
             } else {
-                ErrorDialog.open(Constants.LEVEL.ERROR, e);
+                ErrorDialog.open(Constants.LEVEL.DEBUG, e);
             }
         }
     };

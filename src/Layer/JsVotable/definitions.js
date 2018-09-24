@@ -66,18 +66,18 @@ define([
             if (element.nodeType == 1) {
                 var nodeName = element.localName;
                 switch (nodeName) {
-                    case "COOSYS":
-                        coosyss.push(new Coosys(element));
-                        break;
-                    case "PARAM":
-                        params.push(new Param(element));
-                        break;
-                    default:
-                        this.getCache().addWarning(
-                            "unknown element " +
+                case "COOSYS":
+                    coosyss.push(new Coosys(element));
+                    break;
+                case "PARAM":
+                    params.push(new Param(element));
+                    break;
+                default:
+                    this.getCache().addWarning(
+                        "unknown element " +
                                 nodeName +
                                 " in Definitions node"
-                        );
+                    );
                 }
                 if (nodeName == "COOSYS") {
                     coosyss.push(new Coosys(element));

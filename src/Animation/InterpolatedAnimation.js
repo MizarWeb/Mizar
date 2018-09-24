@@ -35,9 +35,10 @@
  * along with GlobWeb. If not, see <http://www.gnu.org/licenses/>.
  ***************************************/
 
-define(["../Utils/Utils", "./AbstractAnimation"], function(
+define(["../Utils/Utils", "./AbstractAnimation","../Utils/Numeric"], function(
     Utils,
-    AbstractAnimation
+    AbstractAnimation,
+    Numeric
 ) {
     /**
      * Interpolated animation configuration
@@ -63,14 +64,17 @@ define(["../Utils/Utils", "./AbstractAnimation"], function(
      * @todo Create a tutorial with a simple InterpolatedAnimation on Mars
      */
     var InterpolatedAnimation = function(options) {
-        Utils.assert(typeof(options.startValue)==="number" 
-        && typeof(options.endValue)==="number" 
-        && typeof(options.duration)==="number" 
-        && typeof(options.interpolationFunction)==="function" 
-        && typeof(options.setFunction)==="function", 
-        "Missing required arguments in constructor", "InterpolatedAnimation.js");
+        Utils.assert(
+            typeof options.startValue === "number" &&
+                typeof options.endValue === "number" &&
+                typeof options.duration === "number" &&
+                typeof options.interpolationFunction === "function" &&
+                typeof options.setFunction === "function",
+            "Missing required arguments in constructor",
+            "InterpolatedAnimation.js"
+        );
         // Call ancestor constructor
-        AbstractAnimation.prototype.constructor.call(this);        
+        AbstractAnimation.prototype.constructor.call(this);
         this.values = [[0.0, options.startValue], [1.0, options.endValue]];
         this.duration = options.duration;
         this.interpolationFunction = options.interpolationFunction;
@@ -91,8 +95,16 @@ define(["../Utils/Utils", "./AbstractAnimation"], function(
      * @param {float} value Value to reach
      */
     InterpolatedAnimation.prototype.addValue = function(t, value) {
-        Utils.assert(t >= 0 && t <= 1, "t must be in [0,1] when using addValue method", "InterpolatedAnimation.js");
-        Utils.assert(typeof(value) === "number", "value must be a number when using addValue method", "InterpolatedAnimation.js");
+        Utils.assert(
+            t >= 0 && t <= 1,
+            "t must be in [0,1] when using addValue method",
+            "InterpolatedAnimation.js"
+        );
+        Utils.assert(
+            typeof value === "number",
+            "value must be a number when using addValue method",
+            "InterpolatedAnimation.js"
+        );
         var count = this.values.length;
         var upper = 0;
         while (upper < count && this.values[upper][0] < t) {

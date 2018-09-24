@@ -20,26 +20,22 @@ define([
     "../Utils/Utils",
     "./AbstractRegistryHandler",
     "../Utils/Constants",
+    "../Gui/dialog/ErrorDialog",
     "./WMTSServer"
-], function(Utils, AbstractRegistryHandler, Constants, WMTSServer) {
-
+], function(Utils, AbstractRegistryHandler, Constants, ErrorDialog, WMTSServer) {
     /**
      * Creates a WMTS handler to create {@link WMTSLayer WMTS layers}
-     * @param {*} mizarConfiguration 
-     * @param {*} pendingLayers 
+     * @param {*} pendingLayers
      * @augments AbstractRegistryHandler
      * @memberof module:Registry
      * @see {@link WMTSServer}
      * @constructor
      */
     var WMTSServerRegistryHandler = function(
-        mizarConfiguration,
         pendingLayers
     ) {
         AbstractRegistryHandler.prototype.constructor.call();
         this.pendingLayers = pendingLayers;
-        this.proxyUse = mizarConfiguration.proxyUse;
-        this.proxyUrl = mizarConfiguration.proxyUrl;
     };
 
     /**************************************************************************************************************/
@@ -51,7 +47,8 @@ define([
     /**
      * @function handleRequest
      * @memberof WMTSServerRegistryHandler#
-     */ 
+     */
+
     WMTSServerRegistryHandler.prototype.handleRequest = function(
         layerDescription,
         callback,
@@ -60,8 +57,6 @@ define([
         try {
             if (layerDescription.type === Constants.LAYER.WMTS) {
                 var wmtsServer = new WMTSServer(
-                    this.proxyUse,
-                    this.proxyUrl,
                     layerDescription
                 );
                 var self = this;
@@ -77,7 +72,7 @@ define([
             if (fallback) {
                 fallback(e);
             } else {
-                console.error(e);
+                ErrorDialog.open(Constants.LEVEL.DEBUG, "WMTSServerRegistryHandler.js", e);
             }
         }
     };

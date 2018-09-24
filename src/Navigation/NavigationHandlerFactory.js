@@ -51,25 +51,25 @@ define([
         create: function(type, options) {
             var obj;
             switch (type) {
-                case Constants.HANDLER.GoogleMouse:
-                    obj = new GoogleMouseNavigationHandler(options);
-                    break;
-                case Constants.HANDLER.Keyboard:
-                    obj = new KeyboardNavigationHandler(options);
-                    break;
-                case Constants.HANDLER.Mouse:
-                    obj = new MouseNavigationHandler(options);
-                    break;
-                case Constants.HANDLER.Touch:
-                    obj = new TouchNavigationHandler(options);
-                    break;
-                default:
-                    throw RangeError(
-                        "The type " +
+            case Constants.HANDLER.GoogleMouse:
+                obj = new GoogleMouseNavigationHandler(options);
+                break;
+            case Constants.HANDLER.Keyboard:
+                obj = new KeyboardNavigationHandler(options);
+                break;
+            case Constants.HANDLER.Mouse:
+                obj = new MouseNavigationHandler(options);
+                break;
+            case Constants.HANDLER.Touch:
+                obj = new TouchNavigationHandler(options);
+                break;
+            default:
+                throw RangeError(
+                    "The type " +
                             type +
                             " is not allowed, A valid type is included in the list Constants.HANDLER",
-                        "NavigationHandlerFactory.js"
-                    );
+                    "NavigationHandlerFactory.js"
+                );
             }
             return obj;
         }

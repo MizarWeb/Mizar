@@ -1034,8 +1034,8 @@ define(function() {
                                         ? ptOther.x >= qsNode.seg.vTo.x
                                         : ptOther.x < qsNode.seg.vTo.x;
                                     qsNode = (isInSegmentShorter
-                                      ? inSegment.sprev.upward
-                                      : qsNode.seg.snext.upward)
+                                        ? inSegment.sprev.upward
+                                        : qsNode.seg.snext.upward)
                                         ? qsNode.right
                                         : qsNode.left; // above : below
                                 } else {
@@ -1045,8 +1045,8 @@ define(function() {
                                         ? ptOther.x < qsNode.seg.vFrom.x
                                         : ptOther.x >= qsNode.seg.vFrom.x;
                                     qsNode = (isInSegmentShorter
-                                      ? inSegment.snext.upward
-                                      : qsNode.seg.sprev.upward)
+                                        ? inSegment.snext.upward
+                                        : qsNode.seg.sprev.upward)
                                         ? qsNode.left
                                         : qsNode.right; // below : above
                                 }
@@ -1074,15 +1074,15 @@ define(function() {
                                         : ptOther.y < qsNode.seg.vTo.y;
                                     compRes = isInSegmentShorter
                                         ? this.is_left_of(
-                                              qsNode.seg,
-                                              inSegment.sprev.vFrom,
-                                              false
-                                          )
+                                            qsNode.seg,
+                                            inSegment.sprev.vFrom,
+                                            false
+                                        )
                                         : -this.is_left_of(
-                                              qsNode.seg,
-                                              qsNode.seg.snext.vTo,
-                                              false
-                                          );
+                                            qsNode.seg,
+                                            qsNode.seg.snext.vTo,
+                                            false
+                                        );
                                 } else {
                                     // connected at qsNode.seg.vTo
                                     //								console.log("ptNode: co-linear, going back on previous segment, connected at qsNode.seg.vTo", ptMain, ptOther, qsNode );
@@ -1091,15 +1091,15 @@ define(function() {
                                         : ptOther.y >= qsNode.seg.vFrom.y;
                                     compRes = isInSegmentShorter
                                         ? this.is_left_of(
-                                              qsNode.seg,
-                                              inSegment.snext.vTo,
-                                              false
-                                          )
+                                            qsNode.seg,
+                                            inSegment.snext.vTo,
+                                            false
+                                        )
                                         : -this.is_left_of(
-                                              qsNode.seg,
-                                              qsNode.seg.sprev.vFrom,
-                                              false
-                                          );
+                                            qsNode.seg,
+                                            qsNode.seg.sprev.vFrom,
+                                            false
+                                        );
                                 }
                             }
                         }

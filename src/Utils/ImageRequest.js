@@ -35,7 +35,7 @@
  * along with GlobWeb. If not, see <http://www.gnu.org/licenses/>.
  ***************************************/
 
-define([], function() {
+define(["./Proxy"], function(Proxy) {
     /**
      *    @constructor
      *    ImageRequest constructor
@@ -66,7 +66,7 @@ define([], function() {
             }
         };
         this.image.onerror = this.failCallback.bind(this);
-        this.image.src = url;
+        this.image.src = Proxy.proxify(url);
     };
 
     /**************************************************************************************************************/

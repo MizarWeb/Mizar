@@ -51,82 +51,81 @@ define([
     ReverseNameResolver,
     TimeTravelCore
 ) {
-
     /**
      * image:added
      * Called when an image has been added
      * @event Mizar#image:added
      * @type {json}
-     */ 
+     */
 
     /**
      * image:removed.<br/>
      * Called when an image has been removed
      * @event Mizar#image:removed
      * @type {json}
-     */      
+     */
 
     /**
      * image:downloaded.<br/>
      * Called when an image has been downloaded
      * @event Mizar#image:downloaded
      * @type {json}
-     */      
+     */
 
     return {
         create: function(serviceType, userOptions) {
             var obj;
             switch (serviceType) {
-                case Constants.SERVICE.FitsVisu:
-                    obj = FitsVisu;
-                    break;
-                case Constants.SERVICE.Histogram:
-                    obj = HistogramCore;
-                    break;
-                case Constants.SERVICE.ImageProcessing:
-                    obj = ImageProcessingCore;
-                    break;
-                case Constants.SERVICE.MeasureToolPlanet:
-                    obj = MeasureToolPlanetCore;
-                    break;
-                case Constants.SERVICE.MeasureToolSky:
-                    obj = MeasureToolSkyCore;
-                    break;
-                case Constants.SERVICE.MocBase:
-                    obj = MocBase;
-                    break;
-                case Constants.SERVICE.MollweideViewer:
-                    obj = MollweideViewerCore;
-                    break;
-                case Constants.SERVICE.TimeTravel:
-                    obj = TimeTravelCore;
-                    break;
-                case Constants.SERVICE.PickingManager:
-                    obj = PickingManagerCore;
-                    break;
-                case Constants.SERVICE.Samp:
-                    obj = SampCore;
-                    break;
-                case Constants.SERVICE.SelectionTool:
-                    obj = new SelectionToolCore(userOptions);
-                    break;
-                case Constants.SERVICE.NameResolver:
-                    obj = NameResolver;
-                    break;
-                case Constants.SERVICE.ReverseNameResolver:
-                    obj = ReverseNameResolver;
-                    break;
-                case Constants.SERVICE.ExportTool:
-                    obj = ExportToolCore;
-                    break;
-                case Constants.SERVICE.FitsHips:
-                    obj = FitsHips;
-                    break;
-                default:
-                    throw new RangeError(
-                        "Cannot retrieve service " + serviceType,
-                        "ServiceFactory.js"
-                    );
+            case Constants.SERVICE.FitsVisu:
+                obj = FitsVisu;
+                break;
+            case Constants.SERVICE.Histogram:
+                obj = HistogramCore;
+                break;
+            case Constants.SERVICE.ImageProcessing:
+                obj = ImageProcessingCore;
+                break;
+            case Constants.SERVICE.MeasureToolPlanet:
+                obj = MeasureToolPlanetCore;
+                break;
+            case Constants.SERVICE.MeasureToolSky:
+                obj = MeasureToolSkyCore;
+                break;
+            case Constants.SERVICE.MocBase:
+                obj = MocBase;
+                break;
+            case Constants.SERVICE.MollweideViewer:
+                obj = MollweideViewerCore;
+                break;
+            case Constants.SERVICE.TimeTravel:
+                obj = TimeTravelCore;
+                break;
+            case Constants.SERVICE.PickingManager:
+                obj = PickingManagerCore;
+                break;
+            case Constants.SERVICE.Samp:
+                obj = SampCore;
+                break;
+            case Constants.SERVICE.SelectionTool:
+                obj = new SelectionToolCore(userOptions);
+                break;
+            case Constants.SERVICE.NameResolver:
+                obj = NameResolver;
+                break;
+            case Constants.SERVICE.ReverseNameResolver:
+                obj = ReverseNameResolver;
+                break;
+            case Constants.SERVICE.ExportTool:
+                obj = ExportToolCore;
+                break;
+            case Constants.SERVICE.FitsHips:
+                obj = FitsHips;
+                break;
+            default:
+                throw new RangeError(
+                    "Cannot retrieve service " + serviceType,
+                    "ServiceFactory.js"
+                );
             }
             return obj;
         }

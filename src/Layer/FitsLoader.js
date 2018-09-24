@@ -19,7 +19,7 @@
 
 /*global define: false */
 
-define(["fits"], function() {
+define(["../Utils/Constants","../Gui/dialog/ErrorDialog","../Utils/Proxy","fits"], function(Constants, ErrorDialog, Proxy) {
     /**
      *    Parse fits file
      *
@@ -79,7 +79,7 @@ define(["fits"], function() {
                         }
                     }
                 } else {
-                    console.error("Error while loading " + url);
+                    ErrorDialog.open(Constants.LEVEL.ERROR, "Error while loading " + url);
                     if (failCallback) {
                         failCallback();
                     }
@@ -91,7 +91,7 @@ define(["fits"], function() {
         // Firefox won't take Content-length header into account
         // so evt.lengthComputable will be always set to false..
         xhr.onprogress = function(evt) {};
-        xhr.open("GET", url);
+        xhr.open("GET", Proxy.proxify(url));
         xhr.responseType = "arraybuffer";
         xhr.send();
         return xhr;

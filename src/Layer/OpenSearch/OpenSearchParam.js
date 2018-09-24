@@ -67,7 +67,7 @@ define(["./OpenSearchUtils"], function(OpenSearchUtils) {
         if (this.pattern === null) {
             this.patternAttribute = "";
         } else {
-            this.patternAttribute = 'pattern="' + this.pattern + '" ';
+            this.patternAttribute = "pattern=\"" + this.pattern + "\" ";
         }
 
         if (paramJson.Option !== undefined) {
@@ -133,7 +133,7 @@ define(["./OpenSearchUtils"], function(OpenSearchUtils) {
         if (this.title === null) {
             this.titleAttribute = "";
         } else {
-            this.titleAttribute = 'title="' + this.title + '" ';
+            this.titleAttribute = "title=\"" + this.title + "\" ";
         }
     };
 

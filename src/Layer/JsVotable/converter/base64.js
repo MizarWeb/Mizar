@@ -127,29 +127,29 @@ define(function() {
 
         //converts the bits in human readable value
         switch (datatype) {
-            case "short":
-                value = bin2short16(tabBits);
-                break;
-            case "int":
-                value = bin2int32(tabBits);
-                break;
-            case "float":
-                value = bin2float32(tabBits);
-                value = value.toFixed(this.fields[fieldNumber].precision()); // round (arrondi)
-                break;
-            case "double":
-                value = bin2double64(tabBits);
-                value = value.toFixed(this.fields[fieldNumber].precision()); // round (arrondi)
-                break;
-            case "unsignedByte":
-                value = bin2ubyte8(tabBits);
-                break;
-            case "char":
-                value = bin2string(tabBits);
-                break;
-            case "NULL": // Empty Data
-                value = "NULL";
-                break;
+        case "short":
+            value = bin2short16(tabBits);
+            break;
+        case "int":
+            value = bin2int32(tabBits);
+            break;
+        case "float":
+            value = bin2float32(tabBits);
+            value = value.toFixed(this.fields[fieldNumber].precision()); // round (arrondi)
+            break;
+        case "double":
+            value = bin2double64(tabBits);
+            value = value.toFixed(this.fields[fieldNumber].precision()); // round (arrondi)
+            break;
+        case "unsignedByte":
+            value = bin2ubyte8(tabBits);
+            break;
+        case "char":
+            value = bin2string(tabBits);
+            break;
+        case "NULL": // Empty Data
+            value = "NULL";
+            break;
         }
         if (value === "NaN" || value === "NULL" || value === 0) {
             value = "";

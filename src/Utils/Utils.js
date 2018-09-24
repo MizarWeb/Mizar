@@ -40,8 +40,9 @@ define([
     "moment",
     "./Numeric",
     "./UtilsIntersection",
-    "../Error/NetworkError"
-], function($, Moment, Numeric, UtilsIntersection, NetworkError) {
+    "../Error/NetworkError",
+    "../Utils/Proxy"
+], function($, Moment, Numeric, UtilsIntersection, NetworkError, Proxy) {
     var Utils = {};
 
     /**
@@ -69,40 +70,40 @@ define([
         var g;
         var b;
         switch (h_i) {
-            case 0:
-                r = v;
-                g = t;
-                b = p;
-                break;
-            case 1:
-                r = q;
-                g = v;
-                b = p;
-                break;
-            case 2:
-                r = p;
-                g = v;
-                b = t;
-                break;
-            case 3:
-                r = p;
-                g = q;
-                b = v;
-                break;
-            case 4:
-                r = t;
-                g = p;
-                b = v;
-                break;
-            case 5:
-                r = v;
-                g = p;
-                b = q;
-                break;
-            default:
-                r = 1;
-                g = 1;
-                b = 1;
+        case 0:
+            r = v;
+            g = t;
+            b = p;
+            break;
+        case 1:
+            r = q;
+            g = v;
+            b = p;
+            break;
+        case 2:
+            r = p;
+            g = v;
+            b = t;
+            break;
+        case 3:
+            r = p;
+            g = q;
+            b = v;
+            break;
+        case 4:
+            r = t;
+            g = p;
+            b = v;
+            break;
+        case 5:
+            r = v;
+            g = p;
+            b = q;
+            break;
+        default:
+            r = 1;
+            g = 1;
+            b = 1;
         }
         return [r, g, b];
     }
@@ -129,7 +130,7 @@ define([
         var result;
         if (typeof id === "string") {
             result = id.replace(
-                /\s{1,}|\.{1,}|\[{1,}|\]{1,}|\({1,}|\){1,}|\~{1,}|\+{1,}|\°{1,}|\-{1,}|\'{1,}|\"{1,}/g,
+                /\s{1,}|\.{1,}|\[{1,}|\]{1,}|\({1,}|\){1,}|~{1,}|\+{1,}|°{1,}|-{1,}|'{1,}|"{1,}/g,
                 ""
             );
         } else {
@@ -280,14 +281,22 @@ define([
      * @param {Utils~requestFallback} [fallBack] - The fallback that handles the error.
      * @param {Utils~requestComplete} [complete] - The completeback that is executed afet the callback/fallback
      */
-    Utils.requestUrl = function(url, datatype, acceptDatatype, options, callback, fallBack, complete) {        
+    Utils.requestUrl = function(
+        url,
+        datatype,
+        acceptDatatype,
+        options,
+        callback,
+        fallBack,
+        complete
+    ) {
         $.ajax({
             type: "GET",
-            url: url,
+            url: Proxy.proxify(url),
             dataType: datatype,
-            beforeSend(xhr) {
+            beforeSend: function(xhr) {
                 xhr.setRequestHeader("Accept", acceptDatatype);
-            }, 
+            },
             success: function(response) {
                 if (callback) {
                     callback(response, options);
@@ -302,10 +311,12 @@ define([
                         url;
                     code = 0;
                 } else {
-                    message = thrownError.message ? thrownError.message : thrownError;
+                    message = thrownError.message
+                        ? thrownError.message
+                        : thrownError;
                     code = thrownError.code ? thrownError.code : -1;
-                    if (typeof(ajaxOptions)==='string') {
-                        message = ajaxOptions+": "+message;
+                    if (typeof ajaxOptions === "string") {
+                        message = ajaxOptions + ": " + message;
                     }
                 }
                 if (fallBack) {
@@ -335,39 +346,13 @@ define([
 
     /**
      * A function to be called when the request finishes (after success and error callbacks are executed).
-     * The function gets passed two arguments: The jqXHR (in jQuery 1.4.x, XMLHTTPRequest) object and a 
-     * string categorizing the status of the request ("success", "notmodified", "nocontent", "error", 
+     * The function gets passed two arguments: The jqXHR (in jQuery 1.4.x, XMLHTTPRequest) object and a
+     * string categorizing the status of the request ("success", "notmodified", "nocontent", "error",
      * "timeout", "abort", or "parsererror").
      * @callback Utils~requestComplete
      * @param {Object} xhr - xhr object
      * @param {string} status - status text
-     */     
-
-    /**
-     * Proxifies an URL according to a proxy configuration.
-     * @function proxify
-     * @param {string} url - URL to proxify
-     * @param {{use:boolean, url:string}} proxy - proxy configuration
-     * @return {*}
      */
-    Utils.proxify = function(url, proxy) {
-        if (typeof url !== "string") {
-            return url;
-        }
-        var proxifiedUrl = url;
-        if (proxy) {
-            if (proxy.use === true) {
-                if (url.toLowerCase().startsWith("http") === false) {
-                    proxifiedUrl = url;
-                } else if (url.startsWith(proxy.url)) {
-                    proxifiedUrl = url; // No change, proxy always set
-                } else {
-                    proxifiedUrl = proxy.url + encodeURIComponent(url); // Add proxy redirection
-                }
-            }
-        }
-        return proxifiedUrl;
-    };
 
     /**
      * Converts UTC hms from date to hours.
@@ -581,6 +566,7 @@ define([
             var options = Object.defineProperty({}, "passive", {
                 get: function() {
                     passiveSupported = true;
+                    return passiveSupported;
                 }
             });
 
@@ -596,17 +582,19 @@ define([
      * Assert function.
      * @param {Boolean} condition test condition
      * @param {string} message Output when the assert is not true
-     * @param {string} [filename] where the error occurs 
-     * @throws {Error} sent message when the condition is false 
+     * @param {string} [filename] where the error occurs
+     * @throws {Error} sent message when the condition is false
      */
     Utils.assert = function(condition, message, filename) {
-        if (!condition) {            
+        if (!condition) {
             if (filename == null) {
-                message = filename+": "+message;    
-            }            
-            throw new Error("Assert failed" + (typeof message !== "undefined" ? " - " + message : ""));
+                message = filename + ": " + message;
+            }
+            throw new Error(
+                "Assert failed" +
+                    (typeof message !== "undefined" ? " - " + message : "")
+            );
         }
-
     };
 
     return Utils;

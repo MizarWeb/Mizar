@@ -28,8 +28,9 @@
 define([
     "../Layer/HipsGraphicLayer",
     "../Utils/Constants",
+    "../Gui/dialog/ErrorDialog",
     "../Crs/CoordinateSystemFactory"
-], function(HipsLayer, Constants, CoordinateSystemFactory) {
+], function(HipsLayer, Constants, ErrorDialog, CoordinateSystemFactory) {
     var gid = 0;
 
     /**
@@ -43,22 +44,22 @@ define([
                 gwLayer.subLayers = [];
             }
             switch (service.type) {
-                case Constants.LAYER.Hips:
-                    service.layer = new HipsLayer({
-                        format: service.format,
-                        baseUrl: service.url,
-                        name: service.name,
-                        visible: false,
-                        coordinates: feature.geometry.coordinates[0]
-                    });
-                    gwLayer.subLayers.push(service.layer);
-                    if (gwLayer.planet && gwLayer.visible()) {
-                        // Add sublayer to engine
-                        gwLayer.planet.addLayer(service.layer);
-                    }
-                    break;
-                default:
-                    break;
+            case Constants.LAYER.Hips:
+                service.layer = new HipsLayer({
+                    format: service.format,
+                    baseUrl: service.url,
+                    name: service.name,
+                    visible: false,
+                    coordinates: feature.geometry.coordinates[0]
+                });
+                gwLayer.subLayers.push(service.layer);
+                if (gwLayer.planet && gwLayer.visible()) {
+                    // Add sublayer to engine
+                    gwLayer.planet.addLayer(service.layer);
+                }
+                break;
+            default:
+                break;
             }
         }
     }
@@ -102,10 +103,7 @@ define([
 
             var features = featureCollection.features;
             if (features === null || features === undefined) {
-                console.error(
-                    "Error, no feature in featureCollection : ",
-                    featureCollection
-                );
+                ErrorDialog.open(Constants.LEVEL.ERROR, "Error, no feature in featureCollection : ", featureCollection);
                 return;
             }
             var i, j, r;
@@ -114,34 +112,34 @@ define([
                 var currentFeature = features[i];
 
                 switch (currentFeature.geometry.type) {
-                    case Constants.GEOMETRY.Point:
-                        if (!gwLayer.dataType) {
-                            gwLayer.dataType = "point";
-                        } else {
-                            if (gwLayer.dataType !== "point") {
-                                gwLayer.dataType = "none";
-                            }
+                case Constants.GEOMETRY.Point:
+                    if (!gwLayer.dataType) {
+                        gwLayer.dataType = "point";
+                    } else {
+                        if (gwLayer.dataType !== "point") {
+                            gwLayer.dataType = "none";
                         }
-                        break;
-                    case Constants.GEOMETRY.Polygon:
-                    case Constants.GEOMETRY.MultiPolygon:
-                        if (!gwLayer.dataType) {
-                            gwLayer.dataType = "line";
-                        } else {
-                            if (gwLayer.dataType !== "line") {
-                                gwLayer.dataType = "none";
-                            }
+                    }
+                    break;
+                case Constants.GEOMETRY.Polygon:
+                case Constants.GEOMETRY.MultiPolygon:
+                    if (!gwLayer.dataType) {
+                        gwLayer.dataType = "line";
+                    } else {
+                        if (gwLayer.dataType !== "line") {
+                            gwLayer.dataType = "none";
                         }
+                    }
 
-                        if (currentFeature.properties._imageCoordinates) {
-                            // Set _imageCoordinates as geometry's property (may be modified later)
-                            currentFeature.geometry._imageCoordinates =
+                    if (currentFeature.properties._imageCoordinates) {
+                        // Set _imageCoordinates as geometry's property (may be modified later)
+                        currentFeature.geometry._imageCoordinates =
                                 currentFeature.properties._imageCoordinates;
-                        }
+                    }
 
-                        break;
-                    default:
-                        break;
+                    break;
+                default:
+                    break;
                 }
                 if (!currentFeature.geometry.crs) {
                     currentFeature.geometry.crs = crs;

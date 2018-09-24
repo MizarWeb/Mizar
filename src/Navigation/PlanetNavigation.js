@@ -42,6 +42,7 @@ define([
     "../Animation/AnimationFactory",
     "../Utils/Numeric",
     "../Renderer/Ray",
+    "../Gui/dialog/ErrorDialog",
     "../Renderer/glMatrix"
 ], function(
     Utils,
@@ -49,7 +50,8 @@ define([
     AbstractNavigation,
     AnimationFactory,
     Numeric,
-    Ray
+    Ray,
+    ErrorDialog
 ) {
     /**
      * Flat navigation configuration
@@ -780,11 +782,9 @@ define([
             const nh = (hc + this.offset - ht) / this._distance;
             const as = Math.asin(nh); // New tilt value
             if (Number.isNaN(as)) {
-                console.log(
-                    `NaN ! ${hc}, ${ht}, ${this.offset}, ${
-                        this._distance
-                    }, ${nh}`
-                );
+                ErrorDialog.open(Constants.LEVEL.DEBUG, "PlanetNavigation.js",`NaN ! ${hc}, ${ht}, ${this.offset}, ${
+                    this._distance
+                }, ${nh}`);
                 this._distance += this.offset;
             } else {
                 this.tilt = (as * 180) / Math.PI;

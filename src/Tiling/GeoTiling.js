@@ -336,25 +336,25 @@ define([
         var coords;
         var checkDateLine = true;
         switch (geometry.type) {
-            case Constants.GEOMETRY.Point:
-                coords = geometry.coordinates;
-                return [coords[0], coords[1], coords[0], coords[1]];
-            case Constants.GEOMETRY.MultiPoint:
-                coords = geometry.coordinates;
-                checkDateLine = false;
-                break;
-            case Constants.GEOMETRY.Polygon:
-                coords = geometry.coordinates[0];
-                break;
-            case Constants.GEOMETRY.MultiPolygon:
-                coords = geometry.coordinates[0][0];
-                break;
-            case Constants.GEOMETRY.LineString:
-                coords = geometry.coordinates;
-                break;
-            case Constants.GEOMETRY.MultiLineString:
-                coords = geometry.coordinates[0];
-                break;
+        case Constants.GEOMETRY.Point:
+            coords = geometry.coordinates;
+            return [coords[0], coords[1], coords[0], coords[1]];
+        case Constants.GEOMETRY.MultiPoint:
+            coords = geometry.coordinates;
+            checkDateLine = false;
+            break;
+        case Constants.GEOMETRY.Polygon:
+            coords = geometry.coordinates[0];
+            break;
+        case Constants.GEOMETRY.MultiPolygon:
+            coords = geometry.coordinates[0][0];
+            break;
+        case Constants.GEOMETRY.LineString:
+            coords = geometry.coordinates;
+            break;
+        case Constants.GEOMETRY.MultiLineString:
+            coords = geometry.coordinates[0];
+            break;
         }
 
         if (!coords || coords.length === 0) {
@@ -373,12 +373,12 @@ define([
                 : 1;
         for (var j = 0; j < numOuterRings; j++) {
             switch (geometry.type) {
-                case Constants.GEOMETRY.MultiPolygon:
-                    coords = geometry.coordinates[j][0];
-                    break;
-                case Constants.GEOMETRY.MultiLineString:
-                    coords = geometry.coordinates[j];
-                    break;
+            case Constants.GEOMETRY.MultiPolygon:
+                coords = geometry.coordinates[j][0];
+                break;
+            case Constants.GEOMETRY.MultiLineString:
+                coords = geometry.coordinates[j];
+                break;
             }
 
             for (var i = 0; i < coords.length; i++) {

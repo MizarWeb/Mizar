@@ -108,17 +108,15 @@ define([
      * Loads a global overview if available.
      * Only use for sky rendering currently
      * @function loadOverview
-     * @memberof AbstractRasterLayer#     
+     * @memberof AbstractRasterLayer#
      */
-    AbstractRasterLayer.prototype.loadOverview = function() {
-
-    };
+    AbstractRasterLayer.prototype.loadOverview = function() {};
 
     /**
      * Returns the URL to query the raster.
      * @param {Tile} tile for which the URL is created
      * @returns {string} the URL
-     * @memberof AbstractRasterLayer#     
+     * @memberof AbstractRasterLayer#
      */
     AbstractRasterLayer.prototype.getUrl = function(tile) {
         throw new SyntaxError(
@@ -128,26 +126,27 @@ define([
     };
 
     /**
-     * Returns the proxified Url when the tile level is between [minLevel, maxLevel]
+     * Returns the Url when the tile level is between [minLevel, maxLevel]
      * @param url url
      * @returns {Boolean} the proxified Url when the tile level is between [minLevel, maxLevel]
-     * @memberof AbstractRasterLayer#     
+     * @function allowRequest
+     * @memberof AbstractRasterLayer#
      */
-    AbstractRasterLayer.prototype.proxify = function(url, level) {
-        var proxifyUrl;
+    AbstractRasterLayer.prototype.allowRequest = function(url, level) {
+        var request;
         if (this.isBetweenMinMaxLevel(level)) {
-            proxifyUrl = AbstractLayer.prototype.proxify.call(this, url);
+            request = url;
         } else {
-            proxifyUrl = null;
+            request = null;
         }
-        return proxifyUrl;
+        return request;
     };
 
     /**
      * Returns true when the tile is defined between [minLevel,maxLevel] otherwise false.
      * @param level level of the tile
      * @returns {Boolean} true when the tile level is defined between [minLevel,maxLevel] otherwise false.
-     * @memberof AbstractRasterLayer#     
+     * @memberof AbstractRasterLayer#
      */
     AbstractRasterLayer.prototype.isBetweenMinMaxLevel = function(level) {
         var isInside;

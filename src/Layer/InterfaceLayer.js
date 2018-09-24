@@ -24,7 +24,7 @@
  * @type {Layer}
  */
 
- /**
+/**
  * opacity:changed.<br/>
  * Called when the opacity of a layer changes
  * @event Layer#opacity:changed
@@ -67,7 +67,7 @@
  * @property {Layer} layer
  * @property {Object} features
  */
- 
+
 /**
  * Layer is an interface to get access to the layer data model.
  *

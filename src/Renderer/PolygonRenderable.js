@@ -44,7 +44,8 @@ define([
     "../Tiling/TiledVectorRenderer",
     "../Utils/Numeric",
     "../Tiling/Triangulator",
-    "./PolygonCutter"
+    "./PolygonCutter",
+    "../Gui/dialog/ErrorDialog"
 ], function(
     Constants,
     Utils,
@@ -54,7 +55,8 @@ define([
     TiledVectorRenderer,
     Numeric,
     Triangulator,
-    PolygonCutter
+    PolygonCutter,
+    ErrorDialog
 ) {
     var dividePolygon = function(polygons, pointSet, bounds, level, res) {
         if (level === 0) {
@@ -349,7 +351,7 @@ define([
                             );
                         }
                     } else {
-                        console.error("Triangulation problem");
+                        ErrorDialog.open(Constants.LEVEL.DEBUG, "PolygonRenderable.js", "Triangulation problem");
                     }
                 }
             }

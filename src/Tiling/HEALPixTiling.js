@@ -40,8 +40,9 @@ define([
     "./HEALPixBase",
     "../Renderer/GeoBound",
     "../Utils/Numeric",
-    "../Utils/Constants"
-], function(Tile, HEALPixBase, GeoBound, Numeric, Constants) {
+    "../Utils/Constants",
+    "../Gui/dialog/ErrorDialog"
+], function(Tile, HEALPixBase, GeoBound, Numeric, Constants, ErrorDialog) {
     /**
          Tile constructor
 
@@ -335,37 +336,37 @@ define([
     var _getGeometryCoordinates = function(geometry) {
         var coords, n;
         switch (geometry.type) {
-            case Constants.GEOMETRY.Point:
-                coords = [];
-                coords.push(geometry.coordinates);
-                break;
-            case Constants.GEOMETRY.MultiPoint:
-            case Constants.GEOMETRY.LineString:
-                coords = geometry.coordinates;
-                break;
-            case Constants.GEOMETRY.MultiLineString:
-                coords = [];
-                for (n = 0; n < geometry.coordinates.length; n++) {
-                    coords = coords.concat(geometry.coordinates[n]);
-                }
-                break;
-            case Constants.GEOMETRY.Polygon:
-                coords = geometry.coordinates[0];
-                break;
-            case Constants.GEOMETRY.MultiPolygon:
-                coords = [];
-                for (n = 0; n < geometry.coordinates.length; n++) {
-                    coords = coords.concat(geometry.coordinates[n][0]);
-                }
-                break;
-            case Constants.GEOMETRY.GeometryCollection:
-                coords = [];
-                for (n = 0; n < geometry.geometries.length; n++) {
-                    coords = coords.concat(
-                        _getGeometryCoordinates(geometry.geometries[n])
-                    );
-                }
-                break;
+        case Constants.GEOMETRY.Point:
+            coords = [];
+            coords.push(geometry.coordinates);
+            break;
+        case Constants.GEOMETRY.MultiPoint:
+        case Constants.GEOMETRY.LineString:
+            coords = geometry.coordinates;
+            break;
+        case Constants.GEOMETRY.MultiLineString:
+            coords = [];
+            for (n = 0; n < geometry.coordinates.length; n++) {
+                coords = coords.concat(geometry.coordinates[n]);
+            }
+            break;
+        case Constants.GEOMETRY.Polygon:
+            coords = geometry.coordinates[0];
+            break;
+        case Constants.GEOMETRY.MultiPolygon:
+            coords = [];
+            for (n = 0; n < geometry.coordinates.length; n++) {
+                coords = coords.concat(geometry.coordinates[n][0]);
+            }
+            break;
+        case Constants.GEOMETRY.GeometryCollection:
+            coords = [];
+            for (n = 0; n < geometry.geometries.length; n++) {
+                coords = coords.concat(
+                    _getGeometryCoordinates(geometry.geometries[n])
+                );
+            }
+            break;
         }
         return coords;
     };
@@ -380,7 +381,7 @@ define([
 
         var coords = _getGeometryCoordinates(geometry);
         if (!coords) {
-            console.error("Invalid geometry type or not supported.");
+            ErrorDialog.open(Constants.LEVEL.DEBUG, "HEALPixTiling.js", "Invalid geometry type or not supported.");
             return tileIndices;
         }
 

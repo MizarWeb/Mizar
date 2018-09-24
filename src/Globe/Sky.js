@@ -95,12 +95,8 @@ define([
      * @throws {RangeError} Layer must be set
      **/
     Sky.prototype.setBaseImagery = function(layer) {
-
         if (layer == null) {
-            throw new RangeError(
-                "layer must be exist.",
-                "Sky.js"
-            );
+            throw new RangeError("layer must be exist.", "Sky.js");
         }
 
         if (this.baseImagery === layer) {
@@ -115,8 +111,8 @@ define([
         }
 
         layer.loadOverview();
-        
-        // Attach the layer to the globe      
+
+        // Attach the layer to the globe
         this.definedBackgound = true;
         layer.visible = true;
         if (layer.isDetached()) {
@@ -126,10 +122,7 @@ define([
             layer.tiling.coordinateSystem.getGeoideName()
         ].setImageryProvider(layer);
         this.baseImagery = layer;
-        this.publishEvent(
-            Constants.EVENT_MSG.LAYER_BACKGROUND_CHANGED,
-            layer
-        );    
+        this.publishEvent(Constants.EVENT_MSG.LAYER_BACKGROUND_CHANGED, layer);
     };
 
     /**

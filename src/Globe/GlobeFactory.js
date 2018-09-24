@@ -41,19 +41,19 @@ define(["./Planet", "./Sky", "../Utils/Constants"], function(
         create: function(type, options) {
             var obj;
             switch (type) {
-                case Constants.GLOBE.Planet:
-                    obj = new Planet(options);
-                    break;
-                case Constants.GLOBE.Sky:
-                    obj = new Sky(options);
-                    break;
-                default:
-                    throw RangeError(
-                        "The type " +
+            case Constants.GLOBE.Planet:
+                obj = new Planet(options);
+                break;
+            case Constants.GLOBE.Sky:
+                obj = new Sky(options);
+                break;
+            default:
+                throw RangeError(
+                    "The type " +
                             type +
                             " is not allowed, A valid type is included in the list GLOBE",
-                        "GlobeFactory.js"
-                    );
+                    "GlobeFactory.js"
+                );
             }
 
             return obj;

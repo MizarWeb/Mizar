@@ -37,7 +37,7 @@
 
 /*global define: false */
 
-define(["../Utils/Numeric"], function(Numeric) {
+define(["../Utils/Numeric","../Utils/Constants", "../Gui/dialog/ErrorDialog"], function(Numeric, Constants, ErrorDialog) {
     /**************************************************************************************************************/
     var transferFonctions = {
         linear: [],
@@ -57,25 +57,25 @@ define(["../Utils/Numeric"], function(Numeric) {
                 for (var i = 0; i < 256; i++) {
                     v = i;
                     switch (x) {
-                        case "linear":
-                            val[i] = v;
-                            break;
-                        case "asin":
-                            val[i] = Math.log(
-                                v + Math.sqrt(Math.pow(v, 2) + 1.0)
-                            );
-                            break;
-                        case "log":
-                            val[i] = Math.log(v / 10.0 + 1);
-                            break;
-                        case "sqrt":
-                            val[i] = Math.sqrt(v / 10.0);
-                            break;
-                        case "sqr":
-                            val[i] = v * v;
-                            break;
-                        default:
-                            break;
+                    case "linear":
+                        val[i] = v;
+                        break;
+                    case "asin":
+                        val[i] = Math.log(
+                            v + Math.sqrt(Math.pow(v, 2) + 1.0)
+                        );
+                        break;
+                    case "log":
+                        val[i] = Math.log(v / 10.0 + 1);
+                        break;
+                    case "sqrt":
+                        val[i] = Math.sqrt(v / 10.0);
+                        break;
+                    case "sqr":
+                        val[i] = v * v;
+                        break;
+                    default:
+                        break;
                     }
 
                     if (val[i] < min) {
@@ -4022,7 +4022,7 @@ define(["../Utils/Numeric"], function(Numeric) {
          */
         addCustomColormap: function(name, colors) {
             if (colors.length < 2) {
-                console.error("Colors length must be >= 2");
+                ErrorDialog.open(Constants.LEVEL.DEBUG, "ColorMap.js", "Colors length must be >= 2");
                 return null;
             }
 

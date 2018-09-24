@@ -49,22 +49,22 @@ define([
         create: function(type, configuration, options) {
             var obj;
             switch (type) {
-                case Constants.CONTEXT.Planet:
-                    obj = new PlanetContext(configuration, options);
-                    break;
-                case Constants.CONTEXT.Sky:
-                    obj = new SkyContext(configuration, options);
-                    break;
-                case Constants.CONTEXT.Ground:
-                    obj = new GroundContext(configuration, options);
-                    break;
-                default:
-                    throw new RangeError(
-                        "The type " +
+            case Constants.CONTEXT.Planet:
+                obj = new PlanetContext(configuration, options);
+                break;
+            case Constants.CONTEXT.Sky:
+                obj = new SkyContext(configuration, options);
+                break;
+            case Constants.CONTEXT.Ground:
+                obj = new GroundContext(configuration, options);
+                break;
+            default:
+                throw new RangeError(
+                    "The type " +
                             type +
                             " is not allowed, A valid type is included in the list Constants.CONTEXT",
-                        "ContextFactory.js"
-                    );
+                    "ContextFactory.js"
+                );
             }
             return obj;
         }

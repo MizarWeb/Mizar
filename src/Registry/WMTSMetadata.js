@@ -20,7 +20,7 @@ define([], function() {
     /**
      * @class
      * WMTS metadata from capabilities.
-     * @param {string} json 
+     * @param {string} json
      * @constructor
      * @memberof module:Registry
      */
@@ -41,10 +41,10 @@ define([], function() {
 
     /**
      * @class
-     * Creates ServiceIdentification object. 
-     * @param {string} json 
+     * Creates ServiceIdentification object.
+     * @param {string} json
      * @constructor
-     * @memberof WMTSMetadata#     
+     * @memberof WMTSMetadata#
      */
     var ServiceIdentification = function(json) {
         if (json === undefined) {
@@ -71,10 +71,11 @@ define([], function() {
     /**
      * @class
      * Creates ServiceProvider object.
-     * @param {string} json 
+     * @param {string} json
      * @constructor
-     * @memberof WMTSMetadata#     
-     */    
+     * @memberof WMTSMetadata#
+     */
+
     var ServiceProvider = function(json) {
         if (json === undefined) {
             this.providerName = null;
@@ -89,11 +90,12 @@ define([], function() {
 
     /**
      * @class
-     * Creates ServiceContact object. 
-     * @param {string} json 
+     * Creates ServiceContact object.
+     * @param {string} json
      * @constructor
-     * @memberof WMTSMetadata#    
-     */    
+     * @memberof WMTSMetadata#
+     */
+
     var ServiceContact = function(json) {
         if (json === undefined) {
             this.individualName = null;
@@ -110,11 +112,12 @@ define([], function() {
 
     /**
      * @class
-     * Creates ContactInfo object. 
-     * @param {string} json 
+     * Creates ContactInfo object.
+     * @param {string} json
      * @constructor
-     * @memberof WMTSMetadata#     
-     */    
+     * @memberof WMTSMetadata#
+     */
+
     var ContactInfo = function(json) {
         if (json === undefined) {
             this.phone = null;
@@ -135,11 +138,12 @@ define([], function() {
 
     /**
      * @class
-     * Create Phone object 
-     * @param {string} json 
+     * Create Phone object
+     * @param {string} json
      * @constructor
-     * @memberof WMTSMetadata#     
-     */    
+     * @memberof WMTSMetadata#
+     */
+
     var Phone = function(json) {
         if (json === undefined) {
             this.voice = null;
@@ -152,11 +156,12 @@ define([], function() {
 
     /**
      * @class
-     * Create Address object 
-     * @param {string} json 
+     * Create Address object
+     * @param {string} json
      * @constructor
-     * @memberof WMTSMetadata#     
-     */    
+     * @memberof WMTSMetadata#
+     */
+
     var Address = function(json) {
         if (json === undefined) {
             this.deliveryPoint = null;
@@ -181,11 +186,12 @@ define([], function() {
 
     /**
      * @class
-     * Create Contents object 
-     * @param {string} json 
+     * Create Contents object
+     * @param {string} json
      * @constructor
-     * @memberof WMTSMetadata#     
-     */    
+     * @memberof WMTSMetadata#
+     */
+
     var Contents = function(json) {
         if (json === undefined) {
             this.layers = null;
@@ -199,9 +205,9 @@ define([], function() {
     /**
      * @class
      * Create Layer object
-     * @param {string} json 
+     * @param {string} json
      * @constructor
-     * @memberof WMTSMetadata#     
+     * @memberof WMTSMetadata#
      */
     var Layer = function(json) {
         if (json === undefined) {
@@ -241,15 +247,16 @@ define([], function() {
             this.dimension = null;
             this.resourceURL = null;
         }
-    };   
-    
+    };
+
     /**
      * @class
      * Create TileMatrixSet object
-     * @param {string} json 
+     * @param {string} json
      * @constructor
-     * @memberof WMTSMetadata#     
-     */    
+     * @memberof WMTSMetadata#
+     */
+
     var TileMatrixSet = function(json) {
         this.identifier = null;
         this.supportedCRS = null;
@@ -260,10 +267,11 @@ define([], function() {
     /**
      * @class
      * Create TileMatrix object
-     * @param {string} json 
+     * @param {string} json
      * @constructor
      * @memberof WMTSMetadata#
-     */     
+     */
+
     var TileMatrix = function(json) {
         this.identifier = null;
         this.scaleDenominator = null;
@@ -272,19 +280,21 @@ define([], function() {
         this.tileHeight = null;
         this.matrixWidth = null;
         this.matrixHeight = null;
-    };    
+    };
 
     /**
-     * Parses layer element 
-     * @param {string} json 
+     * Parses layer element
+     * @param {string} json
      * @returns {Layer[]} Returns Array of Layer object
      * @function parseLayer
-     * @memberof WMTSMetadata# 
-     * @private      
-     */    
+     * @memberof WMTSMetadata#
+     * @private
+     */
+
     WMTSMetadata.parseLayer = function(json) {
         var layers = [];
         if (json === undefined) {
+            // do nothing
         } else if (Array.isArray(json)) {
             for (var i = 0; i < json.length; i++) {
                 layers.push(new Layer(json[i]));
@@ -296,16 +306,18 @@ define([], function() {
     };
 
     /**
-     * Parses TileMatrixSetLink element 
-     * @param {string} json 
+     * Parses TileMatrixSetLink element
+     * @param {string} json
      * @returns {string[]} Returns array of parseTileMatrixSetLink value.
      * @function parseTileMatrixSetLink
-     * @memberof WMTSMetadata# 
-     * @private      
-     */    
+     * @memberof WMTSMetadata#
+     * @private
+     */
+
     WMTSMetadata.parseTileMatrixSetLink = function(json) {
         var tileMatrixSetLink = [];
         if (json === undefined) {
+            // do nothing
         } else if (Array.isArray(json)) {
             for (var i = 0; i < json.length; i++) {
                 tileMatrixSetLink.push(
@@ -322,15 +334,16 @@ define([], function() {
 
     /**
      * Parses Format element
-     * @param {string} json 
+     * @param {string} json
      * @returns {string[]} Array of format.
      * @function parseFormat
-     * @memberof WMTSMetadata# 
-     * @private      
+     * @memberof WMTSMetadata#
+     * @private
      */
     WMTSMetadata.parseFormat = function(json) {
         var formats = [];
         if (json === undefined) {
+            // do nothing
         } else if (Array.isArray(json)) {
             for (var i = 0; i < json.length; i++) {
                 formats.push(WMTSMetadata.getValueTag(json.Format[i]));
@@ -344,11 +357,12 @@ define([], function() {
     /**
      * Get Value
      * @param {string} json
-     * @returns {string} Returns the value 
+     * @returns {string} Returns the value
      * @function getValueTag
-     * @memberof WMTSMetadata# 
-     * @private      
-     */     
+     * @memberof WMTSMetadata#
+     * @private
+     */
+
     WMTSMetadata.getValueTag = function(json) {
         var result;
         if (json !== undefined) {
@@ -363,36 +377,39 @@ define([], function() {
 
     /**
      * Get Text
-     * @param {string} json 
+     * @param {string} json
      * @return {string} Returns the text
      * @function getText
-     * @memberof WMTSMetadata# 
-     * @private     
-     */     
+     * @memberof WMTSMetadata#
+     * @private
+     */
+
     WMTSMetadata.getText = function(keyword) {
         return keyword._text;
     };
 
     /**
      * Get Value
-     * @param {string} json 
+     * @param {string} json
      * @returns {string} Returns the value
      * @function getValue
-     * @memberof WMTSMetadata# 
-     * @private       
-     */ 
+     * @memberof WMTSMetadata#
+     * @private
+     */
+
     WMTSMetadata.getValue = function(keyword) {
         return keyword._value;
     };
 
     /**
      * Parses keyword list
-     * @param {string} json 
+     * @param {string} json
      * @returns {string[]} Returns the array of keyword.
      * @function parseKeywordList
-     * @memberof WMTSMetadata# 
-     * @private      
-     */     
+     * @memberof WMTSMetadata#
+     * @private
+     */
+
     WMTSMetadata.parseKeywordList = function(keywordsJson) {
         var keywords = [];
         if (
@@ -415,11 +432,12 @@ define([], function() {
     /**
      * Parses Voice
      * @param {string} json
-     * @returns {string[]} Returns the array of voice 
+     * @returns {string[]} Returns the array of voice
      * @function parseVoice
-     * @memberof WMTSMetadata# 
-     * @private     
-     */     
+     * @memberof WMTSMetadata#
+     * @private
+     */
+
     WMTSMetadata.parseVoice = function(json) {
         var voices = [];
         if (json !== undefined && json.hasOwnProperty("Voice")) {
@@ -437,11 +455,12 @@ define([], function() {
     /**
      * Parses Fac simile element
      * @param {string} json
-     * @returns {string[]} Returns the array of Facsimile 
+     * @returns {string[]} Returns the array of Facsimile
      * @function parseFacsimile
-     * @memberof WMTSMetadata# 
-     * @private      
-     */     
+     * @memberof WMTSMetadata#
+     * @private
+     */
+
     WMTSMetadata.parseFacsimile = function(json) {
         var phones = [];
         if (json !== undefined && json.hasOwnProperty("Facsimile")) {
@@ -458,12 +477,13 @@ define([], function() {
 
     /**
      * Parses AccessConstraints element
-     * @param {string} json 
+     * @param {string} json
      * @return {string[]} Returns the array of AccessConstraints
      * @function parseAccessConstraints
-     * @memberof WMTSMetadata# 
-     * @private      
-     */    
+     * @memberof WMTSMetadata#
+     * @private
+     */
+
     WMTSMetadata.parseAccessConstraints = function(json) {
         var acccessConstraints = [];
         if (json !== undefined && json.hasOwnProperty("AccessConstraints")) {
@@ -485,11 +505,12 @@ define([], function() {
     /**
      * Parses WGS84BoundingBox element
      * @param {string} json
-     * @returns {string[]} Returns the WGS84 bounding box 
+     * @returns {string[]} Returns the WGS84 bounding box
      * @function parseWGS84BoundingBox
-     * @memberof WMTSMetadata# 
-     * @private      
-     */     
+     * @memberof WMTSMetadata#
+     * @private
+     */
+
     WMTSMetadata.parseWGS84BoundingBox = function(wgs84BoundingBoxJson) {
         var wgs84BoundingBox = [];
         if (wgs84BoundingBoxJson !== undefined) {
@@ -518,12 +539,13 @@ define([], function() {
 
     /**
      * Parses BoundingBox element
-     * @param {string} json 
-     * @return {string[]} Returns the bounding box 
+     * @param {string} json
+     * @return {string[]} Returns the bounding box
      * @function parseBoundingBox
-     * @memberof WMTSMetadata# 
-     * @private       
-     */     
+     * @memberof WMTSMetadata#
+     * @private
+     */
+
     WMTSMetadata.parseBoundingBox = function(BoundingBoxJson) {
         //TODO crs dimensions
         var boundingBox = [];

@@ -424,7 +424,7 @@ define([
     return {
         /**
          * @fires Context#backgroundLayer:added
-         * @fires Context#layer:added         
+         * @fires Context#layer:added
          */
         init: function(options) {
             mizarAPI = options.mizar;

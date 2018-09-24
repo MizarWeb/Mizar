@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with MIZAR. If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
-define(['../../Utils/Constants'], function(Constants) {
+define(["../../Utils/Constants","../../Gui/dialog/ErrorDialog","../../Utils/Proxy"], function(Constants, ErrorDialog, Proxy) {
     /**
      * @name OpenSearchRequestPool
      * @class
@@ -26,8 +26,6 @@ define(['../../Utils/Constants'], function(Constants) {
     var OpenSearchRequestPool = function() {
         this.maxRunningRequests = 4;
         this.maxPoolingRequests = 50;
-
-        this.debugMode = false;
 
         // Running requests
         this.runningRequests = [];
@@ -48,22 +46,7 @@ define(['../../Utils/Constants'], function(Constants) {
             this.freeRequests.push(xhr);
         }
 
-        this.debug("[New] " + this.getPoolsStatus());
-    };
-
-    /**************************************************************************************************************/
-
-    /**
-     * Debug information
-     * @function debug
-     * @memberof OpenSearchRequestPool#
-     * @param {string} message Message to display
-     */
-
-    OpenSearchRequestPool.prototype.debug = function(message) {
-        if (this.debugMode === true) {
-            console.log("Pool:" + message);
-        }
+        ErrorDialog.open(Constants.LEVEL.DEBUG, "OpenSearchRequestPool", "[New] " + this.getPoolsStatus());
     };
 
     /**************************************************************************************************************/
@@ -101,14 +84,15 @@ define(['../../Utils/Constants'], function(Constants) {
      */
 
     OpenSearchRequestPool.prototype.getFreeRequest = function() {
-        this.debug("[getFreeRequest]");
+        ErrorDialog.open(Constants.LEVEL.DEBUG, "OpenSearchRequestPool", "[getFreeRequest]");
+
         if (this.freeRequests.length === 0) {
             // Take oldest request in pool and use it
-            xhr = this.poolingRequests.splice(0, 1)[0];
-            this.debug("Oldest pooling request cancel and reused");
+            var xhr = this.poolingRequests.splice(0, 1)[0];
+            ErrorDialog.open(Constants.LEVEL.DEBUG, "OpenSearchRequestPool", "Oldest pooling request cancel and reused");
             return xhr;
         } else {
-            this.debug("Take one request from pool");
+            ErrorDialog.open(Constants.LEVEL.DEBUG, "OpenSearchRequestPool", "Take one request from pool");
             return this.freeRequests.pop();
         }
     };
@@ -125,9 +109,9 @@ define(['../../Utils/Constants'], function(Constants) {
      * @param {string} key Key of the tile
      */
     OpenSearchRequestPool.prototype.addQuery = function(url, tile, key, layer) {
-        this.debug("[addQuery]");
+        ErrorDialog.open(Constants.LEVEL.DEBUG, "OpenSearchRequestPool", "[addQuery]");
         if (this.resetMode === true) {
-            this.debug("addQuery halt, reset mode");
+            ErrorDialog.open(Constants.LEVEL.DEBUG, "OpenSearchRequestPool", "addQuery halt, reset mode");
             return;
         }
 
@@ -147,7 +131,7 @@ define(['../../Utils/Constants'], function(Constants) {
         var xhr = this.getFreeRequest();
 
         // set value for managing
-        self = this;
+        var self = this;
 
         // Associate the key
         xhr.key = key;
@@ -160,12 +144,12 @@ define(['../../Utils/Constants'], function(Constants) {
             if (xhr.readyState === 4) {
                 if (xhr.status === 200 && xhr.response !== null) {
                     response = JSON.parse(xhr.response);
-                    nbFound = xhr.layer.result.parseResponse(response);
+                    //nbFound = xhr.layer.result.parseResponse(response);
                     //self.layer.cache.addTile(bound,response.features,nbFound);
                     xhr.layer.manageFeaturesResponse(response.features, tile);
                 } else if (xhr.status >= 400) {
                     //tileData.complete = true;
-                    self.debug(xhr.responseText);
+                    ErrorDialog.open(Constants.LEVEL.DEBUG, "OpenSearchRequestPool", xhr.responseText);
                     return;
                 }
 
@@ -177,14 +161,16 @@ define(['../../Utils/Constants'], function(Constants) {
                     response.features !== null &&
                     response.features.length > 0
                 ) {
-                    xhr.layer.getGlobe().publishEvent(Constants.EVENT_MSG.FEATURED_ADDED, {
-                        layer: xhr.layer,
-                        features: response.features
-                    });
+                    xhr.layer
+                        .getGlobe()
+                        .publishEvent(Constants.EVENT_MSG.FEATURED_ADDED, {
+                            layer: xhr.layer,
+                            features: response.features
+                        });
                 }
             }
         };
-        xhr.open("GET", url);
+        xhr.open("GET", Proxy.proxify(url));
         xhr.setRequestHeader("Accept", "application/json");
 
         // Add request to pooling (last position)
@@ -220,7 +206,9 @@ o     * Check if there is any remaining query in the pool
                 }
             }
             // no request running, stop ihm indicator
-            current.getGlobe().publishEvent(Constants.EVENT_MSG.LAYER_END_LOAD, current);
+            current
+                .getGlobe()
+                .publishEvent(Constants.EVENT_MSG.LAYER_END_LOAD, current);
         }
     };
 
@@ -232,23 +220,23 @@ o     * Check if there is any remaining query in the pool
      * @memberof OpenSearchRequestPool#
      */
     OpenSearchRequestPool.prototype.checkPool = function() {
-        this.debug("[checkPool]" + this.getPoolsStatus());
+        ErrorDialog.open(Constants.LEVEL.DEBUG, "OpenSearchRequestPool", "[checkPool]" + this.getPoolsStatus());
 
         if (this.resetMode === true) {
-            this.debug("checkPool halt, reset mode");
+            ErrorDialog.open(Constants.LEVEL.DEBUG, "OpenSearchRequestPool", "checkPool halt, reset mode");
             return;
         }
 
         if (this.runningRequests.length === this.maxRunningRequests) {
             // Running pool is full, wait for a free slot
-            this.debug("no running slot available, wait");
+            ErrorDialog.open(Constants.LEVEL.DEBUG, "OpenSearchRequestPool", "no running slot available, wait");
             return;
         }
 
         this.checkEachLayerFinished();
 
         // There is at least one slot free
-        this.debug("before : " + this.getPoolsStatus());
+        ErrorDialog.open(Constants.LEVEL.DEBUG, "OpenSearchRequestPool", "before : " + this.getPoolsStatus());
 
         // Remove it from pool
         var xhr = this.poolingRequests.pop();
@@ -258,12 +246,14 @@ o     * Check if there is any remaining query in the pool
             this.runningRequests.push(xhr);
 
             // Start ihm indicator
-            xhr.layer.getGlobe().publishEvent(Constants.EVENT_MSG.LAYER_START_LOAD, xhr.layer);
+            xhr.layer
+                .getGlobe()
+                .publishEvent(Constants.EVENT_MSG.LAYER_START_LOAD, xhr.layer);
 
             // Launch request
             xhr.send();
 
-            this.debug("after : " + this.getPoolsStatus());
+            ErrorDialog.open(Constants.LEVEL.DEBUG, "OpenSearchRequestPool", "after : " + this.getPoolsStatus());
 
             // check for another request
             this.checkPool();
@@ -279,14 +269,12 @@ o     * Check if there is any remaining query in the pool
      * @param {Object} xhr Query
      */
     OpenSearchRequestPool.prototype.manageFinishedRequest = function(xhr) {
-        this.debug("[manageFinishedRequest]");
-
+        ErrorDialog.open(Constants.LEVEL.DEBUG, "OpenSearchRequestPool", "[manageFinishedRequest]");
         if (this.resetMode === true) {
-            this.debug("manageFinishedRequest halt, reset mode");
+            ErrorDialog.open(Constants.LEVEL.DEBUG, "OpenSearchRequestPool", "manageFinishedRequest halt, reset mode");
             return;
         }
-
-        this.debug("before : " + this.getPoolsStatus());
+        ErrorDialog.open(Constants.LEVEL.DEBUG, "OpenSearchRequestPool", "before : " + this.getPoolsStatus());
 
         // Get index of ended request
         var index = -1;
@@ -304,7 +292,7 @@ o     * Check if there is any remaining query in the pool
         // Set it into pool
         this.freeRequests.push(xhr);
 
-        this.debug("after : " + this.getPoolsStatus());
+        ErrorDialog.open(Constants.LEVEL.DEBUG, "OpenSearchRequestPool", "after : " + this.getPoolsStatus());
 
         this.checkPool();
     };
@@ -322,7 +310,7 @@ o     * Check if there is any remaining query in the pool
         key,
         layerID
     ) {
-        this.debug("[isQueryStillWanted]");
+        ErrorDialog.open(Constants.LEVEL.DEBUG, "OpenSearchRequestPool", "[isQueryStillWanted]");
         for (var i = 0; i < this.runningRequests.length; i++) {
             // Recheck if runningRequests is modified outside
             if (
@@ -354,7 +342,7 @@ o     * Check if there is any remaining query in the pool
      */
     OpenSearchRequestPool.prototype.resetPool = function() {
         this.resetMode = true;
-        this.debug("[resetPool]");
+        ErrorDialog.open(Constants.LEVEL.DEBUG, "OpenSearchRequestPool", "[resetPool]");
         this.removeRunningQueries();
         this.removePoolQueries();
         this.resetMode = false;
@@ -368,8 +356,7 @@ o     * Check if there is any remaining query in the pool
      * @memberof OpenSearchRequestPool#
      */
     OpenSearchRequestPool.prototype.removeRunningQueries = function() {
-        this.debug("[removeRunningQueries]");
-
+        ErrorDialog.open(Constants.LEVEL.DEBUG, "OpenSearchRequestPool", "[removeRunningQueries]");
         var xhr = this.runningRequests.pop();
         while (xhr !== null && typeof xhr !== "undefined") {
             xhr.abort();
@@ -386,8 +373,7 @@ o     * Check if there is any remaining query in the pool
      * @memberof OpenSearchRequestPool#
      */
     OpenSearchRequestPool.prototype.removePoolQueries = function() {
-        this.debug("[removePoolQueries]");
-
+        ErrorDialog.open(Constants.LEVEL.DEBUG, "OpenSearchRequestPool", "[removePoolQueries]");
         var xhr = this.poolingRequests.pop();
         while (xhr !== null && typeof xhr !== "undefined") {
             this.freeRequests.push(xhr);

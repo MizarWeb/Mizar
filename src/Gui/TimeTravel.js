@@ -25,14 +25,14 @@
  * @type {Context}
  */
 
- /**
+/**
  * globalTime:rewind.<br/>
  * Called when the time is set to rewind
  * @event Context#globalTime:rewind
  * @type {Context}
  */
 
- /**
+/**
  * globalTime:forward.<br/>
  * Called when the time is set to forward
  * @event Context#globalTime:forward
@@ -97,7 +97,7 @@ define(["jquery", "../Utils/Constants", "../Services/TimeTravelCore"], function(
         var svgHourGlassDoc = null;
 
         document.getElementById(parentElement).innerHTML =
-            '<div id="objectForward"></div><div id="objectHourGlass"></div><div id="objectRewind"></div>';
+            "<div id=\"objectForward\"></div><div id=\"objectHourGlass\"></div><div id=\"objectRewind\"></div>";
 
         var _handleMouseUp = function(name) {
             ctx.publish(name, ctx);

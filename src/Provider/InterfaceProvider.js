@@ -17,17 +17,17 @@
  * along with MIZAR. If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
 
- /**
-  * Mizar is able to load a whole file as GeoJson format for vectorial data. If the data format is not in GeoJson then a Provider must be applied.
-  * <ul>
-  *     <li>{@link module:Provider.ConstellationProvider ConstellationProvider}: Loads constellation data</li>
-  *     <li>{@link module:Provider.CraterProvider CraterProvider} : Loads craters</li>
-  *     <li>{@link module:Provider.PlanetProvider PlanetProvider} : Loads planets position on the sky</li>
-  *     <li>{@link module:Provider.StarProvider StarProvider} : Loads stars name on the sky</li>
-  *     <li>{@link module:Provider.TrajectoryProvider TrajectoryProvider} : Loads a file to display a trajectory</li>
-  * </ul>  
- * @see {@link module:Provider the provider package}  
-  */
+/**
+ * Mizar is able to load a whole file as GeoJson format for vectorial data. If the data format is not in GeoJson then a Provider must be applied.
+ * <ul>
+ *     <li>{@link module:Provider.ConstellationProvider ConstellationProvider}: Loads constellation data</li>
+ *     <li>{@link module:Provider.CraterProvider CraterProvider} : Loads craters</li>
+ *     <li>{@link module:Provider.PlanetProvider PlanetProvider} : Loads planets position on the sky</li>
+ *     <li>{@link module:Provider.StarProvider StarProvider} : Loads stars name on the sky</li>
+ *     <li>{@link module:Provider.TrajectoryProvider TrajectoryProvider} : Loads a file to display a trajectory</li>
+ * </ul>
+ * @see {@link module:Provider the provider package}
+ */
 /**
  * Provider is an interface that provides methods to load file, which are not supported by Mizar.
  * @interface

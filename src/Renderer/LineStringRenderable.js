@@ -321,7 +321,7 @@ define([
         if (this.globe.isSky()) {
             return false;
         }
-        result =
+        var result =
             (type === Constants.GEOMETRY.LineString ||
                 type === Constants.GEOMETRY.MultiLineString ||
                 (!style.fill &&
@@ -367,7 +367,7 @@ define([
      * @return {Boolean} Is compatible ?
      */
     LineStringBucket.prototype.isCompatible = function(style) {
-        result =
+        var result =
             this.style.strokeColor[0] === style.strokeColor[0] &&
             this.style.strokeColor[1] === style.strokeColor[1] &&
             this.style.strokeColor[2] === style.strokeColor[2] &&

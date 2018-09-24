@@ -388,7 +388,7 @@ define([
             url = null;
         }
 
-        return this.proxify(url, tile.level);
+        return this.allowRequest(url, tile.level);
     };
 
     /**

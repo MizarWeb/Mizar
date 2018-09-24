@@ -353,7 +353,7 @@ define([
                     if (renderable.hasChildren === true && tile.children) {
                         for (var n = 0; n < 4; n++) {
                             if (tile.children[n].state === Tile.State.LOADED) {
-                                levelReturned = this._removeGeometryFromTile(
+                                var levelReturned = this._removeGeometryFromTile(
                                     geometry,
                                     bbox,
                                     tile.children[n],
@@ -383,7 +383,7 @@ define([
     VectorRenderer.prototype.removeGeometryFromTile = function(geometry, tile) {
         //var bbox = Utils.getBBoxFromCoordinateArray(geometry.coordinates[0]);
         //var startDate = new Date();
-        maxLevel = this._removeGeometryFromTile(geometry, null, tile, 0);
+        var maxLevel = this._removeGeometryFromTile(geometry, null, tile, 0);
         //var endDate = new Date();
         //console.log("Delta remove : "+(endDate*1.0 - startDate*1.0)+"ms with "+maxLevel+" levels");
     };

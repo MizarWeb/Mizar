@@ -63,8 +63,12 @@ define(["../Utils/Utils", "./AbstractAnimation", "../Utils/Numeric"], function(
      * @memberof module:Animation
      */
     var SegmentedAnimation = function(options) {
-        Utils.assert(typeof(options.duration)==="number" 
-        && typeof(options.valueSetter)==="function", "Missing required parameters in constructor", "SegmentedAnimation.js");
+        Utils.assert(
+            typeof options.duration === "number" &&
+                typeof options.valueSetter === "function",
+            "Missing required parameters in constructor",
+            "SegmentedAnimation.js"
+        );
         // Call ancestor constructor
         AbstractAnimation.prototype.constructor.call(this);
 

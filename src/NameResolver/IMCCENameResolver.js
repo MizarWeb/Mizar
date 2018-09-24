@@ -22,8 +22,9 @@ define([
     "../Utils/Utils",
     "./AbstractNameResolver",
     "../Utils/Constants",
-    "../Gui/dialog/ErrorDialog"
-], function($, _, Utils, AbstractNameResolver, Constants, ErrorDialog) {
+    "../Gui/dialog/ErrorDialog",
+    "../Utils/Proxy"
+], function($, _, Utils, AbstractNameResolver, Constants, ErrorDialog, Proxy) {
     /**************************************************************************************************************/
 
     /**
@@ -65,11 +66,11 @@ define([
             "&from=Mizar";
         $.ajax({
             type: "GET",
-            url: url,
+            url: Proxy.proxify(url),
             dataType: "json",
-            beforeSend(xhr) {
+            beforeSend: function(xhr) {
                 xhr.setRequestHeader("Accept", "application/json");
-            },             
+            },
             success: function(jsonResponse) {
                 var data = jsonResponse.data;
                 parseResponse(data, createsGeoJsonResponse);
@@ -112,26 +113,37 @@ define([
                             "https://api.ssodnet.imcce.fr/quaero/1/sso/" +
                             id +
                             "/resolver";
-                        Utils.requestUrl(url, 'json', 'application/json', null, function(data){
-                            var coordinates = data.geometry.coordinates;
-                            var ra = (coordinates[0] * 360) / 24;
-                            var dec = coordinates[1];
-                            if (_.isNumber(ra) && _.isNumber(dec)) {
-                                ra = parseFloat(ra);
-                                dec = parseFloat(dec);
-                                var feature = {};
-                                feature.ra = ra;
-                                feature.dec = dec;
-                                feature.credits =
-                                    'Powered by <a href="http://vo.imcce.fr/webservices/ssodnet/?quaero" target="_blank">SsODNet/Quaero API</a>.';
-                                feature.id = id;
-                                feature.type = type;
-                                feature.name = name;
-                                callback(feature);
+                        Utils.requestUrl(
+                            url,
+                            "json",
+                            "application/json",
+                            null,
+                            function(data) {
+                                var coordinates = data.geometry.coordinates;
+                                var ra = (coordinates[0] * 360) / 24;
+                                var dec = coordinates[1];
+                                if (_.isNumber(ra) && _.isNumber(dec)) {
+                                    ra = parseFloat(ra);
+                                    dec = parseFloat(dec);
+                                    var feature = {};
+                                    feature.ra = ra;
+                                    feature.dec = dec;
+                                    feature.credits =
+                                        "Powered by <a href=\"http://vo.imcce.fr/webservices/ssodnet/?quaero\" target=\"_blank\">SsODNet/Quaero API</a>.";
+                                    feature.id = id;
+                                    feature.type = type;
+                                    feature.name = name;
+                                    callback(feature);
+                                }
+                            },
+                            function(err) {
+                                ErrorDialog.open(
+                                    Constants.LEVEL.ERROR,
+                                    "Failed ot request " + url,
+                                    err
+                                );
                             }
-                        }, function(err){
-                            ErrorDialog.open(Constants.LEVEL.ERROR, 'Failed ot request '+url, err);
-                        });
+                        );
                     } else {
                         callback();
                     }
@@ -195,7 +207,7 @@ define([
                 if (onError) {
                     //TODO : network problem
                 }
-                console.error(xhr.responseText);
+                ErrorDialog.open(Constants.LEVEL.ERROR,xhr.responseText);
             },
             complete: function(xhr) {
                 if (onComplete) {

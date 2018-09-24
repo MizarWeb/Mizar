@@ -51,12 +51,22 @@ define([
             var marsResolverUrl = context.getContextConfiguration().nameResolver
                 .baseUrl; //.replace('mizar_gui', 'mizar_lite');
 
-            Utils.requestUrl(marsResolverUrl,'json','application/json',null, function(response){
-                dictionary = response;
-            }, function(err) {
-                ErrorDialog.open(Constants.LEVEL.ERROR, 'Failed ot request '+marsResolverUrl, err);
-            });
-
+            Utils.requestUrl(
+                marsResolverUrl,
+                "json",
+                "application/json",
+                null,
+                function(response) {
+                    dictionary = response;
+                },
+                function(err) {
+                    ErrorDialog.open(
+                        Constants.LEVEL.ERROR,
+                        "Failed ot request " + marsResolverUrl,
+                        err
+                    );
+                }
+            );
         } else {
             dictionary = null;
         }
@@ -64,14 +74,14 @@ define([
 
     /**************************************************************************************************************/
     /**
-    * @name DictionaryNameResolver
-    * @class
-    *      Plugin to access to the dictionary name resolver
-    * @augments AbstractNameResolver
-    * @param {Context} options - Configuration properties
-    * @memberof module:NameResolver
-    * @constructor          
-    */
+     * @name DictionaryNameResolver
+     * @class
+     *      Plugin to access to the dictionary name resolver
+     * @augments AbstractNameResolver
+     * @param {Context} options - Configuration properties
+     * @memberof module:NameResolver
+     * @constructor
+     */
     var DictionaryNameResolver = function(options) {
         AbstractNameResolver.prototype.constructor.call(this, options);
         dictionary = retrieveDictionary(options);
@@ -129,104 +139,104 @@ define([
         var tmpCenter = null;
         var newDistance = null;
         switch (type) {
-            case "Point":
-                center = coordinates;
-                distance = null;
-                break;
-            case "LineString":
-                center = _computeLineStringBarycenter.call(this, coordinates);
-                distance = _computeFarestDistanceAlongLineString.call(
+        case "Point":
+            center = coordinates;
+            distance = null;
+            break;
+        case "LineString":
+            center = _computeLineStringBarycenter.call(this, coordinates);
+            distance = _computeFarestDistanceAlongLineString.call(
+                this,
+                center,
+                coordinates
+            );
+            break;
+        case "Polygon":
+            var exteriorRing = coordinates[0];
+            center = _computeLineStringBarycenter.call(this, exteriorRing);
+            distance = _computeFarestDistanceAlongLineString.call(
+                this,
+                center,
+                exteriorRing
+            );
+            break;
+        case "MultiPoint":
+            center = _computeLineStringBarycenter.call(this, coordinates);
+            distance = _computeFarestDistanceAlongLineString.call(
+                this,
+                center,
+                coordinates
+            );
+            break;
+        case "MultiLineString":
+            var lineStringArray = coordinates[0];
+            center = _computeLineStringBarycenter.call(
+                this,
+                lineStringArray[0]
+            );
+            center[0] = center[0] * lineStringArray[0].length;
+            center[1] = center[1] * lineStringArray[0].length;
+            nbPts = 0;
+            for (var i = 1; i < lineStringArray.length; i++) {
+                tmpCenter = _computeLineStringBarycenter.call(
                     this,
-                    center,
-                    coordinates
+                    lineStringArray[i]
                 );
-                break;
-            case "Polygon":
-                var exteriorRing = coordinates[0];
-                center = _computeLineStringBarycenter.call(this, exteriorRing);
-                distance = _computeFarestDistanceAlongLineString.call(
-                    this,
-                    center,
-                    exteriorRing
-                );
-                break;
-            case "MultiPoint":
-                center = _computeLineStringBarycenter.call(this, coordinates);
-                distance = _computeFarestDistanceAlongLineString.call(
-                    this,
-                    center,
-                    coordinates
-                );
-                break;
-            case "MultiLineString":
-                var lineStringArray = coordinates[0];
-                center = _computeLineStringBarycenter.call(
-                    this,
-                    lineStringArray[0]
-                );
-                center[0] = center[0] * lineStringArray[0].length;
-                center[1] = center[1] * lineStringArray[0].length;
-                nbPts = 0;
-                for (var i = 1; i < lineStringArray.length; i++) {
-                    tmpCenter = _computeLineStringBarycenter.call(
-                        this,
-                        lineStringArray[i]
-                    );
-                    tmpCenter[0] = tmpCenter[0] * lineStringArray[i].length;
-                    tmpCenter[1] = tmpCenter[1] * lineStringArray[i].length;
-                    nbPts = nbPts + lineStringArray[i].length;
-                    center = _addPoint(center, tmpCenter);
-                }
-                center[0] = center[0] / nbPts;
-                center[1] = center[1] / nbPts;
+                tmpCenter[0] = tmpCenter[0] * lineStringArray[i].length;
+                tmpCenter[1] = tmpCenter[1] * lineStringArray[i].length;
+                nbPts = nbPts + lineStringArray[i].length;
+                center = _addPoint(center, tmpCenter);
+            }
+            center[0] = center[0] / nbPts;
+            center[1] = center[1] / nbPts;
 
-                distance = 0;
-                for (i = 0; i < lineStringArray.length; i++) {
-                    newDistance = _farestDistance.call(
-                        this,
-                        center,
-                        lineStringArray[i]
-                    );
-                    if (newDistance > distance) {
-                        distance = newDistance;
-                    }
-                }
-                break;
-            case "MultiPolygon":
-                var polygonArray = coordinates[0];
-                center = _computeLineStringBarycenter.call(
+            distance = 0;
+            for (i = 0; i < lineStringArray.length; i++) {
+                newDistance = _farestDistance.call(
                     this,
-                    polygonArray[0][0]
+                    center,
+                    lineStringArray[i]
                 );
-                center[0] = center[0] * polygonArray[0][0].length;
-                center[1] = center[1] * polygonArray[0][0].length;
-                nbPts = 0;
-                for (i = 1; i < polygonArray.length; i++) {
-                    tmpCenter = _computeLineStringBarycenter.call(
-                        this,
-                        lineStringArray[i][0]
-                    );
-                    tmpCenter[0] = tmpCenter[0] * lineStringArray[i][0].length;
-                    tmpCenter[1] = tmpCenter[1] * lineStringArray[i][0].length;
-                    nbPts = nbPts + lineStringArray[i][0].length;
-                    center = _addPoint.call(this, center, tmpCenter);
+                if (newDistance > distance) {
+                    distance = newDistance;
                 }
-                center[0] = center[0] / nbPts;
-                center[1] = center[1] / nbPts;
-                distance = 0;
-                for (i = 0; i < polygonArray.length; i++) {
-                    newDistance = _farestDistance.call(
-                        this,
-                        center,
-                        polygonArray[i][0]
-                    );
-                    if (newDistance > distance) {
-                        distance = newDistance;
-                    }
+            }
+            break;
+        case "MultiPolygon":
+            var polygonArray = coordinates[0];
+            center = _computeLineStringBarycenter.call(
+                this,
+                polygonArray[0][0]
+            );
+            center[0] = center[0] * polygonArray[0][0].length;
+            center[1] = center[1] * polygonArray[0][0].length;
+            nbPts = 0;
+            for (i = 1; i < polygonArray.length; i++) {
+                tmpCenter = _computeLineStringBarycenter.call(
+                    this,
+                    lineStringArray[i][0]
+                );
+                tmpCenter[0] = tmpCenter[0] * lineStringArray[i][0].length;
+                tmpCenter[1] = tmpCenter[1] * lineStringArray[i][0].length;
+                nbPts = nbPts + lineStringArray[i][0].length;
+                center = _addPoint.call(this, center, tmpCenter);
+            }
+            center[0] = center[0] / nbPts;
+            center[1] = center[1] / nbPts;
+            distance = 0;
+            for (i = 0; i < polygonArray.length; i++) {
+                newDistance = _farestDistance.call(
+                    this,
+                    center,
+                    polygonArray[i][0]
+                );
+                if (newDistance > distance) {
+                    distance = newDistance;
                 }
-                break;
-            default:
-                throw "geometry " + type + " is not supported";
+            }
+            break;
+        default:
+            throw "geometry " + type + " is not supported";
         }
         return [center, distance];
     }

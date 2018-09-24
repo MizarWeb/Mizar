@@ -35,8 +35,7 @@
  * along with GlobWeb. If not, see <http://www.gnu.org/licenses/>.
  ***************************************/
 
-define(function () {
-
+define(function() {
     /**
      * Default div ID for attribution.
      */
@@ -53,11 +52,11 @@ define(function () {
             layer.getCopyrightUrl() !== undefined
         ) {
             attribution =
-                '<a class="whiteLink" href="' +
+                "<a class=\"whiteLink\" href=\"" +
                 layer.getCopyrightUrl() +
-                '" target="_blank" title="' +
+                "\" target=\"_blank\" title=\"" +
                 title +
-                '">' +
+                "\">" +
                 layer.getAttribution() +
                 "</a>";
         } else {
@@ -76,7 +75,7 @@ define(function () {
         <li>element : the HTML element to show attributions, can be a string (the ID) or the DOM element itself</li>
         </ul>
     */
-    var AttributionHandler = function (globe, options) {
+    var AttributionHandler = function(globe, options) {
         // Search for the element to use
         var elt = options ? options.element : undefined;
         if (elt) {
@@ -102,7 +101,7 @@ define(function () {
      * @memberof AttributionHandler.prototype
      * @param {Layer} layer Layer
      */
-    AttributionHandler.prototype.removeAttribution = function (layer) {
+    AttributionHandler.prototype.removeAttribution = function(layer) {
         if (this.element) {
             var div = document.getElementById(this.element.id + "_" + layer.id);
             if (div) {
@@ -117,7 +116,7 @@ define(function () {
      * @memberof AttributionHandler.prototype
      * @param {Layer} layer Layer
      */
-    AttributionHandler.prototype.addAttribution = function (layer) {
+    AttributionHandler.prototype.addAttribution = function(layer) {
         if (this.element) {
             var div = document.createElement("div");
             div.innerHTML = _createHTMLAttribution.call(this, layer);
@@ -138,7 +137,7 @@ define(function () {
      * @memberof AttributionHandler.prototype
      * @param {Layer} layer Layer
      */
-    AttributionHandler.prototype.enable = function (layer) {
+    AttributionHandler.prototype.enable = function(layer) {
         if (this.element && layer && layer.isVisible()) {
             var div = document.getElementById(this.element.id + "_" + layer.id);
             if (div) {
@@ -153,7 +152,7 @@ define(function () {
      * @memberof AttributionHandler.prototype
      * @param {Layer} layer Layer
      */
-    AttributionHandler.prototype.disable = function (layer) {
+    AttributionHandler.prototype.disable = function(layer) {
         if (this.element && layer && layer.isVisible()) {
             var div = document.getElementById(this.element.id + "_" + layer.id);
             if (div) {
@@ -168,7 +167,7 @@ define(function () {
      * @memberof AttributionHandler.prototype
      * @param {Layer} layer Layer
      */
-    AttributionHandler.prototype.toggleAttribution = function (layer) {
+    AttributionHandler.prototype.toggleAttribution = function(layer) {
         if (this.element) {
             var div = document.getElementById(this.element.id + "_" + layer.id);
             if (div) {

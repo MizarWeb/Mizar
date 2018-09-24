@@ -23,20 +23,17 @@ define([
     "xmltojson",
     "../Layer/LayerFactory"
 ], function($, _, Utils, XmlToJson, LayerFactory, WCS) {
-
     /**
      * @class
      * Creates an instance of WCS server
      * A WCS server exposes a set of {@link WCSElevationLayer WCS} layers.
-     * @param {boolean} proxyUse  true for using the poxy
-     * @param {string} proxyUrl proxy url
      * @param {Options} options Options
      * @param {string} [options.baseUrl] Base URL of the getCapabilities
-     * @param {string} [options.getCapabilities] GetCapabilities 
+     * @param {string} [options.getCapabilities] GetCapabilities
      * @constructor
      * @memberof module:Registry
      */
-    var WCSServer = function(proxyUse, proxyUrl, options) {
+    var WCSServer = function(options) {
         if (options.getCapabilities) {
             options.baseUrl = Utils.computeBaseUrlFromCapabilities(
                 options.getCapabilities,
@@ -57,16 +54,14 @@ define([
             options.baseUrl,
             options
         );
-        this.proxyUse = proxyUse;
-        this.proxyUrl = proxyUrl;
         this.options = options;
     };
 
     /**
-     * Skip when the current layer is not included in the list of defined layers (layersFromConf)  
+     * Skip when the current layer is not included in the list of defined layers (layersFromConf)
      * @param {string[]} layersFromConf List of user-defined layer
      * @param {string} currentLayer
-     * @returns {boolean} true wen the currentLayer is not included in the list of user-defined layers otherwise false 
+     * @returns {boolean} true wen the currentLayer is not included in the list of user-defined layers otherwise false
      * @function _mustBeSkipped
      * @memberof WCSServer#
      * @private
@@ -81,10 +76,10 @@ define([
     /**
      * Converts a bbox string to an array of float.
      * @param {string[]} jsonBbox. bbox as string. First element is the lower left corner. 2nd element is the upper right corner
-     * @returns {bbox_type} bbox as an array 
+     * @returns {bbox_type} bbox as an array
      * @function _bbox
      * @memberof WCSServer#
-     * @private      
+     * @private
      */
     function _bbox(jsonBbox) {
         var pos = jsonBbox.pos;
@@ -104,7 +99,7 @@ define([
      * @property {string} 0 longitude in degee of the lower left corner.
      * @property {string} 1 latitude in degee of the lower left corner.
      * @property {string} 2 longitude in degee of the upper right corner.
-     * @property {string} 3 latitude in degee of the upper right corner.     
+     * @property {string} 3 latitude in degee of the upper right corner.
      */
 
     /**
@@ -113,7 +108,7 @@ define([
      * @property {string} 0 longitude in degee.
      * @property {string} 1 latitude in degee.
      * @property {string} 2 distance from ground in meter.
-     */   
+     */
 
     /**
      * Computes the bbox center.
@@ -122,7 +117,7 @@ define([
      * @returns {center_type} the central position of the camera and the distance from which the bbox is embedded
      * @function _computeCenterBbox
      * @memberof WCSServer#
-     * @private     
+     * @private
      */
     function _computeCenterBbox(bbox) {
         var center;
@@ -149,7 +144,7 @@ define([
      * @returns {string} time seprated by a value
      * @function _timeVal
      * @memberof WCSServer#
-     * @private     
+     * @private
      */
     function _timeVal(lonlat) {
         var values;
@@ -168,19 +163,18 @@ define([
 
     /**
      * Returns the metadata
-     * @param {metadata~requestCallback} callback 
-     * @param {serverLayerFallback} fallback 
+     * @param {metadata~requestCallback} callback
+     * @param {serverLayerFallback} fallback
      * @function getMetadata
-     * @memberof WCSServer#      
-     */      
+     * @memberof WCSServer#
+     */
+
     WCSServer.prototype.getMetadata = function(callback, fallback) {
         var self = this;
         Utils.requestUrl(
-            Utils.proxify(this.options.getCapabilities, {
-                use: this.proxyUse,
-                url: this.proxyUrl
-            }),
-            "text", "application/xml",
+            this.options.getCapabilities,
+            "text",
+            "application/xml",
             {},
             function(response) {
                 var myOptions = {
@@ -203,19 +197,18 @@ define([
 
     /**
      * Returns the coverage
-     * @param {*} callback 
-     * @param {*} fallback 
+     * @param {*} callback
+     * @param {*} fallback
      * @function getCoverage
-     * @memberof WCSServer#      
-     */    
+     * @memberof WCSServer#
+     */
+
     WCSServer.prototype.getCoverage = function(callback, fallback) {
         var self = this;
         Utils.requestUrl(
-            Utils.proxify(this.options.describeCoverage, {
-                use: this.proxyUse,
-                url: this.proxyUrl
-            }),
-            "text", "application/xml",
+            this.options.describeCoverage,
+            "text",
+            "application/xml",
             {},
             function(response) {
                 var myOptions = {
@@ -245,20 +238,19 @@ define([
 
     /**
      * Create WCS layers from WCS capabilities
-     * @param {serverLayerCallback} callback 
-     * @param {serverLayerFallback} fallback 
+     * @param {serverLayerCallback} callback
+     * @param {serverLayerFallback} fallback
      * @function createLayers
-     * @memberof WCSServer#      
+     * @memberof WCSServer#
      */
     WCSServer.prototype.createLayers = function(callback, fallback) {
         this.getMetadata(function(layerDescription, metadata) {
-
             // extracts layers from layer description if set
             var layersFromConf = layerDescription.hasOwnProperty("layers")
                 ? layerDescription.layers.trim().split(/\s*,\s*/)
                 : [];
 
-            // retrieves the list of layers from capabilities    
+            // retrieves the list of layers from capabilities
             var jsonLayers = [];
             var contentMetadata = metadata.WCS_Capabilities.ContentMetadata;
             if (Array.isArray(contentMetadata.CoverageOfferingBrief)) {
@@ -270,7 +262,6 @@ define([
             // iter on each layer
             var layers = [];
             for (var i = 0; i < jsonLayers.length; i++) {
-
                 // get a layer
                 var jsonLayer = jsonLayers[i].CoverageOfferingBrief;
                 if (_mustBeSkipped.call(this, layersFromConf, jsonLayer)) {
@@ -344,10 +335,10 @@ define([
      * Returns the capabilities
      * @param {string} baseUrl GetCapabilities URL
      * @param {Object} options
-     * @param {string} [options.version = 1.0.0] WCS version 
+     * @param {string} [options.version = 1.0.0] WCS version
      * @function getCapabilitiesFromBaseURL
-     * @memberof WCSServer#     
-     * @returns {string} describeCoverage URL      
+     * @memberof WCSServer#
+     * @returns {string} describeCoverage URL
      */
     WCSServer.getCapabilitiesFromBaseURL = function(baseUrl, options) {
         var getCapabilitiesUrl = baseUrl;
@@ -371,12 +362,12 @@ define([
 
     /**
      * Describes the coverage
-     * @param {string} baseUrl describeCoverage URL 
+     * @param {string} baseUrl describeCoverage URL
      * @param {Object} options Options
-     * @param {string} [options.version = 1.0.0] WCS version 
+     * @param {string} [options.version = 1.0.0] WCS version
      * @function describeCoverageFromBaseURL
-     * @memberof WCSServer#     
-     * @returns {string} describeCoverage URL 
+     * @memberof WCSServer#
+     * @returns {string} describeCoverage URL
      */
     WCSServer.describeCoverageFromBaseURL = function(baseUrl, options) {
         var describeCoverageUrl = baseUrl;

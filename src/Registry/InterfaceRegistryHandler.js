@@ -17,10 +17,10 @@
  * along with MIZAR. If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
 
- /**
-  * Chain of responsability to process the layer description.
-  * @interface
-  */
+/**
+ * Chain of responsability to process the layer description.
+ * @interface
+ */
 function RegistryHandler() {}
 
 /**
@@ -43,9 +43,9 @@ RegistryHandler.prototype.setNext = function(next) {};
 
 /**
  * Handle requests to process a layer description
- * @param {AbstractLayer.atmosphere_configuration|AbstractLayer.coordinateGrid_configuration|AbstractLayer.groundOverlay_configuration|AbstractLayer.hipsCat_configuration|AbstractLayer.moc_configuration|AbstractLayer.tileWireFrame_configuration|AbstractLayer.vector_configuration|AbstractRasterLayer.wms_configuration|AbstractRasterLayer.bing_configuration|AbstractLayer.geojson_configuration|AbstractHipsLayer.hipsFits_configuration|AbstractRasterLayer.osm_configuration|AbstractRasterLayer.wcsElevation_configuration|AbstractRasterLayer.wmts_configuration} layerDescription 
- * @param {serverLayerCallback} callback 
- * @param {serverLayerFallback} fallback 
+ * @param {AbstractLayer.atmosphere_configuration|AbstractLayer.coordinateGrid_configuration|AbstractLayer.groundOverlay_configuration|AbstractLayer.hipsCat_configuration|AbstractLayer.moc_configuration|AbstractLayer.tileWireFrame_configuration|AbstractLayer.vector_configuration|AbstractRasterLayer.wms_configuration|AbstractRasterLayer.bing_configuration|AbstractLayer.geojson_configuration|AbstractHipsLayer.hipsFits_configuration|AbstractRasterLayer.osm_configuration|AbstractRasterLayer.wcsElevation_configuration|AbstractRasterLayer.wmts_configuration} layerDescription
+ * @param {serverLayerCallback} callback
+ * @param {serverLayerFallback} fallback
  */
 RegistryHandler.prototype.handleRequest = function(
     layerDescription,

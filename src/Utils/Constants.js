@@ -32,11 +32,13 @@ define(function() {
      * @namespace
      * LEVEL
      * @property {string} WARNING - Warning level
-     * @property {string} ERROR - Error level     
+     * @property {string} ERROR - Error level
+     * @property {string} DEBUG - Error level     
      */
     Constants.LEVEL = {
-        WARNING : "warning",
-        ERROR : "error"
+        WARNING: "warning",
+        ERROR: "error",
+        DEBUG: "debug"
     };
 
     /**
@@ -173,7 +175,7 @@ define(function() {
      * @property {string} Moon_2000 - IAU2000:30101 coordinate reference system
      * @property {string} Moon_2000_old - IAU2000:30100 coordinate reference system
      * @property {string} HorizontalLocal - Local reference system based on horizontal coordinates
-     * @property {string} Sun - Sun Coordinate reference system     
+     * @property {string} Sun - Sun Coordinate reference system
      */
     Constants.CRS = {
         Equatorial: "Equatorial",
@@ -197,18 +199,18 @@ define(function() {
      * @property {string} Mars_2000_old - Planet context
      * @property {string} Moon_2000 - Planet context
      * @property {string} Moon_2000_old - Planet context
-     * @property {string} HorizontalLocal - Ground context 
-     * @property {string} Sun - Sun Coordinate reference system          
+     * @property {string} HorizontalLocal - Ground context
+     * @property {string} Sun - Sun Coordinate reference system
      */
     Constants.CRS_TO_CONTEXT = {
-        "Equatorial" : "Sky",
-        "Galactic": "Sky",
+        Equatorial: "Sky",
+        Galactic: "Sky",
         "CRS:84": "Planet",
         "IAU2000:49901": "Planet",
         "IAU2000:49900": "Planet",
         "IAU2000:30101": "Planet",
         "IAU2000:30100": "Planet",
-        "HorizontalLocal": "Ground",
+        HorizontalLocal: "Ground",
         "IAU:Sun": "Planet"
     };
 
@@ -378,7 +380,7 @@ define(function() {
         LAYER_BACKGROUND_ADDED: "backgroundLayer:added",
         LAYER_BACKGROUND_CHANGED: "backgroundLayer:changed",
         LAYER_ADDED: "layer:added",
-        LAYER_REMOVED: "layer:removed",        
+        LAYER_REMOVED: "layer:removed",
         LAYER_VISIBILITY_CHANGED: "visibility:changed",
         LAYER_OPACITY_CHANGED: "opacity:changed",
         LAYER_START_LOAD: "startLoad",
@@ -448,7 +450,7 @@ define(function() {
      * @property {string} MINUTE - minutes
      * @property {string} SECOND - seconds
      * @property {string} MILLISECOND - milliseconds
-     * @property {string} ENUMERATED - null                                
+     * @property {string} ENUMERATED - null
      */
     Constants.TIME_STEP = {
         YEAR: "years",
@@ -471,8 +473,9 @@ define(function() {
      * @property {string} DAY - day
      * @property {string} HOUR - hour
      * @property {string} MINUTE - minute
-     * @property {string} SECOND - second      
-     */    
+     * @property {string} SECOND - second
+     */
+
     Constants.TIME_MOMENT_STEP = {
         YEAR: "year",
         MONTH: "month",
@@ -490,8 +493,9 @@ define(function() {
      * @property {string} DAY - D
      * @property {string} HOUR - H
      * @property {string} MINUTE - M
-     * @property {string} SECOND - S      
-     */     
+     * @property {string} SECOND - S
+     */
+
     Constants.UNIT_TIME_WMS = {
         YEAR: "Y",
         MONTH: "M",
@@ -505,8 +509,9 @@ define(function() {
      * @namespace
      * UNIT_RESOLUTION_WMS
      * @property {string} TIME - PT
-     * @property {string} NOT_TIME - P    
-     */    
+     * @property {string} NOT_TIME - P
+     */
+
     Constants.UNIT_RESOLUTION_WMS = {
         TIME: "PT",
         NOT_TIME: "P"
@@ -516,7 +521,8 @@ define(function() {
      * @namespace
      * TIME
      * @property {string} DEFAULT_FORMAT - Do MMM Y HH:mm
-     */     
+     */
+
     Constants.TIME = {
         DEFAULT_FORMAT: "Do MMM Y HH:mm"
     };

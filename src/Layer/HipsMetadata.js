@@ -17,10 +17,11 @@
  * along with MIZAR. If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
 
-define(["jquery", "../Utils/Constants", "../Gui/dialog/ErrorDialog"], function(
+define(["jquery", "../Utils/Constants", "../Gui/dialog/ErrorDialog", "../Utils/Proxy"], function(
     $,
     Constants,
-    ErrorDialog
+    ErrorDialog,
+    Proxy
 ) {
     /**
      * @namespace
@@ -661,7 +662,12 @@ define(["jquery", "../Utils/Constants", "../Gui/dialog/ErrorDialog"], function(
             //Fix for version=1.2
             if (key === "creator_did" && hipsMetadata.hips_version === "1.2") {
                 hipsMetadata.creator_did = hipsMetadata.publisher_did;
-                ErrorDialog.open(Constants.LEVEL.WARNING, "Deprecated Hips version <b>1.2</b> for "+hipsMetadata.obs_title, "please update it - <i>use creator_did=publisher_did</i>");                   
+                ErrorDialog.open(
+                    Constants.LEVEL.WARNING,
+                    "Deprecated Hips version <b>1.2</b> for " +
+                        hipsMetadata.obs_title,
+                    "please update it - <i>use creator_did=publisher_did</i>"
+                );
             }
             //Fix for version=1.3
             else if (
@@ -669,13 +675,23 @@ define(["jquery", "../Utils/Constants", "../Gui/dialog/ErrorDialog"], function(
                 hipsMetadata.hips_version === "1.3"
             ) {
                 hipsMetadata.creator_did = hipsMetadata.publisher_did;
-                ErrorDialog.open(Constants.LEVEL.WARNING, "Deprecated Hips version <b>1.3</b> for "+hipsMetadata.obs_title, "please update it - <i>use creator_did=publisher_did</i>");                   
+                ErrorDialog.open(
+                    Constants.LEVEL.WARNING,
+                    "Deprecated Hips version <b>1.3</b> for " +
+                        hipsMetadata.obs_title,
+                    "please update it - <i>use creator_did=publisher_did</i>"
+                );
             } else if (
                 key === "obs_title" &&
                 hipsMetadata.hips_version === "1.3"
             ) {
                 hipsMetadata.obs_title = hipsMetadata.obs_collection;
-                ErrorDialog.open(Constants.LEVEL.WARNING, "Deprecated Hips version <b>1.3</b> for "+hipsMetadata.obs_title, "please update it - <i>use obs_title=obs_collection</i>");                   
+                ErrorDialog.open(
+                    Constants.LEVEL.WARNING,
+                    "Deprecated Hips version <b>1.3</b> for " +
+                        hipsMetadata.obs_title,
+                    "please update it - <i>use obs_title=obs_collection</i>"
+                );
             }
             //Fox for version 1.4
             else if (
@@ -683,13 +699,22 @@ define(["jquery", "../Utils/Constants", "../Gui/dialog/ErrorDialog"], function(
                 hipsMetadata.hips_version === "1.4"
             ) {
                 hipsMetadata.obs_title = hipsMetadata.obs_collection;
-                ErrorDialog.open(Constants.LEVEL.WARNING, "obs_title not found in v1.4 for "+hipsMetadata.obs_title, "use obs_title, please fix it");                   
+                ErrorDialog.open(
+                    Constants.LEVEL.WARNING,
+                    "obs_title not found in v1.4 for " + hipsMetadata.obs_title,
+                    "use obs_title, please fix it"
+                );
             } else if (
                 key === "creator_did" &&
                 hipsMetadata.hips_version === "1.4"
             ) {
                 hipsMetadata.creator_did = hipsMetadata.publisher_did;
-                ErrorDialog.open(Constants.LEVEL.WARNING, "creator_did not found in v1.4 for "+hipsMetadata.obs_title, "use creator_did, please fix it");                   
+                ErrorDialog.open(
+                    Constants.LEVEL.WARNING,
+                    "creator_did not found in v1.4 for " +
+                        hipsMetadata.obs_title,
+                    "use creator_did, please fix it"
+                );
             }
             /// very old version
             else if (
@@ -697,13 +722,23 @@ define(["jquery", "../Utils/Constants", "../Gui/dialog/ErrorDialog"], function(
                 !hipsMetadata.hasOwnProperty("hips_version")
             ) {
                 hipsMetadata.hips_version = "very old one";
-                ErrorDialog.open(Constants.LEVEL.WARNING, "Deprecated Hips version <b>unknown</b> for "+hipsMetadata.obs_title, "please update it - <i>use a version in your metadata</i>");
+                ErrorDialog.open(
+                    Constants.LEVEL.WARNING,
+                    "Deprecated Hips version <b>unknown</b> for " +
+                        hipsMetadata.obs_title,
+                    "please update it - <i>use a version in your metadata</i>"
+                );
             } else if (
                 key === "creator_did" &&
                 !hipsMetadata.hasOwnProperty("hips_version")
             ) {
                 hipsMetadata.creator_did = hipsMetadata.publisher_did;
-                ErrorDialog.open(Constants.LEVEL.WARNING, "Deprecated Hips version <b>unknown</b> for "+hipsMetadata.obs_title, "please update it - <i>use creator_did = pulisher_did</i>");
+                ErrorDialog.open(
+                    Constants.LEVEL.WARNING,
+                    "Deprecated Hips version <b>unknown</b> for " +
+                        hipsMetadata.obs_title,
+                    "please update it - <i>use creator_did = pulisher_did</i>"
+                );
             }
             //Error
             else {
@@ -751,9 +786,9 @@ define(["jquery", "../Utils/Constants", "../Gui/dialog/ErrorDialog"], function(
                         var format = hipsMetadata[key][val];
                         if (!distinctValue.hasOwnProperty(format)) {
                             valueNotRight.push(
-                                'The value "' +
+                                "The value \"" +
                                     hipsMetadata[key] +
-                                    '" of ' +
+                                    "\" of " +
                                     key +
                                     " (" +
                                     description +
@@ -766,9 +801,9 @@ define(["jquery", "../Utils/Constants", "../Gui/dialog/ErrorDialog"], function(
             } else {
                 if (!distinctValue.hasOwnProperty(hipsMetadata[key])) {
                     valueNotRight.push(
-                        'The value "' +
+                        "The value \"" +
                             hipsMetadata[key] +
-                            '" of ' +
+                            "\" of " +
                             key +
                             " (" +
                             description +
@@ -877,11 +912,11 @@ define(["jquery", "../Utils/Constants", "../Gui/dialog/ErrorDialog"], function(
         var url = baseUrl + "/properties";
         var properties = $.ajax({
             type: "GET",
-            url: baseUrl + "/properties",
+            url: Proxy.allowRequest(baseUrl + "/properties"),
             async: false,
-            beforeSend(xhr) {
+            beforeSend:function(xhr) {
                 xhr.setRequestHeader("Accept", "text/plain");
-            }, 
+            }
         }).responseText;
         if (typeof properties === "undefined") {
             throw new ReferenceError(
@@ -905,7 +940,7 @@ define(["jquery", "../Utils/Constants", "../Gui/dialog/ErrorDialog"], function(
         var currentLine = "";
         $.each(lines, function(i, value) {
             //check if it is a comment line
-            if (!/^\s*(\#|\!|$)/.test(value)) {
+            if (!/^\s*(#|!|$)/.test(value)) {
                 // line is whitespace or first non-whitespace character is '#' or '!'
                 value = value.replace(/^\s*/, ""); // remove space at start of line
                 currentLine += value;
@@ -947,6 +982,7 @@ define(["jquery", "../Utils/Constants", "../Gui/dialog/ErrorDialog"], function(
      */
     var HipsMetadata = function(baseUrl) {
         if (baseUrl == null) {
+            // nothing to do
         } else if (typeof baseUrl === "string") {
             this.baseUrl = baseUrl;
             this.hipsMetadata = _loadHipsProperties.call(this, baseUrl);

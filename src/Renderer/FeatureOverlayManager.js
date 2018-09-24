@@ -35,7 +35,7 @@
  * along with GlobWeb. If not, see <http://www.gnu.org/licenses/>.
  ***************************************/
 
-define(["./RenderContext", "./LineStringRenderable"], function(RenderContext) {
+define(["./RenderContext", "./LineStringRenderer","./LineStringRenderable"], function(RenderContext, LineStringRenderer) {
     /**************************************************************************************************************/
 
     /**

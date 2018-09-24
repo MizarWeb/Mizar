@@ -126,23 +126,23 @@ define([
             if (element.nodeType == 1) {
                 nodeName = element.localName;
                 switch (nodeName) {
-                    case "DESCRIPTION":
-                        description = new Description(element);
-                        break;
-                    case "INFO":
-                        infos.push(new Info(element));
-                        break;
-                    case "COOSYS":
-                        coosyss.push(new Coosys());
-                        break;
-                    case "GROUP":
-                        groups.push(new Group());
-                        break;
-                    case "PARAM":
-                        params.push(new Param());
-                        break;
-                    default:
-                        end = i;
+                case "DESCRIPTION":
+                    description = new Description(element);
+                    break;
+                case "INFO":
+                    infos.push(new Info(element));
+                    break;
+                case "COOSYS":
+                    coosyss.push(new Coosys());
+                    break;
+                case "GROUP":
+                    groups.push(new Group());
+                    break;
+                case "PARAM":
+                    params.push(new Param());
+                    break;
+                default:
+                    end = i;
                 }
             }
             if (end != 0) {
@@ -161,34 +161,34 @@ define([
             if (element.nodeType == 1) {
                 nodeName = element.localName;
                 switch (nodeName) {
-                    case "LINK":
-                        if (
-                            seqElts.hasOwnProperty("TABLE") ||
+                case "LINK":
+                    if (
+                        seqElts.hasOwnProperty("TABLE") ||
                             seqElts.hasOwnProperty("RESOURCE")
-                        ) {
-                            seqElts.LINKS = seqLinks;
-                            seqElts.INFOS = seqInfos;
-                            abstractSequences.push(seqElts);
-                            seqElts = {};
-                            seqLinks = [];
-                            seqInfos = [];
-                        } else {
-                            seqLinks.push(new Link(element));
-                        }
-                        break;
-                    case "TABLE":
-                        seqElts.TABLE = new Table(element);
-                        break;
-                    case "RESOURCE":
-                        seqElts.RESOURCE = new Resource(element);
-                        break;
-                    case "INFO":
-                        seqInfos.push(new Info(element));
-                        break;
-                    default:
-                        this.getCache().addWarning(
-                            "Unkknown element " + nodeName + " in RESOURCE node"
-                        );
+                    ) {
+                        seqElts.LINKS = seqLinks;
+                        seqElts.INFOS = seqInfos;
+                        abstractSequences.push(seqElts);
+                        seqElts = {};
+                        seqLinks = [];
+                        seqInfos = [];
+                    } else {
+                        seqLinks.push(new Link(element));
+                    }
+                    break;
+                case "TABLE":
+                    seqElts.TABLE = new Table(element);
+                    break;
+                case "RESOURCE":
+                    seqElts.RESOURCE = new Resource(element);
+                    break;
+                case "INFO":
+                    seqInfos.push(new Info(element));
+                    break;
+                default:
+                    this.getCache().addWarning(
+                        "Unkknown element " + nodeName + " in RESOURCE node"
+                    );
                 }
             }
         }

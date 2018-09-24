@@ -68,7 +68,7 @@ define([
     /**
      * Ceates lines from the set of points
      * @param {Object} pois pois
-     * @returns {string} the geometry 
+     * @returns {string} the geometry
      */
     function _createLines(pois) {
         var geom = [];
@@ -83,8 +83,8 @@ define([
 
     /**
      * ExtractDates from the set of points
-     * @param {Object} Set of points 
-     * @returns Object range date as [date min, date max]     
+     * @param {Object} Set of points
+     * @returns Object range date as [date min, date max]
      */
     function _extractDates(pois) {
         var dateMin = pois[0][2];
@@ -94,59 +94,70 @@ define([
 
     /**
      * Computes the trajectory.
-     * @param {Layer} mizarLayer 
+     * @param {Layer} mizarLayer
      */
     var computePositions = function(mizarLayer) {
-        Utils.requestUrl(url, 'text', 'plain/text', null, function(response){
-            var pois = _parseFile(response);
-            var geom = _createLines(pois);
-            var dates = _extractDates(pois);
+        Utils.requestUrl(
+            url,
+            "text",
+            "plain/text",
+            null,
+            function(response) {
+                var pois = _parseFile(response);
+                var geom = _createLines(pois);
+                var dates = _extractDates(pois);
 
-            var style = new FeatureStyle({
-                iconUrl: "css/images/lander.png",
-                strokeColor: FeatureStyle.fromStringToColor("white"),
-                fillColor: FeatureStyle.fromStringToColor("white")
-            });
+                var style = new FeatureStyle({
+                    iconUrl: "css/images/lander.png",
+                    strokeColor: FeatureStyle.fromStringToColor("white"),
+                    fillColor: FeatureStyle.fromStringToColor("white")
+                });
 
-            var trajectory = createTrajectory(
-                mizarLayer,
-                Constants.GEOMETRY.MultiLineString,
-                mizarLayer.name,
-                { trajectory: geom, color: "white", dates: dates }
-            );
-            // Create feature collection
-            poiFeatureCollection = {
-                type: "FeatureCollection",
-                crs: {
-                    type: "name",
-                    properties: {
-                        name: "IAU2000:30101"
-                    }
-                },
-                features: [
-                    trajectory,
-                    {
-                        type: "Feature",
+                var trajectory = createTrajectory(
+                    mizarLayer,
+                    Constants.GEOMETRY.MultiLineString,
+                    mizarLayer.name,
+                    { trajectory: geom, color: "white", dates: dates }
+                );
+                // Create feature collection
+                poiFeatureCollection = {
+                    type: "FeatureCollection",
+                    crs: {
+                        type: "name",
                         properties: {
-                            title: "Landing site",
-                            style: style,
-                            thumbnail:
-                                "http://space.skyrocket.de/img_sat/team-indus__1.jpg",
-                            abstract:
-                                'The <a href="http://www.teamindus.in/mission/" class="selectValue">Team Indus Lunar Lander</a> is a lunar lander developed by the Indian nonprofit organisation Team Indus. It is an entry to win the Google Lunar XPRIZE (GLXP).<p>The Team Indus Lunar Lander is a lunar lander, which has a propulsion system to enable itself to leave earth orbit and to enter a trajectory to the moon. After landing it will deploy the Indian ECA (Ek Choti si Asha) rover, which will move to a distance of at least 500 m to satisfy the rules of the GLXP. <p>The propulsion system is bipropellant, consisting of a single 440 N prime thruster and sixteen 22 N thrusters. <p>Once deployed from the rocket, the spacecraft will orbit the earth twice. In a manoeuvre called the trans-lunar injection by which it will successfully leave Earth’s orbit, the rocket engines will be fired to set course to the Moon. At this point, the craft will be traveling at the maximum speed of 10.5 km/s—almost 39600 km/h for the distance of 384400 km within 10 days. When roughly 100 km from the Moon, it will perform another manoeuvre called the Lunar Orbit Capture to eventually settle into a parking orbit. By now, the craft will have decelerated to 800 m/s. These extreme variations in speed will consume most of the spacecraft’s fuel.The landing phase of the mission will be initiated at a 100 km × 100 km orbit around the Moon. The entire process will be controlled by software onboard the spacecraft using data collected from laser sensors. These sensors will detect and analysis the surface, orienting the craft accordingly. Considering that manual control of the craft at this point is impossible, automation and preprogramming is the only way to go. At a time optimised to coincide with the lunar dawn on Mare Imbrium, the spacecraft thrusters will be fired again to decrease the orbit for a soft touchdown.The Team Indus Lunar Lander is a lunar lander developed by the Indian nonprofit organisation Team Indus. It is an entry to win the Google Lunar XPRIZE (GLXP).The Team Indus Lunar Lander is a lunar lander, which has a propulsion system to enable itself to leave earth orbit and to enter a trajectory to the moon. After landing it will deploy the Indian ECA (Ek Choti si Asha) rover, which will move to a distance of at least 500 m to satisfy the rules of the GLXP.The propulsion system is bipropellant, consisting of a single 440 N prime thruster and sixteen 22 N thrusters.Once deployed from the rocket, the spacecraft will orbit the earth twice. In a manoeuvre called the trans-lunar injection by which it will successfully leave Earth’s orbit, the rocket engines will be fired to set course to the Moon. At this point, the craft will be traveling at the maximum speed of 10.5 km/s—almost 39600 km/h for the distance of 384400 km within 10 days. When roughly 100 km from the Moon, it will perform another manoeuvre called the Lunar Orbit Capture to eventually settle into a parking orbit. By now, the craft will have decelerated to 800 m/s. These extreme variations in speed will consume most of the spacecraft’s fuel.The landing phase of the mission will be initiated at a 100 km × 100 km orbit around the Moon. The entire process will be controlled by software onboard the spacecraft using data collected from laser sensors. These sensors will detect and analysis the surface, orienting the craft accordingly. Considering that manual control of the craft at this point is impossible, automation and preprogramming is the only way to go. At a time optimised to coincide with the lunar dawn on <a href="https://en.wikipedia.org/wiki/Mare_Imbrium" class="selectValue">Mare Imbrium</a>, the spacecraft thrusters will be fired again to decrease the orbit for a soft touchdown.'
-                        },
-                        geometry: {
-                            type: "Point",
-                            coordinates: [-25.680079147, 29.5212266285]
+                            name: "IAU2000:30101"
                         }
-                    }
-                ]
-            };
+                    },
+                    features: [
+                        trajectory,
+                        {
+                            type: "Feature",
+                            properties: {
+                                title: "Landing site",
+                                style: style,
+                                thumbnail:
+                                    "http://space.skyrocket.de/img_sat/team-indus__1.jpg",
+                                abstract:
+                                    "The <a href=\"http://www.teamindus.in/mission/\" class=\"selectValue\">Team Indus Lunar Lander</a> is a lunar lander developed by the Indian nonprofit organisation Team Indus. It is an entry to win the Google Lunar XPRIZE (GLXP).<p>The Team Indus Lunar Lander is a lunar lander, which has a propulsion system to enable itself to leave earth orbit and to enter a trajectory to the moon. After landing it will deploy the Indian ECA (Ek Choti si Asha) rover, which will move to a distance of at least 500 m to satisfy the rules of the GLXP. <p>The propulsion system is bipropellant, consisting of a single 440 N prime thruster and sixteen 22 N thrusters. <p>Once deployed from the rocket, the spacecraft will orbit the earth twice. In a manoeuvre called the trans-lunar injection by which it will successfully leave Earth’s orbit, the rocket engines will be fired to set course to the Moon. At this point, the craft will be traveling at the maximum speed of 10.5 km/s—almost 39600 km/h for the distance of 384400 km within 10 days. When roughly 100 km from the Moon, it will perform another manoeuvre called the Lunar Orbit Capture to eventually settle into a parking orbit. By now, the craft will have decelerated to 800 m/s. These extreme variations in speed will consume most of the spacecraft’s fuel.The landing phase of the mission will be initiated at a 100 km × 100 km orbit around the Moon. The entire process will be controlled by software onboard the spacecraft using data collected from laser sensors. These sensors will detect and analysis the surface, orienting the craft accordingly. Considering that manual control of the craft at this point is impossible, automation and preprogramming is the only way to go. At a time optimised to coincide with the lunar dawn on Mare Imbrium, the spacecraft thrusters will be fired again to decrease the orbit for a soft touchdown.The Team Indus Lunar Lander is a lunar lander developed by the Indian nonprofit organisation Team Indus. It is an entry to win the Google Lunar XPRIZE (GLXP).The Team Indus Lunar Lander is a lunar lander, which has a propulsion system to enable itself to leave earth orbit and to enter a trajectory to the moon. After landing it will deploy the Indian ECA (Ek Choti si Asha) rover, which will move to a distance of at least 500 m to satisfy the rules of the GLXP.The propulsion system is bipropellant, consisting of a single 440 N prime thruster and sixteen 22 N thrusters.Once deployed from the rocket, the spacecraft will orbit the earth twice. In a manoeuvre called the trans-lunar injection by which it will successfully leave Earth’s orbit, the rocket engines will be fired to set course to the Moon. At this point, the craft will be traveling at the maximum speed of 10.5 km/s—almost 39600 km/h for the distance of 384400 km within 10 days. When roughly 100 km from the Moon, it will perform another manoeuvre called the Lunar Orbit Capture to eventually settle into a parking orbit. By now, the craft will have decelerated to 800 m/s. These extreme variations in speed will consume most of the spacecraft’s fuel.The landing phase of the mission will be initiated at a 100 km × 100 km orbit around the Moon. The entire process will be controlled by software onboard the spacecraft using data collected from laser sensors. These sensors will detect and analysis the surface, orienting the craft accordingly. Considering that manual control of the craft at this point is impossible, automation and preprogramming is the only way to go. At a time optimised to coincide with the lunar dawn on <a href=\"https://en.wikipedia.org/wiki/Mare_Imbrium\" class=\"selectValue\">Mare Imbrium</a>, the spacecraft thrusters will be fired again to decrease the orbit for a soft touchdown."
+                            },
+                            geometry: {
+                                type: "Point",
+                                coordinates: [-25.680079147, 29.5212266285]
+                            }
+                        }
+                    ]
+                };
 
-            mizarLayer.addFeatureCollection(poiFeatureCollection);
-        }, function(err) {
-            ErrorDialog.open(Constants.LEVEL.ERROR, 'Failed ot request '+url, err);
-        });
+                mizarLayer.addFeatureCollection(poiFeatureCollection);
+            },
+            function(err) {
+                ErrorDialog.open(
+                    Constants.LEVEL.ERROR,
+                    "Failed ot request " + url,
+                    err
+                );
+            }
+        );
     };
 
     /*
@@ -214,7 +225,8 @@ define([
      * @param {Object} configuration - Configuration options
      * @param {string} configuration.url - Url providing the trajectory
      * @param {string} configuration.interval - time in ms where the trajectory is reloaded
-     */    
+     */
+
     TrajectoryProvider.prototype.loadFiles = function(layer, configuration) {
         data = configuration;
         interval = configuration.interval ? configuration.interval : 60000;
@@ -225,7 +237,8 @@ define([
     /**
      * @function handleFeatures
      * @memberof TrajectoryProvider#
-     */        
+     */
+
     TrajectoryProvider.prototype.handleFeatures = function(layer) {
         computePositions(layer);
         setInterval(function() {

@@ -1,13 +1,13 @@
 ({
     name: "../build/almond",
-    include: ['Mizar'],
+    include: ["Mizar"],
     out: "../Mizar.min",
     optimize: "none",
     api_version:"TO BE DEFINED",
-    mainConfigFile: '../src/rconfig.js',
+    mainConfigFile: "../src/rconfig.js",
     wrap: {
-        startFile: '../build/start.frag',
-        endFile: '../build/end.frag'
+        startFile: "../build/start.frag",
+        endFile: "../build/end.frag"
     },
     preserveLicenseComments: false,
     onBuildRead: function (moduleName, path, contents) {
@@ -26,4 +26,4 @@
         warnings: true,
         mangle: true
     }
-})
+});

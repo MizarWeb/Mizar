@@ -35,7 +35,7 @@
  * along with GlobWeb. If not, see <http://www.gnu.org/licenses/>.
  ***************************************/
 
-define(function() {
+define(["../Utils/Constants", "../Gui/dialog/ErrorDialog"],function(Constants, ErrorDialog) {
     var PolygonCutter = {};
 
     var _pointLineDistance = function(p, a, b) {
@@ -153,7 +153,7 @@ define(function() {
         }
         //intersections.length = intersections.length & (~1);
         if (intersections.length & 1) {
-            console.error("error!");
+            ErrorDialog.open(Constants.LEVEL.DEBUG, "PolygonCutter.js", "error!");
             intersections.length = intersections.length & ~1;
         }
 

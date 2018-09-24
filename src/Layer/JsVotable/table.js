@@ -104,31 +104,31 @@ define([
             if (element.nodeType == 1) {
                 var nodeName = element.localName;
                 switch (nodeName) {
-                    case "DESCRIPTION":
-                        description = new Description(element);
-                        break;
-                    case "FIELD":
-                        fields.push(new Field(element));
-                        break;
-                    case "PARAM":
-                        params.push(new Param(element));
-                        break;
-                    case "GROUP":
-                        groups.push(new Group(element));
-                        break;
-                    case "LINK":
-                        links.push(new Link(element));
-                        break;
-                    case "DATA":
-                        data = new Data(element);
-                        break;
-                    case "INFO":
-                        infos.push(new Info(element));
-                        break;
-                    default:
-                        this.getCache().addWarning(
-                            "unknown element " + nodeName + " in Table node"
-                        );
+                case "DESCRIPTION":
+                    description = new Description(element);
+                    break;
+                case "FIELD":
+                    fields.push(new Field(element));
+                    break;
+                case "PARAM":
+                    params.push(new Param(element));
+                    break;
+                case "GROUP":
+                    groups.push(new Group(element));
+                    break;
+                case "LINK":
+                    links.push(new Link(element));
+                    break;
+                case "DATA":
+                    data = new Data(element);
+                    break;
+                case "INFO":
+                    infos.push(new Info(element));
+                    break;
+                default:
+                    this.getCache().addWarning(
+                        "unknown element " + nodeName + " in Table node"
+                    );
                 }
             }
         }

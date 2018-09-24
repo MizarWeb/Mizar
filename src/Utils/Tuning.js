@@ -35,7 +35,7 @@
  * along with GlobWeb. If not, see <http://www.gnu.org/licenses/>.
  ***************************************/
 
-define(function() {
+define(["../Utils/Constants","../Gui/dialog/ErrorDialog"],function(Constants, ErrorDialog) {
     /**
      @name Tuning
      @class
@@ -98,12 +98,12 @@ define(function() {
         if (isIndex) {
             completeName = name += index;
         }
-        console.log("Elapsed [" + completeName + "] = " + this[completeName]);
+        ErrorDialog.open(Constants.LEVEL.DEBUG, "Elapsed [" + completeName + "] = " + this[completeName]);
 
         if (!isIndex) {
             if (typeof this["sum" + name] !== "undefined") {
                 var avg = this["sum" + name] / this["nb" + name];
-                console.log(
+                ErrorDialog.open(Constants.LEVEL.DEBUG,
                     "Average [" +
                         name +
                         "] = " +

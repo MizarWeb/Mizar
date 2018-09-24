@@ -17,12 +17,12 @@
  * along with MIZAR. If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
 
- /**
+/**
  * This package allow to call a registry of layers so that to create {@link Layer layers} from this registry. For this,
  * a set of handler is defined according to a chain of responsibility pattern.
  * <ul>
  *     <li>{@link module:Registry.LayerRegistryHandler LayerRegistryHandler}: Creates a simple {@link Layer} from {@link LayerFactory}</li>
- *     <li>{@link module:Registry.PendingLayersRegistryHandler PendingLayersRegistryHandler} : Create a pool of pending layer description. 
+ *     <li>{@link module:Registry.PendingLayersRegistryHandler PendingLayersRegistryHandler} : Create a pool of pending layer description.
  * In some cases, layer must declare in a certain order. To avoid an error, some layers has set as pending the time to have the required layer</li>
  *     <li>{@link module:Registry.WCSServerRegistryHandler WCSServerRegistryHandler} : Creates {@link WCSElevationLayer WCS layers} from {@link WCSServer}</li>
  *     <li>{@link module:Registry.WMSServerRegistryHandler WMSServerRegistryHandler} : Creates {@link WMSLayer WMS layers} from {@link WMSServer}</li>
@@ -34,13 +34,19 @@
  * @module Registry
  * @implements {RegistryHandler}
  */
- define([
+define([
     "../Utils/Utils",
     "./AbstractRegistryHandler",
     "../Layer/LayerFactory",
     "../Utils/Constants",
     "../Gui/dialog/ErrorDialog"
-], function(Utils, AbstractRegistryHandler, LayerFactory, Constants, ErrorDialog) {
+], function(
+    Utils,
+    AbstractRegistryHandler,
+    LayerFactory,
+    Constants,
+    ErrorDialog
+) {
     /**
      * @class
      * This handler processes the layerdescription as a simple {@link LayerFactory}
@@ -62,8 +68,9 @@
 
     /**
      * @function handleRequest
-     * @memberof LayerRegistryHandler#     
-     */    
+     * @memberof LayerRegistryHandler#
+     */
+
     LayerRegistryHandler.prototype.handleRequest = function(
         layerDescription,
         callback,
@@ -81,7 +88,11 @@
             } else if (fallback) {
                 fallback(e);
             } else {
-                ErrorDialog.open(Constants.LEVEL.ERROR,"Unknown error in LayerRegistryHanlder", e);
+                ErrorDialog.open(
+                    Constants.LEVEL.DEBUG,
+                    "Unknown error in LayerRegistryHanlder",
+                    e
+                );
             }
         }
     };

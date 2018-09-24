@@ -16,7 +16,8 @@
  * You should have received a copy of the GNU General Public License
  * along with MIZAR. If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
-define(["./OpenSearchParam", "./OpenSearchUtils"], function(
+define(["jquery","./OpenSearchParam", "./OpenSearchUtils"], function(
+    $,
     OpenSearchParam,
     OpenSearchUtils
 ) {
@@ -63,7 +64,7 @@ define(["./OpenSearchParam", "./OpenSearchUtils"], function(
         }
         this.type = typeValue;
         this.template = OpenSearchUtils.getAttributeValue(urlJson, "template");
-        listParameters = urlJson.Parameter;
+        var listParameters = urlJson.Parameter;
         if (typeof listParameters.length !== "undefined") {
             for (var i = 0; i < listParameters.length; i++) {
                 var param = new OpenSearchParam(listParameters[i]);
@@ -131,8 +132,8 @@ define(["./OpenSearchParam", "./OpenSearchUtils"], function(
      */
     OpenSearchForm.prototype.updateFromGUI = function() {
         for (var i = 0; i < this.parameters.length; i++) {
-            param = this.parameters[i];
-            val = $("#p_" + param.name).val();
+            var param = this.parameters[i];
+            var val = $("#p_" + param.name).val();
             if (val !== "") {
                 param.currentValue = val;
             } else {

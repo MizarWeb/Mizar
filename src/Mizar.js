@@ -38,7 +38,8 @@ define([
     "./Utils/Constants",
     "./Gui/dialog/ErrorDialog",
     "./Layer/HipsMetadata",
-    "./Time/Time"
+    "./Time/Time",
+    "./Utils/Proxy"
 ], function(
     $,
     _,
@@ -56,7 +57,8 @@ define([
     Constants,
     ErrorDialog,
     HipsMetadata,
-    Time
+    Time,
+    Proxy
 ) {
     /**
      * mizarMode:toggle.<br/>
@@ -119,22 +121,22 @@ define([
      * Time travel configuration
      * @typedef {Object} TimeTravel_position_configuration
      * @property {string} [element = timeTravelDiv] - tracker div element
-     */ 
+     */
 
     /**
      * Position tracker configuration
      * @typedef {Object} AbstractTracker_position_configuration
      * @property {string} [element = posTracker] - tracker div element
      * @property {string}  [position = bottom] - tracker position in the GUI
-     */     
-    
+     */
+
     /**
      * Elevation tracker configuration
      * @typedef {Object} AbstractTracker_elevation_configuration
      * @property {string} [element = elevTracker] - tracker div element
      * @property {string}  [position = bottom] - tracker position in the GUI
      * @property {Layer} [elevationLayer] - elevationLayer
-     */     
+     */
 
     /**
      * Mizar configuration
@@ -150,7 +152,7 @@ define([
      * @property {AbstractContext.skyContext} [skyContext] - Sky context configuration
      * @property {AbstractContext.planetContext} [planetContext] - Planet context configuration
      * @property {AbstractContext.groundContext} [groundContext] - Ground context configuration
-     */     
+     */
 
     /**
      * @name Mizar
@@ -162,10 +164,12 @@ define([
      * @constructor
      */
     var Mizar = function(options) {
-        Event.prototype.constructor.call(this);
+        Event.prototype.constructor.call(this);        
 
         _checkConfiguration(options);
         this.options = _createConfiguration(options);
+
+        ErrorDialog.setDebug(this.options.debug ? this.options.debug : false);
 
         // Init all factories
         /**
@@ -182,17 +186,11 @@ define([
          */
         this.LayerFactory = LayerFactory;
 
-        // Set proxy parameters to Layer factory
-        this.LayerFactory.proxy = {
-            url: this.options.configuration.proxyUrl,
-            // Sets to false when proxyUse is undefined or null
-            use:
-                this.options.configuration.proxyUse == null
-                    ? false
-                    : this.options.configuration.proxyUse
-        };
-
-        proxy = this.LayerFactory.proxy;
+        // Proxy settings
+        Proxy.setProxyUse(
+            this.options.configuration.proxyUse == null ? false : this.options.configuration.proxyUse
+        );
+        Proxy.setProxyUrl(this.options.configuration.proxyUrl);
 
         /**
          * Creates an {@link module:Animation.AnimationFactory animation}
@@ -266,7 +264,7 @@ define([
     Mizar.VERSION = API_VERSION;
 
     /**
-     * List of supported values for {@link ANIMATION animation}* 
+     * List of supported values for {@link ANIMATION animation}*
      * @name ANIMATION
      * @memberof Mizar#
      * @see {@link module:Animation animation package} for further information.
@@ -277,7 +275,7 @@ define([
      * List of supported values for {@link LAYER layer}
      * @name LAYER
      * @memberof Mizar#
-     * @see {@link module:Layer layer package} for further information.     
+     * @see {@link module:Layer layer package} for further information.
      */
     Mizar.LAYER = Constants.LAYER;
 
@@ -285,7 +283,8 @@ define([
      * List of supported values for {@link INFORMATION_TYPE information}
      * @name INFORMATION_TYPE
      * @memberof Mizar#
-     */    
+     */
+
     Mizar.INFORMATION_TYPE = Constants.INFORMATION_TYPE;
 
     /**
@@ -299,7 +298,7 @@ define([
      * List of supported values for {@link NAVIGATION navigation}
      * @name NAVIGATION
      * @memberof Mizar#
-     * @see {@link module:Navigation navigation package} for further information.          
+     * @see {@link module:Navigation navigation package} for further information.
      */
     Mizar.NAVIGATION = Constants.NAVIGATION;
 
@@ -307,7 +306,7 @@ define([
      * List of supported values for {@link CONTEXT context}
      * @name CONTEXT
      * @memberof Mizar#
-     * @see {@link module:Context context package} for further information.               
+     * @see {@link module:Context context package} for further information.
      */
     Mizar.CONTEXT = Constants.CONTEXT;
 
@@ -315,7 +314,7 @@ define([
      * List of supported values for {@link PROJECTION projection}
      * @name PROJECTION
      * @memberof Mizar#
-     * @see {@link module:Projection projection package} for further information.               
+     * @see {@link module:Projection projection package} for further information.
      */
     Mizar.PROJECTION = Constants.PROJECTION;
 
@@ -323,14 +322,14 @@ define([
      * List of supported values for {@link CRS coordinate reference system}
      * @name CRS
      * @memberof Mizar#
-     * @see {@link module:Crs coordinate system package} for further information.               
+     * @see {@link module:Crs coordinate system package} for further information.
      */
     Mizar.CRS = Constants.CRS;
 
     /**
      * List of supported values for {@link CRS_TO_CONTEXT crs/context mapping}
      * @name CRS_TO_CONTEXT
-     * @memberof Mizar#     
+     * @memberof Mizar#
      */
     Mizar.CRS_TO_CONTEXT = Constants.CRS_TO_CONTEXT;
 
@@ -359,7 +358,7 @@ define([
      * List of supported values for {@link PROVIDER provider}
      * @name PROVIDER
      * @memberof Mizar#
-     * @see {@link module:Provider provider package} for further information.                    
+     * @see {@link module:Provider provider package} for further information.
      */
     Mizar.PROVIDER = Constants.PROVIDER;
 
@@ -371,7 +370,7 @@ define([
     Mizar.EVENT_MSG = Constants.EVENT_MSG;
 
     /**
-     * List of supported valaues for {@link TIME_STEP time step} 
+     * List of supported valaues for {@link TIME_STEP time step}
      * @name TIME_STEP
      * @memberof Mizar#
      */
@@ -473,7 +472,7 @@ define([
      * @param {AbstractContext} context - Target context
      * @param {Object} [options] - options management for the source context
      * @param {boolean} [options.mustBeDestroyed=false] - options management for the source context : destroy it
-     * @param {boolean} [options.mustBeHidden=false] - options management for the source context : hidden it    
+     * @param {boolean} [options.mustBeHidden=false] - options management for the source context : hidden it
      * @function _switchToContext
      * @memberof Mizar#
      * @private
@@ -531,8 +530,8 @@ define([
             context
                 .getNavigation()
                 .getRenderContext().cameraUpdateFunction = context
-                .getNavigation()
-                .update.bind(context.getNavigation());
+                    .getNavigation()
+                    .update.bind(context.getNavigation());
         }
         context.getNavigation().toViewMatrix(viewMatrix, fov, 2000, function() {
             if (context) {
@@ -543,7 +542,7 @@ define([
             }
             context.showAdditionalLayers();
             self.getActivatedContext().show();
-            self.publish(Constants.EVENT_MSG.MIZAR_MODE_TOGGLE, context);            
+            self.publish(Constants.EVENT_MSG.MIZAR_MODE_TOGGLE, context);
             self.getActivatedContext().refresh();
             if (self.getRenderContext().viewMatrix[0] !== "undefined") {
                 self.getActivatedContext()
@@ -562,8 +561,8 @@ define([
      * @fires Context#baseLayersReady
      * @fires Context#baseLayersError
      * @fires Context#startBackgroundLoad
-     * @fires Context#endBackgroundLoad 
-     * @fires Context#features:added      
+     * @fires Context#endBackgroundLoad
+     * @fires Context#features:added
      * @private
      */
     function _disableAtmosphere() {
@@ -585,8 +584,8 @@ define([
      * @fires Context#baseLayersReady
      * @fires Context#baseLayersError
      * @fires Context#startBackgroundLoad
-     * @fires Context#endBackgroundLoad 
-     * @fires Context#features:added    
+     * @fires Context#endBackgroundLoad
+     * @fires Context#features:added
      * @private
      */
     function _enableAtmosphere() {
@@ -609,8 +608,8 @@ define([
      * @fires Context#baseLayersReady
      * @fires Context#baseLayersError
      * @fires Context#startBackgroundLoad
-     * @fires Context#endBackgroundLoad 
-     * @fires Context#features:added      
+     * @fires Context#endBackgroundLoad
+     * @fires Context#features:added
      * @private
      */
     function _switch2Dto3D() {
@@ -715,24 +714,6 @@ define([
     }
 
     /**
-     * Proxify an url
-     * @function _proxify
-     * @memberof Mizar#
-     * @param {string} url - URL
-     * @return {string} Url proxified
-     * @private
-     */
-    function _proxify(url) {
-        var proxifyUrl;
-        if (proxy.use === true) {
-            proxifyUrl = proxy.url + url;
-        } else {
-            proxifyUrl = url;
-        }
-        return proxifyUrl;
-    }
-
-    /**
      * Loads HIPS layers from passed service url
      * @function _checkHipsServiceIsAvailable
      * @memberof Mizar#
@@ -746,11 +727,18 @@ define([
         }
         var url = hipsServiceUrlArray.shift();
 
-        Utils.requestUrl( _proxify(url) + "/properties", 'text', 'text/plain', null, function(data){
-            callback(url);
-        }, function(err) {
-            _checkHipsServiceIsAvailable(hipsServiceUrlArray, callback);
-        });
+        Utils.requestUrl(
+            url + "/properties",
+            "text",
+            "text/plain",
+            null,
+            function(data) {
+                callback(url);
+            },
+            function(err) {
+                _checkHipsServiceIsAvailable(hipsServiceUrlArray, callback);
+            }
+        );
     }
 
     /**
@@ -769,48 +757,62 @@ define([
             options.hasOwnProperty("registry") &&
             options.registry.hasOwnProperty("hips")
         ) {
-
-            Utils.requestUrl(_proxify(options.registry.hips), 'json','application/json',null, function(hipsLayersJSON) {
-                _.each(
-                    hipsLayersJSON,
-                    function(hipsLayer) {
-                        var hipsServiceUrlArray = _getHipsServiceUrlArray(
-                            hipsLayer
-                        );
-                        var hipsUrl = _checkHipsServiceIsAvailable(
-                            hipsServiceUrlArray,
-                            function(hipsServiceUrl) {
-                                if (typeof hipsServiceUrl === "undefined") {
-                                    var text = "";
-                                    if (
-                                        typeof hipsLayer.obs_title ===
-                                        "undefined"
-                                    ) {
-                                        text =
-                                            "with ID <b>" +
-                                            hipsLayer.ID +
-                                            "</b>";
-                                    } else {
-                                        text =
-                                            "with title <b>" +
-                                            hipsLayer.obs_title +
-                                            "</b>";
+            Utils.requestUrl(
+                options.registry.hips,
+                "json",
+                "application/json",
+                null,
+                function(hipsLayersJSON) {
+                    _.each(
+                        hipsLayersJSON,
+                        function(hipsLayer) {
+                            var hipsServiceUrlArray = _getHipsServiceUrlArray(
+                                hipsLayer
+                            );
+                            var hipsUrl = _checkHipsServiceIsAvailable(
+                                hipsServiceUrlArray,
+                                function(hipsServiceUrl) {
+                                    if (typeof hipsServiceUrl === "undefined") {
+                                        var text = "";
+                                        if (
+                                            typeof hipsLayer.obs_title ===
+                                            "undefined"
+                                        ) {
+                                            text =
+                                                "with ID <b>" +
+                                                hipsLayer.ID +
+                                                "</b>";
+                                        } else {
+                                            text =
+                                                "with title <b>" +
+                                                hipsLayer.obs_title +
+                                                "</b>";
+                                        }
+                                        ErrorDialog.open(
+                                            Constants.LEVEL.ERROR,
+                                            " Cannot add layer " + text,
+                                            "no mirror available"
+                                        );
+                                        return;
                                     }
-                                    ErrorDialog.open(Constants.LEVEL.ERROR, ' Cannot add layer '+text, "no mirror available");
-                                    return;
+                                    $.proxy(_createHips, Mizar)(
+                                        hipsLayer,
+                                        hipsServiceUrl
+                                    );
                                 }
-                                $.proxy(_createHips, Mizar)(
-                                    hipsLayer,
-                                    hipsServiceUrl
-                                );
-                            }
-                        );
-                    },
-                    Mizar
-                );
-            }, function(err) {
-                ErrorDialog.open(Constants.LEVEL.WARNING, 'Cannot connect to '+options.registry.hips, err.message);
-            });
+                            );
+                        },
+                        Mizar
+                    );
+                },
+                function(err) {
+                    ErrorDialog.open(
+                        Constants.LEVEL.WARNING,
+                        "Cannot connect to " + options.registry.hips,
+                        err.message
+                    );
+                }
+            );
         }
     }
 
@@ -839,7 +841,14 @@ define([
             var name = hipsLayer.obs_title
                 ? hipsLayer.obs_title
                 : hipsLayer.obs_collection;
-            ErrorDialog.open(Constants.LEVEL.ERROR, 'Hips layer '+name+' not valid for '+hipsLayer.hips_service_url, e.message);
+            ErrorDialog.open(
+                Constants.LEVEL.ERROR,
+                "Hips layer " +
+                    name +
+                    " not valid for " +
+                    hipsLayer.hips_service_url,
+                e.message
+            );
         }
     }
 
@@ -895,25 +904,25 @@ define([
     function _getContext(mode) {
         var context;
         switch (mode) {
-            case undefined:
-                context = this.getActivatedContext();
-                break;
-            case Mizar.CONTEXT.Sky:
-                context = this.getSkyContext();
-                break;
-            case Mizar.CONTEXT.Planet:
-                context = this.getPlanetContext();
-                break;
-            case Mizar.CONTEXT.Ground:
-                context = this.getGroundContext();
-                break;
-            default:
-                throw new RangeError(
-                    "The mode " +
+        case undefined:
+            context = this.getActivatedContext();
+            break;
+        case Mizar.CONTEXT.Sky:
+            context = this.getSkyContext();
+            break;
+        case Mizar.CONTEXT.Planet:
+            context = this.getPlanetContext();
+            break;
+        case Mizar.CONTEXT.Ground:
+            context = this.getGroundContext();
+            break;
+        default:
+            throw new RangeError(
+                "The mode " +
                         mode +
                         " is not allowed, A valid mode is included in the list CONTEXT",
-                    "Mizar.js"
-                );
+                "Mizar.js"
+            );
         }
         return context;
     }
@@ -941,7 +950,11 @@ define([
                 }
             }
         } catch (e) {
-            ErrorDialog.open(Constants.LEVEL.ERROR, 'Cannot get the context', e.message);
+            ErrorDialog.open(
+                Constants.LEVEL.ERROR,
+                "Cannot get the context",
+                e.message
+            );
         }
         return this.activatedContext;
     };
@@ -958,21 +971,24 @@ define([
     Mizar.prototype.setActivatedContext = function(contextMode) {
         var result;
         switch (contextMode) {
-            case Mizar.CONTEXT.Planet:
-                this.activatedContext = this.planetContext;
-                result = true;
-                break;
-            case Mizar.CONTEXT.Sky:
-                this.activatedContext = this.skyContext;
-                result = true;
-                break;
-            case Mizar.CONTEXT.Ground:
-                this.activatedContext = this.groundContext;
-                result = true;
-                break;
-            default:
-                result = false;
-                ErrorDialog.open(Constants.LEVEL.ERROR, 'Cannot set the context to '+contextMode);
+        case Mizar.CONTEXT.Planet:
+            this.activatedContext = this.planetContext;
+            result = true;
+            break;
+        case Mizar.CONTEXT.Sky:
+            this.activatedContext = this.skyContext;
+            result = true;
+            break;
+        case Mizar.CONTEXT.Ground:
+            this.activatedContext = this.groundContext;
+            result = true;
+            break;
+        default:
+            result = false;
+            ErrorDialog.open(
+                Constants.LEVEL.ERROR,
+                "Cannot set the context to " + contextMode
+            );
         }
     };
 
@@ -1120,27 +1136,31 @@ define([
             );
 
             switch (contextMode) {
-                case Mizar.CONTEXT.Sky:
-                    this.skyContext = ctx;
-                    _loadHIPSLayers(this, this.getOptions().configuration);
-                    break;
-                case Mizar.CONTEXT.Planet:
-                    this.planetContext = ctx;
-                    break;
-                case Mizar.CONTEXT.Ground:
-                    this.groundContext = ctx;
-                    break;
-                default:
-                    throw new RangeError(
-                        "Unknown contextMode '" + contextMode + "'",
-                        "Mizar.js"
-                    );
+            case Mizar.CONTEXT.Sky:
+                this.skyContext = ctx;
+                _loadHIPSLayers(this, this.getOptions().configuration);
+                break;
+            case Mizar.CONTEXT.Planet:
+                this.planetContext = ctx;
+                break;
+            case Mizar.CONTEXT.Ground:
+                this.groundContext = ctx;
+                break;
+            default:
+                throw new RangeError(
+                    "Unknown contextMode '" + contextMode + "'",
+                    "Mizar.js"
+                );
             }
             this.renderContext = ctx.getRenderContext();
             result = true;
         } catch (e) {
             result = false;
-            ErrorDialog.open(Constants.LEVEL.ERROR, 'Cannot create the context', e.message);
+            ErrorDialog.open(
+                Constants.LEVEL.ERROR,
+                "Cannot create the context",
+                e.message
+            );
         }
         return result;
     };
@@ -1156,8 +1176,8 @@ define([
      * @fires Context#baseLayersReady
      * @fires Context#baseLayersError
      * @fires Context#startBackgroundLoad
-     * @fires Context#endBackgroundLoad 
-     * @fires Context#features:added     
+     * @fires Context#endBackgroundLoad
+     * @fires Context#features:added
      */
     Mizar.prototype.toggleDimension = function() {
         var result;
@@ -1174,7 +1194,11 @@ define([
             result = true;
         } catch (e) {
             result = false;
-            ErrorDialog.open(Constants.LEVEL.ERROR, 'Cannot toggle the dimension', e.message);
+            ErrorDialog.open(
+                Constants.LEVEL.ERROR,
+                "Cannot toggle the dimension",
+                e.message
+            );
         }
         return result;
     };
@@ -1184,7 +1208,7 @@ define([
      * @param {AbstractContext} context - target context
      * @param {Object} [options] - options management for the source context
      * @param {boolean} [options.mustBeDestroyed=false] - options management for the source context
-     * @param {boolean} [options.mustBeHidden=false] - options management for the source context     
+     * @param {boolean} [options.mustBeHidden=false] - options management for the source context
      * @param {Function} callback - Call at the end of the toggle
      * @fires Mizar#mizarMode:toggle
      * @function toggleToContext
@@ -1202,7 +1226,11 @@ define([
             result = true;
         } catch (e) {
             result = false;
-            ErrorDialog.open(Constants.LEVEL.ERROR, 'Cannot toggle the context', e.message);
+            ErrorDialog.open(
+                Constants.LEVEL.ERROR,
+                "Cannot toggle the context",
+                e.message
+            );
         }
         return result;
     };
@@ -1277,7 +1305,11 @@ define([
             result = _getContext.call(this, mode).getLayers();
         } catch (e) {
             result = null;
-            ErrorDialog.open(Constants.LEVEL.ERROR, 'Cannot get the layers', e.message);
+            ErrorDialog.open(
+                Constants.LEVEL.ERROR,
+                "Cannot get the layers",
+                e.message
+            );
         }
         return result;
     };
@@ -1297,7 +1329,11 @@ define([
             result = true;
         } else {
             result = false;
-            ErrorDialog.open(Constants.LEVEL.ERROR, 'Cannot set the layer on the top', layerID+" does not exist");
+            ErrorDialog.open(
+                Constants.LEVEL.ERROR,
+                "Cannot set the layer on the top",
+                layerID + " does not exist"
+            );
         }
         return result;
     };
@@ -1331,7 +1367,11 @@ define([
             result = _getContext.call(this, mode).getLayerByID(layerID);
         } catch (e) {
             result = null;
-            ErrorDialog.open(Constants.LEVEL.ERROR, 'Cannot get the layer by ID', e.message);
+            ErrorDialog.open(
+                Constants.LEVEL.ERROR,
+                "Cannot get the layer by ID",
+                e.message
+            );
         }
         return result;
     };
@@ -1354,7 +1394,11 @@ define([
             result = _getContext.call(this, mode).getLayerByName(layerName);
         } catch (e) {
             result = null;
-            ErrorDialog.open(Constants.LEVEL.ERROR, 'Cannot get the layer by name', e.message);
+            ErrorDialog.open(
+                Constants.LEVEL.ERROR,
+                "Cannot get the layer by name",
+                e.message
+            );
         }
         return result;
     };
@@ -1437,7 +1481,11 @@ define([
             result = typeof removedLayer !== "undefined";
         } catch (e) {
             result = false;
-            ErrorDialog.open(Constants.LEVEL.ERROR, 'Cannot remove the layer', e.message);
+            ErrorDialog.open(
+                Constants.LEVEL.ERROR,
+                "Cannot remove the layer",
+                e.message
+            );
         }
         return result;
     };
@@ -1464,7 +1512,11 @@ define([
             result = typeof gwLayer !== "undefined";
         } catch (e) {
             result = false;
-            ErrorDialog.open(Constants.LEVEL.ERROR, 'Cannot set the background', e.message);
+            ErrorDialog.open(
+                Constants.LEVEL.ERROR,
+                "Cannot set the background",
+                e.message
+            );
         }
         return result;
     };
@@ -1490,7 +1542,11 @@ define([
             result = typeof gwLayer !== "undefined";
         } catch (e) {
             result = false;
-            ErrorDialog.open(Constants.LEVEL.ERROR, 'Cannot set the backgorund by ID', e.message);
+            ErrorDialog.open(
+                Constants.LEVEL.ERROR,
+                "Cannot set the backgorund by ID",
+                e.message
+            );
         }
         return result;
     };
@@ -1515,7 +1571,11 @@ define([
             result = typeof gwLayer !== "undefined";
         } catch (e) {
             result = false;
-            ErrorDialog.open(Constants.LEVEL.ERROR, 'Cannot set the base elevation', e.message);
+            ErrorDialog.open(
+                Constants.LEVEL.ERROR,
+                "Cannot set the base elevation",
+                e.message
+            );
         }
         return result;
     };
@@ -1555,7 +1615,11 @@ define([
             result = typeof gwLayer !== "undefined";
         } catch (e) {
             result = false;
-            ErrorDialog.open(Constants.LEVEL.ERROR, 'Cannot set the base elevation by ID', e.message);
+            ErrorDialog.open(
+                Constants.LEVEL.ERROR,
+                "Cannot set the base elevation by ID",
+                e.message
+            );
         }
         return result;
     };
@@ -1649,23 +1713,11 @@ define([
             result = true;
         } catch (e) {
             result = false;
-            ErrorDialog.open(Constants.LEVEL.ERROR, 'Cannot register the data provider', e.message);
-        }
-        return result;
-    };
-
-    /**
-     * Apply proxy to url if needed
-     * @function _getUrl
-     * @memberof Mizar#
-     * @private
-     */
-    Mizar.prototype._getUrl = function(url) {
-        var result;
-        if (this.options.configuration.proxyUse === true) {
-            result = this.options.configuration.proxyUrl + url;
-        } else {
-            result = url;
+            ErrorDialog.open(
+                Constants.LEVEL.ERROR,
+                "Cannot register the data provider",
+                e.message
+            );
         }
         return result;
     };
@@ -1683,7 +1735,11 @@ define([
             result = ServiceFactory.create(serviceName, options);
         } catch (e) {
             result = null;
-            ErrorDialog.open(Constants.LEVEL.ERROR, 'Cannot get the service by name', e.message);
+            ErrorDialog.open(
+                Constants.LEVEL.ERROR,
+                "Cannot get the service by name",
+                e.message
+            );
         }
         return result;
     };
@@ -1692,11 +1748,11 @@ define([
      * Creates and get Stats Object
      * @function createStats
      * @param {Object} options - Configuration properties for stats.
-     * @param {string|object} options.element div ID ou jquery element in wich the stats are written 
+     * @param {string|object} options.element div ID ou jquery element in wich the stats are written
      * @param {boolean} [options.verbose=false] detailled display when verbose=true
      * @return {Stats}
      * @memberof Mizar#
-     * @see {@link Stats} 
+     * @see {@link Stats}
      */
     Mizar.prototype.createStats = function(options) {
         var result;
@@ -1728,8 +1784,8 @@ define([
      * @fires Context#baseLayersReady
      * @fires Context#baseLayersError
      * @fires Context#startBackgroundLoad
-     * @fires Context#endBackgroundLoad 
-     * @fires Context#features:added 
+     * @fires Context#endBackgroundLoad
+     * @fires Context#features:added
      */
     Mizar.prototype.render = function() {
         var result;
@@ -1747,7 +1803,7 @@ define([
 
     /**
      * Disposes the Mizar's contexts (planet, sky and ground).
-     * 
+     *
      * Reset the {@link TileManager} and delete texture for each defined context.
      * @function dispose
      * @memberof Mizar#
@@ -1777,13 +1833,16 @@ define([
             layer._detach(ctx.globe);
             layer._attach(ctx.globe);
         } else {
-            ErrorDialog.open(Constants.LEVEL.WARNING, "Context not yet available");
+            ErrorDialog.open(
+                Constants.LEVEL.WARNING,
+                "Context not yet available"
+            );
         }
     };
 
     /**
      * Destroys Mizar
-     * 
+     *
      * @function destroy
      * @memberof Mizar#
      */

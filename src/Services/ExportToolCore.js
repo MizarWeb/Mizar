@@ -125,28 +125,28 @@ define([
 
                             var isIncluded = true;
                             switch (feature.geometry.type) {
-                                case Constants.GEOMETRY.Point:
+                            case Constants.GEOMETRY.Point:
+                                isIncluded = self.checkIfPointInBbox(
+                                    feature.geometry.coordinates,
+                                    self.coordinates
+                                );
+                                break;
+
+                            case Constants.GEOMETRY.Polygon:
+                                for (
+                                    var i = 0;
+                                    i < feature.geometry.coordinates.length;
+                                    i++
+                                ) {
+                                    if (!isIncluded) {
+                                        return;
+                                    }
                                     isIncluded = self.checkIfPointInBbox(
-                                        feature.geometry.coordinates,
+                                        feature.geometry.coordinates[0][i],
                                         self.coordinates
                                     );
-                                    break;
-
-                                case Constants.GEOMETRY.Polygon:
-                                    for (
-                                        var i = 0;
-                                        i < feature.geometry.coordinates.length;
-                                        i++
-                                    ) {
-                                        if (!isIncluded) {
-                                            return;
-                                        }
-                                        isIncluded = self.checkIfPointInBbox(
-                                            feature.geometry.coordinates[0][i],
-                                            self.coordinates
-                                        );
-                                    }
-                                    break;
+                                }
+                                break;
                             }
                             if (isIncluded) {
                                 // Adding layer information in order to rank data in archive
@@ -259,13 +259,15 @@ define([
                     };
                     image.onerror = function() {
                         imageNotFound = true;
-                        console.dir(
-                            "Error while retrieving image : " + this.imageName
-                        );
+                        ErrorDialog.open(Constants.LEVEL.WARNING, "Error while retrieving image : " + this.imageName);
                         numberOfImages--;
                         if (numberOfImages == 0) {
                             if (imageNotFound) {
-                                ErrorDialog.open(Constants.LEVEL.WARNING, 'Some images not found', 'Change zoom level and retry download');
+                                ErrorDialog.open(
+                                    Constants.LEVEL.WARNING,
+                                    "Some images not found",
+                                    "Change zoom level and retry download"
+                                );
                             }
 
                             self.downloadArchive(zip);

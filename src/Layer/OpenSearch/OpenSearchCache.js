@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with MIZAR. If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
-define([], function() {
+define(["../../Utils/Constants", "../../Gui/dialog/ErrorDialog"], function(Constants, ErrorDialog) {
     /**
      * @name OpenSearchCache
      * @class
@@ -27,25 +27,7 @@ define([], function() {
     var OpenSearchCache = function() {
         this.maxTiles = 120;
         this.tileArray = [];
-
-        this.debugMode = false;
-
-        this.debug("[New] " + this.getCacheStatus());
-    };
-
-    /**************************************************************************************************************/
-
-    /**
-     * Debug information
-     * @function debug
-     * @memberof OpenSearchCache#
-     * @param {string} message Message to display
-     */
-
-    OpenSearchCache.prototype.debug = function(message) {
-        if (this.debugMode === true) {
-            console.log("Cache:" + message);
-        }
+        ErrorDialog.open(Constants.LEVEL.DEBUG, "OpenSearchCache", "[New] " + this.getCacheStatus());
     };
 
     /**************************************************************************************************************/
@@ -156,7 +138,7 @@ define([], function() {
      */
 
     OpenSearchCache.prototype.addTile = function(bound, features, nbFound) {
-        this.debug("[addTile]" + this.getCacheStatus());
+        ErrorDialog.open(Constants.LEVEL.DEBUG, "OpenSearchCache", "[addTile]" + this.getCacheStatus());
 
         var key = this.getKey(bound);
         var tile = {
@@ -166,7 +148,7 @@ define([], function() {
         };
         // If cache is full, remove first element
         if (this.tileArray.length === this.maxTiles) {
-            this.debug("Cache full, remove oldest");
+            ErrorDialog.open(Constants.LEVEL.DEBUG, "OpenSearchCache", "Cache full, remove oldest");
             this.tileArray.splice(0, 1);
         }
         this.tileArray.push(tile);
@@ -183,8 +165,7 @@ define([], function() {
      */
 
     OpenSearchCache.prototype.updateTile = function(tile, features) {
-        this.debug("[update]" + this.getCacheStatus());
-
+        ErrorDialog.open(Constants.LEVEL.DEBUG, "OpenSearchCache", "[update]" + this.getCacheStatus());
         tile.features = tile.features.concat(features);
     };
 
@@ -199,7 +180,7 @@ define([], function() {
      */
 
     OpenSearchCache.prototype.getTile = function(bound) {
-        this.debug("[getTile]" + this.getCacheStatus());
+        ErrorDialog.open(Constants.LEVEL.DEBUG, "OpenSearchCache", "[getTile]" + this.getCacheStatus());
 
         var key = this.getKey(bound);
 
@@ -221,7 +202,7 @@ define([], function() {
      */
 
     OpenSearchCache.prototype.reset = function() {
-        this.debug("[reset]");
+        ErrorDialog.open(Constants.LEVEL.DEBUG, "OpenSearchCache", "[reset]");
         this.tileArray.length = 0;
     };
 

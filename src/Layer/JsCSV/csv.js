@@ -64,17 +64,17 @@ define([], function() {
     function parseDatatype(value, type) {
         var result;
         switch (type) {
-            case "short":
-            case "int":
-            case "long":
-                result = Number.parseInt(value);
-                break;
-            case "float":
-            case "double":
-                result = Number.parseFloat(value);
-                break;
-            default:
-                result = value;
+        case "short":
+        case "int":
+        case "long":
+            result = Number.parseInt(value);
+            break;
+        case "float":
+        case "double":
+            result = Number.parseFloat(value);
+            break;
+        default:
+            result = value;
         }
         return result;
     }

@@ -260,31 +260,31 @@ define(["../Utils/Constants"], function(Constants) {
         var geoBound = new GeoBound();
         var coords = geometry.coordinates;
         switch (geometry.type) {
-            case Constants.GEOMETRY.LineString:
-                geoBound.computeFromCoordinates(coords);
+        case Constants.GEOMETRY.LineString:
+            geoBound.computeFromCoordinates(coords);
+            isIntersected |= this.intersects(geoBound);
+            break;
+        case Constants.GEOMETRY.Polygon:
+            // Don't take care about holes
+            for (i = 0; i < coords.length && !isIntersected; i++) {
+                geoBound.computeFromCoordinates(coords[i]);
                 isIntersected |= this.intersects(geoBound);
-                break;
-            case Constants.GEOMETRY.Polygon:
-                // Don't take care about holes
-                for (i = 0; i < coords.length && !isIntersected; i++) {
-                    geoBound.computeFromCoordinates(coords[i]);
+            }
+            break;
+        case Constants.GEOMETRY.MultiLineString:
+            for (i = 0; i < coords.length && !isIntersected; i++) {
+                geoBound.computeFromCoordinates(coords[i]);
+                isIntersected |= this.intersects(geoBound);
+            }
+            break;
+        case Constants.GEOMETRY.MultiPolygon:
+            for (i = 0; i < coords.length && !isIntersected; i++) {
+                for (j = 0; j < coords[i].length && !isIntersected; j++) {
+                    geoBound.computeFromCoordinates(coords[i][j]);
                     isIntersected |= this.intersects(geoBound);
                 }
-                break;
-            case Constants.GEOMETRY.MultiLineString:
-                for (i = 0; i < coords.length && !isIntersected; i++) {
-                    geoBound.computeFromCoordinates(coords[i]);
-                    isIntersected |= this.intersects(geoBound);
-                }
-                break;
-            case Constants.GEOMETRY.MultiPolygon:
-                for (i = 0; i < coords.length && !isIntersected; i++) {
-                    for (j = 0; j < coords[i].length && !isIntersected; j++) {
-                        geoBound.computeFromCoordinates(coords[i][j]);
-                        isIntersected |= this.intersects(geoBound);
-                    }
-                }
-                break;
+            }
+            break;
         }
         return isIntersected;
     };

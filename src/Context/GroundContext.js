@@ -103,13 +103,18 @@ define([
             ServiceFactory.create(Constants.SERVICE.PickingManager).init(this);
             try {
                 this.setTimeTravelVisible(
-                    mizarConfiguration.timeTravel && mizarConfiguration.timeTravel.element
+                    mizarConfiguration.timeTravel &&
+                    mizarConfiguration.timeTravel.element
                         ? mizarConfiguration.timeTravel.element
                         : "timeTravelDiv",
                     true
                 );
             } catch (err) {
-                ErrorDialog.open(Constants.LEVEL.ERROR, "Cannot create the Time travel", err);
+                ErrorDialog.open(
+                    Constants.LEVEL.DEBUG,
+                    "Cannot create the Time travel",
+                    err
+                );
             }
         } catch (err) {
             this._showUpError(err);
@@ -173,7 +178,7 @@ define([
 
     /**
      * @function setTimeTravelVisible
-     * @memberof GroundContext#    
+     * @memberof GroundContext#
      */
     GroundContext.prototype.setTimeTravelVisible = function(divName, visible) {
         if (visible) {

@@ -1,8 +1,9 @@
-define(["jquery", "moment", "../Utils/Constants", "../Utils/Utils"], function(
+define(["jquery", "moment", "../Utils/Constants", "../Utils/Utils","../Time/TimeTravelParams"], function(
     $,
     Moment,
     Constants,
-    Utils
+    Utils,
+    TimeTravelParams
 ) {
     /**
      * @class
@@ -56,8 +57,8 @@ define(["jquery", "moment", "../Utils/Constants", "../Utils/Utils"], function(
         var period = null;
 
         var regExpYear = /^\d{4}$/;
-        var regExpMonth = /^\d{4}\-\d{2}$/;
-        var regExpDay = /^\d{4}\-\d{2}\-\d{2}$/;
+        var regExpMonth = /^\d{4}-\d{2}$/;
+        var regExpDay = /^\d{4}-\d{2}-\d{2}$/;
         if (typeof value === "string") {
             // Year management
             if (regExpYear.test(value)) {
@@ -252,7 +253,7 @@ define(["jquery", "moment", "../Utils/Constants", "../Utils/Utils"], function(
                 var cpt = 0;
                 var isDone = false;
                 while (!isDone) {
-                    currentDate = this.enumeratedValues[cpt].date;
+                    var currentDate = this.enumeratedValues[cpt].date;
                     if (currentDate > date) {
                         isDone = true;
                         foundDate = this.enumeratedValues[cpt].date;
@@ -310,7 +311,7 @@ define(["jquery", "moment", "../Utils/Constants", "../Utils/Utils"], function(
 
                 while (!isDone) {
                     while (!isDone) {
-                        currentDate = this.enumeratedValues[cpt].date;
+                        var currentDate = this.enumeratedValues[cpt].date;
                         if (currentDate < date) {
                             isDone = true;
                             foundDate = this.enumeratedValues[cpt].date;

@@ -28,26 +28,26 @@ define([
         create: function(type, options) {
             var obj;
             switch (type) {
-                case Constants.UTILITY.Fits:
-                    obj = UtilsFits;
-                    break;
-                case Constants.UTILITY.Intersection:
-                    obj = UtilsIntersection;
-                    break;
-                case Constants.UTILITY.Numeric:
-                    obj = Numeric;
-                    break;
-                case Constants.UTILITY.CreateStyle:
-                    obj = new FeatureStyle(options);
-                    break;
-                case Constants.UTILITY.FeatureStyle:
-                    obj = FeatureStyle;
-                    break;
-                default:
-                    throw new RangeError(
-                        "Cannot create the utility " + type,
-                        "UtilityFactory.js"
-                    );
+            case Constants.UTILITY.Fits:
+                obj = UtilsFits;
+                break;
+            case Constants.UTILITY.Intersection:
+                obj = UtilsIntersection;
+                break;
+            case Constants.UTILITY.Numeric:
+                obj = Numeric;
+                break;
+            case Constants.UTILITY.CreateStyle:
+                obj = new FeatureStyle(options);
+                break;
+            case Constants.UTILITY.FeatureStyle:
+                obj = FeatureStyle;
+                break;
+            default:
+                throw new RangeError(
+                    "Cannot create the utility " + type,
+                    "UtilityFactory.js"
+                );
             }
             return obj;
         }

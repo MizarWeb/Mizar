@@ -299,7 +299,7 @@ define([
      * @param {AbstractContext} ctx - context
      * @param {number} destDistance - Final zooming distance in meter
      * @param {Object} [options] - options
-     * @param {Object} [options.callback] - Callback function to call when it is defined.     
+     * @param {Object} [options.callback] - Callback function to call when it is defined.
      * @fires Context#navigation:changedDistance
      * @private
      */
@@ -447,10 +447,10 @@ define([
     };
 
     /**
-    * Compute the view matrix
-    * @function computeViewMatrix
-    * @memberof GroundNavigation#
-    */
+     * Compute the view matrix
+     * @function computeViewMatrix
+     * @memberof GroundNavigation#
+     */
     GroundNavigation.prototype.computeViewMatrix = function() {
         var eye = [];
         vec3.normalize(this.center3d);

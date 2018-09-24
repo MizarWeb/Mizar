@@ -76,7 +76,7 @@ define([
         this.hipsMetadata = _createMetadata.call(
             this,
             hipsMetadata,
-            Utils.proxify(options.baseUrl, options.proxy)
+            options.baseUrl
         );
         _overloadHipsMetataByConfiguration.call(
             this,
@@ -179,9 +179,9 @@ define([
         options.coordinateSystem = options.hasOwnProperty("coordinateSystem")
             ? CoordinateSystemFactory.create(options.coordinateSystem)
             : CoordinateSystemFactory.create({
-                  geoideName:
+                geoideName:
                       Constants.MappingCrsHips2Mizar[hipsMetadata.hips_frame]
-              });
+            });
         options.tilePixelSize = options.hasOwnProperty("tilePixelSize")
             ? options.tilePixelSize
             : hipsMetadata.hips_tile_width;
@@ -198,9 +198,9 @@ define([
             : hipsMetadata.obs_title;
         options.attribution = options.hasOwnProperty("attribution")
             ? options.attribution
-            : '<a href="' +
+            : "<a href=\"" +
               hipsMetadata.obs_copyright_url +
-              '" target="_blank">' +
+              "\" target=\"_blank\">" +
               hipsMetadata.obs_copyright +
               "</a>";
         options.copyrightUrl = options.hasOwnProperty("copyrightUrl")

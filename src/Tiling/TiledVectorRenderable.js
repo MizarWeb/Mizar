@@ -193,26 +193,26 @@ define([
         if (tileInRange) {
             var coords = geometry.coordinates;
             switch (geometry.type) {
-                case Constants.GEOMETRY.LineString:
-                    this.buildVerticesAndIndices(tile, coords);
-                    break;
-                case Constants.GEOMETRY.Polygon:
-                    for (i = 0; i < coords.length; i++) {
-                        this.buildVerticesAndIndices(tile, coords[i]);
+            case Constants.GEOMETRY.LineString:
+                this.buildVerticesAndIndices(tile, coords);
+                break;
+            case Constants.GEOMETRY.Polygon:
+                for (i = 0; i < coords.length; i++) {
+                    this.buildVerticesAndIndices(tile, coords[i]);
+                }
+                break;
+            case Constants.GEOMETRY.MultiLineString:
+                for (i = 0; i < coords.length; i++) {
+                    this.buildVerticesAndIndices(tile, coords[i]);
+                }
+                break;
+            case Constants.GEOMETRY.MultiPolygon:
+                for (j = 0; j < coords.length; j++) {
+                    for (i = 0; i < coords[j].length; i++) {
+                        this.buildVerticesAndIndices(tile, coords[j][i]);
                     }
-                    break;
-                case Constants.GEOMETRY.MultiLineString:
-                    for (i = 0; i < coords.length; i++) {
-                        this.buildVerticesAndIndices(tile, coords[i]);
-                    }
-                    break;
-                case Constants.GEOMETRY.MultiPolygon:
-                    for (j = 0; j < coords.length; j++) {
-                        for (i = 0; i < coords[j].length; i++) {
-                            this.buildVerticesAndIndices(tile, coords[j][i]);
-                        }
-                    }
-                    break;
+                }
+                break;
             }
         }
         return tile.geoBound.intersectsGeometry(geometry);

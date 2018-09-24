@@ -39,8 +39,9 @@ define([
     "../Utils/Utils",
     "./AbstractRasterLayer",
     "../Utils/Constants",
-    "../Tiling/MercatorTiling"
-], function(Utils, AbstractRasterLayer, Constants, MercatorTiling) {
+    "../Tiling/MercatorTiling",
+    "../Utils/Proxy"
+], function(Utils, AbstractRasterLayer, Constants, MercatorTiling, Proxy) {
     /**************************************************************************************************************/
     var BingTileSystem = (function() {
         var EarthRadius = 6378137;
@@ -212,26 +213,26 @@ define([
             for (var i = levelOfDetail; i > 0; i--) {
                 var mask = 1 << (i - 1);
                 switch (quadKey[levelOfDetail - i]) {
-                    case "0":
-                        break;
+                case "0":
+                    break;
 
-                    case "1":
-                        tileX |= mask;
-                        break;
+                case "1":
+                    tileX |= mask;
+                    break;
 
-                    case "2":
-                        tileY |= mask;
-                        break;
+                case "2":
+                    tileY |= mask;
+                    break;
 
-                    case "3":
-                        tileX |= mask;
-                        tileY |= mask;
-                        break;
+                case "3":
+                    tileX |= mask;
+                    tileY |= mask;
+                    break;
 
-                    default:
-                        throw new ArgumentException(
-                            "Invalid QuadKey digit sequence."
-                        );
+                default:
+                    throw new Error(
+                        "Invalid QuadKey digit sequence."
+                    );
                 }
             }
         }
@@ -288,10 +289,10 @@ define([
 
         // Need to provide a global callback for JSONP
         window._bingTileProviderCallback = function(result) {
-            self.baseUrl = self.proxify(
+            self.baseUrl = Proxy.proxify(
                 result.resourceSets[0].resources[0].imageUrl
             );
-            self.baseUrlSubDomains = self.proxify(
+            self.baseUrlSubDomains = Proxy.proxify(
                 result.resourceSets[0].resources[0].imageUrlSubdomains
             );
             self._ready = true;
@@ -310,7 +311,7 @@ define([
         // JSONP Call : needed because of cross-site origin policy
         var script = document.createElement("script");
         script.type = "text/javascript";
-        script.src = this.proxify(
+        script.src = Proxy.proxify(
             "http://dev.virtualearth.net/REST/V1/Imagery/Metadata/" +
                 options.imageSet +
                 "?jsonp=_bingTileProviderCallback&key=" +
@@ -342,7 +343,7 @@ define([
                 Math.floor(Math.random() * this.baseUrlSubDomains.length)
             ]
         );
-        return this.proxify(url, tile.level);
+        return this.allowRequest(url, tile.level);
     };
 
     /**************************************************************************************************************/

@@ -81,77 +81,77 @@ define(["../Renderer/FeatureStyle", "../Utils/Constants"], function(
             var extrude, outerBoundary, coordNode;
 
             switch (node.nodeName) {
-                case Constants.GEOMETRY.MultiPolygon:
-                    var geoms = [];
+            case Constants.GEOMETRY.MultiPolygon:
+                var geoms = [];
 
-                    var children = node.childNodes;
-                    for (var i = 0; i < children.length; i++) {
-                        var geometry = checkAndParseGeometry(
-                            children[i],
-                            style
-                        );
-                        if (geometry) {
-                            geoms.push(geometry);
-                        }
+                var children = node.childNodes;
+                for (var i = 0; i < children.length; i++) {
+                    var geometry = checkAndParseGeometry(
+                        children[i],
+                        style
+                    );
+                    if (geometry) {
+                        geoms.push(geometry);
                     }
+                }
 
+                return {
+                    type: Constants.GEOMETRY.GeometryCollection,
+                    geometries: geoms
+                };
+            case Constants.GEOMETRY.LineString:
+                coordNode = node.getElementsByTagName("coordinates");
+                if (coordNode.length === 1) {
                     return {
-                        type: Constants.GEOMETRY.GeometryCollection,
-                        geometries: geoms
+                        type: Constants.GEOMETRY.LineString,
+                        coordinates: parseCoordinates(
+                            coordNode[0].textContent
+                        )
                     };
-                case Constants.GEOMETRY.LineString:
-                    coordNode = node.getElementsByTagName("coordinates");
-                    if (coordNode.length === 1) {
-                        return {
-                            type: Constants.GEOMETRY.LineString,
-                            coordinates: parseCoordinates(
-                                coordNode[0].textContent
-                            )
-                        };
-                    }
-                    break;
-                case Constants.GEOMETRY.Polygon:
-                    // Take into accout extresion
-                    extrude = node.getElementsByTagName("extrude");
-                    if (extrude.length === 1) {
-                        style.extrude =
+                }
+                break;
+            case Constants.GEOMETRY.Polygon:
+                // Take into accout extresion
+                extrude = node.getElementsByTagName("extrude");
+                if (extrude.length === 1) {
+                    style.extrude =
                             parseInt(extrude[0].childNodes[0].nodeValue) !== 0;
-                    }
+                }
 
-                    // TODO : check how to manage fill property
-                    if (style) {
-                        style.fill = true;
-                    }
+                // TODO : check how to manage fill property
+                if (style) {
+                    style.fill = true;
+                }
 
-                    // TODO : manage holes
-                    outerBoundary = node.getElementsByTagName(
-                        "outerBoundaryIs"
-                    );
-                    coordNode = outerBoundary[0].getElementsByTagName(
-                        "coordinates"
-                    );
-                    if (coordNode.length === 1) {
-                        return {
-                            type: Constants.GEOMETRY.Polygon,
-                            coordinates: [
-                                parseCoordinates(coordNode[0].textContent)
-                            ]
-                        };
-                    }
-                    break;
-                case Constants.GEOMETRY.Point:
-                    coordNode = node.getElementsByTagName("coordinates");
-                    if (coordNode.length === 1) {
-                        var coord = coordNode[0].textContent.split(",");
-                        return {
-                            type: Constants.GEOMETRY.Point,
-                            coordinates: [
-                                parseFloat(coord[0]),
-                                parseFloat(coord[1])
-                            ]
-                        };
-                    }
-                    break;
+                // TODO : manage holes
+                outerBoundary = node.getElementsByTagName(
+                    "outerBoundaryIs"
+                );
+                coordNode = outerBoundary[0].getElementsByTagName(
+                    "coordinates"
+                );
+                if (coordNode.length === 1) {
+                    return {
+                        type: Constants.GEOMETRY.Polygon,
+                        coordinates: [
+                            parseCoordinates(coordNode[0].textContent)
+                        ]
+                    };
+                }
+                break;
+            case Constants.GEOMETRY.Point:
+                coordNode = node.getElementsByTagName("coordinates");
+                if (coordNode.length === 1) {
+                    var coord = coordNode[0].textContent.split(",");
+                    return {
+                        type: Constants.GEOMETRY.Point,
+                        coordinates: [
+                            parseFloat(coord[0]),
+                            parseFloat(coord[1])
+                        ]
+                    };
+                }
+                break;
             }
 
             return null;
@@ -164,11 +164,11 @@ define(["../Renderer/FeatureStyle", "../Utils/Constants"], function(
             var child = node.firstElementChild;
             while (child) {
                 switch (child.nodeName) {
-                    case "color":
-                        style.fillColor = fromStringToColor(
-                            child.childNodes[0].nodeValue
-                        );
-                        break;
+                case "color":
+                    style.fillColor = fromStringToColor(
+                        child.childNodes[0].nodeValue
+                    );
+                    break;
                 }
                 child = child.nextElementSibling;
             }
@@ -181,16 +181,16 @@ define(["../Renderer/FeatureStyle", "../Utils/Constants"], function(
             var child = node.firstElementChild;
             while (child) {
                 switch (child.nodeName) {
-                    case "color":
-                        style.strokeColor = fromStringToColor(
-                            child.childNodes[0].nodeValue
-                        );
-                        break;
-                    case "width":
-                        style.strokeWidth = parseFloat(
-                            child.childNodes[0].nodeValue
-                        );
-                        break;
+                case "color":
+                    style.strokeColor = fromStringToColor(
+                        child.childNodes[0].nodeValue
+                    );
+                    break;
+                case "width":
+                    style.strokeWidth = parseFloat(
+                        child.childNodes[0].nodeValue
+                    );
+                    break;
                 }
                 child = child.nextElementSibling;
             }
@@ -203,17 +203,17 @@ define(["../Renderer/FeatureStyle", "../Utils/Constants"], function(
             var child = node.firstElementChild;
             while (child) {
                 switch (child.nodeName) {
-                    case "color":
-                        //style.strokeColor = fromStringToColor( child.childNodes[0].nodeValue );
-                        break;
-                    case "Icon":
-                        if (child.firstElementChild) {
-                            style.iconUrl =
+                case "color":
+                    //style.strokeColor = fromStringToColor( child.childNodes[0].nodeValue );
+                    break;
+                case "Icon":
+                    if (child.firstElementChild) {
+                        style.iconUrl =
                                 child.firstElementChild.childNodes[0].nodeValue;
-                        } else {
-                            style.iconUrl = null;
-                        }
-                        break;
+                    } else {
+                        style.iconUrl = null;
+                    }
+                    break;
                 }
                 child = child.nextElementSibling;
             }
@@ -226,15 +226,15 @@ define(["../Renderer/FeatureStyle", "../Utils/Constants"], function(
             var child = node.firstElementChild;
             while (child) {
                 switch (child.nodeName) {
-                    case "color":
-                        var labelColor = fromStringToColor(
-                            child.textContent.trim()
-                        );
-                        if (labelColor[3] === 0) {
-                            style.label = null;
-                            style.textColor = labelColor;
-                        }
-                        break;
+                case "color":
+                    var labelColor = fromStringToColor(
+                        child.textContent.trim()
+                    );
+                    if (labelColor[3] === 0) {
+                        style.label = null;
+                        style.textColor = labelColor;
+                    }
+                    break;
                     /*case "Icon":
                      if ( child.firstElementChild )
                      style.iconUrl = child.firstElementChild.childNodes[0].nodeValue;
@@ -259,18 +259,18 @@ define(["../Renderer/FeatureStyle", "../Utils/Constants"], function(
             var child = node.firstElementChild;
             while (child) {
                 switch (child.nodeName) {
-                    case "PolyStyle":
-                        parsePolyStyle(child, style);
-                        break;
-                    case "LineStyle":
-                        parseLineStyle(child, style);
-                        break;
-                    case "IconStyle":
-                        parseIconStyle(child, style);
-                        break;
-                    case "LabelStyle":
-                        parseLabelStyle(child, style);
-                        break;
+                case "PolyStyle":
+                    parsePolyStyle(child, style);
+                    break;
+                case "LineStyle":
+                    parseLineStyle(child, style);
+                    break;
+                case "IconStyle":
+                    parseIconStyle(child, style);
+                    break;
+                case "LabelStyle":
+                    parseLabelStyle(child, style);
+                    break;
                 }
                 child = child.nextElementSibling;
             }
@@ -294,38 +294,38 @@ define(["../Renderer/FeatureStyle", "../Utils/Constants"], function(
             var child = node.firstElementChild;
             while (child) {
                 switch (child.nodeName) {
-                    case "name":
-                        feature.properties.name = child.childNodes[0].nodeValue;
-                        break;
-                    case "styleUrl":
-                        {
-                            id = child.childNodes[0].nodeValue;
-                            if (styles.hasOwnProperty(id)) {
-                                feature.properties.style = styles[id];
-                                shareStyle = true;
-                            }
+                case "name":
+                    feature.properties.name = child.childNodes[0].nodeValue;
+                    break;
+                case "styleUrl":
+                    {
+                        id = child.childNodes[0].nodeValue;
+                        if (styles.hasOwnProperty(id)) {
+                            feature.properties.style = styles[id];
+                            shareStyle = true;
                         }
-                        break;
-                    case "Style":
-                        {
-                            style = parseStyle(
-                                child,
-                                feature.properties.name,
-                                feature.properties.style
-                            );
-                            if (style) {
-                                feature.properties.style = style;
-                            }
+                    }
+                    break;
+                case "Style":
+                    {
+                        style = parseStyle(
+                            child,
+                            feature.properties.name,
+                            feature.properties.style
+                        );
+                        if (style) {
+                            feature.properties.style = style;
                         }
-                        break;
-                    default:
-                        // Try with geometry
-                        if (feature.geometry === null) {
-                            feature.geometry = checkAndParseGeometry(
-                                child,
-                                style
-                            );
-                        }
+                    }
+                    break;
+                default:
+                    // Try with geometry
+                    if (feature.geometry === null) {
+                        feature.geometry = checkAndParseGeometry(
+                            child,
+                            style
+                        );
+                    }
                 }
                 child = child.nextElementSibling;
             }
@@ -358,17 +358,17 @@ define(["../Renderer/FeatureStyle", "../Utils/Constants"], function(
             var vis;
             while (child) {
                 switch (child.nodeName) {
-                    case "visibility":
-                        vis = parseInt(child.textContent, 10);
-                        if (vis === 0) {
-                            return;
-                        }
-                        break;
-                    case "Style":
-                        parseStyle(child);
-                        break;
-                    default:
-                        checkAndParseFeature(child);
+                case "visibility":
+                    vis = parseInt(child.textContent, 10);
+                    if (vis === 0) {
+                        return;
+                    }
+                    break;
+                case "Style":
+                    parseStyle(child);
+                    break;
+                default:
+                    checkAndParseFeature(child);
                 }
                 child = child.nextElementSibling;
             }
@@ -379,16 +379,16 @@ define(["../Renderer/FeatureStyle", "../Utils/Constants"], function(
          */
         var checkAndParseFeature = function(node) {
             switch (node.nodeName) {
-                case "Style":
-                    parseStyle(node);
-                    break;
-                case "Placemark":
-                    parsePlacemark(node);
-                    break;
-                case "Document":
-                case "Folder":
-                    parseDocumentOrFolder(node);
-                    break;
+            case "Style":
+                parseStyle(node);
+                break;
+            case "Placemark":
+                parsePlacemark(node);
+                break;
+            case "Document":
+            case "Folder":
+                parseDocumentOrFolder(node);
+                break;
             }
         };
 

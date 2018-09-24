@@ -118,23 +118,23 @@ define(["../utils"], function(Utils) {
         var infos = table.getInfos();
         var tableData = null;
         switch (data.getDataImplementationName()) {
-            case "TableData":
-                tableData = data.getData();
-                trs = tableData.getTrs();
-                break;
-            case "Binary":
-                var binary = data.getData();
-                tableData = binary.getStream().getContent(true, fields);
-                trs = tableData.getTrs();
-                break;
-            case "Binary2":
-                var binary2 = data.getData();
-                throw new Error("Binary2 not implemented");
-            case "Fits":
-                var fits = data.getData();
-                throw new Error("Fits not implemented");
-            default:
-                throw new Error("Type of data not implemented");
+        case "TableData":
+            tableData = data.getData();
+            trs = tableData.getTrs();
+            break;
+        case "Binary":
+            var binary = data.getData();
+            tableData = binary.getStream().getContent(true, fields);
+            trs = tableData.getTrs();
+            break;
+        case "Binary2":
+            var binary2 = data.getData();
+            throw new Error("Binary2 not implemented");
+        case "Fits":
+            var fits = data.getData();
+            throw new Error("Fits not implemented");
+        default:
+            throw new Error("Type of data not implemented");
         }
         creatureFeatures(fields, infos, trs, features);
     }
@@ -240,17 +240,17 @@ define(["../utils"], function(Utils) {
         function parseDatatype(value, type) {
             var result;
             switch (type) {
-                case "short":
-                case "int":
-                case "long":
-                    result = Number.parseInt(value);
-                    break;
-                case "float":
-                case "double":
-                    result = Number.parseFloat(value);
-                    break;
-                default:
-                    result = value;
+            case "short":
+            case "int":
+            case "long":
+                result = Number.parseInt(value);
+                break;
+            case "float":
+            case "double":
+                result = Number.parseFloat(value);
+                break;
+            default:
+                result = value;
             }
             return result;
         }

@@ -35,7 +35,7 @@
  * along with GlobWeb. If not, see <http://www.gnu.org/licenses/>.
  ***************************************/
 
- /**
+/**
  * Mizar is able to load a whole file as GeoJson format for vectorial data. If the data format is not in GeoJson then a Provider must be applied.
  * <ul>
  *     <li>{@link module:Provider.ConstellationProvider ConstellationProvider}: Loads constellation data</li>
@@ -223,92 +223,92 @@ define([
         var cy = d / 36525; // centuries since J2000
 
         switch (i) {
-            case 0: // Mercury
-                p.color = "rgb(170,150,170)";
-                p.a = 0.38709893 + 0.00000066 * cy;
-                p.e = 0.20563069 + 0.00002527 * cy;
-                p.i = (7.00487 - (23.51 * cy) / 3600) * RADS;
-                p.O = (48.33167 - (446.3 * cy) / 3600) * RADS;
-                p.w = (77.45645 + (573.57 * cy) / 3600) * RADS;
-                p.L = mod2pi((252.25084 + (538101628.29 * cy) / 3600) * RADS);
-                break;
-            case 1: // Venus
-                p.color = "rgb(245,222,179)";
-                p.a = 0.72333199 + 0.00000092 * cy;
-                p.e = 0.00677323 - 0.00004938 * cy;
-                p.i = (3.39471 - (2.86 * cy) / 3600) * RADS;
-                p.O = (76.68069 - (996.89 * cy) / 3600) * RADS;
-                p.w = (131.53298 - (108.8 * cy) / 3600) * RADS;
-                p.L = mod2pi((181.97973 + (210664136.06 * cy) / 3600) * RADS);
-                break;
-            case 2: // Earth/Sun
-                p.color = "rgb(255,193,37)";
-                p.a = 1.00000011 - 0.00000005 * cy;
-                p.e = 0.01671022 - 0.00003804 * cy;
-                p.i = (0.00005 - (46.94 * cy) / 3600) * RADS;
-                p.O = (-11.26064 - (18228.25 * cy) / 3600) * RADS;
-                p.w = (102.94719 + (1198.28 * cy) / 3600) * RADS;
-                p.L = mod2pi((100.46435 + (129597740.63 * cy) / 3600) * RADS);
-                break;
-            case 3: // Mars
-                p.color = "rgb(255,50,50)";
-                p.a = 1.52366231 - 0.00007221 * cy;
-                p.e = 0.09341233 + 0.00011902 * cy;
-                p.i = (1.85061 - (25.47 * cy) / 3600) * RADS;
-                p.O = (49.57854 - (1020.19 * cy) / 3600) * RADS;
-                p.w = (336.04084 + (1560.78 * cy) / 3600) * RADS;
-                p.L = mod2pi((355.45332 + (68905103.78 * cy) / 3600) * RADS);
-                break;
-            case 4: // Jupiter
-                p.color = "rgb(255,150,150)";
-                p.a = 5.20336301 + 0.00060737 * cy;
-                p.e = 0.04839266 - 0.0001288 * cy;
-                p.i = (1.3053 - (4.15 * cy) / 3600) * RADS;
-                p.O = (100.55615 + (1217.17 * cy) / 3600) * RADS;
-                p.w = (14.75385 + (839.93 * cy) / 3600) * RADS;
-                p.L = mod2pi((34.40438 + (10925078.35 * cy) / 3600) * RADS);
-                break;
-            case 5: // Saturn
-                p.color = "rgb(200,150,150)";
-                p.a = 9.53707032 - 0.0030153 * cy;
-                p.e = 0.0541506 - 0.00036762 * cy;
-                p.i = (2.48446 + (6.11 * cy) / 3600) * RADS;
-                p.O = (113.71504 - (1591.05 * cy) / 3600) * RADS;
-                p.w = (92.43194 - (1948.89 * cy) / 3600) * RADS;
-                p.L = mod2pi((49.94432 + (4401052.95 * cy) / 3600) * RADS);
-                break;
-            case 6: // Uranus
-                p.color = "rgb(130,150,255)";
-                p.a = 19.19126393 + 0.00152025 * cy;
-                p.e = 0.04716771 - 0.0001915 * cy;
-                p.i = (0.76986 - (2.09 * cy) / 3600) * RADS;
-                p.O = (74.22988 - (1681.4 * cy) / 3600) * RADS;
-                p.w = (170.96424 + (1312.56 * cy) / 3600) * RADS;
-                p.L = mod2pi((313.23218 + (1542547.79 * cy) / 3600) * RADS);
-                break;
-            case 7: // Neptune
-                p.color = "rgb(100,100,255)";
-                p.a = 30.06896348 - 0.00125196 * cy;
-                p.e = 0.00858587 + 0.0000251 * cy;
-                p.i = (1.76917 - (3.64 * cy) / 3600) * RADS;
-                p.O = (131.72169 - (151.25 * cy) / 3600) * RADS;
-                p.w = (44.97135 - (844.43 * cy) / 3600) * RADS;
-                p.L = mod2pi((304.88003 + (786449.21 * cy) / 3600) * RADS);
-                break;
-            case 8: // Pluto
-                p.color = "rgb(100,100,255)";
-                p.a = 39.48168677 - 0.00076912 * cy;
-                p.e = 0.24880766 + 0.00006465 * cy;
-                p.i = (17.14175 + (11.07 * cy) / 3600) * RADS;
-                p.O = (110.30347 - (37.33 * cy) / 3600) * RADS;
-                p.w = (224.06676 - (132.25 * cy) / 3600) * RADS;
-                p.L = mod2pi((238.92881 + (522747.9 * cy) / 3600) * RADS);
-                break;
-            default:
-                throw RangeError(
-                    "function mean_elements() failed!",
-                    "PlanetProvider.js"
-                );
+        case 0: // Mercury
+            p.color = "rgb(170,150,170)";
+            p.a = 0.38709893 + 0.00000066 * cy;
+            p.e = 0.20563069 + 0.00002527 * cy;
+            p.i = (7.00487 - (23.51 * cy) / 3600) * RADS;
+            p.O = (48.33167 - (446.3 * cy) / 3600) * RADS;
+            p.w = (77.45645 + (573.57 * cy) / 3600) * RADS;
+            p.L = mod2pi((252.25084 + (538101628.29 * cy) / 3600) * RADS);
+            break;
+        case 1: // Venus
+            p.color = "rgb(245,222,179)";
+            p.a = 0.72333199 + 0.00000092 * cy;
+            p.e = 0.00677323 - 0.00004938 * cy;
+            p.i = (3.39471 - (2.86 * cy) / 3600) * RADS;
+            p.O = (76.68069 - (996.89 * cy) / 3600) * RADS;
+            p.w = (131.53298 - (108.8 * cy) / 3600) * RADS;
+            p.L = mod2pi((181.97973 + (210664136.06 * cy) / 3600) * RADS);
+            break;
+        case 2: // Earth/Sun
+            p.color = "rgb(255,193,37)";
+            p.a = 1.00000011 - 0.00000005 * cy;
+            p.e = 0.01671022 - 0.00003804 * cy;
+            p.i = (0.00005 - (46.94 * cy) / 3600) * RADS;
+            p.O = (-11.26064 - (18228.25 * cy) / 3600) * RADS;
+            p.w = (102.94719 + (1198.28 * cy) / 3600) * RADS;
+            p.L = mod2pi((100.46435 + (129597740.63 * cy) / 3600) * RADS);
+            break;
+        case 3: // Mars
+            p.color = "rgb(255,50,50)";
+            p.a = 1.52366231 - 0.00007221 * cy;
+            p.e = 0.09341233 + 0.00011902 * cy;
+            p.i = (1.85061 - (25.47 * cy) / 3600) * RADS;
+            p.O = (49.57854 - (1020.19 * cy) / 3600) * RADS;
+            p.w = (336.04084 + (1560.78 * cy) / 3600) * RADS;
+            p.L = mod2pi((355.45332 + (68905103.78 * cy) / 3600) * RADS);
+            break;
+        case 4: // Jupiter
+            p.color = "rgb(255,150,150)";
+            p.a = 5.20336301 + 0.00060737 * cy;
+            p.e = 0.04839266 - 0.0001288 * cy;
+            p.i = (1.3053 - (4.15 * cy) / 3600) * RADS;
+            p.O = (100.55615 + (1217.17 * cy) / 3600) * RADS;
+            p.w = (14.75385 + (839.93 * cy) / 3600) * RADS;
+            p.L = mod2pi((34.40438 + (10925078.35 * cy) / 3600) * RADS);
+            break;
+        case 5: // Saturn
+            p.color = "rgb(200,150,150)";
+            p.a = 9.53707032 - 0.0030153 * cy;
+            p.e = 0.0541506 - 0.00036762 * cy;
+            p.i = (2.48446 + (6.11 * cy) / 3600) * RADS;
+            p.O = (113.71504 - (1591.05 * cy) / 3600) * RADS;
+            p.w = (92.43194 - (1948.89 * cy) / 3600) * RADS;
+            p.L = mod2pi((49.94432 + (4401052.95 * cy) / 3600) * RADS);
+            break;
+        case 6: // Uranus
+            p.color = "rgb(130,150,255)";
+            p.a = 19.19126393 + 0.00152025 * cy;
+            p.e = 0.04716771 - 0.0001915 * cy;
+            p.i = (0.76986 - (2.09 * cy) / 3600) * RADS;
+            p.O = (74.22988 - (1681.4 * cy) / 3600) * RADS;
+            p.w = (170.96424 + (1312.56 * cy) / 3600) * RADS;
+            p.L = mod2pi((313.23218 + (1542547.79 * cy) / 3600) * RADS);
+            break;
+        case 7: // Neptune
+            p.color = "rgb(100,100,255)";
+            p.a = 30.06896348 - 0.00125196 * cy;
+            p.e = 0.00858587 + 0.0000251 * cy;
+            p.i = (1.76917 - (3.64 * cy) / 3600) * RADS;
+            p.O = (131.72169 - (151.25 * cy) / 3600) * RADS;
+            p.w = (44.97135 - (844.43 * cy) / 3600) * RADS;
+            p.L = mod2pi((304.88003 + (786449.21 * cy) / 3600) * RADS);
+            break;
+        case 8: // Pluto
+            p.color = "rgb(100,100,255)";
+            p.a = 39.48168677 - 0.00076912 * cy;
+            p.e = 0.24880766 + 0.00006465 * cy;
+            p.i = (17.14175 + (11.07 * cy) / 3600) * RADS;
+            p.O = (110.30347 - (37.33 * cy) / 3600) * RADS;
+            p.w = (224.06676 - (132.25 * cy) / 3600) * RADS;
+            p.L = mod2pi((238.92881 + (522747.9 * cy) / 3600) * RADS);
+            break;
+        default:
+            throw RangeError(
+                "function mean_elements() failed!",
+                "PlanetProvider.js"
+            );
         }
     }
 
@@ -471,7 +471,7 @@ define([
 
     /**
      * Returns the Sun position at the date.
-     * @param {date} date 
+     * @param {date} date
      * @returns {float[]} the Sun position
      */
     PlanetProvider.prototype.getSunPosition = function(date) {

@@ -35,10 +35,13 @@
  * along with GlobWeb. If not, see <http://www.gnu.org/licenses/>.
  ***************************************/
 
-define(["./HEALPixTables", "../Utils/Long", "../Utils/CircleFinder"], function(
+define(["underscore-min","./HEALPixTables", "../Utils/Long", "../Utils/CircleFinder", "../Utils/Constants", "../Gui/dialog/ErrorDialog"], function(
+    _,
     HealPixTables,
     Long,
-    CircleFinder
+    CircleFinder,
+    Constants,
+    ErrorDialog
 ) {
     /**************************************************************************************************************/
 
@@ -447,7 +450,7 @@ define(["./HEALPixTables", "../Utils/Long", "../Utils/CircleFinder"], function(
             var order = this.nside2order(nside_in);
 
             if (scheme_in === "NESTED" && order < 0) {
-                throw new Exception(
+                throw new Error(
                     "Nside must be a power of 2 for NESTED scheme"
                 );
             }
@@ -518,7 +521,7 @@ define(["./HEALPixTables", "../Utils/Long", "../Utils/CircleFinder"], function(
             var ncirc = inclusive ? nv + 1 : nv;
 
             if (nv < 3) {
-                console.error("not enough vertices in polygon");
+                ErrorDialog.open(Constants.LEVEL.DEBUG, "HEALPixBase.js", "not enough vertices in polygon");
                 return;
             }
 
@@ -558,7 +561,7 @@ define(["./HEALPixTables", "../Utils/Long", "../Utils/CircleFinder"], function(
             }
 
             var res = this.queryMultiDisc(normal, rad, fact, healpixOrder);
-            console.dir(res);
+            ErrorDialog.open(Constants.LEVEL.DEBUG, "HEALPixBase.js", res);
             return res;
         },
 

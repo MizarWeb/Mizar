@@ -24,11 +24,12 @@
 define([
     "jquery",
     "underscore-min",
+    "../Utils/Constants",
     "../Parser/JsonProcessor",
     "../Gui/dialog/ErrorDialog",
     "samp",
     "jquery.ui"
-], function($, _, JsonProcessor, ErrorDialog) {
+], function($, _, Constants, JsonProcessor, ErrorDialog) {
     var mizar;
     var navigation;
     var imageManager;
@@ -73,7 +74,10 @@ define([
                 //    sampLayer.addFeatureCollection(response);
                 //});
             } else {
-                ErrorDialog.open(Constants.LEVEL.ERROR, "votable2geojson plugin base url isn't defined");
+                ErrorDialog.open(
+                    Constants.LEVEL.ERROR,
+                    "votable2geojson plugin base url isn't defined"
+                );
             }
         };
 

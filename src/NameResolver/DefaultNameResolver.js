@@ -24,7 +24,7 @@
  *     <li>{@link module:NameResolver.DefaultNameResolver DefaultNameResolver} : Deprecated</li>
  *     <li>{@link module:NameResolver.DictionaryNameResolver DictionaryNameResolver} : Name resolver on a GeoJson file</li>
  *     <li>{@link module:NameResolver.IMCCENameResolver IMCCENameResolver} : Name resolver from IMCCE</li>
- *     <li>{@link module:NameResolver.NameResolver NameResolver} : NameResolver object</li> 
+ *     <li>{@link module:NameResolver.NameResolver NameResolver} : NameResolver object</li>
  * </ul>
  *
  * @module NameResolver
@@ -46,7 +46,7 @@ define([
      * @augments AbstractNameResolver
      * @param {Context} options - Context
      * @memberof module:NameResolver
-     * @constructor     
+     * @constructor
      */
     var DefaultNameResolver = function(options) {
         AbstractNameResolver.prototype.constructor.call(this, options);
@@ -77,7 +77,12 @@ define([
             "/" +
             objectName +
             "/EQUATORIAL";
-        Utils.requestUrl(url, 'text', 'text/plain', null, function(response){
+        Utils.requestUrl(
+            url,
+            "text",
+            "text/plain",
+            null,
+            function(response) {
                 // Check if response contains features
                 if (response.type === "FeatureCollection") {
                     var firstFeature = response.features[0];
@@ -94,13 +99,16 @@ define([
                 } else {
                     onError();
                 }
-        }, function(err) {
-            searchLayer(objectName, onSuccess, onError);
-        }, function(xhr, textStatus){
-            if (onComplete) {
-                onComplete(xhr);
+            },
+            function(err) {
+                searchLayer(objectName, onSuccess, onError);
+            },
+            function(xhr, textStatus) {
+                if (onComplete) {
+                    onComplete(xhr);
+                }
             }
-        });
+        );
     };
 
     /**

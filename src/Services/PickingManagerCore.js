@@ -21,13 +21,15 @@ define([
     "../Layer/OpenSearchLayer",
     "../Utils/Utils",
     "../Utils/UtilsIntersection",
-    "../Utils/Constants"
+    "../Utils/Constants",
+    "../Gui/dialog/ErrorDialog"
 ], function(
     FeatureStyle,
     OpenSearchLayer,
     Utils,
     UtilsIntersection,
-    Constants
+    Constants,
+    ErrorDialog
 ) {
     const DEFAULT_SIZE_MULTIPLICATOR = 1;
 
@@ -55,7 +57,7 @@ define([
         if (pickableLayers.indexOf(layer) === -1) {
             pickableLayers.push(layer);
         } else {
-            console.log("WARN:" + layer.name + " has been already added");
+            ErrorDialog.open(Constants.LEVEL.DEBUG, "PickingManagerCore.js", layer.name + " has been already added");
         }
     }
 
@@ -93,19 +95,19 @@ define([
         if (selectedData) {
             var style = new FeatureStyle(selectedData.feature.properties.style);
             switch (selectedData.feature.geometry.type) {
-                case Constants.GEOMETRY.LineString:
-                case Constants.GEOMETRY.MultiLineString:
-                case Constants.GEOMETRY.Polygon:
-                case Constants.GEOMETRY.MultiPolygon:
-                    style.strokeColor = selectedData.layer.getStyle().strokeColor;
-                    break;
-                case Constants.GEOMETRY.Point:
-                    // Use stroke color while reverting
-                    style.fillColor =
+            case Constants.GEOMETRY.LineString:
+            case Constants.GEOMETRY.MultiLineString:
+            case Constants.GEOMETRY.Polygon:
+            case Constants.GEOMETRY.MultiPolygon:
+                style.strokeColor = selectedData.layer.getStyle().strokeColor;
+                break;
+            case Constants.GEOMETRY.Point:
+                // Use stroke color while reverting
+                style.fillColor =
                         selectedData.feature.properties.style.strokeColor;
-                    break;
-                default:
-                    break;
+                break;
+            default:
+                break;
             }
             style.zIndex = selectedData.layer.getStyle().zIndex;
             if (typeof selectedData.layer.unhighlight !== "undefined") {
@@ -151,17 +153,17 @@ define([
             this.stackSelectionIndex = index;
             var style = new FeatureStyle(selectedData.feature.properties.style);
             switch (selectedData.feature.geometry.type) {
-                case Constants.GEOMETRY.LineString:
-                case Constants.GEOMETRY.MultiLineString:
-                case Constants.GEOMETRY.Polygon:
-                case Constants.GEOMETRY.MultiPolygon:
-                    style.strokeColor = strokeColor;
-                    break;
-                case Constants.GEOMETRY.Point:
-                    style.fillColor = fillColor;
-                    break;
-                default:
-                    break;
+            case Constants.GEOMETRY.LineString:
+            case Constants.GEOMETRY.MultiLineString:
+            case Constants.GEOMETRY.Polygon:
+            case Constants.GEOMETRY.MultiPolygon:
+                style.strokeColor = strokeColor;
+                break;
+            case Constants.GEOMETRY.Point:
+                style.fillColor = fillColor;
+                break;
+            default:
+                break;
             }
             style.zIndex = this.selectedStyle.zIndex;
             if (typeof selectedData.layer.highlight !== "undefined") {
@@ -200,20 +202,20 @@ define([
             var selectedData = this.getSelection()[i];
             var style = new FeatureStyle(selectedData.feature.properties.style);
             switch (selectedData.feature.geometry.type) {
-                case Constants.GEOMETRY.LineString:
-                case Constants.GEOMETRY.MultiLineString:
-                case Constants.GEOMETRY.Polygon:
-                case Constants.GEOMETRY.MultiPolygon:
-                    style.strokeColor = selectedData.layer.getStyle().strokeColor;
-                    style.strokeWidth = 1;
-                    break;
-                case Constants.GEOMETRY.Point:
-                    // Use stroke color while reverting
-                    style.fillColor =
+            case Constants.GEOMETRY.LineString:
+            case Constants.GEOMETRY.MultiLineString:
+            case Constants.GEOMETRY.Polygon:
+            case Constants.GEOMETRY.MultiPolygon:
+                style.strokeColor = selectedData.layer.getStyle().strokeColor;
+                style.strokeWidth = 1;
+                break;
+            case Constants.GEOMETRY.Point:
+                // Use stroke color while reverting
+                style.fillColor =
                         selectedData.feature.properties.style.strokeColor;
-                    break;
-                default:
-                    break;
+                break;
+            default:
+                break;
             }
             style.zIndex = selectedData.layer.getStyle().zIndex;
 
@@ -254,18 +256,18 @@ define([
                 style = new FeatureStyle(selectedData.layer.getStyle());
             }
             switch (selectedData.feature.geometry.type) {
-                case Constants.GEOMETRY.LineString:
-                case Constants.GEOMETRY.MultiLineString:
-                case Constants.GEOMETRY.Polygon:
-                case Constants.GEOMETRY.MultiPolygon:
-                    style.strokeColor = this.selectedStyle.strokeColor;
-                    style.strokeWidth = 3;
-                    break;
-                case Constants.GEOMETRY.Point:
-                    style.fillColor = this.selectedStyle.fillColor;
-                    break;
-                default:
-                    break;
+            case Constants.GEOMETRY.LineString:
+            case Constants.GEOMETRY.MultiLineString:
+            case Constants.GEOMETRY.Polygon:
+            case Constants.GEOMETRY.MultiPolygon:
+                style.strokeColor = this.selectedStyle.strokeColor;
+                style.strokeWidth = 3;
+                break;
+            case Constants.GEOMETRY.Point:
+                style.fillColor = this.selectedStyle.fillColor;
+                break;
+            default:
+                break;
             }
             style.zIndex = this.selectedStyle.zIndex;
             if (typeof selectedData.layer.highlight !== "undefined") {
@@ -365,82 +367,80 @@ define([
                 ? options.sizeMultiplicator
                 : DEFAULT_SIZE_MULTIPLICATOR;
         switch (feature.geometry.type) {
-            case Constants.GEOMETRY.LineString:
-                for (i = 0; i < feature.geometry.coordinates.length - 1; i++) {
-                    feat = feature.geometry.coordinates[i];
-                    featNext = feature.geometry.coordinates[i + 1];
+        case Constants.GEOMETRY.LineString:
+            for (i = 0; i < feature.geometry.coordinates.length - 1; i++) {
+                feat = feature.geometry.coordinates[i];
+                featNext = feature.geometry.coordinates[i + 1];
+                if (
+                    UtilsIntersection.pointInLine(pickPoint, feat, featNext)
+                ) {
+                    return true;
+                }
+            }
+            //var ring = this.fixDateLine(pickPoint, feature['geometry']['coordinates'][0]);
+            break;
+        case Constants.GEOMETRY.MultiLineString:
+            for (i = 0; i < feature.geometry.coordinates.length; i++) {
+                for (
+                    j = 0;
+                    j < feature.geometry.coordinates[i].length - 1;
+                    j++
+                ) {
+                    feat = feature.geometry.coordinates[i][j];
+                    featNext = feature.geometry.coordinates[i][j + 1];
                     if (
-                        UtilsIntersection.pointInLine(pickPoint, feat, featNext)
+                        UtilsIntersection.pointInLine(
+                            pickPoint,
+                            feat,
+                            featNext
+                        )
                     ) {
                         return true;
                     }
                 }
-                //var ring = this.fixDateLine(pickPoint, feature['geometry']['coordinates'][0]);
-                break;
-            case Constants.GEOMETRY.MultiLineString:
-                for (i = 0; i < feature.geometry.coordinates.length; i++) {
-                    for (
-                        j = 0;
-                        j < feature.geometry.coordinates[i].length - 1;
-                        j++
-                    ) {
-                        feat = feature.geometry.coordinates[i][j];
-                        featNext = feature.geometry.coordinates[i][j + 1];
-                        if (
-                            UtilsIntersection.pointInLine(
-                                pickPoint,
-                                feat,
-                                featNext
-                            )
-                        ) {
-                            return true;
-                        }
-                    }
-                }
-                break;
-            case Constants.GEOMETRY.Polygon:
+            }
+            break;
+        case Constants.GEOMETRY.Polygon:
+            ring = this.fixDateLine(
+                pickPoint,
+                feature.geometry.coordinates[0]
+            );
+            return UtilsIntersection.pointInRing(pickPoint, ring);
+        case Constants.GEOMETRY.MultiPolygon:
+            for (p = 0; p < feature.geometry.coordinates.length; p++) {
                 ring = this.fixDateLine(
                     pickPoint,
-                    feature.geometry.coordinates[0]
+                    feature.geometry.coordinates[p][0]
                 );
-                return UtilsIntersection.pointInRing(pickPoint, ring);
-            case Constants.GEOMETRY.MultiPolygon:
-                for (p = 0; p < feature.geometry.coordinates.length; p++) {
-                    ring = this.fixDateLine(
-                        pickPoint,
-                        feature.geometry.coordinates[p][0]
-                    );
-                    if (UtilsIntersection.pointInRing(pickPoint, ring)) {
-                        return true;
-                    }
+                if (UtilsIntersection.pointInRing(pickPoint, ring)) {
+                    return true;
                 }
-                return false;
-            case Constants.GEOMETRY.Point:
-                var point = feature.geometry.coordinates;
-                // Do not pick the labeled features
-                var isLabel =
+            }
+            return false;
+        case Constants.GEOMETRY.Point:
+            var point = feature.geometry.coordinates;
+            // Do not pick the labeled features
+            var isLabel =
                     feature &&
                     feature.properties &&
                     feature.properties.style &&
                     feature.properties.style.label;
-                var pt = [pickPoint[0], pickPoint[1], pickPoint[2]];
-                if (pickingNoDEM === true) {
-                    pt[2] = 0;
-                }
-                return (
-                    UtilsIntersection.pointInSphere(
-                        ctx,
-                        pt,
-                        point,
-                        feature.geometry._bucket.textureHeight *
+            var pt = [pickPoint[0], pickPoint[1], pickPoint[2]];
+            if (pickingNoDEM === true) {
+                pt[2] = 0;
+            }
+            return (
+                UtilsIntersection.pointInSphere(
+                    ctx,
+                    pt,
+                    point,
+                    feature.geometry._bucket.textureHeight *
                             sizeMultiplicator
-                    ) && !isLabel
-                );
-            default:
-                console.log(
-                    "WARN: Picking for " + feature.geometry.type + " is not yet"
-                );
-                return false;
+                ) && !isLabel
+            );
+        default:
+            ErrorDialog.open(Constants.LEVEL.DEBUG, "PickingManagerCore.js", "Picking for " + feature.geometry.type + " is not yet");
+            return false;
         }
     }
 
@@ -479,7 +479,7 @@ define([
                     var tile = selectedTile;
 
                     if (tile === null || typeof tile === "undefined") {
-                        console.error("no tile found");
+                        ErrorDialog.open(Constants.LEVEL.DEBUG, "PickingManagerCore.js", "no tile found");
                         continue;
                     }
                     var tileData = tile.extension.renderer;

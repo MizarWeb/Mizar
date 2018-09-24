@@ -35,7 +35,7 @@
  * along with GlobWeb. If not, see <http://www.gnu.org/licenses/>.
  ***************************************/
 
-define(["./Frustum", "./glMatrix"], function(Frustum) {
+define(["jquery","./Frustum", "./glMatrix"], function($, Frustum) {
     /**************************************************************************************************************/
     /**
          @name RenderContext
@@ -210,8 +210,8 @@ define(["./Frustum", "./glMatrix"], function(Frustum) {
      * @fires Context#baseLayersReady
      * @fires Context#baseLayersError
      * @fires Context#startBackgroundLoad
-     * @fires Context#endBackgroundLoad 
-     * @fires Context#features:added                  
+     * @fires Context#endBackgroundLoad
+     * @fires Context#features:added
      */
     RenderContext.prototype.frame = function() {
         if (this.isActive) {

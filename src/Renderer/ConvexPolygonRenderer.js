@@ -38,6 +38,7 @@
 define([
     "../Utils/Utils",
     "../Utils/Constants",
+    "../Gui/dialog/ErrorDialog",
     "./VectorRenderer",
     "./Program",
     "./FeatureStyle",
@@ -47,6 +48,7 @@ define([
 ], function(
     Utils,
     Constants,
+    ErrorDialog,
     VectorRenderer,
     Program,
     FeatureStyle,
@@ -551,8 +553,6 @@ define([
     ConvexPolygonRenderer.prototype.createBucket = function(layer, style) {
         var gl = this.renderContext.gl;
         var vb = gl.createBuffer();
-
-        console.log("ConvexPolygonrenderer.createBucket");
         // Create a bucket
         var bucket = new Bucket(layer, style);
 
@@ -571,7 +571,7 @@ define([
                 };
 
                 image.onerror = function(event) {
-                    console.error("Cannot load " + image.src);
+                    ErrorDialog.open(Constants.LEVEL.WARNING, "Cannot load " + image.src);
                 };
 
                 image.src = style.fillTextureUrl;

@@ -72,25 +72,25 @@ define([
         create: function(type, ctx, options) {
             var obj;
             switch (type) {
-                case Constants.NAVIGATION.AstroNavigation:
-                    obj = new AstroNavigation(ctx, options);
-                    break;
-                case Constants.NAVIGATION.PlanetNavigation:
-                    obj = new PlanetNavigation(ctx, options);
-                    break;
-                case Constants.NAVIGATION.FlatNavigation:
-                    obj = new FlatNavigation(ctx, options);
-                    break;
-                case Constants.NAVIGATION.GroundNavigation:
-                    obj = new GroundNavigation(ctx, options);
-                    break;
-                default:
-                    throw new RangeError(
-                        "The type " +
+            case Constants.NAVIGATION.AstroNavigation:
+                obj = new AstroNavigation(ctx, options);
+                break;
+            case Constants.NAVIGATION.PlanetNavigation:
+                obj = new PlanetNavigation(ctx, options);
+                break;
+            case Constants.NAVIGATION.FlatNavigation:
+                obj = new FlatNavigation(ctx, options);
+                break;
+            case Constants.NAVIGATION.GroundNavigation:
+                obj = new GroundNavigation(ctx, options);
+                break;
+            default:
+                throw new RangeError(
+                    "The type " +
                             type +
                             " is not allowed, A valid type is included in the list NAVIGATION",
-                        "NavigationFactory.js"
-                    );
+                    "NavigationFactory.js"
+                );
             }
             return obj;
         }

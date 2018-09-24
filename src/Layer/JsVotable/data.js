@@ -73,25 +73,25 @@ define([
             if (element.nodeType == 1) {
                 var nodeName = element.localName;
                 switch (nodeName) {
-                    case "TABLEDATA":
-                        data = new TableData(element);
-                        break;
-                    case "BINARY":
-                        data = new Binary(element);
-                        break;
-                    case "BINARY2":
-                        data = new Binary2(element);
-                        break;
-                    case "FITS":
-                        data = new Fits(element);
-                        break;
-                    case "INFO":
-                        infos.push(new Info(element));
-                        break;
-                    default:
-                        this.getCache().addWarning(
-                            "unknown element " + nodeName + " in Data node"
-                        );
+                case "TABLEDATA":
+                    data = new TableData(element);
+                    break;
+                case "BINARY":
+                    data = new Binary(element);
+                    break;
+                case "BINARY2":
+                    data = new Binary2(element);
+                    break;
+                case "FITS":
+                    data = new Fits(element);
+                    break;
+                case "INFO":
+                    infos.push(new Info(element));
+                    break;
+                default:
+                    this.getCache().addWarning(
+                        "unknown element " + nodeName + " in Data node"
+                    );
                 }
             }
         }

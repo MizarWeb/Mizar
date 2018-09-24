@@ -47,7 +47,7 @@ define([
          *     <li>{@link module:Provider.CraterProvider CraterProvider}</li>
          *     <li>{@link module:Provider.PlanetProvider PlanetProvider}</li>
          *     <li>{@link module:Provider.StarProvider StarProvider}</li>
-         *     <li>{@link module:Provider.TrajectoryProvider TrajectoryProvider}</li>         
+         *     <li>{@link module:Provider.TrajectoryProvider TrajectoryProvider}</li>
          * </ul>
          * @param {PROVIDER} type - Type of provider.
          * @param {Object} options - See the options for each animation for further information
@@ -59,30 +59,31 @@ define([
          * @see {@link module:Provider.PlanetProvider PlanetProvider} Loads planets position
          * @see {@link module:Provider.TrajectoryProvider TrajectoryProvider} Loads trajectory
          *
-         */        
+         */
+
         create: function(type, options) {
             var obj;
             switch (type) {
-                case Constants.PROVIDER.Constellation:
-                    obj = new ConstellationProvider(options);
-                    break;
-                case Constants.PROVIDER.Crater:
-                    obj = new CraterProvider(options);
-                    break;
-                case Constants.PROVIDER.Planet:
-                    obj = new PlanetProvider(options);
-                    break;
-                case Constants.PROVIDER.Star:
-                    obj = new StarProvider(options);
-                    break;
-                case Constants.PROVIDER.Trajectory:
-                    obj = new TrajectoryProvider(options);
-                    break;
-                default:
-                    throw new RangeError(
-                        "unable to create the provider " + type,
-                        "ProviderFactory.js"
-                    );
+            case Constants.PROVIDER.Constellation:
+                obj = new ConstellationProvider(options);
+                break;
+            case Constants.PROVIDER.Crater:
+                obj = new CraterProvider(options);
+                break;
+            case Constants.PROVIDER.Planet:
+                obj = new PlanetProvider(options);
+                break;
+            case Constants.PROVIDER.Star:
+                obj = new StarProvider(options);
+                break;
+            case Constants.PROVIDER.Trajectory:
+                obj = new TrajectoryProvider(options);
+                break;
+            default:
+                throw new RangeError(
+                    "unable to create the provider " + type,
+                    "ProviderFactory.js"
+                );
             }
             return obj;
         }

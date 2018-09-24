@@ -21,11 +21,10 @@ define([
     "./AbstractRegistryHandler",
     "../Utils/Constants"
 ], function(Utils, AbstractRegistryHandler, Constants) {
-
     /**
      * Creates a pending layer handler
-     * @param {*} pendingLayers 
-     * @param {*} layers 
+     * @param {*} pendingLayers
+     * @param {*} layers
      * @constructor
      * @augments AbstractRegistryHandler
      * @memberof module:Registry
@@ -63,8 +62,9 @@ define([
 
     /**
      * @function handleRequest
-     * @memberof PendingLayersRegistryHandler#     
-     */     
+     * @memberof PendingLayersRegistryHandler#
+     */
+
     PendingLayersRegistryHandler.prototype.handleRequest = function(
         layerDescription,
         callback,

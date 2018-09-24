@@ -37,20 +37,22 @@
 
 define([
     "../Utils/Utils",
+    "../Utils/Constants",
     "./RenderContext",
     "./VectorRenderer",
     "./RendererManager",
-    "./FeatureStyle",
     "./Program",
-    "./pnltri"
+    "./pnltri",
+    "../Gui/dialog/ErrorDialog"
 ], function(
     Utils,
+    Constants,
     RenderContext,
     VectorRenderer,
     RendererManager,
-    FeatureStyle,
     Program,
-    PNLTRI
+    PNLTRI,
+    ErrorDialog
 ) {
     /**************************************************************************************************************/
     /**
@@ -177,9 +179,7 @@ define([
             }
 
             if (indices === null) {
-                console.error(
-                    "Triangulation error ! Check if your GeoJSON geometry is valid"
-                );
+                ErrorDialog.open(Constants.LEVEL.DEBUG, "StencilPolygonRenderer.js", "Triangulation error ! Check if your GeoJSON geometry is valid");
                 return false;
             }
 

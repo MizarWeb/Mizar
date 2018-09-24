@@ -266,34 +266,34 @@ define(["./Triangle"], function(Triangle) {
 
             var scaledValue;
             switch (this.image.transferFn) {
-                case "linear":
-                    scaledValue = (value / nbBins) * originY;
-                    break;
-                case "log":
-                    scaledValue =
+            case "linear":
+                scaledValue = (value / nbBins) * originY;
+                break;
+            case "log":
+                scaledValue =
                         (Math.log(value / 10.0 + 1) /
                             Math.log(nbBins / 10.0 + 1)) *
                         originY;
-                    break;
-                case "sqrt":
-                    scaledValue =
+                break;
+            case "sqrt":
+                scaledValue =
                         (Math.sqrt(value / 10.0) / Math.sqrt(nbBins / 10.0)) *
                         originY;
-                    break;
-                case "sqr":
-                    scaledValue =
+                break;
+            case "sqr":
+                scaledValue =
                         (Math.pow(value, 2) / Math.pow(nbBins, 2)) * originY;
-                    break;
-                case "asin":
-                    scaledValue =
+                break;
+            case "asin":
+                scaledValue =
                         (Math.log(value + Math.sqrt(Math.pow(value, 2) + 1.0)) /
                             Math.log(
                                 nbBins + Math.sqrt(Math.pow(nbBins, 2) + 1.0)
                             )) *
                         originY;
-                    break;
-                default:
-                    break;
+                break;
+            default:
+                break;
             }
 
             if (!this.image.inverse) {

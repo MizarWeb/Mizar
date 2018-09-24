@@ -16,19 +16,28 @@
  * You should have received a copy of the GNU General Public License
  * along with MIZAR. If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
-define(["underscore-min", "../Layer/LayerFactory", "../Utils/Constants", "../Gui/dialog/ErrorDialog"], function(_, LayerFactory, Constants, ErrorDialog) {
-
+define([
+    "underscore-min",
+    "../Layer/LayerFactory",
+    "../Utils/Constants",
+    "../Gui/dialog/ErrorDialog"
+], function(_, LayerFactory, Constants, ErrorDialog) {
     /**
      * @name AbstractRegistryHandler
      * @class
      *  Abstract Registry Handler
      * @param {object} options
      * @implements {RegistryHandler}
-     */    
+     */
+
     var AbstractRegistryHandler = function() {
         this.next = {
             handleRequest: function(layerDescription, callback, fallback) {
-                ErrorDialog.open(Constants.LEVEL.WARNING, "All strategies exhausted.");
+                ErrorDialog.open(
+                    Constants.LEVEL.DEBUG,
+                    "AbstractRegistryHandler.js",
+                    "All strategies exhausted."
+                );
             }
         };
     };
@@ -45,7 +54,8 @@ define(["underscore-min", "../Layer/LayerFactory", "../Utils/Constants", "../Gui
     /**
      * @function handleRequest
      * @memberof AbstractRegistryHandler#
-     */    
+     */
+
     AbstractRegistryHandler.prototype.handleRequest = function(
         layerDescription,
         callback,
@@ -58,7 +68,8 @@ define(["underscore-min", "../Layer/LayerFactory", "../Utils/Constants", "../Gui
      * @memberof AbstractRegistryHandler#
      * @param {Layer[]} pendingLayers Pending layers
      * @param {Layer[]} List pf layers
-     */  
+     */
+
     AbstractRegistryHandler.prototype._handlePendingLayers = function(
         pendingLayers,
         layers
@@ -66,10 +77,7 @@ define(["underscore-min", "../Layer/LayerFactory", "../Utils/Constants", "../Gui
         //TODO : I loose the callback of pendingLayers
         for (var i = 0; i < layers.length && pendingLayers.length !== 0; i++) {
             var layer = layers[i];
-            if (
-                pendingLayers.length != 0 &&
-                layer.isBackground()
-            ) {
+            if (pendingLayers.length != 0 && layer.isBackground()) {
                 var j = pendingLayers.length;
                 while (j > 0) {
                     j--;
@@ -79,7 +87,9 @@ define(["underscore-min", "../Layer/LayerFactory", "../Utils/Constants", "../Gui
                             LayerFactory.create(pendingLayerDescription)
                         );
                         pendingLayers.splice(j, 1);
-                    } catch (RangeError) {}
+                    } catch (RangeError) {
+                        ErrorDialog.open(Constants.LEVEL.DEBUG, "Failed to create layer", RangeError.message);
+                    }
                 }
                 break;
             }

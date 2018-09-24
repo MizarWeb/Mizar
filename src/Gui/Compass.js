@@ -244,7 +244,7 @@ define([
 
                 // Append the imported SVG root element to the appropriate HTML element
                 document.getElementById(self.parentElement).innerHTML =
-                    '<div id="objectCompass"></div>';
+                    "<div id=\"objectCompass\"></div>";
                 $("#objectCompass").append(self.svgDoc);
 
                 self.setSvg(self.svgDoc);

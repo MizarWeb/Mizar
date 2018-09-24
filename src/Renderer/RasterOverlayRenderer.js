@@ -742,8 +742,8 @@ define([
                 renderable.tile.state === Tile.State.LOADED
                     ? this.tileManager.tileIndexBuffer.getSolid()
                     : this.tileManager.tileIndexBuffer.getSubSolid(
-                          renderable.tile.parentIndex
-                      );
+                        renderable.tile.parentIndex
+                    );
             if (currentIB !== indexBuffer) {
                 gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
                 currentIB = indexBuffer;

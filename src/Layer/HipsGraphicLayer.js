@@ -39,8 +39,9 @@ define([
     "../Utils/Utils",
     "../Tiling/HEALPixTiling",
     "./AbstractHipsLayer",
-    "../Utils/Constants"
-], function(Utils, HEALPixTiling, AbstractHipsLayer, Constants) {
+    "../Utils/Constants",
+    "../Gui/dialog/ErrorDialog"
+], function(Utils, HEALPixTiling, AbstractHipsLayer, Constants, ErrorDialog) {
     /**************************************************************************************************************/
 
     /**
@@ -60,7 +61,7 @@ define([
      * @see {@link http://www.ivoa.net/documents/HiPS/20170406/index.html Hips standard}
      * @fires Context#baseLayersError
      */
-    var HipsGraphicLayer = function(hipsMetadata, options) {        
+    var HipsGraphicLayer = function(hipsMetadata, options) {
         //options.format = options.format || "jpg";
         AbstractHipsLayer.prototype.constructor.call(
             this,
@@ -69,7 +70,6 @@ define([
         );
 
         this._ready = false;
-        
 
         // allsky
         this.levelZeroImage = new Image();
@@ -96,10 +96,8 @@ define([
                 error
             );
             self._ready = false;
-
-            console.error("Cannot load " + self.levelZeroImage.src);
+            ErrorDialog.open(Constants.LEVEL.WARNING, "Cannot load " + self.levelZeroImage.src);
         };
-
     };
 
     /**************************************************************************************************************/
@@ -130,7 +128,7 @@ define([
     HipsGraphicLayer.prototype.loadOverview = function() {
         if (this.isBackground()) {
             this.levelZeroImage.src =
-                this.proxify(this.baseUrl) + "/Norder3/Allsky." + this.format;
+                this.allowRequest(this.baseUrl) + "/Norder3/Allsky." + this.format;
         }
     };
 
@@ -144,7 +142,7 @@ define([
      * @return {string} Url
      */
     HipsGraphicLayer.prototype.getUrl = function(tile) {
-        var url = this.proxify(this.baseUrl);
+        var url = this.allowRequest(this.baseUrl);
 
         url += "/Norder";
         url += tile.order;
@@ -157,7 +155,7 @@ define([
         url += tile.pixelIndex;
         url += "." + this.format;
 
-        return this.proxify(url);
+        return this.allowRequest(url);
     };
 
     /**************************************************************************************************************/

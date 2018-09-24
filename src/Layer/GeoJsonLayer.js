@@ -65,11 +65,11 @@ define([
             feature.geometry.crs = globalCrs
                 ? globalCrs
                 : {
-                      type: "name",
-                      properties: {
-                          name: Constants.CRS.WGS84
-                      }
-                  };
+                    type: "name",
+                    properties: {
+                        name: Constants.CRS.WGS84
+                    }
+                };
         }
         return feature;
     }

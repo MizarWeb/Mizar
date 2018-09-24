@@ -38,8 +38,10 @@
 define([
     "../Renderer/BoundingBox",
     "../Renderer/Ray",
+    "../Utils/Constants",
+    "../Gui/dialog/ErrorDialog",
     "../Renderer/glMatrix"
-], function(BoundingBox, Ray) {
+], function(BoundingBox, Ray, Constants, ErrorDialog) {
     /**************************************************************************************************************/
 
     /**
@@ -543,7 +545,7 @@ define([
         if (minChildrenIntersection && minChildrenIntersection >= 0) {
             final_t = minChildrenIntersection;
         } else if (this.vertices == null) {
-            console.warn("vertices is null");
+            ErrorDialog.open(Constants.LEVEL.DEBUG, "Tile.js", "vertices is null");
         } else {
             var intersection = null;
 

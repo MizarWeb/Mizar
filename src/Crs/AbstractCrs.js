@@ -22,8 +22,9 @@ define([
     "./Geoide",
     "../Utils/Constants",
     "./AstroCoordTransform",
+    "../Gui/dialog/ErrorDialog",
     "../Renderer/glMatrix"
-], function(Numeric, Geoide, Constants, AstroCoordTransform) {
+], function(Numeric, Geoide, Constants, ErrorDialog, AstroCoordTransform) {
     /**
      * Abstract coordinate reference system configuration
      * @typedef {AbstractCrs.geoide_configuration} AbstractCrs.configuration
@@ -100,7 +101,7 @@ define([
             dest = new Array(3);
         }
         if (!geo || geo.length < 2) {
-            console.log("Erreur !");
+            ErrorDialog.open(Constants.LEVEL.DEBUG, "AbstractCrs.js", "geo is 2D or does not exist");
             dest[0] = 0;
             dest[1] = 0;
             dest[2] = 0;
@@ -427,40 +428,38 @@ define([
         var convertedGeo = null;
         var convertType = null;
         switch (from + "2" + to) {
-            case Constants.CRS.Galactic + "2" + Constants.CRS.Equatorial:
-                convertType = AstroCoordTransform.Type.GAL2EQ;
-                convertedGeo = AstroCoordTransform.transformInDeg(
-                    geo,
-                    convertType
-                );
-                break;
-            case Constants.CRS.Equatorial + "2" + Constants.CRS.Galactic:
-                convertType = AstroCoordTransform.Type.EQ2GAL;
-                convertedGeo = AstroCoordTransform.transformInDeg(
-                    geo,
-                    convertType
-                );
-                if (convertedGeo[0] < 0) {
-                    // TODO : Check if convertedGeo can be negative
-                    console.warn(
-                        "EQ2GAL transformation returned negative value"
-                    );
-                    convertedGeo[0] += 360;
-                }
-                break;
-            case Constants.CRS.Mars_2000 + "2" + Constants.CRS.Mars_2000_old:
-            case Constants.CRS.Mars_2000_old + "2" + Constants.CRS.Mars_2000:
-                convertedGeo = geo;
-                break;
-            case Constants.CRS.Moon_2000 + "2" + Constants.CRS.Moon_2000_old:
-            case Constants.CRS.Moon_2000_old + "2" + Constants.CRS.Moon_2000:
-                convertedGeo = geo;
-                break;
-            default:
-                throw new RangeError(
-                    "Conversion " + from + " to " + to + " is not implemented",
-                    "AbstractCrs.js"
-                );
+        case Constants.CRS.Galactic + "2" + Constants.CRS.Equatorial:
+            convertType = AstroCoordTransform.Type.GAL2EQ;
+            convertedGeo = AstroCoordTransform.transformInDeg(
+                geo,
+                convertType
+            );
+            break;
+        case Constants.CRS.Equatorial + "2" + Constants.CRS.Galactic:
+            convertType = AstroCoordTransform.Type.EQ2GAL;
+            convertedGeo = AstroCoordTransform.transformInDeg(
+                geo,
+                convertType
+            );
+            if (convertedGeo[0] < 0) {
+                // TODO : Check if convertedGeo can be negative
+                ErrorDialog.open(Constants.LEVEL.DEBUG, "AbstractCRs.js", "EQ2GAL transformation returned negative value");
+                convertedGeo[0] += 360;
+            }
+            break;
+        case Constants.CRS.Mars_2000 + "2" + Constants.CRS.Mars_2000_old:
+        case Constants.CRS.Mars_2000_old + "2" + Constants.CRS.Mars_2000:
+            convertedGeo = geo;
+            break;
+        case Constants.CRS.Moon_2000 + "2" + Constants.CRS.Moon_2000_old:
+        case Constants.CRS.Moon_2000_old + "2" + Constants.CRS.Moon_2000:
+            convertedGeo = geo;
+            break;
+        default:
+            throw new RangeError(
+                "Conversion " + from + " to " + to + " is not implemented",
+                "AbstractCrs.js"
+            );
         }
 
         return convertedGeo;
@@ -523,7 +522,7 @@ define([
             this._pad2Digits(min) +
             "' " +
             this._pad2Digits(Numeric.roundNumber(sec, 2)) +
-            '"'
+            "\""
         );
     };
 

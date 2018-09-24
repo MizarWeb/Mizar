@@ -20,24 +20,21 @@ define([
     "../Utils/Utils",
     "./AbstractRegistryHandler",
     "../Utils/Constants",
+    "../Gui/dialog/ErrorDialog",
     "./WMSServer"
-], function(Utils, AbstractRegistryHandler, Constants, WMSServer) {
-
+], function(Utils, AbstractRegistryHandler, Constants, ErrorDialog, WMSServer) {
     /**
      * @class
      * Creates a WMS handler to create {@link WMSLayer WMS layers}
-     * @param {*} mizarConfiguration 
-     * @param {*} pendingLayers 
+     * @param {*} pendingLayers
      * @augments AbstractRegistryHandler
      * @memberof module:Registry
      * @constructor
      * @see {@link WMSServer}
      */
-    var WMSServerRegistryHandler = function(mizarConfiguration, pendingLayers) {
+    var WMSServerRegistryHandler = function(pendingLayers) {
         AbstractRegistryHandler.prototype.constructor.call();
         this.pendingLayers = pendingLayers;
-        this.proxyUse = mizarConfiguration.proxyUse;
-        this.proxyUrl = mizarConfiguration.proxyUrl;
     };
 
     /**************************************************************************************************************/
@@ -49,7 +46,8 @@ define([
     /**
      * @function handleRequest
      * @memberof WMSServerRegistryHandler#
-     */    
+     */
+
     WMSServerRegistryHandler.prototype.handleRequest = function(
         layerDescription,
         callback,
@@ -58,8 +56,6 @@ define([
         try {
             if (layerDescription.type === Constants.LAYER.WMS) {
                 var wmsServer = new WMSServer(
-                    this.proxyUse,
-                    this.proxyUrl,
                     layerDescription
                 );
                 var self = this;
@@ -75,7 +71,7 @@ define([
             if (fallback) {
                 fallback(e);
             } else {
-                console.error(e);
+                ErrorDialog.open(Constants.LEVEL.DEBUG, "WMSServerRegistryHandler.js", e);
             }
         }
     };

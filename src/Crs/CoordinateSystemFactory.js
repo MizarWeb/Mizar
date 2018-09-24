@@ -54,40 +54,40 @@ define([
     function _createCrs(geoideName, options) {
         var cs;
         switch (geoideName) {
-            case Constants.CRS.Equatorial:
-                cs = new EquatorialCrs(options);
-                break;
-            case Constants.CRS.Galactic:
-                cs = new GalacticCrs(options);
-                break;
+        case Constants.CRS.Equatorial:
+            cs = new EquatorialCrs(options);
+            break;
+        case Constants.CRS.Galactic:
+            cs = new GalacticCrs(options);
+            break;
             // For Earth
-            case Constants.CRS.WGS84:
-                cs = new WGS84Crs(options);
-                break;
+        case Constants.CRS.WGS84:
+            cs = new WGS84Crs(options);
+            break;
             // For Mars
-            case Constants.CRS.Mars_2000_old:
-            case Constants.CRS.Mars_2000:
-                cs = new Mars2000Crs(options);
-                break;
+        case Constants.CRS.Mars_2000_old:
+        case Constants.CRS.Mars_2000:
+            cs = new Mars2000Crs(options);
+            break;
             // For Moon
-            case Constants.CRS.Moon_2000_old:
-            case Constants.CRS.Moon_2000:
-                cs = new Moon2000Crs(options);
-                break;
+        case Constants.CRS.Moon_2000_old:
+        case Constants.CRS.Moon_2000:
+            cs = new Moon2000Crs(options);
+            break;
             // For Ground
-            case Constants.CRS.HorizontalLocal:
-                cs = new HorizontalLocalCrs(options);
-                break;
+        case Constants.CRS.HorizontalLocal:
+            cs = new HorizontalLocalCrs(options);
+            break;
             // For Sun
-            case Constants.CRS.Sun:
-                cs = new SunCrs(options);
-                break;
+        case Constants.CRS.Sun:
+            cs = new SunCrs(options);
+            break;
             // Unknown geoide name
-            default:
-                throw new RangeError(
-                    "Datum " + geoideName + " not implemented",
-                    "CoordinateSystemFactory.js"
-                );
+        default:
+            throw new RangeError(
+                "Datum " + geoideName + " not implemented",
+                "CoordinateSystemFactory.js"
+            );
         }
         return cs;
     }

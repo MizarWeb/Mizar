@@ -17,10 +17,11 @@
  * along with GlobWeb. If not, see <http://www.gnu.org/licenses/>.
  ***************************************/
 
-define(["../Utils/Utils", "./Renderer", "./ColladaParser"], function(
+define(["../Utils/Utils", "./Renderer", "./ColladaParser", "../Utils/Proxy"], function(
     Utils,
     Renderer,
-    ColladaParser
+    ColladaParser,
+    Proxy
 ) {
     /**************************************************************************************************************/
 
@@ -161,7 +162,7 @@ define(["../Utils/Utils", "./Renderer", "./ColladaParser"], function(
             };
 
             node.loading = true;
-            xhr.open("GET", node.modelPath);
+            xhr.open("GET", Proxy.proxify(node.modelPath));
             xhr.overrideMimeType("text/xml");
             xhr.send();
         }
