@@ -372,19 +372,21 @@ define([], function() {
      *
      * @param {vec3} vec First vector
      * @param {vec3} vec2 Second vector
-     * @param {number} lerp Interpolation amount between the two inputs
+     * @param {number} t Interpolation amount between the two inputs
      * @param {vec3} [dest] vec3 receiving operation result. If not specified result is written to vec
      *
      * @returns {vec3} dest if specified, vec otherwise
      */
-    vec3.lerp = function(vec, vec2, lerp, dest) {
+    vec3.lerp = function(vec, vec2, t, dest) {
         if (!dest) {
             dest = vec;
         }
 
-        dest[0] = vec[0] + lerp * (vec2[0] - vec[0]);
-        dest[1] = vec[1] + lerp * (vec2[1] - vec[1]);
-        dest[2] = vec[2] + lerp * (vec2[2] - vec[2]);
+        const oneMinusT = 1 - t;
+
+        dest[0] = oneMinusT * vec[0] + t * vec2[0];
+        dest[1] = oneMinusT * vec[1] + t * vec2[1];
+        dest[2] = oneMinusT * vec[2] + t * vec2[2];
 
         return dest;
     };

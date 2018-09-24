@@ -420,8 +420,8 @@ define(["../Utils/Constants"], function(Constants) {
     };
 
     FeatureStyle.prototype.setOpacity = function(opacity) {
-        if (typeof opacity === "number" && opacity >= 0.0 && opacity <= 1.0) {
-            this.opacity = opacity;
+        if (typeof opacity === "number") {
+            this.opacity = Math.min(1.0, Math.max(0.0, opacity));
         } else {
             throw new RangeError(
                 "opacity value should be a value in [0..1]",
