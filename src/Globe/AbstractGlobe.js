@@ -319,6 +319,7 @@ define([
                     layer.getUrl(),
                     "json",
                     "application/json",
+                    null,                
                     function(data) {
                         layer.addFeatureCollection(data);
                         layer.id = globe.nbCreatedLayers;
@@ -329,7 +330,6 @@ define([
                             layer.callback(data);
                         }
                     },
-                    null,
                     function(err) {
                         ErrorDialog.open(
                             Constants.LEVEL.ERROR,
