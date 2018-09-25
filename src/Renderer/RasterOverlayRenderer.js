@@ -428,6 +428,25 @@ define([
 
     /**************************************************************************************************************/
 
+    RasterOverlayRenderer.prototype.updateOverlay = function(overlay) {
+        this.needTransition = true;
+
+        var bucket = overlay._bucket;
+
+        if (!bucket) {
+            this.addOverlay(overlay);
+        } else {
+            for (var i = 0; i < this.tileManager.level0Tiles.length; i++) {
+                var tile = this.tileManager.level0Tiles[i];
+                if (tile.state === Tile.State.LOADED) {
+                    this.addOverlayToTile(tile, bucket);
+                }
+            }
+        }
+    };
+
+    /**************************************************************************************************************/
+
     /**
      * Add an overlay into a tile.
      * Create tile data if needed, and create the renderable for the overlay.

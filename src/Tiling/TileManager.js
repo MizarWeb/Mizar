@@ -215,8 +215,14 @@ define([
      */
     function _updateOverlay(renderable, layer) {
         var bucket = renderable.bucket;
-        bucket.renderer.removeOverlay(bucket.layer);
-        bucket.renderer.addOverlay(layer);
+        var renderer = bucket.renderer;
+
+        if (renderer.updateOverlay) {
+            renderer.updateOverlay(bucket.layer);
+        } else {
+            renderer.removeOverlay(bucket.layer);
+            renderer.addOverlay(bucket.layer);
+        }
     }
 
     function _abortTilesForLayer(tiles, layer, callback) {
