@@ -224,7 +224,7 @@ define([
         }
 
         return onTerrain;
-    }
+    };
 
     /**
      * Add a feature to renderers.

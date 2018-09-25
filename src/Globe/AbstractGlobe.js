@@ -115,8 +115,8 @@ define([
         this.preRenderers = [];
         this.nbCreatedLayers = 0;
         this.definedBackgound = false;
-            this.subdivisionLength = options.subdivisionLength || 10000;
-            this.maxSubdivisionCount = options.maxSubdivisionCount || 128;
+        this.subdivisionLength = options.subdivisionLength || 10000;
+        this.maxSubdivisionCount = options.maxSubdivisionCount || 128;
 
         this.tileManager.addPostRenderer(this.rendererManager);
 
@@ -710,7 +710,7 @@ define([
      */
     AbstractGlobe.prototype.getSubdivisionLength = function() {
         return this.subdivisionLength;
-    }
+    };
 
     /**
      * @function setSubdivisionLength
@@ -718,7 +718,7 @@ define([
      */
     AbstractGlobe.prototype.setSubdivisionLength = function(value) {
         this.subdivisionLength = value;
-    }
+    };
 
     /**
      * @function getMaxSubdivisionCount
@@ -726,7 +726,7 @@ define([
      */
     AbstractGlobe.prototype.getMaxSubdivisionCount = function() {
         return this.maxSubdivisionCount;
-    }
+    };
 
     /**
      * @function setMaxSubdivisionCount
@@ -734,7 +734,7 @@ define([
      */
     AbstractGlobe.prototype.setMaxSubdivisionCount = function(value) {
         this.maxSubdivisionCount = value;
-    }
+    };
 
     return AbstractGlobe;
 });
