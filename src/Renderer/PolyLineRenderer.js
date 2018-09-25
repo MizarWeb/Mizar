@@ -110,6 +110,10 @@ define([
 
     /**************************************************************************************************************/
 
+    Renderable.prototype._clamp = function(x, a, b) {
+        return Math.max(a, Math.min(x, b));
+    };
+
     Renderable.prototype._subdivideSegment = function(p0, p1, crsName) {
         const globe = this.bucket.renderer.globe;
         const cs = globe.getCoordinateSystem();
@@ -121,7 +125,7 @@ define([
         var p1in3d = vec3.create(); cs.get3DFromWorldInCrs(p1, crsName, p1in3d);
 
         const d = vec3.dist(p0in3d, p1in3d);
-        const subdivisionCount = Math.min(Math.floor(d / subdivisionLength), maxSubdivisionCount);
+        const subdivisionCount = this._clamp(Math.floor(d / subdivisionLength), 1, maxSubdivisionCount);
         const alt0 = p0[2];
         const alt1 = p1[2];
 
