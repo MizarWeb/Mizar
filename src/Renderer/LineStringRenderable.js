@@ -326,7 +326,7 @@ define([
             return false;
         }
 
-        result =
+        const result =
             (type === Constants.GEOMETRY.LineString ||
                 type === Constants.GEOMETRY.MultiLineString ||
                 (!style.fill &&

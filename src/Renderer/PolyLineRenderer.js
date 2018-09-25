@@ -91,7 +91,7 @@ define([
 
     PolyLineRenderer.prototype.generateLevelZero = function(tile) {
         // do nothing
-    }
+    };
 
     /**************************************************************************************************************/
 
@@ -137,7 +137,7 @@ define([
         }
 
         return result;
-    }
+    };
 
     /**************************************************************************************************************/
 
@@ -152,7 +152,7 @@ define([
         }
 
         return result;
-    }
+    };
 
     /**************************************************************************************************************/
 
@@ -241,7 +241,7 @@ define([
 
         this.ibo = null;
         this.vbo = null;
-    }
+    };
 
     Renderable.prototype.bindBuffers = function(rc) {
         if (!rc) return;
@@ -262,7 +262,7 @@ define([
 
         gl.bindBuffer(gl.ARRAY_BUFFER, this.vbo);
         gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.ibo);
-    }
+    };
 
     /**************************************************************************************************************/
 
@@ -292,7 +292,7 @@ define([
         geometry._bucket = bucket;
 
         this.buckets.push(bucket);
-    }
+    };
 
     /**************************************************************************************************************/
 
@@ -303,7 +303,7 @@ define([
             bucket.mainRenderable.dispose();
             bucket.mainRenderable = null;
         }
-    }
+    };
 
     /**************************************************************************************************************/
 
@@ -421,7 +421,7 @@ define([
      * @return {PolyLineBucket} Bucket
      */
     PolyLineRenderer.prototype.createBucket = function(layer, style) {
-        return new PolyLineBucket(layer, style);
+        return new Bucket(layer, style);
     };
 
     /**************************************************************************************************************/
