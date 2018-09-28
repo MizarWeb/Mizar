@@ -912,7 +912,7 @@ define(["jquery", "../Utils/Constants", "../Gui/dialog/ErrorDialog", "../Utils/P
         var url = baseUrl + "/properties";
         var properties = $.ajax({
             type: "GET",
-            url: Proxy.allowRequest(baseUrl + "/properties"),
+            url: Proxy.proxify(baseUrl + "/properties"),
             async: false,
             beforeSend:function(xhr) {
                 xhr.setRequestHeader("Accept", "text/plain");
