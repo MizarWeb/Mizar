@@ -718,6 +718,12 @@ define([
             function(e) {
                 if (fallback) {
                     fallback(e);
+                } else {
+                    ErrorDialog.open(
+                        Constants.LEVEL.ERROR,
+                        "Cannot create the layer(s)",
+                        e
+                    );
                 }
             }
         );

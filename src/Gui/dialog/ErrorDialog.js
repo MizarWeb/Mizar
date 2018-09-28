@@ -88,24 +88,27 @@ define(["../../Utils/Constants", "jquery", "jquery.ui"], function(
     var _computeMessageHTML = function(message, description) {
         if (description != null && message != null) {
             message = message + " - <font style='color:white'>";
-            if (typeof description === "object") {
-                message = message + JSON.stringify(description);
-            } else {
+            if (typeof description === "string") {
                 message = message + description;
+            } else if(description.message) {
+                message = message + description.message;
+            } else {
+                message = message + JSON.stringify(description);
             }
-
             message = message + "</font>";
         }  
         return message;      
     };
 
     var _computeMessageASCII = function(message, description) {
-        if (description != null && message != null) {            
-            if (typeof description === "object") {
-                message = message + JSON.stringify(description);
+        if (description != null && message != null) {  
+            if (typeof description === "string") {
+                message = message + ":" + description;
+            } else if(description.message) {
+                message = message +":" + description.message;
             } else {
-                message = message + description;
-            }
+                message = message + ":" + JSON.stringify(description);
+            }                      
         }  
         return message;      
     };  
