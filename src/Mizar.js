@@ -169,7 +169,7 @@ define([
         _checkConfiguration(options);
         this.options = _createConfiguration(options);
 
-        ErrorDialog.setDebug(this.options.debug ? this.options.debug : false);
+        ErrorDialog.setDebug(this.options.configuration.debug ? this.options.configuration.debug : false);
 
         // Init all factories
         /**
