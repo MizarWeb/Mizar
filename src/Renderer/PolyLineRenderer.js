@@ -301,7 +301,7 @@ define([
     /**************************************************************************************************************/
 
     PolyLineRenderer.prototype.removeGeometry = function(layer, geometry) {
-        var bucket = geometry._bucket;
+        var bucket = layer._bucket;
         if (bucket.mainRenderable) {
             // Cleanup opengl resources
             bucket.mainRenderable.dispose();
