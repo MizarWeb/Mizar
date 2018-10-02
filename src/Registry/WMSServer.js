@@ -27,7 +27,7 @@ define([
     /**
      * @class
      * Creates an instance of WMS server
-     * A WMS server exposes a set of {@link WMTLayer WMT} layers.
+     * A WMS server exposes a set of {@link WMSLayer WMS} layers.
      * @param {Options} options Options
      * @param {string} [options.baseUrl] Base URL of the getCapabilities
      * @param {string} [options.getCapabilities] GetCapabilities
@@ -340,6 +340,7 @@ define([
         var bbox = _bboxGroup.call(this, jsonLayer);
         var center = _computeCenterBbox.call(this, bbox);
         var layerDesc = Object.assign({}, layerDescription, {});
+        
         layerDesc.name = layerDescription.name || jsonLayer.Title;
         layerDesc.format = layerDescription.format || "image/png";
         layerDesc.layers = jsonLayer.Name;

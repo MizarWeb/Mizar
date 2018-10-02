@@ -29,6 +29,7 @@ define([
     "../Registry/WMSServerRegistryHandler",
     "../Registry/WMTSServerRegistryHandler",
     "../Registry/WCSServerRegistryHandler",
+    "../Registry/OpenSearchRegistryHandler",
     "../Registry/PendingLayersRegistryHandler",
     "../Registry/LayerRegistryHandler",
     "../Gui/Compass",
@@ -56,6 +57,7 @@ define([
     WMSServerRegistryHandler,
     WMTSServerRegistryHandler,
     WCSServerRegistryHandler,
+    OpenSearchRegistryHandler,
     PendingLayersRegistryHandler,
     LayerRegistryHandler,
     Compass,
@@ -657,12 +659,17 @@ define([
             this.layers,
             this.pendingLayers
         );
+
+        var openSearchServerHandler = new OpenSearchRegistryHandler(
+            this.pendingLayers
+        );        
         var layerHandler = new LayerRegistryHandler(this.pendingLayers);
 
         pendingLayersHandler.setNext(wmsServerHandler);
         wmsServerHandler.setNext(wmtsServerHandler);
         wmtsServerHandler.setNext(wcsServerHandler);
-        wcsServerHandler.setNext(layerHandler);
+        wcsServerHandler.setNext(openSearchServerHandler);
+        openSearchServerHandler.setNext(layerHandler);
 
         var self = this;
         pendingLayersHandler.handleRequest(
