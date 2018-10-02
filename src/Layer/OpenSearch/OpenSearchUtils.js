@@ -72,7 +72,7 @@ define(["jquery"],function($) {
         var param; // param managed
         for (var i = 0; i < form.parameters.length; i++) {
             param = form.parameters[i];
-            if (param.name === name) {
+            if (param.value === "{"+name+"}") {
                 param.currentValue = value;
                 $("#p_" + name).val(value);
                 break;
@@ -94,7 +94,7 @@ define(["jquery"],function($) {
         var param; // param managed
         for (var i = 0; i < form.parameters.length; i++) {
             param = form.parameters[i];
-            if (param.name === name) {
+            if (param.value === "{"+name+"}") {
                 return param.currentValue;
             }
         }

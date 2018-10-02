@@ -35,6 +35,7 @@
  * along with GlobWeb. If not, see <http://www.gnu.org/licenses/>.
  ***************************************/
 define([
+    "underscore-min",
     "../Renderer/FeatureStyle",
     "../Renderer/RendererManager",
     "../Utils/Utils",
@@ -53,6 +54,7 @@ define([
     "./OpenSearch/OpenSearchCache",
     "moment"
 ], function(
+    _,
     FeatureStyle,
     RendererManager,
     Utils,
@@ -132,32 +134,14 @@ define([
             options
         );
 
-        this.name = options.name;
-        this.title = options.title;
-
-        this.afterLoad = options.afterLoad;
-
         this.minOrder = options.minOrder || 5;
         this.maxRequests = options.maxRequests || 2;
-        this.invertY = options.invertY || false;
-        this.coordSystemRequired = options.hasOwnProperty("coordSystemRequired")
-            ? options.coordSystemRequired
-            : true;
+        this.coordSystemRequired = options.hasOwnProperty("coordSystemRequired")? options.coordSystemRequired: true;
 
-        this.oldBound = null;
 
         this.previousViewKey = null;
-        this.previousTileWidth = null;
+        this.previousTileId = null;
         this.previousDistance = null;
-
-        // Used for picking management
-        //this.features = [];
-        // Counter set, indicates how many times the feature has been requested
-        //this.featuresSet = {};
-        //this.tilesToLoad = [];
-
-        // Keep save of all tiles where a feature is set, in order to remove all when reset
-        //this.allTiles = {};
 
         // Keep trace of all features loaded (TODO: make object more light, just keep geometry and style ?)
         this.features = [];
@@ -168,11 +152,7 @@ define([
 
         // last datetime for removing outside
         this.lastRemovingDateTime = null;
-        this.removingDeltaSeconds = options.hasOwnProperty(
-            "removingDeltaSeconds"
-        )
-            ? options.removingDeltaSeconds
-            : 5;
+        this.removingDeltaSeconds = options.hasOwnProperty("removingDeltaSeconds")? options.removingDeltaSeconds: 1;
 
         // OpenSearch result
         this.result = new OpenSearchResult();
@@ -186,29 +166,12 @@ define([
         // Force Refresh
         this.forceRefresh = false;
 
-        this.getCapabilitiesUrl = options.baseUrl;
-
-        if (typeof this.getGetCapabilitiesUrl() !== "undefined") {
-            this.hasForm = true;
-            this.loadGetCapabilities(
-                this.manageCapabilities,
-                this.getGetCapabilitiesUrl(),
-                this
-            );
-        } else {
-            this.hasForm = false;
-        }
-
         // Layer created on-the-fly to display quickook over openSearch layer
         // TODO: optimisation : created only once and reused ?
         this.currentQuicklookLayer = null;
         // Id of current feature displayed
         this.currentIdDisplayed = null;
 
-        if (typeof document.currentOpenSearchLayer === "undefined") {
-            document.currentOpenSearchLayer = [];
-        }
-        document.currentOpenSearchLayer[this.ID] = this;
     };
 
     /**************************************************************************************************************/
@@ -222,6 +185,327 @@ define([
         LOADED: 1,
         NOT_LOADED: 2
     };
+
+    function _fixCrossLine(features) {
+        var len = features.length;
+        while (len--) {
+            var currentFeature = features[len];
+
+            if (currentFeature.geometry) {
+                switch (currentFeature.geometry.type) {
+                case Constants.GEOMETRY.Point:
+                    // Convert to geographic to simplify picking
+                    if (currentFeature.geometry.coordinates[0] > 180) {
+                        currentFeature.geometry.coordinates[0] -= 360;
+                    }
+                    break;
+                case Constants.GEOMETRY.Polygon:
+                    var ring = currentFeature.geometry.coordinates[0];
+                    for (var j = 0; j < ring.length; j++) {
+                        // Convert to geographic to simplify picking
+                        if (ring[j][0] > 180) {
+                            ring[j][0] -= 360;
+                        }
+                    }
+                    break;
+                default:
+                    break;
+                }
+            }
+        }        
+    }
+
+    function _isFeatureAttachedToMoreThanOne(featureId, key, tilesLoaded) {        
+        var isUsed = false;
+        var len = tilesLoaded.length;        
+        while(len--) {
+            var aTile = tilesLoaded[len].tile;
+            if (key !== aTile.key) {
+                var index = (typeof aTile.associatedFeaturesId !== "undefined") ? aTile.associatedFeaturesId.indexOf(featureId) : -1;                
+                if (index >= 0) {
+                    isUsed = true;
+                    break;
+                }                
+            }
+        }
+        return isUsed;
+    }    
+
+    function _isAlreadyAdded(featureId, features) {
+        var isFound = _.find(features, function (feature) { return feature.id === featureId; });
+        return isFound !== undefined;
+    }
+
+    function _isAlreadyAddedInTile(featureId, tile) {
+        if (typeof tile.associatedFeaturesId.length === "undefined") {
+            return false;
+        }
+        var num = tile.associatedFeaturesId.indexOf(featureId);
+        return num >= 0; 
+    }  
+    
+    function _getFeatureIndexById(features, featureId) {
+        var index = -1;
+        var len = features.length;
+        while(len--) {
+            if (features[len].id === featureId) {
+                index = len;
+                break;
+            }            
+        }        
+        return index;
+    } 
+    
+    /**
+     * Internal function to sort tiles
+     * @function _sortTilesByDistance
+     * @param {Tile} t1 First tile
+     * @param {Tile} t2 Second tile
+     * @private
+     */
+    function _sortTilesByDistance(t1, t2) {
+        return t1.distance - t2.distance;
+    }
+
+    function _computeGeoTileIndex(tiles) {
+        var resut = {};
+        for (var i = 0; i < tiles.length; i++) {
+            var level = tiles[i].level;
+            if (resut[level] == null) {
+                resut[level] = {
+                    x:[],
+                    y:[]
+                };
+            }
+            resut[level].x.push(tiles[i].x);
+            resut[level].y.push(tiles[i].y);
+        }
+        return resut;
+    }  
+    
+    function _computeGeometryExtent(geometry) {
+        var result = {
+            east: -180,
+            west: +180,
+            north: -90,
+            south: +90
+        };
+        for (var i = 0; i < geometry.coordinates[0].length; i++) {
+            var coord = geometry.coordinates[0][i];
+            result.south = coord[1] < result.south ? coord[1] : result.south;
+            result.north = coord[1] > result.north ? coord[1] : result.north;
+            result.east = coord[0] > result.east ? coord[0] : result.east;
+            result.west = coord[0] < result.west ? coord[0] : result.west;
+        }
+        return result;        
+    }   
+    
+    function _removeFeature(layer, featureId) {
+        var featureIndex = _getFeatureIndexById(layer.features, featureId);
+        var feature = layer.features[featureIndex];
+
+        layer.getGlobe().getRendererManager().removeGeometry(feature.geometry, layer);
+
+        // Remove from list of features
+        layer.features[featureIndex] = layer.features[layer.features.length-1];
+        layer.features.pop();
+    }
+
+    function _removeFeatures(layer) {
+        // clean renderers
+        var len = layer.features.length; 
+        while (len--) {
+            _removeFeature(layer, layer.features[len].id);
+        }
+
+        for (var i = 0; i < layer.tilesLoaded.length; i++) {
+            layer.tilesLoaded[i].tile.osState[layer.getID()] = OpenSearchLayer.TileState.NOT_LOADED;
+        }
+
+        layer.getGlobe().getRenderContext().requestFrame();          
+    }  
+    
+    function _removeTile(layer, tile) {
+        if (typeof tile.associatedFeaturesId === "undefined") {
+            tile.associatedFeaturesId = [];
+        }
+        // For each feature of the tile, remove the features
+        var lenAssociatedFeaturesId = tile.associatedFeaturesId.length;
+        while(lenAssociatedFeaturesId--) {
+            var featureId = tile.associatedFeaturesId[lenAssociatedFeaturesId];
+            if( !_isFeatureAttachedToMoreThanOne(featureId, tile.key, layer.tilesLoaded) ) {
+                _removeFeature(layer, featureId);
+            }
+        }
+        tile.associatedFeaturesId = [];
+
+        // Remove the tile
+        var len = layer.tilesLoaded.length;
+        var indice;
+        while (len--) {
+            if(layer.tilesLoaded[len].tile.key === tile.key) {
+                indice = len;
+                break;
+            }
+        }
+        layer.tilesLoaded[indice] = layer.tilesLoaded[layer.tilesLoaded.length-1];
+        layer.tilesLoaded.pop();        
+    }  
+    
+    function _removeFeaturesOutside(layer, visualTilesIndex) {
+        for (var i = 0; i < layer.tilesLoaded.length; i++) {
+            var tile = layer.tilesLoaded[i].tile;
+            var intersects = UtilsIntersection.tileIntersects(tile,visualTilesIndex);
+            if (intersects === false) {
+                _removeTile(layer, tile);
+            }
+        }
+    }   
+    
+    function _addFeatureToRenderers(layer, feature) {
+        var geometry = feature.geometry;
+
+        // Manage style, if undefined try with properties, otherwise use defaultStyle
+        var style = layer.style;
+        var props = feature.properties;
+        if (props && props.style) {
+            style = props.style;
+        }
+
+        // Manage geometry collection
+        if (geometry.type === "GeometryCollection") {
+            var geoms = geometry.geometries;
+            for (var i = 0; i < geoms.length; i++) {
+                layer.getGlobe().getRendererManager().addGeometry(layer, geoms[i], style);
+            }
+        } else {
+            // Add geometry to renderers
+            layer.getGlobe().getRendererManager().addGeometry(layer, geometry, style);
+        }        
+    } 
+
+    function _removeFeatureFromRenderers(layer, feature) {
+        return layer.getGlobe().getRendererManager().removeGeometry(feature.geometry, layer);
+    }    
+    
+    function _addFeature(layer, feature) {
+        var defaultCrs = {
+            type: "name",
+            properties: {
+                name: Constants.CRS.WGS84
+            }
+        };
+
+        feature.geometry.gid = feature.id;
+
+        // MS: Feature could be added from ClusterOpenSearch which have features with different styles
+        var style = feature.properties.style ? feature.properties.style : layer.style;
+        //style.visible = true;
+        style.opacity = layer.getOpacity();
+
+        layer.features.push(feature);
+
+        // Add features to renderer if layer is attached to planet
+        _addFeatureToRenderers(layer, feature);
+        if (layer.isVisible()) {
+            layer.getGlobe().getRenderContext().requestFrame();
+        }        
+    } 
+    
+    function _cleanCache(layer) {
+        layer.cache.reset();
+        layer.previousViewKey = null;        
+    }  
+    
+
+    function _prepareParameters(layer, tile) {
+        var param; // param managed
+        var code; // param code
+        for (var i = 0; i < layer.getServices().queryForm.parameters.length; i++) {
+            param = layer.getServices().queryForm.parameters[i];
+            code = param.value;
+            code = code.replace("?}", "}");
+            if (code === "{geo:box}") {
+                // set bbox
+                param.currentValue =
+                    tile.bound.west +
+                    "," +
+                    tile.bound.south +
+                    "," +
+                    tile.bound.east +
+                    "," +
+                    tile.bound.north;
+            }
+        }
+    }   
+    
+    function _addFeatureToRenderersCurrentLevel(layer, feature) {
+        var geometry = feature.geometry;
+
+        // Manage style, if undefined try with properties, otherwise use defaultStyle
+        var style = layer.style;
+        var props = feature.properties;
+        if (props && props.style) {
+            style = props.style;
+        }
+
+        // Manage geometry collection
+        if (geometry.type === "GeometryCollection") {
+            var geoms = geometry.geometries;
+            for (var i = 0; i < geoms.length; i++) {
+                layer.getGlobe().rendererManager.addGeometryCurrentLevel(layer, geoms[i], style);
+            }
+        } else {
+            // Add geometry to renderers
+            layer.getGlobe().rendererManager.addGeometryCurrentLevel(layer, geometry, style);
+        }        
+    }
+
+    function _removeFeatureFromRenderersCurrentLevel(layer, feature) {
+        return layer.getGlobe().getRendererManager().removeGeometryCurrentLevel(feature.geometry, layer);
+    }     
+
+    function _buildUrl(layer, tile) {
+        //var url = this.serviceUrl + "/search?order=" + tile.order + "&healpix=" + tile.pixelIndex;
+        if (!layer.getServices().hasOwnProperty("queryForm")) {
+            return null;
+        }
+        var url = layer.getServices().queryForm.template;
+
+        // Prepare parameters for this tile
+        _prepareParameters(layer, tile);
+
+        // Check each parameter
+        var param; // param managed
+        var currentValue; // value set
+        for (
+            var i = 0;
+            i < layer.getServices().queryForm.parameters.length;
+            i++
+        ) {
+            param = layer.getServices().queryForm.parameters[i];
+            currentValue = param.currentValueTransformed();
+            if (currentValue === null) {
+                // Remove parameter if not mandatory (with a ?)
+                url = url.replace(
+                    "&" + param.name + "=" + param.value.replace("}", "?}"),
+                    ""
+                );
+                url = url.replace(
+                    param.name + "=" + param.value.replace("}", "?}"),
+                    ""
+                );
+                // Set blank if parameter is mandatory
+                url = url.replace(param.value, "");
+            } else {
+                // replace value
+                url = url.replace(param.value, currentValue);
+                // replace optional value
+                url = url.replace(param.value.replace("}", "?}"), currentValue);
+            }
+        }
+        return url;
+    }    
 
     /**************************************************************************************************************/
 
@@ -251,28 +535,13 @@ define([
      */
     OpenSearchLayer.prototype.setParameter = function(paramName, value) {
         if (paramName === "mizar:time") {
-            value.period.from = Moment(value.period.from).format(
-                "YYYY-MM-DD HH:mm"
-            );
-            value.period.to = Moment(value.period.to).format(
-                "YYYY-MM-DD HH:mm"
-            );
+            value.period.from = Moment(value.period.from).format("YYYY-MM-DD HH:mm");
+            value.period.to = Moment(value.period.to).format("YYYY-MM-DD HH:mm");
 
-            OpenSearchUtils.setCurrentValueToParam(
-                this.getServices().queryForm,
-                "startDate",
-                value.period.from
-            );
-            OpenSearchUtils.setCurrentValueToParam(
-                this.getServices().queryForm,
-                "completionDate",
-                value.period.to
-            );
+            OpenSearchUtils.setCurrentValueToParam(this.getServices().queryForm,"time:start",value.period.from);
+            OpenSearchUtils.setCurrentValueToParam(this.getServices().queryForm,"time:end",value.period.to);
         } else {
-            OpenSearchUtils.setCurrentValueToParam(
-                this.getServices().queryForm,
-                paramName,
-                value
+            OpenSearchUtils.setCurrentValueToParam(this.getServices().queryForm,paramName,value
             );
         }
         this.resetAll();
@@ -285,19 +554,14 @@ define([
      * @fires OpenSearchLayer#updateStatsAttribute
      */
     OpenSearchLayer.prototype.nextPage = function() {
-        var num = OpenSearchUtils.getCurrentValue(
-            this.getServices().queryForm,
-            "page"
-        );
+        var num = OpenSearchUtils.getCurrentValue(this.getServices().queryForm,"startPage");
         // If not specified, set default to 1
         if (num === null || typeof num === "undefined") {
             num = 1;
+        } else {
+            num = parseInt(num);
         }
-        OpenSearchUtils.setCurrentValueToParam(
-            this.getServices().queryForm,
-            "page",
-            num * 1 + 1
-        );
+        OpenSearchUtils.setCurrentValueToParam(this.getServices().queryForm,"startPage",num + 1);
 
         // update labels
         this.callbackContext.publish(
@@ -310,73 +574,9 @@ define([
 
         this.forceRefresh = true;
         for (var i = 0; i < this.tilesLoaded.length; i++) {
-            this.tilesLoaded[i].tile.osState[this.getID()] =
-                OpenSearchLayer.TileState.NOT_LOADED;
+            this.tilesLoaded[i].tile.osState[this.getID()] = OpenSearchLayer.TileState.NOT_LOADED;
         }
-        this.getGlobe()
-            .getRenderContext()
-            .requestFrame();
-    };
-
-    /**************************************************************************************************************/
-
-    /**
-     * When getCapabilities is loading, manage it
-     * @function manageCapabilities
-     * @memberof OpenSearchLayer#
-     * @param json Json object
-     * @param sourceObject Object where data is stored
-     * @private
-     */
-    OpenSearchLayer.prototype.manageCapabilities = function(
-        json,
-        sourceObject
-    ) {
-        // check if form description is well provided
-        var dataForm = null;
-        var openSearchRoot = json.OpenSearchDescription;
-        if (typeof openSearchRoot !== "undefined") {
-            sourceObject.name =
-                typeof sourceObject.name !== "undefined"
-                    ? sourceObject.name
-                    : OpenSearchUtils.getValue(openSearchRoot, "ShortName");
-            sourceObject.title =
-                typeof sourceObject.title !== "undefined"
-                    ? sourceObject.title
-                    : OpenSearchUtils.getValue(openSearchRoot, "LongName");
-            var urls = openSearchRoot.Url;
-            if (typeof urls !== "undefined") {
-                dataForm = urls;
-            }
-        }
-        if (dataForm != null) {
-            // Load form description
-            sourceObject.getServices().queryForm = new OpenSearchForm(
-                dataForm,
-                "application/json"
-            );
-            ErrorDialog.open(Constants.LEVEL.DEBUG, "OpenSearchLayer.js","FORM ! "+ sourceObject.getServices().queryForm);
-            OpenSearchUtils.initNavigationValues(
-                sourceObject.getServices().queryForm
-            );
-        } else {
-            ErrorDialog.open(Constants.LEVEL.DEBUG, "OpenSearchLayer.js","Form not correct");
-        }
-
-        if (
-            sourceObject.callbackContext !== null &&
-            typeof sourceObject.callbackContext !== "undefined"
-        ) {
-            sourceObject.callbackContext.addLayerFromObject(
-                sourceObject,
-                sourceObject.options
-            );
-        }
-
-        if (typeof sourceObject.afterLoad === "function") {
-            // Update GUI !!
-            sourceObject.afterLoad(sourceObject);
-        }
+        this.getGlobe().getRenderContext().requestFrame();
     };
 
     /**************************************************************************************************************/
@@ -403,320 +603,31 @@ define([
      * @private
      */
     OpenSearchLayer.prototype._detach = function() {
-        this.getGlobe()
-            .getTileManager()
-            .removePostRenderer(this);
+        this.getGlobe().getTileManager().removePostRenderer(this);
         AbstractLayer.prototype._detach.call(this);
     };
 
     /**************************************************************************************************************/
 
-    OpenSearchLayer.prototype.getTileByKey = function(key) {
-        for (var i = 0; i < this.tilesLoaded.length; i++) {
-            if (this.tilesLoaded[i].key === key) {
-                return this.tilesLoaded[i];
-            }
-        }
-        return null;
-    };
-    /**
-     * Launches request to the OpenSearch service.
-     * @function launchRequest
-     * @memberof OpenSearchLayer#
-     * @param {Tile} tile Tile
-     * @param {string} url Url
-     * @fires Context#startLoad
-     * @fires Context#endLoad
-     * @fires Context#features:added
-     */
-    OpenSearchLayer.prototype.launchRequest = function(tile, url) {
-        var key = this.cache.getKey(tile.bound);
-        if (this.getTileByKey(key) === null) {
-            this.tilesLoaded.push({
-                key: key,
-                tile: tile
-            });
-        }
-        this.pool.addQuery(url, tile, key, this);
-    };
 
-    /**************************************************************************************************************/
+    OpenSearchLayer.prototype.modifyFeatureStyle = function(feature, style) {
+        if (_removeFeatureFromRenderers(this, feature)) {
+            feature.properties.style = style;
+            _addFeatureToRenderers(this, feature);
+        }        
+    };   
 
-    /**
-     * Remove all previous features
-     * @function removeFeatures
-     * @memberof OpenSearchLayer#
-     */
-    OpenSearchLayer.prototype.removeFeatures = function() {
-        // clean renderers
-        while (this.features.length > 0) {
-            //this.getGlobe().rendererManager.removeGeometry(this.features[i].geometry);
-            this.removeFeature(this.features[0].id);
-        }
-
-        for (var i = 0; i < this.tilesLoaded.length; i++) {
-            this.tilesLoaded[i].tile.osState[this.getID()] =
-                OpenSearchLayer.TileState.NOT_LOADED;
-        }
-
-        //this.globe.refresh();
-        if (this.getGlobe() && this.getGlobe().getRenderContext()) {
-            this.getGlobe()
-                .getRenderContext()
-                .requestFrame();
-        }
-    };
-
-    /**************************************************************************************************************/
-
-    /**
-     * Remove all feature still used by a tile
-     * @function removeTile
-     * @param {Tile} tile Tile
-     * @memberof OpenSearchLayer#
-     */
-    OpenSearchLayer.prototype.removeTile = function(tile) {
-        if (typeof tile.associatedFeaturesId === "undefined") {
-            tile.associatedFeaturesId = [];
-        }
-        var index = null;
-        // For each feature of the tile
-        for (var i = 0; i < tile.associatedFeaturesId.length; i++) {
-            var featureId = tile.associatedFeaturesId[i];
-            // Is this feature is used in other tile ?
-            var isUsed = false;
-            for (var j = 0; j < this.tilesLoaded.length; j++) {
-                var aTile = this.tilesLoaded[j].tile;
-                if (tile.key !== aTile.key) {
-                    if (typeof aTile.associatedFeaturesId !== "undefined") {
-                        index = aTile.associatedFeaturesId.indexOf(featureId);
-                    } else {
-                        index = -1;
-                    }
-                    if (index >= 0) {
-                        isUsed = true;
-                        break;
-                    }
-                }
-            }
-
-            if (isUsed === false) {
-                this.removeFeature(featureId);
-            }
-        }
-
-        tile.associatedFeaturesId = [];
-
-        // Remove the tile
-        index = -1;
-        for (i = 0; i < this.tilesLoaded.length; i++) {
-            if (this.tilesLoaded[i].tile.key === tile.key) {
-                index = i;
+    OpenSearchLayer.prototype._isTileLoaded = function(tilesLoaded, key) {
+        var isLoaded = false;
+        var len = tilesLoaded.length;
+        while(len--) {
+            if (tilesLoaded[len].key === key) {
+                isLoaded = true;
                 break;
             }
         }
-        if (index >= 0) {
-            this.tilesLoaded.splice(index, 1);
-        }
+        return isLoaded;
     };
-
-    /**************************************************************************************************************/
-
-    /**
-     * Remove all previous features
-     * @function removeFeaturesOutside
-     * @param {JSon} extent Extent
-     * @memberof OpenSearchLayer#
-     */
-    OpenSearchLayer.prototype.removeFeaturesOutside = function(extent) {
-        // clean renderers
-        var nbRemoved = 0;
-        for (var i = 0; i < this.tilesLoaded.length; i++) {
-            var tile = this.tilesLoaded[i].tile;
-            var intersects = UtilsIntersection.boundsIntersects(
-                tile.bound,
-                extent
-            );
-            if (intersects === false) {
-                this.removeTile(tile);
-                nbRemoved++;
-            }
-        }
-        //console.log(nbRemoved+" tiles removed");
-    };
-
-    /**************************************************************************************************************/
-
-    /**
-     * Adds feature to the layer
-     * @function addFeature
-     * @memberof OpenSearchLayer#
-     * @param {Feature} feature Feature
-     */
-    OpenSearchLayer.prototype.addFeature = function(feature) {
-        // update list id added
-        this.featuresIdLoaded.push(feature.id);
-
-        var defaultCrs = {
-            type: "name",
-            properties: {
-                name: Constants.CRS.WGS84
-            }
-        };
-
-        feature.geometry.gid = feature.id;
-
-        // MS: Feature could be added from ClusterOpenSearch which have features with different styles
-        var style = feature.properties.style
-            ? feature.properties.style
-            : this.style;
-        //style.visible = true;
-        style.opacity = this.getOpacity();
-
-        this.features.push(feature);
-
-        // Add features to renderer if layer is attached to planet
-        if (this.globe) {
-            this._addFeatureToRenderers(feature);
-            if (this.isVisible()) {
-                this.getGlobe()
-                    .getRenderContext()
-                    .requestFrame();
-            }
-        }
-    };
-
-    /**************************************************************************************************************/
-
-    /**
-     * Add a feature to renderers
-     * @function _addFeatureToRenderers
-     * @memberof GeoJsonLayer#
-     * @param {GeoJSON} feature Feature
-     * @private
-     */
-    OpenSearchLayer.prototype._addFeatureToRenderers = function(feature) {
-        var geometry = feature.geometry;
-
-        // Manage style, if undefined try with properties, otherwise use defaultStyle
-        var style = this.style;
-        var props = feature.properties;
-        if (props && props.style) {
-            style = props.style;
-        }
-
-        // Manage geometry collection
-        if (geometry.type === "GeometryCollection") {
-            var geoms = geometry.geometries;
-            for (var i = 0; i < geoms.length; i++) {
-                this.getGlobe().rendererManager.addGeometry(
-                    this,
-                    geoms[i],
-                    style
-                );
-            }
-        } else {
-            // Add geometry to renderers
-            this.getGlobe().rendererManager.addGeometry(this, geometry, style);
-        }
-    };
-
-    /**************************************************************************************************************/
-
-    /**
-     * Add a feature to renderers current level
-     * @function _addFeatureToRenderersCurrentLevel
-     * @memberof GeoJsonLayer#
-     * @param {GeoJSON} feature Feature
-     * @private
-     */
-    OpenSearchLayer.prototype._addFeatureToRenderersCurrentLevel = function(
-        feature
-    ) {
-        var geometry = feature.geometry;
-
-        // Manage style, if undefined try with properties, otherwise use defaultStyle
-        var style = this.style;
-        var props = feature.properties;
-        if (props && props.style) {
-            style = props.style;
-        }
-
-        // Manage geometry collection
-        if (geometry.type === "GeometryCollection") {
-            var geoms = geometry.geometries;
-            for (var i = 0; i < geoms.length; i++) {
-                this.getGlobe().rendererManager.addGeometryCurrentLevel(
-                    this,
-                    geoms[i],
-                    style
-                );
-            }
-        } else {
-            // Add geometry to renderers
-            this.getGlobe().rendererManager.addGeometryCurrentLevel(
-                this,
-                geometry,
-                style
-            );
-        }
-    };
-
-    /**************************************************************************************************************/
-
-    /**
-     * Remove a feature from renderers
-     * @function _removeFeatureFromRenderers
-     * @memberof GeoJsonLayer#
-     * @param {GeoJSON} feature Feature
-     * @private
-     */
-    OpenSearchLayer.prototype._removeFeatureFromRenderersCurrentLevel = function(
-        feature
-    ) {
-        return this.globe
-            .getRendererManager()
-            .removeGeometryCurrentLevel(feature.geometry, this);
-    };
-
-    /**
-     * Remove a feature from renderers
-     * @function _removeFeatureFromRenderers
-     * @memberof GeoJsonLayer#
-     * @param {GeoJSON} feature Feature
-     * @private
-     */
-    OpenSearchLayer.prototype._removeFeatureFromRenderers = function(feature) {
-        return this.globe
-            .getRendererManager()
-            .removeGeometry(feature.geometry, this);
-    };
-
-    /**
-     * Removes feature from Dynamic OpenSearch layer.
-     *  (called when it's sure to have to remove feature)
-     * @function removeFeature
-     * @memberof OpenSearchLayer#
-     * @param {string} featureId Feature id
-     */
-    OpenSearchLayer.prototype.removeFeature = function(featureId) {
-        var featureIndex = this.getFeatureIndexById(featureId);
-        var feature = this.features[featureIndex];
-
-        if (typeof feature === "undefined") {
-            return;
-        }
-        // remove id from featuresId
-        var index = this.featuresIdLoaded.indexOf(featureId);
-        if (index !== -1) this.featuresIdLoaded.splice(index, 1);
-
-        this.getGlobe().rendererManager.removeGeometry(feature.geometry, this);
-
-        // Remove from list of features
-        this.features.splice(featureIndex, 1);
-    };
-
-    /**************************************************************************************************************/
 
     /**
      * Load quicklook
@@ -738,10 +649,7 @@ define([
 
         if (this.currentQuicklookLayer === null) {
             // Creation first time
-            this.currentQuicklookLayer = new GroundOverlayLayer({
-                quad: quad,
-                image: url
-            });
+            this.currentQuicklookLayer = new GroundOverlayLayer({quad: quad,image: url});
             this.currentQuicklookLayer._attach(this.globe);
         } else {
             this.currentQuicklookLayer.update(quad, url);
@@ -789,7 +697,7 @@ define([
      */
     OpenSearchLayer.prototype.highlight = function(feature, style) {
         feature.properties.style = style;
-        this._addFeatureToRenderersCurrentLevel(feature);
+        _addFeatureToRenderersCurrentLevel(this, feature);
     };
 
     /**
@@ -800,121 +708,8 @@ define([
      * @param {FeatureStyle} style Style
      */
     OpenSearchLayer.prototype.unhighlight = function(feature, style) {
-        this._removeFeatureFromRenderersCurrentLevel(feature);
+        _removeFeatureFromRenderersCurrentLevel(this, feature);
     };
-
-    /**
-     * Modify feature style.
-     * @function modifyFeatureStyle
-     * @memberof OpenSearchLayer#
-     * @param {Feature} feature Feature
-     * @param {FeatureStyle} style Style
-     */
-    OpenSearchLayer.prototype.modifyFeatureStyle = function(feature, style) {
-        if (this._removeFeatureFromRenderers(feature)) {
-            feature.properties.style = style;
-            this._addFeatureToRenderers(feature);
-        }
-    };
-
-    /**************************************************************************************************************/
-
-    /**
-     * Prepare parameters for a given bound
-     * @function prepareParameters
-     * @memberof OpenSearchLayer#
-     * @param {Bound} bound Bound
-     */
-    OpenSearchLayer.prototype.prepareParameters = function(bound) {
-        var param; // param managed
-        var code; // param code
-        for (
-            var i = 0;
-            i < this.getServices().queryForm.parameters.length;
-            i++
-        ) {
-            param = this.getServices().queryForm.parameters[i];
-            code = param.value;
-            code = code.replace("?}", "}");
-            if (code === "{geo:box}") {
-                // set bbox
-                param.currentValue =
-                    bound.west +
-                    "," +
-                    bound.south +
-                    "," +
-                    bound.east +
-                    "," +
-                    bound.north;
-            }
-        }
-    };
-
-    /**************************************************************************************************************/
-
-    /**
-     * Build request url
-     * @function buildUrl
-     * @memberof OpenSearchLayer#
-     * @param {Bound} bound Bound
-     * @return {string} Url
-     */
-    OpenSearchLayer.prototype.buildUrl = function(bound) {
-        //var url = this.serviceUrl + "/search?order=" + tile.order + "&healpix=" + tile.pixelIndex;
-        if (!this.getServices().hasOwnProperty("queryForm")) {
-            return null;
-        }
-        var url = this.getServices().queryForm.template;
-
-        // Prepare parameters for this tile
-        this.prepareParameters(bound);
-
-        // Check each parameter
-        var param; // param managed
-        var currentValue; // value set
-        for (
-            var i = 0;
-            i < this.getServices().queryForm.parameters.length;
-            i++
-        ) {
-            param = this.getServices().queryForm.parameters[i];
-            currentValue = param.currentValueTransformed();
-            if (currentValue === null) {
-                // Remove parameter if not mandatory (with a ?)
-                url = url.replace(
-                    "&" + param.name + "=" + param.value.replace("}", "?}"),
-                    ""
-                );
-                url = url.replace(
-                    param.name + "=" + param.value.replace("}", "?}"),
-                    ""
-                );
-                // Set blank if parameter is mandatory
-                url = url.replace(param.value, "");
-            } else {
-                // replace value
-                url = url.replace(param.value, currentValue);
-                // replace optional value
-                url = url.replace(param.value.replace("}", "?}"), currentValue);
-            }
-        }
-        return url;
-    };
-
-    /**************************************************************************************************************/
-
-    /**
-     * Internal function to sort tiles
-     * @function _sortTilesByDistance
-     * @param {Tile} t1 First tile
-     * @param {Tile} t2 Second tile
-     * @private
-     */
-    function _sortTilesByDistance(t1, t2) {
-        return t1.distance - t2.distance;
-    }
-
-    /**************************************************************************************************************/
 
     /**
      * Render function
@@ -930,33 +725,30 @@ define([
             return;
         }
 
-        this.tiles = tiles;
-
-        this.needRefresh = false;
-        this.globalKey = this.cache.getArrayBoundKey(this.tiles);
+        var needRefresh;
+        this.globalKey = this.cache.getArrayBoundKey(tiles);
 
         if (this.forceRefresh === true) {
             // Remove cache, in order to reload new features
-            this.cleanCache();
+            _cleanCache(this);
             this.forceRefresh = false;
         }
 
         if (this.previousViewKey === null) {
-            this.needRefresh = true;
+            needRefresh = true;
         } else {
-            this.needRefresh = this.previousViewKey !== this.globalKey;
+            needRefresh = this.previousViewKey !== this.globalKey;
         }
 
-        if (this.needRefresh) {
+        if (needRefresh) {
             // Sort tiles in order to load the first tiles closed to the camera
-            this.tiles.sort(_sortTilesByDistance);
+            tiles.sort(_sortTilesByDistance);
 
             // =========================================================================
             // Determination of zoom level change
             // =========================================================================
 
-            this.newTileWidth =
-                this.tiles[0].bound.east - this.tiles[0].bound.west;
+            this.newTileId = tiles[0].level+"#"+tiles[0].x+"#"+tiles[0].y;
             this.ctx = this.callbackContext;
             this.distance = null;
             if (this.ctx) {
@@ -966,21 +758,26 @@ define([
 
             // TODO : warning, float comparison not ok
             this.isZoomLevelChanged = false;
-            this.isZoomLevelChanged =
-                this.newTileWidth !== this.previousTileWidth;
+            this.isZoomLevelChanged = this.newTileId !== this.previousTileId;
             if (this.ctx) {
-                this.isZoomLevelChanged =
-                    this.isZoomLevelChanged &&
-                    this.distance !== this.previousDistance;
+                this.isZoomLevelChanged = this.isZoomLevelChanged && this.distance !== this.previousDistance;
                 this.previousDistance = this.distance;
             }
             if (this.isZoomLevelChanged) {
                 // Go to page 1
                 OpenSearchUtils.setCurrentValueToParam(
                     this.getServices().queryForm,
-                    "page",
+                    "startPage",
                     1
                 );
+                // update labels
+                this.callbackContext.publish(
+                    Constants.EVENT_MSG.LAYER_UPDATE_STATS_ATTRIBUTES,
+                    {
+                        shortName: this.getShortName(),
+                        page: 1
+                    }
+                );                
 
                 this.result.featuresLoaded = 0;
                 this.result.featuresLoaded = this.features.length;
@@ -990,50 +787,42 @@ define([
             // Check each tile
             // =========================================================================
 
-            this.previousTileWidth = this.newTileWidth;
+            this.previousTileId = this.newTileId;
             this.previousViewKey = this.globalKey;
             this.result.featuresTotal = 0;
-            for (var i = 0; i < this.tiles.length; i++) {
-                this.currentTile = this.tiles[i];
+            for (var i = 0; i < tiles.length; i++) {
+                this.currentTile = tiles[i];
                 if (typeof this.currentTile.key === "undefined") {
-                    this.currentTile.key = this.cache.getKey(
-                        this.currentTile.bound
-                    );
+                    this.currentTile.key = this.cache.getKey(this.currentTile);
                 }
                 // If no state defined...
-                if (
-                    this.currentTile.osState === null ||
-                    typeof this.currentTile.osState === "undefined"
-                ) {
+                if (this.currentTile.osState === null || typeof this.currentTile.osState === "undefined") {
                     //...set it to NOT_LOADED
                     this.currentTile.osState = [];
                 }
-                if (
-                    this.currentTile.osState[this.getID()] === null ||
-                    typeof this.currentTile.osState[this.getID()] ===
-                        "undefined"
-                ) {
-                    this.currentTile.osState[this.getID()] =
-                        OpenSearchLayer.TileState.NOT_LOADED;
+                if (this.currentTile.osState[this.getID()] == null) {
+                    this.currentTile.osState[this.getID()] = OpenSearchLayer.TileState.NOT_LOADED;
                 }
-                if (
-                    this.currentTile.osState[this.getID()] ===
-                    OpenSearchLayer.TileState.NOT_LOADED
-                ) {
-                    var url = this.buildUrl(this.currentTile.bound);
+                if (this.currentTile.osState[this.getID()] === OpenSearchLayer.TileState.NOT_LOADED) {
+                    var url = _buildUrl(this, this.currentTile);
                     if (url !== null) {
-                        this.currentTile.osState[this.getID()] =
-                            OpenSearchLayer.TileState.LOADING;
-                        this.launchRequest(this.currentTile, url);
+                        var nb = 0;
+                        for(i=0; i<this.tilesLoaded.length; i++) {
+                            var tileLoaded = this.tilesLoaded[i].tile;
+                            if(tileLoaded.associatedFeaturesId) {
+                                nb = nb + tileLoaded.associatedFeaturesId.length;
+                            } 
+                            
+                        }
+                        console.log("features in tileLoaded :"+nb);
+                        console.log("nb features :"+this.features.length);                        
+                        this.currentTile.osState[this.getID()] =  OpenSearchLayer.TileState.LOADING;
+                        this.pool.addQuery(url, this.currentTile, this);
                     }
-                } else if (
-                    this.currentTile.osState[this.getID()] ===
-                    OpenSearchLayer.TileState.LOADED
-                ) {
+                } else if (this.currentTile.osState[this.getID()] === OpenSearchLayer.TileState.LOADED) {
                     //console.log("tile still loaded !!!");
                 } else if (
-                    this.currentTile.osState[this.getID()] ===
-                    OpenSearchLayer.TileState.LOADING
+                    this.currentTile.osState[this.getID()] === OpenSearchLayer.TileState.LOADING
                 ) {
                     //console.log("tile loading...");
                 }
@@ -1056,72 +845,14 @@ define([
                 if (this.lastRemovingDateTime === null) {
                     this.doRemove = true;
                 } else {
-                    this.doRemove =
-                        Date.now() - this.lastRemovingDateTime >=
-                        this.removingDeltaSeconds * 1000;
+                    this.doRemove = Date.now() - this.lastRemovingDateTime >= this.removingDeltaSeconds * 1000;
                 }
                 if (this.doRemove) {
-                    var viewExtent = this.getExtent(this.tiles);
+                    var visualTilesIndex = _computeGeoTileIndex(tiles);
                     this.lastRemovingDateTime = Date.now();
-                    this.removeFeaturesOutside(viewExtent);
-                }
+                    _removeFeaturesOutside(this, visualTilesIndex);                 }
             }
         }
-    };
-
-    /**************************************************************************************************************/
-
-    /**
-     * Get extent from array of tiles
-     * @function getExtent
-     * @param {Array} tiless Array of tiles
-     * @return {Json} Extent (north, south, east, west)
-     * @memberof OpenSearchLayer#
-     */
-
-    OpenSearchLayer.prototype.getExtent = function(tiles) {
-        var result = {
-            east: -180,
-            west: +180,
-            north: -90,
-            south: +90
-        };
-        var bound;
-        for (var i = 0; i < tiles.length; i++) {
-            bound = tiles[i].bound;
-            result.south =
-                bound.south < result.south ? bound.south : result.south;
-            result.north =
-                bound.north > result.north ? bound.north : result.north;
-            result.east = bound.east > result.east ? bound.east : result.east;
-            result.west = bound.west < result.west ? bound.west : result.west;
-        }
-        return result;
-    };
-
-    /**************************************************************************************************************/
-
-    /**
-     * Get geometry extent
-     * @function getGeometryExtent
-     * @param {Json} geometry Geometry
-     * @memberof OpenSearchLayer#
-     */
-    OpenSearchLayer.prototype.getGeometryExtent = function(geometry) {
-        var result = {
-            east: -180,
-            west: +180,
-            north: -90,
-            south: +90
-        };
-        for (var i = 0; i < geometry.coordinates[0].length; i++) {
-            var coord = geometry.coordinates[0][i];
-            result.south = coord[1] < result.south ? coord[1] : result.south;
-            result.north = coord[1] > result.north ? coord[1] : result.north;
-            result.east = coord[0] > result.east ? coord[0] : result.east;
-            result.west = coord[0] < result.west ? coord[0] : result.west;
-        }
-        return result;
     };
 
     /**************************************************************************************************************/
@@ -1182,13 +913,11 @@ define([
     };
 
     /**************************************************************************************************************/
-
     /**
-            /**
-             * @function setOpacity
-             * @memberof OpenSearchLayer#
-             * @throws {RangeError} opacity - opacity value should be a value in [0..1]
-             */
+     * @function setOpacity
+     * @memberof OpenSearchLayer#
+     * @throws {RangeError} opacity - opacity value should be a value in [0..1]
+     */
     OpenSearchLayer.prototype.setOpacity = function(arg) {
         if (typeof arg === "number" && arg >= 0.0 && arg <= 1.0) {
             var targetStyle = new FeatureStyle(this.getStyle());
@@ -1226,78 +955,13 @@ define([
         // Reset pool
         this.pool.resetPool();
         // Reset cache
-        this.cleanCache();
+        _cleanCache(this);
         // Remove all features
-        this.removeFeatures();
+        _removeFeatures(this);
     };
 
-    /**************************************************************************************************************/
 
-    /**
-     * Clean the cache
-     * @function cleanCache
-     * @memberof OpenSearchLayer#
-     */
-    OpenSearchLayer.prototype.cleanCache = function() {
-        this.cache.reset();
-        this.previousViewKey = null;
-    };
 
-    /**************************************************************************************************************/
-
-    /**
-     * Update the GUI (mainly debug purpose)
-     * @function updateGUI
-     * @memberof OpenSearchLayer#
-     */
-    OpenSearchLayer.prototype.updateGUI = function() {
-        var message = "";
-        message +=
-            "<a href='javascript:document.currentOpenSearchLayer.resetAll();'>Reset</a><br>";
-        message +=
-            "<a href='javascript:document.currentOpenSearchLayer.nextPage();'>Next</a><br>";
-        message += "# Features : " + this.features.length + "<br>";
-        message += this.pool.getPoolsStatus() + "<br>";
-        message += this.cache.getCacheStatus();
-    };
-
-    /**************************************************************************************************************/
-
-    /**
-     * Check is feature still added to global render
-     * @function featureStillAdded
-     * @memberof OpenSearchLayer#
-     * @param {string} featureId Feature id
-     * @private
-     */
-    OpenSearchLayer.prototype.featureStillAdded = function(featureId) {
-        var num = this.featuresIdLoaded.indexOf(featureId);
-
-        return num >= 0;
-    };
-
-    /**
-     * Check is feature still added to tile
-     * @function featureStillAddedToTile
-     * @memberof OpenSearchLayer#
-     * @param {string} featureId Feature id
-     * @param {Tile} tile Tile
-     * @private
-     */
-    OpenSearchLayer.prototype.featureStillAddedToTile = function(
-        featureId,
-        tile
-    ) {
-        if (typeof tile.associatedFeaturesId.length === "undefined") {
-            return false;
-        }
-
-        var num = tile.associatedFeaturesId.indexOf(featureId);
-
-        return num >= 0;
-    };
-
-    /**************************************************************************************************************/
 
     /**
      * Load WMS layer
@@ -1309,7 +973,7 @@ define([
      * @fires Context#layer:added
      */
     OpenSearchLayer.prototype.loadWMS = function(selectedData) {
-        var extent = this.getGeometryExtent(selectedData.feature.geometry);
+        var extent = _computeGeometryExtent(selectedData.feature.geometry);
         var endpoint = selectedData.feature.properties.services.browse.layer.url;
         var name = selectedData.layer.name + " (WMS)";
         var layerDescription = {
@@ -1392,49 +1056,6 @@ define([
         }
     };
 
-    OpenSearchLayer.prototype.getFeatureById = function(featureId) {
-        for (var i = 0; i < this.features.length; i++) {
-            if (this.features[i].id === featureId) {
-                return this.features[i];
-            }
-        }
-        return null;
-    };
-
-    OpenSearchLayer.prototype.getFeatureIndexById = function(featureId) {
-        for (var i = 0; i < this.features.length; i++) {
-            if (this.features[i].id === featureId) {
-                return i;
-            }
-        }
-        return -1;
-    };
-
-    OpenSearchLayer.prototype.updateFeatureListWithTile = function(
-        featureId,
-        tile
-    ) {
-        var feature = this.getFeatureById(featureId);
-        if (feature === null) {
-            // Feature not found...no action
-            return;
-        }
-
-        // Creation of list of associated tiles to keep trace of feature by tile
-        if (typeof feature.associatedTiles === "undefined") {
-            feature.associatedTiles = [];
-        }
-
-        // Make key value for tile
-        var key = this.cache.getKey(tile.bound);
-
-        if (feature.associatedTiles.indexOf(key) >= 0) {
-            // still aded !
-        } else {
-            // add it
-            feature.associatedTiles.push(key);
-        }
-    };
     /**************************************************************************************************************/
     /**
      * Manage a response to OpenSearch query
@@ -1444,19 +1065,13 @@ define([
      * @param {Tile} tile Tile
      * @fires OpenSearchLayer#updateStatsAttribute
      */
-    OpenSearchLayer.prototype.manageFeaturesResponse = function(
-        features,
-        tile
-    ) {
-        this.updateFeatures(features);
+    OpenSearchLayer.prototype.manageFeaturesResponse = function(features,tile) {
+        _fixCrossLine(features);
 
         this.result.featuresLoaded += features.length;
 
         // Init array of feature id associated to tile
-        if (
-            tile.associatedFeaturesId === null ||
-            typeof tile.associatedFeaturesId === "undefined"
-        ) {
+        if (tile.associatedFeaturesId == null) {
             tile.associatedFeaturesId = [];
         }
 
@@ -1468,27 +1083,20 @@ define([
                 feature.id = feature.properties.identifier;
             }
 
-            // Check if feature still globaly added ? (even on another tile)
-            var alreadyAdded = this.featureStillAdded(feature.id);
-            var alreadyAddedToTile = false;
-            if (alreadyAdded) {
+            if (_isAlreadyAdded(feature.id, this.features)) {
                 // Check if still added into this tile
-                alreadyAddedToTile = this.featureStillAddedToTile(
-                    feature.id,
-                    tile
-                );
-                if (alreadyAddedToTile === true) {
+                if (_isAlreadyAddedInTile(feature.id, tile)) {
                     // Nothing to do !
                 } else {
                     tile.associatedFeaturesId.push(feature.id);
-                    this.updateFeatureListWithTile(feature.id, tile);
+                    //this.updateFeatureListWithTile(feature.id, tile);
                 }
             } else {
-                this.addFeature(feature);
+                _addFeature(this, feature);
                 tile.associatedFeaturesId.push(feature.id);
-                this.updateFeatureListWithTile(feature.id, tile);
+                //this.updateFeatureListWithTile(feature.id, tile);
             }
-            features.splice(i, 1);
+            //features.splice(i, 1);
         }
 
         if (typeof this.callbackContext !== "undefined") {
@@ -1511,42 +1119,6 @@ define([
         this.getGlobe().refresh();
     };
 
-    /**************************************************************************************************************/
-
-    /**
-     * Update features
-     * @function updateFeatures
-     * @memberof OpenSearchLayer#
-     * @param {Array} features Array of features
-     * @private
-     */
-    OpenSearchLayer.prototype.updateFeatures = function(features) {
-        for (var i = 0; i < features.length; i++) {
-            var currentFeature = features[i];
-
-            if (currentFeature.geometry) {
-                switch (currentFeature.geometry.type) {
-                case Constants.GEOMETRY.Point:
-                    // Convert to geographic to simplify picking
-                    if (currentFeature.geometry.coordinates[0] > 180) {
-                        currentFeature.geometry.coordinates[0] -= 360;
-                    }
-                    break;
-                case Constants.GEOMETRY.Polygon:
-                    var ring = currentFeature.geometry.coordinates[0];
-                    for (var j = 0; j < ring.length; j++) {
-                        // Convert to geographic to simplify picking
-                        if (ring[j][0] > 180) {
-                            ring[j][0] -= 360;
-                        }
-                    }
-                    break;
-                default:
-                    break;
-                }
-            }
-        }
-    };
 
     /*************************************************************************************************************/
 

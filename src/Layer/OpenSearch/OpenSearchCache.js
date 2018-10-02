@@ -55,29 +55,21 @@ define(["../../Utils/Constants", "../../Gui/dialog/ErrorDialog"], function(Const
     /*************************************************************************************************************/
 
     /**
-     * Calcul an unic key for bound
+     * Calcul an unic key for tile
      * @function getKey
      * @memberof OpenSearchCache#
-     * @param {Bound} bound Bound
+     * @param {Tile} tile Tile
      * @return {string} Key generated
      */
 
-    OpenSearchCache.prototype.getKey = function(bound) {
-        var key =
-            bound.north +
-            ":" +
-            bound.east +
-            ":" +
-            bound.south +
-            ":" +
-            bound.west;
-        return key;
+    OpenSearchCache.prototype.getKey = function(tile) {
+        return tile.level+"#"+tile.x+"#"+tile.y;
     };
 
     /*************************************************************************************************************/
 
     /**
-     * Calcul an unic key for an array of bound
+     * Calcul an unic key for an array of tile
      * @function getArrayBoundKey
      * @memberof OpenSearchCache#
      * @param {Array} tiles Array of tiles
@@ -90,7 +82,7 @@ define(["../../Utils/Constants", "../../Gui/dialog/ErrorDialog"], function(Const
             return "";
         }
         for (var i = 0; i < tiles.length; i++) {
-            key += this.getKey(tiles[i].bound);
+            key += this.getKey(tiles[i]);
         }
         return key;
     };
@@ -132,16 +124,16 @@ define(["../../Utils/Constants", "../../Gui/dialog/ErrorDialog"], function(Const
      * Add a tile and its features to the cache
      * @function addTile
      * @memberof OpenSearchCache#
-     * @param {Bound} bound Bound
+     * @param {Tile} tile Tile
      * @param {Array} features Array of features to add
      * @param {Int} nbFound Total number of features found
      */
 
-    OpenSearchCache.prototype.addTile = function(bound, features, nbFound) {
+    OpenSearchCache.prototype.addTile = function(tile, features, nbFound) {
         ErrorDialog.open(Constants.LEVEL.DEBUG, "OpenSearchCache", "[addTile]" + this.getCacheStatus());
 
-        var key = this.getKey(bound);
-        var tile = {
+        var key = this.getKey(tile);
+        var myTile = {
             key: key,
             features: features.slice(),
             remains: nbFound
@@ -151,47 +143,9 @@ define(["../../Utils/Constants", "../../Gui/dialog/ErrorDialog"], function(Const
             ErrorDialog.open(Constants.LEVEL.DEBUG, "OpenSearchCache", "Cache full, remove oldest");
             this.tileArray.splice(0, 1);
         }
-        this.tileArray.push(tile);
+        this.tileArray.push(myTile);
     };
 
-    /*************************************************************************************************************/
-
-    /**
-     * Add features to an existing tile in cache
-     * @function updateTile
-     * @memberof OpenSearchCache#
-     * @param {Tile} tile Tile
-     * @param {Array} features Array of features to add
-     */
-
-    OpenSearchCache.prototype.updateTile = function(tile, features) {
-        ErrorDialog.open(Constants.LEVEL.DEBUG, "OpenSearchCache", "[update]" + this.getCacheStatus());
-        tile.features = tile.features.concat(features);
-    };
-
-    /*************************************************************************************************************/
-
-    /**
-     * Get a tile from the cache
-     * @function getTile
-     * @memberof OpenSearchCache#
-     * @param {Bound} bound Bound
-     * @return {Json} Cache element
-     */
-
-    OpenSearchCache.prototype.getTile = function(bound) {
-        ErrorDialog.open(Constants.LEVEL.DEBUG, "OpenSearchCache", "[getTile]" + this.getCacheStatus());
-
-        var key = this.getKey(bound);
-
-        for (var i = 0; i < this.tileArray.length; i++) {
-            // TODO : try in reverse order, best performance ?
-            if (this.tileArray[i].key === key) {
-                return this.tileArray[i];
-            }
-        }
-        return null;
-    };
 
     /*************************************************************************************************************/
 

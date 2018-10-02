@@ -912,6 +912,7 @@ define(["jquery", "../Utils/Constants", "../Gui/dialog/ErrorDialog", "../Utils/P
         var url = baseUrl + "/properties";
         var properties = $.ajax({
             type: "GET",
+            datatype : "text",
             url: Proxy.proxify(baseUrl + "/properties"),
             async: false,
             beforeSend:function(xhr) {

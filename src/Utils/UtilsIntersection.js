@@ -162,7 +162,7 @@ define(["./Numeric", "../Tiling/HEALPixBase"], function(Numeric, HEALPixBase) {
      * @return {boolean} true when v is between min and max otherwise talse
      */
     UtilsIntersection.isValueBetween = function(v, min, max) {
-        return v >= min && v <= max;
+        return min <= v && v <= max;
     };
 
     /**
@@ -176,12 +176,7 @@ define(["./Numeric", "../Tiling/HEALPixBase"], function(Numeric, HEALPixBase) {
         if (a === null || b === null) {
             return false;
         }
-        if (
-            a.north === null ||
-            typeof a.north === "undefined" ||
-            b.north === null ||
-            typeof b.north === "undefined"
-        ) {
+        if (a.north == null || b.north == null) {
             return false;
         }
         var xOk =
@@ -195,6 +190,65 @@ define(["./Numeric", "../Tiling/HEALPixBase"], function(Numeric, HEALPixBase) {
             (a.south <= b.south && a.north >= b.north);
 
         return xOk && yOk;
+    };
+
+    /**
+     * Returns true when t1 intersects with t2 otherwise false
+     * @function tileIntersect
+     * @param {Tile} t1 
+     * @param {Tile} t2 
+     * @returns {boolean} true when t1 intersects with t2 otherwise false
+     */
+    UtilsIntersection.tileIntersect = function(t1, t2) {
+        if (t1 === null || t2 === null) {
+            return false;
+        }
+
+        var result;
+        if (t1.level === t2.level) {
+            result = t1.x === t2.x && t1.y === t2.y;
+        } else if (t1.level > t2.level) {
+            var diffLevel = t1.level - t2.level;
+            var x1 = Math.pow(2, diffLevel) * t2.x;
+            var x2 = Math.pow(2, diffLevel) * (t2.x + 1) - 1;
+            var y1 = Math.pow(2, diffLevel) * t2.y;
+            var y2 = Math.pow(2, diffLevel) * (t2.y + 1) - 1;
+            result = UtilsIntersection.isValueBetween(t1.x, x1, x2) && UtilsIntersection.isValueBetween(t1.y, y1, y2);           
+        } else {
+            diffLevel = t2.level - t1.level;
+            x1 = Math.pow(2, diffLevel) * t1.x;
+            x2 = Math.pow(2, diffLevel) * (t1.x + 1) - 1;
+            y1 = Math.pow(2, diffLevel) * t1.y;
+            y2 = Math.pow(2, diffLevel) * (t1.y + 1) - 1;
+            result = UtilsIntersection.isValueBetween(t2.x, x1, x2) && UtilsIntersection.isValueBetween(t2.y, y1, y2);         
+        }      
+        return result;
+    };
+
+    /**
+     * Checks is two tiles intersect
+     * @function tileIntersects
+     * @param {{level:int, x:int, y:int}} a - index
+     * @param {{level:int, x:int, y:int}} b - index
+     * @return {boolean} true when the two bounding boxes intersect otherwise false
+     */
+    UtilsIntersection.tileIntersects = function(a, b) {
+        if (a === null || b === null) {
+            return false;
+        }
+
+        var levels = Object.keys(b);
+        var result = false;
+        for (var i=0; i<levels.length && !result; i++) {
+            var level = levels[i];
+            var tiles = b[level];
+            for (var iTile=0; iTile < tiles.x.length && !result; iTile++) {
+                var x = tiles.x[iTile];
+                var y = tiles.y[iTile];
+                result = UtilsIntersection.tileIntersect(a, {level:level, x:x, y:y});
+            }           
+        }
+        return result;
     };
 
     /**

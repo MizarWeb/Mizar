@@ -70,37 +70,20 @@ define(["./OpenSearchUtils"], function(OpenSearchUtils) {
             this.patternAttribute = "pattern=\"" + this.pattern + "\" ";
         }
 
-        if (paramJson.Option !== undefined) {
+        if (paramJson.Options !== undefined) {
             this.options = [];
-            if (paramJson.Option.length !== undefined) {
-                for (var i = 0; i < paramJson.Option.length; i++) {
+            if (paramJson.Options.length !== undefined) {
+                for (var i = 0; i < paramJson.Options.length; i++) {
                     this.options.push(
                         OpenSearchUtils.getAttributeValue(
-                            paramJson.Option[i],
+                            paramJson.Options[i],
                             "value"
                         )
                     );
                 }
             } else {
                 this.options.push(
-                    OpenSearchUtils.getAttributeValue(paramJson.Option, "value")
-                );
-            }
-        }
-        if (paramJson.Option !== undefined) {
-            this.options = [];
-            if (paramJson.Option.length !== undefined) {
-                for (var j = 0; j < paramJson.Option.length; j++) {
-                    this.options.push(
-                        OpenSearchUtils.getAttributeValue(
-                            paramJson.Option[j],
-                            "value"
-                        )
-                    );
-                }
-            } else {
-                this.options.push(
-                    OpenSearchUtils.getAttributeValue(paramJson.Option, "value")
+                    OpenSearchUtils.getAttributeValue(paramJson.Options, "value")
                 );
             }
         }
