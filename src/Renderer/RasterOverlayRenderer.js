@@ -71,11 +71,14 @@ define([
         this.fragmentShader += "varying vec2 texCoord;\n";
         this.fragmentShader += "uniform sampler2D overlayTexture;\n";
         this.fragmentShader += "uniform float opacity; \n";
+        this.fragmentShader += "uniform vec3 levelColRow;\n";
         this.fragmentShader += "void main(void)\n";
         this.fragmentShader += "{\n";
         this.fragmentShader +=
             "	gl_FragColor.rgba = texture2D(overlayTexture, texCoord.xy); \n";
         this.fragmentShader += "	gl_FragColor.a *= opacity; \n";
+        // this.fragmentShader += "    gl_FragColor.rgb = levelColRow / vec3(16.0);\n";
+        // this.fragmentShader += "    gl_FragColor.a = min(gl_FragColor.a + 0.8, 1.0);\n";
         this.fragmentShader += "}\n";
 
         this.lerpFragmentShader =
@@ -93,6 +96,7 @@ define([
                 vec4 toColor = texture2D(toOverlayTexture, texCoord.xy);
                 gl_FragColor = mix(fromColor, toColor, time / totalTime);
                 gl_FragColor.a *= opacity;
+                // gl_FragColor.rgba = vec4(0, 1, 0, opacity);
             }`;
 
         this.rendererManager = globe.getRendererManager();
@@ -115,8 +119,8 @@ define([
         this.imageRequests = [];
         this.frameNumber = 0;
 
+
         this.oldRenderables = {};
-        this.oldRenderablesArray = [];
 
         var self = this;
         for (var i = 0; i < 4; i++) {
@@ -139,8 +143,8 @@ define([
 
                         const { level, x, y } = this.renderable.tile;
                         try {
-                            const oldRenderable = self.oldRenderables[level][x][y][this.renderable.bucket];
-                            if (oldRenderable && oldRenderable.texture) {
+                            const oldRenderable = self.oldRenderables[level][x][y];
+                            if (oldRenderable && oldRenderable.ownTexture) {
                                 this.renderable.oldRenderable = oldRenderable;
                                 this.renderable.needsLerp = true;
                                 this.renderable.time = 0.0;
@@ -356,19 +360,16 @@ define([
             manager.renderables.push(this);
         } else if (isLeaf) {
             const oldRenderables = this.bucket.renderer.oldRenderables;
-            // console.log(oldRenderables[tile.level][tile.x][tile.y][this.bucket]);
             try {
-                const oldRenderable = oldRenderables[tile.level][tile.x][tile.y][this.bucket];
-                if (oldRenderable && oldRenderable.texture) {
+                const oldRenderable = oldRenderables[tile.level][tile.x][tile.y];
+                if (oldRenderable && oldRenderable.ownTexture) {
                     const renderable = Object.assign({}, this);
-                    renderable.texture = oldRenderable.texture;
+                    renderable.texture = oldRenderable.ownTexture;
                     manager.renderables.push(renderable);
                 }
             } catch (error) {
                 // do nothing
             }
-        } else if (this.oldRenderable && this.oldRenderable.texture) {
-            manager.renderables.push(this.oldRenderable);
         }
 
         if (!this.requestFinished && this.tile.state === Tile.State.LOADED) {
@@ -460,7 +461,7 @@ define([
      * @memberof RasterOverlayRenderer.prototype
      * @param overlay
      */
-    RasterOverlayRenderer.prototype.removeOverlay = function(overlay) {
+    RasterOverlayRenderer.prototype.removeOverlay = function(overlay, noDispose) {
         var index = this.buckets.indexOf(overlay._bucket);
         this.buckets.splice(index, 1);
 
@@ -474,8 +475,10 @@ define([
                 var index = rs.renderables.indexOf(renderable);
                 rs.renderables.splice(index, 1);
 
-                // Dispose its data
-                renderable.dispose(rc, tp);
+                if (!noDispose) {
+                    // Dispose its data
+                    renderable.dispose(rc, tp);
+                }
 
                 // Remove tile data if not needed anymore
                 if (rs.renderables.length === 0) {
@@ -488,55 +491,34 @@ define([
     /**************************************************************************************************************/
 
     RasterOverlayRenderer.prototype.updateOverlay = function(overlay) {
-        this.needTransition = true;
+        var oldBucket = overlay._bucket;
 
-        var bucket = overlay._bucket;
-
-        if (!bucket) {
-            this.addOverlay(overlay);
-        } else {
-            this.oldRenderables = {};
-            for (var j = 0; j < bucket.renderables.length; ++j) {
-                const renderable = bucket.renderables[j];
-                if (renderable.texture) {
-                    const { level, x, y } = renderable.tile;
-                    if (!this.oldRenderables[level]) this.oldRenderables[level] = {};
-                    if (!this.oldRenderables[level][x]) this.oldRenderables[level][x] = {};
-                    if (!this.oldRenderables[level][x][y]) this.oldRenderables[level][x][y] = {};
-                    this.oldRenderables[level][x][y][bucket] = renderable;
-                    this.oldRenderablesArray.push(renderable);
-                }
-            }
-            for (var i = 0; i < this.tileManager.level0Tiles.length; i++) {
-                var tile = this.tileManager.level0Tiles[i];
-                if (tile.state === Tile.State.LOADED) {
-                    this.addOverlayToTile(tile, bucket);
+        var rc = this.tileManager.renderContext;
+        var tp = this.tileManager.tilePool;
+        for (var level in this.oldRenderables) {
+            for (var x in this.oldRenderables[level]) {
+                for (var y in this.oldRenderables[level][x]) {
+                    const renderable = this.oldRenderables[level][x][y];
+                    renderable.dispose(rc, tp);
                 }
             }
         }
 
-        var self = this;
-        var rc = this.tileManager.renderContext;
-        var tp = this.tileManager.tilePool;
-        this.tileManager.visitTiles(function(tile) {
-            var rs = tile.extension.renderer;
-            var renderable = rs ? rs.getRenderable(overlay._bucket) : null;
-            if (renderable) {
-                // Remove the renderable
-                var index = rs.renderables.indexOf(renderable);
-                rs.renderables.splice(index, 1);
-
-                // Dispose its data
-                if (self.oldRenderablesArray.indexOf(renderable) === -1) {
-                    renderable.dispose(rc, tp);
-                }
-
-                // Remove tile data if not needed anymore
-                if (rs.renderables.length === 0) {
-                    delete tile.extension.renderer;
+        this.oldRenderables = {};
+        if (oldBucket) {
+            for (var j = 0; j < oldBucket.renderables.length; ++j) {
+                const renderable = oldBucket.renderables[j];
+                if (renderable.ownTexture) {
+                    const { level, x, y } = renderable.tile;
+                    if (!this.oldRenderables[level]) this.oldRenderables[level] = {};
+                    if (!this.oldRenderables[level][x]) this.oldRenderables[level][x] = {};
+                    this.oldRenderables[level][x][y] = renderable;
                 }
             }
-        });
+        }
+
+        this.removeOverlay(overlay, true);
+        this.addOverlay(overlay);
     };
 
     /**************************************************************************************************************/
@@ -895,6 +877,13 @@ define([
                 renderable.vTrans
             );
 
+            gl.uniform3f(
+                program.uniforms.levelColRow,
+                renderable.tile.level,
+                renderable.tile.x,
+                renderable.tile.y
+            );
+
             if (renderable.needsLerp) {
                 gl.activeTexture(gl.TEXTURE0);
                 gl.bindTexture(gl.TEXTURE_2D, renderable.oldRenderable.texture);
@@ -913,7 +902,7 @@ define([
                 renderable.time += rc.deltaTime;
                 if (renderable.time > 500) {
                     renderable.needsLerp = false;
-                    // this.buckets
+                    renderable.oldRenderable = null;
                 }
             }
 
