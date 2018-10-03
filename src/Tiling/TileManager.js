@@ -214,7 +214,14 @@ define([
      * @private
      */
     function _updateOverlay(renderable, layer) {
-        var bucket = renderable.bucket;
+        var bucket;
+        if (renderable) {
+            var bucket = renderable.bucket;
+        } else if (layer) {
+            var bucket = layer._bucket;
+        } else {
+            return;
+        }
         var renderer = bucket.renderer;
 
         if (renderer.updateOverlay) {
@@ -422,7 +429,8 @@ define([
      * @param layer the layer where the tiles must be updated
      */
     TileManager.prototype.updateVisibleTiles = function(layer) {
-        this.abortLayerRequests(layer, _updateOverlay);
+        this.abortLayerRequests(layer);
+        _updateOverlay(null, layer);
     };
 
     /**************************************************************************************************************/
