@@ -3,3 +3,6 @@ api_doc/*
 node_modules
 website
 tutorials
+
+Mizar.min.js
+.vscode
