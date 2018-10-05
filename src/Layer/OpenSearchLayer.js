@@ -133,7 +133,7 @@ define([
 
         this.nbFeaturesTotal = 0;
 
-        // last datetime for removing outside    
+        // last datetime for removing outside
         this.lastRemovingDateTime = null;
         this.removingDeltaSeconds = options.hasOwnProperty("removingDeltaSeconds")? options.removingDeltaSeconds: 1;
 
@@ -195,24 +195,24 @@ define([
                     break;
                 }
             }
-        }        
+        }
     }
 
-    function _isFeatureAttachedToMoreThanOne(featureId, key, tilesLoaded) {        
+    function _isFeatureAttachedToMoreThanOne(featureId, key, tilesLoaded) {
         var isUsed = false;
-        var len = tilesLoaded.length;        
+        var len = tilesLoaded.length;
         while(len--) {
             var aTile = tilesLoaded[len].tile;
             if (key !== aTile.key) {
-                var index = (typeof aTile.associatedFeaturesId !== "undefined") ? aTile.associatedFeaturesId.indexOf(featureId) : -1;                
+                var index = (typeof aTile.associatedFeaturesId !== "undefined") ? aTile.associatedFeaturesId.indexOf(featureId) : -1;
                 if (index >= 0) {
                     isUsed = true;
                     break;
-                }                
+                }
             }
         }
         return isUsed;
-    }    
+    }
 
     function _isAlreadyAdded(featureId, features) {
         var isFound = _.find(features, function (feature) { return feature.id === featureId; });
@@ -224,9 +224,9 @@ define([
             return false;
         }
         var num = tile.associatedFeaturesId.indexOf(featureId);
-        return num >= 0; 
-    }  
-    
+        return num >= 0;
+    }
+
     function _getFeatureIndexById(features, featureId) {
         var index = -1;
         var len = features.length;
@@ -234,11 +234,11 @@ define([
             if (features[len].id === featureId) {
                 index = len;
                 break;
-            }            
-        }        
+            }
+        }
         return index;
-    } 
-    
+    }
+
     /**
      * Internal function to sort tiles
      * @function _sortTilesByDistance
@@ -249,7 +249,7 @@ define([
     function _sortTilesByDistance(t1, t2) {
         return t1.distance - t2.distance;
     }
-    
+
     function _computeGeometryExtent(geometry) {
         var result = {
             east: -180,
@@ -264,9 +264,9 @@ define([
             result.east = coord[0] > result.east ? coord[0] : result.east;
             result.west = coord[0] < result.west ? coord[0] : result.west;
         }
-        return result;        
-    }   
-    
+        return result;
+    }
+
     function _removeFeature(layer, featureId) {
         var featureIndex = _getFeatureIndexById(layer.features, featureId);
         var feature = layer.features[featureIndex];
@@ -280,7 +280,7 @@ define([
 
     function _removeFeatures(layer) {
         // clean renderers
-        var len = layer.features.length; 
+        var len = layer.features.length;
         while (len--) {
             _removeFeature(layer, layer.features[len].id);
         }
@@ -289,9 +289,9 @@ define([
             layer.tilesLoaded[i].tile.osState[layer.getID()] = OpenSearchLayer.TileState.NOT_LOADED;
         }
 
-        layer.getGlobe().getRenderContext().requestFrame();          
-    }  
-    
+        layer.getGlobe().getRenderContext().requestFrame();
+    }
+
     function _removeTile(layer, tile) {
         if (typeof tile.associatedFeaturesId === "undefined") {
             tile.associatedFeaturesId = [];
@@ -316,9 +316,9 @@ define([
             }
         }
         layer.tilesLoaded[indice] = layer.tilesLoaded[layer.tilesLoaded.length-1];
-        layer.tilesLoaded.pop();        
-    }  
-    
+        layer.tilesLoaded.pop();
+    }
+
     function _removeFeaturesOutside(layer, tiles) {
         for (var i = 0; i < layer.tilesLoaded.length; i++) {
             var tile = layer.tilesLoaded[i].tile;
@@ -327,8 +327,8 @@ define([
                 _removeTile(layer, tile);
             }
         }
-    }   
-    
+    }
+
     function _addFeatureToRenderers(layer, feature) {
         var geometry = feature.geometry;
 
@@ -348,13 +348,13 @@ define([
         } else {
             // Add geometry to renderers
             layer.getGlobe().getRendererManager().addGeometry(layer, geometry, style);
-        }        
-    } 
+        }
+    }
 
     function _removeFeatureFromRenderers(layer, feature) {
         return layer.getGlobe().getRendererManager().removeGeometry(feature.geometry, layer);
-    }    
-    
+    }
+
     function _addFeature(layer, feature) {
         var defaultCrs = {
             type: "name",
@@ -376,14 +376,14 @@ define([
         _addFeatureToRenderers(layer, feature);
         if (layer.isVisible()) {
             layer.getGlobe().getRenderContext().requestFrame();
-        }        
-    } 
-    
+        }
+    }
+
     function _cleanCache(layer) {
         layer.cache.reset();
-        layer.previousViewKey = null;        
-    }  
-    
+        layer.previousViewKey = null;
+    }
+
 
     function _prepareParameters(layer, tile) {
         var param; // param managed
@@ -391,7 +391,7 @@ define([
         for (var i = 0; i < layer.getServices().queryForm.parameters.length; i++) {
             param = layer.getServices().queryForm.parameters[i];
             code = param.value;
-            code = code.replace("?}", "}");            
+            code = code.replace("?}", "}");
             if (code === "{geo:box}" && (tile.type === Constants.TILE.GEO_TILE || tile.type === Constants.TILE.MERCATOR_TILE)) {
                 // set bbox
                 param.currentValue =
@@ -411,8 +411,8 @@ define([
                 +","+corners[0][0]+" "+corners[0][1]+"))";
             }
         }
-    }   
-    
+    }
+
     function _addFeatureToRenderersCurrentLevel(layer, feature) {
         var geometry = feature.geometry;
 
@@ -432,12 +432,12 @@ define([
         } else {
             // Add geometry to renderers
             layer.getGlobe().getRendererManager().addGeometryCurrentLevel(layer, geometry, style);
-        }        
+        }
     }
 
     function _removeFeatureFromRenderersCurrentLevel(layer, feature) {
         return layer.getGlobe().getRendererManager().removeGeometryCurrentLevel(feature.geometry, layer);
-    }     
+    }
 
     function _buildUrl(layer, tile) {
         //var url = this.serviceUrl + "/search?order=" + tile.order + "&healpix=" + tile.pixelIndex;
@@ -479,7 +479,7 @@ define([
             }
         }
         return url;
-    }    
+    }
 
     function _isTileLoaded(tilesLoaded, key) {
         var isLoaded = false;
@@ -491,7 +491,7 @@ define([
             }
         }
         return isLoaded;
-    }    
+    }
 
     function _removeFeaturesExternalFov(layer, tiles) {
         var doRemove = false;
@@ -502,22 +502,22 @@ define([
         }
         if (doRemove) {
             layer.lastRemovingDateTime = Date.now();
-            _removeFeaturesOutside(layer, tiles);                 
+            _removeFeaturesOutside(layer, tiles);
         }
-    }  
-    
+    }
+
     function _initOsState(layer, tile) {
         if (typeof tile.key === "undefined") {
             tile.key = tile.getKey();
-        }        
+        }
         // If no state defined...
         if (tile.osState == null) {
             //...set it to NOT_LOADED
             tile.osState = [];
-        }    
+        }
         if (tile.osState[layer.getID()] == null) {
             tile.osState[layer.getID()] = OpenSearchLayer.TileState.NOT_LOADED;
-        }            
+        }
     }
 
     function _mustBeRefreshed(previousKey, currentKey, forceRefreshed) {
@@ -526,7 +526,7 @@ define([
             needRefresh = true;
         } else {
             needRefresh = previousKey !== currentKey;
-        }        
+        }
         return needRefresh;
     }
 
@@ -536,15 +536,15 @@ define([
             var tileLoaded = layer.tilesLoaded[i].tile;
             if(tileLoaded.associatedFeaturesId) {
                 nb = nb + tileLoaded.associatedFeaturesId.length;
-            }             
-        } 
+            }
+        }
         console.log("features in tileLoaded :"+nb);
-        console.log("nb features :"+layer.features.length);                
+        console.log("nb features :"+layer.features.length);
     }
 
     function _requestTile(layer, tile) {
         var url = _buildUrl(layer, tile);
-        if (url !== null) {            
+        if (url !== null) {
             var cachedTile = layer.cache.getCacheFromKey(url);
             if(cachedTile == null) {
                 // cache
@@ -555,13 +555,13 @@ define([
                 if (cachedTile.osState == null) {
                     //...set it to NOT_LOADED
                     cachedTile.osState = [];
-                }      
+                }
                 cachedTile.osState[layer.getID()] =  OpenSearchLayer.TileState.LOADING;
-                layer.computeFeaturesResponse(cachedTile.features, cachedTile, cachedTile.total);                                                     
-            }    
-            _computeStats(layer);        
+                layer.computeFeaturesResponse(cachedTile.features, cachedTile, cachedTile.total);
+            }
+            _computeStats(layer);
         }
-    }    
+    }
     /**************************************************************************************************************/
 
     /**
@@ -669,8 +669,8 @@ define([
         if (_removeFeatureFromRenderers(this, feature)) {
             feature.properties.style = style;
             _addFeatureToRenderers(this, feature);
-        }        
-    };   
+        }
+    };
 
     /**
      * Load quicklook
@@ -696,7 +696,7 @@ define([
             this.currentQuicklookLayer._attach(this.globe);
         } else {
             this.currentQuicklookLayer.update(quad, url);
-        }  
+        }
         //TODO : Does not work because it is not added to the renderer but postRenderer
         //TODO : Test : load OSM + S1. Click on S1, load quicklook
         this.currentQuicklookLayer.setOnTheTop();
@@ -769,11 +769,11 @@ define([
     OpenSearchLayer.prototype.render = function(tiles) {
         if (!this.isVisible() || tiles.length === 0) {
             return;
-        }         
+        }
 
         this.currentKey = OpenSearchUtils.getArrayBoundKey(tiles);
 
-        if (_mustBeRefreshed(this.previousKey, this.currentKey, this.forceRefresh)) {            
+        if (_mustBeRefreshed(this.previousKey, this.currentKey, this.forceRefresh)) {
             if (this.forceRefresh === true) {
                 // Remove cache, in order to reload new features
                 _cleanCache(this);
@@ -802,7 +802,7 @@ define([
                         shortName: this.getShortName(),
                         page: 1
                     }
-                );                
+                );
             }
 
             this.nbFeaturesTotal = 0;
@@ -1082,7 +1082,7 @@ define([
             }
         }
 
-        if (typeof this.callbackContext !== "undefined") {            
+        if (typeof this.callbackContext !== "undefined") {
             this.callbackContext.publish(
                 Constants.EVENT_MSG.LAYER_UPDATE_STATS_ATTRIBUTES,
                 {
@@ -1106,14 +1106,14 @@ define([
                 key: tile.getKey(),
                 tile: tile
             });
-        }    
-        
+        }
+
         // Publish event that layer have received new features
         this.getGlobe()
             .publishEvent(Constants.EVENT_MSG.FEATURED_ADDED, {
                 layer: this,
                 features: this.features
-            });      
+            });
     };
 
 

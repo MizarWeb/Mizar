@@ -148,7 +148,7 @@ define(["../../Utils/Constants","../../Gui/dialog/ErrorDialog","../../Utils/Prox
                     var nbFeaturesTotalPerTile = response.properties.totalResults;
                     //TODO cache : degrade resolution
                     //xhr.layer.cache.storeInCache(url, response.features, nbFeaturesTotalPerTile);
-                    xhr.layer.computeFeaturesResponse(response.features, tile, nbFeaturesTotalPerTile);                  
+                    xhr.layer.computeFeaturesResponse(response.features, tile, nbFeaturesTotalPerTile);
                 } else if (xhr.status >= 400) {
                     //tileData.complete = true;
                     ErrorDialog.open(Constants.LEVEL.DEBUG, "OpenSearchRequestPool", xhr.responseText);
@@ -169,7 +169,7 @@ define(["../../Utils/Constants","../../Gui/dialog/ErrorDialog","../../Utils/Prox
 
     /**
      * Check for each layer if there is remaining load needed
-o     * Check if there is any remaining query in the pool 
+o     * Check if there is any remaining query in the pool
      * @function checkPool
      * @memberof OpenSearchRequestPool#
      */
@@ -343,7 +343,7 @@ o     * Check if there is any remaining query in the pool
         while (xhr !== null && typeof xhr !== "undefined") {
             xhr.abort();
             this.freeRequests.push(xhr);
-            xhr = this.runningRequests.pop();            
+            xhr = this.runningRequests.pop();
         }
     };
 
