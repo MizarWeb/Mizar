@@ -29,11 +29,8 @@ define(["jquery"],function($) {
         }
         return key;
     };
-
     /*************************************************************************************************************/
-
     /**
-     * Get the attribute value
      * @function getAttributeValue
      * @memberof OpenSearchUtils#
      * @param {Object} object Object describing the parameter
