@@ -102,7 +102,7 @@ define(["../Utils/Utils"], function(Utils) {
             } else {
                 factor = -event.wheelDelta / 120.0;
             }
-            _navigation.zoom(factor);
+            _navigation.zoom(factor, null, event.clientX, event.clientY);
 
             // Stop all animations when an event is received
             _navigation.stopAnimations();

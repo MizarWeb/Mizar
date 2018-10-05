@@ -553,8 +553,9 @@ define([
      * @param {float} delta Delta zoom
      * @param {float} scale Scale
      */
-    PlanetNavigation.prototype.zoom = function(delta, scale) {
-        // TODO : improve zoom, using scale or delta ? We should use scale always
+    PlanetNavigation.prototype.zoom = function(delta, scale, x, y) {
+        const oldDistance = this.distance;
+
         if (scale) {
             this.distance *= scale;
         } else {
@@ -565,6 +566,40 @@ define([
             Math.min(this.distance, this.maxDistance),
             this.minDistance
         );
+
+        if (x && y) {
+            // Recompute the geo position
+            this.computeInverseViewMatrix();
+            const eye = [
+                this.inverseViewMatrix[12],
+                this.inverseViewMatrix[13],
+                this.inverseViewMatrix[14]
+            ];
+
+            const center = vec3.create();
+            this.ctx.getCoordinateSystem().fromGeoTo3D(this.geoCenter, center);
+            const centerDir = vec3.create();
+            vec3.subtract(center, eye, centerDir);
+            vec3.normalize(centerDir);
+
+            const pos = vec3.create();
+            const geoPos = this.ctx.globe.getLonLatFromPixel(x, y);
+
+            this.ctx.getCoordinateSystem().fromGeoTo3D(geoPos, pos);
+            const zoomDir = vec3.create();
+            vec3.subtract(pos, eye, zoomDir);
+            vec3.normalize(zoomDir);
+            vec3.scale(zoomDir, oldDistance - this.distance);
+
+            const newEye = vec3.create();
+            vec3.add(eye, zoomDir, newEye);
+
+            var r = new Ray(newEye, centerDir);
+            const newCenter = this.ctx.globe.computeIntersection(r);
+            if (newCenter != null && newCenter != undefined) {
+                this.geoCenter = newCenter;
+            }
+        }
 
         // compute the view matrix with new values
         this.computeViewMatrix();
@@ -708,7 +743,6 @@ define([
         vec3.normalize(dir);
         var r = new Ray(eye, dir);
 
-        //const center = this.ctx.globe.getLonLatFromPixel(width / 2, height / 2);
         const center = this.ctx.globe.computeIntersection(r);
         if (center != null && center != undefined) {
             this.geoCenter = center;
