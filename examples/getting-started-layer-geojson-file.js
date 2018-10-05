@@ -3,8 +3,7 @@ var mizar = new Mizar({
     canvas: "MizarCanvas",
     planetContext: {
         coordinateSystem: {
-            geoideName: Mizar.CRS.WGS84,
-            projectionName: Mizar.PROJECTION.Azimuth
+            geoideName: Mizar.CRS.WGS84
         },
         positionTracker: {
             position: "bottom"
@@ -36,6 +35,20 @@ mizar.addLayer({
     type: Mizar.LAYER.GeoJSON,
     name: "LandingSite",
     url: "data/europe.json",
-    visible: true
+    visible: true,
+    style : {
+        color:"red",
+        fill:true
+    }
 });
 
+mizar.getActivatedContext().getRenderContext().canvas.addEventListener("mouseup", _handleMouseUp);
+
+function _handleMouseUp(event) {
+    var pickPoint = mizar.getActivatedContext().getLonLatFromPixel(event.layerX, event.layerY);
+    var pickingManager = mizar.getServiceByName(Mizar.SERVICE.PickingManager);
+    var newSelection = pickingManager.computePickSelection(pickPoint);
+    var select = pickingManager.setSelection(newSelection);
+    pickingManager.focusSelection(select);
+    console.log(select);
+}
