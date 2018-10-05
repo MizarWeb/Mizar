@@ -121,41 +121,35 @@ define([
      * @param {Object} options Configuration properties for the layer. See {@link AbstractLayer} for base properties
      * @param {string} options.serviceUrl Url of OpenSearch description XML file
      * @param {int} [options.minOrder=5] Starting order for OpenSearch requests
-     * @param {int} [options.maxRequests=2] Max request
-     * @param {Boolean} [options.invertY=false] a boolean, if set all the image data of current layer is flipped along the vertical axis
      * @param {Boolean} [options.coordSystemRequired=true]
      * @param {FeatureStyle} [options.style=new FeatureStyle()]
      * @memberof module:Layer
      */
     var OpenSearchLayer = function(options) {
-        AbstractLayer.prototype.constructor.call(
-            this,
-            Constants.LAYER.OpenSearch,
-            options
-        );
+        AbstractLayer.prototype.constructor.call(this, Constants.LAYER.OpenSearch, options);
 
-        this.minOrder = options.minOrder || 5;
-        this.maxRequests = options.maxRequests || 2;
+        this.minLevel = options.minLevel || 5;
         this.coordSystemRequired = options.hasOwnProperty("coordSystemRequired")? options.coordSystemRequired: true;
 
 
-        this.previousViewKey = null;
+        this.previousKey = null;
         this.previousTileId = null;
         this.previousDistance = null;
 
         // Keep trace of all features loaded (TODO: make object more light, just keep geometry and style ?)
         this.features = [];
-        // Keep trace of all features id loaded
-        this.featuresIdLoaded = [];
+
         // Keep trace of all tiles loaded (bound, key and features id associated)
         this.tilesLoaded = [];
 
-        // last datetime for removing outside
+        this.nbFeaturesTotal = 0;
+
+        // last datetime for removing outside    
         this.lastRemovingDateTime = null;
         this.removingDeltaSeconds = options.hasOwnProperty("removingDeltaSeconds")? options.removingDeltaSeconds: 1;
 
-        // OpenSearch result
-        this.result = new OpenSearchResult();
+        this.nbFeaturesTotal = 0;
+
 
         // Pool for request management (manage outside to be sharable between multiple opensearch layers)
         this.pool = options.openSearchRequestPool;
@@ -507,6 +501,88 @@ define([
         return url;
     }    
 
+    function _isTileLoaded(tilesLoaded, key) {
+        var isLoaded = false;
+        var len = tilesLoaded.length;
+        while(len--) {
+            if (tilesLoaded[len].key === key) {
+                isLoaded = true;
+                break;
+            }
+        }
+        return isLoaded;
+    }    
+
+    function _removeFeaturesExternalFov(layer, tiles) {
+        var doRemove = false;
+        if (layer.lastRemovingDateTime === null) {
+            doRemove = true;
+        } else {
+            doRemove = Date.now() - layer.lastRemovingDateTime >= layer.removingDeltaSeconds * 1000;
+        }
+        if (doRemove) {
+            var visualTilesIndex = _computeGeoTileIndex(tiles);
+            layer.lastRemovingDateTime = Date.now();
+            _removeFeaturesOutside(layer, visualTilesIndex);                 
+        }
+    }  
+    
+    function _initOsState(layer, tile) {
+        if (typeof tile.key === "undefined") {
+            tile.key = OpenSearchUtils.getKey(tile);
+        }        
+        // If no state defined...
+        if (tile.osState == null) {
+            //...set it to NOT_LOADED
+            tile.osState = [];
+        }    
+        if (tile.osState[layer.getID()] == null) {
+            tile.osState[layer.getID()] = OpenSearchLayer.TileState.NOT_LOADED;
+        }            
+    }
+
+    function _mustBeRefreshed(previousKey, currentKey, forceRefreshed) {
+        var needRefresh;
+        if (previousKey === null || forceRefreshed === true) {
+            needRefresh = true;
+        } else {
+            needRefresh = previousKey !== currentKey;
+        }        
+        return needRefresh;
+    }
+
+    function _computeStats(layer) {
+        var nb = 0;
+        for(var i=0; i<layer.tilesLoaded.length; i++) {
+            var tileLoaded = layer.tilesLoaded[i].tile;
+            if(tileLoaded.associatedFeaturesId) {
+                nb = nb + tileLoaded.associatedFeaturesId.length;
+            }             
+        } 
+        console.log("features in tileLoaded :"+nb);
+        console.log("nb features :"+layer.features.length);                
+    }
+
+    function _requestTile(layer, tile) {
+        var url = _buildUrl(layer, tile);
+        if (url !== null) {            
+            var cachedTile = layer.cache.getCacheFromKey(url);
+            if(cachedTile == null) {
+                // cache
+                tile.osState[layer.getID()] =  OpenSearchLayer.TileState.LOADING;
+                layer.pool.addQuery(url, tile, layer);
+            } else {
+                // If no state defined...
+                if (cachedTile.osState == null) {
+                    //...set it to NOT_LOADED
+                    cachedTile.osState = [];
+                }      
+                cachedTile.osState[layer.getID()] =  OpenSearchLayer.TileState.LOADING;
+                layer.computeFeaturesResponse(cachedTile.features, cachedTile, cachedTile.total);                                                     
+            }    
+            _computeStats(layer);        
+        }
+    }    
     /**************************************************************************************************************/
 
     /**
@@ -617,18 +693,6 @@ define([
         }        
     };   
 
-    OpenSearchLayer.prototype._isTileLoaded = function(tilesLoaded, key) {
-        var isLoaded = false;
-        var len = tilesLoaded.length;
-        while(len--) {
-            if (tilesLoaded[len].key === key) {
-                isLoaded = true;
-                break;
-            }
-        }
-        return isLoaded;
-    };
-
     /**
      * Load quicklook
      * @function loadQuicklook
@@ -721,48 +785,27 @@ define([
      * @fires Context#features:added
      */
     OpenSearchLayer.prototype.render = function(tiles) {
-        if (!this.isVisible()) {
+        if (!this.isVisible() || tiles.length === 0) {
             return;
-        }
+        }         
 
-        var needRefresh;
-        this.globalKey = this.cache.getArrayBoundKey(tiles);
+        this.currentKey = OpenSearchUtils.getArrayBoundKey(tiles);
 
-        if (this.forceRefresh === true) {
-            // Remove cache, in order to reload new features
-            _cleanCache(this);
-            this.forceRefresh = false;
-        }
+        if (_mustBeRefreshed(this.previousKey, this.currentKey, this.forceRefresh)) {            
+            if (this.forceRefresh === true) {
+                // Remove cache, in order to reload new features
+                _cleanCache(this);
+                this.forceRefresh = false;
+            }
 
-        if (this.previousViewKey === null) {
-            needRefresh = true;
-        } else {
-            needRefresh = this.previousViewKey !== this.globalKey;
-        }
-
-        if (needRefresh) {
             // Sort tiles in order to load the first tiles closed to the camera
             tiles.sort(_sortTilesByDistance);
 
-            // =========================================================================
-            // Determination of zoom level change
-            // =========================================================================
-
-            this.newTileId = tiles[0].level+"#"+tiles[0].x+"#"+tiles[0].y;
+            this.currentLevel = tiles[0].level;
             this.ctx = this.callbackContext;
-            this.distance = null;
-            if (this.ctx) {
-                this.initNav = this.ctx.getNavigation();
-                this.distance = this.initNav.getDistance();
-            }
 
-            // TODO : warning, float comparison not ok
-            this.isZoomLevelChanged = false;
-            this.isZoomLevelChanged = this.newTileId !== this.previousTileId;
-            if (this.ctx) {
-                this.isZoomLevelChanged = this.isZoomLevelChanged && this.distance !== this.previousDistance;
-                this.previousDistance = this.distance;
-            }
+            this.isZoomLevelChanged = this.currentLevel !== this.previousLevel;
+
             if (this.isZoomLevelChanged) {
                 // Go to page 1
                 OpenSearchUtils.setCurrentValueToParam(
@@ -778,93 +821,53 @@ define([
                         page: 1
                     }
                 );                
-
-                this.result.featuresLoaded = 0;
-                this.result.featuresLoaded = this.features.length;
             }
+
+            this.nbFeaturesTotal = 0;
 
             // =========================================================================
             // Check each tile
             // =========================================================================
 
-            this.previousTileId = this.newTileId;
-            this.previousViewKey = this.globalKey;
-            this.result.featuresTotal = 0;
+            this.previousLevel = this.currentLevel;
+            this.previousKey = this.currentKey;
             for (var i = 0; i < tiles.length; i++) {
-                this.currentTile = tiles[i];
-                if (typeof this.currentTile.key === "undefined") {
-                    this.currentTile.key = this.cache.getKey(this.currentTile);
-                }
-                // If no state defined...
-                if (this.currentTile.osState === null || typeof this.currentTile.osState === "undefined") {
-                    //...set it to NOT_LOADED
-                    this.currentTile.osState = [];
-                }
-                if (this.currentTile.osState[this.getID()] == null) {
-                    this.currentTile.osState[this.getID()] = OpenSearchLayer.TileState.NOT_LOADED;
-                }
-                if (this.currentTile.osState[this.getID()] === OpenSearchLayer.TileState.NOT_LOADED) {
-                    var url = _buildUrl(this, this.currentTile);
-                    if (url !== null) {
-                        var nb = 0;
-                        for(i=0; i<this.tilesLoaded.length; i++) {
-                            var tileLoaded = this.tilesLoaded[i].tile;
-                            if(tileLoaded.associatedFeaturesId) {
-                                nb = nb + tileLoaded.associatedFeaturesId.length;
-                            } 
-                            
-                        }
-                        console.log("features in tileLoaded :"+nb);
-                        console.log("nb features :"+this.features.length);                        
-                        this.currentTile.osState[this.getID()] =  OpenSearchLayer.TileState.LOADING;
-                        this.pool.addQuery(url, this.currentTile, this);
-                    }
-                } else if (this.currentTile.osState[this.getID()] === OpenSearchLayer.TileState.LOADED) {
+                var currentTile = tiles[i];
+
+                _initOsState(this, currentTile);
+                switch (currentTile.osState[this.getID()]) {
+                case OpenSearchLayer.TileState.NOT_LOADED:
+                    _requestTile(this, currentTile);
+                    break;
+                case OpenSearchLayer.TileState.LOADED:
                     //console.log("tile still loaded !!!");
-                } else if (
-                    this.currentTile.osState[this.getID()] === OpenSearchLayer.TileState.LOADING
-                ) {
+                    break;
+                case OpenSearchLayer.TileState.LOADING:
                     //console.log("tile loading...");
+                    break;
+                default:
+                    break;
                 }
-
-                /**tileCache = this.cache.getTile(tiles[i].bound);
-                        this.updateGUI();
-                        if (tileCache === null) {
-                            var url = this.buildUrl(tiles[i].bound);
-                            if (url !== null) {
-                                this.launchRequest(tiles[i], url);
-                            }
-                        } else {
-                            this.result.featuresTotal += tileCache.remains;
-                            this.manageFeaturesResponse(tileCache.features.slice(),tiles[i]);
-                            this.updateGUI();
-                        }*/
-
                 // Remove all feature outside view of tiles
-                this.doRemove = false;
-                if (this.lastRemovingDateTime === null) {
-                    this.doRemove = true;
-                } else {
-                    this.doRemove = Date.now() - this.lastRemovingDateTime >= this.removingDeltaSeconds * 1000;
-                }
-                if (this.doRemove) {
-                    var visualTilesIndex = _computeGeoTileIndex(tiles);
-                    this.lastRemovingDateTime = Date.now();
-                    _removeFeaturesOutside(this, visualTilesIndex);                 }
+                _removeFeaturesExternalFov(this, tiles);
             }
         }
     };
 
+
     /**************************************************************************************************************/
 
     /**
-     * Submit OpenSearch form
-     * @function submit
+     * setRequestProperties OpenSearch form from a submit
+     * @function setRequestProperties
      * @memberof OpenSearchLayer#
+     * @param {Object} properties query parameters from query form
      */
-    OpenSearchLayer.prototype.submit = function() {
+    OpenSearchLayer.prototype.setRequestProperties = function(properties) {
+        this.getServices().queryForm.setParametersValueFrom(properties);
         this.getServices().queryForm.updateFromGUI();
         this.resetAll();
+        this.forceRefresh = true;
     };
 
     /**************************************************************************************************************/
@@ -959,8 +962,6 @@ define([
         // Remove all features
         _removeFeatures(this);
     };
-
-
 
 
     /**
@@ -1058,17 +1059,19 @@ define([
 
     /**************************************************************************************************************/
     /**
-     * Manage a response to OpenSearch query
-     * @function manageFeaturesResponse
+     * Compute a response to OpenSearch query
+     * @function computeFeaturesResponse
      * @memberof OpenSearchLayer#
      * @param {Array} features Array of features loaded
      * @param {Tile} tile Tile
+     * @param {int} nbFeaturesTotalPerTile Total number of features found over all pages for a given tile
      * @fires OpenSearchLayer#updateStatsAttribute
      */
-    OpenSearchLayer.prototype.manageFeaturesResponse = function(features,tile) {
+    OpenSearchLayer.prototype.computeFeaturesResponse = function(features, tile, nbFeaturesTotalPerTile) {
         _fixCrossLine(features);
 
-        this.result.featuresLoaded += features.length;
+        // compute the total number of available features on the server in the FOV
+        this.nbFeaturesTotal += nbFeaturesTotalPerTile;
 
         // Init array of feature id associated to tile
         if (tile.associatedFeaturesId == null) {
@@ -1089,23 +1092,20 @@ define([
                     // Nothing to do !
                 } else {
                     tile.associatedFeaturesId.push(feature.id);
-                    //this.updateFeatureListWithTile(feature.id, tile);
                 }
             } else {
                 _addFeature(this, feature);
                 tile.associatedFeaturesId.push(feature.id);
-                //this.updateFeatureListWithTile(feature.id, tile);
             }
-            //features.splice(i, 1);
         }
 
-        if (typeof this.callbackContext !== "undefined") {
+        if (typeof this.callbackContext !== "undefined") {            
             this.callbackContext.publish(
                 Constants.EVENT_MSG.LAYER_UPDATE_STATS_ATTRIBUTES,
                 {
                     shortName: this.getShortName(),
                     nb_loaded: this.features.length,
-                    nb_total: this.result.featuresTotal
+                    nb_total: this.nbFeaturesTotal
                 }
             );
         }
@@ -1117,6 +1117,20 @@ define([
         }
 
         this.getGlobe().refresh();
+
+        if (!_isTileLoaded(this.tilesLoaded, OpenSearchUtils.getKey(tile))) {
+            this.tilesLoaded.push({
+                key: OpenSearchUtils.getKey(tile),
+                tile: tile
+            });
+        }    
+        
+        // Publish event that layer have received new features
+        this.getGlobe()
+            .publishEvent(Constants.EVENT_MSG.FEATURED_ADDED, {
+                layer: this,
+                features: this.features
+            });      
     };
 
 

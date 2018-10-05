@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with MIZAR. If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
-define(["../../Utils/Constants","../../Gui/dialog/ErrorDialog","../../Utils/Proxy"], function(Constants, ErrorDialog, Proxy) {
+define(["../../Utils/Constants","../../Gui/dialog/ErrorDialog","../../Utils/Proxy", "./OpenSearchUtils"], function(Constants, ErrorDialog, Proxy, OpenSearchUtils) {
     /**
      * @name OpenSearchRequestPool
      * @class
@@ -115,7 +115,7 @@ define(["../../Utils/Constants","../../Gui/dialog/ErrorDialog","../../Utils/Prox
             return;
         }
 
-        var key = layer.cache.getKey(tile);
+        var key = OpenSearchUtils.getKey(tile);
 
         // Add layer to list
         if (typeof this.layers[layer.getID()] === "undefined") {
@@ -145,36 +145,16 @@ define(["../../Utils/Constants","../../Gui/dialog/ErrorDialog","../../Utils/Prox
             if (xhr.readyState === 4) {
                 if (xhr.status === 200 && xhr.response !== null) {
                     response = JSON.parse(xhr.response);
-                    var nbFound = xhr.layer.result.parseResponse(response);
-                    //xhr.layer.cache.addTile(tile,response.features,nbFound);
-                    xhr.layer.manageFeaturesResponse(response.features, tile);
-                    if (!xhr.layer._isTileLoaded(xhr.layer.tilesLoaded, key)) {
-                        xhr.layer.tilesLoaded.push({
-                            key: key,
-                            tile: tile
-                        });
-                    }                    
+                    var nbFeaturesTotalPerTile = response.properties.totalResults;
+                    //TODO cache : degrade resolution
+                    //xhr.layer.cache.storeInCache(url, response.features, nbFeaturesTotalPerTile);
+                    xhr.layer.computeFeaturesResponse(response.features, tile, nbFeaturesTotalPerTile);                  
                 } else if (xhr.status >= 400) {
                     //tileData.complete = true;
                     ErrorDialog.open(Constants.LEVEL.DEBUG, "OpenSearchRequestPool", xhr.responseText);
                     return;
                 }
-
                 self.manageFinishedRequest(xhr);
-
-                // Publish event that layer have received new features
-                if (
-                    response !== undefined &&
-                    response.features !== null &&
-                    response.features.length > 0
-                ) {
-                    xhr.layer
-                        .getGlobe()
-                        .publishEvent(Constants.EVENT_MSG.FEATURED_ADDED, {
-                            layer: xhr.layer,
-                            features: response.features
-                        });
-                }
             }
         };
         xhr.open("GET", Proxy.proxify(url));

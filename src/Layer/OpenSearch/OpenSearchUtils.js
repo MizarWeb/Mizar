@@ -19,6 +19,22 @@
 define(["jquery"],function($) {
     var OpenSearchUtils = {};
 
+
+    OpenSearchUtils.getKey = function(tile) {
+        return tile.level + "#" + tile.x + "#" + tile.y;
+    };
+
+    OpenSearchUtils.getArrayBoundKey = function(tiles) {
+        var key = "";
+        if (tiles == null) {
+            return "";
+        }
+        for (var i = 0; i < tiles.length; i++) {
+            key += this.getKey(tiles[i]);
+        }
+        return key;
+    };    
+
     /*************************************************************************************************************/
 
     /**
@@ -64,7 +80,7 @@ define(["jquery"],function($) {
      * Set the current value of a parameter
      * @function setCurrentValueToParam
      * @memberof OpenSearchUtils#
-     * @param {OpenSearchFrom} form Form
+     * @param {OpenSearchForm} form Form
      * @param {string} name Name of the parameter
      * @param {string} value Value to set
      */
@@ -86,7 +102,7 @@ define(["jquery"],function($) {
      * Get the current value of a parameter
      * @function getCurrentValue
      * @memberof OpenSearchUtils#
-     * @param {OpenSearchFrom} form Form
+     * @param {OpenSearchForm} form Form
      * @param {string} name Name of the parameter
      * @return {string} Current value
      */
@@ -106,17 +122,17 @@ define(["jquery"],function($) {
      * Init navigation values
      * @function initNavigationValues
      * @memberof OpenSearchUtils#
-     * @param {OpenSearchFrom} form Form
+     * @param {OpenSearchForm} form Form
      */
     OpenSearchUtils.initNavigationValues = function(form) {
         var param; // param managed
         for (var i = 0; i < form.parameters.length; i++) {
             param = form.parameters[i];
-            if (param.name === "maxRecords") {
+            if (param.value === "{count}") {
                 param.currentValue = Math.ceil(param.maxInclusive * 0.2);
                 //param.currentValue = Math.ceil(param.maxInclusive * 1);
                 //param.currentValue = 20;
-            } else if (param.name === "page") {
+            } else if (param.value === "{startPage}") {
                 param.currentValue = 1;
             } else {
                 //console.log(param.name,param);
