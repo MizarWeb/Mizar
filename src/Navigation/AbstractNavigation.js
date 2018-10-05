@@ -534,6 +534,10 @@ define([
         // Does nothing by default
     };
 
+    AbstractNavigation.prototype.startInteraction = function(x, y) {
+        // Does nothing by default
+    };
+
     /**************************************************************************************************************/
 
     return AbstractNavigation;
