@@ -134,6 +134,8 @@ define(["../Utils/Utils"], function(Utils) {
                 _dx = 0;
                 _dy = 0;
 
+                _navigation.startInteraction(_lastMouseX, _lastMouseY);
+
                 // Return false to stop mouse down to be propagated when using onmousedown
                 return false;
             }
@@ -195,7 +197,7 @@ define(["../Utils/Utils"], function(Utils) {
             var ret = false;
             // Pan
             if (_pressedButton === _panButton) {
-                _navigation.pan(_dx, _dy);
+                _navigation.pan(_dx, _dy, event.clientX, event.clientY);
                 ret = true;
             }
             // Rotate

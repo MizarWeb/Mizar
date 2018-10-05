@@ -233,6 +233,8 @@ define([
 
         this.inverseViewMatrix = mat4.create();
 
+        this.lastMousePosition = null;
+
         var updateViewMatrix = this.options.hasOwnProperty("updateViewMatrix")
             ? this.options.updateViewMatrix
             : true;
@@ -612,65 +614,123 @@ define([
      * @param {int} dx Window delta x
      * @param {int} dy Window delta y
      */
-    PlanetNavigation.prototype.pan = function(dx, dy) {
-        // Get geographic frame
-        var local2World = mat4.create();
-        var coordinateSystem = this.ctx.getCoordinateSystem();
-        coordinateSystem.getLocalTransform(this.geoCenter, local2World);
-        // Then corresponding vertical axis and north
-        var z = vec3.create();
-        var previousNorth = vec3.create([0.0, 1.0, 0.0]);
-        coordinateSystem.getUpVector(local2World, z);
-        //coordinateSystem.getFrontVector( local2World, previousNorth );
-        mat4.multiplyVec3(local2World, previousNorth, previousNorth);
+    PlanetNavigation.prototype.pan = function(dx, dy, mx, my) {
+        if (this.lastMousePosition && mx && my) {
+            const crs = this.ctx.getCoordinateSystem();
+            const globe = this.ctx.globe;
+            const rc = this.renderContext;
 
-        // Then apply local transform
-        this.applyLocalRotation(local2World);
-        // Retrieve corresponding axes
-        var x = vec3.create();
-        var y = vec3.create();
-        coordinateSystem.getSideVector(local2World, x);
-        coordinateSystem.getFrontVector(local2World, y);
-        // According to our local configuration, up is y and side is x
+            const fov = rc.getFov();
+            const halfFov = fov * 0.5 * Math.PI / 180.0;
 
-        // Compute direction axes
-        vec3.cross(z, x, y);
-        vec3.cross(y, z, x);
-        vec3.normalize(x, x);
-        vec3.normalize(y, y);
+            this.computeInverseViewMatrix();
+            const eye = [
+                this.inverseViewMatrix[12],
+                this.inverseViewMatrix[13],
+                this.inverseViewMatrix[14]
+            ];
 
-        //Normalize dx and dy
-        dx = dx / this.renderContext.getCanvas().width;
-        dy = dy / this.renderContext.getCanvas().height;
+            const rotation = mat4.create(this.inverseViewMatrix);
+            // mat4.translate(rotation, [0, 0, -this.distance]);
+            // mat4.inverse(rotation);
+            // crs.getLHVTransform(this.geoCenter, rotation);
 
-        // Move accordingly
-        var position = vec3.create();
-        coordinateSystem.get3DFromWorld(this.geoCenter, position);
-        // FIXME: Might be interesting to be able to control minimum camera speed
-        vec3.scale(x, dx * Math.max(this.distance, 1000 * this.scale), x);
-        vec3.scale(y, dy * Math.max(this.distance, 1000 * this.scale), y);
-        vec3.subtract(position, x, position);
-        vec3.add(position, y, position);
+            const center = vec3.create();
+            this.ctx.getCoordinateSystem().fromGeoTo3D(this.geoCenter, center);
+            const centerDir = vec3.create();
+            vec3.subtract(center, eye, centerDir);
+            vec3.normalize(centerDir);
 
-        // Clamp onto sphere
-        vec3.normalize(position);
-        vec3.scale(position, coordinateSystem.getGeoide().getRadius());
+            const pGeo = globe.getLonLatFromPixel(this.lastMousePosition[0], this.lastMousePosition[1]);
 
-        // Update geographic center
-        coordinateSystem.getWorldFrom3D(position, this.geoCenter);
-        this.geoCenter[2] = this.targetHeight;
+            // Cannot move if we do not pick a proper point
+            // We always want to update the last mouse position
+            // to avoid stopping interaction when moving out of the earth and coming back
+            this.lastMousePosition = [mx, my];
+            if (!pGeo) return;
 
-        // Compute new north axis
-        var newNorth = vec3.create([0.0, 1.0, 0.0]);
-        coordinateSystem.getLocalTransform(this.geoCenter, local2World);
-        mat4.multiplyVec3(local2World, newNorth, newNorth);
+            const p = vec3.create();
+            crs.fromGeoTo3D(pGeo, p);
 
-        // Take care if we traverse the pole, ie the north is inverted
-        if (vec3.dot(previousNorth, newNorth) < 0) {
-            this.heading = (this.heading + 180.0) % MAX_HEADING;
+            const d = vec3.create();
+            vec3.subtract(eye, p, d);
+            const distance = vec3.length(d);
+            const projScale = distance * Math.tan(halfFov);
+
+            dx = dx * 2 / rc.getCanvas().width;
+            dy = dy * 2 / rc.getCanvas().height;
+
+            const deltaWorld = vec3.createFrom(-dx * projScale, dy * projScale, 0);
+            mat4.rotateVec3(rotation, deltaWorld);
+
+            const newEye = vec3.create();
+            vec3.add(eye, deltaWorld, newEye);
+
+            var r = new Ray(newEye, centerDir);
+            const newCenter = this.ctx.globe.computeIntersection(r);
+            if (newCenter != null && newCenter != undefined) {
+                this.geoCenter = newCenter;
+            }
+        } else {
+            // Get geographic frame
+            var local2World = mat4.create();
+            var coordinateSystem = this.ctx.getCoordinateSystem();
+            coordinateSystem.getLocalTransform(this.geoCenter, local2World);
+            // Then corresponding vertical axis and north
+            var z = vec3.create();
+            var previousNorth = vec3.create([0.0, 1.0, 0.0]);
+            coordinateSystem.getUpVector(local2World, z);
+            //coordinateSystem.getFrontVector( local2World, previousNorth );
+            mat4.multiplyVec3(local2World, previousNorth, previousNorth);
+
+            // Then apply local transform
+            this.applyLocalRotation(local2World);
+            // Retrieve corresponding axes
+            var x = vec3.create();
+            var y = vec3.create();
+            coordinateSystem.getSideVector(local2World, x);
+            coordinateSystem.getFrontVector(local2World, y);
+            // According to our local configuration, up is y and side is x
+
+            // Compute direction axes
+            vec3.cross(z, x, y);
+            vec3.cross(y, z, x);
+            vec3.normalize(x, x);
+            vec3.normalize(y, y);
+
+            //Normalize dx and dy
+            dx = dx / this.renderContext.getCanvas().width;
+            dy = dy / this.renderContext.getCanvas().height;
+
+            // Move accordingly
+            var position = vec3.create();
+            coordinateSystem.get3DFromWorld(this.geoCenter, position);
+            // FIXME: Might be interesting to be able to control minimum camera speed
+            vec3.scale(x, dx * Math.max(this.distance, 1000 * this.scale), x);
+            vec3.scale(y, dy * Math.max(this.distance, 1000 * this.scale), y);
+            vec3.subtract(position, x, position);
+            vec3.add(position, y, position);
+
+            // Clamp onto sphere
+            vec3.normalize(position);
+            vec3.scale(position, coordinateSystem.getGeoide().getRadius());
+
+            // Update geographic center
+            coordinateSystem.getWorldFrom3D(position, this.geoCenter);
+            this.geoCenter[2] = this.targetHeight;
+
+            // Compute new north axis
+            var newNorth = vec3.create([0.0, 1.0, 0.0]);
+            coordinateSystem.getLocalTransform(this.geoCenter, local2World);
+            mat4.multiplyVec3(local2World, newNorth, newNorth);
+
+            // Take care if we traverse the pole, ie the north is inverted
+            if (vec3.dot(previousNorth, newNorth) < 0) {
+                this.heading = (this.heading + 180.0) % MAX_HEADING;
+            }
+
+            this.computeViewMatrix();
         }
-
-        this.computeViewMatrix();
     };
 
     /**
@@ -844,10 +904,15 @@ define([
 
     PlanetNavigation.prototype.donePanning = function() {
         this.updateGeoCenter();
+        this.lastMousePosition = null;
     };
 
     PlanetNavigation.prototype.doneRotating = function() {
         this.updateGeoCenter();
+    };
+
+    PlanetNavigation.prototype.startInteraction = function(x, y) {
+        this.lastMousePosition = [x, y];
     };
 
     /**
