@@ -130,7 +130,7 @@ define([
      */
     Renderable.prototype.add = function(geometry) {
         var rings = [];
-        var geometryCrs = geometry.crs.properties.name;
+        var geometryCrs = "Equatorial";//geometry.crs.properties.name;
         var i, r, pt;
         if (geometry.type === Constants.GEOMETRY.MultiPolygon) {
             for (i = 0; i < geometry.coordinates.length; i++) {

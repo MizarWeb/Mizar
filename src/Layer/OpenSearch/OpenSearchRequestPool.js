@@ -115,7 +115,7 @@ define(["../../Utils/Constants","../../Gui/dialog/ErrorDialog","../../Utils/Prox
             return;
         }
 
-        var key = OpenSearchUtils.getKey(tile);
+        var key = tile.getKey();
 
         // Add layer to list
         if (typeof this.layers[layer.getID()] === "undefined") {

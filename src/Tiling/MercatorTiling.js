@@ -35,8 +35,9 @@
  * along with GlobWeb. If not, see <http://www.gnu.org/licenses/>.
  ***************************************/
 
-define(["./Tile", "../Renderer/GeoBound", "./GeoTiling"], function(
+define(["./Tile", "../Utils/Constants","../Renderer/GeoBound", "./GeoTiling"], function(
     Tile,
+    Constants,
     GeoBound,
     GeoTiling
 ) {
@@ -71,6 +72,8 @@ define(["./Tile", "../Renderer/GeoBound", "./GeoTiling"], function(
         this.level = level;
         this.x = x;
         this.y = y;
+        this.key = this.level+"#"+this.x+"#"+this.y;
+        this.type = Constants.TILE.MERCATOR_TILE;        
 
         this.geoBound = new GeoBound(
             tile2long(x, level),
@@ -99,6 +102,10 @@ define(["./Tile", "../Renderer/GeoBound", "./GeoTiling"], function(
     MercatorTile.prototype.getElevation = function(lon, lat) {
         // TODO
         return 0.0;
+    };
+
+    MercatorTile.prototype.getKey = function() {
+        return this.key;
     };
 
     /**************************************************************************************************************/

@@ -19,18 +19,13 @@
 define(["jquery"],function($) {
     var OpenSearchUtils = {};
 
-
-    OpenSearchUtils.getKey = function(tile) {
-        return tile.level + "#" + tile.x + "#" + tile.y;
-    };
-
     OpenSearchUtils.getArrayBoundKey = function(tiles) {
         var key = "";
         if (tiles == null) {
             return "";
         }
         for (var i = 0; i < tiles.length; i++) {
-            key += this.getKey(tiles[i]);
+            key += tiles[i].getKey();
         }
         return key;
     };    

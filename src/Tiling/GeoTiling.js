@@ -54,6 +54,8 @@ define([
         this.level = level;
         this.x = x;
         this.y = y;
+        this.key = this.level+"#"+this.x+"#"+this.y;
+        this.type = Constants.TILE.GEO_TILE;
     };
 
     /**************************************************************************************************************/
@@ -102,6 +104,10 @@ define([
         var geo = this.config.coordinateSystem.getWorldFrom3D(vertex);
         return geo[2];
     };
+
+    GeoTile.prototype.getKey = function() {
+        return this.key;
+    };    
 
     /**************************************************************************************************************/
 

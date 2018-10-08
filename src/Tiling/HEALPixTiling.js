@@ -58,10 +58,13 @@ define([
         // Call ancestor constructor
         Tile.prototype.constructor.call(this);
 
-        this.order = order;
+        this.level = this.order = order;        
         this.nside = Math.pow(2, this.order);
         this.pixelIndex = pix;
         this.face = face;
+
+        this.key = this.level+"#"+this.pixelIndex;
+        this.type = Constants.TILE.HEALPIX_TILE; 
 
         // Compute texture transform
         /*	var width = 1728/64;
@@ -77,6 +80,10 @@ define([
     HEALPixTile.prototype = new Tile();
 
     /**************************************************************************************************************/
+
+    HEALPixTile.prototype.getKey = function() {
+        return this.key;
+    };
 
     /**
          Create the children
@@ -174,70 +181,71 @@ define([
 
     /**************************************************************************************************************/
 
-    /**
-         Generate vertices for tile
-         */
-    HEALPixTile.prototype.generateVertices = function() {
+    function _computeWorldSpaceVertices(config, nside, pixelIndex, face) {
         // Build the vertices
-        var size = this.config.tesselation;
+        var size = config.tesselation;
         var worldSpaceVertices = [];
         var step = 1.0 / (size - 1);
 
         // xyf calculation
-        var pix = this.pixelIndex & (this.nside * this.nside - 1);
+        var pix = pixelIndex & (nside * nside - 1);
         var ix = HEALPixBase.compress_bits(pix);
         var iy = HEALPixBase.compress_bits(pix >>> 1);
-        var coordinateSystem = this.config.coordinateSystem;
         // Compute array of worldspace coordinates
         for (var u = 0; u < size; u++) {
             for (var v = 0; v < size; v++) {
                 var vertice = HEALPixBase.fxyf(
-                    (ix + u * step) / this.nside,
-                    (iy + v * step) / this.nside,
-                    this.face
+                    (ix + u * step) / nside,
+                    (iy + v * step) / nside,
+                    face
                 );
 
                 // Take sphere radius into account
-                vertice[0] *= coordinateSystem.getGeoide().getRadius();
-                vertice[1] *= coordinateSystem.getGeoide().getRadius();
-                vertice[2] *= coordinateSystem.getGeoide().getRadius();
+                vertice[0] *= config.coordinateSystem.getGeoide().getRadius();
+                vertice[1] *= config.coordinateSystem.getGeoide().getRadius();
+                vertice[2] *= config.coordinateSystem.getGeoide().getRadius();
                 //TODO a modifier
-                if (
-                    coordinateSystem.getGeoideName() !==
-                    Constants.CRS.Equatorial
-                ) {
-                    var geo = coordinateSystem.getWorldFrom3D(vertice);
-                    var eq = coordinateSystem.convert(
+                if (config.coordinateSystem.getGeoideName() !== Constants.CRS.Equatorial) {
+                    var geo = config.coordinateSystem.getWorldFrom3D(vertice);
+                    var eq = config.coordinateSystem.convert(
                         geo,
-                        coordinateSystem.getGeoideName(),
+                        config.coordinateSystem.getGeoideName(),
                         Constants.CRS.Equatorial
                     );
-                    worldSpaceVertices[
-                        u * size + v
-                    ] = coordinateSystem.get3DFromWorld(eq);
+                    worldSpaceVertices[u * size + v] = config.coordinateSystem.get3DFromWorld(eq);
                 } else {
                     worldSpaceVertices[u * size + v] = vertice;
                 }
             }
-        }
+        }  
+        return worldSpaceVertices;      
+    }
 
+    function _computeCorners(config, worldSpaceVertices) {
+        var corners = [];
+        var size = config.tesselation;
+        corners.push(config.coordinateSystem.getWorldFrom3D(worldSpaceVertices[0]));
+        corners.push(config.coordinateSystem.getWorldFrom3D(worldSpaceVertices[size - 1]));
+        corners.push(config.coordinateSystem.getWorldFrom3D(worldSpaceVertices[size * (size - 1)]));
+        corners.push(config.coordinateSystem.getWorldFrom3D(worldSpaceVertices[size * size - 1]));
+        return corners;
+    }
+
+    HEALPixTile.prototype.getCorners = function() {
+        var worldSpaceVertices = _computeWorldSpaceVertices(this.config, this.nside, this.pixelIndex, this.face);
+        var corners = _computeCorners(this.config, worldSpaceVertices);
+        return corners;
+    }; 
+
+    /**
+         Generate vertices for tile
+         */
+    HEALPixTile.prototype.generateVertices = function() {
+        var size = this.config.tesselation;
+        var worldSpaceVertices = _computeWorldSpaceVertices(this.config, this.nside, this.pixelIndex, this.face);
+        var corners = _computeCorners(this.config, worldSpaceVertices);
         // Compute geoBound using corners of tile
         this.geoBound = new GeoBound();
-
-        var corners = [];
-        corners.push(coordinateSystem.getWorldFrom3D(worldSpaceVertices[0]));
-        corners.push(
-            coordinateSystem.getWorldFrom3D(worldSpaceVertices[size - 1])
-        );
-        corners.push(
-            coordinateSystem.getWorldFrom3D(
-                worldSpaceVertices[size * (size - 1)]
-            )
-        );
-        corners.push(
-            coordinateSystem.getWorldFrom3D(worldSpaceVertices[size * size - 1])
-        );
-
         this.geoBound.computeFromCoordinates(corners);
 
         // Compute tile matrix
