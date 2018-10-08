@@ -37,39 +37,27 @@
 define([
     "underscore-min",
     "../Renderer/FeatureStyle",
-    "../Renderer/RendererManager",
     "../Utils/Utils",
     "../Utils/UtilsIntersection",
     "./AbstractLayer",
     "./GroundOverlayLayer",
-    "../Renderer/RendererTileData",
     "../Tiling/Tile",
-    "../Tiling/GeoTiling",
     "../Utils/Constants",
     "../Gui/dialog/ErrorDialog",
-    "./OpenSearch/OpenSearchForm",
     "./OpenSearch/OpenSearchUtils",
-    "./OpenSearch/OpenSearchResult",
-    "./OpenSearch/OpenSearchRequestPool",
     "./OpenSearch/OpenSearchCache",
     "moment"
 ], function(
     _,
     FeatureStyle,
-    RendererManager,
     Utils,
     UtilsIntersection,
     AbstractLayer,
     GroundOverlayLayer,
-    RendererTileData,
     Tile,
-    GeoTiling,
     Constants,
     ErrorDialog,
-    OpenSearchForm,
     OpenSearchUtils,
-    OpenSearchResult,
-    OpenSearchRequestPool,
     OpenSearchCache,
     Moment
 ) {
@@ -126,6 +114,7 @@ define([
      * @memberof module:Layer
      */
     var OpenSearchLayer = function(options) {
+        options.zIndex = options.zIndex || Constants.DISPLAY.DEFAULT_VECTOR;
         AbstractLayer.prototype.constructor.call(this, Constants.LAYER.OpenSearch, options);
 
         this.minLevel = options.minLevel || 5;
@@ -260,22 +249,6 @@ define([
     function _sortTilesByDistance(t1, t2) {
         return t1.distance - t2.distance;
     }
-
-    function _computeGeoTileIndex(tiles) {
-        var resut = {};
-        for (var i = 0; i < tiles.length; i++) {
-            var level = tiles[i].level;
-            if (resut[level] == null) {
-                resut[level] = {
-                    x:[],
-                    y:[]
-                };
-            }
-            resut[level].x.push(tiles[i].x);
-            resut[level].y.push(tiles[i].y);
-        }
-        return resut;
-    }  
     
     function _computeGeometryExtent(geometry) {
         var result = {
@@ -346,10 +319,10 @@ define([
         layer.tilesLoaded.pop();        
     }  
     
-    function _removeFeaturesOutside(layer, visualTilesIndex) {
+    function _removeFeaturesOutside(layer, tiles) {
         for (var i = 0; i < layer.tilesLoaded.length; i++) {
             var tile = layer.tilesLoaded[i].tile;
-            var intersects = UtilsIntersection.tileIntersects(tile,visualTilesIndex);
+            var intersects = UtilsIntersection.tileIntersects(tile,tiles);
             if (intersects === false) {
                 _removeTile(layer, tile);
             }
@@ -418,8 +391,8 @@ define([
         for (var i = 0; i < layer.getServices().queryForm.parameters.length; i++) {
             param = layer.getServices().queryForm.parameters[i];
             code = param.value;
-            code = code.replace("?}", "}");
-            if (code === "{geo:box}") {
+            code = code.replace("?}", "}");            
+            if (code === "{geo:box}" && (tile.type === Constants.TILE.GEO_TILE || tile.type === Constants.TILE.MERCATOR_TILE)) {
                 // set bbox
                 param.currentValue =
                     tile.bound.west +
@@ -429,6 +402,13 @@ define([
                     tile.bound.east +
                     "," +
                     tile.bound.north;
+            } else if (code === "{geo:geometry}" && tile.type === Constants.TILE.HEALPIX_TILE) {
+                var corners = tile.getCorners();
+                param.currentValue = "POLYGON(("+corners[0][0]+" "+corners[0][1]
+                +","+corners[1][0]+" "+corners[1][1]
+                +","+corners[2][0]+" "+corners[2][1]
+                +","+corners[3][0]+" "+corners[3][1]
+                +","+corners[0][0]+" "+corners[0][1]+"))";
             }
         }
     }   
@@ -447,11 +427,11 @@ define([
         if (geometry.type === "GeometryCollection") {
             var geoms = geometry.geometries;
             for (var i = 0; i < geoms.length; i++) {
-                layer.getGlobe().rendererManager.addGeometryCurrentLevel(layer, geoms[i], style);
+                layer.getGlobe().getRendererManager().addGeometryCurrentLevel(layer, geoms[i], style);
             }
         } else {
             // Add geometry to renderers
-            layer.getGlobe().rendererManager.addGeometryCurrentLevel(layer, geometry, style);
+            layer.getGlobe().getRendererManager().addGeometryCurrentLevel(layer, geometry, style);
         }        
     }
 
@@ -521,15 +501,14 @@ define([
             doRemove = Date.now() - layer.lastRemovingDateTime >= layer.removingDeltaSeconds * 1000;
         }
         if (doRemove) {
-            var visualTilesIndex = _computeGeoTileIndex(tiles);
             layer.lastRemovingDateTime = Date.now();
-            _removeFeaturesOutside(layer, visualTilesIndex);                 
+            _removeFeaturesOutside(layer, tiles);                 
         }
     }  
     
     function _initOsState(layer, tile) {
         if (typeof tile.key === "undefined") {
-            tile.key = OpenSearchUtils.getKey(tile);
+            tile.key = tile.getKey();
         }        
         // If no state defined...
         if (tile.osState == null) {
@@ -717,7 +696,10 @@ define([
             this.currentQuicklookLayer._attach(this.globe);
         } else {
             this.currentQuicklookLayer.update(quad, url);
-        }
+        }  
+        //TODO : Does not work because it is not added to the renderer but postRenderer
+        //TODO : Test : load OSM + S1. Click on S1, load quicklook
+        this.currentQuicklookLayer.setOnTheTop();
         this.getGlobe().refresh();
     };
 
@@ -989,11 +971,12 @@ define([
             linkedTo: selectedData.layer.ID
         };
         var self = this;
-        selectedData.layer.callbackContext.addLayer(layerDescription, function(
-            layerID
-        ) {
+        selectedData.layer.callbackContext.addLayer(layerDescription, function(layerID) {
             // Add feature id of wms into list a current WMS displayed
             self.addServicesRunningOnRecord(selectedData.feature.id, layerID);
+
+            var layer = self.callbackContext.getLayerByID(layerID);
+            layer.setOnTheTop();
 
             if (typeof self.callbackContext !== "undefined") {
                 self.callbackContext.publish(
@@ -1118,9 +1101,9 @@ define([
 
         this.getGlobe().refresh();
 
-        if (!_isTileLoaded(this.tilesLoaded, OpenSearchUtils.getKey(tile))) {
+        if (!_isTileLoaded(this.tilesLoaded, tile.getKey())) {
             this.tilesLoaded.push({
-                key: OpenSearchUtils.getKey(tile),
+                key: tile.getKey(),
                 tile: tile
             });
         }    

@@ -89,9 +89,7 @@ define([
         var dragging = false;
         var state;
 
-        this.renderContext.canvas.addEventListener("mousedown", function(
-            event
-        ) {
+        this.renderContext.canvas.addEventListener("mousedown", function(event) {
             var pickPoint = [event.layerX, event.layerY];
             var geoPickPoint = ctx.getLonLatFromPixel(
                 event.layerX,

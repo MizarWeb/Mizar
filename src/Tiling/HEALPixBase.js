@@ -45,7 +45,7 @@ define(["underscore-min","./HEALPixTables", "../Utils/Long", "../Utils/CircleFin
 ) {
     /**************************************************************************************************************/
 
-    var HALF_PI = 3.14159265 / 2;
+    var HALF_PI = Math.PI * 0.5;
 
     var lonLat2ang = function(lon, lat) {
         if (lon < 0) {

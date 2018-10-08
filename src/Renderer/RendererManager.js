@@ -35,9 +35,10 @@
  * along with GlobWeb. If not, see <http://www.gnu.org/licenses/>.
  ***************************************/
 
-define(["../Utils/Constants", "./RasterOverlayRenderer", "../Gui/dialog/ErrorDialog"], function(
+define(["../Utils/Constants", "./RasterOverlayRenderer", "./GroundOverlayRenderer","../Gui/dialog/ErrorDialog"], function(
     Constants,
     RasterOverlayRenderer,
+    GroundOverlayRenderer,
     ErrorDialog
 ) {
     /**************************************************************************************************************/
@@ -78,13 +79,11 @@ define(["../Utils/Constants", "./RasterOverlayRenderer", "../Gui/dialog/ErrorDia
      * @memberof RendererManager.prototype
      * @param selectedLayer Layer to draw on the top
      */
-    RendererManager.prototype.setSelectedRasterBucket = function(
-        selectedLayer
-    ) {
+    RendererManager.prototype.setSelectedRasterBucket = function(selectedLayer) {
         var rendererIdx = this.renderers.length;
         while (rendererIdx--) {
             var renderer = this.renderers[rendererIdx];
-            if (renderer instanceof RasterOverlayRenderer) {
+            if (renderer instanceof RasterOverlayRenderer || renderer instanceof GroundOverlayRenderer) {
                 var buckets = renderer.buckets;
                 var bucketIdx = buckets.length;
                 while (bucketIdx--) {

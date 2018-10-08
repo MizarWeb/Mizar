@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with MIZAR. If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
-define(["./Numeric", "../Tiling/HEALPixBase"], function(Numeric, HEALPixBase) {
+define(["./Numeric", "./Constants","../Tiling/HEALPixBase"], function(Numeric, Constants, HEALPixBase) {
     var UtilsIntersection = {};
 
     UtilsIntersection.convertPolygonToHealpixOrder = function(
@@ -192,14 +192,40 @@ define(["./Numeric", "../Tiling/HEALPixBase"], function(Numeric, HEALPixBase) {
         return xOk && yOk;
     };
 
+
     /**
      * Returns true when t1 intersects with t2 otherwise false
-     * @function tileIntersect
+     * @function tileIntersectHealpixTile
      * @param {Tile} t1 
      * @param {Tile} t2 
      * @returns {boolean} true when t1 intersects with t2 otherwise false
      */
-    UtilsIntersection.tileIntersect = function(t1, t2) {
+    UtilsIntersection.tileIntersectHealpixTile = function(t1, t2) {
+        if (t1 === null || t2 === null) {
+            return false;
+        }
+
+        var result;
+        if (t1.level === t2.level) {
+            result = t1.pixelIndex === t2.pixelIndex;
+        } else if (t1.level > t2.level) {
+            var diffLevel = t1.level - t2.level;
+            result = t1.pixelIndex >> Math.pow(2, diffLevel) === t2.pixelIndex;
+        } else {
+            diffLevel = t2.level - t1.level;
+            result = t2.pixelIndex >> Math.pow(2, diffLevel) === t1.pixelIndex;
+        }      
+        return result;
+    };
+
+    /**
+     * Returns true when t1 intersects with t2 otherwise false
+     * @function tileIntersectGeoTile
+     * @param {Tile} t1 
+     * @param {Tile} t2 
+     * @returns {boolean} true when t1 intersects with t2 otherwise false
+     */
+    UtilsIntersection.tileIntersectGeoTile = function(t1, t2) {
         if (t1 === null || t2 === null) {
             return false;
         }
@@ -226,27 +252,42 @@ define(["./Numeric", "../Tiling/HEALPixBase"], function(Numeric, HEALPixBase) {
     };
 
     /**
-     * Checks is two tiles intersect
+     * Returns true when t1 intersects with t2 otherwise false
+     * @function tileIntersect
+     * @param {Tile} t1 
+     * @param {Tile} t2 
+     * @returns {boolean} true when t1 intersects with t2 otherwise false
+     */
+    UtilsIntersection.tileIntersect = function(t1, t2) {
+        if (t1 === null || t2 === null) {
+            return false;
+        }
+        var result;
+        if (t1.type === Constants.TILE.GEO_TILE || t1.type === Constants.TILE.MERCATOR_TILE) {
+            result = UtilsIntersection.tileIntersectGeoTile(t1, t2);
+        } else if (t1.type === Constants.TILE.HEALPIX_TILE) {
+            result = UtilsIntersection.tileIntersectHealpixTile(t1, t2);
+        } else {
+            throw new "Unknown tiling";
+        }
+        return result;
+    };
+
+    /**
+     * Checks is one tile intersects intersect with a set of tiles
      * @function tileIntersects
-     * @param {{level:int, x:int, y:int}} a - index
-     * @param {{level:int, x:int, y:int}} b - index
-     * @return {boolean} true when the two bounding boxes intersect otherwise false
+     * @param {Tile} a - tile
+     * @param {Tile[]} b - index
+     * @return {boolean} true when intersection otherwise false
      */
     UtilsIntersection.tileIntersects = function(a, b) {
         if (a === null || b === null) {
             return false;
         }
-
-        var levels = Object.keys(b);
         var result = false;
-        for (var i=0; i<levels.length && !result; i++) {
-            var level = levels[i];
-            var tiles = b[level];
-            for (var iTile=0; iTile < tiles.x.length && !result; iTile++) {
-                var x = tiles.x[iTile];
-                var y = tiles.y[iTile];
-                result = UtilsIntersection.tileIntersect(a, {level:level, x:x, y:y});
-            }           
+        for(var i=0; i<b.length && !result; i++) {
+            var tile = b[i];
+            result = UtilsIntersection.tileIntersect(a, tile);
         }
         return result;
     };

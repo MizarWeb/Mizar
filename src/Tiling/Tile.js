@@ -440,6 +440,9 @@ define([
     Tile.prototype.generate = function(tilePool, image, elevations) {
         // Generate the vertices
         this.vertices = this.generateVertices(elevations);
+        if(this.vertices === null) {
+            console.log("vertice is null");
+        }
 
         // Compute the bounding box
         var size = this.config.tesselation;

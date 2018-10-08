@@ -979,7 +979,7 @@ define([
             ErrorDialog.open(
                 Constants.LEVEL.ERROR,
                 "Cannot add the layer " +
-                    layer.getName() +
+                    layer.name ? layer.name : layer.ID +
                     "from " +
                     layer.getBaseUrl(),
                 layer.message
