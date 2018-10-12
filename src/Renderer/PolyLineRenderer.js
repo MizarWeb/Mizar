@@ -528,7 +528,7 @@ define([
             proj = cs.projection.options.projectionName;
         }
 
-        if (cs.flat === true && proj !== Mizar.PROJECTION.Azimuth) {
+        if (cs.flat === true && proj !== Constants.PROJECTION.Azimuth) {
             _detectDiscontinuities(lines, normalLines, clippedLines);
         } else {
             normalLines = lines.slice(0);
