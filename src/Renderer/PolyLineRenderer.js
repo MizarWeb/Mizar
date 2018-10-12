@@ -523,7 +523,12 @@ define([
         var normalLines = [];
         var clippedLines = [];
 
-        if (cs.flat === true) {
+        var proj = null;
+        if (cs.projection && cs.projection.options && cs.projection.options.projectionName) {
+            proj = cs.projection.options.projectionName;
+        }
+
+        if (cs.flat === true && proj !== Mizar.PROJECTION.Azimuth) {
             _detectDiscontinuities(lines, normalLines, clippedLines);
         } else {
             normalLines = lines.slice(0);
