@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with MIZAR. If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
-define(["./Numeric", "../Tiling/HEALPixBase"], function(Numeric, HEALPixBase) {
+define(["./Numeric", "./Constants","../Tiling/HEALPixBase"], function(Numeric, Constants, HEALPixBase) {
     var UtilsIntersection = {};
 
     UtilsIntersection.convertPolygonToHealpixOrder = function(
@@ -162,7 +162,7 @@ define(["./Numeric", "../Tiling/HEALPixBase"], function(Numeric, HEALPixBase) {
      * @return {boolean} true when v is between min and max otherwise talse
      */
     UtilsIntersection.isValueBetween = function(v, min, max) {
-        return v >= min && v <= max;
+        return min <= v && v <= max;
     };
 
     /**
@@ -176,12 +176,7 @@ define(["./Numeric", "../Tiling/HEALPixBase"], function(Numeric, HEALPixBase) {
         if (a === null || b === null) {
             return false;
         }
-        if (
-            a.north === null ||
-            typeof a.north === "undefined" ||
-            b.north === null ||
-            typeof b.north === "undefined"
-        ) {
+        if (a.north == null || b.north == null) {
             return false;
         }
         var xOk =
@@ -195,6 +190,106 @@ define(["./Numeric", "../Tiling/HEALPixBase"], function(Numeric, HEALPixBase) {
             (a.south <= b.south && a.north >= b.north);
 
         return xOk && yOk;
+    };
+
+
+    /**
+     * Returns true when t1 intersects with t2 otherwise false
+     * @function tileIntersectHealpixTile
+     * @param {Tile} t1 
+     * @param {Tile} t2 
+     * @returns {boolean} true when t1 intersects with t2 otherwise false
+     */
+    UtilsIntersection.tileIntersectHealpixTile = function(t1, t2) {
+        if (t1 === null || t2 === null) {
+            return false;
+        }
+
+        var result;
+        if (t1.level === t2.level) {
+            result = t1.pixelIndex === t2.pixelIndex;
+        } else if (t1.level > t2.level) {
+            var diffLevel = t1.level - t2.level;
+            result = t1.pixelIndex >> Math.pow(2, diffLevel) === t2.pixelIndex;
+        } else {
+            diffLevel = t2.level - t1.level;
+            result = t2.pixelIndex >> Math.pow(2, diffLevel) === t1.pixelIndex;
+        }      
+        return result;
+    };
+
+    /**
+     * Returns true when t1 intersects with t2 otherwise false
+     * @function tileIntersectGeoTile
+     * @param {Tile} t1 
+     * @param {Tile} t2 
+     * @returns {boolean} true when t1 intersects with t2 otherwise false
+     */
+    UtilsIntersection.tileIntersectGeoTile = function(t1, t2) {
+        if (t1 === null || t2 === null) {
+            return false;
+        }
+
+        var result;
+        if (t1.level === t2.level) {
+            result = t1.x === t2.x && t1.y === t2.y;
+        } else if (t1.level > t2.level) {
+            var diffLevel = t1.level - t2.level;
+            var x1 = Math.pow(2, diffLevel) * t2.x;
+            var x2 = Math.pow(2, diffLevel) * (t2.x + 1) - 1;
+            var y1 = Math.pow(2, diffLevel) * t2.y;
+            var y2 = Math.pow(2, diffLevel) * (t2.y + 1) - 1;
+            result = UtilsIntersection.isValueBetween(t1.x, x1, x2) && UtilsIntersection.isValueBetween(t1.y, y1, y2);           
+        } else {
+            diffLevel = t2.level - t1.level;
+            x1 = Math.pow(2, diffLevel) * t1.x;
+            x2 = Math.pow(2, diffLevel) * (t1.x + 1) - 1;
+            y1 = Math.pow(2, diffLevel) * t1.y;
+            y2 = Math.pow(2, diffLevel) * (t1.y + 1) - 1;
+            result = UtilsIntersection.isValueBetween(t2.x, x1, x2) && UtilsIntersection.isValueBetween(t2.y, y1, y2);         
+        }      
+        return result;
+    };
+
+    /**
+     * Returns true when t1 intersects with t2 otherwise false
+     * @function tileIntersect
+     * @param {Tile} t1 
+     * @param {Tile} t2 
+     * @returns {boolean} true when t1 intersects with t2 otherwise false
+     */
+    UtilsIntersection.tileIntersect = function(t1, t2) {
+        if (t1 === null || t2 === null) {
+            return false;
+        }
+        var result;
+        if (t1.type === Constants.TILE.GEO_TILE || t1.type === Constants.TILE.MERCATOR_TILE) {
+            result = UtilsIntersection.tileIntersectGeoTile(t1, t2);
+        } else if (t1.type === Constants.TILE.HEALPIX_TILE) {
+            result = UtilsIntersection.tileIntersectHealpixTile(t1, t2);
+        } else {
+            throw new "Unknown tiling";
+        }
+        return result;
+    };
+
+    /**
+     * Checks is one tile intersects intersect with a set of tiles
+     * @function tileIntersects
+     * @param {Tile} a - tile
+     * @param {Tile[]} b - index
+     * @return {boolean} true when intersection otherwise false
+     */
+    UtilsIntersection.tileIntersects = function(a, b) {
+        if (a === null || b === null) {
+            return false;
+        }
+        var result = false;
+        for(var i=0; i<b.length && !result; i++) {
+            var tile = b[i];
+            result = UtilsIntersection.tileIntersect(a, tile);
+        }
+        return result;
     };
 
     /**

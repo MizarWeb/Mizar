@@ -589,61 +589,6 @@ define([
     /**************************************************************************************************************/
 
     /**
-     * Load the getCapabilities into json variable
-     * use only for openSearch
-     * TODO : refactor
-     * @function loadGetCapabilities
-     * @memberof AbstractLayer
-     * @param {function} callback Callback function
-     * @param {string} paramUrl url (if ommited, reconstructed with getCapabilitiesUrl)
-     * @param {Object} sourceObject source object
-     * @return {JSON} data loaded
-     */
-    AbstractLayer.prototype.loadGetCapabilities = function(
-        callback,
-        paramUrl,
-        sourceObject
-    ) {
-        var url;
-        var urlRaw;
-        if (typeof paramUrl === "undefined") {
-            url = this.getGetCapabilitiesUrl();
-            urlRaw = this.getCapabilitiesUrl;
-        } else {
-            url = paramUrl;
-            urlRaw = paramUrl;
-        }
-        $.ajax({
-            type: "GET",
-            url: Proxy.proxify(url),
-            dataType: "text",
-            async: false,
-            beforeSend:function(xhr) {
-                xhr.setRequestHeader("Accept", "application/xml");
-            },
-            success: function(response) {
-                var myOptions = {
-                    mergeCDATA: true,
-                    xmlns: false,
-                    attrsAsObject: false,
-                    childrenAsArray: false
-                };
-                var result = XmlToJson.parseString(response, myOptions);
-                callback(result, sourceObject);
-            },
-            error: function(xhr, ajaxOptions, thrownError) {
-                throw new NetworkError(
-                    thrownError.message,
-                    "AbstractLayer.js",
-                    thrownError.code
-                );
-            }
-        });
-    };
-
-    /**************************************************************************************************************/
-
-    /**
      * @function getMetadataAPI
      * @memberof AbstractLayer#
      */

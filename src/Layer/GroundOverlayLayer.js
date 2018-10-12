@@ -61,6 +61,7 @@ define([
      * @memberof module:Layer
      */
     var GroundOverlayLayer = function(options) {
+        options.zIndex = options.zIndex || Constants.DISPLAY.DEFAULT_RASTER;
         AbstractLayer.prototype.constructor.call(
             this,
             Constants.LAYER.GroundOverlay,

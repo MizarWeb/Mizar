@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with MIZAR. If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
-define(["../../Utils/Constants","../../Gui/dialog/ErrorDialog","../../Utils/Proxy"], function(Constants, ErrorDialog, Proxy) {
+define(["../../Utils/Constants","../../Gui/dialog/ErrorDialog","../../Utils/Proxy", "./OpenSearchUtils"], function(Constants, ErrorDialog, Proxy, OpenSearchUtils) {
     /**
      * @name OpenSearchRequestPool
      * @class
@@ -106,21 +106,22 @@ define(["../../Utils/Constants","../../Gui/dialog/ErrorDialog","../../Utils/Prox
      * @memberof OpenSearchRequestPool#
      * @param {string} url Url query to get
      * @param {Tile} tile Tile associated with the query
-     * @param {string} key Key of the tile
+     * @param {Layer} layer
      */
-    OpenSearchRequestPool.prototype.addQuery = function(url, tile, key, layer) {
+    OpenSearchRequestPool.prototype.addQuery = function(url, tile, layer) {
         ErrorDialog.open(Constants.LEVEL.DEBUG, "OpenSearchRequestPool", "[addQuery]");
         if (this.resetMode === true) {
             ErrorDialog.open(Constants.LEVEL.DEBUG, "OpenSearchRequestPool", "addQuery halt, reset mode");
             return;
         }
 
+        var key = tile.getKey();
+
         // Add layer to list
         if (typeof this.layers[layer.getID()] === "undefined") {
             this.layers[layer.getID()] = layer;
         }
 
-        var bound = tile.bound;
         // First check if query is style wanted
         if (this.isQueryStillWanted(key, layer.getID())) {
             // Query still in pool or running, so do not add it again
@@ -144,30 +145,16 @@ define(["../../Utils/Constants","../../Gui/dialog/ErrorDialog","../../Utils/Prox
             if (xhr.readyState === 4) {
                 if (xhr.status === 200 && xhr.response !== null) {
                     response = JSON.parse(xhr.response);
-                    //nbFound = xhr.layer.result.parseResponse(response);
-                    //self.layer.cache.addTile(bound,response.features,nbFound);
-                    xhr.layer.manageFeaturesResponse(response.features, tile);
+                    var nbFeaturesTotalPerTile = response.properties.totalResults;
+                    //TODO cache : degrade resolution
+                    //xhr.layer.cache.storeInCache(url, response.features, nbFeaturesTotalPerTile);
+                    xhr.layer.computeFeaturesResponse(response.features, tile, nbFeaturesTotalPerTile);                  
                 } else if (xhr.status >= 400) {
                     //tileData.complete = true;
                     ErrorDialog.open(Constants.LEVEL.DEBUG, "OpenSearchRequestPool", xhr.responseText);
                     return;
                 }
-
                 self.manageFinishedRequest(xhr);
-
-                // Publish event that layer have received new features
-                if (
-                    response !== undefined &&
-                    response.features !== null &&
-                    response.features.length > 0
-                ) {
-                    xhr.layer
-                        .getGlobe()
-                        .publishEvent(Constants.EVENT_MSG.FEATURED_ADDED, {
-                            layer: xhr.layer,
-                            features: response.features
-                        });
-                }
             }
         };
         xhr.open("GET", Proxy.proxify(url));
@@ -246,9 +233,7 @@ o     * Check if there is any remaining query in the pool
             this.runningRequests.push(xhr);
 
             // Start ihm indicator
-            xhr.layer
-                .getGlobe()
-                .publishEvent(Constants.EVENT_MSG.LAYER_START_LOAD, xhr.layer);
+            xhr.layer.getGlobe().publishEvent(Constants.EVENT_MSG.LAYER_START_LOAD, xhr.layer);
 
             // Launch request
             xhr.send();
@@ -306,10 +291,7 @@ o     * Check if there is any remaining query in the pool
      * @param {string} key Key of the query
      * @return {Boolean} true if query is still in pool
      */
-    OpenSearchRequestPool.prototype.isQueryStillWanted = function(
-        key,
-        layerID
-    ) {
+    OpenSearchRequestPool.prototype.isQueryStillWanted = function(key,layerID) {
         ErrorDialog.open(Constants.LEVEL.DEBUG, "OpenSearchRequestPool", "[isQueryStillWanted]");
         for (var i = 0; i < this.runningRequests.length; i++) {
             // Recheck if runningRequests is modified outside
@@ -361,7 +343,7 @@ o     * Check if there is any remaining query in the pool
         while (xhr !== null && typeof xhr !== "undefined") {
             xhr.abort();
             this.freeRequests.push(xhr);
-            xhr = this.runningRequests.pop();
+            xhr = this.runningRequests.pop();            
         }
     };
 

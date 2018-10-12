@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with MIZAR. If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
-define(["../../Utils/Constants", "../../Gui/dialog/ErrorDialog"], function(Constants, ErrorDialog) {
+define(["underscore-min","../../Utils/Constants", "../../Gui/dialog/ErrorDialog"], function(_, Constants, ErrorDialog) {
     /**
      * @name OpenSearchCache
      * @class
@@ -52,48 +52,6 @@ define(["../../Utils/Constants", "../../Gui/dialog/ErrorDialog"], function(Const
         return message;
     };
 
-    /*************************************************************************************************************/
-
-    /**
-     * Calcul an unic key for bound
-     * @function getKey
-     * @memberof OpenSearchCache#
-     * @param {Bound} bound Bound
-     * @return {string} Key generated
-     */
-
-    OpenSearchCache.prototype.getKey = function(bound) {
-        var key =
-            bound.north +
-            ":" +
-            bound.east +
-            ":" +
-            bound.south +
-            ":" +
-            bound.west;
-        return key;
-    };
-
-    /*************************************************************************************************************/
-
-    /**
-     * Calcul an unic key for an array of bound
-     * @function getArrayBoundKey
-     * @memberof OpenSearchCache#
-     * @param {Array} tiles Array of tiles
-     * @return {string} Key generated
-     */
-
-    OpenSearchCache.prototype.getArrayBoundKey = function(tiles) {
-        var key = "";
-        if (tiles === null || typeof tiles === "undefined") {
-            return "";
-        }
-        for (var i = 0; i < tiles.length; i++) {
-            key += this.getKey(tiles[i].bound);
-        }
-        return key;
-    };
 
     /*************************************************************************************************************/
 
@@ -126,72 +84,30 @@ define(["../../Utils/Constants", "../../Gui/dialog/ErrorDialog"], function(Const
         return nb;
     };
 
-    /*************************************************************************************************************/
 
-    /**
-     * Add a tile and its features to the cache
-     * @function addTile
-     * @memberof OpenSearchCache#
-     * @param {Bound} bound Bound
-     * @param {Array} features Array of features to add
-     * @param {Int} nbFound Total number of features found
-     */
-
-    OpenSearchCache.prototype.addTile = function(bound, features, nbFound) {
+    OpenSearchCache.prototype.storeInCache = function(url, features, total) {
         ErrorDialog.open(Constants.LEVEL.DEBUG, "OpenSearchCache", "[addTile]" + this.getCacheStatus());
 
-        var key = this.getKey(bound);
-        var tile = {
-            key: key,
+        var myTile = {
+            key: url,
             features: features.slice(),
-            remains: nbFound
+            total: total
         };
         // If cache is full, remove first element
         if (this.tileArray.length === this.maxTiles) {
             ErrorDialog.open(Constants.LEVEL.DEBUG, "OpenSearchCache", "Cache full, remove oldest");
             this.tileArray.splice(0, 1);
         }
-        this.tileArray.push(tile);
+        this.tileArray.push(myTile);
     };
 
-    /*************************************************************************************************************/
-
-    /**
-     * Add features to an existing tile in cache
-     * @function updateTile
-     * @memberof OpenSearchCache#
-     * @param {Tile} tile Tile
-     * @param {Array} features Array of features to add
-     */
-
-    OpenSearchCache.prototype.updateTile = function(tile, features) {
-        ErrorDialog.open(Constants.LEVEL.DEBUG, "OpenSearchCache", "[update]" + this.getCacheStatus());
-        tile.features = tile.features.concat(features);
+    OpenSearchCache.prototype.getCacheFromKey = function(url){
+        var result =_.find(this.tileArray, function(tile) {
+            return tile.key === url;
+        });
+        return (result === undefined) ? null: Object.assign({}, result);
     };
 
-    /*************************************************************************************************************/
-
-    /**
-     * Get a tile from the cache
-     * @function getTile
-     * @memberof OpenSearchCache#
-     * @param {Bound} bound Bound
-     * @return {Json} Cache element
-     */
-
-    OpenSearchCache.prototype.getTile = function(bound) {
-        ErrorDialog.open(Constants.LEVEL.DEBUG, "OpenSearchCache", "[getTile]" + this.getCacheStatus());
-
-        var key = this.getKey(bound);
-
-        for (var i = 0; i < this.tileArray.length; i++) {
-            // TODO : try in reverse order, best performance ?
-            if (this.tileArray[i].key === key) {
-                return this.tileArray[i];
-            }
-        }
-        return null;
-    };
 
     /*************************************************************************************************************/
 

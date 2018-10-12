@@ -527,6 +527,19 @@ define(function() {
         DEFAULT_FORMAT: "Do MMM Y HH:mm"
     };
 
+    /**
+     * @namespace
+     * TILE
+     * @property {string} GEO_TILE - GeoTile
+     * @property {string} MERCATOR_TILE - MercatorTile
+     * @property {string} HEALPIX_TILE - HealpixTile          
+     */    
+    Constants.TILE = {
+        GEO_TILE: "GeoTile",
+        MERCATOR_TILE: "MercatorTile",
+        HEALPIX_TILE: "HealpixTile"
+    };
+
     /**************************************************************************************************************/
 
     return Constants;
