@@ -43,7 +43,8 @@ define([
     "./FeatureStyle",
     "./Program",
     "./BatchRenderable",
-    "./GeoBound"
+    "./GeoBound",
+    "../Crs/WGS84Crs"
 ], function(
     Constants,
     Utils,
@@ -52,7 +53,8 @@ define([
     FeatureStyle,
     Program,
     BatchRenderable,
-    GeoBound
+    GeoBound,
+    WGS84Crs
 ) {
     /**************************************************************************************************************/
     /**
@@ -340,15 +342,15 @@ define([
 
     /**************************************************************************************************************/
 
-    Renderable.prototype._subdivideSegment = function(p0, p1, crsName) {
+    Renderable.prototype._subdivideSegment = function(p0, p1) {
         const globe = this.bucket.renderer.globe;
-        const cs = globe.getCoordinateSystem();
+        const cs = new WGS84Crs();
         const scale = cs.getGeoide().getHeightScale();
         const subdivisionLength = globe.getSubdivisionLength() * scale;
         const maxSubdivisionCount = globe.getMaxSubdivisionCount();
 
-        var p0in3d = vec3.create(); cs.get3DFromWorldInCrs(p0, crsName, p0in3d);
-        var p1in3d = vec3.create(); cs.get3DFromWorldInCrs(p1, crsName, p1in3d);
+        var p0in3d = vec3.create(); cs.get3DFromWorldInCrs(p0, "CRS:84", p0in3d);
+        var p1in3d = vec3.create(); cs.get3DFromWorldInCrs(p1, "CRS:84", p1in3d);
 
         const d = vec3.dist(p0in3d, p1in3d);
         const subdivisionCount = this._clamp(Math.floor(d / subdivisionLength), 1, maxSubdivisionCount);
@@ -374,11 +376,11 @@ define([
     /**
      * Subdivide a line to follow planet curvature
      */
-    Renderable.prototype._subdivideLine = function(line, crsName) {
+    Renderable.prototype._subdivideLine = function(line) {
         var result = [];
 
         for (var i = 0; i < line.length - 1; ++i) {
-            result = result.concat(this._subdivideSegment(line[i], line[i + 1], crsName));
+            result = result.concat(this._subdivideSegment(line[i], line[i + 1]));
         }
 
         return result;
@@ -546,7 +548,7 @@ define([
             };
 
             // First, subdivide the line
-            const finalLine = this._subdivideLine(line, crsName);
+            const finalLine = this._subdivideLine(line);
 
             for (var coords of finalLine) {
                 cs.get3DFromWorldInCrs(coords, crsName, pos3d);
@@ -574,22 +576,22 @@ define([
                 indexCount: -1
             };
 
-            const line1 = [];
-            const line2 = [];
+            const finalLine = this._subdivideLine(line);
 
-            for (i = 0; i < line.length; ++i) {
-                const x = line[i][0];
+            const finalLine1 = [];
+            const finalLine2 = [];
+
+            for (i = 0; i < finalLine.length; ++i) {
+                const x = finalLine[i][0];
                 const x1 = x >= 0 ? x : x + 360;
                 const x2 = x <= 0 ? x : x - 360;
 
-                line1.push([x1, line[i][1], line[i][2]]);
-                line2.push([x2, line[i][1], line[i][2]]);
+                finalLine1.push([x1, finalLine[i][1], finalLine[i][2]]);
+                finalLine2.push([x2, finalLine[i][1], finalLine[i][2]]);
             }
 
             // First, subdivide the line
-            const finalLine1 = this._subdivideLine(line1, crsName);
             var coords;
-
             for (coords of finalLine1) {
                 cs.get3DFromWorldInCrs(coords, crsName, pos3d);
                 for (i = 0; i < 3; ++i) this.vertices.push(pos3d[i] - origin[i]);
@@ -604,7 +606,6 @@ define([
                 indexCount: -1,
             };
 
-            const finalLine2 = this._subdivideLine(line2, crsName);
             for (coords of finalLine2) {
                 cs.get3DFromWorldInCrs(coords, crsName, pos3d);
                 for (i = 0; i < 3; ++i) this.vertices.push(pos3d[i] - origin[i]);
