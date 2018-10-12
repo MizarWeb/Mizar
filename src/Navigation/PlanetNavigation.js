@@ -670,6 +670,7 @@ define([
             const newCenter = this.ctx.globe.computeIntersection(r);
             if (newCenter != null && newCenter != undefined) {
                 this.geoCenter = newCenter;
+                this.geoCenter[1] = Math.min(88, Math.max(this.geoCenter[1], -88));
             }
         } else {
             // Get geographic frame
