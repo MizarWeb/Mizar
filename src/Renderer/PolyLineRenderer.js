@@ -73,7 +73,14 @@ define([
     /**************************************************************************************************************/
 
     PolyLineRenderer.prototype.generateLevelZero = function(tile) {
-        // do nothing
+        for (var bucket of this.buckets) {
+            const layer = bucket.layer;
+            const geometry = bucket.geometry;
+            const style = bucket.style;
+
+            this.removeGeometry(layer);
+            this.addGeometry(layer, geometry, style);
+        }
     };
 
     /**************************************************************************************************************/
@@ -153,6 +160,13 @@ define([
 
         this.rightClipPlane = vec3.create();
         this.rightClipNormal = vec3.create();
+    };
+
+    /**************************************************************************************************************/
+
+    MainRenderable.prototype.dispose = function(rc) {
+        this.renderable.dispose(rc);
+        this.clippedRenderable.dispose(rc);
     };
 
     /**************************************************************************************************************/
@@ -479,6 +493,7 @@ define([
         } else {
             lines = [geometry.coordinates];
         }
+        lines = JSON.parse(JSON.stringify(lines));
 
         var geometryBound = new GeoBound();
         var csBound = new GeoBound(
@@ -670,10 +685,11 @@ define([
      @param layer
      @constructor
     */
-    var Bucket = function(layer, style, rc) {
+    var Bucket = function(layer, style, geometry, rc) {
         this.layer = layer;
         this.renderer = null;
         this.style = new FeatureStyle(style);
+        this.geometry = geometry;
         this.mainRenderable = new MainRenderable(this, rc);
         this.id = -1;
     };
@@ -681,12 +697,13 @@ define([
     /**************************************************************************************************************/
 
     PolyLineRenderer.prototype.addGeometry = function(layer, geometry, style) {
-        var bucket = new Bucket(layer, style, this.globe.renderContext);
+        var bucket = new Bucket(layer, style, geometry, this.globe.renderContext);
         bucket.renderer = this;
         bucket.id = this.globe.getRendererManager().bucketId++;
         bucket.mainRenderable.build(geometry);
 
         geometry._bucket = bucket;
+        layer._bucket = bucket;
 
         this.buckets.push(bucket);
     };
@@ -697,8 +714,13 @@ define([
         var bucket = layer._bucket;
         if (bucket.mainRenderable) {
             // Cleanup opengl resources
-            bucket.mainRenderable.dispose();
+            bucket.mainRenderable.dispose(this.globe.renderContext);
             bucket.mainRenderable = null;
+        }
+
+        const index = this.buckets.indexOf(bucket);
+        if (index !== -1) {
+            this.buckets.splice(index, 1);
         }
     };
 
