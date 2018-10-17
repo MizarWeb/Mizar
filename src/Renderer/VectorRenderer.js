@@ -381,11 +381,11 @@ define([
      * @param {Tile} tile Tile
      */
     VectorRenderer.prototype.removeGeometryFromTile = function(geometry, tile) {
-        //var bbox = Utils.getBBoxFromCoordinateArray(geometry.coordinates[0]);
-        //var startDate = new Date();
-        var maxLevel = this._removeGeometryFromTile(geometry, null, tile, 0);
-        //var endDate = new Date();
-        //console.log("Delta remove : "+(endDate*1.0 - startDate*1.0)+"ms with "+maxLevel+" levels");
+        var bbox = Utils.getBBox(geometry);
+        // var startDate = new Date();
+        var maxLevel = this._removeGeometryFromTile(geometry, bbox, tile, 0);
+        // var endDate = new Date();
+        // console.log("Delta remove : "+(endDate*1.0 - startDate*1.0)+"ms with "+maxLevel+" levels");
     };
 
     /**************************************************************************************************************/
