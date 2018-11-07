@@ -669,7 +669,7 @@ define([
             }
         }
 
-        return [minX, minY, maxX, maxY];
+        return { north: maxY, south: minY, west: minX, east: maxX };
     };
 
     return Utils;
