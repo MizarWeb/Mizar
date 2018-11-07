@@ -216,13 +216,22 @@ define([
     function _updateOverlay(renderable, layer) {
         var bucket;
         if (renderable) {
-            var bucket = renderable.bucket;
+            bucket = renderable.bucket;
         } else if (layer) {
-            var bucket = layer._bucket;
+            bucket = layer._bucket;
         } else {
             return;
         }
+
+        if (!bucket) {
+            return;
+        }
+
         var renderer = bucket.renderer;
+
+        if (!renderer) {
+            return;
+        }
 
         if (renderer.updateOverlay) {
             renderer.updateOverlay(bucket.layer);
