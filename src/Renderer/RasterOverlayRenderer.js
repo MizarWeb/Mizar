@@ -495,21 +495,21 @@ define([
 
         var rc = this.tileManager.renderContext;
         var tp = this.tileManager.tilePool;
-        for (var level in this.oldRenderables) {
-            for (var x in this.oldRenderables[level]) {
-                for (var y in this.oldRenderables[level][x]) {
-                    const renderable = this.oldRenderables[level][x][y];
-                    renderable.dispose(rc, tp);
-                }
-            }
-        }
 
-        this.oldRenderables = {};
         if (oldBucket) {
             for (var j = 0; j < oldBucket.renderables.length; ++j) {
                 const renderable = oldBucket.renderables[j];
                 if (renderable.ownTexture) {
                     const { level, x, y } = renderable.tile;
+
+                    // If there is already old data, dispose it
+                    try {
+                        const oldRenderable = this.oldRenderables[level][x][y];
+                        oldRenderable.dispose(rc, tp);
+                    } catch (e) {
+                        // No-op
+                    }
+
                     if (!this.oldRenderables[level]) this.oldRenderables[level] = {};
                     if (!this.oldRenderables[level][x]) this.oldRenderables[level][x] = {};
                     this.oldRenderables[level][x][y] = renderable;
