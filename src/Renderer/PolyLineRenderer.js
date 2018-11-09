@@ -519,11 +519,15 @@ define([
         const leftNormal = [1, 0, 0];
         cs.get3DFromWorldInCrs(leftPlane, crsName, this.leftClipPlane);
         cs.get3DFromWorldInCrs(leftNormal, crsName, this.leftClipNormal);
+        vec3.normalize(this.leftClipNormal);
+        vec3.subtract(this.leftClipPlane, origin);
 
         const rightPlane = [180, 0, 0];
         const rightNormal = [-1, 0, 0];
         cs.get3DFromWorldInCrs(rightPlane, crsName, this.rightClipPlane);
         cs.get3DFromWorldInCrs(rightNormal, crsName, this.rightClipNormal);
+        vec3.normalize(this.rightClipNormal);
+        vec3.subtract(this.rightClipPlane, origin);
 
         // Check if some lines are going through the poles
         // In this case, we want to duplicate the points that do not have the same x coordinate.
