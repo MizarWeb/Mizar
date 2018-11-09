@@ -609,10 +609,48 @@ define([
             }
 
             // First, subdivide the line
-            var coords;
-            for (coords of finalLine1) {
+            var lineIdx;
+            for (lineIdx = 0; lineIdx < finalLine1.length; ++lineIdx) {
+                const coords = finalLine1[lineIdx];
                 cs.get3DFromWorldInCrs(coords, crsName, pos3d);
                 for (i = 0; i < 3; ++i) this.vertices.push(pos3d[i] - origin[i]);
+
+                var wrapAround = false;
+                if (lineIdx > 1) {
+                    const x0 = finalLine1[lineIdx][0];
+                    const x1 = finalLine1[lineIdx - 1][0];
+                    const x2 = finalLine1[lineIdx - 2][0];
+
+                    const currDir = x0 - x1;
+                    const lastDir = x1 - x2;
+
+                    // We changed direction
+                    // last point is outside the visible range
+                    // Current point is inside  the visible range
+                    if (lastDir > 0 && currDir < 0 && x1 > 180 && x0 < 180) {
+                        const distanceAsIt = x1 - x0;
+                        const distanceWithWrapAround = (x0 + 360) - x1;
+                        if (distanceWithWrapAround < distanceAsIt) {
+                            wrapAround = true;
+                        }
+                    } else if (lastDir < 0 && currDir > 0 && x1 < 180 && x0 > 180) {
+                        const distanceAsIt = x0 - x1;
+                        const distanceWithWrapAround = (x1 + 360) - x0;
+                        if (distanceWithWrapAround < distanceAsIt) {
+                            wrapAround = true;
+                        }
+                    }
+                }
+
+                if (wrapAround) {
+                    lineInfos.indexCount = lastIndex - lineInfos.startIndex;
+                    this.lines.push(lineInfos);
+                    lineInfos = {
+                        startIndex: lastIndex,
+                        indexCount: -1
+                    };
+                }
+
                 this.indices.push(lastIndex++);
             }
 
@@ -624,9 +662,47 @@ define([
                 indexCount: -1,
             };
 
-            for (coords of finalLine2) {
+            for (lineIdx = 0; lineIdx < finalLine2.length; ++lineIdx) {
+                const coords = finalLine2[lineIdx];
                 cs.get3DFromWorldInCrs(coords, crsName, pos3d);
                 for (i = 0; i < 3; ++i) this.vertices.push(pos3d[i] - origin[i]);
+
+                wrapAround = false;
+                if (lineIdx > 1) {
+                    const x0 = finalLine2[lineIdx][0];
+                    const x1 = finalLine2[lineIdx - 1][0];
+                    const x2 = finalLine2[lineIdx - 2][0];
+
+                    const currDir = x0 - x1;
+                    const lastDir = x1 - x2;
+
+                    // We were going "to the left", we changed direction
+                    // last point is outside the visible range
+                    // Current point is inside  the visible range
+                    if (lastDir > 0 && currDir < 0 && x1 > -180 && x0 < -180) {
+                        const distanceAsIt = x1 - x0;
+                        const distanceWithWrapAround = x0 - (x1 - 360);
+                        if (distanceWithWrapAround < distanceAsIt) {
+                            wrapAround = true;
+                        }
+                    } else if (lastDir < 0 && currDir > 0 && x1 < -180 && x0 > -180) {
+                        const distanceAsIt = x0 - x1;
+                        const distanceWithWrapAround = x1 - (x0 - 360);
+                        if (distanceWithWrapAround < distanceAsIt) {
+                            wrapAround = true;
+                        }
+                    }
+                }
+
+                if (wrapAround) {
+                    lineInfos.indexCount = lastIndex - lineInfos.startIndex;
+                    this.clippedLines.push(lineInfos);
+                    lineInfos = {
+                        startIndex: lastIndex,
+                        indexCount: -1
+                    };
+                }
+
                 this.indices.push(lastIndex++);
             }
 
