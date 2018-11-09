@@ -803,6 +803,10 @@ define([
                         page: 1
                     }
                 );
+
+                this.tilesToLoad.length = 0;
+                // Remove all feature outside view of tiles
+                _removeFeaturesExternalFov(this, tiles);
             }
 
             this.nbFeaturesTotal = 0;
@@ -830,8 +834,6 @@ define([
                 default:
                     break;
                 }
-                // Remove all feature outside view of tiles
-                _removeFeaturesExternalFov(this, tiles);
             }
         }
     };
