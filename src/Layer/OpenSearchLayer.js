@@ -157,6 +157,7 @@ define([
         // Id of current feature displayed
         this.currentIdDisplayed = null;
 
+        this.tilesToLoad = [];
     };
 
     /**************************************************************************************************************/
@@ -363,7 +364,7 @@ define([
             featureData = {
                 index: layer.features.length - 1,
                 tiles: [tile],
-        };
+            };
             layer.featuresSet[feature.id] = featureData;
         } else {
             featureData = layer.featuresSet[feature.id];
@@ -564,6 +565,7 @@ define([
             if(cachedTile == null) {
                 // cache
                 tile.osState[layer.getID()] =  OpenSearchLayer.TileState.LOADING;
+                layer.tilesToLoad.push(tile);
                 layer.pool.addQuery(url, tile, layer);
             } else {
                 // If no state defined...
@@ -1079,9 +1081,11 @@ define([
             tile.associatedFeaturesId = [];
         }
 
-        // For each feature...
-        for (var i = features.length - 1; i >= 0; i--) {
-            var feature = features[i];
+        // Remove the tile we just loaded from the array
+        const idx = this.tilesToLoad.indexOf(tile);
+        if (idx != -1) {
+            this.tilesToLoad.splice(idx, 1);
+        }
 
         // For each feature...
         for (var feature of features) {
@@ -1127,6 +1131,11 @@ define([
                 layer: this,
                 features: this.features
             });
+
+        // No more features to load, load the next page
+        if (this.tilesToLoad.length === 0) {
+            this.nextPage();
+        }
     };
 
 
