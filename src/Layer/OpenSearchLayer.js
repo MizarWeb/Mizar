@@ -645,7 +645,6 @@ define([
      */
     OpenSearchLayer.prototype._attach = function(g) {
         AbstractLayer.prototype._attach.call(this, g);
-        this.extId += this.id;
         g.getTileManager().addPostRenderer(this);
     };
 
