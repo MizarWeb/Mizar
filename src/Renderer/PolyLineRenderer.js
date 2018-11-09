@@ -382,6 +382,15 @@ define([
             result = result.concat(this._subdivideSegment(line[i], line[i + 1]));
         }
 
+        // Remove consecutive duplicates
+        for (i = result.length - 1; i >= 1; --i) {
+            const curr = result[i];
+            const prev = result[i - 1];
+            if (curr[0] === prev[0] && curr[1] === prev[1] && curr[2] === prev[2]) {
+                result.splice(i, 1);
+            }
+        }
+
         return result;
     };
 
