@@ -120,16 +120,8 @@ define([
         void main() {
             gl_Position = uModelViewProjMatrix * vec4(aVertex, 1.0);
 
-            //vec3 p = vec3(uModelViewMatrix * vec4(aVertex, 1.0));
-            //vec3 c = vec3(uModelViewMatrix * vec4(uClipPlane.xyz, 1.0));
-            //vec3 n = vec3(uModelViewMatrix * vec4(uClipPlane.w, 0, 0, 0));
-
-            vec3 p = aVertex;
-            vec3 c = uClipPlane;
-            vec3 n = uClipNormal;
-
-            vec3 a = normalize(p - c);
-            n = normalize(n);
+            vec2 a = normalize(aVertex.xy - uClipPlane.xy);
+            vec2 n = normalize(uClipNormal.xy);
 
             vClipDistance = dot(a, n);
         }`;
@@ -142,7 +134,6 @@ define([
 
         void main() {
             if (vClipDistance < 0.0) discard;
-
             gl_FragColor = uColor;
         }
         `;
@@ -231,12 +222,6 @@ define([
             this.clippedProgram.uniforms.uModelViewProjMatrix,
             false,
             mvpMatrix
-        );
-
-        gl.uniformMatrix4fv(
-            this.clippedProgram.uniforms.uModelViewMatrix,
-            false,
-            modelViewMatrix
         );
 
         gl.uniform4f(
