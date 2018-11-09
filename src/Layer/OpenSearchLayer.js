@@ -513,7 +513,7 @@ define([
         // If no state defined...
         if (tile.osState == null) {
             //...set it to NOT_LOADED
-            tile.osState = [];
+            tile.osState = {};
         }
         if (tile.osState[layer.getID()] == null) {
             tile.osState[layer.getID()] = OpenSearchLayer.TileState.NOT_LOADED;
@@ -554,7 +554,7 @@ define([
                 // If no state defined...
                 if (cachedTile.osState == null) {
                     //...set it to NOT_LOADED
-                    cachedTile.osState = [];
+                    cachedTile.osState = {};
                 }
                 cachedTile.osState[layer.getID()] =  OpenSearchLayer.TileState.LOADING;
                 layer.computeFeaturesResponse(cachedTile.features, cachedTile, cachedTile.total);
