@@ -127,6 +127,8 @@ define([
 
         // Keep trace of all features loaded (TODO: make object more light, just keep geometry and style ?)
         this.features = [];
+        // Keep all tiles associated to a feature id to add / remove them more efficiently
+        this.featuresSet = {};
 
         // Keep trace of all tiles loaded (bound, key and features id associated)
         this.tilesLoaded = [];
@@ -155,6 +157,7 @@ define([
         // Id of current feature displayed
         this.currentIdDisplayed = null;
 
+        this.tilesToLoad = [];
     };
 
     /**************************************************************************************************************/
@@ -271,7 +274,9 @@ define([
         var featureIndex = _getFeatureIndexById(layer.features, featureId);
         var feature = layer.features[featureIndex];
 
-        layer.getGlobe().getRendererManager().removeGeometry(feature.geometry, layer);
+        for (var tile of layer.featuresSet[featureId].tiles) {
+            layer.getGlobe().getRendererManager().removeGeometryFromTile(feature.geometry, tile);
+        }
 
         // Remove from list of features
         layer.features[featureIndex] = layer.features[layer.features.length-1];
@@ -329,7 +334,7 @@ define([
         }
     }
 
-    function _addFeatureToRenderers(layer, feature) {
+    function _addFeatureToRenderers(layer, feature, tile) {
         var geometry = feature.geometry;
 
         // Manage style, if undefined try with properties, otherwise use defaultStyle
@@ -343,39 +348,50 @@ define([
         if (geometry.type === "GeometryCollection") {
             var geoms = geometry.geometries;
             for (var i = 0; i < geoms.length; i++) {
-                layer.getGlobe().getRendererManager().addGeometry(layer, geoms[i], style);
+                layer.getGlobe().getRendererManager().addGeometryToTile(layer, geoms[i], style, tile);
             }
         } else {
             // Add geometry to renderers
-            layer.getGlobe().getRendererManager().addGeometry(layer, geometry, style);
+            layer.getGlobe().getRendererManager().addGeometryToTile(layer, geometry, style, tile);
         }
     }
 
-    function _removeFeatureFromRenderers(layer, feature) {
-        return layer.getGlobe().getRendererManager().removeGeometry(feature.geometry, layer);
-    }
+    function _addFeature(layer, feature, tile) {
+        var featureData;
 
-    function _addFeature(layer, feature) {
-        var defaultCrs = {
-            type: "name",
-            properties: {
-                name: Constants.CRS.WGS84
-            }
-        };
+        if (!layer.featuresSet.hasOwnProperty(feature.id)) {
+            layer.features.push(feature);
+            featureData = {
+                index: layer.features.length - 1,
+                tiles: [tile],
+            };
+            layer.featuresSet[feature.id] = featureData;
+        } else {
+            featureData = layer.featuresSet[feature.id];
 
+            // Store the tile
+            featureData.tiles.push(tile);
+
+            // Always use the base feature to manager geometry indices
+            feature = layer.features[featureData.index];
+        }
+
+        tile.associatedFeaturesId.push(feature.id);
         feature.geometry.gid = feature.id;
 
         // MS: Feature could be added from ClusterOpenSearch which have features with different styles
         var style = feature.properties.style ? feature.properties.style : layer.style;
-        //style.visible = true;
+
         style.opacity = layer.getOpacity();
 
-        layer.features.push(feature);
-
-        // Add features to renderer if layer is attached to planet
-        _addFeatureToRenderers(layer, feature);
-        if (layer.isVisible()) {
-            layer.getGlobe().getRenderContext().requestFrame();
+        if (feature.geometry.type === "GeometryCollection") {
+            var geoms = feature.geometry.geometries;
+            for (var i = 0; i < geoms.length; i++) {
+                layer.getGlobe().getRendererManager().addGeometryToTile(layer, geoms[i], style, tile);
+            }
+        } else {
+            // Add geometry to renderers
+            layer.getGlobe().getRendererManager().addGeometryToTile(layer, feature.geometry, style, tile);
         }
     }
 
@@ -513,7 +529,7 @@ define([
         // If no state defined...
         if (tile.osState == null) {
             //...set it to NOT_LOADED
-            tile.osState = [];
+            tile.osState = {};
         }
         if (tile.osState[layer.getID()] == null) {
             tile.osState[layer.getID()] = OpenSearchLayer.TileState.NOT_LOADED;
@@ -549,12 +565,13 @@ define([
             if(cachedTile == null) {
                 // cache
                 tile.osState[layer.getID()] =  OpenSearchLayer.TileState.LOADING;
+                layer.tilesToLoad.push(tile);
                 layer.pool.addQuery(url, tile, layer);
             } else {
                 // If no state defined...
                 if (cachedTile.osState == null) {
                     //...set it to NOT_LOADED
-                    cachedTile.osState = [];
+                    cachedTile.osState = {};
                 }
                 cachedTile.osState[layer.getID()] =  OpenSearchLayer.TileState.LOADING;
                 layer.computeFeaturesResponse(cachedTile.features, cachedTile, cachedTile.total);
@@ -645,7 +662,6 @@ define([
      */
     OpenSearchLayer.prototype._attach = function(g) {
         AbstractLayer.prototype._attach.call(this, g);
-        this.extId += this.id;
         g.getTileManager().addPostRenderer(this);
     };
 
@@ -664,11 +680,13 @@ define([
 
     /**************************************************************************************************************/
 
-
     OpenSearchLayer.prototype.modifyFeatureStyle = function(feature, style) {
-        if (_removeFeatureFromRenderers(this, feature)) {
-            feature.properties.style = style;
-            _addFeatureToRenderers(this, feature);
+        const rm = this.getGlobe().getRendererManager();
+        for (var tile of this.featuresSet[feature.id].tiles) {
+            try {
+                rm.removeGeometryFromTile(feature.geometry, tile);
+                rm.addGeometryToTile(this, feature.geometry, style, tile);
+            } catch (error) { /* e */ }
         }
     };
 
@@ -803,6 +821,10 @@ define([
                         page: 1
                     }
                 );
+
+                this.tilesToLoad.length = 0;
+                // Remove all feature outside view of tiles
+                _removeFeaturesExternalFov(this, tiles);
             }
 
             this.nbFeaturesTotal = 0;
@@ -830,8 +852,6 @@ define([
                 default:
                     break;
                 }
-                // Remove all feature outside view of tiles
-                _removeFeaturesExternalFov(this, tiles);
             }
         }
     };
@@ -1061,25 +1081,22 @@ define([
             tile.associatedFeaturesId = [];
         }
 
-        // For each feature...
-        for (var i = features.length - 1; i >= 0; i--) {
-            var feature = features[i];
+        // Remove the tile we just loaded from the array
+        const idx = this.tilesToLoad.indexOf(tile);
+        if (idx != -1) {
+            this.tilesToLoad.splice(idx, 1);
+        }
 
+        // For each feature...
+        for (var feature of features) {
             if (!feature.hasOwnProperty("id")) {
                 feature.id = feature.properties.identifier;
             }
 
-            if (_isAlreadyAdded(feature.id, this.features)) {
-                // Check if still added into this tile
-                if (_isAlreadyAddedInTile(feature.id, tile)) {
-                    // Nothing to do !
-                } else {
-                    tile.associatedFeaturesId.push(feature.id);
-                }
-            } else {
-                _addFeature(this, feature);
-                tile.associatedFeaturesId.push(feature.id);
-            }
+            try {
+                _addFeature(this, feature, tile);
+            } catch (error) { /* error */ }
+            // Add features to renderer if this is attached to planet
         }
 
         if (typeof this.callbackContext !== "undefined") {
@@ -1101,7 +1118,7 @@ define([
 
         this.getGlobe().refresh();
 
-        if (!_isTileLoaded(this.tilesLoaded, tile.getKey())) {
+        if (this.tilesLoaded.indexOf(tile.getKey()) === -1) {
             this.tilesLoaded.push({
                 key: tile.getKey(),
                 tile: tile
@@ -1114,6 +1131,11 @@ define([
                 layer: this,
                 features: this.features
             });
+
+        // No more features to load, load the next page
+        if (this.tilesToLoad.length === 0) {
+            this.nextPage();
+        }
     };
 
 
