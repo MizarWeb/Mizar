@@ -480,6 +480,10 @@ define([
      * @fires Mizar#mizarMode:toggle
      */
     function _switchToContext(context, options) {
+        if (context && context.globe) {
+            context.globe.isEnable = false;
+        }
+
         var self = this;
         var mustBeDestroyed = options.hasOwnProperty("mustBeDestroyed")
             ? options.mustBeDestroyed
@@ -537,6 +541,10 @@ define([
         context.getNavigation().toViewMatrix(viewMatrix, fov, 2000, function() {
             if (context) {
                 context.enable();
+
+                if (context && context.globe) {
+                    context.globe.isEnable = true;
+                }
             }
             if (options && options.callback) {
                 options.callback.call(self);
