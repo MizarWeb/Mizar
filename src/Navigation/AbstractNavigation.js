@@ -121,8 +121,7 @@ define([
             );
             const self = this;
             inertia.onstop = function() {
-                self.donePanning();
-                self.doneRotating();
+                self.doneMoving();
             };
         } else {
             inertia = null;
@@ -512,6 +511,16 @@ define([
      */
     AbstractNavigation.prototype.update = function() {
         // Does nothing by default
+    };
+
+    /**
+     * Called when stopping inertia.
+     * @function doneMoving
+     * @memberof AbstractNavigation#
+     */
+    AbstractNavigation.prototype.doneMoving = function() {
+        this.donePanning();
+        this.doneRotating();
     };
 
     /**

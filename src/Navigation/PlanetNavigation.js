@@ -903,6 +903,11 @@ define([
         this.tilt = Math.min(Math.max(this.tilt, MIN_TILT), MAX_TILT);
     };
 
+    PlanetNavigation.prototype.doneMoving = function() {
+        this.updateGeoCenter();
+        this.lastMousePosition = null;
+    };
+
     PlanetNavigation.prototype.donePanning = function() {
         this.updateGeoCenter();
         this.lastMousePosition = null;
