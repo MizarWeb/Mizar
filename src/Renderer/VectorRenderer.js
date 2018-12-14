@@ -381,9 +381,12 @@ define([
      * @param {Tile} tile Tile
      */
     VectorRenderer.prototype.removeGeometryFromTile = function(geometry, tile) {
-        var bbox = Utils.getBBox(geometry);
+        var bbox = null;
+        if (!geometry.type === "Point") {
+            bbox = Utils.getBBox(geometry);
+        }
         // var startDate = new Date();
-        var maxLevel = this._removeGeometryFromTile(geometry, bbox, tile, 0);
+        this._removeGeometryFromTile(geometry, bbox, tile, 0);
         // var endDate = new Date();
         // console.log("Delta remove : "+(endDate*1.0 - startDate*1.0)+"ms with "+maxLevel+" levels");
     };
