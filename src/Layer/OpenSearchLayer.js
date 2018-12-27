@@ -157,6 +157,8 @@ define([
         // Id of current feature displayed
         this.currentIdDisplayed = null;
 
+        this.featuresAddedToNotLoadedTiles = {};
+
         this.colormap = [
             { pct: 0.0, color: [0.0, 0.0, 1.0] },
             { pct: 0.1, color: [0.0, 1.0, 0.0] },
@@ -433,6 +435,14 @@ define([
             // Add geometry to renderers
             layer.getGlobe().getRendererManager().addGeometryToTile(layer, feature.geometry, style, tile);
         }
+
+        if (tile.state !== Tile.State.LOADED) {
+            if (!layer.featuresAddedToNotLoadedTiles[tile.key]) {
+                layer.featuresAddedToNotLoadedTiles[tile.key] = [];
+            }
+
+            layer.featuresAddedToNotLoadedTiles[tile.key].push(feature);
+    }
     }
 
     function _cleanCache(layer) {
@@ -839,6 +849,18 @@ define([
     OpenSearchLayer.prototype.render = function(tiles) {
         if (!this.isVisible() || tiles.length === 0) {
             return;
+        }
+
+        // Check if we have features that might be missing
+        if (Object.keys(this.featuresAddedToNotLoadedTiles).length > 0) {
+            for (var tile of tiles) {
+                if (tile.state === Tile.State.LOADED && this.featuresAddedToNotLoadedTiles[tile.key]) {
+                    for (var feature of this.featuresAddedToNotLoadedTiles[tile.key]) {
+                        _addFeature(this, feature, tile);
+                    }
+                    delete this.featuresAddedToNotLoadedTiles[tile.key];
+                }
+            }
         }
 
         this.currentKey = OpenSearchUtils.getArrayBoundKey(tiles);
