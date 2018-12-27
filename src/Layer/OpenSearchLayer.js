@@ -1188,15 +1188,6 @@ define([
         // compute the total number of available features on the server in the FOV
         this.nbFeaturesTotal += nbFeaturesTotalPerTile;
 
-        // Init array of feature id associated to tile
-        if (tile.associatedFeaturesId == null) {
-            tile.associatedFeaturesId = [];
-        }
-
-        // For each feature...
-        for (var i = features.length - 1; i >= 0; i--) {
-            var feature = features[i];
-
         // For each feature...
         for (var feature of features) {
             if (!feature.hasOwnProperty("id")) {
