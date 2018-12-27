@@ -225,7 +225,8 @@ define([
                     //selectedData.layer.unhighlight(selectedData.feature,style);
                     selectedData.layer.modifyFeatureStyle(
                         selectedData.feature,
-                        style
+                        style,
+                        true
                     );
                 } else {
                     selectedData.layer.modifyFeatureStyle(

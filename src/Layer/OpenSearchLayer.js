@@ -157,6 +157,12 @@ define([
         // Id of current feature displayed
         this.currentIdDisplayed = null;
 
+        this.colormap = [
+            { pct: 0.0, color: [0.0, 0.0, 1.0] },
+            { pct: 0.1, color: [0.0, 1.0, 0.0] },
+            { pct: 0.2, color: [1.0, 0.0, 0.0] },
+        ];
+
     };
 
     /**************************************************************************************************************/
@@ -239,6 +245,41 @@ define([
             }
         }
         return index;
+    }
+
+    function _getColorForPercentage(pct, colormap) {
+        var colors = colormap.slice(0);
+        colors.sort(function(c0, c1) { return c0.pct - c1.pct; });
+
+        const length = colors.length;
+
+        // Find the pct bounds
+        var color;
+        // Pct is outside colormap bounds
+        if (colors[0].pct > pct) {
+            color = colors[0].color;
+        } else if (colors[length - 1].pct < pct) {
+            color = colors[length - 1].color;
+        } else {
+            for (var i = 0; i < length - 1; ++i) {
+                const p0 = colors[i].pct;
+                const p1 = colors[i + 1].pct;
+
+                if (p0 <= pct && p1 >= pct) {
+                    const p = (pct - p0) / (p1 - p0);
+                    const c0 = colors[i].color;
+                    const c1 = colors[i + 1].color;
+
+                    color = [
+                        (1.0 - p) * c0[0] + p * c1[0],
+                        (1.0 - p) * c0[1] + p * c1[1],
+                        (1.0 - p) * c0[2] + p * c1[2],
+                    ];
+                }
+            }
+        }
+
+        return color;
     }
 
     /**
@@ -454,7 +495,7 @@ define([
         return layer.getGlobe().getRendererManager().removeGeometryCurrentLevel(feature.geometry, layer);
     }
 
-    function _buildUrl(layer, tile) {
+    function _buildUrl(layer, tile, count) {
         //var url = this.serviceUrl + "/search?order=" + tile.order + "&healpix=" + tile.pixelIndex;
         if (!layer.getServices().hasOwnProperty("queryForm")) {
             return null;
@@ -473,7 +514,12 @@ define([
             i++
         ) {
             param = layer.getServices().queryForm.parameters[i];
+            if (param.name === "maxRecords" && count) {
+                currentValue = count;
+            } else {
             currentValue = param.currentValueTransformed();
+            }
+
             if (currentValue === null) {
                 // Remove parameter if not mandatory (with a ?)
                 url = url.replace(
@@ -557,8 +603,8 @@ define([
         console.log("nb features :"+layer.features.length);
     }
 
-    function _requestTile(layer, tile) {
-        var url = _buildUrl(layer, tile);
+    function _requestTile(layer, tile, count) {
+        var url = _buildUrl(layer, tile, count);
         if (url !== null) {
             var cachedTile = layer.cache.getCacheFromKey(url);
             if(cachedTile == null) {
@@ -678,7 +724,15 @@ define([
 
     /**************************************************************************************************************/
 
-    OpenSearchLayer.prototype.modifyFeatureStyle = function(feature, style) {
+    OpenSearchLayer.prototype.modifyFeatureStyle = function(feature, style, useFeatureStyle) {
+        if (useFeatureStyle && feature.properties.style) {
+            for (var key in feature.properties.style) {
+                if (!feature.properties.style.hasOwnProperty(key)) continue;
+
+                style[key] = feature.properties.style[key];
+            }
+        }
+
         const rm = this.getGlobe().getRendererManager();
         for (var tile of this.featuresSet[feature.id].tiles) {
             try {
@@ -835,7 +889,8 @@ define([
                 _initOsState(this, currentTile);
                 switch (currentTile.osState[this.getID()]) {
                 case OpenSearchLayer.TileState.NOT_LOADED:
-                    _requestTile(this, currentTile);
+                // First load the least possible amount of data
+                _requestTile(this, currentTile, 1);
                     break;
                 case OpenSearchLayer.TileState.LOADED:
                     //console.log("tile still loaded !!!");
@@ -925,7 +980,7 @@ define([
             targetStyle.setOpacity(arg);
 
             for (var i = 0; i < this.features.length; i++) {
-                this.modifyFeatureStyle(this.features[i], targetStyle);
+                this.modifyFeatureStyle(this.features[i], targetStyle, true);
             }
 
             var linkedLayers = this.callbackContext.getLinkedLayers(
@@ -1067,6 +1122,67 @@ define([
      * @fires OpenSearchLayer#updateStatsAttribute
      */
     OpenSearchLayer.prototype.computeFeaturesResponse = function(features, tile, nbFeaturesTotalPerTile) {
+        if (nbFeaturesTotalPerTile > 1000 && tile.level <= 6) {
+            // TODO: Draw heatmap
+            tile.nbFeaturesTotal = nbFeaturesTotalPerTile;
+
+            if (!tile.parent) {
+                tile.pct = 1.0;
+            } else {
+                var currentParent = tile.parent;
+                while (currentParent.parent && !currentParent.pct) {
+                    currentParent = currentParent.parent;
+                }
+
+                // FIXME(Charly):   How should we consider the case where we did not load the first levels at the begining ?
+                //                  Right now, we use the current tile as the reference level, maybe we should trigger a request for
+                //                  the corresponding level 0 and postpone this response ?
+                //                  Ideally, the server could just give the level 0 total for this tile, and the tile's feature total.
+                if (!currentParent.pct) {
+                    tile.pct = 1.0;
+                } else {
+                    tile.pct = currentParent.pct * (tile.nbFeaturesTotal / currentParent.nbFeaturesTotal);
+                }
+            }
+
+            const center = [
+                (tile.geoBound.east + tile.geoBound.west) / 2.0,
+                (tile.geoBound.north + tile.geoBound.south) / 2.0
+            ];
+
+            const color = _getColorForPercentage(tile.pct, this.colormap);
+
+            const feature = {
+                type: "Feature",
+                id: `${this.ID}_${tile.key}`,
+                geometry: {
+                    type: "Point",
+                    coordinates: center,
+                    crs: {
+                        type: "name",
+                        properties: {
+                            name: tile.config.srs
+                        }
+                    }
+                },
+                properties: {
+                    style: {
+                        label: false,
+                        iconUrl: null,
+                        fillColor: color
+                    }
+                },
+            };
+            _addFeature(this, feature, tile);
+
+            return;
+        }
+
+        if (features.length === 1) {
+            _requestTile(this, tile);
+            return;
+        }
+
         _fixCrossLine(features);
 
         // compute the total number of available features on the server in the FOV

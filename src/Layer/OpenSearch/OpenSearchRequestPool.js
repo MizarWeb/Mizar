@@ -36,6 +36,7 @@ define(["../../Utils/Constants","../../Gui/dialog/ErrorDialog","../../Utils/Prox
         // Pooling requests
         this.freeRequests = [];
         this.poolingRequests = [];
+        this.awaitingRequests = [];
 
         this.layers = [];
 
@@ -123,7 +124,7 @@ define(["../../Utils/Constants","../../Gui/dialog/ErrorDialog","../../Utils/Prox
         }
 
         // First check if query is style wanted
-        if (this.isQueryStillWanted(key, layer.getID())) {
+        if (this.isQueryStillWanted(key, layer.getID(), url)) {
             // Query still in pool or running, so do not add it again
             return;
         }
@@ -137,6 +138,7 @@ define(["../../Utils/Constants","../../Gui/dialog/ErrorDialog","../../Utils/Prox
         // Associate the key
         xhr.key = key;
         xhr.layer = layer;
+        xhr.url = url;
 
         xhr.onreadystatechange = function(e) {
             var i, feature;
@@ -291,14 +293,15 @@ o     * Check if there is any remaining query in the pool
      * @param {string} key Key of the query
      * @return {Boolean} true if query is still in pool
      */
-    OpenSearchRequestPool.prototype.isQueryStillWanted = function(key,layerID) {
+    OpenSearchRequestPool.prototype.isQueryStillWanted = function(key, layerID, url) {
         ErrorDialog.open(Constants.LEVEL.DEBUG, "OpenSearchRequestPool", "[isQueryStillWanted]");
         for (var i = 0; i < this.runningRequests.length; i++) {
             // Recheck if runningRequests is modified outside
             if (
                 typeof this.runningRequests[i] !== "undefined" &&
                 this.runningRequests[i].key === key &&
-                this.runningRequests[i].layer.getID() === layerID
+                this.runningRequests[i].layer.getID() === layerID &&
+                this.runningRequests[i].url === url
             ) {
                 return true;
             }
@@ -307,7 +310,8 @@ o     * Check if there is any remaining query in the pool
             // Recheck if poolingRequests is modified outside
             if (
                 typeof this.poolingRequests[i] !== "undefined" &&
-                this.poolingRequests[i].key === key
+                this.poolingRequests[i].key === key &&
+                this.poolingRequests[i].url === url
             ) {
                 return true;
             }
