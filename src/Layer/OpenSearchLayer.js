@@ -865,7 +865,7 @@ define([
 
         this.currentKey = OpenSearchUtils.getArrayBoundKey(tiles);
 
-        if (_mustBeRefreshed(this.previousKey, this.currentKey, this.forceRefresh)) {
+        // if (_mustBeRefreshed(this.previousKey, this.currentKey, this.forceRefresh)) {
             if (this.forceRefresh === true) {
                 // Remove cache, in order to reload new features
                 _cleanCache(this);
@@ -924,11 +924,8 @@ define([
                     break;
                 }
                 // Remove all feature outside view of tiles
-                _removeFeaturesExternalFov(this, tiles);
-            }
-        }
+        // }
     };
-
 
     /**************************************************************************************************************/
 
