@@ -314,10 +314,18 @@ define([
 
     function _removeFeature(layer, featureId) {
         var featureIndex = _getFeatureIndexById(layer.features, featureId);
+
+        if (featureIndex === -1) return;
+
         var feature = layer.features[featureIndex];
 
-        for (var tile of layer.featuresSet[featureId].tiles) {
-            layer.getGlobe().getRendererManager().removeGeometryFromTile(feature.geometry, tile);
+        if (layer.featuresSet[featureId]) {
+            for (var tile of layer.featuresSet[featureId].tiles) {
+                layer.getGlobe().getRendererManager().removeGeometryFromTile(feature.geometry, tile);
+            }
+
+            // Remove from featureSets
+            delete layer.featuresSet[featureId];
         }
 
         // Remove from list of features
@@ -406,7 +414,7 @@ define([
             featureData = {
                 index: layer.features.length - 1,
                 tiles: [tile],
-        };
+            };
             layer.featuresSet[feature.id] = featureData;
         } else {
             featureData = layer.featuresSet[feature.id];
@@ -417,6 +425,8 @@ define([
             // Always use the base feature to manager geometry indices
             feature = layer.features[featureData.index];
         }
+
+        if (!tile.associatedFeaturesId) tile.associatedFeaturesId = [];
 
         tile.associatedFeaturesId.push(feature.id);
         feature.geometry.gid = feature.id;
@@ -442,7 +452,7 @@ define([
             }
 
             layer.featuresAddedToNotLoadedTiles[tile.key].push(feature);
-    }
+        }
     }
 
     function _cleanCache(layer) {
@@ -527,7 +537,7 @@ define([
             if (param.name === "maxRecords" && count) {
                 currentValue = count;
             } else {
-            currentValue = param.currentValueTransformed();
+                currentValue = param.currentValueTransformed();
             }
 
             if (currentValue === null) {
@@ -744,11 +754,13 @@ define([
         }
 
         const rm = this.getGlobe().getRendererManager();
-        for (var tile of this.featuresSet[feature.id].tiles) {
-            try {
-                rm.removeGeometryFromTile(feature.geometry, tile);
-                rm.addGeometryToTile(this, feature.geometry, style, tile);
-            } catch (error) { /* e */ }
+        if (this.featuresSet[feature.id]) {
+            for (var tile of this.featuresSet[feature.id].tiles) {
+                try {
+                    rm.removeGeometryFromTile(feature.geometry, tile);
+                    rm.addGeometryToTile(this, feature.geometry, style, tile);
+                } catch (error) { /* e */ }
+            }
         }
     };
 
@@ -866,68 +878,68 @@ define([
         this.currentKey = OpenSearchUtils.getArrayBoundKey(tiles);
 
         // if (_mustBeRefreshed(this.previousKey, this.currentKey, this.forceRefresh)) {
-            if (this.forceRefresh === true) {
-                // Remove cache, in order to reload new features
-                _cleanCache(this);
-                this.forceRefresh = false;
-            }
+        if (this.forceRefresh === true) {
+            // Remove cache, in order to reload new features
+            _cleanCache(this);
+            this.forceRefresh = false;
+        }
 
         var localTiles = tiles.slice(0);
 
-            // Sort tiles in order to load the first tiles closed to the camera
+        // Sort tiles in order to load the first tiles closed to the camera
         localTiles.sort(_sortTilesByDistance);
 
         this.currentLevel = localTiles[0].level;
-            this.ctx = this.callbackContext;
+        this.ctx = this.callbackContext;
 
-            this.isZoomLevelChanged = this.currentLevel !== this.previousLevel;
+        this.isZoomLevelChanged = this.currentLevel !== this.previousLevel;
 
-            if (this.isZoomLevelChanged) {
-                // Go to page 1
-                OpenSearchUtils.setCurrentValueToParam(
-                    this.getServices().queryForm,
-                    "startPage",
-                    1
-                );
-                // update labels
-                this.callbackContext.publish(
-                    Constants.EVENT_MSG.LAYER_UPDATE_STATS_ATTRIBUTES,
-                    {
-                        shortName: this.getShortName(),
-                        page: 1
-                    }
-                );
-            }
+        if (this.isZoomLevelChanged) {
+            // Go to page 1
+            OpenSearchUtils.setCurrentValueToParam(
+                this.getServices().queryForm,
+                "startPage",
+                1
+            );
+            // update labels
+            this.callbackContext.publish(
+                Constants.EVENT_MSG.LAYER_UPDATE_STATS_ATTRIBUTES,
+                {
+                    shortName: this.getShortName(),
+                    page: 1
+                }
+            );
+        }
 
-            this.nbFeaturesTotal = 0;
+        this.nbFeaturesTotal = 0;
 
-            // =========================================================================
-            // Check each tile
-            // =========================================================================
+        // =========================================================================
+        // Check each tile
+        // =========================================================================
 
-            this.previousLevel = this.currentLevel;
-            this.previousKey = this.currentKey;
+        this.previousLevel = this.currentLevel;
+        this.previousKey = this.currentKey;
         for (var i = 0; i < localTiles.length; i++) {
             var currentTile = localTiles[i];
 
-                _initOsState(this, currentTile);
-                switch (currentTile.osState[this.getID()]) {
-                case OpenSearchLayer.TileState.NOT_LOADED:
+            _initOsState(this, currentTile);
+            switch (currentTile.osState[this.getID()]) {
+            case OpenSearchLayer.TileState.NOT_LOADED:
                 // First load the least possible amount of data
                 _requestTile(this, currentTile, 1);
-                    break;
-                case OpenSearchLayer.TileState.LOADED:
-                    //console.log("tile still loaded !!!");
-                    break;
-                case OpenSearchLayer.TileState.LOADING:
-                    //console.log("tile loading...");
-                    break;
-                default:
-                    break;
-                }
+                break;
+            case OpenSearchLayer.TileState.LOADED:
+                //console.log("tile still loaded !!!");
+                break;
+            case OpenSearchLayer.TileState.LOADING:
+                //console.log("tile loading...");
+                break;
+            default:
+                break;
+            }
         }
 
-                // Remove all feature outside view of tiles
+        // Remove all feature outside view of tiles
         _removeFeaturesExternalFov(this, localTiles);
         // }
     };
