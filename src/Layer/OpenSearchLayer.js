@@ -872,10 +872,12 @@ define([
                 this.forceRefresh = false;
             }
 
-            // Sort tiles in order to load the first tiles closed to the camera
-            tiles.sort(_sortTilesByDistance);
+        var localTiles = tiles.slice(0);
 
-            this.currentLevel = tiles[0].level;
+            // Sort tiles in order to load the first tiles closed to the camera
+        localTiles.sort(_sortTilesByDistance);
+
+        this.currentLevel = localTiles[0].level;
             this.ctx = this.callbackContext;
 
             this.isZoomLevelChanged = this.currentLevel !== this.previousLevel;
@@ -905,8 +907,8 @@ define([
 
             this.previousLevel = this.currentLevel;
             this.previousKey = this.currentKey;
-            for (var i = 0; i < tiles.length; i++) {
-                var currentTile = tiles[i];
+        for (var i = 0; i < localTiles.length; i++) {
+            var currentTile = localTiles[i];
 
                 _initOsState(this, currentTile);
                 switch (currentTile.osState[this.getID()]) {
@@ -923,7 +925,10 @@ define([
                 default:
                     break;
                 }
+        }
+
                 // Remove all feature outside view of tiles
+        _removeFeaturesExternalFov(this, localTiles);
         // }
     };
 
