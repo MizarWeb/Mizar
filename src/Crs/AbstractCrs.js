@@ -24,7 +24,7 @@ define([
     "./AstroCoordTransform",
     "../Gui/dialog/ErrorDialog",
     "../Renderer/glMatrix"
-], function(Numeric, Geoide, Constants, ErrorDialog, AstroCoordTransform) {
+], function(Numeric, Geoide, Constants, AstroCoordTransform, ErrorDialog) {
     /**
      * Abstract coordinate reference system configuration
      * @typedef {AbstractCrs.geoide_configuration} AbstractCrs.configuration
