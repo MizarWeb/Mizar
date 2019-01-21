@@ -19,21 +19,12 @@ define([
      * @constructor
      */
     var OpenSearchServer = function(options) {
-        if (options.baseUrl && options.baseUrl.indexOf("describe.xml")!== -1) {
+        // when url contains .xml, it means that the XML descriptor is there
+        if (options.baseUrl && options.baseUrl.indexOf(".xml")!== -1) {
             options.getCapabilities = options.baseUrl;
-            options.baseUrl = undefined;
         }
 
-        if(options.getCapabilities && options.getCapabilities.indexOf("describe.xml") === -1) {
-            options.baseUrl = options.getCapabilities;
-            options.getCapabilities = undefined;
-        }
-
-        if (options.getCapabilities) {
-            options.baseUrl = options.getCapabilities.replace("/describe.xml","");
-        } else if (options.baseUrl) {
-            options.getCapabilities = OpenSearchServer.getCapabilitiesFromBaseURl(options.baseUrl);
-        } else {
+        if (!options.getCapabilities) {
             throw new ReferenceError(
                 "No URL to access to the server is defined",
                 "OpenSearchServer.js"
@@ -117,23 +108,6 @@ define([
             }
         );
     };    
-
-    /**
-     * Returns the capabilities
-     * @param {string} baseUrl GetCapabilities URL
-     * @function getCapabilitiesFromBaseURL
-     * @memberof OpenSearchServer#
-     * @returns {string} describeCoverage URL
-     */
-    OpenSearchServer.getCapabilitiesFromBaseURl = function(baseUrl) {
-        var getCapabilitiesUrl = baseUrl;
-        var idxSlash = getCapabilitiesUrl.lastIndexOf("/");
-        if (idxSlash != getCapabilitiesUrl.length-1) {
-            getCapabilitiesUrl = getCapabilitiesUrl + "/";
-        }
-        getCapabilitiesUrl = getCapabilitiesUrl + "describe.xml";
-        return getCapabilitiesUrl;
-    };
 
     return OpenSearchServer;
 });
