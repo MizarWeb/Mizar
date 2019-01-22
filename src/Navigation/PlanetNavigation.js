@@ -529,9 +529,6 @@ define([
             this.inverseViewMatrix,
             this.renderContext.getViewMatrix()
         );
-        if (!mat4.equal(this.renderContext.getViewMatrix(), oldMatrix)) {
-            this.ctx.publish(Constants.EVENT_MSG.NAVIGATION_MODIFIED);
-        }
         this.renderContext.requestFrame();
     };
 
@@ -918,6 +915,7 @@ define([
     };
 
     PlanetNavigation.prototype.startInteraction = function(x, y) {
+        this.ctx.publish(Constants.EVENT_MSG.NAVIGATION_MODIFIED);
         this.lastMousePosition = [x, y];
     };
 
@@ -964,6 +962,7 @@ define([
         );
 
         this.ctx.addAnimation(animation);
+        this.ctx.publish(Constants.EVENT_MSG.NAVIGATION_MODIFIED);
         animation.start();
     };
 
