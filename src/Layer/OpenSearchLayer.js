@@ -1185,7 +1185,7 @@ define([
             nbFeatures: nbFeaturesTotalPerTile
         };
 
-        if (nbFeaturesTotalPerTile > 100 && level <= 6) {
+        if (nbFeaturesTotalPerTile > 100 && level <= 5) {
             ableToContinue = false;
 
             this.heatmapTiles[level][key].shouldBeDrawn = true;
