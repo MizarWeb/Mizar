@@ -160,11 +160,17 @@ define([
         this.featuresAddedToNotLoadedTiles = {};
 
         this.colormap = [
-            { pct: 0.0, color: [0.0, 0.0, 1.0] },
-            { pct: 0.1, color: [0.0, 1.0, 0.0] },
-            { pct: 0.2, color: [1.0, 0.0, 0.0] },
+            { pct: 0.00, color: [0.0, 0.0, 0.3] },
+            { pct: 0.01, color: [0.0, 0.0, 1.0] },
+            { pct: 0.05, color: [0.0, 1.0, 1.0] },
+            { pct: 0.10, color: [0.0, 1.0, 0.0] },
+            { pct: 0.25, color: [1.0, 1.0, 0.0] },
+            { pct: 0.50, color: [1.0, 0.0, 0.0] },
+            { pct: 1.00, color: [0.3, 0.0, 0.0] },
         ];
 
+        this.heatmapTiles = {};
+        this.requestsPerLevel = {};
     };
 
     /**************************************************************************************************************/
@@ -208,22 +214,6 @@ define([
         }
     }
 
-    function _isFeatureAttachedToMoreThanOne(featureId, key, tilesLoaded) {
-        var isUsed = false;
-        var len = tilesLoaded.length;
-        while(len--) {
-            var aTile = tilesLoaded[len].tile;
-            if (key !== aTile.key) {
-                var index = (typeof aTile.associatedFeaturesId !== "undefined") ? aTile.associatedFeaturesId.indexOf(featureId) : -1;
-                if (index >= 0) {
-                    isUsed = true;
-                    break;
-                }
-            }
-        }
-        return isUsed;
-    }
-
     function _isAlreadyAdded(featureId, features) {
         var isFound = _.find(features, function (feature) { return feature.id === featureId; });
         return isFound !== undefined;
@@ -235,18 +225,6 @@ define([
         }
         var num = tile.associatedFeaturesId.indexOf(featureId);
         return num >= 0;
-    }
-
-    function _getFeatureIndexById(features, featureId) {
-        var index = -1;
-        var len = features.length;
-        while(len--) {
-            if (features[len].id === featureId) {
-                index = len;
-                break;
-            }
-        }
-        return index;
     }
 
     function _getColorForPercentage(pct, colormap) {
@@ -312,66 +290,87 @@ define([
         return result;
     }
 
-    function _removeFeature(layer, featureId) {
-        var featureIndex = _getFeatureIndexById(layer.features, featureId);
+    function _removeFeature(layer, featureId, tile) {
+        const featureData = layer.featuresSet[featureId];
+        if (!featureData) return;
 
-        if (featureIndex === -1) return;
+        const index = featureData.tiles.findIndex(function(element) {
+            return element.key === tile.key;
+        });
 
-        var feature = layer.features[featureIndex];
+        if (index === -1) {
+            ErrorDialog.open(Constants.LEVEL.DEBUG, "OpenSearchLayer.js:298", "Tile not found when removing feature");
+        } else {
+            const feature = layer.features[featureData.index];
+            layer.getGlobe().getRendererManager().removeGeometryFromTile(feature.geometry, tile);
 
-        if (layer.featuresSet[featureId]) {
-            for (var tile of layer.featuresSet[featureId].tiles) {
-                layer.getGlobe().getRendererManager().removeGeometryFromTile(feature.geometry, tile);
-            }
-
-            // Remove from featureSets
-            delete layer.featuresSet[featureId];
+            featureData.tiles.splice(index, 1);
         }
 
-        // Remove from list of features
-        layer.features[featureIndex] = layer.features[layer.features.length-1];
-        layer.features.pop();
+        if (featureData.tiles.length === 0) {
+            // No more tiles attached to this feature, remove it from the dataset
+            delete layer.featuresSet[featureId];
+
+            // And from the features list
+            const lastFeature = layer.features.pop();
+            if (featureData.index < layer.features.length) {
+                // The poped feature is not the one we are removing, swap them
+                layer.features[featureData.index] = lastFeature;
+
+                // And update the index
+                layer.featuresSet[lastFeature.id].index = featureData.index;
+            }
+        }
     }
 
     function _removeFeatures(layer) {
-        // clean renderers
-        var len = layer.features.length;
-        while (len--) {
-            _removeFeature(layer, layer.features[len].id);
+        for (const id in layer.featuresSet) {
+            for (const tile in layer.featuresSet[id].tiles) {
+                _removeFeature(layer, id, tile);
+            }
         }
+
+        layer.featuresSet = {};
 
         for (var i = 0; i < layer.tilesLoaded.length; i++) {
             layer.tilesLoaded[i].tile.osState[layer.getID()] = OpenSearchLayer.TileState.NOT_LOADED;
         }
+        layer.tilesLoaded = [];
 
         layer.getGlobe().getRenderContext().requestFrame();
     }
 
     function _removeTile(layer, tile) {
-        if (typeof tile.associatedFeaturesId === "undefined") {
+        // If there is no features for this tile, there will be no associatedFeaturesId
+        if (tile.associatedFeaturesId) {
+            // Remove each feature associated with the tile
+            for (const id in tile.associatedFeaturesId) {
+                const featureId = tile.associatedFeaturesId[id];
+                _removeFeature(layer, featureId, tile);
+            }
             tile.associatedFeaturesId = [];
         }
-        // For each feature of the tile, remove the features
-        var lenAssociatedFeaturesId = tile.associatedFeaturesId.length;
-        while(lenAssociatedFeaturesId--) {
-            var featureId = tile.associatedFeaturesId[lenAssociatedFeaturesId];
-            if( !_isFeatureAttachedToMoreThanOne(featureId, tile.key, layer.tilesLoaded) ) {
-                _removeFeature(layer, featureId);
-            }
-        }
-        tile.associatedFeaturesId = [];
 
         // Remove the tile
-        var len = layer.tilesLoaded.length;
-        var indice;
-        while (len--) {
-            if(layer.tilesLoaded[len].tile.key === tile.key) {
-                indice = len;
-                break;
+        const index = layer.tilesLoaded.findIndex(function(element) {
+            return element.tile.key === tile.key;
+        });
+
+        if (index !== -1) {
+            layer.tilesLoaded.splice(index, 1);
+        }
+
+        tile.osState[layer.getID()] = OpenSearchLayer.TileState.NOT_LOADED;
+
+        delete layer.heatmapTiles[tile.level][tile.key];
+        const requestIndex = layer.requestsPerLevel[tile.level].indexOf(tile.key);
+        if (requestIndex !== -1) {
+            layer.requestsPerLevel[tile.level].splice(requestIndex, 1);
+
+            if (layer.requestsPerLevel[tile.level].length === 0) {
+                layer.buildHeatmap();
             }
         }
-        layer.tilesLoaded[indice] = layer.tilesLoaded[layer.tilesLoaded.length-1];
-        layer.tilesLoaded.pop();
     }
 
     function _removeFeaturesOutside(layer, tiles) {
@@ -459,7 +458,6 @@ define([
         layer.cache.reset();
         layer.previousViewKey = null;
     }
-
 
     function _prepareParameters(layer, tile) {
         var param; // param managed
@@ -563,15 +561,8 @@ define([
     }
 
     function _isTileLoaded(tilesLoaded, key) {
-        var isLoaded = false;
-        var len = tilesLoaded.length;
-        while(len--) {
-            if (tilesLoaded[len].key === key) {
-                isLoaded = true;
-                break;
-            }
-        }
-        return isLoaded;
+        const index = tilesLoaded.findIndex(function(element) { return element.key === key; });
+        return index !== -1;
     }
 
     function _removeFeaturesExternalFov(layer, tiles) {
@@ -631,6 +622,13 @@ define([
                 // cache
                 tile.osState[layer.getID()] =  OpenSearchLayer.TileState.LOADING;
                 layer.pool.addQuery(url, tile, layer);
+                if (!layer.requestsPerLevel[tile.level]) {
+                    layer.requestsPerLevel[tile.level] = [];
+                }
+                if (count === 1) {
+                    // Only keep infos about a heatmap request if necessary
+                    layer.requestsPerLevel[tile.level].push(tile.key);
+                }
             } else {
                 // If no state defined...
                 if (cachedTile.osState == null) {
@@ -909,6 +907,13 @@ define([
                     page: 1
                 }
             );
+
+            for (const key in this.heatmapTiles[this.previousLevel]) {
+                const heatmapData = this.heatmapTiles[this.previousLevel][key];
+                if (heatmapData.shouldBeDrawn && heatmapData.feature) {
+                    _removeFeature(this, heatmapData.feature.id, heatmapData.tile);
+                }
+            }
         }
 
         this.nbFeaturesTotal = 0;
@@ -1158,64 +1163,43 @@ define([
      * @fires OpenSearchLayer#updateStatsAttribute
      */
     OpenSearchLayer.prototype.computeFeaturesResponse = function(features, tile, nbFeaturesTotalPerTile) {
-        if (nbFeaturesTotalPerTile > 1000 && tile.level <= 6) {
-            // TODO: Draw heatmap
-            tile.nbFeaturesTotal = nbFeaturesTotalPerTile;
+        var ableToContinue = true;
+        var buildHeatmap = false;
 
-            if (!tile.parent) {
-                tile.pct = 1.0;
-            } else {
-                var currentParent = tile.parent;
-                while (currentParent.parent && !currentParent.pct) {
-                    currentParent = currentParent.parent;
-                }
+        const { level, key } = tile;
 
-                // FIXME(Charly):   How should we consider the case where we did not load the first levels at the begining ?
-                //                  Right now, we use the current tile as the reference level, maybe we should trigger a request for
-                //                  the corresponding level 0 and postpone this response ?
-                //                  Ideally, the server could just give the level 0 total for this tile, and the tile's feature total.
-                if (!currentParent.pct) {
-                    tile.pct = 1.0;
-                } else {
-                    tile.pct = currentParent.pct * (tile.nbFeaturesTotal / currentParent.nbFeaturesTotal);
-                }
+        const index = this.requestsPerLevel[level].indexOf(key);
+        if (index !== -1) {
+            this.requestsPerLevel[level].splice(index, 1);
+            if (level === this.currentLevel && this.requestsPerLevel[level].length === 0) {
+                buildHeatmap = true;
             }
-
-            const center = [
-                (tile.geoBound.east + tile.geoBound.west) / 2.0,
-                (tile.geoBound.north + tile.geoBound.south) / 2.0
-            ];
-
-            const color = _getColorForPercentage(tile.pct, this.colormap);
-
-            const feature = {
-                type: "Feature",
-                id: `${this.ID}_${tile.key}`,
-                geometry: {
-                    type: "Point",
-                    coordinates: center,
-                    crs: {
-                        type: "name",
-                        properties: {
-                            name: tile.config.srs
-                        }
-                    }
-                },
-                properties: {
-                    style: {
-                        label: false,
-                        iconUrl: null,
-                        fillColor: color
-                    }
-                },
-            };
-            _addFeature(this, feature, tile);
-
-            return;
         }
 
-        if (features.length === 1) {
+        if (!this.heatmapTiles[level]) {
+            this.heatmapTiles[level] = {};
+        }
+
+        this.heatmapTiles[level][key] = {
+            tile: tile,
+            nbFeatures: nbFeaturesTotalPerTile
+        };
+
+        if (nbFeaturesTotalPerTile > 100 && level <= 6) {
+            ableToContinue = false;
+
+            this.heatmapTiles[level][key].shouldBeDrawn = true;
+        }
+        else if (features.length === 1) {
+            ableToContinue = false;
             _requestTile(this, tile);
+        }
+
+        if (buildHeatmap) {
+            this.buildHeatmap();
+        }
+
+        if (!ableToContinue) {
             return;
         }
 
@@ -1255,9 +1239,9 @@ define([
 
         this.getGlobe().refresh();
 
-        if (this.tilesLoaded.indexOf(tile.getKey()) === -1) {
+        if (!_isTileLoaded(this.tilesLoaded, tile.key)) {
             this.tilesLoaded.push({
-                key: tile.getKey(),
+                key: key,
                 tile: tile
             });
         }
@@ -1270,6 +1254,75 @@ define([
             });
     };
 
+    /**************************************************************************************************************/
+    /**
+     * Build a heatmap showing the amount of OS data per tile currently displayed on screen
+     * @function buildHeatmap
+     * @memberof OpenSearchLayer#
+     */
+    OpenSearchLayer.prototype.buildHeatmap = function() {
+        var total = 0;
+
+        const heatmapData = this.heatmapTiles[this.currentLevel];
+
+        for (const key in heatmapData) {
+            total += heatmapData[key].nbFeatures;
+        }
+
+        for (const key in heatmapData) {
+            const entry = heatmapData[key];
+            if (entry.shouldBeDrawn) {
+                const pct = entry.nbFeatures / total;
+                const { tile } = entry;
+
+                const center = [
+                    (tile.geoBound.east + tile.geoBound.west) / 2.0,
+                    (tile.geoBound.north + tile.geoBound.south) / 2.0
+                ];
+
+                const color = _getColorForPercentage(pct, this.colormap);
+
+                const feature = {
+                    type: "Feature",
+                    id: `${this.ID}_${key}`,
+                    geometry: {
+                        type: "Point",
+                        coordinates: center,
+                        crs: {
+                            type: "name",
+                            properties: {
+                                name: tile.config.srs
+                            }
+                        }
+                    },
+                    properties: {
+                        style: {
+                            label: `${(pct * 100).toFixed(2).toString()}%`,
+                            fillColor: color,
+                            opacity: 1,
+                            iconUrl: null,
+                            pointMaxSize: 500,
+                        }
+                    },
+                };
+
+                entry.feature = feature;
+
+                if (entry.feature) {
+                    _removeFeature(this, entry.feature.id, tile);
+                }
+
+                _addFeature(this, feature, tile);
+
+                if (this.tilesLoaded.findIndex(function(element) { return element.key === tile.key; }) === -1) {
+                    this.tilesLoaded.push({
+                        key: tile.key,
+                        tile: tile
+                    });
+                }
+            }
+        }
+    };
 
     /*************************************************************************************************************/
 
