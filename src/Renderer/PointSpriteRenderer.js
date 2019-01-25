@@ -68,35 +68,85 @@ define([
         // For stats
         this.numberOfRenderPoints = 0;
 
-        var vertexShader = "attribute vec3 vertex; \n";
-        vertexShader += "uniform mat4 viewProjectionMatrix; \n";
-        vertexShader += "uniform float pointSize; \n";
-        vertexShader += "void main(void)  \n";
-        vertexShader += "{ \n";
-        vertexShader +=
-            "	gl_Position = viewProjectionMatrix * vec4(vertex,1.0); \n";
-        vertexShader += "	gl_PointSize = pointSize; \n";
-        vertexShader += "} \n";
+        var vertexShader = `
+        attribute vec3 vertex;
+        uniform mat4 viewProjectionMatrix;
+        uniform float pointSize;
+        void main(void)
+        {
+            gl_Position = viewProjectionMatrix * vec4(vertex,1.0);
+            gl_PointSize = pointSize;
+        }`;
 
-        var fragmentShader = "precision lowp float; \n";
-        fragmentShader += "uniform sampler2D texture; \n";
-        fragmentShader += "uniform float alpha; \n";
-        fragmentShader += "uniform vec3 color; \n";
-        fragmentShader += "\n";
-        fragmentShader += "void main(void) \n";
-        fragmentShader += "{ \n";
-        fragmentShader +=
-            "	vec4 textureColor = texture2D(texture, gl_PointCoord); \n";
-        fragmentShader +=
-            "	gl_FragColor = vec4(textureColor.rgb * color, textureColor.a * alpha); \n";
-        fragmentShader += "	if (gl_FragColor.a <= 0.0) discard; \n";
-        fragmentShader += "	//gl_FragColor = vec4(1.0); \n";
-        fragmentShader += "} \n";
+        var fragmentShader = `
+        precision lowp float;
+        uniform sampler2D texture;
+        uniform float alpha;
+        uniform vec3 color;
+
+        void main(void)
+        {
+            vec4 textureColor = texture2D(texture, gl_PointCoord);
+            gl_FragColor = vec4(textureColor.rgb * color, textureColor.a * alpha);
+            if (gl_FragColor.a <= 0.0) discard;
+            //gl_FragColor = vec4(1.0);
+        }`;
+
+        var meterSizeVertexShader = `
+        attribute vec3 vertex;
+        uniform mat4 viewMatrix;
+        uniform mat4 viewProjectionMatrix;
+        uniform vec3 billboardPos;
+        uniform vec2 billboardSize;
+
+        varying vec2 texcoords;
+
+        void main() {
+            vec3 camRight = vec3(viewMatrix[0][0], viewMatrix[1][0], viewMatrix[2][0]);
+            vec3 camUp = vec3(viewMatrix[0][1], viewMatrix[1][1], viewMatrix[2][1]);
+            vec3 x = camRight * vertex.x * billboardSize.x;
+            vec3 y = camUp * vertex.y * billboardSize.y;
+            vec3 pos = billboardPos + x + y;
+
+            gl_Position = viewProjectionMatrix * vec4(pos, 1.0);
+            texcoords = vec2(vertex.x + 0.5, 1.0 - vertex.y);
+        }`;
+
+        var meterSizeFragmentShader = `
+        precision lowp float;
+
+        uniform sampler2D texture;
+        uniform float alpha;
+        uniform vec3 color;
+
+        varying vec2 texcoords;
+
+        void main(void)
+        {
+            vec4 textureColor = texture2D(texture, texcoords);
+            gl_FragColor = vec4(textureColor.rgb * color, textureColor.a * alpha);
+            if (gl_FragColor.a <= 0.0) discard;
+        }`;
 
         this.program = new Program(globe.renderContext);
         this.program.createFromSource(vertexShader, fragmentShader);
 
+        this.meterSizeProgram = new Program(globe.renderContext);
+        this.meterSizeProgram.createFromSource(meterSizeVertexShader, meterSizeFragmentShader);
+
         this.defaultTexture = null;
+
+        const vertices = new Float32Array([
+            -0.5, 0.0, 0.0,
+            0.5, 0.0, 0.0,
+            0.5, 1.0, 0.0,
+            -0.5, 1.0, 0.0,
+        ]);
+
+        var gl = globe.tileManager.renderContext.gl;
+        this.rectVertexBuffer = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, this.rectVertexBuffer);
+        gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
     };
 
     Utils.inherits(VectorRenderer, PointSpriteRenderer);
@@ -133,24 +183,33 @@ define([
         // TODO: Find a better way to access to coordinate system
         var globe = this.bucket.renderer.globe;
         var crs = globe.getCoordinateSystem();
-        var pt = crs.get3DFromWorldInCrs(
-            geometry.coordinates,
-            geometry.crs.properties.name
-        );
-        var realPlanetRadius = crs.getGeoide().getRealPlanetRadius();
-        var planetRadius = crs.getGeoide().getRadius();
-        var scale = this.bucket.renderer.globe.isSky()
-            ? 0.95
-            : 1.0 +
-              (crs.getElevation(globe, geometry) + 200) / realPlanetRadius;
-        //TODO Instead of 0.95, it should be 0.9995. But with this value, the point is dislayed
-        //TODO after order > 5. With order<=5, the image need more control points. Without these
-        //TODO control point, the image does not fit perfectly the sphere and the point is behind the image
-        this.vertices.push(scale * pt[0], scale * pt[1], scale * pt[2]);
+
+        if (this.bucket.style.useMeterSize) {
+            const elevation = crs.getElevation(globe, geometry) + 200;
+            const pt = crs.get3DFromWorldInCrs(
+                [geometry.coordinates[0], geometry.coordinates[1], elevation],
+                geometry.crs.properties.name
+            );
+            this.vertices.push(pt[0], pt[1], pt[2]);
+        } else {
+            var pt = crs.get3DFromWorldInCrs(
+                geometry.coordinates,
+                geometry.crs.properties.name
+            );
+            var realPlanetRadius = crs.getGeoide().getRealPlanetRadius();
+            var scale = this.bucket.renderer.globe.isSky()
+                ? 0.95
+                : 1.0 +
+                (crs.getElevation(globe, geometry) + 200) / realPlanetRadius;
+            //TODO Instead of 0.95, it should be 0.9995. But with this value, the point is dislayed
+            //TODO after order > 5. With order<=5, the image need more control points. Without these
+            //TODO control point, the image does not fit perfectly the sphere and the point is behind the image
+            this.vertices.push(scale * pt[0], scale * pt[1], scale * pt[2]);
+            this.vertexBufferDirty = true;
+        }
         if (stockGeometry !== false) {
             this.geometries.push(geometry);
         }
-        this.vertexBufferDirty = true;
         return true;
     };
 
@@ -390,21 +449,14 @@ define([
         gl.blendEquation(gl.FUNC_ADD);
         gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
 
-        // Setup program
-        this.program.apply();
-
         // The shader only needs the viewProjection matrix, use GlobWeb.modelViewMatrix as a temporary storage
         mat4.multiply(
             renderContext.projectionMatrix,
             renderContext.viewMatrix,
             renderContext.modelViewMatrix
         );
-        gl.uniformMatrix4fv(
-            this.program.uniforms.viewProjectionMatrix,
-            false,
-            renderContext.modelViewMatrix
-        );
-        gl.uniform1i(this.program.uniforms.texture, 0);
+
+        var program;
 
         // Render each renderables
         var currentBucket = null;
@@ -414,21 +466,41 @@ define([
             var bucket = renderable.bucket;
 
             if (currentBucket !== bucket) {
+                // Setup program
+                program = bucket.style.useMeterSize ? this.meterSizeProgram : this.program;
+                program.apply();
+
+                gl.uniformMatrix4fv(
+                    program.uniforms.viewProjectionMatrix,
+                    false,
+                    renderContext.modelViewMatrix
+                );
+                gl.uniform1i(program.uniforms.texture, 0);
+
                 gl.uniform1f(
-                    this.program.uniforms.alpha,
+                    program.uniforms.alpha,
                     bucket.layer.getOpacity()
                 );
                 var color = bucket.style.getFillColor();
                 gl.uniform3f(
-                    this.program.uniforms.color,
+                    program.uniforms.color,
                     color[0],
                     color[1],
                     color[2]
                 );
-                gl.uniform1f(
-                    this.program.uniforms.pointSize,
-                    bucket.textureWidth
-                );
+
+                if (bucket.style.useMeterSize) {
+                    const radius = this.globe.getCoordinateSystem().getGeoide().getRealPlanetRadius();
+                    const w = bucket.style.meterSize[0] / radius;
+                    const h = bucket.style.meterSize[1] / radius;
+                    gl.uniform2f(program.uniforms.billboardSize, w, h);
+                    gl.uniformMatrix4fv(program.uniforms.viewMatrix, false, renderContext.viewMatrix);
+                } else {
+                    gl.uniform1f(
+                        program.uniforms.pointSize,
+                        bucket.textureWidth
+                    );
+                }
 
                 // Bind point texture
                 gl.activeTexture(gl.TEXTURE0);
@@ -437,30 +509,44 @@ define([
                 currentBucket = bucket;
             }
 
-            if (!renderable.vertexBuffer) {
-                renderable.vertexBuffer = gl.createBuffer();
-            }
+            if (bucket.style.useMeterSize) {
+                gl.bindBuffer(gl.ARRAY_BUFFER, this.rectVertexBuffer);
+                gl.vertexAttribPointer(program.attributes.vertex, 3, gl.FLOAT, false, 0, 0);
 
-            gl.bindBuffer(gl.ARRAY_BUFFER, renderable.vertexBuffer);
-            gl.vertexAttribPointer(
-                this.program.attributes.vertex,
-                3,
-                gl.FLOAT,
-                false,
-                0,
-                0
-            );
+                for (var i = 0; i < renderable.vertices.length; i += 3) {
+                    const x = renderable.vertices[i];
+                    const y = renderable.vertices[i + 1];
+                    const z = renderable.vertices[i + 2];
 
-            if (renderable.vertexBufferDirty) {
-                gl.bufferData(
-                    gl.ARRAY_BUFFER,
-                    new Float32Array(renderable.vertices),
-                    gl.STATIC_DRAW
+                    gl.uniform3f(program.uniforms.billboardPos, x, y, z);
+                    gl.drawArrays(gl.TRIANGLE_FAN, 0, 4);
+                }
+            } else {
+                if (!renderable.vertexBuffer) {
+                    renderable.vertexBuffer = gl.createBuffer();
+                }
+
+                gl.bindBuffer(gl.ARRAY_BUFFER, renderable.vertexBuffer);
+                gl.vertexAttribPointer(
+                    program.attributes.vertex,
+                    3,
+                    gl.FLOAT,
+                    false,
+                    0,
+                    0
                 );
-                renderable.vertexBufferDirty = false;
-            }
 
-            gl.drawArrays(gl.POINTS, 0, renderable.vertices.length / 3);
+                if (renderable.vertexBufferDirty) {
+                    gl.bufferData(
+                        gl.ARRAY_BUFFER,
+                        new Float32Array(renderable.vertices),
+                        gl.STATIC_DRAW
+                    );
+                    renderable.vertexBufferDirty = false;
+                }
+
+                gl.drawArrays(gl.POINTS, 0, renderable.vertices.length / 3);
+            }
         }
 
         //gl.enable(gl.DEPTH_TEST);

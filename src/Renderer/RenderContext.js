@@ -133,6 +133,11 @@ define(["jquery","./Frustum", "./glMatrix"], function($, Frustum) {
         this.renderers = [];
         this.cameraUpdateFunction = null;
 
+        this.lastFrameTime = null;
+        this.currentFrameTime = null;
+        this.totalElapsedTime = 0.0;
+        this.deltaTime = 0.0;
+
         // Initialize the window requestAnimationFrame
         if (!window.requestAnimationFrame) {
             window.requestAnimationFrame = (function() {
@@ -226,11 +231,21 @@ define(["jquery","./Frustum", "./glMatrix"], function($, Frustum) {
                 this.stats.start("globalRenderTime");
             }
 
+            // Update frame time infos
+            this.lastFrameTime = this.currentFrameTime;
+            this.currentFrameTime = Date.now();
+            if (!this.lastFrameTime) {
+                this.lastFrameTime = this.currentFrameTime;
+            }
+
+            const dt = this.currentFrameTime - this.lastFrameTime;
+            this.totalElapsedTime += dt;
+            this.deltaTime = dt;
+
             // Update active animations
             if (this.activeAnimations.length > 0) {
-                var time = Date.now();
                 for (i = 0; i < this.activeAnimations.length; i++) {
-                    this.activeAnimations[i].update(time);
+                    this.activeAnimations[i].update(this.currentFrameTime);
                 }
             }
 

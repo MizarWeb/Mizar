@@ -81,7 +81,7 @@ define([
      * @private
      */
     function _setID(feature) {
-        feature.geometry.gid = "GeoJSON_" + this.gid;
+        feature.geometry.gid = this.ID + "_GeoJSON_" + this.gid;
         this.gid++;
         return feature;
     }

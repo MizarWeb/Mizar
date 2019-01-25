@@ -70,9 +70,8 @@ mizar.addLayer({
 // create a WMS on Blue Marble, by default visible with an opacity of 70%
 mizar.addLayer({
     type: Mizar.LAYER.WMS,
-    name: "Blue Marble",
-    baseUrl: "http://demonstrator.telespazio.com/wmspub",
-    layers: "BlueMarble",
+    "name": "Blue Marble",
+    "baseUrl": "http://80.158.6.138/mapserv?map=WMS_BLUEMARBLE"
     visible: true,
     opacity: 70
 });

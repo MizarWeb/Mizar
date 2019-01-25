@@ -214,9 +214,31 @@ define([
      * @private
      */
     function _updateOverlay(renderable, layer) {
-        var bucket = renderable.bucket;
-        bucket.renderer.removeOverlay(bucket.layer);
-        bucket.renderer.addOverlay(layer);
+        var bucket;
+        if (renderable) {
+            bucket = renderable.bucket;
+        } else if (layer) {
+            bucket = layer._bucket;
+        } else {
+            return;
+        }
+
+        if (!bucket) {
+            return;
+        }
+
+        var renderer = bucket.renderer;
+
+        if (!renderer) {
+            return;
+        }
+
+        if (renderer.updateOverlay) {
+            renderer.updateOverlay(bucket.layer);
+        } else {
+            renderer.removeOverlay(bucket.layer);
+            renderer.addOverlay(bucket.layer);
+        }
     }
 
     function _abortTilesForLayer(tiles, layer, callback) {
@@ -416,7 +438,8 @@ define([
      * @param layer the layer where the tiles must be updated
      */
     TileManager.prototype.updateVisibleTiles = function(layer) {
-        this.abortLayerRequests(layer, _updateOverlay);
+        this.abortLayerRequests(layer);
+        _updateOverlay(null, layer);
     };
 
     /**************************************************************************************************************/

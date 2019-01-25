@@ -118,6 +118,8 @@ define([
         this.subdivisionLength = options.subdivisionLength || 10000;
         this.maxSubdivisionCount = options.maxSubdivisionCount || 128;
 
+        this.cachedPickingValue = null;
+
         this.tileManager.addPostRenderer(this.rendererManager);
 
         this.renderContext.renderers.push(this);
@@ -319,7 +321,7 @@ define([
                     layer.getUrl(),
                     "json",
                     "application/json",
-                    null,                
+                    null,
                     function(data) {
                         layer.addFeatureCollection(data);
                         layer.id = globe.nbCreatedLayers;
@@ -478,8 +480,21 @@ define([
                 this.constructor.name,
             "AbstractGlobe.js"
         );
+
+        if (this.isPlanet() && this.cachedPickingValue && this.cachedPickingValue.x === x && this.cachedPickingValue.y === y) {
+            return this.cachedPickingValue.lonLat;
+        }
+
         var ray = Ray.createFromPixel(this.renderContext, x, y);
-        return this.computeIntersection(ray);
+        const lonLat = this.computeIntersection(ray);
+
+        this.cachedPickingValue = {
+            x: x,
+            y: y,
+            lonLat: lonLat,
+        };
+
+        return lonLat;
     };
 
     /**

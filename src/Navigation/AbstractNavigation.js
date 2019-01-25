@@ -121,8 +121,7 @@ define([
             );
             const self = this;
             inertia.onstop = function() {
-                self.donePanning();
-                self.doneRotating();
+                self.doneMoving();
             };
         } else {
             inertia = null;
@@ -515,6 +514,16 @@ define([
     };
 
     /**
+     * Called when stopping inertia.
+     * @function doneMoving
+     * @memberof AbstractNavigation#
+     */
+    AbstractNavigation.prototype.doneMoving = function() {
+        this.donePanning();
+        this.doneRotating();
+    };
+
+    /**
      * Called by mouse and keyboard handler when pan interactions are finished.
      * This is useful to, e.g.,  fetch the new focus point of the navigator.
      * @function donePanning
@@ -531,6 +540,10 @@ define([
      * @memberof AbstractNavigation#
      */
     AbstractNavigation.prototype.doneRotating = function() {
+        // Does nothing by default
+    };
+
+    AbstractNavigation.prototype.startInteraction = function(x, y) {
         // Does nothing by default
     };
 
