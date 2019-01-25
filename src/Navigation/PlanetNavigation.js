@@ -529,9 +529,6 @@ define([
             this.inverseViewMatrix,
             this.renderContext.getViewMatrix()
         );
-        if (!mat4.equal(this.renderContext.getViewMatrix(), oldMatrix)) {
-            this.ctx.publish(Constants.EVENT_MSG.NAVIGATION_MODIFIED);
-        }
         this.renderContext.requestFrame();
     };
 
@@ -903,6 +900,11 @@ define([
         this.tilt = Math.min(Math.max(this.tilt, MIN_TILT), MAX_TILT);
     };
 
+    PlanetNavigation.prototype.doneMoving = function() {
+        this.updateGeoCenter();
+        this.lastMousePosition = null;
+    };
+
     PlanetNavigation.prototype.donePanning = function() {
         this.updateGeoCenter();
         this.lastMousePosition = null;
@@ -913,6 +915,7 @@ define([
     };
 
     PlanetNavigation.prototype.startInteraction = function(x, y) {
+        this.ctx.publish(Constants.EVENT_MSG.NAVIGATION_MODIFIED);
         this.lastMousePosition = [x, y];
     };
 
@@ -959,6 +962,7 @@ define([
         );
 
         this.ctx.addAnimation(animation);
+        this.ctx.publish(Constants.EVENT_MSG.NAVIGATION_MODIFIED);
         animation.start();
     };
 
