@@ -465,11 +465,14 @@ define([
     function computePickSelection(pickPoint, options) {
         var i, j, feature;
         var newSelection = [];
-        for (i = 0; i < this.getPickableLayers().length; i++) {
-            var selectedTile = pickPoint
-                ? globe.tileManager.getVisibleTile(pickPoint[0], pickPoint[1])
-                : undefined;
 
+        var selectedTile = pickPoint
+            ? globe.tileManager.getVisibleTile(pickPoint[0], pickPoint[1])
+            : undefined;
+
+        const tileData = selectedTile ? selectedTile.extension.renderer : null;
+
+        for (i = 0; i < this.getPickableLayers().length; i++) {
             var pickableLayer = this.getPickableLayers()[i];
             if (pickableLayer.isVisible() && pickableLayer.globe === globe) {
                 if (pickableLayer instanceof OpenSearchLayer) {
@@ -479,13 +482,16 @@ define([
 
                     // Extension using layer
                     // Search for features in each tile
-                    var tile = selectedTile;
-
-                    if (tile === null || typeof tile === "undefined") {
+                    if (!selectedTile) {
                         ErrorDialog.open(Constants.LEVEL.DEBUG, "PickingManagerCore.js", "no tile found");
                         continue;
                     }
-                    var tileData = tile.extension.renderer;
+
+                    if (!tileData) {
+                        ErrorDialog.open(Constants.LEVEL.DEBUG, "PickingManagerCore.js", "no tile data");
+                        continue;
+                    }
+
                     //[pickableLayer.extId];
                     /*if (!tileData || tileData.state !== OpenSearchLayer.TileState.LOADED) {
                             while (tile.parent && (!tileData || tileData.state !== OpenSearchLayer.TileState.LOADED)) {
@@ -493,24 +499,23 @@ define([
                                 tileData = tile.extension[pickableLayer.extId];
                             }
                         }*/
-                    if (tileData) {
-                        //for (j = 0; j < tileData.featureIds.length; j++) {
-                        for (j = 0; j < pickableLayer.features.length; j++) {
-                            //feature = pickableLayer.features[pickableLayer.featuresSet[tileData.featureIds[j]].index];
-                            feature = pickableLayer.features[j];
-                            if (
-                                this.featureIsPicked(
-                                    feature,
-                                    pickPoint,
-                                    pickableLayer.pickingNoDEM,
-                                    options
-                                )
-                            ) {
-                                newSelection.push({
-                                    feature: feature,
-                                    layer: pickableLayer
-                                });
-                            }
+
+                    //for (j = 0; j < tileData.featureIds.length; j++) {
+                    for (j = 0; j < pickableLayer.features.length; j++) {
+                        //feature = pickableLayer.features[pickableLayer.featuresSet[tileData.featureIds[j]].index];
+                        feature = pickableLayer.features[j];
+                        if (
+                            this.featureIsPicked(
+                                feature,
+                                pickPoint,
+                                pickableLayer.pickingNoDEM,
+                                options
+                            )
+                        ) {
+                            newSelection.push({
+                                feature: feature,
+                                layer: pickableLayer
+                            });
                         }
                     }
                 } else {
@@ -534,11 +539,11 @@ define([
                     }
                 }
             }
-
-            // Add selected tile to selection to be able to make the requests by tile
-            // (actually used for asteroids search)
-            newSelection.selectedTile = selectedTile;
         }
+
+        // Add selected tile to selection to be able to make the requests by tile
+        // (actually used for asteroids search)
+        newSelection.selectedTile = selectedTile;
 
         return newSelection;
     }
