@@ -36,6 +36,7 @@ define(["../../Utils/Constants","../../Gui/dialog/ErrorDialog","../../Utils/Prox
         // Pooling requests
         this.freeRequests = [];
         this.poolingRequests = [];
+        this.awaitingRequests = [];
 
         this.layers = [];
 
@@ -123,7 +124,7 @@ define(["../../Utils/Constants","../../Gui/dialog/ErrorDialog","../../Utils/Prox
         }
 
         // First check if query is style wanted
-        if (this.isQueryStillWanted(key, layer.getID())) {
+        if (this.isQueryStillWanted(key, layer.getID(), url)) {
             // Query still in pool or running, so do not add it again
             return;
         }
@@ -137,26 +138,33 @@ define(["../../Utils/Constants","../../Gui/dialog/ErrorDialog","../../Utils/Prox
         // Associate the key
         xhr.key = key;
         xhr.layer = layer;
+        xhr.url = url;
 
-        xhr.onreadystatechange = function(e) {
-            var i, feature;
-            var response;
-            var alreadyAdded;
-            if (xhr.readyState === 4) {
-                if (xhr.status === 200 && xhr.response !== null) {
-                    response = JSON.parse(xhr.response);
-                    var nbFeaturesTotalPerTile = response.properties.totalResults;
-                    //TODO cache : degrade resolution
-                    //xhr.layer.cache.storeInCache(url, response.features, nbFeaturesTotalPerTile);
-                    xhr.layer.computeFeaturesResponse(response.features, tile, nbFeaturesTotalPerTile);                  
-                } else if (xhr.status >= 400) {
-                    //tileData.complete = true;
-                    ErrorDialog.open(Constants.LEVEL.DEBUG, "OpenSearchRequestPool", xhr.responseText);
-                    return;
-                }
-                self.manageFinishedRequest(xhr);
-            }
+        xhr.onabort = function() {
+            debugger;
+            console.log(`xhr with key ${xhr.key} aborted`);
         };
+
+        xhr.onerror = function() {
+            debugger;
+            console.log(`xhr with key ${xhr.key} error`);
+        };
+
+        xhr.onload = function() {
+            if (xhr.status === 200 && xhr.response !== null) {
+                const response = JSON.parse(xhr.response);
+                var nbFeaturesTotalPerTile = response.properties.totalResults;
+                //TODO cache : degrade resolution
+                //xhr.layer.cache.storeInCache(url, response.features, nbFeaturesTotalPerTile);
+                xhr.layer.computeFeaturesResponse(response.features, tile, nbFeaturesTotalPerTile);
+            } else if (xhr.status >= 400) {
+                //tileData.complete = true;
+                ErrorDialog.open(Constants.LEVEL.DEBUG, "OpenSearchRequestPool", xhr.responseText);
+                return;
+            }
+            self.manageFinishedRequest(xhr);
+        };
+
         xhr.open("GET", Proxy.proxify(url));
         xhr.setRequestHeader("Accept", "application/json");
 
@@ -169,7 +177,7 @@ define(["../../Utils/Constants","../../Gui/dialog/ErrorDialog","../../Utils/Prox
 
     /**
      * Check for each layer if there is remaining load needed
-o     * Check if there is any remaining query in the pool 
+     * Check if there is any remaining query in the pool
      * @function checkPool
      * @memberof OpenSearchRequestPool#
      */
@@ -291,14 +299,15 @@ o     * Check if there is any remaining query in the pool
      * @param {string} key Key of the query
      * @return {Boolean} true if query is still in pool
      */
-    OpenSearchRequestPool.prototype.isQueryStillWanted = function(key,layerID) {
+    OpenSearchRequestPool.prototype.isQueryStillWanted = function(key, layerID, url) {
         ErrorDialog.open(Constants.LEVEL.DEBUG, "OpenSearchRequestPool", "[isQueryStillWanted]");
         for (var i = 0; i < this.runningRequests.length; i++) {
             // Recheck if runningRequests is modified outside
             if (
                 typeof this.runningRequests[i] !== "undefined" &&
                 this.runningRequests[i].key === key &&
-                this.runningRequests[i].layer.getID() === layerID
+                this.runningRequests[i].layer.getID() === layerID &&
+                this.runningRequests[i].url === url
             ) {
                 return true;
             }
@@ -307,7 +316,8 @@ o     * Check if there is any remaining query in the pool
             // Recheck if poolingRequests is modified outside
             if (
                 typeof this.poolingRequests[i] !== "undefined" &&
-                this.poolingRequests[i].key === key
+                this.poolingRequests[i].key === key &&
+                this.poolingRequests[i].url === url
             ) {
                 return true;
             }
@@ -343,7 +353,7 @@ o     * Check if there is any remaining query in the pool
         while (xhr !== null && typeof xhr !== "undefined") {
             xhr.abort();
             this.freeRequests.push(xhr);
-            xhr = this.runningRequests.pop();            
+            xhr = this.runningRequests.pop();
         }
     };
 

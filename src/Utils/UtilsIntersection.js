@@ -196,8 +196,8 @@ define(["./Numeric", "./Constants","../Tiling/HEALPixBase"], function(Numeric, C
     /**
      * Returns true when t1 intersects with t2 otherwise false
      * @function tileIntersectHealpixTile
-     * @param {Tile} t1 
-     * @param {Tile} t2 
+     * @param {Tile} t1
+     * @param {Tile} t2
      * @returns {boolean} true when t1 intersects with t2 otherwise false
      */
     UtilsIntersection.tileIntersectHealpixTile = function(t1, t2) {
@@ -214,15 +214,15 @@ define(["./Numeric", "./Constants","../Tiling/HEALPixBase"], function(Numeric, C
         } else {
             diffLevel = t2.level - t1.level;
             result = t2.pixelIndex >> Math.pow(2, diffLevel) === t1.pixelIndex;
-        }      
+        }
         return result;
     };
 
     /**
      * Returns true when t1 intersects with t2 otherwise false
      * @function tileIntersectGeoTile
-     * @param {Tile} t1 
-     * @param {Tile} t2 
+     * @param {Tile} t1
+     * @param {Tile} t2
      * @returns {boolean} true when t1 intersects with t2 otherwise false
      */
     UtilsIntersection.tileIntersectGeoTile = function(t1, t2) {
@@ -239,23 +239,23 @@ define(["./Numeric", "./Constants","../Tiling/HEALPixBase"], function(Numeric, C
             var x2 = Math.pow(2, diffLevel) * (t2.x + 1) - 1;
             var y1 = Math.pow(2, diffLevel) * t2.y;
             var y2 = Math.pow(2, diffLevel) * (t2.y + 1) - 1;
-            result = UtilsIntersection.isValueBetween(t1.x, x1, x2) && UtilsIntersection.isValueBetween(t1.y, y1, y2);           
+            result = UtilsIntersection.isValueBetween(t1.x, x1, x2) && UtilsIntersection.isValueBetween(t1.y, y1, y2);
         } else {
             diffLevel = t2.level - t1.level;
             x1 = Math.pow(2, diffLevel) * t1.x;
             x2 = Math.pow(2, diffLevel) * (t1.x + 1) - 1;
             y1 = Math.pow(2, diffLevel) * t1.y;
             y2 = Math.pow(2, diffLevel) * (t1.y + 1) - 1;
-            result = UtilsIntersection.isValueBetween(t2.x, x1, x2) && UtilsIntersection.isValueBetween(t2.y, y1, y2);         
-        }      
+            result = UtilsIntersection.isValueBetween(t2.x, x1, x2) && UtilsIntersection.isValueBetween(t2.y, y1, y2);
+        }
         return result;
     };
 
     /**
      * Returns true when t1 intersects with t2 otherwise false
      * @function tileIntersect
-     * @param {Tile} t1 
-     * @param {Tile} t2 
+     * @param {Tile} t1
+     * @param {Tile} t2
      * @returns {boolean} true when t1 intersects with t2 otherwise false
      */
     UtilsIntersection.tileIntersect = function(t1, t2) {
@@ -301,6 +301,118 @@ define(["./Numeric", "./Constants","../Tiling/HEALPixBase"], function(Numeric, C
      */
     UtilsIntersection.isCrossDateLine = function(minLong, maxLong) {
         return Math.abs(minLong - maxLong) > 180;
+    };
+
+    /**
+     * Checks if the 2d screen point is inside (meter-sized) billboard described
+     * by its origin  (given by o, see below) and its size in meters.
+     *
+     *     *-------*
+     *     |       |
+     *     |       |
+     *     *---o---*
+     *
+     * @function isInBillboard
+     * @param {Geometry} geometry The geometry to test, in geo coordinates
+     * @param {Array(float)} origin The origin of the rectangle, in geo coordinates
+     * @param {Array(float)} size The size of the rectangle, in meters
+     * @param {Array(float)} eventPos The click position
+     *
+     * @return {boolean} true when the point is inside the given billboard
+     */
+    UtilsIntersection.isInBillboard = function(pickPoint, originGeometry, size, eventPos) {
+        // point is in 2d screen position, hence we need to convert origin and size
+        // (which is in geo coordinates) to screen.
+        if (!originGeometry._bucket || !originGeometry._bucket.renderer) {
+            return false;
+        }
+
+        const from3dToScreenSpace = function(point) {
+            var result = vec3.create();
+
+            const viewMatrix = rc.viewMatrix;
+            const projMatrix = rc.projectionMatrix;
+            const viewProjMatrix = mat4.create();
+            mat4.multiply(projMatrix, viewMatrix, viewProjMatrix);
+
+            const p = [point[0], point[1], point[2], 1.0];
+            mat4.project(viewProjMatrix, p, result);
+            const w = rc.canvas.clientWidth;
+            const h = rc.canvas.clientHeight;
+
+            result[0] = (result[0] + 1.0) * 0.5 * w;
+            result[1] = (1.0 - result[1]) * 0.5 * h;
+
+            return result;
+        };
+
+        const renderer = originGeometry._bucket.renderer;
+        const globe = renderer.globe;
+        const crs = globe.getCoordinateSystem();
+        const rc = renderer.tileManager.renderContext;
+
+        // Compute mouse position. We do not always use eventPos, to keep the z position.
+        var mouse2d;
+        if (pickPoint) {
+            const pickPoint3D = crs.get3DFromWorld(pickPoint);
+            mouse2d = from3dToScreenSpace(pickPoint3D);
+        } else {
+            mouse2d = [eventPos[0], eventPos[1], -1.0];
+        }
+
+        // Get the "center" of the billboard in 3D
+        const elevation = crs.getElevation(globe, originGeometry) + 200; // match the rendering
+        const originGeo = [originGeometry.coordinates[0], originGeometry.coordinates[1], elevation];
+        const origin3d = crs.get3DFromWorldInCrs(originGeo, originGeometry.crs.properties.name);
+        const origin2d = from3dToScreenSpace(origin3d);
+
+        // Compute top left and bottom right corners
+        const camRight = vec3.create([rc.viewMatrix[0], rc.viewMatrix[4], rc.viewMatrix[8]]);
+        const camUp = vec3.create([rc.viewMatrix[1], rc.viewMatrix[5], rc.viewMatrix[9]]);
+
+        const radius = crs.getGeoide().getRealPlanetRadius();
+        const billboardSize = vec3.create([size[0] / radius, size[1] / radius, 1.0]);
+
+        const billboardTo3d = function(o, p, size, camRight, camUp) {
+            var x = vec3.create();
+            vec3.scale(camRight, p[0], x);
+            vec3.scale(x, size[0]);
+
+            var y = vec3.create();
+            vec3.scale(camUp, p[1], y);
+            vec3.scale(y, size[1]);
+
+            var result = vec3.create();
+            vec3.add(o, x, result);
+            vec3.add(result, y);
+            return result;
+        };
+
+        const topLeftLocal = vec3.create([-0.5, 1.0, 0.0]);
+        const topLeft3d = billboardTo3d(origin3d, topLeftLocal, billboardSize, camRight, camUp);
+        const topLeft2d = from3dToScreenSpace(topLeft3d);
+
+        const bottomRightLocal = vec3.create([0.5, 0.0, 0.0]);
+        const bottomRight3d = billboardTo3d(origin3d, bottomRightLocal, billboardSize, camRight, camUp);
+        const bottomRight2d = from3dToScreenSpace(bottomRight3d);
+
+
+        const left = topLeft2d[0];
+        const right = bottomRight2d[0];
+        const top = topLeft2d[1];
+        const bottom = bottomRight2d[1];
+
+        // Check if point is in the 2d bounds
+        if (mouse2d[0] > left && mouse2d[0] < right && mouse2d[1] > top && mouse2d[1] < bottom) {
+            // Check the z value, we do not want to pick a point behind the terrain
+            // If the z is negative, that means we are picking outside the terrain,
+            // so we always have an intersection
+            if (mouse2d[2] < 0.0 || mouse2d[2] > origin2d[2]) {
+                return true;
+            }
+        }
+
+        return false;
     };
 
     return UtilsIntersection;

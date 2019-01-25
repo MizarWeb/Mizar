@@ -270,12 +270,16 @@ define([
      * @param geometry
      * @return {Boolean} If the geometry has been successfully added to the renderable
      */
-    PointRenderable.prototype.add = function(geometry) {
+    PointRenderable.prototype.add = function(geometry, stockGeometry) {
         // TODO: Find a better way to access to coordinate system
         var coordinateSystem = this.bucket.layer
             .getGlobe()
             .getCoordinateSystem();
-        var posGeo = geometry.coordinates;
+        var posGeo = geometry.coordinates.slice(0);
+
+        if (stockGeometry !== false) {
+            this.geometries.push(geometry);
+        }
 
         posGeo = coordinateSystem.convert(
             posGeo,
@@ -291,6 +295,13 @@ define([
         );
 
         if (csBound.isPointInside(posGeo)) {
+            const globe = this.bucket.renderer.globe;
+
+            const altitude = globe.isSky()
+                ? 0.0
+                : coordinateSystem.getElevation(globe, geometry) + 200;
+            posGeo.push(altitude);
+
             var pos3d = coordinateSystem.get3DFromWorld(posGeo);
             var vertical = coordinateSystem.getVerticalAt3D(pos3d);
 
@@ -303,6 +314,15 @@ define([
             return true;
         } else {
             return false;
+        }
+    };
+
+    /**************************************************************************************************************/
+
+    PointRenderable.prototype.updateElevations = function() {
+        this.points = [];
+        for (var i = 0; i < this.geometries.length; i++) {
+            this.add(this.geometries[i], false);
         }
     };
 
@@ -497,6 +517,7 @@ define([
         var currentBucket = null;
         for (var n = start; n < end; n++) {
             var renderable = renderables[n];
+            renderable.updateElevations();
             var bucket = renderable.bucket;
 
             if (renderable.points.length === 0) {

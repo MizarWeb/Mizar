@@ -171,6 +171,8 @@ define([
             // Render tiles
             this.tileManager.render();
         }
+
+        this.cachedPickingValue = null;
     };
 
     /**

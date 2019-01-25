@@ -71,12 +71,33 @@ define([
         this.fragmentShader += "varying vec2 texCoord;\n";
         this.fragmentShader += "uniform sampler2D overlayTexture;\n";
         this.fragmentShader += "uniform float opacity; \n";
+        this.fragmentShader += "uniform vec3 levelColRow;\n";
         this.fragmentShader += "void main(void)\n";
         this.fragmentShader += "{\n";
         this.fragmentShader +=
             "	gl_FragColor.rgba = texture2D(overlayTexture, texCoord.xy); \n";
         this.fragmentShader += "	gl_FragColor.a *= opacity; \n";
+        // this.fragmentShader += "    gl_FragColor.rgb = levelColRow / vec3(16.0);\n";
+        // this.fragmentShader += "    gl_FragColor.a = min(gl_FragColor.a + 0.8, 1.0);\n";
         this.fragmentShader += "}\n";
+
+        this.lerpFragmentShader =
+            `precision lowp float;
+
+            varying vec2 texCoord;
+            uniform sampler2D fromOverlayTexture;
+            uniform sampler2D toOverlayTexture;
+            uniform float time;
+            uniform float totalTime;
+            uniform float opacity;
+
+            void main() {
+                vec4 fromColor = texture2D(fromOverlayTexture, texCoord.xy);
+                vec4 toColor = texture2D(toOverlayTexture, texCoord.xy);
+                gl_FragColor = mix(fromColor, toColor, time / totalTime);
+                gl_FragColor.a *= opacity;
+                // gl_FragColor.rgba = vec4(0, 1, 0, opacity);
+            }`;
 
         this.rendererManager = globe.getRendererManager();
         this.tileManager = globe.tileManager;
@@ -88,9 +109,18 @@ define([
             updateUniforms: null
         });
 
+        this.lerpProgram = this.createProgram({
+            vertexCode: this.vertexShader,
+            fragmentCode: this.lerpFragmentShader,
+            updateUniforms: null
+        });
+
         this.buckets = [];
         this.imageRequests = [];
         this.frameNumber = 0;
+
+
+        this.oldRenderables = {};
 
         var self = this;
         for (var i = 0; i < 4; i++) {
@@ -110,6 +140,19 @@ define([
                         this.renderable.vTrans = 0.0;
                         this.renderable.updateChildrenTexture();
                         this.renderable.onRequestFinished(true);
+
+                        const { level, x, y } = this.renderable.tile;
+                        try {
+                            const oldRenderable = self.oldRenderables[level][x][y];
+                            if (oldRenderable && oldRenderable.ownTexture) {
+                                this.renderable.oldRenderable = oldRenderable;
+                                this.renderable.needsLerp = true;
+                                this.renderable.time = 0.0;
+                            }
+                        } catch (error) {
+                            // Nothing to do
+                        }
+
                         this.renderable = null;
                         self.tileManager.renderContext.requestFrame();
                     }
@@ -145,8 +188,12 @@ define([
          */
     var RasterOverlayRenderable = function(bucket) {
         this.bucket = bucket;
+        this.bucket.renderables.push(this);
         this.ownTexture = null;
         this.texture = null;
+        this.oldRenderable = null;
+        this.needsLerp = false;
+        this.time = 0.0;
         this.request = null;
         this.requestFinished = false;
         this.tile = null;
@@ -311,6 +358,18 @@ define([
     ) {
         if (isLeaf && this.texture) {
             manager.renderables.push(this);
+        } else if (isLeaf) {
+            const oldRenderables = this.bucket.renderer.oldRenderables;
+            try {
+                const oldRenderable = oldRenderables[tile.level][tile.x][tile.y];
+                if (oldRenderable && oldRenderable.ownTexture) {
+                    const renderable = Object.assign({}, this);
+                    renderable.texture = oldRenderable.ownTexture;
+                    manager.renderables.push(renderable);
+                }
+            } catch (error) {
+                // do nothing
+            }
         }
 
         if (!this.requestFinished && this.tile.state === Tile.State.LOADED) {
@@ -350,6 +409,7 @@ define([
         this.layer = layer;
         this.renderer = null;
         this.style = layer.style;
+        this.renderables = [];
     };
 
     /**************************************************************************************************************/
@@ -401,7 +461,7 @@ define([
      * @memberof RasterOverlayRenderer.prototype
      * @param overlay
      */
-    RasterOverlayRenderer.prototype.removeOverlay = function(overlay) {
+    RasterOverlayRenderer.prototype.removeOverlay = function(overlay, noDispose) {
         var index = this.buckets.indexOf(overlay._bucket);
         this.buckets.splice(index, 1);
 
@@ -415,8 +475,10 @@ define([
                 var index = rs.renderables.indexOf(renderable);
                 rs.renderables.splice(index, 1);
 
-                // Dispose its data
-                renderable.dispose(rc, tp);
+                if (!noDispose) {
+                    // Dispose its data
+                    renderable.dispose(rc, tp);
+                }
 
                 // Remove tile data if not needed anymore
                 if (rs.renderables.length === 0) {
@@ -424,6 +486,39 @@ define([
                 }
             }
         });
+    };
+
+    /**************************************************************************************************************/
+
+    RasterOverlayRenderer.prototype.updateOverlay = function(overlay) {
+        var oldBucket = overlay._bucket;
+
+        var rc = this.tileManager.renderContext;
+        var tp = this.tileManager.tilePool;
+
+        if (oldBucket) {
+            for (var j = 0; j < oldBucket.renderables.length; ++j) {
+                const renderable = oldBucket.renderables[j];
+                if (renderable.ownTexture) {
+                    const { level, x, y } = renderable.tile;
+
+                    // If there is already old data, dispose it
+                    try {
+                        const oldRenderable = this.oldRenderables[level][x][y];
+                        oldRenderable.dispose(rc, tp);
+                    } catch (e) {
+                        // No-op
+                    }
+
+                    if (!this.oldRenderables[level]) this.oldRenderables[level] = {};
+                    if (!this.oldRenderables[level][x]) this.oldRenderables[level][x] = {};
+                    this.oldRenderables[level][x][y] = renderable;
+                }
+            }
+        }
+
+        this.removeOverlay(overlay, true);
+        this.addOverlay(overlay);
     };
 
     /**************************************************************************************************************/
@@ -690,6 +785,12 @@ define([
             if (layer.customShader) {
                 program = this.getProgram(layer.customShader);
                 updateUniforms = layer.customShader.updateUniforms;
+            } else if (renderable.needsLerp) {
+                program = this.getProgram({
+                    vertexCode: this.vertexShader,
+                    fragmentCode: this.lerpFragmentShader,
+                    updateUniforms: null
+                });
             } else {
                 program = this.getProgram({
                     vertexCode: this.vertexShader,
@@ -708,7 +809,13 @@ define([
                     false,
                     rc.projectionMatrix
                 );
-                gl.uniform1i(program.uniforms.overlayTexture, 0);
+
+                if (renderable.needsLerp) {
+                    gl.uniform1i(program.uniforms.fromOverlayTexture, 0);
+                    gl.uniform1i(program.uniforms.toOverlayTexture, 1);
+                } else {
+                    gl.uniform1i(program.uniforms.overlayTexture, 0);
+                }
 
                 // Bind tcoord buffer
                 gl.bindBuffer(gl.ARRAY_BUFFER, this.tileManager.tcoordBuffer);
@@ -770,8 +877,34 @@ define([
                 renderable.vTrans
             );
 
-            gl.activeTexture(gl.TEXTURE0);
-            gl.bindTexture(gl.TEXTURE_2D, renderable.texture);
+            gl.uniform3f(
+                program.uniforms.levelColRow,
+                renderable.tile.level,
+                renderable.tile.x,
+                renderable.tile.y
+            );
+
+            if (renderable.needsLerp) {
+                gl.activeTexture(gl.TEXTURE0);
+                gl.bindTexture(gl.TEXTURE_2D, renderable.oldRenderable.texture);
+
+                gl.activeTexture(gl.TEXTURE1);
+                gl.bindTexture(gl.TEXTURE_2D, renderable.texture);
+
+                gl.uniform1f(program.uniforms.time, renderable.time);
+                gl.uniform1f(program.uniforms.totalTime, 500);
+            } else {
+                gl.activeTexture(gl.TEXTURE0);
+                gl.bindTexture(gl.TEXTURE_2D, renderable.texture || renderable.oldRenderable.texture);
+            }
+
+            if (renderable.needsLerp) {
+                renderable.time += rc.deltaTime;
+                if (renderable.time > 500) {
+                    renderable.needsLerp = false;
+                    renderable.oldRenderable = null;
+                }
+            }
 
             // Finally draw the tiles
             gl.drawElements(

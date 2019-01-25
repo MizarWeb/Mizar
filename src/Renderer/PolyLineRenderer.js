@@ -73,7 +73,14 @@ define([
     /**************************************************************************************************************/
 
     PolyLineRenderer.prototype.generateLevelZero = function(tile) {
-        // do nothing
+        for (var bucket of this.buckets) {
+            const layer = bucket.layer;
+            const geometry = bucket.geometry;
+            const style = bucket.style;
+
+            this.removeGeometry(layer);
+            this.addGeometry(layer, geometry, style);
+        }
     };
 
     /**************************************************************************************************************/
@@ -113,16 +120,8 @@ define([
         void main() {
             gl_Position = uModelViewProjMatrix * vec4(aVertex, 1.0);
 
-            //vec3 p = vec3(uModelViewMatrix * vec4(aVertex, 1.0));
-            //vec3 c = vec3(uModelViewMatrix * vec4(uClipPlane.xyz, 1.0));
-            //vec3 n = vec3(uModelViewMatrix * vec4(uClipPlane.w, 0, 0, 0));
-
-            vec3 p = aVertex;
-            vec3 c = uClipPlane;
-            vec3 n = uClipNormal;
-
-            vec3 a = normalize(p - c);
-            n = normalize(n);
+            vec2 a = normalize(aVertex.xy - uClipPlane.xy);
+            vec2 n = normalize(uClipNormal.xy);
 
             vClipDistance = dot(a, n);
         }`;
@@ -135,7 +134,6 @@ define([
 
         void main() {
             if (vClipDistance < 0.0) discard;
-
             gl_FragColor = uColor;
         }
         `;
@@ -153,6 +151,13 @@ define([
 
         this.rightClipPlane = vec3.create();
         this.rightClipNormal = vec3.create();
+    };
+
+    /**************************************************************************************************************/
+
+    MainRenderable.prototype.dispose = function(rc) {
+        this.renderable.dispose(rc);
+        this.clippedRenderable.dispose(rc);
     };
 
     /**************************************************************************************************************/
@@ -217,12 +222,6 @@ define([
             this.clippedProgram.uniforms.uModelViewProjMatrix,
             false,
             mvpMatrix
-        );
-
-        gl.uniformMatrix4fv(
-            this.clippedProgram.uniforms.uModelViewMatrix,
-            false,
-            modelViewMatrix
         );
 
         gl.uniform4f(
@@ -383,6 +382,15 @@ define([
             result = result.concat(this._subdivideSegment(line[i], line[i + 1]));
         }
 
+        // Remove consecutive duplicates
+        for (i = result.length - 1; i >= 1; --i) {
+            const curr = result[i];
+            const prev = result[i - 1];
+            if (curr[0] === prev[0] && curr[1] === prev[1] && curr[2] === prev[2]) {
+                result.splice(i, 1);
+            }
+        }
+
         return result;
     };
 
@@ -479,6 +487,7 @@ define([
         } else {
             lines = [geometry.coordinates];
         }
+        lines = JSON.parse(JSON.stringify(lines));
 
         var geometryBound = new GeoBound();
         var csBound = new GeoBound(
@@ -510,11 +519,15 @@ define([
         const leftNormal = [1, 0, 0];
         cs.get3DFromWorldInCrs(leftPlane, crsName, this.leftClipPlane);
         cs.get3DFromWorldInCrs(leftNormal, crsName, this.leftClipNormal);
+        vec3.normalize(this.leftClipNormal);
+        vec3.subtract(this.leftClipPlane, origin);
 
         const rightPlane = [180, 0, 0];
         const rightNormal = [-1, 0, 0];
         cs.get3DFromWorldInCrs(rightPlane, crsName, this.rightClipPlane);
         cs.get3DFromWorldInCrs(rightNormal, crsName, this.rightClipNormal);
+        vec3.normalize(this.rightClipNormal);
+        vec3.subtract(this.rightClipPlane, origin);
 
         // Check if some lines are going through the poles
         // In this case, we want to duplicate the points that do not have the same x coordinate.
@@ -596,10 +609,48 @@ define([
             }
 
             // First, subdivide the line
-            var coords;
-            for (coords of finalLine1) {
+            var lineIdx;
+            for (lineIdx = 0; lineIdx < finalLine1.length; ++lineIdx) {
+                const coords = finalLine1[lineIdx];
                 cs.get3DFromWorldInCrs(coords, crsName, pos3d);
                 for (i = 0; i < 3; ++i) this.vertices.push(pos3d[i] - origin[i]);
+
+                var wrapAround = false;
+                if (lineIdx > 1) {
+                    const x0 = finalLine1[lineIdx][0];
+                    const x1 = finalLine1[lineIdx - 1][0];
+                    const x2 = finalLine1[lineIdx - 2][0];
+
+                    const currDir = x0 - x1;
+                    const lastDir = x1 - x2;
+
+                    // We changed direction
+                    // last point is outside the visible range
+                    // Current point is inside  the visible range
+                    if (lastDir > 0 && currDir < 0 && x1 > 180 && x0 < 180) {
+                        const distanceAsIt = x1 - x0;
+                        const distanceWithWrapAround = (x0 + 360) - x1;
+                        if (distanceWithWrapAround < distanceAsIt) {
+                            wrapAround = true;
+                        }
+                    } else if (lastDir < 0 && currDir > 0 && x1 < 180 && x0 > 180) {
+                        const distanceAsIt = x0 - x1;
+                        const distanceWithWrapAround = (x1 + 360) - x0;
+                        if (distanceWithWrapAround < distanceAsIt) {
+                            wrapAround = true;
+                        }
+                    }
+                }
+
+                if (wrapAround) {
+                    lineInfos.indexCount = lastIndex - lineInfos.startIndex;
+                    this.lines.push(lineInfos);
+                    lineInfos = {
+                        startIndex: lastIndex,
+                        indexCount: -1
+                    };
+                }
+
                 this.indices.push(lastIndex++);
             }
 
@@ -611,9 +662,47 @@ define([
                 indexCount: -1,
             };
 
-            for (coords of finalLine2) {
+            for (lineIdx = 0; lineIdx < finalLine2.length; ++lineIdx) {
+                const coords = finalLine2[lineIdx];
                 cs.get3DFromWorldInCrs(coords, crsName, pos3d);
                 for (i = 0; i < 3; ++i) this.vertices.push(pos3d[i] - origin[i]);
+
+                wrapAround = false;
+                if (lineIdx > 1) {
+                    const x0 = finalLine2[lineIdx][0];
+                    const x1 = finalLine2[lineIdx - 1][0];
+                    const x2 = finalLine2[lineIdx - 2][0];
+
+                    const currDir = x0 - x1;
+                    const lastDir = x1 - x2;
+
+                    // We were going "to the left", we changed direction
+                    // last point is outside the visible range
+                    // Current point is inside  the visible range
+                    if (lastDir > 0 && currDir < 0 && x1 > -180 && x0 < -180) {
+                        const distanceAsIt = x1 - x0;
+                        const distanceWithWrapAround = x0 - (x1 - 360);
+                        if (distanceWithWrapAround < distanceAsIt) {
+                            wrapAround = true;
+                        }
+                    } else if (lastDir < 0 && currDir > 0 && x1 < -180 && x0 > -180) {
+                        const distanceAsIt = x0 - x1;
+                        const distanceWithWrapAround = x1 - (x0 - 360);
+                        if (distanceWithWrapAround < distanceAsIt) {
+                            wrapAround = true;
+                        }
+                    }
+                }
+
+                if (wrapAround) {
+                    lineInfos.indexCount = lastIndex - lineInfos.startIndex;
+                    this.clippedLines.push(lineInfos);
+                    lineInfos = {
+                        startIndex: lastIndex,
+                        indexCount: -1
+                    };
+                }
+
                 this.indices.push(lastIndex++);
             }
 
@@ -670,10 +759,11 @@ define([
      @param layer
      @constructor
     */
-    var Bucket = function(layer, style, rc) {
+    var Bucket = function(layer, style, geometry, rc) {
         this.layer = layer;
         this.renderer = null;
         this.style = new FeatureStyle(style);
+        this.geometry = geometry;
         this.mainRenderable = new MainRenderable(this, rc);
         this.id = -1;
     };
@@ -681,12 +771,13 @@ define([
     /**************************************************************************************************************/
 
     PolyLineRenderer.prototype.addGeometry = function(layer, geometry, style) {
-        var bucket = new Bucket(layer, style, this.globe.renderContext);
+        var bucket = new Bucket(layer, style, geometry, this.globe.renderContext);
         bucket.renderer = this;
         bucket.id = this.globe.getRendererManager().bucketId++;
         bucket.mainRenderable.build(geometry);
 
         geometry._bucket = bucket;
+        layer._bucket = bucket;
 
         this.buckets.push(bucket);
     };
@@ -697,8 +788,13 @@ define([
         var bucket = layer._bucket;
         if (bucket.mainRenderable) {
             // Cleanup opengl resources
-            bucket.mainRenderable.dispose();
+            bucket.mainRenderable.dispose(this.globe.renderContext);
             bucket.mainRenderable = null;
+        }
+
+        const index = this.buckets.indexOf(bucket);
+        if (index !== -1) {
+            this.buckets.splice(index, 1);
         }
     };
 

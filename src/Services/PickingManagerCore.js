@@ -225,7 +225,8 @@ define([
                     //selectedData.layer.unhighlight(selectedData.feature,style);
                     selectedData.layer.modifyFeatureStyle(
                         selectedData.feature,
-                        style
+                        style,
+                        true
                     );
                 } else {
                     selectedData.layer.modifyFeatureStyle(
@@ -368,6 +369,7 @@ define([
                 : DEFAULT_SIZE_MULTIPLICATOR;
         switch (feature.geometry.type) {
         case Constants.GEOMETRY.LineString:
+            if (!pickPoint) { return false; }
             for (i = 0; i < feature.geometry.coordinates.length - 1; i++) {
                 feat = feature.geometry.coordinates[i];
                 featNext = feature.geometry.coordinates[i + 1];
@@ -380,6 +382,7 @@ define([
             //var ring = this.fixDateLine(pickPoint, feature['geometry']['coordinates'][0]);
             break;
         case Constants.GEOMETRY.MultiLineString:
+            if (!pickPoint) { return false; }
             for (i = 0; i < feature.geometry.coordinates.length; i++) {
                 for (
                     j = 0;
@@ -401,12 +404,14 @@ define([
             }
             break;
         case Constants.GEOMETRY.Polygon:
+            if (!pickPoint) { return false; }
             ring = this.fixDateLine(
                 pickPoint,
                 feature.geometry.coordinates[0]
             );
             return UtilsIntersection.pointInRing(pickPoint, ring);
         case Constants.GEOMETRY.MultiPolygon:
+            if (!pickPoint) { return false; }
             for (p = 0; p < feature.geometry.coordinates.length; p++) {
                 ring = this.fixDateLine(
                     pickPoint,
@@ -418,26 +423,23 @@ define([
             }
             return false;
         case Constants.GEOMETRY.Point:
-            var point = feature.geometry.coordinates;
             // Do not pick the labeled features
-            var isLabel =
-                    feature &&
-                    feature.properties &&
-                    feature.properties.style &&
-                    feature.properties.style.label;
-            var pt = [pickPoint[0], pickPoint[1], pickPoint[2]];
-            if (pickingNoDEM === true) {
-                pt[2] = 0;
+            var isLabel = feature && feature.properties && feature.properties.style && feature.properties.style.label;
+            if (isLabel) return false;
+
+            if (feature.properties && feature.properties.style &&
+                feature.properties.style.useMeterSize && feature.properties.style.meterSize) {
+                return UtilsIntersection.isInBillboard(pickPoint, feature.geometry, feature.properties.style.meterSize, options.eventPos);
+            } else {
+                if (!pickPoint) { return false; }
+                var point = feature.geometry.coordinates;
+
+                var pt = [pickPoint[0], pickPoint[1], pickPoint[2]];
+                if (pickingNoDEM === true) {
+                    pt[2] = 0;
+                }
+                return UtilsIntersection.pointInSphere(ctx, pt, point, feature.geometry._bucket.textureHeight * sizeMultiplicator);
             }
-            return (
-                UtilsIntersection.pointInSphere(
-                    ctx,
-                    pt,
-                    point,
-                    feature.geometry._bucket.textureHeight *
-                            sizeMultiplicator
-                ) && !isLabel
-            );
         default:
             ErrorDialog.open(Constants.LEVEL.DEBUG, "PickingManagerCore.js", "Picking for " + feature.geometry.type + " is not yet");
             return false;
@@ -461,28 +463,35 @@ define([
      * @return {Array} newSelection
      */
     function computePickSelection(pickPoint, options) {
-        if (!pickPoint) {
-            return [];
-        }
         var i, j, feature;
         var newSelection = [];
+
+        var selectedTile = pickPoint
+            ? globe.tileManager.getVisibleTile(pickPoint[0], pickPoint[1])
+            : undefined;
+
+        const tileData = selectedTile ? selectedTile.extension.renderer : null;
+
         for (i = 0; i < this.getPickableLayers().length; i++) {
-            var selectedTile = globe.tileManager.getVisibleTile(
-                pickPoint[0],
-                pickPoint[1]
-            );
             var pickableLayer = this.getPickableLayers()[i];
             if (pickableLayer.isVisible() && pickableLayer.globe === globe) {
                 if (pickableLayer instanceof OpenSearchLayer) {
+                    if (!pickPoint) {
+                        return [];
+                    }
+
                     // Extension using layer
                     // Search for features in each tile
-                    var tile = selectedTile;
-
-                    if (tile === null || typeof tile === "undefined") {
+                    if (!selectedTile) {
                         ErrorDialog.open(Constants.LEVEL.DEBUG, "PickingManagerCore.js", "no tile found");
                         continue;
                     }
-                    var tileData = tile.extension.renderer;
+
+                    if (!tileData) {
+                        ErrorDialog.open(Constants.LEVEL.DEBUG, "PickingManagerCore.js", "no tile data");
+                        continue;
+                    }
+
                     //[pickableLayer.extId];
                     /*if (!tileData || tileData.state !== OpenSearchLayer.TileState.LOADED) {
                             while (tile.parent && (!tileData || tileData.state !== OpenSearchLayer.TileState.LOADED)) {
@@ -490,24 +499,23 @@ define([
                                 tileData = tile.extension[pickableLayer.extId];
                             }
                         }*/
-                    if (tileData) {
-                        //for (j = 0; j < tileData.featureIds.length; j++) {
-                        for (j = 0; j < pickableLayer.features.length; j++) {
-                            //feature = pickableLayer.features[pickableLayer.featuresSet[tileData.featureIds[j]].index];
-                            feature = pickableLayer.features[j];
-                            if (
-                                this.featureIsPicked(
-                                    feature,
-                                    pickPoint,
-                                    pickableLayer.pickingNoDEM,
-                                    options
-                                )
-                            ) {
-                                newSelection.push({
-                                    feature: feature,
-                                    layer: pickableLayer
-                                });
-                            }
+
+                    //for (j = 0; j < tileData.featureIds.length; j++) {
+                    for (j = 0; j < pickableLayer.features.length; j++) {
+                        //feature = pickableLayer.features[pickableLayer.featuresSet[tileData.featureIds[j]].index];
+                        feature = pickableLayer.features[j];
+                        if (
+                            this.featureIsPicked(
+                                feature,
+                                pickPoint,
+                                pickableLayer.pickingNoDEM,
+                                options
+                            )
+                        ) {
+                            newSelection.push({
+                                feature: feature,
+                                layer: pickableLayer
+                            });
                         }
                     }
                 } else {
@@ -531,11 +539,11 @@ define([
                     }
                 }
             }
-
-            // Add selected tile to selection to be able to make the requests by tile
-            // (actually used for asteroids search)
-            newSelection.selectedTile = selectedTile;
         }
+
+        // Add selected tile to selection to be able to make the requests by tile
+        // (actually used for asteroids search)
+        newSelection.selectedTile = selectedTile;
 
         return newSelection;
     }
