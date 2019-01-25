@@ -469,13 +469,13 @@ define([
             if (code === "{geo:box}" && (tile.type === Constants.TILE.GEO_TILE || tile.type === Constants.TILE.MERCATOR_TILE)) {
                 // set bbox
                 param.currentValue =
-                    tile.bound.west +
+                    tile.geoBound.west +
                     "," +
-                    tile.bound.south +
+                    tile.geoBound.south +
                     "," +
-                    tile.bound.east +
+                    tile.geoBound.east +
                     "," +
-                    tile.bound.north;
+                    tile.geoBound.north;
             } else if (code === "{geo:geometry}" && tile.type === Constants.TILE.HEALPIX_TILE) {
                 var corners = tile.getCorners();
                 param.currentValue = "POLYGON(("+corners[0][0]+" "+corners[0][1]
