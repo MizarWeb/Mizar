@@ -177,7 +177,7 @@ define(["./Tile", "../Utils/ImageRequest"], function(Tile, ImageRequest) {
             this.elevations = null;
 
             // Request the elevation if needed
-            if (tileManager.elevationProvider) {
+            if (tileManager.elevationProvider && tileManager.elevationProvider.getUrl(tile) != null) {
                 // TODO : handle the elevations coming from cache
                 _elevationLoaded = false;
                 _xhr.open("GET", tileManager.elevationProvider.getUrl(tile));
@@ -193,7 +193,7 @@ define(["./Tile", "../Utils/ImageRequest"], function(Tile, ImageRequest) {
                 _elevationLoaded = true;
             }
 
-            if (tileManager.imageryProvider) {
+            if (tileManager.imageryProvider && tileManager.imageryProvider.getUrl(tile)) {
                 if (!_imageRequest) {
                     _imageRequest = new ImageRequest({
                         successCallback: function() {
