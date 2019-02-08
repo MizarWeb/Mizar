@@ -908,10 +908,16 @@ define([
                 }
             );
 
-            for (const key in this.heatmapTiles[this.previousLevel]) {
+            if (this.previousLevel !== undefined && this.previousLevel !== null) {
+                const oldKeys = Object.keys(this.heatmapTiles[this.previousLevel]);
+                for (var i = oldKeys.length - 1; i >= 0; --i)  {
+                    const key = oldKeys[i];
                 const heatmapData = this.heatmapTiles[this.previousLevel][key];
-                if (heatmapData.shouldBeDrawn && heatmapData.feature) {
-                    _removeFeature(this, heatmapData.feature.id, heatmapData.tile);
+                    if (heatmapData.feature && heatmapData.feature.textFeature) _removeFeature(this, heatmapData.feature.textFeature.id, heatmapData.tile);
+
+                    heatmapData.tile.osState[this.getID()] = OpenSearchLayer.TileState.NOT_LOADED;
+
+                    delete this.heatmapTiles[this.previousLevel][key];
                 }
             }
         }
