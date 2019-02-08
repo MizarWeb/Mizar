@@ -170,7 +170,6 @@ define([
         ];
 
         this.heatmapTiles = {};
-        this.requestsPerLevel = {};
     };
 
     /**************************************************************************************************************/
@@ -363,15 +362,8 @@ define([
         tile.osState[layer.getID()] = OpenSearchLayer.TileState.NOT_LOADED;
 
         delete layer.heatmapTiles[tile.level][tile.key];
-        const requestIndex = layer.requestsPerLevel[tile.level].indexOf(tile.key);
-        if (requestIndex !== -1) {
-            layer.requestsPerLevel[tile.level].splice(requestIndex, 1);
-
-            if (layer.requestsPerLevel[tile.level].length === 0) {
                 layer.buildHeatmap();
             }
-        }
-    }
 
     function _removeFeaturesOutside(layer, tiles) {
         for (var i = 0; i < layer.tilesLoaded.length; i++) {
@@ -626,13 +618,6 @@ define([
                 // cache
                 tile.osState[layer.getID()] =  OpenSearchLayer.TileState.LOADING;
                 layer.pool.addQuery(url, tile, layer);
-                if (!layer.requestsPerLevel[tile.level]) {
-                    layer.requestsPerLevel[tile.level] = [];
-                }
-                if (count === 1) {
-                    // Only keep infos about a heatmap request if necessary
-                    layer.requestsPerLevel[tile.level].push(tile.key);
-                }
             } else {
                 // If no state defined...
                 if (cachedTile.osState == null) {
@@ -1174,17 +1159,8 @@ define([
      */
     OpenSearchLayer.prototype.computeFeaturesResponse = function(features, tile, nbFeaturesTotalPerTile) {
         var ableToContinue = true;
-        var buildHeatmap = false;
 
         const { level, key } = tile;
-
-        const index = this.requestsPerLevel[level].indexOf(key);
-        if (index !== -1) {
-            this.requestsPerLevel[level].splice(index, 1);
-            if (level === this.currentLevel && this.requestsPerLevel[level].length === 0) {
-                buildHeatmap = true;
-            }
-        }
 
         if (!this.heatmapTiles[level]) {
             this.heatmapTiles[level] = {};
@@ -1205,9 +1181,7 @@ define([
             _requestTile(this, tile);
         }
 
-        if (buildHeatmap) {
             this.buildHeatmap();
-        }
 
         if (!ableToContinue) {
             return;
