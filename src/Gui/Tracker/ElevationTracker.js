@@ -53,6 +53,7 @@ define([
      */
     ElevationTracker.prototype.setScaleLayer = function(elevationLayer) {
         this.scale = elevationLayer.getScale();
+        this.options.elevationLayer = elevationLayer;
     };
 
     /**
@@ -64,7 +65,7 @@ define([
             event.clientX = event.changedTouches[0].clientX;
             event.clientY = event.changedTouches[0].clientY;
         }
-        if (document.getElementById(self._getElement())) {
+        if (document.getElementById(self._getElement()) && self.options.elevationLayer && self.options.elevationLayer.isRequested()) {
             var geoPos = self
                 ._getGlobe()
                 .getLonLatFromPixel(event.clientX, event.clientY);

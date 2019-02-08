@@ -91,6 +91,8 @@ define([
             this.getBaseUrl(),
             options
         );
+
+        this.level = null;
     };
 
     /**************************************************************************************************************/
@@ -238,6 +240,16 @@ define([
     };
 
     /**
+     * Checks if the Elevation is requested at the current level.
+     * @function isRequested
+     * @memberof WCSElevationLayer#
+     * @return {boolean} True when the elevation is requested at the current level otherwise False.
+     */
+    WCSElevationLayer.prototype.isRequested = function() {
+        return (this.level == null) ? false : this.isBetweenMinMaxLevel(this.level);
+    };
+
+    /**
      * Get an url for the given tile
      * @function getUrl
      * @memberof WCSElevationLayer#
@@ -287,8 +299,10 @@ define([
                         geoBound.north
                 );
             }
+            this.level = tile.level;
         } else {
             url = null;
+            this.level = null;
         }
         return this.allowRequest(url, tile.level);
     };
