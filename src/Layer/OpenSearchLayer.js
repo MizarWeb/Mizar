@@ -450,6 +450,10 @@ define([
                 layer.featuresAddedToNotLoadedTiles[tile.key] = [];
             }
 
+            if (feature.geometry.type === "Point") {
+                layer.featuresAddedToNotLoadedTiles[tile.key].length = 0;
+            }
+
             layer.featuresAddedToNotLoadedTiles[tile.key].push(feature);
         }
     }
