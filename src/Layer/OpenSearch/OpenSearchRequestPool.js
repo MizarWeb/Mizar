@@ -140,14 +140,22 @@ define(["../../Utils/Constants","../../Gui/dialog/ErrorDialog","../../Utils/Prox
         xhr.layer = layer;
         xhr.url = url;
 
+        // The server sometimes times out (e.g. too many requests)
+        // In this case, finish the request and retry later.
+        xhr.ontimeout = function()  {
+            ErrorDialog(Constants.LEVEL.DEBUG, "OpenSeachRequestPool", "Server Timeout, resend later");
+            self.manageFinishedRequest(xhr);
+            self.poolingRequests.push(xhr);
+        };
+
         xhr.onabort = function() {
-            debugger;
-            console.log(`xhr with key ${xhr.key} aborted`);
+            ErrorDialog(Constants.LEVEL.ERROR, "OpenSearchRequestPool", "Request aborted");
+            self.manageFinishedRequest(xhr);
         };
 
         xhr.onerror = function() {
-            debugger;
-            console.log(`xhr with key ${xhr.key} error`);
+            ErrorDialog(Constants.LEVEL.ERROR, "OpenSearchRequestPool", "Request error: " + xhr.status);
+            self.manageFinishedRequest(xhr);
         };
 
         xhr.onload = function() {
