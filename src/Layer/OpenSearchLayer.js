@@ -1304,6 +1304,13 @@ define([
                         tile: tile
                     });
                 }
+
+                // Only if tile was LOADING...
+                if (tile.osState[this.getID()] === OpenSearchLayer.TileState.LOADING) {
+                    // ...set to LOADED
+                    tile.osState[this.getID()] = OpenSearchLayer.TileState.LOADED;
+                }
+
             }
         }
     };
