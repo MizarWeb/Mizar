@@ -133,6 +133,12 @@ define(["../Utils/Utils", "../Utils/Constants", "../Gui/dialog/ErrorDialog"], fu
 
             _actionHits = [0, 0, 0, 0];
 
+            _navigation.ctx.publish(
+                Constants.EVENT_MSG.NAVIGATION_STARTED
+            );
+
+            _navigation.startInteraction(event.touches[0].clientX, event.touches[0].clientY);
+
             // Stop all animations when an event is received
             _navigation.stopAnimations();
             _dx = 0;
@@ -274,6 +280,10 @@ define(["../Utils/Utils", "../Utils/Constants", "../Gui/dialog/ErrorDialog"], fu
                 event.preventDefault();
             }
             event.returnValue = false;
+
+            _navigation.ctx.publish(
+                Constants.EVENT_MSG.NAVIGATION_ENDED
+            );
 
             return false;
         };
