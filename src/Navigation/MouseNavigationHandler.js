@@ -35,7 +35,7 @@
  * along with GlobWeb. If not, see <http://www.gnu.org/licenses/>.
  ***************************************/
 
-define(["../Utils/Utils"], function(Utils) {
+define(["../Utils/Utils", "../Utils/Constants"], function(Utils, Constants) {
     /**
      * Mouse navigation handler configuration
      * @typedef {Object} AbstractNavigation.mouse_configuration
@@ -102,6 +102,10 @@ define(["../Utils/Utils"], function(Utils) {
             } else {
                 factor = -event.wheelDelta / 120.0;
             }
+
+            _navigation.ctx.publish(
+                Constants.EVENT_MSG.NAVIGATION_STARTED
+            );
             _navigation.zoom(factor, null, event.clientX, event.clientY);
 
             // Stop all animations when an event is received
@@ -133,6 +137,10 @@ define(["../Utils/Utils"], function(Utils) {
                 _lastMouseY = event.clientY;
                 _dx = 0;
                 _dy = 0;
+
+                _navigation.ctx.publish(
+                    Constants.EVENT_MSG.NAVIGATION_STARTED
+                );
 
                 _navigation.startInteraction(_lastMouseX, _lastMouseY);
 
@@ -167,6 +175,10 @@ define(["../Utils/Utils"], function(Utils) {
             if (event.button === _rotateButton) {
                 _navigation.doneRotating();
             }
+
+            _navigation.ctx.publish(
+                Constants.EVENT_MSG.NAVIGATION_ENDED
+            );
 
             if (event.button === _panButton || event.button === _rotateButton) {
                 event.preventDefault();

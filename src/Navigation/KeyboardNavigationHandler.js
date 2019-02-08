@@ -35,7 +35,7 @@
  * along with GlobWeb. If not, see <http://www.gnu.org/licenses/>.
  ***************************************/
 
-define(function() {
+define(["../Utils/Constants"], function(Constants) {
     /**
      * Keyboard navigation handler configuration
      * @typedef {Object} AbstractNavigation.keyboard_configuration
@@ -114,6 +114,9 @@ define(function() {
         var _handleKeyDown = function(event) {
             switch (event.keyCode) {
             case 32:
+                _navigation.ctx.publish(
+                    Constants.EVENT_MSG.NAVIGATION_STARTED
+                );
                 // space bar
                 // Stop all animations when an event is received
                 _navigation.stopAnimations();
@@ -126,6 +129,9 @@ define(function() {
                 // falls through
             case 107:
                 // + on other
+                _navigation.ctx.publish(
+                    Constants.EVENT_MSG.NAVIGATION_STARTED
+                );
                 _navigation.zoom(-self.zoomFactor);
                 break;
             case 189:
@@ -136,6 +142,9 @@ define(function() {
                 // falls through
             case 109:
                 // - on other
+                _navigation.ctx.publish(
+                    Constants.EVENT_MSG.NAVIGATION_STARTED
+                );
                 _navigation.zoom(self.zoomFactor);
                 break;
             case 81:
@@ -143,6 +152,9 @@ define(function() {
                 // falls through
             case 37:
                 // Left arrow
+                _navigation.ctx.publish(
+                    Constants.EVENT_MSG.NAVIGATION_STARTED
+                );
                 if (event.shiftKey) {
                     _navigation.rotate(self.panFactor, 0);
                 } else {
@@ -154,6 +166,9 @@ define(function() {
                 // falls through
             case 38:
                 // Up arrow
+                _navigation.ctx.publish(
+                    Constants.EVENT_MSG.NAVIGATION_STARTED
+                );
                 if (event.shiftKey) {
                     _navigation.rotate(0, self.panFactor);
                 } else {
@@ -165,6 +180,9 @@ define(function() {
                 // falls through
             case 39:
                 // Right arrow
+                _navigation.ctx.publish(
+                    Constants.EVENT_MSG.NAVIGATION_STARTED
+                );
                 if (event.shiftKey) {
                     _navigation.rotate(-self.panFactor, 0);
                 } else {
@@ -176,6 +194,9 @@ define(function() {
                 // falls through
             case 40:
                 // Down arrow
+                _navigation.ctx.publish(
+                    Constants.EVENT_MSG.NAVIGATION_STARTED
+                );
                 if (event.shiftKey) {
                     _navigation.rotate(0, -self.panFactor);
                 } else {
