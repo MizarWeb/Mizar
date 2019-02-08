@@ -362,8 +362,8 @@ define([
         tile.osState[layer.getID()] = OpenSearchLayer.TileState.NOT_LOADED;
 
         delete layer.heatmapTiles[tile.level][tile.key];
-                layer.buildHeatmap();
-            }
+        layer.buildHeatmap();
+    }
 
     function _removeFeaturesOutside(layer, tiles) {
         for (var i = 0; i < layer.tilesLoaded.length; i++) {
@@ -901,8 +901,9 @@ define([
                 const oldKeys = Object.keys(this.heatmapTiles[this.previousLevel]);
                 for (var i = oldKeys.length - 1; i >= 0; --i)  {
                     const key = oldKeys[i];
-                const heatmapData = this.heatmapTiles[this.previousLevel][key];
+                    const heatmapData = this.heatmapTiles[this.previousLevel][key];
                     if (heatmapData.feature && heatmapData.feature.textFeature) _removeFeature(this, heatmapData.feature.textFeature.id, heatmapData.tile);
+                    if (heatmapData.feature && heatmapData.feature.pointFeature) _removeFeature(this, heatmapData.feature.pointFeature.id, heatmapData.tile);
 
                     heatmapData.tile.osState[this.getID()] = OpenSearchLayer.TileState.NOT_LOADED;
 
@@ -1181,7 +1182,7 @@ define([
             _requestTile(this, tile);
         }
 
-            this.buildHeatmap();
+        this.buildHeatmap();
 
         if (!ableToContinue) {
             return;
@@ -1266,9 +1267,9 @@ define([
 
                 const color = _getColorForPercentage(pct, this.colormap);
 
-                const feature = {
+                const textFeature = {
                     type: "Feature",
-                    id: `${this.ID}_${key}`,
+                    id: `${this.ID}_${key}_text`,
                     geometry: {
                         type: "Point",
                         coordinates: center,
@@ -1283,20 +1284,61 @@ define([
                         style: {
                             label: `${(pct * 100).toFixed(2).toString()}%`,
                             fillColor: color,
+                            strokeColor: color,
+                            textColor: color,
                             opacity: 1,
+                            pointMaxSize: 500,
+
+                            extrusionScale: 1,
+                            fill: false,
+                            fillShader: null,
+                            fillTexture: null,
+                            fillTextureUrl: null,
+                            icon: null,
                             iconUrl: null,
+                            onTerrain: true,
+                            strokeWidth: 1,
+                            zIndex: 0
+                        }
+                    },
+                };
+
+                const pointFeature = {
+                    type: "Feature",
+                    id: `${this.ID}_${key}_point`,
+                    geometry: {
+                        type: "Point",
+                        coordinates: center,
+                        crs: {
+                            type: "name",
+                            properties: {
+                                name: tile.config.srs
+                            }
+                        }
+                    },
+                    properties: {
+                        name: `${entry.nbFeatures}`,
+                        Name: `${entry.nbFeatures}`,
+                        style: {
+                            strokeColor: color,
+                            fillColor: color,
                             pointMaxSize: 500,
                         }
                     },
                 };
 
-                entry.feature = feature;
-
                 if (entry.feature) {
-                    _removeFeature(this, entry.feature.id, tile);
+                    if (entry.feature.textFeature) _removeFeature(this, entry.feature.textFeature.id, tile);
+                    // if (entry.feature.pointFeature) _removeFeature(this, entry.feature.pointFeature.id, tile);
                 }
 
-                _addFeature(this, feature, tile);
+                entry.feature = {
+                    textFeature: textFeature,
+                    // pointFeature: pointFeature,
+                };
+
+                _addFeature(this, textFeature, tile);
+                // _addFeature(this, pointFeature, tile);
 
                 if (this.tilesLoaded.findIndex(function(element) { return element.key === tile.key; }) === -1) {
                     this.tilesLoaded.push({
