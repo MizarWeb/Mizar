@@ -235,7 +235,11 @@ define([
                     );
                 }
             }
+
+            if (selectedData.feature.pickData) {
+                delete selectedData.feature.pickData;
         }
+    }
     }
 
     /**************************************************************************************************************/
@@ -512,6 +516,12 @@ define([
                                 options
                             )
                         ) {
+                            feature.pickData = {
+                                picked: true,
+                                index: newSelection.length,
+                                pickSelection: newSelection
+                            };
+
                             newSelection.push({
                                 feature: feature,
                                 layer: pickableLayer
