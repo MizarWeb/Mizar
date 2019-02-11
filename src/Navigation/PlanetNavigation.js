@@ -503,6 +503,7 @@ define([
         };
 
         this.ctx.addAnimation(this.zoomToAnimation);
+        this.ctx.publish(Constants.EVENT_MSG.NAVIGATION_MODIFIED);
 
         this.zoomToAnimation.start();
     };
