@@ -902,8 +902,7 @@ define([
                 for (var i = oldKeys.length - 1; i >= 0; --i)  {
                     const key = oldKeys[i];
                     const heatmapData = this.heatmapTiles[this.previousLevel][key];
-                    if (heatmapData.feature && heatmapData.feature.textFeature) _removeFeature(this, heatmapData.feature.textFeature.id, heatmapData.tile);
-                    if (heatmapData.feature && heatmapData.feature.pointFeature) _removeFeature(this, heatmapData.feature.pointFeature.id, heatmapData.tile);
+                    if (heatmapData.feature && heatmapData.feature) _removeFeature(this, heatmapData.feature.id, heatmapData.tile);
 
                     heatmapData.tile.osState[this.getID()] = OpenSearchLayer.TileState.NOT_LOADED;
 
@@ -1303,42 +1302,14 @@ define([
                     },
                 };
 
-                const pointFeature = {
-                    type: "Feature",
-                    id: `${this.ID}_${key}_point`,
-                    geometry: {
-                        type: "Point",
-                        coordinates: center,
-                        crs: {
-                            type: "name",
-                            properties: {
-                                name: tile.config.srs
-                            }
-                        }
-                    },
-                    properties: {
-                        name: `${entry.nbFeatures}`,
-                        Name: `${entry.nbFeatures}`,
-                        style: {
-                            strokeColor: color,
-                            fillColor: color,
-                            pointMaxSize: 500,
-                        }
-                    },
-                };
-
                 if (entry.feature) {
-                    if (entry.feature.textFeature) _removeFeature(this, entry.feature.textFeature.id, tile);
-                    // if (entry.feature.pointFeature) _removeFeature(this, entry.feature.pointFeature.id, tile);
-                }
+                            }
+                    _removeFeature(this, entry.feature.id, tile);
+                        }
 
-                entry.feature = {
-                    textFeature: textFeature,
-                    // pointFeature: pointFeature,
-                };
+                entry.feature = textFeature;
 
                 _addFeature(this, textFeature, tile);
-                // _addFeature(this, pointFeature, tile);
 
                 if (this.tilesLoaded.findIndex(function(element) { return element.key === tile.key; }) === -1) {
                     this.tilesLoaded.push({
