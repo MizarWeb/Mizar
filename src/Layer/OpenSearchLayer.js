@@ -1305,9 +1305,12 @@ define([
                 };
 
                 if (entry.feature) {
-                            }
+                    if (entry.feature.pickData && entry.feature.pickData.picked) {
+                        entry.feature.pickData.pickSelection[entry.feature.pickData.index].feature = textFeature;
+                        textFeature.pickData = entry.feature.pickData;
+                    }
                     _removeFeature(this, entry.feature.id, tile);
-                        }
+                }
 
                 entry.feature = textFeature;
 
