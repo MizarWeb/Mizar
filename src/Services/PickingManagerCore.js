@@ -428,7 +428,7 @@ define([
             return false;
         case Constants.GEOMETRY.Point:
             // Do not pick the labeled features
-            var isLabel = feature && feature.properties && feature.properties.style && feature.properties.style.label;
+            var isLabel = !options.allowLabelPicking && feature && feature.properties && feature.properties.style && feature.properties.style.label;
             if (isLabel) return false;
 
             if (feature.properties && feature.properties.style &&
@@ -508,12 +508,22 @@ define([
                     for (j = 0; j < pickableLayer.features.length; j++) {
                         //feature = pickableLayer.features[pickableLayer.featuresSet[tileData.featureIds[j]].index];
                         feature = pickableLayer.features[j];
+
+                        // Allow label picking for opensearch texts
+                        var localOptions = JSON.parse(JSON.stringify(options));
+                        if (feature && feature.properties && feature.properties.style && feature.properties.style.label) {
+                            localOptions.allowLabelPicking = true;
+                            if (!localOptions.sizeMultiplicator) {
+                                localOptions.sizeMultiplicator = 3;
+                            }
+                        }
+
                         if (
                             this.featureIsPicked(
                                 feature,
                                 pickPoint,
                                 pickableLayer.pickingNoDEM,
-                                options
+                                localOptions
                             )
                         ) {
                             feature.pickData = {
