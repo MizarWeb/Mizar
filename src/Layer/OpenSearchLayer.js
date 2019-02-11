@@ -630,6 +630,15 @@ define([
             _computeStats(layer);
         }
     }
+
+    function _setTileLoaded(tile, id) {
+        // Only if tile was LOADING...
+        if (tile.osState[id] === OpenSearchLayer.TileState.LOADING) {
+            // ...set to LOADED
+            tile.osState[id] = OpenSearchLayer.TileState.LOADED;
+        }
+    }
+
     /**************************************************************************************************************/
 
     /**
@@ -919,8 +928,8 @@ define([
 
         this.previousLevel = this.currentLevel;
         this.previousKey = this.currentKey;
-        for (var i = 0; i < localTiles.length; i++) {
-            var currentTile = localTiles[i];
+        for (var j = 0; j < localTiles.length; j++) {
+            var currentTile = localTiles[j];
 
             _initOsState(this, currentTile);
             switch (currentTile.osState[this.getID()]) {
@@ -1215,11 +1224,7 @@ define([
             );
         }
 
-        // Only if tile was LOADING...
-        if (tile.osState[this.getID()] === OpenSearchLayer.TileState.LOADING) {
-            // ...set to LOADED
-            tile.osState[this.getID()] = OpenSearchLayer.TileState.LOADED;
-        }
+        _setTileLoaded(tile, this.getID());
 
         this.getGlobe().refresh();
 
@@ -1323,12 +1328,7 @@ define([
                     });
                 }
 
-                // Only if tile was LOADING...
-                if (tile.osState[this.getID()] === OpenSearchLayer.TileState.LOADING) {
-                    // ...set to LOADED
-                    tile.osState[this.getID()] = OpenSearchLayer.TileState.LOADED;
-                }
-
+                _setTileLoaded(tile, this.getID());
             }
         }
     };
