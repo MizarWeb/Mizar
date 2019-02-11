@@ -238,8 +238,8 @@ define([
 
             if (selectedData.feature.pickData) {
                 delete selectedData.feature.pickData;
+            }
         }
-    }
     }
 
     /**************************************************************************************************************/
