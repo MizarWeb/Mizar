@@ -603,6 +603,7 @@ define([
 
         // compute the view matrix with new values
         this.computeViewMatrix();
+        this.ctx.publish(Constants.EVENT_MSG.NAVIGATION_MODIFIED);
     };
 
     /**
