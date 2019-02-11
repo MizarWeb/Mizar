@@ -1280,6 +1280,8 @@ define([
                         }
                     },
                     properties: {
+                        "Feature count": `${entry.nbFeatures}`,
+                        "Percentage": `${(pct * 100).toFixed(2).toString()}%`,
                         style: {
                             label: `${(pct * 100).toFixed(2).toString()}%`,
                             fillColor: color,
