@@ -366,10 +366,23 @@ define([
     }
 
     function _removeFeaturesOutside(layer, tiles) {
+        var maxLevel = 0;
+        for (var t of tiles) {
+            if (maxLevel < t.level) {
+                maxLevel = t.level;
+            }
+        }
+
         for (var i = 0; i < layer.tilesLoaded.length; i++) {
             var tile = layer.tilesLoaded[i].tile;
-            var intersects = UtilsIntersection.tileIntersects(tile,tiles);
-            if (intersects === false) {
+
+            var remove = (tile.level > maxLevel);
+
+            if (!remove) {
+                remove = !UtilsIntersection.tileIntersects(tile,tiles);
+            }
+
+            if (remove) {
                 _removeTile(layer, tile);
             }
         }
