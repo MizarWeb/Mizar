@@ -111,6 +111,8 @@ define([
      * @param {int} [options.minOrder=5] Starting order for OpenSearch requests
      * @param {Boolean} [options.coordSystemRequired=true]
      * @param {FeatureStyle} [options.style=new FeatureStyle()]
+     * @param {int} [options.heatmapMinFeatureCount=100] The minimum feature count to not display the heatmap anymore
+     * @param {int} [options.heatmapMaxLevel=5] The maximum level where the heatmap can be displayed
      * @memberof module:Layer
      */
     var OpenSearchLayer = function(options) {
@@ -158,6 +160,9 @@ define([
         this.currentIdDisplayed = null;
 
         this.featuresAddedToNotLoadedTiles = {};
+
+        this.heatmapMaxLevel = options.heatmapMaxLevel || 5;
+        this.heatmapMinFeatureCount = options.heatmapMinFeatureCount || 100;
 
         this.colormap = [
             { pct: 0.00, color: [0.0, 0.0, 0.3] },
@@ -1193,7 +1198,7 @@ define([
             nbFeatures: nbFeaturesTotalPerTile
         };
 
-        if (nbFeaturesTotalPerTile > 100 && level <= 5) {
+        if (nbFeaturesTotalPerTile > this.heatmapMinFeatureCount && level <= this.heatmapMaxLevel) {
             ableToContinue = false;
 
             this.heatmapTiles[level][key].shouldBeDrawn = true;
