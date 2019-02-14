@@ -448,7 +448,11 @@ define([
 
     /**************************************************************************************************************/
 
+    /**
+     * @deprecated Please use computePickSelection
+     */
     function computeFilterPickSelection(pickPoint, options) {
+        ErrorDialog.open(Constants.LEVEL.WARNING, "PickingManagerCore", "computeFilterPickSelection: This function is deprecated. Please use computePickSelection instead.");
         var selection = this.computePickSelection(pickPoint, options);
         var returnedSelection = [];
         for (var i = 0; i < selection.length; i++) {
