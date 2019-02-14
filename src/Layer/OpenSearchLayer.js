@@ -111,6 +111,8 @@ define([
      * @param {int} [options.minOrder=5] Starting order for OpenSearch requests
      * @param {Boolean} [options.coordSystemRequired=true]
      * @param {FeatureStyle} [options.style=new FeatureStyle()]
+     * @param {int} [options.heatmapMinFeatureCount=100] The minimum feature count to not display the heatmap anymore
+     * @param {int} [options.heatmapMaxLevel=5] The maximum level where the heatmap can be displayed
      * @memberof module:Layer
      */
     var OpenSearchLayer = function(options) {
@@ -159,6 +161,9 @@ define([
 
         this.featuresAddedToNotLoadedTiles = {};
 
+        this.heatmapMaxLevel = options.heatmapMaxLevel || 5;
+        this.heatmapMinFeatureCount = options.heatmapMinFeatureCount || 100;
+
         this.colormap = [
             { pct: 0.00, color: [0.0, 0.0, 0.3] },
             { pct: 0.01, color: [0.0, 0.0, 1.0] },
@@ -170,7 +175,6 @@ define([
         ];
 
         this.heatmapTiles = {};
-        this.requestsPerLevel = {};
     };
 
     /**************************************************************************************************************/
@@ -363,21 +367,27 @@ define([
         tile.osState[layer.getID()] = OpenSearchLayer.TileState.NOT_LOADED;
 
         delete layer.heatmapTiles[tile.level][tile.key];
-        const requestIndex = layer.requestsPerLevel[tile.level].indexOf(tile.key);
-        if (requestIndex !== -1) {
-            layer.requestsPerLevel[tile.level].splice(requestIndex, 1);
-
-            if (layer.requestsPerLevel[tile.level].length === 0) {
-                layer.buildHeatmap();
-            }
-        }
+        layer.buildHeatmap();
     }
 
     function _removeFeaturesOutside(layer, tiles) {
+        var maxLevel = 0;
+        for (var t of tiles) {
+            if (maxLevel < t.level) {
+                maxLevel = t.level;
+            }
+        }
+
         for (var i = 0; i < layer.tilesLoaded.length; i++) {
             var tile = layer.tilesLoaded[i].tile;
-            var intersects = UtilsIntersection.tileIntersects(tile,tiles);
-            if (intersects === false) {
+
+            var remove = (tile.level > maxLevel);
+
+            if (!remove) {
+                remove = !UtilsIntersection.tileIntersects(tile,tiles);
+            }
+
+            if (remove) {
                 _removeTile(layer, tile);
             }
         }
@@ -448,6 +458,10 @@ define([
         if (tile.state !== Tile.State.LOADED) {
             if (!layer.featuresAddedToNotLoadedTiles[tile.key]) {
                 layer.featuresAddedToNotLoadedTiles[tile.key] = [];
+            }
+
+            if (feature.geometry.type === "Point") {
+                layer.featuresAddedToNotLoadedTiles[tile.key].length = 0;
             }
 
             layer.featuresAddedToNotLoadedTiles[tile.key].push(feature);
@@ -622,13 +636,6 @@ define([
                 // cache
                 tile.osState[layer.getID()] =  OpenSearchLayer.TileState.LOADING;
                 layer.pool.addQuery(url, tile, layer);
-                if (!layer.requestsPerLevel[tile.level]) {
-                    layer.requestsPerLevel[tile.level] = [];
-                }
-                if (count === 1) {
-                    // Only keep infos about a heatmap request if necessary
-                    layer.requestsPerLevel[tile.level].push(tile.key);
-                }
             } else {
                 // If no state defined...
                 if (cachedTile.osState == null) {
@@ -641,6 +648,15 @@ define([
             _computeStats(layer);
         }
     }
+
+    function _setTileLoaded(tile, id) {
+        // Only if tile was LOADING...
+        if (tile.osState[id] === OpenSearchLayer.TileState.LOADING) {
+            // ...set to LOADED
+            tile.osState[id] = OpenSearchLayer.TileState.LOADED;
+        }
+    }
+
     /**************************************************************************************************************/
 
     /**
@@ -908,10 +924,16 @@ define([
                 }
             );
 
-            for (const key in this.heatmapTiles[this.previousLevel]) {
-                const heatmapData = this.heatmapTiles[this.previousLevel][key];
-                if (heatmapData.shouldBeDrawn && heatmapData.feature) {
-                    _removeFeature(this, heatmapData.feature.id, heatmapData.tile);
+            if (this.previousLevel !== undefined && this.previousLevel !== null) {
+                const oldKeys = Object.keys(this.heatmapTiles[this.previousLevel]);
+                for (var i = oldKeys.length - 1; i >= 0; --i)  {
+                    const key = oldKeys[i];
+                    const heatmapData = this.heatmapTiles[this.previousLevel][key];
+                    if (heatmapData.feature && heatmapData.feature) _removeFeature(this, heatmapData.feature.id, heatmapData.tile);
+
+                    heatmapData.tile.osState[this.getID()] = OpenSearchLayer.TileState.NOT_LOADED;
+
+                    delete this.heatmapTiles[this.previousLevel][key];
                 }
             }
         }
@@ -924,8 +946,8 @@ define([
 
         this.previousLevel = this.currentLevel;
         this.previousKey = this.currentKey;
-        for (var i = 0; i < localTiles.length; i++) {
-            var currentTile = localTiles[i];
+        for (var j = 0; j < localTiles.length; j++) {
+            var currentTile = localTiles[j];
 
             _initOsState(this, currentTile);
             switch (currentTile.osState[this.getID()]) {
@@ -1164,17 +1186,8 @@ define([
      */
     OpenSearchLayer.prototype.computeFeaturesResponse = function(features, tile, nbFeaturesTotalPerTile) {
         var ableToContinue = true;
-        var buildHeatmap = false;
 
         const { level, key } = tile;
-
-        const index = this.requestsPerLevel[level].indexOf(key);
-        if (index !== -1) {
-            this.requestsPerLevel[level].splice(index, 1);
-            if (level === this.currentLevel && this.requestsPerLevel[level].length === 0) {
-                buildHeatmap = true;
-            }
-        }
 
         if (!this.heatmapTiles[level]) {
             this.heatmapTiles[level] = {};
@@ -1185,7 +1198,7 @@ define([
             nbFeatures: nbFeaturesTotalPerTile
         };
 
-        if (nbFeaturesTotalPerTile > 100 && level <= 5) {
+        if (nbFeaturesTotalPerTile > this.heatmapMinFeatureCount && level <= this.heatmapMaxLevel) {
             ableToContinue = false;
 
             this.heatmapTiles[level][key].shouldBeDrawn = true;
@@ -1195,9 +1208,7 @@ define([
             _requestTile(this, tile);
         }
 
-        if (buildHeatmap) {
-            this.buildHeatmap();
-        }
+        this.buildHeatmap();
 
         if (!ableToContinue) {
             return;
@@ -1231,11 +1242,7 @@ define([
             );
         }
 
-        // Only if tile was LOADING...
-        if (tile.osState[this.getID()] === OpenSearchLayer.TileState.LOADING) {
-            // ...set to LOADED
-            tile.osState[this.getID()] = OpenSearchLayer.TileState.LOADED;
-        }
+        _setTileLoaded(tile, this.getID());
 
         this.getGlobe().refresh();
 
@@ -1282,9 +1289,9 @@ define([
 
                 const color = _getColorForPercentage(pct, this.colormap);
 
-                const feature = {
+                const textFeature = {
                     type: "Feature",
-                    id: `${this.ID}_${key}`,
+                    id: `${this.ID}_${key}_text`,
                     geometry: {
                         type: "Point",
                         coordinates: center,
@@ -1296,23 +1303,41 @@ define([
                         }
                     },
                     properties: {
+                        "Feature count": `${entry.nbFeatures}`,
+                        "Percentage": `${(pct * 100).toFixed(2).toString()}%`,
                         style: {
                             label: `${(pct * 100).toFixed(2).toString()}%`,
                             fillColor: color,
+                            strokeColor: color,
+                            textColor: color,
                             opacity: 1,
-                            iconUrl: null,
                             pointMaxSize: 500,
+
+                            extrusionScale: 1,
+                            fill: false,
+                            fillShader: null,
+                            fillTexture: null,
+                            fillTextureUrl: null,
+                            icon: null,
+                            iconUrl: null,
+                            onTerrain: true,
+                            strokeWidth: 1,
+                            zIndex: 0
                         }
                     },
                 };
 
-                entry.feature = feature;
-
                 if (entry.feature) {
+                    if (entry.feature.pickData && entry.feature.pickData.picked) {
+                        entry.feature.pickData.pickSelection[entry.feature.pickData.index].feature = textFeature;
+                        textFeature.pickData = entry.feature.pickData;
+                    }
                     _removeFeature(this, entry.feature.id, tile);
                 }
 
-                _addFeature(this, feature, tile);
+                entry.feature = textFeature;
+
+                _addFeature(this, textFeature, tile);
 
                 if (this.tilesLoaded.findIndex(function(element) { return element.key === tile.key; }) === -1) {
                     this.tilesLoaded.push({
@@ -1320,6 +1345,8 @@ define([
                         tile: tile
                     });
                 }
+
+                _setTileLoaded(tile, this.getID());
             }
         }
     };

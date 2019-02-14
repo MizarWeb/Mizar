@@ -305,11 +305,20 @@ define([
             var pos3d = coordinateSystem.get3DFromWorld(posGeo);
             var vertical = coordinateSystem.getVerticalAt3D(pos3d);
 
-            this.points.push({
-                pos3d: pos3d,
-                vertical: vertical,
-                geometry: geometry
-            });
+            var found = false;
+            for (var j = 0; j < this.points.length; ++j) {
+                if (this.points[j].geometry === geometry) {
+                    found = true;
+                }
+            }
+            if (!found) {
+                this.points.push({
+
+                    pos3d: pos3d,
+                    vertical: vertical,
+                    geometry: geometry
+                });
+            }
 
             return true;
         } else {
@@ -517,7 +526,7 @@ define([
         var currentBucket = null;
         for (var n = start; n < end; n++) {
             var renderable = renderables[n];
-            renderable.updateElevations();
+            // renderable.updateElevations();
             var bucket = renderable.bucket;
 
             if (renderable.points.length === 0) {
