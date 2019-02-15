@@ -25,10 +25,10 @@
     "doc:open": "firefox ./api_doc/index.html",
     "start": "http-server -d -o",
     "license": "license-checker --production --relativeLicensePath | awk 'NR > 5' > licenses-3rd/npm/LICENSES",
-    "build:prod": "r.js -o build/buildMizar.js api_version=$npm_package_version && uglifyjs Mizar.min > Mizar.min.js && rm Mizar.min",
-    "build:dev": "r.js -o build/buildMizar.js api_version=$npm_package_version && mv Mizar.min Mizar.min.js",
-    "build:prod_win": "r.js.cmd -o build/buildMizar.js api_version=$npm_package_version && uglifyjs Mizar.min > Mizar.min.js && rm Mizar.min",
-    "build:dev_win": "r.js.cmd -o build/buildMizar.js api_version=$npm_package_version && mv Mizar.min Mizar.min.js",
+    "build:prod": "r.js -o build/buildMizar.js api_version=$npm_package_version && uglifyjs --compress --mangle -o Mizar.min.js2 Mizar.min.js && mv Mizar.min.js2 Mizar.min.js",
+    "build:dev": "r.js -o build/buildMizar.js api_version=$npm_package_version",
+    "build:prod_win": "r.js.cmd -o build/buildMizar.js api_version=$npm_package_version && uglifyjs --compress --mangle -o Mizar.min.js2 Mizar.min.js && mv Mizar.min.js2 Mizar.min.js",
+    "build:dev_win": "r.js.cmd -o build/buildMizar.js api_version=$npm_package_version",
     "eslint": "eslint --fix src/",
     "test": "echo \"Error: no test specified\" && exit 1",
     "push": "git push --follow-tags",
@@ -87,6 +87,8 @@
     "gzip-js": "^0.3.2",
     "jquery": "^3.1.1",
     "jquery-ui-dist": "^1.12.1",
+    "jscsv": "^1.1.4",
+    "jsvotable": "^2.0.2",
     "jszip": "^3.1.3",
     "moment": "^2.22.1",
     "path": "^0.12.7",
@@ -107,6 +109,6 @@
     "license-checker": "^8.0.3",
     "nodangel": "^1.3.8",
     "pre-commit": "^1.2.2",
-    "uglify-es": "^3.3.9"
+    "uglify-es": "github:mishoo/UglifyJS2#harmony"
   }
 }
