@@ -266,7 +266,7 @@ define([
 
         if (!ext) {
             // TODO
-            ErrorDialog(Constants.LEVEL.DEBUG, "HipsFitsLayer.js", "no OES_texture_float");
+            ErrorDialog.open(Constants.LEVEL.DEBUG, "HipsFitsLayer.js", "no OES_texture_float");
             this.fitsSupported = false;
             //return;
         }

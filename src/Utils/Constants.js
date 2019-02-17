@@ -414,6 +414,7 @@ define(function() {
      * @property {string} SELECTED_RASTER - Selected layer index (specially images)
      * @property {string} DEFAULT_VECTOR - Default vector index
      * @property {string} SELECTED_VECTOR - Selected vector index
+     * @property {string} HIGHLIGHTED_VECTOR - Highlighted vector index     
      * @property {string} SERVICE_VECTOR - Service index
      */
     Constants.DISPLAY = {
@@ -422,6 +423,7 @@ define(function() {
         SELECTED_RASTER: 10,
         DEFAULT_VECTOR: 20,
         SELECTED_VECTOR: 30,
+        HIGHLIGHTED_VECTOR: 31,
         SERVICE_VECTOR: 40
     };
 

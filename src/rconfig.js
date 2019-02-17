@@ -24,7 +24,7 @@ require.config({
     out: "../build/generated/Mizar.min.js",
     optimize: "none",
     paths: {
-	"JsCsv": "JsCsv",    
+        "JsCsv": "JsCsv",    
         path: "../node_modules/path/path",
         fits: "../external/fits",
         "underscore-min": "../node_modules/underscore/underscore-min",
@@ -40,8 +40,7 @@ require.config({
         jsvotable: "../node_modules/jsvotable/JsVotable.min",
         jscsv: "../node_modules/jscsv/JsCsv.min",
         xmltojson: "../node_modules/xmltojson/lib/xmlToJSON.min",
-        "wms-capabilities":
-            "../node_modules/wms-capabilities/dist/wms-capabilities"
+        "wms-capabilities": "../node_modules/wms-capabilities/dist/wms-capabilities"
     },
     shim: {
         "underscore-min": {

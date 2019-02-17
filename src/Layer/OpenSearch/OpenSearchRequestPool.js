@@ -143,18 +143,18 @@ define(["../../Utils/Constants","../../Gui/dialog/ErrorDialog","../../Utils/Prox
         // The server sometimes times out (e.g. too many requests)
         // In this case, finish the request and retry later.
         xhr.ontimeout = function()  {
-            ErrorDialog(Constants.LEVEL.DEBUG, "OpenSeachRequestPool", "Server Timeout, resend later");
+            ErrorDialog.open(Constants.LEVEL.DEBUG, "OpenSeachRequestPool", "Server Timeout, resend later");
             self.manageFinishedRequest(xhr);
             self.poolingRequests.push(xhr);
         };
 
         xhr.onabort = function() {
-            ErrorDialog(Constants.LEVEL.ERROR, "OpenSearchRequestPool", "Request aborted");
+            ErrorDialog.open(Constants.LEVEL.ERROR, "OpenSearchRequestPool", "Request aborted");
             self.manageFinishedRequest(xhr);
         };
 
         xhr.onerror = function() {
-            ErrorDialog(Constants.LEVEL.ERROR, "OpenSearchRequestPool", "Request error: " + xhr.status);
+            ErrorDialog.open(Constants.LEVEL.ERROR, "OpenSearchRequestPool", "Request error: " + xhr.status);
             self.manageFinishedRequest(xhr);
         };
 

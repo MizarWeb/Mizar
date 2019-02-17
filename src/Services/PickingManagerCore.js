@@ -46,6 +46,12 @@ define([
         zIndex: Constants.DISPLAY.SELECTED_VECTOR
     });
 
+    var highlightedSelectedStyle = new FeatureStyle({
+        strokeColor: [0.0, 0.0, 1.0, 1.0],
+        fillColor: [0.0, 0.0, 1.0, 1.0],
+        zIndex: Constants.DISPLAY.HIGHLIGHTED_VECTOR
+    });    
+
     /**************************************************************************************************************/
 
     /**
@@ -99,29 +105,20 @@ define([
             case Constants.GEOMETRY.MultiLineString:
             case Constants.GEOMETRY.Polygon:
             case Constants.GEOMETRY.MultiPolygon:
-                style.strokeColor = selectedData.layer.getStyle().strokeColor;
+                style.strokeColor = this.selectedStyle.strokeColor;
                 break;
             case Constants.GEOMETRY.Point:
                 // Use stroke color while reverting
-                style.fillColor =
-                        selectedData.feature.properties.style.strokeColor;
+                style.fillColor = this.selectedStyle.fillColor;
                 break;
             default:
                 break;
             }
-            style.zIndex = selectedData.layer.getStyle().zIndex;
-            if (typeof selectedData.layer.unhighlight !== "undefined") {
-                //selectedData.layer.unhighlight(selectedData.feature,style);
-                selectedData.layer.modifyFeatureStyle(
-                    selectedData.feature,
-                    style
-                );
-            } else {
-                selectedData.layer.modifyFeatureStyle(
-                    selectedData.feature,
-                    style
-                );
-            }
+            style.zIndex = selectedStyle.zIndex;
+            selectedData.layer.modifyFeatureStyle(
+                selectedData.feature,
+                style
+            );       
         }
     }
 
@@ -143,10 +140,10 @@ define([
         // Update highlight color
         var strokeColor = options.color
             ? FeatureStyle.fromStringToColor(options.color)
-            : this.selectedStyle.strokeColor;
+            : this.highlightedSelectedStyle.strokeColor;
         var fillColor = options.color
             ? FeatureStyle.fromStringToColor(options.color)
-            : this.selectedStyle.fillColor;
+            : this.highlightedSelectedStyle.fillColor;
 
         var selectedData = this.getSelection()[index];
         if (selectedData) {
@@ -158,6 +155,7 @@ define([
             case Constants.GEOMETRY.Polygon:
             case Constants.GEOMETRY.MultiPolygon:
                 style.strokeColor = strokeColor;
+                style.strokeWidth = style.strokeWidth + 2;                
                 break;
             case Constants.GEOMETRY.Point:
                 style.fillColor = fillColor;
@@ -165,19 +163,11 @@ define([
             default:
                 break;
             }
-            style.zIndex = this.selectedStyle.zIndex;
-            if (typeof selectedData.layer.highlight !== "undefined") {
-                //selectedData.layer.highlight(selectedData.feature,style);
-                selectedData.layer.modifyFeatureStyle(
-                    selectedData.feature,
-                    style
-                );
-            } else {
-                selectedData.layer.modifyFeatureStyle(
-                    selectedData.feature,
-                    style
-                );
-            }
+            style.zIndex = this.highlightedSelectedStyle.zIndex;
+            selectedData.layer.modifyFeatureStyle(
+                selectedData.feature,
+                style
+            );            
         }
         globe.refresh();
     }
@@ -207,12 +197,11 @@ define([
             case Constants.GEOMETRY.Polygon:
             case Constants.GEOMETRY.MultiPolygon:
                 style.strokeColor = selectedData.layer.getStyle().strokeColor;
-                style.strokeWidth = 1;
+                style.strokeWidth = selectedData.layer.getStyle().strokeWidth;
                 break;
             case Constants.GEOMETRY.Point:
                 // Use stroke color while reverting
-                style.fillColor =
-                        selectedData.feature.properties.style.strokeColor;
+                style.fillColor = selectedData.feature.properties.style.strokeColor;
                 break;
             default:
                 break;
@@ -221,19 +210,10 @@ define([
 
             if (selectedData.layer.getGlobe()) {
                 // Layer is still attached to globe
-                if (typeof selectedData.layer.unhighlight !== "undefined") {
-                    //selectedData.layer.unhighlight(selectedData.feature,style);
-                    selectedData.layer.modifyFeatureStyle(
-                        selectedData.feature,
-                        style,
-                        true
-                    );
-                } else {
-                    selectedData.layer.modifyFeatureStyle(
-                        selectedData.feature,
-                        style
-                    );
-                }
+                selectedData.layer.modifyFeatureStyle(
+                    selectedData.feature,
+                    style
+                );                
             }
 
             if (selectedData.feature.pickData) {
@@ -266,7 +246,7 @@ define([
             case Constants.GEOMETRY.Polygon:
             case Constants.GEOMETRY.MultiPolygon:
                 style.strokeColor = this.selectedStyle.strokeColor;
-                style.strokeWidth = 3;
+                style.strokeWidth = style.strokeWidth + 1;
                 break;
             case Constants.GEOMETRY.Point:
                 style.fillColor = this.selectedStyle.fillColor;
@@ -275,18 +255,10 @@ define([
                 break;
             }
             style.zIndex = this.selectedStyle.zIndex;
-            if (typeof selectedData.layer.highlight !== "undefined") {
-                //selectedData.layer.highlight(selectedData.feature,style);
-                selectedData.layer.modifyFeatureStyle(
-                    selectedData.feature,
-                    style
-                );
-            } else {
-                selectedData.layer.modifyFeatureStyle(
-                    selectedData.feature,
-                    style
-                );
-            }
+            selectedData.layer.modifyFeatureStyle(
+                selectedData.feature,
+                style
+            );
         }
         /*            for (var layerID in focusLayers) {
                 currentLayer = focusLayers[layerID];
@@ -609,6 +581,7 @@ define([
 
     return {
         selectedStyle: selectedStyle,
+        highlightedSelectedStyle: highlightedSelectedStyle,
         stackSelectionIndex: stackSelectionIndex,
         init: function(context) {
             ctx = context;
