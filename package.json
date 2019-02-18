@@ -87,6 +87,7 @@
     "gzip-js": "^0.3.2",
     "jquery": "^3.1.1",
     "jquery-ui-dist": "^1.12.1",
+    "jquery.loadmask": "^1.0.1",
     "jscsv": "^1.1.4",
     "jsvotable": "^2.0.2",
     "jszip": "^3.1.3",

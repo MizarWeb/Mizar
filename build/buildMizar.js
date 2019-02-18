@@ -5,8 +5,8 @@
     api_version:"TO BE DEFINED",
     mainConfigFile: "../src/rconfig.js",
     wrap: {
-	startFile: "wrap.start",
-	endFile: "wrap.end"
+        startFile: "wrap.start",
+        endFile: "wrap.end"
     },
     preserveLicenseComments: false,
     onBuildRead: function (moduleName, path, contents) {
