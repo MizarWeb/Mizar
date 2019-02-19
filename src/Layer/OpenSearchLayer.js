@@ -416,7 +416,24 @@ define([
     }
 
     function _addFeature(layer, feature, tile) {
-        var featureData;
+        var featureData;         
+
+        var style = feature.properties.style ? feature.properties.style : layer.style;
+        style.opacity = layer.getOpacity(); 
+        
+        
+        // fix geometry gid
+        feature.geometry.gid = feature.id;
+        
+        // fix feature ID
+        if (!feature.hasOwnProperty("id")) {
+            feature.id = feature.properties.identifier;
+        }
+
+        // fix style
+        if (!feature.properties.hasOwnProperty("style")) {          
+            feature.properties.style = style;
+        }        
 
         if (!layer.featuresSet.hasOwnProperty(feature.id)) {
             layer.features.push(feature);
@@ -438,12 +455,6 @@ define([
         if (!tile.associatedFeaturesId) tile.associatedFeaturesId = [];
 
         tile.associatedFeaturesId.push(feature.id);
-        feature.geometry.gid = feature.id;
-
-        // MS: Feature could be added from ClusterOpenSearch which have features with different styles
-        var style = feature.properties.style ? feature.properties.style : layer.style;
-
-        style.opacity = layer.getOpacity();
 
         if (feature.geometry.type === "GeometryCollection") {
             var geoms = feature.geometry.geometries;
@@ -1043,7 +1054,7 @@ define([
             targetStyle.setOpacity(arg);
 
             for (var i = 0; i < this.features.length; i++) {
-                this.modifyFeatureStyle(this.features[i], targetStyle, true);
+                this.modifyFeatureStyle(this.features[i], targetStyle);
             }
 
             var linkedLayers = this.callbackContext.getLinkedLayers(
@@ -1205,8 +1216,11 @@ define([
         }
         else if (features.length === 1) {
             ableToContinue = false;
-            _requestTile(this, tile);
-        }
+            // Set 10 times more than the parsed value because the features total 
+            // number is approximative 
+            // TODO Iterate on each page until there is no feature to parse
+            _requestTile(this, tile, this.heatmapMinFeatureCount);
+        } 
 
         this.buildHeatmap();
 
@@ -1221,10 +1235,6 @@ define([
 
         // For each feature...
         for (var feature of features) {
-            if (!feature.hasOwnProperty("id")) {
-                feature.id = feature.properties.identifier;
-            }
-
             try {
                 _addFeature(this, feature, tile);
             } catch (error) { /* error */ }

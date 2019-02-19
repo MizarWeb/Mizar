@@ -70,20 +70,20 @@ define(["./OpenSearchUtils"], function(OpenSearchUtils) {
             this.patternAttribute = "pattern=\"" + this.pattern + "\" ";
         }
 
-        if (paramJson.Options !== undefined) {
+        if (paramJson.Option !== undefined) {
             this.options = [];
-            if (paramJson.Options.length !== undefined) {
-                for (var i = 0; i < paramJson.Options.length; i++) {
+            if (paramJson.Option.length !== undefined) {
+                for (var i = 0; i < paramJson.Option.length; i++) {
                     this.options.push(
                         OpenSearchUtils.getAttributeValue(
-                            paramJson.Options[i],
+                            paramJson.Option[i],
                             "value"
                         )
                     );
                 }
             } else {
                 this.options.push(
-                    OpenSearchUtils.getAttributeValue(paramJson.Options, "value")
+                    OpenSearchUtils.getAttributeValue(paramJson.Option, "value")
                 );
             }
         }

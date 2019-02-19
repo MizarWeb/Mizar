@@ -208,7 +208,7 @@ define(["../Utils/Constants"], function(Constants) {
     var FeatureStyle = function(style) {
         // Color used for lines or polygon outline
         this.strokeColor = [1.0, 0.0, 0.0, 1.0];
-        // Color used to full polygon
+        // Color used to fill polygon
         this.fillColor = [1.0, 0.0, 0.0, 1.0];
         this.fillTextureUrl = null;
         this.fillTexture = null;

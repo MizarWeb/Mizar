@@ -24,9 +24,8 @@ define([
     "../Utils/Utils",
     "../Renderer/RendererTileData",
     "../Tiling/Tile",
-    "./JsVotable/JsVotable",
-    "./JsVotable/utils",
-    "./JsCSV/csv",
+    "jsvotable",
+    "jscsv",
     "../Utils/Constants",
     "../Gui/dialog/ErrorDialog",
     "../Utils/Proxy"
@@ -38,7 +37,6 @@ define([
     RendererTileData,
     Tile,
     JsVotable,
-    UtilsJsVotable,
     CSV,
     Constants,
     ErrorDialog,
@@ -87,13 +85,13 @@ define([
         this.maxOrder = Number.parseInt(hips_order, 10);
         this.maxRequests = options.maxRequests || 4;
         this.invertY = options.invertY || false;
-        var xhr = UtilsJsVotable.makeHttpObject();
+        var xhr = new XMLHttpRequest();
         xhr.open("GET", Proxy.proxify(this.allowRequest(options.baseUrl + "/metadata.xml")), false);
         xhr.setRequestHeader("Accept", "application/xml");
         xhr.send(null);
         var jsVotable = new JsVotable.Votable(xhr.responseXML);
         var resource = jsVotable.getResources()[0];
-        var table = resource.getResourcesOrTables()[0].TABLE;
+        var table = resource.getResourcesOrTables()[0];
         this.fields = table.getFields();
         this.raColNumber = null;
         this.decColNumber = null;
@@ -238,7 +236,7 @@ define([
                         headerInfo.name.push(field.name());
                         headerInfo.datatype.push(field.datatype());
                     });
-                    var csv = new CSV(xhr.response, "\t", headerInfo);
+                    var csv = new CSV.Csv(xhr.response, "\t", headerInfo);
                     var geoJson = csv.getGeoJSon(
                         {
                             RA: self.raColNumber,
