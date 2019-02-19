@@ -1219,7 +1219,7 @@ define([
             // Set 10 times more than the parsed value because the features total 
             // number is approximative 
             // TODO Iterate on each page until there is no feature to parse
-            _requestTile(this, tile, this.heatmapMinFeatureCount*10);
+            _requestTile(this, tile, this.heatmapMinFeatureCount);
         } 
 
         this.buildHeatmap();

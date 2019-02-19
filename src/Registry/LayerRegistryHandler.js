@@ -83,7 +83,7 @@ define([
             this._handlePendingLayers(this.pendingLayers, layers);
             callback(layers);
         } catch (e) {
-            if (e instanceof RangeError) {
+            if (e instanceof RangeError && this.next != null) {
                 this.next.handleRequest(layerDescription, callback, fallback);
             } else if (fallback) {
                 fallback(e);
