@@ -936,15 +936,17 @@ define([
             );
 
             if (this.previousLevel !== undefined && this.previousLevel !== null) {
-                const oldKeys = Object.keys(this.heatmapTiles[this.previousLevel]);
-                for (var i = oldKeys.length - 1; i >= 0; --i)  {
-                    const key = oldKeys[i];
-                    const heatmapData = this.heatmapTiles[this.previousLevel][key];
-                    if (heatmapData.feature && heatmapData.feature) _removeFeature(this, heatmapData.feature.id, heatmapData.tile);
+                if (this.heatmapTiles && this.heatmapTiles[this.previousLevel]) {
+                    const oldKeys = Object.keys(this.heatmapTiles[this.previousLevel]);
+                    for (var i = oldKeys.length - 1; i >= 0; --i)  {
+                        const key = oldKeys[i];
+                        const heatmapData = this.heatmapTiles[this.previousLevel][key];
+                        if (heatmapData.feature && heatmapData.feature) _removeFeature(this, heatmapData.feature.id, heatmapData.tile);
 
-                    heatmapData.tile.osState[this.getID()] = OpenSearchLayer.TileState.NOT_LOADED;
+                        heatmapData.tile.osState[this.getID()] = OpenSearchLayer.TileState.NOT_LOADED;
 
-                    delete this.heatmapTiles[this.previousLevel][key];
+                        delete this.heatmapTiles[this.previousLevel][key];
+                    }
                 }
             }
         }
