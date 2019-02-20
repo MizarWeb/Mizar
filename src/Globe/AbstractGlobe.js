@@ -529,7 +529,7 @@ define([
         this.dispose();
         this.tileManager.tileConfig.coordinateSystem = coordinateSystem;
 
-        if (this.coordinateSystem.getProjection().getName() === Constants.PROJECTION.Azimuth ||
+        if (this.coordinateSystem.isFlat() && this.coordinateSystem.getProjection().getName() === Constants.PROJECTION.Azimuth ||
             oldCrs.getProjection().getName() === Constants.PROJECTION.Azimuth) {
             this.tileManager.level0Tiles = this.tileManager.tiling.generateLevelZeroTiles(
                 this.tileManager.tileConfig,
@@ -539,13 +539,6 @@ define([
 
         _updateTileIndexInGeometry.call(this, this.getTileManager());
     };
-
-    AbstractGlobe.prototype._updateGeoTiling = function(oldCrs, crs) {
-        if (crs.getProjection().getName() === Constants.PROJECTION.Azimuth ||
-            oldCrs.getProjection().getName() === Constants.PROJECTION.Azimuth) {
-            mustBeUpdated = true;
-        }
-    }
 
     /**
      * @function getCoordinateSystem
