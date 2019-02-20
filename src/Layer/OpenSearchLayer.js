@@ -1056,7 +1056,7 @@ define([
             targetStyle.setOpacity(arg);
 
             for (var i = 0; i < this.features.length; i++) {
-                this.modifyFeatureStyle(this.features[i], targetStyle);
+                this.modifyFeatureStyle(this.features[i], targetStyle, true);
             }
 
             var linkedLayers = this.callbackContext.getLinkedLayers(
