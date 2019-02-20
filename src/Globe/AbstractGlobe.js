@@ -528,6 +528,15 @@ define([
         this.coordinateSystem = coordinateSystem;
         this.dispose();
         this.tileManager.tileConfig.coordinateSystem = coordinateSystem;
+
+        if (this.coordinateSystem.isFlat() && this.coordinateSystem.getProjection().getName() === Constants.PROJECTION.Azimuth ||
+            oldCrs.getProjection().getName() === Constants.PROJECTION.Azimuth) {
+            this.tileManager.level0Tiles = this.tileManager.tiling.generateLevelZeroTiles(
+                this.tileManager.tileConfig,
+                this.tileManager.tilePool
+            );
+        }
+
         _updateTileIndexInGeometry.call(this, this.getTileManager());
     };
 

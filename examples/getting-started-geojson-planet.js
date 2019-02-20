@@ -20,7 +20,7 @@ mizar.addLayer({
 mizar.addLayer({
     type: Mizar.LAYER.WMS,
     "name": "Blue Marble",
-    "baseUrl": "http://80.158.6.138/mapserv?map=WMS_BLUEMARBLE"
+    "baseUrl": "http://80.158.6.138/mapserv?map=WMS_BLUEMARBLE",
     visible: true,
     opacity: 70
 });

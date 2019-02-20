@@ -329,8 +329,8 @@ define([
 
     function _removeFeatures(layer) {
         for (const id in layer.featuresSet) {
-            for (const tile in layer.featuresSet[id].tiles) {
-                _removeFeature(layer, id, tile);
+            for (var tileIndex = layer.featuresSet[id].tiles.length - 1; tileIndex >= 0; --tileIndex) {
+                _removeFeature(layer, id, layer.featuresSet[id].tiles[tileIndex]);
             }
         }
 
@@ -416,24 +416,24 @@ define([
     }
 
     function _addFeature(layer, feature, tile) {
-        var featureData;         
+        var featureData;
 
         var style = feature.properties.style ? feature.properties.style : layer.style;
-        style.opacity = layer.getOpacity(); 
-        
-        
+        style.opacity = layer.getOpacity();
+
+
         // fix geometry gid
         feature.geometry.gid = feature.id;
-        
+
         // fix feature ID
         if (!feature.hasOwnProperty("id")) {
             feature.id = feature.properties.identifier;
         }
 
         // fix style
-        if (!feature.properties.hasOwnProperty("style")) {          
+        if (!feature.properties.hasOwnProperty("style")) {
             feature.properties.style = style;
-        }        
+        }
 
         if (!layer.featuresSet.hasOwnProperty(feature.id)) {
             layer.features.push(feature);
@@ -936,15 +936,17 @@ define([
             );
 
             if (this.previousLevel !== undefined && this.previousLevel !== null) {
-                const oldKeys = Object.keys(this.heatmapTiles[this.previousLevel]);
-                for (var i = oldKeys.length - 1; i >= 0; --i)  {
-                    const key = oldKeys[i];
-                    const heatmapData = this.heatmapTiles[this.previousLevel][key];
-                    if (heatmapData.feature && heatmapData.feature) _removeFeature(this, heatmapData.feature.id, heatmapData.tile);
+                if (this.heatmapTiles && this.heatmapTiles[this.previousLevel]) {
+                    const oldKeys = Object.keys(this.heatmapTiles[this.previousLevel]);
+                    for (var i = oldKeys.length - 1; i >= 0; --i)  {
+                        const key = oldKeys[i];
+                        const heatmapData = this.heatmapTiles[this.previousLevel][key];
+                        if (heatmapData.feature) _removeFeature(this, heatmapData.feature.id, heatmapData.tile);
 
-                    heatmapData.tile.osState[this.getID()] = OpenSearchLayer.TileState.NOT_LOADED;
+                        heatmapData.tile.osState[this.getID()] = OpenSearchLayer.TileState.NOT_LOADED;
 
-                    delete this.heatmapTiles[this.previousLevel][key];
+                        delete this.heatmapTiles[this.previousLevel][key];
+                    }
                 }
             }
         }
@@ -1054,7 +1056,7 @@ define([
             targetStyle.setOpacity(arg);
 
             for (var i = 0; i < this.features.length; i++) {
-                this.modifyFeatureStyle(this.features[i], targetStyle);
+                this.modifyFeatureStyle(this.features[i], targetStyle, true);
             }
 
             var linkedLayers = this.callbackContext.getLinkedLayers(
@@ -1216,11 +1218,11 @@ define([
         }
         else if (features.length === 1) {
             ableToContinue = false;
-            // Set 10 times more than the parsed value because the features total 
-            // number is approximative 
+            // Set 10 times more than the parsed value because the features total
+            // number is approximative
             // TODO Iterate on each page until there is no feature to parse
             _requestTile(this, tile, this.heatmapMinFeatureCount);
-        } 
+        }
 
         this.buildHeatmap();
 
