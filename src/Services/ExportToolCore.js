@@ -29,7 +29,8 @@ define([
     "saveAs",
     "../Gui/dialog/ErrorDialog",
     "../Utils/Constants",
-    "../Utils/Proxy"
+    "../Utils/Proxy",
+    "loadmask"
 ], function($, _, JSZip, saveAs, ErrorDialog, Constants, Proxy) {
     var self, mizarAPI, layers, availableLayers;
 

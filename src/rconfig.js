@@ -40,7 +40,9 @@ require.config({
         jsvotable: "../node_modules/jsvotable/JsVotable.min",
         jscsv: "../node_modules/jscsv/JsCsv.min",
         xmltojson: "../node_modules/xmltojson/lib/xmlToJSON.min",
-        "wms-capabilities": "../node_modules/wms-capabilities/dist/wms-capabilities"
+        "wms-capabilities": "../node_modules/wms-capabilities/dist/wms-capabilities",
+        loadmask: "../external/loadmask/jquery.loadmask.min"
+
     },
     shim: {
         "underscore-min": {
@@ -51,6 +53,9 @@ require.config({
         },
         jquery: {
             exports: "$"
+        },
+        loadmask: {
+            deps: ["jquery"]
         }
     }
 });

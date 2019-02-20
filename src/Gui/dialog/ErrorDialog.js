@@ -194,7 +194,7 @@ define(["../../Utils/Constants", "jquery", "jquery.ui"], function(
          * By default debug is disable.
          * @param {boolean} debug Set to true to show debug message in the console otherwise False 
          */
-        setDebug(debug) {
+        setDebug: function(debug) {
             isDebug = debug;
         }
 
