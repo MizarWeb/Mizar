@@ -941,7 +941,7 @@ define([
                     for (var i = oldKeys.length - 1; i >= 0; --i)  {
                         const key = oldKeys[i];
                         const heatmapData = this.heatmapTiles[this.previousLevel][key];
-                        if (heatmapData.feature && heatmapData.feature) _removeFeature(this, heatmapData.feature.id, heatmapData.tile);
+                        if (heatmapData.feature) _removeFeature(this, heatmapData.feature.id, heatmapData.tile);
 
                         heatmapData.tile.osState[this.getID()] = OpenSearchLayer.TileState.NOT_LOADED;
 
