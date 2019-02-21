@@ -42,6 +42,7 @@ define(["./Numeric", "./Constants","../Tiling/HEALPixBase"], function(Numeric, C
         var deltax = segmentEnd[0] - segmentStart[0];
         var deltay, t;
         var liesInXDir = false;
+        var isIntersect;
 
         if (deltax === 0) {
             liesInXDir = point[0] === segmentStart[0];
@@ -53,14 +54,15 @@ define(["./Numeric", "./Constants","../Tiling/HEALPixBase"], function(Numeric, C
         if (liesInXDir) {
             deltay = segmentEnd[1] - segmentStart[1];
             if (deltax === 0) {
-                return point[1] === segmentStart[1];
+                isIntersect = point[1] === segmentStart[1];
             } else {
                 t = (point[1] - segmentStart[1]) / deltay;
-                return t >= 0 && t <= 1;
+                isIntersect = t >= 0 && t <= 1;
             }
         } else {
-            return false;
+            isIntersect = false;
         }
+        return isIntersect;
     };
 
     /**
