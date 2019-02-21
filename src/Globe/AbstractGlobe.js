@@ -476,7 +476,7 @@ define([
     AbstractGlobe.prototype.getLonLatFromPixel = function(x, y) {
         Utils.assert(
             typeof x === "number" && typeof y === "number",
-            "(lon,lat) from getLonLatFromPixel must be numbers for " +
+            "(x,y) from getLonLatFromPixel must be numbers for " +
                 this.constructor.name,
             "AbstractGlobe.js"
         );
@@ -530,7 +530,7 @@ define([
         this.tileManager.tileConfig.coordinateSystem = coordinateSystem;
 
         if (this.coordinateSystem.isFlat() && this.coordinateSystem.getProjection().getName() === Constants.PROJECTION.Azimuth ||
-            oldCrs.getProjection().getName() === Constants.PROJECTION.Azimuth) {
+            oldCrs.isFlat() && oldCrs.getProjection().getName() === Constants.PROJECTION.Azimuth) {
             this.tileManager.level0Tiles = this.tileManager.tiling.generateLevelZeroTiles(
                 this.tileManager.tileConfig,
                 this.tileManager.tilePool
