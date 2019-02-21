@@ -408,11 +408,15 @@ define([
                 return UtilsIntersection.isInBillboard(pickPoint, feature.geometry, feature.properties.style.meterSize, options.eventPos);
             } else {
                 if (!pickPoint) { return false; }
-                var point = feature.geometry.coordinates;
-
+                var coord = feature.geometry.coordinates;
+                var point;
                 var pt = [pickPoint[0], pickPoint[1], pickPoint[2]];
                 if (pickingNoDEM === true) {
                     pt[2] = 0;
+                    point = [coord[0], coord[1], 0];
+                    sizeMultiplicator = 3;
+                } else {
+                    point = coord;
                 }
                 return UtilsIntersection.pointInSphere(ctx, pt, point, feature.geometry._bucket.textureHeight * sizeMultiplicator);
             }

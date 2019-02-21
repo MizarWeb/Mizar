@@ -86,6 +86,16 @@ define([
         return feature;
     }
 
+    /**
+     * Checks whether a geometry type such a point has a geometry.
+     * @param {Object} geometry 
+     * @returns {Boolean} true when the point has an altitude otherwse false
+     * @private
+     */
+    function _hasPointAltitude(geometry) {
+        return geometry.type === Constants.GEOMETRY.Point && geometry.coordinates.length == 3;
+    }    
+
     /**************************************************************************************************************/
 
     Utils.inherits(AbstractVectorLayer, GeoJsonLayer);
@@ -123,6 +133,11 @@ define([
             for (var i = 0; i < features.length; i++) {
                 this.addFeature(features[i], crs);
             }
+            // When there is an altitude for a geometry type as point, set this option to make possible
+            // intersection algorithm           
+            if (_hasPointAltitude(features[0].geometry)) {
+                this.pickingNoDEM = true;
+            }            
         }
     };
 
