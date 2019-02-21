@@ -404,14 +404,14 @@ define([
 
     /**
      * Return the base URL of this script.
-     * @returns {string} the base URL
+     * @returns {string} the base URL or an empty string
      * @private
      */
     function _getMizarAPIBaseURL() {
         var scripts = document.getElementsByTagName("script");
         return (
             _extractURLFrom.call(this, scripts, MIZAR_NAME_PROD, -1) ||
-            _extractURLFrom.call(this, scripts, MIZAR_NAME_DEV, -2)
+            _extractURLFrom.call(this, scripts, MIZAR_NAME_DEV, -2) || ""
         );
     }
 
@@ -443,7 +443,7 @@ define([
      * @private
      */
     function _createConfiguration(options) {
-        var mizarAPIUrl = _getMizarAPIBaseURL();
+        var mizarAPIUrl = _getMizarAPIBaseURL();        
         var mizarOptions = {
             canvas:
                 typeof options.canvas === "string"
