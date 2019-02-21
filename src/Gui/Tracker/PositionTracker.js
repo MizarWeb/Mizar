@@ -113,9 +113,7 @@ define([
      */
     PositionTracker.prototype.attachTo = function(context) {
         AbstractTracker.prototype.attachTo.call(this, context);
-        var $posTrackerInfo = $(posTrackerInfoHTML).appendTo(
-            "#" + this._getElement() + "Info"
-        );
+        $(posTrackerInfoHTML).appendTo("#" + this._getElement() + "Info");
         CrsDialog.open(context._getGlobe().getCoordinateSystem());
         $("#posTrackerInfoButton").on("click", function() {
             if (CrsDialog.isActive() === true) {

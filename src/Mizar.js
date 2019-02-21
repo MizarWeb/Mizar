@@ -480,7 +480,7 @@ define([
      * @fires Mizar#mizarMode:toggle
      */
     function _switchToContext(context, options) {
-        if (context && context.globe) {
+        if (context.globe) {
             context.globe.isEnable = false;
         }
 
@@ -539,13 +539,12 @@ define([
                     .update.bind(context.getNavigation());
         }
         context.getNavigation().toViewMatrix(viewMatrix, fov, 2000, function() {
-            if (context) {
-                context.enable();
+            context.enable();
 
-                if (context && context.globe) {
-                    context.globe.isEnable = true;
-                }
+            if (context.globe) {
+                context.globe.isEnable = true;
             }
+            
             if (options && options.callback) {
                 options.callback.call(self);
             }
@@ -778,7 +777,7 @@ define([
                             var hipsServiceUrlArray = _getHipsServiceUrlArray(
                                 hipsLayer
                             );
-                            var hipsUrl = _checkHipsServiceIsAvailable(
+                            _checkHipsServiceIsAvailable(
                                 hipsServiceUrlArray,
                                 function(hipsServiceUrl) {
                                     if (typeof hipsServiceUrl === "undefined") {
@@ -1226,10 +1225,6 @@ define([
     Mizar.prototype.toggleToContext = function(context, options) {
         var result;
         try {
-            var toggleMode =
-                this.getActivatedContext().getMode() === Mizar.CONTEXT.Sky
-                    ? Mizar.CONTEXT.Planet
-                    : Mizar.CONTEXT.Sky;
             var opts = options || {};
             _switchToContext.call(this, context, opts);
             result = true;

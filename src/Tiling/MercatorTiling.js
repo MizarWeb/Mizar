@@ -185,7 +185,7 @@ define(["./Tile", "../Utils/Constants","../Renderer/GeoBound", "./GeoTiling"], f
         var size = this.config.tesselation;
         var vertices = new Float32Array(3 * size * (size + 6));
         var step = 1.0 / (size - 1);
-        var radius = this.config.coordinateSystem.geoide.radius;
+        //var radius = this.config.coordinateSystem.geoide.radius;
         var scale = this.config.coordinateSystem.geoide.heightScale;
         var offset = 0;
 
@@ -197,8 +197,8 @@ define(["./Tile", "../Utils/Constants","../Renderer/GeoBound", "./GeoTiling"], f
             var lat = Math.atan(0.5 * (Math.exp(n) - Math.exp(-n)));
             lat = (lat * 180) / Math.PI;
 
-            var cosLat = Math.cos(lat);
-            var sinLat = Math.sin(lat);
+            //var cosLat = Math.cos(lat);
+            //var sinLat = Math.sin(lat);
 
             var u = this.x;
 

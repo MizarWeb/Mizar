@@ -218,19 +218,6 @@ define([
         }
     }
 
-    function _isAlreadyAdded(featureId, features) {
-        var isFound = _.find(features, function (feature) { return feature.id === featureId; });
-        return isFound !== undefined;
-    }
-
-    function _isAlreadyAddedInTile(featureId, tile) {
-        if (typeof tile.associatedFeaturesId.length === "undefined") {
-            return false;
-        }
-        var num = tile.associatedFeaturesId.indexOf(featureId);
-        return num >= 0;
-    }
-
     function _getColorForPercentage(pct, colormap) {
         var colors = colormap.slice(0);
         colors.sort(function(c0, c1) { return c0.pct - c1.pct; });
@@ -278,6 +265,7 @@ define([
     }
 
     function _computeGeometryExtent(geometry) {
+        //TODO : To be modified according to the planet CRS.
         var result = {
             east: -180,
             west: +180,
@@ -390,28 +378,6 @@ define([
             if (remove) {
                 _removeTile(layer, tile);
             }
-        }
-    }
-
-    function _addFeatureToRenderers(layer, feature, tile) {
-        var geometry = feature.geometry;
-
-        // Manage style, if undefined try with properties, otherwise use defaultStyle
-        var style = layer.style;
-        var props = feature.properties;
-        if (props && props.style) {
-            style = props.style;
-        }
-
-        // Manage geometry collection
-        if (geometry.type === "GeometryCollection") {
-            var geoms = geometry.geometries;
-            for (var i = 0; i < geoms.length; i++) {
-                layer.getGlobe().getRendererManager().addGeometryToTile(layer, geoms[i], style, tile);
-            }
-        } else {
-            // Add geometry to renderers
-            layer.getGlobe().getRendererManager().addGeometryToTile(layer, geometry, style, tile);
         }
     }
 
@@ -617,16 +583,6 @@ define([
         }
     }
 
-    function _mustBeRefreshed(previousKey, currentKey, forceRefreshed) {
-        var needRefresh;
-        if (previousKey === null || forceRefreshed === true) {
-            needRefresh = true;
-        } else {
-            needRefresh = previousKey !== currentKey;
-        }
-        return needRefresh;
-    }
-
     function _computeStats(layer) {
         var nb = 0;
         for(var i=0; i<layer.tilesLoaded.length; i++) {
@@ -635,8 +591,6 @@ define([
                 nb = nb + tileLoaded.associatedFeaturesId.length;
             }
         }
-        console.log("features in tileLoaded :"+nb);
-        console.log("nb features :"+layer.features.length);
     }
 
     function _requestTile(layer, tile, count) {
@@ -1151,17 +1105,16 @@ define([
 
         this.callbackContext.refresh();
 
-        if (typeof this.callbackContext !== "undefined") {
-            if (typeof selectedData !== "undefined") {
-                this.callbackContext.publish(
-                    Constants.EVENT_MSG.LAYER_TOGGLE_WMS,
-                    {
-                        layer_name: selectedData.layer.getShortName(),
-                        visible: false
-                    }
-                );
-            }
+        if (typeof selectedData !== "undefined") {
+            this.callbackContext.publish(
+                Constants.EVENT_MSG.LAYER_TOGGLE_WMS,
+                {
+                    layer_name: selectedData.layer.getShortName(),
+                    visible: false
+                }
+            );
         }
+        
     };
 
     /**************************************************************************************************************/

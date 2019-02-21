@@ -36,7 +36,6 @@ define(["../Utils/Constants","../Gui/dialog/ErrorDialog","../Utils/Proxy","fits"
         var hdu = fits.getHDU();
         var data = hdu.data;
 
-        var uintPixels;
         var swapPixels = new Uint8Array(
             data.view.buffer,
             data.begin,

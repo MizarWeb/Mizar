@@ -66,12 +66,6 @@ define([
      */
 
     /**
-     * 1km epsilon error for elevation.
-     * @type {number}
-     */
-    const OFFSET_ELEVATION = 1000.0;
-
-    /**
      * Duration of animation in milliseconds for the zoom_to function.
      * @type {number}
      */
@@ -523,7 +517,6 @@ define([
      * @memberof Navigation#
      */
     PlanetNavigation.prototype.computeViewMatrix = function() {
-        const oldMatrix = Array.from(this.renderContext.getViewMatrix());
         this.computeInverseViewMatrix();
         mat4.inverse(
             this.inverseViewMatrix,
@@ -666,7 +659,7 @@ define([
 
             var r = new Ray(newEye, centerDir);
             const newCenter = this.ctx.globe.computeIntersection(r);
-            if (newCenter != null && newCenter != undefined) {
+            if (newCenter != null) {
                 this.geoCenter = newCenter;
                 this.geoCenter[1] = Math.min(88, Math.max(this.geoCenter[1], -88));
             }
@@ -740,14 +733,9 @@ define([
      * @param {int} dy Window delta y
      */
     PlanetNavigation.prototype.rotate = function(dx, dy) {
-        var previousHeading = this.heading;
-        var previousTilt = this.tilt;
-
         this.heading += dx * DELTA_HEADING;
         this.tilt += dy * DELTA_TILT;
-
         this.clampTilt();
-
         this.computeViewMatrix();
     };
 
@@ -767,8 +755,6 @@ define([
         this.ctx.getCoordinateSystem().from3DToGeo(eye, geoEye);
         const elevation = this.ctx.getElevation(geoEye[0], geoEye[1]);
 
-        const near = this.ctx.getRenderContext().near;
-
         const dist = geoEye[2] - elevation - 25;
         const collides = dist < 0;
 
@@ -785,8 +771,6 @@ define([
      */
     PlanetNavigation.prototype.updateGeoCenter = function() {
         const canvas = this.renderContext.canvas;
-        const width = canvas.width;
-        const height = canvas.height;
 
         // Recompute the geo position, trace a new ray to check intersection with the terrain
         this.computeInverseViewMatrix();
@@ -803,7 +787,7 @@ define([
         var r = new Ray(eye, dir);
 
         const center = this.ctx.globe.computeIntersection(r);
-        if (center != null && center != undefined) {
+        if (center != null) {
             this.geoCenter = center;
             // Update distance
             const center3D = vec3.create();

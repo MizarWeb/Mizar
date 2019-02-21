@@ -133,7 +133,7 @@ define([
      *        <li>color : Highlight color</li>
      */
     function focusFeatureByIndex(index, options) {
-        if (options && options.isExclusive) {
+        if (options.isExclusive) {
             blurSelection();
         }
 
@@ -230,9 +230,7 @@ define([
      */
     function focusSelection(newSelection) {
         var style;
-        var startTime;
-        var endTime;
-        var focusLayers = {};
+        //var focusLayers = {};
         for (var i = 0; i < newSelection.length; i++) {
             var selectedData = newSelection[i];
             if (selectedData.feature.properties.style) {
@@ -338,7 +336,7 @@ define([
      */
     function featureIsPicked(feature, pickPoint, pickingNoDEM, options) {
         var i, j, p;
-        var feat, featNext, ring, isMobile;
+        var feat, featNext, ring;
         var sizeMultiplicator =
             options && options.sizeMultiplicator
                 ? options.sizeMultiplicator

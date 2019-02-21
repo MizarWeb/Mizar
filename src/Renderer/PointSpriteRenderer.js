@@ -401,7 +401,7 @@ define([
      */
     PointSpriteRenderer.prototype.createBucket = function(layer, style) {
         var gl = this.globe.renderContext.gl;
-        var vb = gl.createBuffer();
+        gl.createBuffer();
 
         // Create a bucket
         var bucket = new Bucket(layer, style);

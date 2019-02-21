@@ -223,19 +223,13 @@ define([
     CDSReverseNameResolver.prototype._parseRa = function(hours, min, sec) {
         var intHours = parseInt(hours, 10);
         var val = (sec / 60.0 + min) / 60.0;
-
-        if (hours <= 0.0) {
-            val = hours - val;
-            intHours = -intHours;
-        } else {
-            val = intHours + val;
-        }
+        val = intHours + val;        
         return val * HOUR_TO_DEG;
     };
 
     /**
      * Parse dec
-     * @function _parseDec
+     * @function _parseDecval = intHours + val;
      * @memberof CDSReverseNameResolver#
      * @param degrees
      * @param min
@@ -250,7 +244,6 @@ define([
 
         if (degrees <= 0.0) {
             val = degrees - val;
-            intDegrees = -intDegrees;
         } else {
             val = intDegrees + val;
         }

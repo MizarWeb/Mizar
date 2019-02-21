@@ -21,8 +21,6 @@ define([
     "underscore-min",
     "../Utils/Utils",
     "./AbstractNameResolver",
-    "../Layer/VectorLayer",
-    "../Renderer/FeatureStyle",
     "../Utils/Constants",
     "../Gui/dialog/ErrorDialog"
 ], function(
@@ -30,8 +28,6 @@ define([
     _,
     Utils,
     AbstractNameResolver,
-    VectorLayer,
-    FeatureStyle,
     Constants,
     ErrorDialog
 ) {
@@ -84,7 +80,7 @@ define([
      */
     var DictionaryNameResolver = function(options) {
         AbstractNameResolver.prototype.constructor.call(this, options);
-        dictionary = retrieveDictionary(options);
+        retrieveDictionary(options);
     };
 
     /**************************************************************************************************************/
@@ -214,11 +210,11 @@ define([
             for (i = 1; i < polygonArray.length; i++) {
                 tmpCenter = _computeLineStringBarycenter.call(
                     this,
-                    lineStringArray[i][0]
+                    polygonArray[i][0]
                 );
-                tmpCenter[0] = tmpCenter[0] * lineStringArray[i][0].length;
-                tmpCenter[1] = tmpCenter[1] * lineStringArray[i][0].length;
-                nbPts = nbPts + lineStringArray[i][0].length;
+                tmpCenter[0] = tmpCenter[0] * polygonArray[i][0].length;
+                tmpCenter[1] = tmpCenter[1] * polygonArray[i][0].length;
+                nbPts = nbPts + polygonArray[i][0].length;
                 center = _addPoint.call(this, center, tmpCenter);
             }
             center[0] = center[0] / nbPts;

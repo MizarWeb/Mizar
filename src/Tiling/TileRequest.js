@@ -212,7 +212,7 @@ define(["./Tile", "../Utils/ImageRequest"], function(Tile, ImageRequest) {
                 // Check if the image isn't already loaded in cache
                 var cachedTileRequest;
                 if (tileManager.imageryProvider.cache) {
-                    cachedTileRequest = cachedTileRequest = tileManager.imageryProvider.cache.getFromCache(
+                    cachedTileRequest = tileManager.imageryProvider.cache.getFromCache(
                         tile
                     );
                 }

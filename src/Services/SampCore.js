@@ -31,14 +31,9 @@ define([
     "jquery.ui"
 ], function($, _, Constants, JsonProcessor, ErrorDialog) {
     var mizar;
-    var navigation;
-    var imageManager;
-
     var connector; // SAMP connector
-    var sampLayer; // SAMP vector layer containing all incoming fits images
     var pointAtReceived = false; // Parameter avoiding looping while receiving coord.pointAt.sky SAMP event
     var votable2geojsonBaseUrl;
-    //var sitoolsBaseUrl;
 
     /**************************************************************************************************************/
 
@@ -65,6 +60,7 @@ define([
             isCall
         ) {
             if (votable2geojsonBaseUrl) {
+                //TODO : convert in GeoJson
                 //var params = message["samp.params"];
                 //var origUrl = params.url;
                 //var proxyUrl = clientTracker.connection.translateUrl(origUrl);

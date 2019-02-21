@@ -109,7 +109,7 @@ define([
          */
         create: function(options) {
             var cs;
-            if (options && options.geoideName) {
+            if (options.geoideName) {
                 cs = _createCrs(options.geoideName, options);
             } else {
                 throw new ReferenceError(
@@ -118,7 +118,7 @@ define([
                 );
             }
 
-            if (options && options.projectionName) {
+            if (options.projectionName) {
                 cs = new ProjectedCrs(cs, options);
             }
             return cs;

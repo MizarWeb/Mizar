@@ -148,7 +148,7 @@ define([
         var lines = content.split("\n");
         for (i = 0; lines !== null && i < lines.length; i++) {
             var line = lines[i];
-            if (line !== null && (line.indexOf("#") > -1 || !line.trim())) {
+            if (line.indexOf("#") > -1 || !line.trim()) {
                 continue;
             }
             var keywordValue = line.split("=");

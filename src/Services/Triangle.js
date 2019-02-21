@@ -115,9 +115,9 @@ define([], function() {
             options = {};
         }
         if (this.dragging) {
-            ctx.fillStyle = options.draggingColor | "#FF0";
+            ctx.fillStyle = options.draggingColor || "#FF0";
         } else {
-            ctx.fillStyle = options.noDraggingColor | "#F00";
+            ctx.fillStyle = options.noDraggingColor || "#F00";
         }
 
         ctx.beginPath();
@@ -128,7 +128,7 @@ define([], function() {
         ctx.fill();
 
         if (!this.dragging && this.hover) {
-            ctx.strokeStyle = options.draggingColor | "#FF0";
+            ctx.strokeStyle = options.draggingColor || "#FF0";
             ctx.stroke();
         }
     };

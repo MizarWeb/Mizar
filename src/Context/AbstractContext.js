@@ -684,11 +684,7 @@ define([
                     // Take autoFillTimeTravel into account
                     if (layer.autoFillTimeTravel === true) {
                         // Only when visible & time travel service activated and available
-                        if (
-                            layer.visible === true &&
-                            self.timeTravelService &&
-                            typeof self.timeTravelService !== "undefined"
-                        ) {
+                        if (layer.visible === true && self.timeTravelService) {
                             self.timeTravelService.update(
                                 layer.timeTravelValues
                             );

@@ -117,17 +117,15 @@ define(["../Utils/Utils", "./AbstractAnimation"], function(
             "InertiaAnimation.js"
         );
         AbstractAnimation.prototype.constructor.call(this);
-        if (options) {
-            this.panFactor = options.hasOwnProperty("panFactor")
-                ? options.panFactor
-                : PAN_FACTOR;
-            this.rotateFactor = options.hasOwnProperty("rotateFactor")
-                ? options.rotateFactor
-                : ROTATE_FACTOR;
-            this.zoomFactor = options.hasOwnProperty("zoomFactor")
-                ? options.zoomFactor
-                : ZOOM_FACTOR;
-        }
+        this.panFactor = options.hasOwnProperty("panFactor")
+            ? options.panFactor
+            : PAN_FACTOR;
+        this.rotateFactor = options.hasOwnProperty("rotateFactor")
+            ? options.rotateFactor
+            : ROTATE_FACTOR;
+        this.zoomFactor = options.hasOwnProperty("zoomFactor")
+            ? options.zoomFactor
+            : ZOOM_FACTOR;        
 
         this.type = null;
         this.dx = 0;

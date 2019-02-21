@@ -196,7 +196,7 @@ define(function() {
             this.indexBuffer = gl.createBuffer();
             gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indexBuffer);
 
-            var indices = this.triIndices;
+            var indices;
             if (this.triIndices.length > 0) {
                 if (this.lineIndices.length > 0) {
                     indices = this.triIndices.concat(this.lineIndices);

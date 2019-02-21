@@ -554,7 +554,7 @@ define([
      */
     ConvexPolygonRenderer.prototype.createBucket = function(layer, style) {
         var gl = this.renderContext.gl;
-        var vb = gl.createBuffer();
+        gl.createBuffer();
         // Create a bucket
         var bucket = new Bucket(layer, style);
 

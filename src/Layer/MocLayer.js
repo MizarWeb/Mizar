@@ -98,7 +98,7 @@ define([
         }
 
         // Set style
-        if (options && options.style) {
+        if (options.style) {
             this.style = new FeatureStyle(options.style);
         } else {
             this.style = new FeatureStyle();
@@ -327,9 +327,6 @@ define([
      * @param response MOC response
      */
     MocLayer.prototype.handleDistribution = function(response) {
-        var gl = this.getGlobe()
-            .getTileManager()
-            .getRenderContext().gl;
         this.featuresSet = {};
         var parentIndex;
         var i, u, v;

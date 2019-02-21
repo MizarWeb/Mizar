@@ -655,8 +655,8 @@ define([
         var gl = rc.gl;
         var i, tile;
         // Compute near/far from tiles
-        var nr;
-        var fr;
+        //var nr;
+        //var fr;
         if (this.tileConfig.cullSign < 0) {
             // When in "Astro" mode, do not compute near/far from tiles not really needed
             // And the code used for "Earth" does not works really well, when the earth is seen from inside...
@@ -690,19 +690,16 @@ define([
             ) {
                 this.program.dispose();
                 this.program = new Program(this.renderContext);
-
-                if (this.imageryProvider && this.imageryProvider.customShader) {
-                    this.currentFragmentShader = this.imageryProvider
-                        .customShader.fragmentCode
-                        ? this.imageryProvider.customShader.fragmentCode
-                        : this.fragmentShader;
-                    this.program.createFromSource(
-                        this.imageryProvider.customShader.vertexShader
-                            ? this.imageryProvider.customShader.vertexShader
-                            : this.vertexShader,
-                        this.currentFragmentShader
-                    );
-                }
+                this.currentFragmentShader = this.imageryProvider
+                    .customShader.fragmentCode
+                    ? this.imageryProvider.customShader.fragmentCode
+                    : this.fragmentShader;
+                this.program.createFromSource(
+                    this.imageryProvider.customShader.vertexShader
+                        ? this.imageryProvider.customShader.vertexShader
+                        : this.vertexShader,
+                    this.currentFragmentShader
+                );                
             }
 
             // Setup program

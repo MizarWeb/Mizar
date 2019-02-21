@@ -380,7 +380,7 @@ define([
         var year = date.getUTCFullYear();
         var month = date.getUTCMonth() + 1;
         var day = date.getUTCDate();
-        var UT = _UT(date);
+        //var UT = _UT(date);
         //TODO check 1721013.5 should be -730531.5 !!!
         return (
             367 * year -
@@ -514,22 +514,6 @@ define([
         var distance =
             (2 * Math.PI * planetRadius * visibleAngularDistance) / 360;
         return (0.5 * distance) / Math.tan(0.5 * Numeric.toRadian(fov));
-    };
-
-    Utils.defineTimeRequest = function(temporalRanges, timeRequest) {
-        var startDate = timeRequest.from;
-        var stopDate = timeRequest.to;
-
-        var times = temporalRanges.split(",");
-        if (times.length == 1) {
-            // no range
-            var time = times[0];
-        } else {
-            // temporalRange
-            var startTime = times[0];
-            var stopTime = times[1];
-            var frequency = times[2];
-        }
     };
 
     Utils.formatResolution = function(format) {

@@ -56,20 +56,6 @@ define([
     /**************************************************************************************************************/
 
     /**
-     * Moves an elements of the array to another index
-     * @param {Array} array array
-     * @param {number} from index where the element to move is located
-     * @param {number} to index where the element must be gone.
-     * @function _moveArrayEltFromTo
-     * @memberof WCSServerRegistryHandler#
-     * @private
-     */
-    function _moveArrayEltFromTo(array, from, to) {
-        var extracted = array.splice(from, 1)[0];
-        array.splice(to, 0, extracted);
-    }
-
-    /**
      * Destroys the TileWireFrame if it exists and returns its layer description.
      * @param layers list of layers to load
      * @function _destroyTileWireFrame

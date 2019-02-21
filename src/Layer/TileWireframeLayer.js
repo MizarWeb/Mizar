@@ -64,7 +64,7 @@ define([
             Constants.LAYER.TileWireframe,
             options
         );
-        this.outline = options && options.outline ? options.outline : false;
+        this.outline = options.outline || false;
         this.globe = null;
         this.program = null;
         this.indexBuffer = null;

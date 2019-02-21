@@ -93,12 +93,10 @@ define(["../Utils/Numeric","../Utils/Constants", "../Gui/dialog/ErrorDialog"], f
                     // Clamp
                     if (v > 256.0) {
                         v = 256.0;
-                    } else {
-                        if (v < 0.0) {
-                            v = 0.0;
-                        }
+                    } else if (v < 0.0) {
+                        v = 0.0;
                     }
-
+                    
                     transferFonctions[x][i] = Math.floor(v);
                 }
             }

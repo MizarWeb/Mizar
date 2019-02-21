@@ -220,8 +220,8 @@ define([
             (this.geoBound.getEast() - this.geoBound.getWest()) / (size - 1);
         var latStep =
             (this.geoBound.getSouth() - this.geoBound.getNorth()) / (size - 1);
-        var radius = this.config.coordinateSystem.getGeoide().getRadius();
-        var scale = this.config.coordinateSystem.getGeoide().getHeightScale();
+        //var radius = this.config.coordinateSystem.getGeoide().getRadius();
+        //var scale = this.config.coordinateSystem.getGeoide().getHeightScale();
         var offset = 0;
 
         // Optimized build for sphere coordinates : uncomment if needed

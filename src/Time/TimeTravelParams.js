@@ -256,7 +256,7 @@ define([
             if (minDate.date === null) {
                 minDate = currentNextDate;
             } else {
-                if (Math.abs(currentNextDate - date < minDate - date)) {
+                if (Math.abs(currentNextDate - date) < Math.abs(minDate - date)) {
                     minDate = currentNextDate;
                 }
             }
@@ -295,11 +295,7 @@ define([
             if (minDate.date === null) {
                 minDate = currentPreviousDate;
             } else {
-                if (
-                    Math.abs(
-                        currentPreviousDate.date - date < minDate.date - date
-                    )
-                ) {
+                if (Math.abs(currentPreviousDate.date - date) < Math.abs(minDate.date - date)) {
                     minDate = currentPreviousDate;
                 }
             }

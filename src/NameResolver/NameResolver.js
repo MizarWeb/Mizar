@@ -177,7 +177,6 @@ define([
         onErrorOutOfBound,
         onComplete
     ) {
-        var geoPos;
         // regexp used only to distinct equatorial coordinates and objects
         // TODO more accurate ( "x < 24h", "x < 60mn", etc.. )
         objectName = objectName.replace(/\s{2,}/g, " "); // Replace multiple spaces by a single one
@@ -190,11 +189,10 @@ define([
         var layerRE = /^layer:(.)*?/;
         var matchHealpix = healpixRE.exec(objectName);
         var matchDegree = degRE.exec(objectName);
-        var matchLayer = layerRE.exec(objectName);
         if (matchHealpix) {
             zoomToHips(matchHealpix, onSuccess);
         } else if (objectName.match(coordinatesExp)) {
-            zoomToSexagesimal(objectName, coordinatesExp, onSuccess);
+            zoomToSexagesimal(objectName, onSuccess);
         } else if (matchDegree) {
             zoomToDecimal(matchDegree, onSuccess, onErrorOutOfBound);
         } else {

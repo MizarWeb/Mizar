@@ -106,7 +106,7 @@ define([
                 ErrorDialog.open(Constants.LEVEL.ERROR, "Error, no feature in featureCollection : ", featureCollection);
                 return;
             }
-            var i, j, r;
+            var i;
 
             for (i = 0; i < features.length; i++) {
                 var currentFeature = features[i];

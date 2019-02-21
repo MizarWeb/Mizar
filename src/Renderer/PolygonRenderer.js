@@ -289,7 +289,6 @@ define([
         }
 
         var lastIndex = this.vertices.length / this.vertexSize;
-        var offset = this.vertices.length;
         var upOffset, lowOffset;
 
         var contours = [];
@@ -297,6 +296,7 @@ define([
             contours = contours.concat(_fixDateLine(polygons[n][0]));
         }
 
+        var offset;
         for (n = 0; n < contours.length; n++) {
             var coords = clipPolygon(contours[n], csBound);
 

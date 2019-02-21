@@ -63,7 +63,7 @@ define([
 
         // Set style
         var style;
-        if (options && options.style) {
+        if (options.style) {
             style = options.style;
         } else {
             style = new FeatureStyle();

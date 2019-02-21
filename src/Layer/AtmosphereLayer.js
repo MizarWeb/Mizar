@@ -123,18 +123,16 @@ define([
         if (!this.name) {
             this.name = "Atmosphere";
         }
-        this.kr = (options && options.kr) || 0.0025;
-        this.km = (options && options.km) || 0.0015;
-        this.sunBrightness = (options && options.sunBrightness) || 15.0;
-        this.exposure = (options && options.exposure) || 2.0;
-        this.wavelength = (options && options.wavelength) || [
+        this.kr = options.kr || 0.0025;
+        this.km = options.km || 0.0015;
+        this.sunBrightness = options.sunBrightness || 15.0;
+        this.exposure = options.exposure || 2.0;
+        this.wavelength = options.wavelength || [
             0.65,
             0.57,
             0.475
         ];
-        this.lightDir =
-            (options && options.lightDir) ||
-            _computeLightDir.call(this, new Date());
+        this.lightDir = options.lightDir || _computeLightDir.call(this, new Date());
 
         // internal properties
         this._skyProgram = null;

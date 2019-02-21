@@ -328,7 +328,6 @@ define([
      */
     HipsFitsLayer.prototype.extractFitsData = function(pi, fitsPixel, sx, sy) {
         var size = 64;
-        var height = this.levelZeroImage.height;
         var width = this.levelZeroImage.width;
         var pixels = this.levelZeroImage.pixels;
 

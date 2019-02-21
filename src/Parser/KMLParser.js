@@ -310,12 +310,10 @@ define(["../Renderer/FeatureStyle", "../Utils/Constants"], function(
                     {
                         style = parseStyle(
                             child,
-                            feature.properties.name,
                             feature.properties.style
                         );
-                        if (style) {
-                            feature.properties.style = style;
-                        }
+                        feature.properties.style = style;
+                        
                     }
                     break;
                 default:

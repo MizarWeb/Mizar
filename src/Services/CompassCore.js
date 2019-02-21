@@ -88,7 +88,7 @@ define(["jquery", "../Utils/Constants"], function($, Constants) {
         var coordinateSystem = ctx.getCoordinateSystem();
         var center = ctx.getNavigation().center3d
             ? ctx.getNavigation().center3d
-            : (center = ctx.getNavigation().geoCenter);
+            : ctx.getNavigation().geoCenter;
         coordinateSystem.from3DToGeo(center, geo);
         geo = coordinateSystem.convert(
             geo,

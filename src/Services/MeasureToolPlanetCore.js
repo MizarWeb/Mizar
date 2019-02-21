@@ -316,10 +316,6 @@ define([
     function updateMeasure() {
         self.clear();
 
-        // Create elevation
-        var firstPoint = self.geoPickPoint;
-        var secondPoint = self.secondGeoPickPoint;
-
         // Create measurement and  apply elevation to all point of displayed arrow
         var coordinates = self.computeMeasure();
         self.measureFeature = createGeoJsonMeasurement(coordinates);

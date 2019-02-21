@@ -223,7 +223,7 @@ define([
                 if (isNaN(elts[n]) || elts[n] === noDATA) {
                     elevation = oldVal;
                 } else {
-                    elevation = parseFloat(elts[n], 10);
+                    elevation = parseFloat(elts[n]).toFixed(10);
                     oldVal = elevation;
                 }
                 //var elevation = parseInt(elts[n], 10);

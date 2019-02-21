@@ -477,7 +477,7 @@ define([
      */
     MainRenderable.prototype.build = function(geometry) {
         var renderer = this.bucket.renderer;
-        var style = this.bucket.style;
+        //var style = this.bucket.style;
         var cs = renderer.globe.getCoordinateSystem();
 
         var lines;
@@ -490,12 +490,7 @@ define([
         lines = JSON.parse(JSON.stringify(lines));
 
         var geometryBound = new GeoBound();
-        var csBound = new GeoBound(
-            cs.getGeoBound().getWest(),
-            cs.getGeoBound().getSouth(),
-            cs.getGeoBound().getEast(),
-            cs.getGeoBound().getNorth()
-        );
+
         var crsName = "CRS:84";
         if (typeof geometry.crs !== "undefined") {
             crsName = geometry.crs.properties.name;

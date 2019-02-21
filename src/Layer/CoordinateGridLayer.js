@@ -634,7 +634,6 @@ define([
      */
     CoordinateGridLayer.prototype.computeSamples = function() {
         var dlong = this.geoBound.east - this.geoBound.west;
-        var dlat = this.geoBound.north - this.geoBound.south;
 
         // if under-sampled and not divergent
         while (

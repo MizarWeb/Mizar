@@ -159,11 +159,7 @@ define([
             // Add geometry to each tile in range
             for (var i = 0; i < tileIndices.length; i++) {
                 var tile = this.tileManager.level0Tiles[tileIndices[i]];
-                if (
-                    tile &&
-                    typeof tile !== "undefined" &&
-                    tile.state === Tile.State.LOADED
-                ) {
+                if (tile && tile.state === Tile.State.LOADED) {
                     this._recursiveAddGeometryToTile(bucket, geometry, tile);
                 }
             }
@@ -382,7 +378,7 @@ define([
      */
     VectorRenderer.prototype.removeGeometryFromTile = function(geometry, tile) {
         var bbox = null;
-        if (!geometry.type === "Point") {
+        if (geometry.type !== "Point") {
             bbox = Utils.getBBox(geometry);
         }
         // var startDate = new Date();

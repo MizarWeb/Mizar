@@ -259,6 +259,7 @@ define(["./Numeric", "./Constants","../Tiling/HEALPixBase"], function(Numeric, C
      * @param {Tile} t1
      * @param {Tile} t2
      * @returns {boolean} true when t1 intersects with t2 otherwise false
+     * @throws ReferenceError - Unknown tiling     
      */
     UtilsIntersection.tileIntersect = function(t1, t2) {
         if (t1 === null || t2 === null) {
@@ -270,7 +271,7 @@ define(["./Numeric", "./Constants","../Tiling/HEALPixBase"], function(Numeric, C
         } else if (t1.type === Constants.TILE.HEALPIX_TILE) {
             result = UtilsIntersection.tileIntersectHealpixTile(t1, t2);
         } else {
-            throw new "Unknown tiling";
+            throw new ReferenceError("Unknown tiling", "UtilsIntersection.js");
         }
         return result;
     };

@@ -83,7 +83,7 @@ define([
     var Point = function(options) {
         this.x = options.x | 0;
         this.y = options.y | 0;
-        this.color = options.color | "rgb(255,0,0)";
+        this.color = options.color || "rgb(255,0,0)";
         this.size = options.size | 2;
         for (var x in options) {
             if (options.hasOwnProperty(x)) {
@@ -266,7 +266,7 @@ define([
             imageObj = new Image();
             imageObj.onload = function() {
                 context.drawImage(imageObj, 0, 0);
-                updateMollweideFov(imageObj);
+                updateMollweideFov();
             };
         },
         getImageObj: function() {

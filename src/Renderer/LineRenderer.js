@@ -110,7 +110,7 @@ define([
 
         this.time = Date.now() / 1000; // Store it in seconds
         this.palette = null; // Palette is an array containing two colors(start/end and the middle one)
-        this.colorTexture = this.generateTexture([
+        this.generateTexture([
             [0.0, 0.0, 255.0],
             [0.0, 200.0, 255.0]
         ]);
@@ -209,7 +209,7 @@ define([
      */
     LineRenderable.prototype.build = function(geometry) {
         var renderer = this.bucket.renderer;
-        var style = this.bucket.style;
+        //var style = this.bucket.style;
         var i, n;
 
         var lines =

@@ -52,7 +52,6 @@ define([
      * @memberof CDSNameResolver#
      */
     CDSNameResolver.prototype.handle = function(options) {
-        var context = this.ctx;
         var objectName = options.objectName;
         var onError = options.onError;
         var onComplete = options.onComplete;

@@ -223,7 +223,6 @@ define(["jquery","./Frustum", "./glMatrix"], function($, Frustum) {
             // Reset frame requested flag first
             this.frameRequested = false;
 
-            var stats = this.stats;
             var gl = this.gl;
             var i;
 

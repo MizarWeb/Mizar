@@ -178,7 +178,7 @@ define([
                 );
             }
 
-            if (indices === null) {
+            if (indices.length === 0) {
                 ErrorDialog.open(Constants.LEVEL.DEBUG, "StencilPolygonRenderer.js", "Triangulation error ! Check if your GeoJSON geometry is valid");
                 return false;
             }

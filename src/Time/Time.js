@@ -98,18 +98,6 @@ define(["jquery", "moment", "../Utils/Constants", "../Utils/Utils"], function(
     }
 
     /**
-     * Tests is value is a numeric value.
-     * @param value value to test
-     * @return {boolean} true when value is a numeric otherwise false
-     * @function _isNumeric
-     * @memberof Time#
-     * @private
-     */
-    function _isNumeric(value) {
-        return !isNaN(value);
-    }
-
-    /**
      * Returns the unit (year, mont, day) of the date
      * @param {UNIT_TIME_WMS} unit
      * @return {TIME_STEP} the unit
@@ -296,7 +284,6 @@ define(["jquery", "moment", "../Utils/Constants", "../Utils/Utils"], function(
         timeResolution
     ) {
         var guess,
-            start,
             currentDate,
             min = 0,
             max = nbValues;
@@ -545,7 +532,7 @@ define(["jquery", "moment", "../Utils/Constants", "../Utils/Utils"], function(
      */
     Time.prototype.isInTimeDefinition = function(timeDefinition) {
         timeDefinition = timeDefinition.trim();
-        var dataTime, momentDataTime, timeIdx;
+        var dataTime, timeIdx;
         var isInside = false;
         var times = timeDefinition.split(",");
         for (timeIdx = 0; timeIdx < times.length && !isInside; timeIdx++) {

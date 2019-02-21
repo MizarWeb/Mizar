@@ -389,15 +389,6 @@ define([
                 })
             }
         };
-        var msg =
-            "Distance :" +
-            self.geoDistance +
-            " at " +
-            coordinates[0][0] +
-            "," +
-            coordinates[0][1] +
-            "," +
-            coordinates[0][2];
         measureLayer.addFeature(self.measureFeature);
         measureLayer.addFeature(self.measureLabel);
     }

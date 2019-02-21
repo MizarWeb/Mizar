@@ -909,7 +909,6 @@ define(["jquery", "../Utils/Constants", "../Gui/dialog/ErrorDialog", "../Utils/P
      * @return {*}
      */
     function _loadHipsProperties(baseUrl) {
-        var url = baseUrl + "/properties";
         var properties = $.ajax({
             type: "GET",
             datatype : "text",

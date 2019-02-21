@@ -166,18 +166,18 @@ define([
         var defaultHandlers = [
             NavigationHandlerFactory.create(
                 Constants.HANDLER.Mouse,
-                options ? options.mouse : null
+                options.mouse || null
             ),
             NavigationHandlerFactory.create(
                 Constants.HANDLER.Keyboard,
-                options ? options.keyboard : null
+                options.keyboard || null
             )
         ];
         if (options.isMobile) {
             defaultHandlers.push(
                 NavigationHandlerFactory.create(
                     Constants.HANDLER.Touch,
-                    options ? options.touch : null
+                    options.touch || null
                 )
             );
         }
