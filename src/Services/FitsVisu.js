@@ -183,10 +183,6 @@ define([
          */
         init: function(m, configuration) {
             mizarAPI = m;
-            // Enable float texture extension to have higher luminance range
-            var ext = mizarAPI
-                .getRenderContext()
-                .gl.getExtension("OES_texture_float");
         },
 
         /**********************************************************************************************/

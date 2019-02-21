@@ -59,22 +59,22 @@ define([
             message,
             isCall
         ) {
-            if (votable2geojsonBaseUrl) {
-                //TODO : convert in GeoJson
-                //var params = message["samp.params"];
-                //var origUrl = params.url;
-                //var proxyUrl = clientTracker.connection.translateUrl(origUrl);
-                //Utils.convertVotable2JsonFromURL(proxyUrl, function (response) {
-                // Add feature collection
-                //    JsonProcessor.handleFeatureCollection(sampLayer, response);
-                //    sampLayer.addFeatureCollection(response);
-                //});
-            } else {
-                ErrorDialog.open(
-                    Constants.LEVEL.ERROR,
-                    "votable2geojson plugin base url isn't defined"
-                );
-            }
+            //if (votable2geojsonBaseUrl) {
+            //TODO : convert in GeoJson
+            //var params = message["samp.params"];
+            //var origUrl = params.url;
+            //var proxyUrl = clientTracker.connection.translateUrl(origUrl);
+            //Utils.convertVotable2JsonFromURL(proxyUrl, function (response) {
+            // Add feature collection
+            //    JsonProcessor.handleFeatureCollection(sampLayer, response);
+            //    sampLayer.addFeatureCollection(response);
+            //});
+            //} else {
+            ErrorDialog.open(
+                Constants.LEVEL.ERROR,
+                "votable2geojson plugin base url isn't defined"
+            );
+            //}
         };
 
         // callHandler["table.highlight.row"] = function(senderId, message, isCall) {

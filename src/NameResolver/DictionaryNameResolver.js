@@ -247,7 +247,7 @@ define([
         var crs = this.ctx.getCoordinateSystem();
         var objectName = options.objectName;
         var onError = options.onError;
-        var onComplete = options.onComplete;
+        //var onComplete = options.onComplete;
         var onSuccess = options.onSuccess;
         var searchLayer = options.searchLayer;
         var zoomTo = options.zoomTo;

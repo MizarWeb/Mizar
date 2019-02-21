@@ -459,7 +459,7 @@ define([
      */
     TimeTravelParams.prototype.getDateFormated = function(date) {
         // Check with STEP kind value
-        var formatPattern = "LLLL";
+        var formatPattern;// = "LLLL";
         if (this.stepKind === Constants.TIME_STEP.YEAR) {
             formatPattern = "Y";
         } else if (

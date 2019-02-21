@@ -186,7 +186,7 @@ define([
         );
         var healpixRE = /^healpix\((\d)+,(\d+)\)/;
         var degRE = /^(-?\d+(\.\d+)?),?\s(-?\d+(\.\d+)?)/;
-        var layerRE = /^layer:(.)*?/;
+        //var layerRE = /^layer:(.)*?/;
         var matchHealpix = healpixRE.exec(objectName);
         var matchDegree = degRE.exec(objectName);
         if (matchHealpix) {
