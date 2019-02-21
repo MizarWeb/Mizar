@@ -33,7 +33,7 @@ define([
     var mizar;
     var connector; // SAMP connector
     var pointAtReceived = false; // Parameter avoiding looping while receiving coord.pointAt.sky SAMP event
-    var votable2geojsonBaseUrl;
+    //var votable2geojsonBaseUrl;
 
     /**************************************************************************************************************/
 
