@@ -180,7 +180,7 @@ define([
         // Samp event callbacks
         var logCc = {
             receiveNotification: function(senderId, message) {
-                var handled = clientTracker.receiveNotification(
+                clientTracker.receiveNotification(
                     senderId,
                     message
                 );
@@ -196,14 +196,14 @@ define([
                 }
             },
             receiveCall: function(senderId, msgId, message) {
-                var handled = clientTracker.receiveCall(
+                clientTracker.receiveCall(
                     senderId,
                     msgId,
                     message
                 );
             },
             receiveResponse: function(responderId, msgTag, response) {
-                var handled = clientTracker.receiveResponse(
+                clientTracker.receiveResponse(
                     responderId,
                     msgTag,
                     response

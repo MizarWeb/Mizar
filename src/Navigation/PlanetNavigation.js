@@ -589,7 +589,7 @@ define([
 
             var r = new Ray(newEye, centerDir);
             const newCenter = this.ctx.globe.computeIntersection(r);
-            if (newCenter != null && newCenter != undefined) {
+            if (newCenter != null) {
                 this.geoCenter = newCenter;
             }
         }
@@ -770,7 +770,6 @@ define([
      * with the center of the screen
      */
     PlanetNavigation.prototype.updateGeoCenter = function() {
-        const canvas = this.renderContext.canvas;
 
         // Recompute the geo position, trace a new ray to check intersection with the terrain
         this.computeInverseViewMatrix();

@@ -140,11 +140,11 @@ define([
         this.type = type;
         this.pickable = this.options.pickable || false;
         this.dataType = this.options.dataType || "";
-        this.background = options.background || false;
+        this.background = this.options.background || false;
         this.category = this.options.background
             ? "background"
             : this.options.category;
-        this.coordinateSystem = options.coordinateSystem;
+        this.coordinateSystem = this.options.coordinateSystem;
         this.format = this.options.format || "";
         this.baseUrl = this.options.baseUrl || "";
         this.deletable = this.options.deletable || false;
@@ -180,7 +180,6 @@ define([
             this.attribution = this.attribution.replace(" ", " target=_blank ");
         }
 
-        //this.services = _createAvailableServices(this.options);
         this.multiLayers = [];
 
         //cache to know which custom (e;g time, style, ...) Raster parameters are send
@@ -192,16 +191,6 @@ define([
          */
         this.allowedHTTPRequest = true;
     };
-
-    function _createAvailableServices(options) {
-        var availableServices;
-        if (options.hasOwnProperty("availableServices")) {
-            availableServices = options.availableServices;
-        } else {
-            availableServices = [];
-        }
-        return availableServices;
-    }
 
     /**
      * Create style

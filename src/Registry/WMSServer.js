@@ -164,16 +164,9 @@ define([
      * @memberof WMSServer#
      * @private
      */
-
     function _computeCenterBbox(bbox) {
         var centerLong = 0.5 * (bbox[0] + bbox[2]);
         var centerLat = 0.5 * (bbox[1] + bbox[3]);
-        var deltaLong = bbox[2] - bbox[0];
-        if (deltaLong > 180) {
-            deltaLong = 180;
-        }
-        var deltaLat = bbox[3] - bbox[1];
-        var delta = deltaLong > deltaLat ? deltaLat : deltaLong;
         return [centerLong, centerLat];
     }
 

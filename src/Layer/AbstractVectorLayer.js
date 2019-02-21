@@ -49,20 +49,14 @@ define([
         this.url = options.url;
         this.draw = false;
 
-        if (options && options.callback) {
+        if (options.callback) {
             this.callback = options.callback;
         } else {
             this.callback = null;
         }
 
-        this.minLevel =
-            options && options.hasOwnProperty("minLevel")
-                ? options.minLevel
-                : 0;
-        this.maxLevel =
-            options && options.hasOwnProperty("maxLevel")
-                ? options.maxLevel
-                : 21;
+        this.minLevel = options.hasOwnProperty("minLevel") ? options.minLevel : 0;
+        this.maxLevel = options.hasOwnProperty("maxLevel") ? options.maxLevel : 21;
 
         this.features = [];
     };

@@ -334,8 +334,6 @@ define(["underscore-min","./HEALPixTables", "../Utils/Long", "../Utils/CircleFin
         },
 
         pix2loc: function(pix, boundaries) {
-            var z, phi, sth, have_sth;
-
             //var fact2 = 4.0 / pix;
             //var fact1 = (nside << 1) * fact2;
             //var nl2 = 2 * nside;

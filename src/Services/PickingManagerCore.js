@@ -398,7 +398,7 @@ define([
             return false;
         case Constants.GEOMETRY.Point:
             // Do not pick the labeled features
-            var isLabel = !options.allowLabelPicking && feature && feature.properties && feature.properties.style && feature.properties.style.label;
+            var isLabel = !options.allowLabelPicking && feature.properties && feature.properties.style && feature.properties.style.label;
             if (isLabel) return false;
 
             if (feature.properties && feature.properties.style &&

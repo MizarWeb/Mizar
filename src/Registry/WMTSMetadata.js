@@ -515,7 +515,8 @@ define([], function() {
         var wgs84BoundingBox = [];
         if (wgs84BoundingBoxJson !== undefined) {
             if (Array.isArray(wgs84BoundingBoxJson)) {
-                for (var wgs84 in wgs84BoundingBoxJson) {
+                for(var i=0; i<wgs84BoundingBoxJson.length; i++) {
+                    var wgs84 = wgs84BoundingBoxJson[i];
                     wgs84BoundingBox.push({
                         lowerCorner: WMTSMetadata.getValueTag(
                             wgs84.LowerCorner
@@ -551,7 +552,8 @@ define([], function() {
         var boundingBox = [];
         if (BoundingBoxJson !== undefined) {
             if (Array.isArray(BoundingBoxJson)) {
-                for (var bbox in BoundingBoxJson) {
+                for (var i=0; i<BoundingBoxJson.length; i++) {
+                    var bbox = BoundingBoxJson[i];
                     boundingBox.push({
                         lowerCorner: WMTSMetadata.getValueTag(bbox.LowerCorner),
                         upperCorner: WMTSMetadata.getValueTag(bbox.UpperCorner)

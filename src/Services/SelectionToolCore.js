@@ -181,12 +181,6 @@ define([
                 return;
             }
 
-            // Compute geo radius
-            var stopPickPoint = ctx.getLonLatFromPixel(
-                event.layerX,
-                event.layerY
-            );
-
             var coordinates = self.computeSelection();
             if (self.activated && onselect) {
                 onselect(coordinates);
