@@ -37,22 +37,16 @@
 
 define([
     "../Utils/Constants",
-    "../Utils/Utils",
-    "./VectorRenderer",
     "./RendererManager",
     "./FeatureStyle",
     "./Program",
-    "./BatchRenderable",
     "./GeoBound",
     "../Crs/WGS84Crs"
 ], function(
     Constants,
-    Utils,
-    VectorRenderer,
     RendererManager,
     FeatureStyle,
     Program,
-    BatchRenderable,
     GeoBound,
     WGS84Crs
 ) {

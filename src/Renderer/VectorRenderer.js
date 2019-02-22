@@ -117,13 +117,8 @@ define([
      * @param {Tile} tile Tile
      * @private
      */
-    VectorRenderer.prototype._recursiveAddGeometryToTile = function(
-        bucket,
-        geometry,
-        tile
-    ) {
+    VectorRenderer.prototype._recursiveAddGeometryToTile = function(bucket, geometry, tile) {
         var renderable = this._addGeometryToTile(bucket, geometry, tile);
-
         if (renderable && renderable.generateChild && tile.children) {
             for (var i = 0; i < 4; i++) {
                 if (tile.children[i].state === Tile.State.LOADED) {
@@ -223,11 +218,7 @@ define([
      * @param style
      * @return {Bucket} Bucket
      */
-    VectorRenderer.prototype.getOrCreateBucket = function(
-        layer,
-        geometry,
-        style
-    ) {
+    VectorRenderer.prototype.getOrCreateBucket = function(layer, geometry, style) {
         // Then find an existing bucket
         var bucket = this.findBucket(layer, style);
         if (!bucket) {
@@ -250,12 +241,7 @@ define([
      * @param style
      * @param {Tile} tile Tile
      */
-    VectorRenderer.prototype.addGeometryToTile = function(
-        layer,
-        geometry,
-        style,
-        tile
-    ) {
+    VectorRenderer.prototype.addGeometryToTile = function(layer, geometry, style, tile) {
         var bucket = this.getOrCreateBucket(layer, geometry, style);
         geometry._bucket = bucket;
         return this._addGeometryToTile(bucket, geometry, tile);
@@ -272,11 +258,7 @@ define([
      * @param {Tile} tile Tile
      * @private
      */
-    VectorRenderer.prototype._addGeometryToTile = function(
-        bucket,
-        geometry,
-        tile
-    ) {
+    VectorRenderer.prototype._addGeometryToTile = function(bucket, geometry, tile) {
         var tileData = tile.extension.renderer;
         if (!tileData) {
             tileData = tile.extension.renderer = new RendererTileData(
@@ -312,17 +294,9 @@ define([
      * @param {Integer} level Level
      * @private
      */
-    VectorRenderer.prototype._removeGeometryFromTile = function(
-        geometry,
-        bbox,
-        tile,
-        level
-    ) {
+    VectorRenderer.prototype._removeGeometryFromTile = function(geometry, bbox, tile, level) {
         var maxLevel = 0;
-        if (
-            bbox !== null &&
-            UtilsIntersection.boundsIntersects(bbox, tile.bound) === false
-        ) {
+        if (bbox !== null && UtilsIntersection.boundsIntersects(bbox, tile.bound) === false) {
             return maxLevel;
         }
 
@@ -381,10 +355,7 @@ define([
         if (geometry.type !== "Point") {
             bbox = Utils.getBBox(geometry);
         }
-        // var startDate = new Date();
         this._removeGeometryFromTile(geometry, bbox, tile, 0);
-        // var endDate = new Date();
-        // console.log("Delta remove : "+(endDate*1.0 - startDate*1.0)+"ms with "+maxLevel+" levels");
     };
 
     /**************************************************************************************************************/

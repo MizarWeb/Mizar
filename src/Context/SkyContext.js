@@ -17,7 +17,6 @@
  * along with MIZAR. If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
 define([
-    "underscore-min",
     "../Utils/Utils",
     "./AbstractContext",
     "../Globe/GlobeFactory",
@@ -27,7 +26,6 @@ define([
     "../Utils/Constants",
     "../Gui/dialog/ErrorDialog"
 ], function(
-    _,
     Utils,
     AbstractContext,
     GlobeFactory,

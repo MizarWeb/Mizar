@@ -23,15 +23,12 @@
  */
 
 define([
-    "jquery",
-    "underscore-min",
     "../Utils/Numeric",
     "../Utils/Constants",
-    "../Layer/VectorLayer",
     "../Renderer/Ray",
     "../Renderer/FeatureStyle",
     "../Renderer/glMatrix"
-], function($, _, Numeric, Constants, VectorLayer, Ray, FeatureStyle) {
+], function(Numeric, Constants, Ray, FeatureStyle) {
     var mizarAPI, navigation, onselect, measureLayer, self, dragging;
 
     /**********************************************************************************************/
@@ -62,9 +59,7 @@ define([
         } else {
             self.pickPoint = [event.layerX, event.layerY];
         }
-        self.geoPickPoint = mizarAPI
-            .getActivatedContext()
-            .getLonLatFromPixel(self.pickPoint[0], self.pickPoint[1]);
+        self.geoPickPoint = mizarAPI.getActivatedContext().getLonLatFromPixel(self.pickPoint[0], self.pickPoint[1]);
     }
 
     /**
@@ -184,13 +179,7 @@ define([
 
             var ray = new Ray(eye, points[i]);
             var pos3d = ray.computePoint(
-                ray.sphereIntersect(
-                    worldCenter,
-                    mizarAPI
-                        .getCrs()
-                        .getGeoide()
-                        .getRadius()
-                )
+                ray.sphereIntersect(worldCenter,mizarAPI.getCrs().getGeoide().getRadius())
             );
             points[i] = mizarAPI.getCrs().getWorldFrom3D(pos3d);
         }
@@ -366,9 +355,7 @@ define([
             (self.secondPickPoint[0] + self.pickPoint[0]) / 2,
             (self.secondPickPoint[1] + self.pickPoint[1]) / 2
         ];
-        var geoCenter = mizarAPI
-            .getActivatedContext()
-            .getLonLatFromPixel(center[0], center[1]);
+        var geoCenter = mizarAPI.getActivatedContext().getLonLatFromPixel(center[0], center[1]);
         self.measureLabel = {
             geometry: {
                 type: Constants.GEOMETRY.Point,

@@ -36,10 +36,8 @@
  ***************************************/
 
 define([
-    "../Utils/Constants",
     "../Utils/Utils",
     "../Utils/Constants",
-    "../Tiling/HEALPixTiling",
     "./AbstractHipsLayer",
     "../Renderer/DynamicImage",
     "./FitsLoader",
@@ -48,10 +46,8 @@ define([
     "./FitsRequest",
     "../Gui/dialog/ErrorDialog"
 ], function(
-    Contants,
     Utils,
     Constants,
-    HEALPixTiling,
     AbstractHipsLayer,
     DynamicImage,
     FitsLoader,

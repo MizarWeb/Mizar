@@ -42,7 +42,6 @@ define([
     "./RendererManager",
     "../Tiling/TiledVectorRenderable",
     "../Tiling/TiledVectorRenderer",
-    "../Utils/Numeric",
     "../Tiling/Triangulator",
     "./PolygonCutter",
     "../Gui/dialog/ErrorDialog"
@@ -53,7 +52,6 @@ define([
     RendererManager,
     TiledVectorRenderable,
     TiledVectorRenderer,
-    Numeric,
     Triangulator,
     PolygonCutter,
     ErrorDialog

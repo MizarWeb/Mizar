@@ -1,12 +1,10 @@
 define([
-    "jquery",
-    "underscore-min",
     "../Utils/Utils",
     "xmltojson",
     "../Layer/LayerFactory",
     "../Layer/OpenSearch/OpenSearchUtils",
     "../Layer/OpenSearch/OpenSearchForm"
-], function($, _, Utils, XmlToJson, LayerFactory, OpenSearchUtils, OpenSearchForm) {
+], function(Utils, XmlToJson, LayerFactory, OpenSearchUtils, OpenSearchForm) {
 
     /**
      * @class

@@ -20,10 +20,9 @@ define([
     "jquery",
     "underscore-min",
     "../Utils/Utils",
-    "xmltojson",
     "../Layer/LayerFactory",
     "wms-capabilities"
-], function($, _, Utils, XmlToJson, LayerFactory, WMSCapabilities) {
+], function($, _, Utils, LayerFactory, WMSCapabilities) {
     /**
      * @class
      * Creates an instance of WMS server

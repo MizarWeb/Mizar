@@ -364,7 +364,7 @@ define(["./Numeric", "./Constants","../Tiling/HEALPixBase"], function(Numeric, C
         }
 
         // Get the "center" of the billboard in 3D
-        const elevation = crs.getElevation(globe, originGeometry) + 200; // match the rendering
+        const elevation = (crs.getType() === Constants.CONTEXT.Planet) ? crs.getElevation(globe, originGeometry) + 200 : 0.0; // match the rendering
         const originGeo = [originGeometry.coordinates[0], originGeometry.coordinates[1], elevation];
         const origin3d = crs.get3DFromWorldInCrs(originGeo, originGeometry.crs.properties.name);
         const origin2d = from3dToScreenSpace(origin3d);
@@ -373,8 +373,15 @@ define(["./Numeric", "./Constants","../Tiling/HEALPixBase"], function(Numeric, C
         const camRight = vec3.create([rc.viewMatrix[0], rc.viewMatrix[4], rc.viewMatrix[8]]);
         const camUp = vec3.create([rc.viewMatrix[1], rc.viewMatrix[5], rc.viewMatrix[9]]);
 
-        const radius = crs.getGeoide().getRealPlanetRadius();
-        const billboardSize = vec3.create([size[0] / radius, size[1] / radius, 1.0]);
+        const scaleRadius = crs.getGeoide().getHeightScale();
+
+        var billboardSize;
+        if (crs.getType() === Constants.CONTEXT.Planet) {
+            billboardSize = vec3.create([size[0] * scaleRadius, size[1] * scaleRadius, 1.0]);
+        } else {
+            const thetaToDist = 2.0 * Math.PI * scaleRadius / 360.0;
+            billboardSize = vec3.create([size[0] * thetaToDist, size[1] * thetaToDist, 1.0]);
+        }
 
         const billboardTo3d = function(o, p, size, camRight, camUp) {
             var x = vec3.create();

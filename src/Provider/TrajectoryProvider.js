@@ -18,7 +18,6 @@
  ******************************************************************************/
 
 define([
-    "jquery",
     "./AbstractProvider",
     "../Renderer/FeatureStyle",
     "../Utils/Utils",
@@ -26,7 +25,6 @@ define([
     "../Services/MeasureToolPlanetCore",
     "../Gui/dialog/ErrorDialog"
 ], function(
-    $,
     AbstractProvider,
     FeatureStyle,
     Utils,

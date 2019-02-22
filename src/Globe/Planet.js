@@ -54,11 +54,10 @@
  */
 define([
     "../Tiling/Tile",
-    "../Utils/Event",
     "../Utils/Utils",
     "./AbstractGlobe",
     "../Utils/Constants"
-], function(Tile, Event, Utils, AbstractGlobe, Constants) {
+], function(Tile, Utils, AbstractGlobe, Constants) {
     /**
      * @name Planet
      * @class

@@ -18,8 +18,6 @@
  ******************************************************************************/
 
 define([
-    "jquery",
-    "underscore-min",
     "../Utils/Utils",
     "./AbstractContext",
     "../Utils/Constants",
@@ -28,9 +26,7 @@ define([
     "../Services/ServiceFactory",
     "../Gui/TimeTravel",
     "../Gui/dialog/ErrorDialog"
-], function(
-    $,
-    _,
+], function(    
     Utils,
     AbstractContext,
     Constants,

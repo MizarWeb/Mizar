@@ -17,7 +17,6 @@
  * along with MIZAR. If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
 define([
-    "../Utils/Event",
     "../Utils/Utils",
     "../Tiling/TileManager",
     "../Renderer/RendererManager",
@@ -29,7 +28,6 @@ define([
     "../Gui/dialog/ErrorDialog",
     "../Renderer/glMatrix"
 ], function(
-    Event,
     Utils,
     TileManager,
     RendererManager,

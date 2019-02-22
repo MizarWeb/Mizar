@@ -23,15 +23,13 @@
  */
 
 define([
-    "jquery",
     "underscore-min",
     "../Utils/Constants",
     "../Layer/VectorLayer",
-    "../Renderer/Ray",
     "../Utils/Numeric",
     "../Renderer/FeatureStyle",
     "../Renderer/glMatrix"
-], function($, _, Constants, VectorLayer, Ray, Numeric, FeatureStyle) {
+], function(_, Constants, VectorLayer, Numeric, FeatureStyle) {
     var navigation, mizarAPI, onselect, measureLayer, self, dragging;
 
     /**********************************************************************************************/

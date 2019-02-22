@@ -39,14 +39,12 @@ define([
     "../Utils/Utils",
     "./AbstractLayer",
     "./AbstractRasterLayer",
-    "../Utils/Constants",
-    "../Registry/WMTSMetadata"
+    "../Utils/Constants"
 ], function(
     Utils,
     AbstractLayer,
     AbstractRasterLayer,
-    Constants,
-    WMTSMetadata
+    Constants
 ) {
     /**
      * Configuration parameters to query a Web Map Tile Service (WMTS)

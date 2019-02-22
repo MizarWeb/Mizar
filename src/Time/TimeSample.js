@@ -1,9 +1,4 @@
-define(["jquery", "moment", "../Utils/Constants", "../Utils/Utils"], function(
-    $,
-    Moment,
-    Constants,
-    Utils
-) {
+define(["moment"], function(Moment) {
     /**
      * @class
      * Store time sample

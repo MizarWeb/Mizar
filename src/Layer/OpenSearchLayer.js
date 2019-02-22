@@ -35,7 +35,6 @@
  * along with GlobWeb. If not, see <http://www.gnu.org/licenses/>.
  ***************************************/
 define([
-    "underscore-min",
     "../Renderer/FeatureStyle",
     "../Utils/Utils",
     "../Utils/UtilsIntersection",
@@ -48,7 +47,6 @@ define([
     "./OpenSearch/OpenSearchCache",
     "moment"
 ], function(
-    _,
     FeatureStyle,
     Utils,
     UtilsIntersection,
@@ -1277,7 +1275,6 @@ define([
                             textColor: color,
                             opacity: 1,
                             pointMaxSize: 500,
-
                             extrusionScale: 1,
                             fill: false,
                             fillShader: null,

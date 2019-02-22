@@ -19,10 +19,7 @@
 
 define([
     "./AbstractHipsLayer",
-    "../Renderer/FeatureStyle",
-    "../Renderer/RendererManager",
     "../Utils/Utils",
-    "../Renderer/RendererTileData",
     "../Tiling/Tile",
     "jsvotable",
     "jscsv",
@@ -31,10 +28,7 @@ define([
     "../Utils/Proxy"
 ], function(
     AbstractHipsLayer,
-    FeatureStyle,
-    RendererManager,
     Utils,
-    RendererTileData,
     Tile,
     JsVotable,
     CSV,

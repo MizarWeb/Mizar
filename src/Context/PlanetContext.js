@@ -54,7 +54,6 @@
  */
 define([
     "jquery",
-    "underscore-min",
     "../Utils/Utils",
     "./AbstractContext",
     "../Utils/Constants",
@@ -66,7 +65,6 @@ define([
     "../Gui/dialog/ErrorDialog"
 ], function(
     $,
-    _,
     Utils,
     AbstractContext,
     Constants,

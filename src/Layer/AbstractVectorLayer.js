@@ -265,9 +265,7 @@ define([
      * @returns {boolean} true when the feature is removed from the globe otherwise false
      * @private
      */
-    AbstractVectorLayer.prototype._removeFeatureFromRenderers = function(
-        feature
-    ) {
+    AbstractVectorLayer.prototype._removeFeatureFromRenderers = function(feature) {
         var isRemoved = true;
         var geometry = feature.geometry;
 

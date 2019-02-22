@@ -420,7 +420,7 @@ define([
         // Create feature collection
         poiFeatureCollection = {
             type: "FeatureCollection",
-            features: pois
+            features: pois,
         };
 
         mizarLayer.addFeatureCollection(poiFeatureCollection);

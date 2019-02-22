@@ -37,11 +37,10 @@
 
 define([
     "../Utils/Utils",
-    "../Tiling/HEALPixTiling",
     "./AbstractHipsLayer",
     "../Utils/Constants",
     "../Gui/dialog/ErrorDialog"
-], function(Utils, HEALPixTiling, AbstractHipsLayer, Constants, ErrorDialog) {
+], function(Utils, AbstractHipsLayer, Constants, ErrorDialog) {
     /**************************************************************************************************************/
 
     /**

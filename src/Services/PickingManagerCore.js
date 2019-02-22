@@ -19,14 +19,12 @@
 define([
     "../Renderer/FeatureStyle",
     "../Layer/OpenSearchLayer",
-    "../Utils/Utils",
     "../Utils/UtilsIntersection",
     "../Utils/Constants",
     "../Gui/dialog/ErrorDialog"
 ], function(
     FeatureStyle,
     OpenSearchLayer,
-    Utils,
     UtilsIntersection,
     Constants,
     ErrorDialog
@@ -404,6 +402,9 @@ define([
             if (feature.properties && feature.properties.style &&
                 feature.properties.style.useMeterSize && feature.properties.style.meterSize) {
                 return UtilsIntersection.isInBillboard(pickPoint, feature.geometry, feature.properties.style.meterSize, options.eventPos);
+            } else if (feature.properties && feature.properties.style &&
+                feature.properties.style.useDegreeSize && feature.properties.style.degreeSize) {
+                return UtilsIntersection.isInBillboard(pickPoint, feature.geometry, feature.properties.style.degreeSize, options.eventPos);
             } else {
                 if (!pickPoint) { return false; }
                 var coord = feature.geometry.coordinates;
@@ -496,14 +497,7 @@ define([
                             }
                         }
 
-                        if (
-                            this.featureIsPicked(
-                                feature,
-                                pickPoint,
-                                pickableLayer.pickingNoDEM,
-                                localOptions
-                            )
-                        ) {
+                        if (this.featureIsPicked(feature, pickPoint, pickableLayer.pickingNoDEM, localOptions)) {
                             feature.pickData = {
                                 picked: true,
                                 index: newSelection.length,

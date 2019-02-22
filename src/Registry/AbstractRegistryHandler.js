@@ -17,11 +17,10 @@
  * along with MIZAR. If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
 define([
-    "underscore-min",
     "../Layer/LayerFactory",
     "../Utils/Constants",
     "../Gui/dialog/ErrorDialog"
-], function(_, LayerFactory, Constants, ErrorDialog) {
+], function(LayerFactory, Constants, ErrorDialog) {
     /**
      * @name AbstractRegistryHandler
      * @class

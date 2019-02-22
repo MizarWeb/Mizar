@@ -36,19 +36,15 @@
  ***************************************/
 
 define([
-    "jquery",
     "../Utils/Utils",
     "./AbstractLayer",
     "./AbstractRasterLayer",
-    "../Utils/Constants",
     "../Tiling/GeoTiling",
     "../Utils/UtilsIntersection"
 ], function(
-    $,
     Utils,
     AbstractLayer,
     AbstractRasterLayer,
-    Constants,
     GeoTiling,
     UtilsIntersection
 ) {

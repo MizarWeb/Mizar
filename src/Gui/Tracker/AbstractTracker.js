@@ -16,10 +16,9 @@
  * You should have received a copy of the GNU General Public License
  * along with SITools2. If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
-define(["jquery", "../../Utils/Utils", "../dialog/ErrorDialog"], function(
+define(["jquery", "../../Utils/Utils"], function(
     $,
-    Utils,
-    ErrorDialog
+    Utils
 ) {
     /**
      * @name AbstractTracker

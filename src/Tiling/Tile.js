@@ -37,11 +37,10 @@
 
 define([
     "../Renderer/BoundingBox",
-    "../Renderer/Ray",
     "../Utils/Constants",
     "../Gui/dialog/ErrorDialog",
     "../Renderer/glMatrix"
-], function(BoundingBox, Ray, Constants, ErrorDialog) {
+], function(BoundingBox, Constants, ErrorDialog) {
     /**************************************************************************************************************/
 
     /**

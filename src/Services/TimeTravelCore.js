@@ -21,8 +21,7 @@
 /**
  * Compass module : map control with "north" component
  */
-define(["jquery", "../Time/TimeTravelParams", "../Utils/Constants"], function(
-    $,
+define(["../Time/TimeTravelParams", "../Utils/Constants"], function(
     TimeTravelParams,
     Constants
 ) {

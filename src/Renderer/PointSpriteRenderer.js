@@ -191,6 +191,12 @@ define([
                 geometry.crs.properties.name
             );
             this.vertices.push(pt[0], pt[1], pt[2]);
+        } else if (this.bucket.style.useDegreeSize) {
+            const pt = crs.get3DFromWorldInCrs(
+                geometry.coordinates,
+                geometry.crs.properties.name
+            );
+            this.vertices.push(pt[0], pt[1], pt[2]);
         } else {
             var pt = crs.get3DFromWorldInCrs(
                 geometry.coordinates,
@@ -467,7 +473,7 @@ define([
 
             if (currentBucket !== bucket) {
                 // Setup program
-                program = bucket.style.useMeterSize ? this.meterSizeProgram : this.program;
+                program = (bucket.style.useMeterSize || bucket.style.useDegreeSize) ? this.meterSizeProgram : this.program;
                 program.apply();
 
                 gl.uniformMatrix4fv(
@@ -490,9 +496,16 @@ define([
                 );
 
                 if (bucket.style.useMeterSize) {
-                    const radius = this.globe.getCoordinateSystem().getGeoide().getRealPlanetRadius();
-                    const w = bucket.style.meterSize[0] / radius;
-                    const h = bucket.style.meterSize[1] / radius;
+                    const scaleRadius = this.globe.getCoordinateSystem().getGeoide().getHeightScale();
+                    const w = bucket.style.meterSize[0] * scaleRadius;
+                    const h = bucket.style.meterSize[1] * scaleRadius;
+                    gl.uniform2f(program.uniforms.billboardSize, w, h);
+                    gl.uniformMatrix4fv(program.uniforms.viewMatrix, false, renderContext.viewMatrix);
+                } else if (bucket.style.useDegreeSize) {
+                    const scaleRadius = this.globe.getCoordinateSystem().getGeoide().getHeightScale();
+                    const thetaToDist = 2.0 * Math.PI * scaleRadius / 360.0;
+                    const w = bucket.style.degreeSize[0] * thetaToDist;
+                    const h = bucket.style.degreeSize[1] * thetaToDist;
                     gl.uniform2f(program.uniforms.billboardSize, w, h);
                     gl.uniformMatrix4fv(program.uniforms.viewMatrix, false, renderContext.viewMatrix);
                 } else {
@@ -509,7 +522,7 @@ define([
                 currentBucket = bucket;
             }
 
-            if (bucket.style.useMeterSize) {
+            if (bucket.style.useMeterSize || bucket.style.useDegreeSize) {
                 gl.bindBuffer(gl.ARRAY_BUFFER, this.rectVertexBuffer);
                 gl.vertexAttribPointer(program.attributes.vertex, 3, gl.FLOAT, false, 0, 0);
 

@@ -17,12 +17,11 @@
  * along with MIZAR. If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
 define([
-    "jquery",
     "underscore-min",
     "../Utils/Utils",
     "xmltojson",
     "../Layer/LayerFactory"
-], function($, _, Utils, XmlToJson, LayerFactory, WCS) {
+], function(_, Utils, XmlToJson, LayerFactory) {
     /**
      * @class
      * Creates an instance of WCS server

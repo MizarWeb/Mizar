@@ -18,11 +18,9 @@
  ******************************************************************************/
 
 define([
-    "jquery",
-    "underscore-min",
     "../Utils/Utils",
     "./AbstractReverseNameResolver"
-], function($, _, Utils, AbstractReverseNameResolver) {
+], function(Utils, AbstractReverseNameResolver) {
     /**************************************************************************************************************/
 
     /**

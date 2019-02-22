@@ -36,14 +36,13 @@
  ***************************************/
 
 define([
-    "../Utils/Utils",
     "../Utils/Constants",
     "../Utils/UtilsIntersection",
     "./Tile",
     "../Renderer/GeoBound",
     "./HEALPixBase",
     "../Renderer/glMatrix"
-], function(Utils, Constants, UtilsIntersection, Tile, GeoBound, HEALPixBase) {
+], function(Constants, UtilsIntersection, Tile, GeoBound, HEALPixBase) {
     /** @constructor
          Tile constructor
          */

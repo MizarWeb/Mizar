@@ -22,12 +22,11 @@
  *    Moc base module
  */
 define([
-    "jquery",
     "../Renderer/FeatureStyle",
     "../Layer/MocLayer",
     "../Utils/Constants",
     "../Utils/Numeric"
-], function($, FeatureStyle, MocLayer, Constants, Numeric) {
+], function(FeatureStyle, MocLayer, Constants, Numeric) {
     var mizarAPI;
     var coverageServiceUrl;
 

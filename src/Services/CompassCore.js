@@ -21,7 +21,7 @@
 /**
  * Compass module : map control with "north" component
  */
-define(["jquery", "../Utils/Constants"], function($, Constants) {
+define(["../Utils/Constants"], function(Constants) {
     const MAX_ROTATION = 360;
 
     /**

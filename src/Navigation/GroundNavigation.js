@@ -21,7 +21,6 @@ define([
     "../Utils/Utils",
     "../Utils/Constants",
     "./AbstractNavigation",
-    "../Animation/SegmentedAnimation",
     "../Animation/AnimationFactory",
     "../Utils/Numeric",
     "../Renderer/Ray",
@@ -30,7 +29,6 @@ define([
     Utils,
     Constants,
     AbstractNavigation,
-    SegmentedAnimation,
     AnimationFactory,
     Numeric,
     Ray

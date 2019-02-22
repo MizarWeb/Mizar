@@ -37,6 +37,10 @@ module.exports = {
         "semi": [
             "error",
             "always"
-        ]
+        ],
+	"max-line-length": [
+		true, 
+		120
+	]
     },
 };

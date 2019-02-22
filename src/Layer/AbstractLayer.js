@@ -36,7 +36,6 @@
  ***************************************/
 
 define([
-    "jquery",
     "underscore-min",
     "../Utils/Event",
     "moment",
@@ -44,12 +43,8 @@ define([
     "../Utils/Utils",
     "../Utils/Constants",
     "../Gui/dialog/ErrorDialog",
-    "../Utils/UtilityFactory",
-    "xmltojson",
-    "../Error/NetworkError",
-    "../Utils/Proxy"
+    "../Utils/UtilityFactory"
 ], function(
-    $,
     _,
     Event,
     Moment,
@@ -57,10 +52,7 @@ define([
     Utils,
     Constants,
     ErrorDialog,
-    UtilityFactory,
-    XmlToJson,
-    NetworkError,
-    Proxy
+    UtilityFactory
 ) {
     const DEFAULT_ICON =
         "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAAXNSR0IArs4c6QAAAAZiS0dEAAAAAAAA+UO7fwAAAAlwSFlzAAALEwAACxMBAJqcGAAAAAd0SU1FB9wMBQkVBRMIQtMAAAAZdEVYdENvbW1lbnQAQ3JlYXRlZCB3aXRoIEdJTVBXgQ4XAAAAvklEQVQY012QMWpCURBFz3yfG7CIwSatpLGwsJJsQEHssr2UttapkkK0zRJEFPKLj5UYPGme8vgDt5l7uNwZKEYNdaZO1FR6VQkBT8AbMAGe1e7dTwXUB8bAFPgF9sBWPUXENbWgBTAELkCTw7bqMdR5kTQCehlogB/gE/iqcs9OVhT9I8v7EZU6UJfqh3pWa3WlvqsvakoRcVOPwCYnvQI1sM67Q0T8JYAWvAEOwDewj4jr4z0teJdf84AA/gF1uG92uhcfoAAAAABJRU5ErkJggg==";

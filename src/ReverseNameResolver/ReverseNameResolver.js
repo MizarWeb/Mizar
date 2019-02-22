@@ -23,12 +23,11 @@
  * TODO : move _handleMouseDown&Up to View ?
  */
 define([
-    "jquery",
     "../Utils/Constants",
     "./DefaultReverseNameResolver",
     "./CDSReverseNameResolver",
     "../Gui/dialog/ErrorDialog"
-], function($, Constants, DefaultReverseNameResolver, ErrorDialog) {
+], function(Constants, DefaultReverseNameResolver, ErrorDialog) {
     var mizarAPI;
     var context;
 

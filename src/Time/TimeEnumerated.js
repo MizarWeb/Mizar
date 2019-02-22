@@ -1,8 +1,6 @@
-define(["jquery", "moment", "../Utils/Constants", "../Utils/Utils","../Time/TimeTravelParams"], function(
-    $,
+define(["moment", "../Utils/Constants","../Time/TimeTravelParams"], function(
     Moment,
     Constants,
-    Utils,
     TimeTravelParams
 ) {
     /**

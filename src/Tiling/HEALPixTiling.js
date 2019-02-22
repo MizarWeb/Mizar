@@ -71,7 +71,7 @@ define([
              var height = 1856/64;
              this.texTransform = [64/1728, 64/1856, ((this.pixelIndex % width))/width, ((Math.floor(this.pixelIndex/width))/height)];*/
 
-        this.geoBound = null;
+        this.bound = this.geoBound = null;
     };
 
     /**************************************************************************************************************/
@@ -247,6 +247,7 @@ define([
         // Compute geoBound using corners of tile
         this.geoBound = new GeoBound();
         this.geoBound.computeFromCoordinates(corners);
+        this.bound = this.geoBound;
 
         // Compute tile matrix
         this.matrix = this.computeLocalMatrix(worldSpaceVertices);

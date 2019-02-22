@@ -920,7 +920,6 @@ define([
         canvas.addEventListener(
             "webglcontextlost",
             function(event) {
-                // TODO
                 event.preventDefault();
                 document.getElementById("loading").style.display = "none";
                 document.getElementById("webGLContextLost").style.display =

@@ -1,5 +1,4 @@
-define(["jquery", "moment", "../Utils/Constants", "../Utils/Utils"], function(
-    $,
+define(["moment", "../Utils/Constants", "../Utils/Utils"], function(
     Moment,
     Constants,
     Utils
