@@ -100,15 +100,7 @@ define([
                     var type = data.type;
                     var id = data.id;
                     var name = data.name;
-                    if (
-                        $.inArray(type, [
-                            "Planet",
-                            "Asteroid",
-                            "Satellite",
-                            "Star",
-                            "Comet"
-                        ]) !== -1
-                    ) {
+                    if ( $.inArray(type, ["Planet","Asteroid","Satellite","Star","Comet"]) !== -1) {
                         var url =
                             "https://api.ssodnet.imcce.fr/quaero/1/sso/" +
                             id +
