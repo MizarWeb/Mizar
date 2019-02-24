@@ -104,22 +104,6 @@ Context.prototype.getPositionTracker = function() {};
  */
 Context.prototype.getElevationTracker = function() {};
 
-/**
- * Sets the compass to visible or not.
- * @param {string} divName - Name of the compass div
- * @param {boolean} visible - Visible or not
- */
-Context.prototype.setCompassVisible = function(divName, visible) {};
-
-/**
- * Sets the time travel to visible or not.
- * @param {string} divName - Name of the time travel div
- * @param {boolean} visible - Visible or not
- * @fires Context#globalTime:set
- * @fires Context#globalTime:rewind
- * @fires Context#globalTime:forward
- */
-Context.prototype.setTimeTravelVisible = function(divName, visible) {};
 
 /**
  * Sets the UI component visibility.

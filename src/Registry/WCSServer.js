@@ -49,10 +49,7 @@ define([
                 "WCSServer.js"
             );
         }
-        options.describeCoverage = WCSServer.describeCoverageFromBaseURL(
-            options.baseUrl,
-            options
-        );
+        options.describeCoverage = WCSServer.describeCoverageFromBaseURL(options.baseUrl, options);
         this.options = options;
     };
 

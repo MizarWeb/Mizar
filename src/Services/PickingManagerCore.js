@@ -345,9 +345,7 @@ define([
             for (i = 0; i < feature.geometry.coordinates.length - 1; i++) {
                 feat = feature.geometry.coordinates[i];
                 featNext = feature.geometry.coordinates[i + 1];
-                if (
-                    UtilsIntersection.pointInLine(pickPoint, feat, featNext)
-                ) {
+                if (UtilsIntersection.pointInLine(pickPoint, feat, featNext)) {
                     return true;
                 }
             }
@@ -363,13 +361,7 @@ define([
                 ) {
                     feat = feature.geometry.coordinates[i][j];
                     featNext = feature.geometry.coordinates[i][j + 1];
-                    if (
-                        UtilsIntersection.pointInLine(
-                            pickPoint,
-                            feat,
-                            featNext
-                        )
-                    ) {
+                    if (UtilsIntersection.pointInLine(pickPoint, feat, featNext)) {
                         return true;
                     }
                 }
@@ -377,18 +369,12 @@ define([
             break;
         case Constants.GEOMETRY.Polygon:
             if (!pickPoint) { return false; }
-            ring = this.fixDateLine(
-                pickPoint,
-                feature.geometry.coordinates[0]
-            );
+            ring = this.fixDateLine(pickPoint, feature.geometry.coordinates[0]);
             return UtilsIntersection.pointInRing(pickPoint, ring);
         case Constants.GEOMETRY.MultiPolygon:
             if (!pickPoint) { return false; }
             for (p = 0; p < feature.geometry.coordinates.length; p++) {
-                ring = this.fixDateLine(
-                    pickPoint,
-                    feature.geometry.coordinates[p][0]
-                );
+                ring = this.fixDateLine(pickPoint, feature.geometry.coordinates[p][0]);
                 if (UtilsIntersection.pointInRing(pickPoint, ring)) {
                     return true;
                 }

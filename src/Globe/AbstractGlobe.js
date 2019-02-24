@@ -70,11 +70,8 @@ define([
      */
     var AbstractGlobe = function(type, options) {
         Utils.assert(
-            type === Constants.GLOBE.Sky ||
-                type === Constants.GLOBE.Planet ||
-                type === Constants.GLOBE.Ground,
-            "Type must be a value of Contants.GLOBE for " +
-                this.constructor.name,
+            type === Constants.GLOBE.Sky || type === Constants.GLOBE.Planet || type === Constants.GLOBE.Ground,
+            "Type must be a value of Contants.GLOBE for " + this.constructor.name,
             "AbstractGlobe.js"
         );
         Utils.assert(
@@ -83,11 +80,8 @@ define([
             "AbastractGlobe.js"
         );
         Utils.assert(
-            options.coordinateSystem != null &&
-                typeof options.coordinateSystem === "object" &&
-                options.coordinateSystem.geoideName != null,
-            "coordinate system is required in options parameters for " +
-                this.constructor.name,
+            options.coordinateSystem != null && typeof options.coordinateSystem === "object" && options.coordinateSystem.geoideName != null,
+            "coordinate system is required in options parameters for " + this.constructor.name,
             "AbastractGlobe.js"
         );
         this.type = type;
@@ -136,10 +130,7 @@ define([
         if (crs.isFlat()) {
             intersection = ray.planeIntersect([0, 0, 0], [0, 0, 1]);
         } else {
-            intersection = ray.sphereIntersect(
-                [0, 0, 0],
-                crs.getGeoide().getRadius()
-            );
+            intersection = ray.sphereIntersect([0, 0, 0], crs.getGeoide().getRadius());
         }
         return intersection;
     }
@@ -156,14 +147,9 @@ define([
         if (intersection >= 0) {
             var pos = crs.getWorldFrom3D(ray.computePoint(intersection));
             var geoBound = crs.getGeoBound();
-            if (
-                !pos ||
-                pos[0] < geoBound[0] ||
-                pos[0] > geoBound[2] ||
-                pos[1] < geoBound[1] ||
-                pos[1] > geoBound[3] ||
-                isNaN(pos[0]) ||
-                isNaN(pos[1])
+            if (!pos || 
+                pos[0] < geoBound[0] || pos[0] > geoBound[2] || pos[1] < geoBound[1] || pos[1] > geoBound[3] ||
+                isNaN(pos[0]) || isNaN(pos[1])
             ) {
                 return null;
             } else {
@@ -195,10 +181,7 @@ define([
                 while (vectorIdx--) {
                     // we iterate on vector
                     var vector = vectors[vectorIdx];
-                    if (
-                        vector.levelZeroTiledGeometries &&
-                        vector.levelZeroTiledGeometries.length > 0
-                    ) {
+                    if (vector.levelZeroTiledGeometries && vector.levelZeroTiledGeometries.length > 0) {
                         // we retrieve the geometries
                         var geometries = vector.levelZeroTiledGeometries;
                         var geometryIdx = geometries.length;
@@ -208,9 +191,7 @@ define([
                             var geometry = geometries[geometryIdx];
                             var tileIndices =
                                 vector.maxTilePerGeometry > 0
-                                    ? tileManager.tiling.getOverlappedLevelZeroTiles(
-                                        geometry
-                                    )
+                                    ? tileManager.tiling.getOverlappedLevelZeroTiles(geometry)
                                     : null;
                             // update
                             geometry._tileIndices = tileIndices;
@@ -302,8 +283,7 @@ define([
     AbstractGlobe.prototype.addLayer = function(layer) {
         Utils.assert(
             layer != null,
-            "layer must be an AbstractLayer object in addLayer for " +
-                this.constructor.name,
+            "layer must be an AbstractLayer object in addLayer for " + this.constructor.name,
             "AbstractGlobe.js"
         );
         var globe = this;
@@ -315,11 +295,7 @@ define([
                 globe.nbCreatedLayers++;
             } else {
                 // normal case
-                Utils.requestUrl(
-                    layer.getUrl(),
-                    "json",
-                    "application/json",
-                    null,
+                Utils.requestUrl(layer.getUrl(), "json", "application/json", null,
                     function(data) {
                         layer.addFeatureCollection(data);
                         layer.id = globe.nbCreatedLayers;
@@ -348,10 +324,7 @@ define([
             this.refresh();
         }
         if (layer.isBackground()) {
-            this.publishEvent(
-                Constants.EVENT_MSG.LAYER_BACKGROUND_ADDED,
-                layer
-            );
+            this.publishEvent(Constants.EVENT_MSG.LAYER_BACKGROUND_ADDED, layer);
         } else {
             this.publishEvent(Constants.EVENT_MSG.LAYER_ADDED, layer);
         }
@@ -364,8 +337,7 @@ define([
     AbstractGlobe.prototype.removeLayer = function(layer) {
         Utils.assert(
             layer != null,
-            "layer must be an AbstractLayer object in removeLayer for " +
-                this.constructor.name,
+            "layer must be an AbstractLayer object in removeLayer for " + this.constructor.name,
             "AbstractGlobe.js"
         );
         layer.background = false;
@@ -381,8 +353,7 @@ define([
     AbstractGlobe.prototype.addAnimation = function(anim) {
         Utils.assert(
             anim != null,
-            "anim must be an AbstractAnimation object in addAnimation for " +
-                this.constructor.name,
+            "anim must be an AbstractAnimation object in addAnimation for " + this.constructor.name,
             "AbstractGlobe.js"
         );
         anim.renderContext = this.renderContext;
@@ -395,8 +366,7 @@ define([
     AbstractGlobe.prototype.removeAnimation = function(anim) {
         Utils.assert(
             anim != null,
-            "anim must be an AbstractAnimation object in removeAnimation for " +
-                this.constructor.name,
+            "anim must be an AbstractAnimation object in removeAnimation for " + this.constructor.name,
             "AbstractGlobe.js"
         );
         anim.renderContext = null;
@@ -474,8 +444,7 @@ define([
     AbstractGlobe.prototype.getLonLatFromPixel = function(x, y) {
         Utils.assert(
             typeof x === "number" && typeof y === "number",
-            "(x,y) from getLonLatFromPixel must be numbers for " +
-                this.constructor.name,
+            "(x,y) from getLonLatFromPixel must be numbers for " + this.constructor.name,
             "AbstractGlobe.js"
         );
 
@@ -502,8 +471,7 @@ define([
     AbstractGlobe.prototype.getPixelFromLonLat = function(lon, lat) {
         Utils.assert(
             typeof lon === "number" && typeof lat === "number",
-            "(lon,lat) from getPixelFromLonLat must be numbers for " +
-                this.constructor.name,
+            "(lon,lat) from getPixelFromLonLat must be numbers for " + this.constructor.name,
             "AbstractGlobe.js"
         );
         var pos3d = vec3.create();
@@ -518,8 +486,7 @@ define([
     AbstractGlobe.prototype.setCoordinateSystem = function(coordinateSystem) {
         Utils.assert(
             coordinateSystem != null,
-            "coordinateSystem must be a Crs object in setCoordinateSystem for " +
-                this.constructor.name,
+            "coordinateSystem must be a Crs object in setCoordinateSystem for " + this.constructor.name,
             "AbstractGlobe.js"
         );
         var oldCrs = this.coordinateSystem;
@@ -557,11 +524,7 @@ define([
             intersection = Number.MAX_VALUE;
             for (var i = 0; i < this.tileManager.level0Tiles.length; ++i) {
                 const tile = this.tileManager.level0Tiles[i];
-                const t = tile.intersect(
-                    ray,
-                    this.tileManager.tileIndexBuffer.indices,
-                    this.renderContext
-                );
+                const t = tile.intersect(ray, this.tileManager.tileIndexBuffer.indices, this.renderContext);
                 if (t < intersection && t >= 0) {
                     intersection = t;
                 }
@@ -579,12 +542,7 @@ define([
         }
 
         // console.log("intersection",intersection);
-        var result = _computePosition.call(
-            this,
-            ray,
-            intersection,
-            this.coordinateSystem
-        );
+        var result = _computePosition.call(this, ray, intersection, this.coordinateSystem);
         // console.log("result",result);
         // console.log("=================================");
         return result;
@@ -613,8 +571,7 @@ define([
     AbstractGlobe.prototype.setRenderContext = function(context) {
         Utils.assert(
             context != null,
-            "context must be a Context object in setRenderContext for " +
-                this.constructor.name,
+            "context must be a Context object in setRenderContext for " + this.constructor.name,
             "AbstractGlobe.js"
         );
         this.renderContext = context;

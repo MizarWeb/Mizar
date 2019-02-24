@@ -281,10 +281,7 @@ define([
                     _updateNorthFromSouth(self);
                 });
 
-                self.northText.addEventListener(
-                    "click",
-                    CompassCore._alignWithNorth
-                );
+                self.northText.addEventListener("click", CompassCore._alignWithNorth);
 
                 if (self.isMobile) {
                     var passiveSupported = Utils.isPassiveSupported();

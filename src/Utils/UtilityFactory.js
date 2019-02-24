@@ -22,8 +22,9 @@ define([
     "./UtilsFits",
     "./Numeric",
     "./UtilsIntersection",
+    "./Utils",
     "../Renderer/FeatureStyle"
-], function(Constants, UtilsFits, Numeric, UtilsIntersection, FeatureStyle) {
+], function(Constants, UtilsFits, Numeric, UtilsIntersection, Utils, FeatureStyle) {
     return {
         create: function(type, options) {
             var obj;
@@ -42,6 +43,9 @@ define([
                 break;
             case Constants.UTILITY.FeatureStyle:
                 obj = FeatureStyle;
+                break;
+            case Constants.UTILITY.Utils:
+                obj = Utils;
                 break;
             default:
                 throw new RangeError(

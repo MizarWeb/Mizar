@@ -112,6 +112,26 @@ define([
             texcoords = vec2(vertex.x + 0.5, 1.0 - vertex.y);
         }`;
 
+        // var meterSizeVertexShader = `
+        // attribute vec3 vertex;
+        // uniform mat4 viewMatrix;
+        // uniform mat4 viewProjectionMatrix;
+        // uniform vec3 billboardPos;
+        // uniform vec2 billboardSize;
+
+        // varying vec2 texcoords;
+
+        // void main() {
+        //     vec3 camRight = vec3(viewMatrix[0][0], viewMatrix[1][0], viewMatrix[2][0]);
+        //     vec3 camUp = vec3(viewMatrix[0][1], viewMatrix[1][1], viewMatrix[2][1]);
+        //     vec3 x = camRight * vertex.x * billboardSize.x;
+        //     vec3 y = camUp * vertex.y * billboardSize.y;
+        //     vec3 pos = billboardPos + x + y;
+
+        //     gl_Position = viewProjectionMatrix * vec4(pos, 1.0);
+        //     texcoords = vec2(vertex.x + 0.5, 1.0 - vertex.y - 0.5);
+        // }`;
+
         var meterSizeFragmentShader = `
         precision lowp float;
 
@@ -142,6 +162,13 @@ define([
             0.5, 1.0, 0.0,
             -0.5, 1.0, 0.0,
         ]);
+
+        // const vertices = new Float32Array([
+        //     -0.5, -0.5, 0.0,
+        //     0.5, -0.5, 0.0,
+        //     0.5, 0.5, 0.0,
+        //     -0.5, 0.5, 0.0,
+        // ]);        
 
         var gl = globe.tileManager.renderContext.gl;
         this.rectVertexBuffer = gl.createBuffer();
@@ -317,13 +344,8 @@ define([
      * @param image
      * @private
      */
-    PointSpriteRenderer.prototype._buildTextureFromImage = function(
-        bucket,
-        image
-    ) {
-        bucket.texture = this.globe.renderContext.createNonPowerOfTwoTextureFromImage(
-            image
-        );
+    PointSpriteRenderer.prototype._buildTextureFromImage = function(bucket, image) {
+        bucket.texture = this.globe.renderContext.createNonPowerOfTwoTextureFromImage(image);
         bucket.textureWidth = image.width;
         bucket.textureHeight = image.height;
     };

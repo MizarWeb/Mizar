@@ -21,20 +21,12 @@ define([
     "../Utils/Utils",
     "./AbstractContext",
     "../Utils/Constants",
-    "../Globe/GlobeFactory",
-    "../Navigation/NavigationFactory",
-    "../Services/ServiceFactory",
-    "../Gui/TimeTravel",
-    "../Gui/dialog/ErrorDialog"
+    "../Gui/TimeTravel"
 ], function(    
     Utils,
     AbstractContext,
     Constants,
-    GlobeFactory,
-    NavigationFactory,
-    ServiceFactory,
-    TimeTravel,
-    ErrorDialog
+    TimeTravel
 ) {
     /**
      * ground context configuration
@@ -62,12 +54,7 @@ define([
      * @memberof module:Context
      */
     var GroundContext = function(mizarConfiguration, options) {
-        AbstractContext.prototype.constructor.call(
-            this,
-            mizarConfiguration,
-            Constants.CONTEXT.Ground,
-            options
-        );
+        AbstractContext.prototype.constructor.call(this, mizarConfiguration, Constants.CONTEXT.Ground, options);
         var self = this;
 
         this.components = {
@@ -79,42 +66,7 @@ define([
         };
 
         var groundOptions = _createGroundConfiguration.call(this, options);
-
-        // Initialize sky
-        try {
-            // Create the sky
-            this.globe = GlobeFactory.create(
-                Constants.GLOBE.Sky,
-                groundOptions
-            );
-            // create the navigation
-            this.navigation = NavigationFactory.create(
-                Constants.NAVIGATION.GroundNavigation,
-                this,
-                options.navigation ? options.navigation : options
-            );
-            // init the globe
-            this.initGlobeEvents(this.globe);
-            // adding picking manager
-            ServiceFactory.create(Constants.SERVICE.PickingManager).init(this);
-            try {
-                this.setTimeTravelVisible(
-                    mizarConfiguration.timeTravel &&
-                    mizarConfiguration.timeTravel.element
-                        ? mizarConfiguration.timeTravel.element
-                        : "timeTravelDiv",
-                    true
-                );
-            } catch (err) {
-                ErrorDialog.open(
-                    Constants.LEVEL.DEBUG,
-                    "Cannot create the Time travel",
-                    err
-                );
-            }
-        } catch (err) {
-            this._showUpError(err);
-        }
+        this.initGlobe(groundOptions, {"3D": Constants.NAVIGATION.GroundNavigation});        
     };
 
     /**
@@ -173,25 +125,6 @@ define([
     /**************************************************************************************************************/
 
     /**
-     * @function setTimeTravelVisible
-     * @memberof GroundContext#
-     */
-    GroundContext.prototype.setTimeTravelVisible = function(divName, visible) {
-        if (visible) {
-            this.timeTravel = new TimeTravel({
-                element: divName,
-                ctx: this,
-                crs: this.getCoordinateSystem().getGeoideName()
-            });
-        } else {
-            if (this.timeTravel) {
-                this.timeTravel.remove();
-            }
-        }
-        this.setComponentVisibility(divName, visible);
-    };
-
-    /**
      * @function setCoordinateSystem
      * @memberof GroundContext#
      * @throws RangeError - "incompatible coordinate reference system with Sky context"
@@ -205,18 +138,6 @@ define([
         }
         this.globe.setCoordinateSystem(cs);
         this.publish(Constants.EVENT_MSG.CRS_MODIFIED, this);
-    };
-
-    /**
-     * @function destroy
-     * @memberof GroundContext#
-     */
-    GroundContext.prototype.destroy = function() {
-        //this.setTimeTravelVisible(false);
-        if (this.timeTravel) {
-            this.timeTravel.remove();
-        }
-        AbstractContext.prototype.destroy.call(this);
     };
 
     /**************************************************************************************************************/

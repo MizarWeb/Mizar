@@ -57,23 +57,13 @@ define([
     "../Utils/Utils",
     "./AbstractContext",
     "../Utils/Constants",
-    "../Globe/GlobeFactory",
-    "../Navigation/NavigationFactory",
-    "../Services/ServiceFactory",
-    "../Gui/Compass",
-    "../Gui/TimeTravel",
-    "../Gui/dialog/ErrorDialog"
+    "../Navigation/NavigationFactory"
 ], function(
     $,
     Utils,
     AbstractContext,
     Constants,
-    GlobeFactory,
-    NavigationFactory,
-    ServiceFactory,
-    Compass,
-    TimeTravel,
-    ErrorDialog
+    NavigationFactory
 ) {
     /**
      * Planet context configuration
@@ -97,12 +87,7 @@ define([
      * @memberof module:Context
      */
     var PlanetContext = function(mizarConfiguration, options) {
-        AbstractContext.prototype.constructor.call(
-            this,
-            mizarConfiguration,
-            Constants.CONTEXT.Planet,
-            options
-        );
+        AbstractContext.prototype.constructor.call(this, mizarConfiguration, Constants.CONTEXT.Planet, options);
         var self = this;
         this.components = {
             posTrackerInfo: true,
@@ -113,40 +98,13 @@ define([
         };
 
         var planetOptions = _createPlanetConfiguration.call(this, options);
-
-        // Initialize planet
-        try {
-            this.globe = GlobeFactory.create(
-                Constants.GLOBE.Planet,
-                planetOptions
-            );
-            this.navigation = _createNavigation.call(
-                this,
-                this.getCoordinateSystem().isFlat(),
-                options.navigation
-            );
-            this.initGlobeEvents(this.globe);
-
-            ServiceFactory.create(Constants.SERVICE.PickingManager).init(this);
-
-            try {
-                this.setTimeTravelVisible(
-                    mizarConfiguration.timeTravel &&
-                    mizarConfiguration.timeTravel.element
-                        ? mizarConfiguration.timeTravel.element
-                        : "timeTravelDiv",
-                    true
-                );
-            } catch (err) {
-                ErrorDialog.open(
-                    Constants.LEVEL.DEBUG,
-                    "Cannot create the Time travel",
-                    err
-                );
+        this.initGlobe(
+            planetOptions, 
+            {
+                "3D": Constants.NAVIGATION.PlanetNavigation, 
+                "2D": Constants.NAVIGATION.FlatNavigation
             }
-        } catch (err) {
-            this._showUpError(err);
-        }
+        );
     };
 
     /**
@@ -165,24 +123,6 @@ define([
      * @property {boolean} renderTileWithoutTexture = true
      * @property {function} publishEvent - Callback
      */
-
-    /**
-     * Create the navigation according to the isFlat parameter.
-     * @param {boolean} isFlat - The globe is projected or in 3D
-     * @param {AbstractNavigation.planet_configuration|AbstractNavigation.flat_configuration} navigationOpts - Options for navigation
-     * @returns {FlatNavigation|PlanetNavigation} navigation
-     * @private
-     */
-    function _createNavigation(isFlat, navigationOpts) {
-        var navigationType;
-        if (isFlat) {
-            navigationType = Constants.NAVIGATION.FlatNavigation;
-        } else {
-            navigationType = Constants.NAVIGATION.PlanetNavigation;
-        }
-
-        return NavigationFactory.create(navigationType, this, navigationOpts);
-    }
 
     /**
      * Creates planet configuration
@@ -240,9 +180,7 @@ define([
      */
     function _propagateNavOptions(options) {
         var navOptions = {};
-        navOptions.inertia = options.hasOwnProperty("inertia")
-            ? options.inertia
-            : false;
+        navOptions.inertia = options.hasOwnProperty("inertia") ? options.inertia : false;
         if (options.hasOwnProperty("mouse")) {
             navOptions.mouse = options.mouse;
         }
@@ -285,25 +223,6 @@ define([
     Utils.inherits(AbstractContext, PlanetContext);
 
     /**************************************************************************************************************/
-
-    /**
-     * @function setTimeTravelVisible
-     * @memberof PlanetContext#
-     */
-    PlanetContext.prototype.setTimeTravelVisible = function(divName, visible) {
-        if (visible) {
-            this.timeTravel = new TimeTravel({
-                element: divName,
-                ctx: this,
-                crs: this.getCoordinateSystem().getGeoideName()
-            });
-        } else {
-            if (this.timeTravel) {
-                this.timeTravel.remove();
-            }
-        }
-        this.setComponentVisibility(divName, visible);
-    };
 
     /**
      * @function setBaseElevation
@@ -367,22 +286,12 @@ define([
         var geoDistance;
 
         var self = this;
-        $(self.canvas.parentElement)
-            .find("#loading")
-            .show();
+        $(self.canvas.parentElement).find("#loading").show();
 
         // Compute current position and distance in order to set them in the new navigation related to the
         // new coordinate reference system
-        geoCenter = _computeGeoCenter.call(
-            this,
-            this.globe.getCoordinateSystem()
-        );
-        geoDistance =
-            this.navigation.distance /
-            this.globe
-                .getCoordinateSystem()
-                .getGeoide()
-                .getHeightScale();
+        geoCenter = _computeGeoCenter.call(this,this.globe.getCoordinateSystem());
+        geoDistance = this.navigation.distance / this.globe.getCoordinateSystem().getGeoide().getHeightScale();
 
         // Update the coordinate reference system
         this.globe.setCoordinateSystem(newCrs);
@@ -390,20 +299,11 @@ define([
 
         // Creates the options for the new navigation related to the new coordinate reference system.
         // We only keep the inertia and the options for the mouse
-        var navOptions = _propagateNavOptions.call(
-            this,
-            this.navigation.getOptions()
-        );
+        var navOptions = _propagateNavOptions.call(this, this.navigation.getOptions());
 
         try {
             // Create a new navigation related to the new coordinate reference system
-            _updateNavForNewCrs.call(
-                this,
-                newCrs,
-                geoCenter,
-                geoDistance,
-                navOptions
-            );
+            _updateNavForNewCrs.call(this, newCrs, geoCenter, geoDistance, navOptions);
         } catch (err) {
             this._showUpError(err);
         }
@@ -420,15 +320,6 @@ define([
 
         this.navigation.computeViewMatrix();
         this.publish(Constants.EVENT_MSG.CRS_MODIFIED, this);
-    };
-
-    /**
-     * @function destroy
-     * @memberof PlanetContext#
-     */
-    PlanetContext.prototype.destroy = function() {
-        //this.setTimeTravelVisible(false);
-        AbstractContext.prototype.destroy.call(this);
     };
 
     /**************************************************************************************************************/

@@ -224,6 +224,8 @@ define([
          */
         this.TimeUtility = Time;
 
+        this.errorDialog = ErrorDialog;
+
         this.skyContext = null;
         this.planetContext = null;
         this.groundContext = null;
@@ -375,6 +377,13 @@ define([
      */
     Mizar.TIME_STEP = Constants.TIME_STEP;
 
+    /**
+     * List of supported valaues for {@link LEVEL level}
+     * @name LEVEL
+     * @memberof Mizar#
+     */    
+    Mizar.LEVEL = Constants.LEVEL;
+
     /**********************************************************************************************************
      *                                      Private methods
      **********************************************************************************************************/
@@ -498,10 +507,7 @@ define([
 
         var viewMatrix;
         var fov;
-        if (
-            context.hasOwnProperty("_oldVM") &&
-            context.hasOwnProperty("_oldFov")
-        ) {
+        if (context.hasOwnProperty("_oldVM") && context.hasOwnProperty("_oldFov")) {
             viewMatrix = context._oldVM;
             fov = context._oldFov;
         } else if (context.getNavigation().inverseViewMatrix === undefined) {
@@ -866,7 +872,7 @@ define([
 
     /**************************************************************************************************************
      *                                          Public methods
-     **************************************************************************************************************/
+     **************************************************************************************************************/    
 
     /**
      * Returns the sky context.
@@ -1435,32 +1441,8 @@ define([
      * @see {@link Mizar#setActivatedContext}
      * @see {@link Mizar#createContext}
      */
-    Mizar.prototype.addLayer = function(layerDescription, callback, fallback) {
-        //var result;
-        //try {
-        this.getActivatedContext().addLayer(
-            layerDescription,
-            callback,
-            fallback
-        );
-        //} catch(e) {
-        //    result = false;
-        //    var prefixe;
-        //    var text;
-        //    var hipsLayer = layerDescription.hipsMetadata;
-        //    if(hipsLayer != null) {
-        //        if (typeof hipsLayer.hipsMetadata.obs_title === 'undefined') {
-        //            prefixe = "ID ";
-        //            text = hipsLayer.hipsMetadata.ID;
-        //        } else {
-        //            prefixe = "";
-        //            text = hipsLayer.hipsMetadata.obs_title;
-        //        }
-        //        //ErrorDialog.open("Hips layer " + prefixe + "<font style='color:yellow'><b>" + text + "</b></font> not valid in Hips registry <font color='grey'><i>(" + hipsLayer.hipsMetadata.hips_service_url + " - reason : "+ e.message +")</i></font>.");
-        //    } else {
-        //        //ErrorDialog.open("Cannot add the layer <font style='color:yellow'><b>" + JSON.stringify(layerDescription) + "</b></font><font color='grey'><i>(reason : "+ e.message +")</i></font>.");
-        //    }
-        //}
+    Mizar.prototype.addLayer = function(layerDescription, callback, fallback) {        
+        this.getActivatedContext().addLayer(layerDescription,callback,fallback);
     };
 
     /**

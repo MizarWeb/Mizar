@@ -319,13 +319,15 @@ define(function() {
      * @property {string} Intersection - Intersection utility
      * @property {string} CreateStyle - CreateStyle utility
      * @property {string} FeatureStyle - FeatureStyle utility
+     * @property {string} Utils - Utils utility     
      */
     Constants.UTILITY = {
         Fits: "Fits",
         Intersection: "Intersection",
         Numeric: "Numeric",
         CreateStyle: "CreateStyle",
-        FeatureStyle: "FeatureStyle"
+        FeatureStyle: "FeatureStyle",
+        Utils: "Utils"
     };
 
     /**

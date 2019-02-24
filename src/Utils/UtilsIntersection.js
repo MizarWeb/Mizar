@@ -19,16 +19,8 @@
 define(["./Numeric", "./Constants","../Tiling/HEALPixBase"], function(Numeric, Constants, HEALPixBase) {
     var UtilsIntersection = {};
 
-    UtilsIntersection.convertPolygonToHealpixOrder = function(
-        coordinates,
-        fact,
-        order
-    ) {
-        return HEALPixBase.convertPolygonToHealpixOrder(
-            coordinates,
-            fact,
-            order
-        );
+    UtilsIntersection.convertPolygonToHealpixOrder = function(coordinates, fact, order) {
+        return HEALPixBase.convertPolygonToHealpixOrder(coordinates, fact, order);
     };
 
     /**
@@ -68,12 +60,7 @@ define(["./Numeric", "./Constants","../Tiling/HEALPixBase"], function(Numeric, C
     /**
      *    Determine if a point lies inside a sphere of radius depending on viewport
      */
-    UtilsIntersection.pointInSphere = function(
-        ctx,
-        point,
-        sphere,
-        pointTextureHeight
-    ) {
+    UtilsIntersection.pointInSphere = function(ctx, point, sphere, pointTextureHeight) {
         var point3D = [];
         var sphere3D = [];
 
@@ -146,9 +133,7 @@ define(["./Numeric", "./Constants","../Tiling/HEALPixBase"], function(Numeric, C
         var p1 = to3D([point[0], point[1] + 90]);
 
         for (var i = 0; i < nvert - 1; i++) {
-            if (
-                greatArcIntersection(to3D(ring[i]), to3D(ring[i + 1]), p0, p1)
-            ) {
+            if (greatArcIntersection(to3D(ring[i]), to3D(ring[i + 1]), p0, p1)) {
                 nbinter++;
             }
         }

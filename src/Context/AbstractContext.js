@@ -22,6 +22,8 @@ define([
     "../Utils/Event",
     "moment",
     "../Utils/Utils",
+    "../Globe/GlobeFactory",
+    "../Navigation/NavigationFactory",
     "../Time/Time",
     "../Utils/UtilsIntersection",
     "../Services/ServiceFactory",
@@ -35,6 +37,7 @@ define([
     "../Gui/Compass",
     "../Gui/Tracker/PositionTracker",
     "../Gui/Tracker/ElevationTracker",
+    "../Gui/TimeTravel",
     "../Utils/AttributionHandler",
     "../Gui/dialog/ErrorDialog",
     "../Renderer/PointRenderer",
@@ -50,6 +53,8 @@ define([
     Event,
     Moment,
     Utils,
+    GlobeFactory,
+    NavigationFactory,    
     Time,
     UtilsIntersection,
     ServiceFactory,
@@ -63,10 +68,11 @@ define([
     Compass,
     PositionTracker,
     ElevationTracker,
+    TimeTravel,    
     AttributionHandler,
     ErrorDialog
 ) {
-    //TODO : attention de bien garder les ...Renderer dans le define
+    //NB : attention de bien garder les ...Renderer dans le define
 
     /**
      * Default ID for position tracker
@@ -110,7 +116,13 @@ define([
      * @default
      */
     const DEFAULT_ATTRIBUTION_ELT = "globeAttributions";
-
+    /**
+     * Default ID for time travel
+     * @constant
+     * @type {string}
+     * @default
+     */
+    const DEFAULT_TIMETRAVEL_ELT = "timeTravelDiv";
     /**
      * @constant
      * @type{{RA:{string},DEC:{String}}}
@@ -155,22 +167,15 @@ define([
         // Link to time travel service
         this.timeTravelService = ctxOptions.timeTravelService;
 
-        this.subscribe(Constants.EVENT_MSG.BASE_LAYERS_READY, function(
-            imagery
-        ) {
+        this.subscribe(Constants.EVENT_MSG.BASE_LAYERS_READY, function(imagery) {
             // When the background takes time to load, the viewMatrix computed by "computeViewMatrix" is created but
             // with empty values. Because of that, the globe cannot be displayed without moving the camera.
             // So we rerun "computeViewMatrix" once "baseLayersReady" is loaded to display the globe
-            if (
-                self.getNavigation().getRenderContext().viewMatrix[0] !==
-                "undefined"
-            ) {
+            if (self.getNavigation().getRenderContext().viewMatrix[0] !=="undefined") {
                 self.getNavigation().computeViewMatrix();
             }
         });
-        this.mizarConfiguration = mizarConfiguration.hasOwnProperty(
-            "configuration"
-        )
+        this.mizarConfiguration = mizarConfiguration.hasOwnProperty("configuration") 
             ? mizarConfiguration.configuration
             : {};
         this.ctxOptions = ctxOptions;
@@ -178,43 +183,10 @@ define([
         this.layers = [];
         this.pendingLayers = [];
         this.initCanvas(this.canvas);
-
-        try {
-            this.positionTracker = _createTrackerPosition.call(
-                this,
-                this.mizarConfiguration
-            );
-        } catch (err) {
-            ErrorDialog.open(
-                Constants.LEVEL.DEBUG,
-                "Cannot create position tracker",
-                err
-            );
-        }
-
-        try {
-            this.elevationTracker = _createTrackerElevation.call(
-                this,
-                this.mizarConfiguration,
-                ctxOptions
-            );
-        } catch (err) {
-            ErrorDialog.open(
-                Constants.LEVEL.DEBUG,
-                "Cannot create elevation tracker",
-                err
-            );
-        }
-
-        try {
-            this.compass = _createCompass.call(this, this.mizarConfiguration);
-        } catch (err) {
-            ErrorDialog.open(
-                Constants.LEVEL.DEBUG,
-                "Cannot create compass tracker",
-                err
-            );
-        }
+        
+        this.positionTracker = _createTrackerPosition.call(this, this.mizarConfiguration);
+        this.elevationTracker = _createTrackerElevation.call(this, this.mizarConfiguration, ctxOptions);        
+        this.compass = _createCompass.call(this, this.mizarConfiguration);
     };
 
     function _initComponentsVisibility(components) {
@@ -249,10 +221,7 @@ define([
         ) {
             var fov = layer.getProperties().initialFov
                 ? layer.getProperties().initialFov
-                : layer
-                    .getGlobe()
-                    .getRenderContext()
-                    .getFov();
+                : layer.getGlobe().getRenderContext().getFov();
             var navigation = layer.callbackContext.getNavigation();
             var center = navigation.getCenter();
             var globeType = layer.globe.getType();
@@ -272,29 +241,14 @@ define([
             case Constants.GLOBE.Planet:
                 var bbox = layer.getProperties().bbox;
                 if (
-                    UtilsIntersection.isValueBetween(
-                        center[0],
-                        bbox[0],
-                        bbox[2]
-                    ) &&
-                        UtilsIntersection.isValueBetween(
-                            center[1],
-                            bbox[1],
-                            bbox[3]
-                        )
+                    UtilsIntersection.isValueBetween(center[0], bbox[0], bbox[2]) &&
+                    UtilsIntersection.isValueBetween(center[1], bbox[1], bbox[3])
                 ) {
                     // Do not move, we see the target
                 } else {
                     var crs = layer.globe.getCoordinateSystem();
-                    var planetRadius = crs
-                        .getGeoide()
-                        .getRealPlanetRadius();
-                    var distanceCamera = Utils.computeDistanceCameraFromBbox(
-                        bbox,
-                        fov,
-                        planetRadius,
-                        crs.isFlat()
-                    );
+                    var planetRadius = crs.getGeoide().getRealPlanetRadius();
+                    var distanceCamera = Utils.computeDistanceCameraFromBbox(bbox, fov, planetRadius, crs.isFlat());
                     navigation.zoomTo(
                         [
                             layer.getProperties().initialRa,
@@ -308,10 +262,7 @@ define([
                 }
                 break;
             default:
-                throw new Error(
-                    "type " + globeType + " is not implemented",
-                    "AbstractContext.js"
-                );
+                throw new SyntaxError("type " + globeType + " is not implemented", "AbstractContext.js");
             }
         }
     }
@@ -323,23 +274,26 @@ define([
      * then {@link DEFAULT_POSITION_TRACKER_ELT} is the default element
      * @param {Mizar.configuration} mizarConfiguration
      * @returns {PositionTracker} positionTracker object or null when the tracker is not configured
-     * @throws {ReferenceError} Can't get the Div to insert the tracker
      * @private
      */
     function _createTrackerPosition(mizarConfiguration) {
-        return new PositionTracker({
-            element:
-                mizarConfiguration.positionTracker &&
-                mizarConfiguration.positionTracker.element
-                    ? mizarConfiguration.positionTracker.element
-                    : DEFAULT_POSITION_TRACKER_ELT,
-            isMobile: mizarConfiguration.isMobile,
-            position:
-                mizarConfiguration.positionTracker &&
-                mizarConfiguration.positionTracker.position
-                    ? mizarConfiguration.positionTracker.position
-                    : DEFAULT_POSITION_TRACKER_ELT_POS
-        });
+        try {
+            return new PositionTracker({
+                element:
+                    mizarConfiguration.positionTracker &&
+                    mizarConfiguration.positionTracker.element
+                        ? mizarConfiguration.positionTracker.element
+                        : DEFAULT_POSITION_TRACKER_ELT,
+                isMobile: mizarConfiguration.isMobile,
+                position:
+                    mizarConfiguration.positionTracker &&
+                    mizarConfiguration.positionTracker.position
+                        ? mizarConfiguration.positionTracker.position
+                        : DEFAULT_POSITION_TRACKER_ELT_POS
+            });
+        } catch (err) {
+            ErrorDialog.open(Constants.LEVEL.DEBUG,"Cannot create position tracker", err);
+        }
     }
 
     /**
@@ -349,27 +303,30 @@ define([
      * @param {Mizar.configuration} mizarConfiguration - Mizar configuration
      * @param {AbstractContext.planetContext} ctxOptions - options
      * @returns {ElevationTracker} elevationTracker object or null when the tracker is not configured
-     * @throws {ReferenceError} Can't get the Div to insert the tracker
      * @private
      */
     function _createTrackerElevation(mizarConfiguration, ctxOptions) {
-        return new ElevationTracker({
-            element:
-                mizarConfiguration.elevationTracker &&
-                mizarConfiguration.elevationTracker.element
-                    ? mizarConfiguration.elevationTracker.element
-                    : DEFAULT_ELEVATION_TRACKER_ELT,
-            isMobile: mizarConfiguration.isMobile,
-            position:
-                mizarConfiguration.elevationTracker &&
-                mizarConfiguration.elevationTracker.elevation
-                    ? mizarConfiguration.elevationTracker.position
-                    : DEFAULT_ELEVATION_TRACKER_ELT_POS,
-            elevationLayer:
-                ctxOptions.planetLayer !== undefined
-                    ? ctxOptions.planetLayer.elevationLayer
-                    : undefined
-        });
+        try{
+            return new ElevationTracker({
+                element:
+                    mizarConfiguration.elevationTracker &&
+                    mizarConfiguration.elevationTracker.element
+                        ? mizarConfiguration.elevationTracker.element
+                        : DEFAULT_ELEVATION_TRACKER_ELT,
+                isMobile: mizarConfiguration.isMobile,
+                position:
+                    mizarConfiguration.elevationTracker &&
+                    mizarConfiguration.elevationTracker.elevation
+                        ? mizarConfiguration.elevationTracker.position
+                        : DEFAULT_ELEVATION_TRACKER_ELT_POS,
+                elevationLayer:
+                    ctxOptions.planetLayer !== undefined
+                        ? ctxOptions.planetLayer.elevationLayer
+                        : undefined
+            });
+        } catch (err) {
+            ErrorDialog.open(Constants.LEVEL.DEBUG, "Cannot create elevation tracker", err);
+        }        
     }
 
     /**
@@ -378,17 +335,49 @@ define([
      * then {@link DEFAULT_COMPASS_ELT} is the default element
      * @param {Mizar.configuration} mizarConfiguration - Mizar configuration
      * @returns {Compass}
-     * @throws {ReferenceError} can't get the div to insert the compass
      * @private
      */
     function _createCompass(mizarConfiguration) {
-        return new Compass({
-            element: mizarConfiguration.compass
-                ? mizarConfiguration.compass
-                : DEFAULT_COMPASS_ELT,
-            ctx: this,
-            isMobile: this.isMobile
-        });
+        try {
+            return new Compass({
+                element: mizarConfiguration.compass
+                    ? mizarConfiguration.compass
+                    : DEFAULT_COMPASS_ELT,
+                ctx: this,
+                isMobile: this.isMobile
+            });
+        } catch (err) {
+            ErrorDialog.open(Constants.LEVEL.DEBUG, "Cannot create compass tracker", err);
+        }        
+    }
+
+    /**
+     * Creates time travel.
+     * When no time traval element is defined in the configuration,
+     * then {@link DEFAULT_TIMETRAVEL_ELT} is the default element
+     * @param {Mizar.configuration} mizarConfiguration - Mizar configuration
+     * @returns {TimeTraval}
+     * @throws {ReferenceError} can't get the div to insert the compass
+     * @private
+     */    
+    function _createTimeTravel(mizarConfiguration) {
+        try {
+            var crs;
+            if(this.mode === Constants.CONTEXT.Sky) {
+                crs = Constants.CRS.Equatorial;
+            } else {
+                crs = this.getCoordinateSystem().getGeoideName();
+            }
+            return new TimeTravel({
+                element: mizarConfiguration.timeTravel && mizarConfiguration.timeTravel.element
+                    ? mizarConfiguration.timeTravel.element
+                    : DEFAULT_TIMETRAVEL_ELT,
+                ctx: this,
+                crs: crs
+            });  
+        } catch (err) {
+            ErrorDialog.open(Constants.LEVEL.DEBUG, "Cannot create time travel", err);
+        }                 
     }
 
     /**
@@ -417,12 +406,9 @@ define([
      * @private
      */
     function _removeRasterOverlay(layer) {
-        // todo : when added a layer without background = true and then using setBackgroundLayer
+        // NB : when added a layer without background = true and then using setBackgroundLayer
         // the screen blink. It seems, this is due to the removeOverlay
-        if (
-            layer.getInformationType() === Constants.INFORMATION_TYPE.RASTER &&
-            !layer.isBackground()
-        ) {
+        if (layer.getInformationType() === Constants.INFORMATION_TYPE.RASTER && !layer.isBackground()) {
             this._getGlobe().rasterOverlayRenderer.removeOverlay(layer);
             layer.background = true;
         }
@@ -468,8 +454,7 @@ define([
             document.getElementById("loading").style.display = "none";
         }
         if (document.getElementById("webGLNotAvailable")) {
-            document.getElementById("webGLNotAvailable").style.display =
-                "block";
+            document.getElementById("webGLNotAvailable").style.display ="block";
         }
     };
 
@@ -481,14 +466,8 @@ define([
      * @memberof AbstractContext#
      * @protected
      */
-    AbstractContext.prototype._fillDataProvider = function(
-        layer,
-        mizarDescription
-    ) {
-        if (
-            mizarDescription.data &&
-            this.dataProviders[mizarDescription.data.type]
-        ) {
+    AbstractContext.prototype._fillDataProvider = function(layer, mizarDescription) {
+        if (mizarDescription.data && this.dataProviders[mizarDescription.data.type]) {
             var callback = this.dataProviders[mizarDescription.data.type];
             callback(layer, mizarDescription.data);
         }
@@ -535,10 +514,7 @@ define([
      *   var planetProvider = ProviderFactory.create(Constants.PROVIDER.Planet);
      *   this.registerNoStandardDataProvider("planets", planetProvider.loadFiles);
      */
-    AbstractContext.prototype.registerNoStandardDataProvider = function(
-        type,
-        loadFunc
-    ) {
+    AbstractContext.prototype.registerNoStandardDataProvider = function(type, loadFunc) {
         this.dataProviders[type.toString()] = loadFunc;
     };
 
@@ -579,10 +555,7 @@ define([
      * @function getPixelFromLonLat
      * @memberof AbstractContext#
      */
-    AbstractContext.prototype.getPixelFromLonLat = function(
-        longitude,
-        latitude
-    ) {
+    AbstractContext.prototype.getPixelFromLonLat = function(longitude, latitude) {
         return this._getGlobe().getPixelFromLonLat(longitude, latitude);
     };
 
@@ -640,29 +613,12 @@ define([
      * @function addLayer
      * @memberof AbstractContext#
      */
-    AbstractContext.prototype.addLayer = function(
-        layerDescription,
-        callback,
-        fallback
-    ) {
-        var pendingLayersHandler = new PendingLayersRegistryHandler(
-            this.pendingLayers,
-            this.layers
-        );
-        var wmsServerHandler = new WMSServerRegistryHandler(
-            this.pendingLayers
-        );
-        var wmtsServerHandler = new WMTSServerRegistryHandler(
-            this.pendingLayers
-        );
-        var wcsServerHandler = new WCSServerRegistryHandler(
-            this.layers,
-            this.pendingLayers
-        );
-
-        var openSearchServerHandler = new OpenSearchRegistryHandler(
-            this.pendingLayers
-        );        
+    AbstractContext.prototype.addLayer = function(layerDescription, callback, fallback) {
+        var pendingLayersHandler = new PendingLayersRegistryHandler(this.pendingLayers,this.layers);
+        var wmsServerHandler = new WMSServerRegistryHandler(this.pendingLayers);
+        var wmtsServerHandler = new WMTSServerRegistryHandler(this.pendingLayers);
+        var wcsServerHandler = new WCSServerRegistryHandler(this.layers,this.pendingLayers);
+        var openSearchServerHandler = new OpenSearchRegistryHandler(this.pendingLayers);        
         var layerHandler = new LayerRegistryHandler(this.pendingLayers);
 
         pendingLayersHandler.setNext(wmsServerHandler);
@@ -672,63 +628,50 @@ define([
         openSearchServerHandler.setNext(layerHandler);
 
         var self = this;
-        pendingLayersHandler.handleRequest(
-            layerDescription,
-            function(layers) {
-                for (var i = 0; i < layers.length; i++) {
-                    var layer = layers[i];
-                    layer.callbackContext = self;
+        pendingLayersHandler.handleRequest(layerDescription,function(layers) {
+            for (var i = 0; i < layers.length; i++) {
+                var layer = layers[i];
+                layer.callbackContext = self;
 
-                    self.layers.push(layer);
+                self.layers.push(layer);
 
-                    // Take autoFillTimeTravel into account
-                    if (layer.autoFillTimeTravel === true) {
-                        // Only when visible & time travel service activated and available
-                        if (layer.visible === true && self.timeTravelService) {
-                            self.timeTravelService.update(
-                                layer.timeTravelValues
-                            );
-                        }
-                    }
-
-                    _addToGlobe.call(self, layer);
-
-                    self._fillDataProvider(layer, layerDescription);
-                    if (layer.isVisible()) {
-                        layer.setTime(self.getTime());
-                    }
-
-                    if (layer.isPickable()) {
-                        ServiceFactory.create(
-                            Constants.SERVICE.PickingManager
-                        ).addPickableLayer(layer);
-                    }
-
-                    layer.subscribe(
-                        Constants.EVENT_MSG.LAYER_VISIBILITY_CHANGED,
-                        _handleCameraWhenLayerAdded
-                    );
-
-                    //if (layer.addEventTime) {
-                    //    layer.addEventTime();
-                    //}
-
-                    if (callback) {
-                        callback(layer.ID);
+                // Take autoFillTimeTravel into account
+                if (layer.autoFillTimeTravel === true) {
+                    // Only when visible & time travel service activated and available
+                    if (layer.visible === true && self.timeTravelService) {
+                        self.timeTravelService.update(layer.timeTravelValues);
                     }
                 }
-            },
-            function(e) {
-                if (fallback) {
-                    fallback(e);
-                } else {
-                    ErrorDialog.open(
-                        Constants.LEVEL.ERROR,
-                        "Cannot create the layer(s)",
-                        e
-                    );
+
+                _addToGlobe.call(self, layer);
+
+                self._fillDataProvider(layer, layerDescription);
+                if (layer.isVisible()) {
+                    layer.setTime(self.getTime());
+                }
+
+                if (layer.isPickable()) {
+                    ServiceFactory.create(Constants.SERVICE.PickingManager).addPickableLayer(layer);
+                }
+
+                layer.subscribe(Constants.EVENT_MSG.LAYER_VISIBILITY_CHANGED,_handleCameraWhenLayerAdded);
+
+                //if (layer.addEventTime) {
+                //    layer.addEventTime();
+                //}
+
+                if (callback) {
+                    callback(layer.ID);
                 }
             }
+        },
+        function(e) {
+            if (fallback) {
+                fallback(e);
+            } else {
+                ErrorDialog.open(Constants.LEVEL.ERROR, "Cannot create the layer(s)", e);
+            }
+        }
         );
     };
 
@@ -764,27 +707,17 @@ define([
                 return index;
             }
         });
-
         if (indexes.length > 0) {
             // At least one layer to remove
             var removedLayers = this.layers.splice(indexes[0], 1);
             removedLayer = removedLayers[0];
             if (removedLayer.autoFillTimeTravel === true) {
-                this.timeTravelService.update({
-                    remove: { ID: layerID }
-                });
+                this.timeTravelService.update({remove: { ID: layerID }});
             }
             var tileManager = this.getTileManager();
             tileManager.abortLayerRequests(removedLayer);
-
-            removedLayer.unsubscribe(
-                Constants.EVENT_MSG.LAYER_VISIBILITY_CHANGED,
-                _handleCameraWhenLayerAdded
-            );
-            ServiceFactory.create(
-                Constants.SERVICE.PickingManager
-            ).removePickableLayer(removedLayer);
-
+            removedLayer.unsubscribe(Constants.EVENT_MSG.LAYER_VISIBILITY_CHANGED, _handleCameraWhenLayerAdded);
+            ServiceFactory.create(Constants.SERVICE.PickingManager).removePickableLayer(removedLayer);
             this._getGlobe().removeLayer(removedLayer);
             this.getRenderContext().requestFrame();
         }
@@ -801,9 +734,7 @@ define([
             var layerIndex = nbLayers - 1;
             var layerID = this.layers[layerIndex].ID;
             if (this.attributionHandler != null)
-                this.attributionHandler.removeAttribution(
-                    this.layers[layerIndex]
-                );
+                this.attributionHandler.removeAttribution(this.layers[layerIndex]);
             this.removeLayer(layerID);
             nbLayers--;
         }
@@ -814,8 +745,7 @@ define([
      * @memberof AbstractContext#
      */
     AbstractContext.prototype.addDraw = function(layer) {
-        Utils.assert(
-            layer.type === Constants.LAYER.Vector,
+        Utils.assert(layer.type === Constants.LAYER.Vector,
             "layer must be a vector layer in addDraw",
             "AbstractContext.js"
         );
@@ -855,9 +785,7 @@ define([
         var width, height;
         var parentCanvas = $(canvas.parentElement);
 
-        $(canvas.parentElement)
-            .find("#loading")
-            .show();
+        $(canvas.parentElement).find("#loading").show();
 
         if ($(canvas).attr("width")) {
             width = $(canvas).attr("width");
@@ -882,20 +810,13 @@ define([
 
         // Add some useful css properties to parent element
         if (parentCanvas) {
-            parentCanvas.css({
-                position: "relative",
-                overflow: "hidden"
-            });
+            parentCanvas.css({position: "relative",overflow: "hidden"});
         }
 
         // Define on resize function
         var self = this;
         var onResize = function() {
-            if (
-                parentCanvas &&
-                parentCanvas.attr("height") &&
-                parentCanvas.attr("width")
-            ) {
+            if (parentCanvas && parentCanvas.attr("height") && parentCanvas.attr("width")) {
                 // Embedded
                 canvas.width = parentCanvas.width();
                 canvas.height = parentCanvas.height();
@@ -922,22 +843,23 @@ define([
             function(event) {
                 event.preventDefault();
                 document.getElementById("loading").style.display = "none";
-                document.getElementById("webGLContextLost").style.display =
-                    "block";
+                document.getElementById("webGLContextLost").style.display ="block";
             },
             false
         );
     };
 
     /**
-     * Initializes the planet or sky events.
-     * @function iniGlobeEvents
+     * Initializes the globe..
+     * @function initGlobe
      * @memberof AbstractContext#
      * @param {AbstractGlobe} globe Planet or Sky object
-     */
-    AbstractContext.prototype.initGlobeEvents = function(globe) {
-        if (globe) {
-            this.globe = globe;
+     */    
+    AbstractContext.prototype.initGlobe = function(globeOptions, navigationMode) {
+        try {
+            this.globe = GlobeFactory.create(this.mode, globeOptions);
+            var navigationType =  (this.getCoordinateSystem().isFlat()) ? navigationMode["2D"] : navigationMode["3D"];        
+            this.navigation = NavigationFactory.create(navigationType, this, this.ctxOptions.navigation ? this.ctxOptions.navigation : this.ctxOptions);
             this.attributionHandler = new AttributionHandler(this.globe, {
                 element:
                     this.mizarConfiguration.attributionHandler &&
@@ -945,7 +867,6 @@ define([
                         ? this.mizarConfiguration.attributionHandler.element
                         : DEFAULT_ATTRIBUTION_ELT
             });
-
             if (this.positionTracker != null) {
                 this.positionTracker.attachTo(this);
                 // it will be updated by the position tracker
@@ -959,27 +880,25 @@ define([
             if (this.compass != null) {
                 this.compass.attachTo(this);
             }
-        } else {
-            ErrorDialog.open(Constants.LEVEL.DEBUG, "AbstractContext.js", "Globe is null in initGlobeEvents");
-        }
+            
+            this.timeTravel = _createTimeTravel.call(this, this.mizarConfiguration);           
 
-        _initComponentsVisibility(this.components);
+            ServiceFactory.create(Constants.SERVICE.PickingManager).init(this);
 
-        //When base layer failed to load, open error dialog
-        var self = this;
-        this.subscribe(Constants.EVENT_MSG.BASE_LAYERS_ERROR, function(layer) {
-            $(self.canvas.parentElement)
-                .find("#loading")
-                .hide();
-            ErrorDialog.open(
-                Constants.LEVEL.ERROR,
-                "Cannot add the layer " +
-                    layer.name ? layer.name : layer.ID +
-                    "from " +
-                    layer.getBaseUrl(),
-                layer.message
-            );
-        });
+            _initComponentsVisibility(this.components);
+
+            //When base layer failed to load, open error dialog
+            this.subscribe(Constants.EVENT_MSG.BASE_LAYERS_ERROR, function(layer) {
+                $(self.canvas.parentElement).find("#loading").hide();
+                ErrorDialog.open(
+                    Constants.LEVEL.ERROR,
+                    "Cannot add the layer " + layer.name ? layer.name : layer.ID + "from " + layer.getBaseUrl(),
+                    layer.message
+                );
+            });               
+        } catch (err) {
+            this._showUpError(err);
+        }                      
     };
 
     /**************************************************************************************************************/
@@ -1030,10 +949,7 @@ define([
     AbstractContext.prototype.hideComponents = function(uiArray) {
         // Hide all the UI components
         for (var componentId in this.components) {
-            if (
-                _isDivExist(componentId) &&
-                $.inArray(componentId, uiArray) === -1
-            ) {
+            if (_isDivExist(componentId) && $.inArray(componentId, uiArray) === -1) {
                 $("#" + componentId).fadeOut();
             }
         }
@@ -1059,10 +975,7 @@ define([
      * @function setComponentVisibility
      * @memberof AbstractContext#
      */
-    AbstractContext.prototype.setComponentVisibility = function(
-        componentId,
-        isVisible
-    ) {
+    AbstractContext.prototype.setComponentVisibility = function(componentId, isVisible) {
         var component = $("#" + componentId);
         if (isVisible) {
             component.show();
@@ -1091,9 +1004,7 @@ define([
         _.each(this.visibleLayers, function(layer) {
             layer.setVisible(true);
             if (layer.isPickable()) {
-                ServiceFactory.create(
-                    Constants.SERVICE.PickingManager
-                ).addPickableLayer(layer);
+                ServiceFactory.create(Constants.SERVICE.PickingManager).addPickableLayer(layer);
             }
         });
     };
@@ -1125,10 +1036,7 @@ define([
             _removeRasterOverlay.call(this, gwLayer);
             this._getGlobe().setBaseImagery(gwLayer);
         } else {
-            this.publish(
-                Constants.EVENT_MSG.LAYER_BACKGROUND_ERROR,
-                survey + " hasn't been found"
-            );
+            this.publish(Constants.EVENT_MSG.LAYER_BACKGROUND_ERROR, survey + " hasn't been found");
         }
         return gwLayer;
     };
@@ -1144,10 +1052,7 @@ define([
             _removeRasterOverlay.call(this, gwLayer);
             this._getGlobe().setBaseImagery(gwLayer);
         } else {
-            this.publish(
-                Constants.EVENT_MSG.LAYER_BACKGROUND_ERROR,
-                surveyID + " hasn't been found"
-            );
+            this.publish(Constants.EVENT_MSG.LAYER_BACKGROUND_ERROR, surveyID + " hasn't been found");
         }
         return gwLayer;
     };
@@ -1216,9 +1121,7 @@ define([
         var layer = this.layers[i];
         while (layer) {
             if (layer.isPickable()) {
-                ServiceFactory.create(
-                    Constants.SERVICE.PickingManager
-                ).addPickableLayer(layer);
+                ServiceFactory.create(Constants.SERVICE.PickingManager).addPickableLayer(layer);
             }
             if (this.AttributionHandler != null)
                 this.attributionHandler.enable(layer);
@@ -1231,33 +1134,6 @@ define([
             }
         }
         this.isEnableCtx = true;
-    };
-
-    /**
-     * @function setCompassVisible
-     * @memberof AbstractContext#
-     * @abstract
-     */
-    AbstractContext.prototype.setCompassVisible = function(divName, visible) {
-        throw new SyntaxError(
-            "compass visible not implemented",
-            "AbstractContext.js"
-        );
-    };
-
-    /**
-     * @function setTimeTravelVisible
-     * @memberof AbstractContext#
-     * @abstract
-     */
-    AbstractContext.prototype.setTimeTravelVisible = function(
-        divName,
-        visible
-    ) {
-        throw new SyntaxError(
-            "time travel visible not implemented",
-            "AbstractContext.js"
-        );
     };
 
     /**
@@ -1336,6 +1212,33 @@ define([
         }
     };
 
+    AbstractContext.prototype.compassDestroy = function() {
+        if (this.compass) {
+            this.compass.destroy();
+            this.compass = null;
+        }
+    };  
+    
+    AbstractContext.prototype.timeTravelDestroy = function() {
+        if (this.timeTravel) {
+            this.timeTravel.remove();
+        }  
+    };  
+    
+    AbstractContext.prototype.navigationDestroy = function() {
+        if (this.navigation) {
+            this.navigation.destroy();
+            this.navigation = null;
+        } 
+    }; 
+    
+    AbstractContext.prototype.globeDestroy = function() {
+        if (this._getGlobe()) {
+            this._getGlobe().destroy();
+            this.globe = null;
+        }
+    };     
+
     /**i
      * @function destroy
      * @memberof AbstractContext#
@@ -1343,11 +1246,9 @@ define([
      */
     AbstractContext.prototype.destroy = function() {
         this.hide();
-        this.trackerDestroy();
-        if (this.compass) {
-            this.compass.destroy();
-            this.compass = null;
-        }
+        this.trackerDestroy();        
+        this.compassDestroy();
+        this.timeTravelDestroy();
         this.removeAllLayers();
         this.components = null;
         this.attributionHandler = null;
@@ -1357,30 +1258,16 @@ define([
         this.mizarConfiguration = null;
         this.ctxOptions = null;
         this.mode = null;
-
-        this.unsubscribe(Constants.EVENT_MSG.BASE_LAYERS_READY, function(
-            imagery
-        ) {
+        this.unsubscribe(Constants.EVENT_MSG.BASE_LAYERS_READY, function(imagery) {
             // When the background takes time to load, the viewMatrix computed by "computeViewMatrix" is created but
             // with empty values. Because of that, the globe cannot be displayed without moving the camera.
             // So we rerun "computeViewMatrix" once "baseLayersReady" is loaded to display the globe
-            if (
-                self.getNavigation().getRenderContext().viewMatrix[0] !==
-                "undefined"
-            ) {
+            if (self.getNavigation().getRenderContext().viewMatrix[0] !=="undefined") {
                 self.getNavigation().computeViewMatrix();
             }
         });
-
-        if (this.navigation) {
-            this.navigation.destroy();
-            this.navigation = null;
-        }
-
-        if (this._getGlobe()) {
-            this._getGlobe().destroy();
-            this.globe = null;
-        }
+        this.navigationDestroy();
+        this.globeDestroy();
         this.canvas = null;
     };
 

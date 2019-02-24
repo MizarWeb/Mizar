@@ -351,10 +351,7 @@ define([
      * @param {Tile} tile Tile
      */
     VectorRenderer.prototype.removeGeometryFromTile = function(geometry, tile) {
-        var bbox = null;
-        if (geometry.type !== "Point") {
-            bbox = Utils.getBBox(geometry);
-        }
+        var bbox = (geometry.type === "Point") ? null : Utils.getBBox(geometry);
         this._removeGeometryFromTile(geometry, bbox, tile, 0);
     };
 

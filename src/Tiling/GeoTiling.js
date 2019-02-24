@@ -36,13 +36,14 @@
  ***************************************/
 
 define([
+    "../Utils/Utils",
     "../Utils/Constants",
     "../Utils/UtilsIntersection",
     "./Tile",
     "../Renderer/GeoBound",
     "./HEALPixBase",
     "../Renderer/glMatrix"
-], function(Constants, UtilsIntersection, Tile, GeoBound, HEALPixBase) {
+], function(Utils, Constants, UtilsIntersection, Tile, GeoBound, HEALPixBase) {
     /** @constructor
          Tile constructor
          */
@@ -333,83 +334,6 @@ define([
         return level0Tiles;
     };
 
-    /**
-     * Compute the bbox of a feature
-     */
-    var _getBBox = function(geometry) {
-        // Get the coordinates
-        var coords;
-        var checkDateLine = true;
-        switch (geometry.type) {
-        case Constants.GEOMETRY.Point:
-            coords = geometry.coordinates;
-            return [coords[0], coords[1], coords[0], coords[1]];
-        case Constants.GEOMETRY.MultiPoint:
-            coords = geometry.coordinates;
-            checkDateLine = false;
-            break;
-        case Constants.GEOMETRY.Polygon:
-            coords = geometry.coordinates[0];
-            break;
-        case Constants.GEOMETRY.MultiPolygon:
-            coords = geometry.coordinates[0][0];
-            break;
-        case Constants.GEOMETRY.LineString:
-            coords = geometry.coordinates;
-            break;
-        case Constants.GEOMETRY.MultiLineString:
-            coords = geometry.coordinates[0];
-            break;
-        }
-
-        if (!coords || coords.length === 0) {
-            return;
-        }
-
-        var minX = coords[0][0];
-        var minY = coords[0][1];
-        var maxX = coords[0][0];
-        var maxY = coords[0][1];
-
-        var numOuterRings =
-            geometry.type === Constants.GEOMETRY.MultiPolygon ||
-            geometry.type === Constants.GEOMETRY.MultiLineString
-                ? geometry.coordinates.length
-                : 1;
-        for (var j = 0; j < numOuterRings; j++) {
-            switch (geometry.type) {
-            case Constants.GEOMETRY.MultiPolygon:
-                coords = geometry.coordinates[j][0];
-                break;
-            case Constants.GEOMETRY.MultiLineString:
-                coords = geometry.coordinates[j];
-                break;
-            }
-
-            for (var i = 0; i < coords.length; i++) {
-                minX = Math.min(minX, coords[i][0]);
-                minY = Math.min(minY, coords[i][1]);
-                maxX = Math.max(maxX, coords[i][0]);
-                maxY = Math.max(maxY, coords[i][1]);
-
-                // Check if the coordinates cross dateline
-                if (
-                    checkDateLine &&
-                    i > 0 &&
-                    UtilsIntersection.isCrossDateLine(
-                        coords[i - 1][0],
-                        coords[i][0]
-                    )
-                ) {
-                    minX = -180;
-                    maxX = 180;
-                }
-            }
-        }
-
-        return [minX, minY, maxX, maxY];
-    };
-
     /**************************************************************************************************************/
 
     /**
@@ -455,21 +379,16 @@ define([
          */
     GeoTiling.prototype.getOverlappedLevelZeroTiles = function(geometry) {
         var tileIndices = [];
-
-        var bbox = _getBBox(geometry);
-        if (bbox) {
-            var i1 = this._lon2LevelZeroIndex(bbox[0]);
-            var j1 = this._lat2LevelZeroIndex(bbox[3]);
-            var i2 = this._lon2LevelZeroIndex(bbox[2]);
-            var j2 = this._lat2LevelZeroIndex(bbox[1]);
-
-            for (var j = j1; j <= j2; j++) {
-                for (var i = i1; i <= i2; i++) {
-                    tileIndices.push(j * this.level0NumTilesX + i);
-                }
+        var bbox = Utils.getBBox(geometry);
+        var i1 = this._lon2LevelZeroIndex(bbox.west);
+        var j1 = this._lat2LevelZeroIndex(bbox.north);
+        var i2 = this._lon2LevelZeroIndex(bbox.east);
+        var j2 = this._lat2LevelZeroIndex(bbox.south);
+        for (var j = j1; j <= j2; j++) {
+            for (var i = i1; i <= i2; i++) {
+                tileIndices.push(j * this.level0NumTilesX + i);
             }
-        }
-
+        }        
         return tileIndices;
     };
 

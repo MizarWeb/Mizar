@@ -159,24 +159,15 @@ define([
      * @param {string[]} parameters - parameters of the getCapabilities
      * @return {string} base URL
      */
-    Utils.computeBaseUrlFromCapabilities = function(
-        capabilitiesUrl,
-        parameters
-    ) {
-        if (
-            typeof capabilitiesUrl != "string" ||
-            capabilitiesUrl.length == 0 ||
-            !Array.isArray(parameters)
-        )
-            return null;
+    Utils.computeBaseUrlFromCapabilities = function(capabilitiesUrl, parameters) {
+        Utils.assert(capabilitiesUrl !== null && capabilitiesUrl.length !== 0, "capabilitiesUrl must not be empty", "Utils.js");
 
         var url = capabilitiesUrl;
         if (url.indexOf("?") > -1) {
             url = url.substr(0, url.indexOf("?"));
         }
         // url cannot be undefined because we need to query a getCapabilities or something else with a parameter
-        var queryString =
-            capabilitiesUrl.replace(url + "?", "") || capabilitiesUrl;
+        var queryString = capabilitiesUrl.replace(url + "?", "") || capabilitiesUrl;
         var query = Utils.parseQuery(queryString);
         // we delete all parameters required by a standard.
         for (var i = 0; i < parameters.length; i++) {
@@ -198,14 +189,17 @@ define([
         return url;
     };
 
+    /**
+     * Parse query url.
+     * @function parseQuery
+     * @param {string} str - url
+     * @return {{}} a hash of parameter/value
+     */
     Utils.parseQuery = function(str) {
         if (typeof str != "string" || str.length == 0) return {};
         var s = str.split("&");
         var s_length = s.length;
-        var bit,
-            query = {},
-            first,
-            second;
+        var bit, query = {}, first, second;
         for (var i = 0; i < s_length; i++) {
             bit = s[i].split("=");
             first = decodeURIComponent(bit[0]);
@@ -238,7 +232,7 @@ define([
      * Parses the base URL.
      * @function parseBaseURL
      * @param {string} url - the URL
-     * @return {*} the base URL
+     * @return {string} the base URL
      */
     Utils.parseBaseURL = function(url) {
         var result;
@@ -282,15 +276,7 @@ define([
      * @param {Utils~requestFallback} [fallBack] - The fallback that handles the error.
      * @param {Utils~requestComplete} [complete] - The completeback that is executed afet the callback/fallback
      */
-    Utils.requestUrl = function(
-        url,
-        datatype,
-        acceptDatatype,
-        options,
-        callback,
-        fallBack,
-        complete
-    ) {
+    Utils.requestUrl = function(url, datatype, acceptDatatype, options, callback, fallBack, complete) {
         $.ajax({
             type: "GET",
             url: Proxy.proxify(url),
@@ -307,14 +293,10 @@ define([
                 var message;
                 var code;
                 if (xhr.status === 0) {
-                    message =
-                        "Unreachable URL or No 'Access-Control-Allow-Origin' header is present on the " +
-                        url;
+                    message = "Unreachable URL or No 'Access-Control-Allow-Origin' header is present on the "+url;
                     code = 0;
                 } else {
-                    message = thrownError.message
-                        ? thrownError.message
-                        : thrownError;
+                    message = thrownError.message ? thrownError.message : thrownError;
                     code = thrownError.code ? thrownError.code : -1;
                     if (typeof ajaxOptions === "string") {
                         message = ajaxOptions + ": " + message;
@@ -492,12 +474,7 @@ define([
      * @param {boolean} isFlat - is it a projected CRS
      * @return {float} the distance of the camera in meters.
      */
-    Utils.computeDistanceCameraFromBbox = function(
-        bbox,
-        fov,
-        planetRadius,
-        isFlat
-    ) {
+    Utils.computeDistanceCameraFromBbox = function(bbox, fov, planetRadius, isFlat) {
         var angularDistance = Math.abs(bbox[2] - bbox[0]);
         if (UtilsIntersection.isCrossDateLine(bbox[0], bbox[2])) {
             angularDistance = 360 - angularDistance;
@@ -511,39 +488,63 @@ define([
             visibleAngularDistance = angularDistance;
         }
 
-        var distance =
-            (2 * Math.PI * planetRadius * visibleAngularDistance) / 360;
+        var distance = (2 * Math.PI * planetRadius * visibleAngularDistance) / 360;
         return (0.5 * distance) / Math.tan(0.5 * Numeric.toRadian(fov));
     };
 
+    /**
+     * Returns the time format based on time pattern.
+     * @function formatResolution
+     * @param {string} time pattern
+     * @return {TIME_STEP} time format
+     * @throws {Error} pattern not supported
+     */
     Utils.formatResolution = function(format) {
         var timeResolution;
         if (Utils.aContainsB.call(this, format, "ss")) {
-            timeResolution = "seconds";
+            timeResolution = Constants.TIME_STEP.SECOND;
         } else if (Utils.aContainsB.call(this, format, "mm")) {
-            timeResolution = "minutes";
+            timeResolution = Constants.TIME_STEP.MINUTE;
         } else if (Utils.aContainsB.call(this, format, "HH")) {
-            timeResolution = "hours";
+            timeResolution = Constants.TIME_STEP.HOUR;
         } else if (Utils.aContainsB.call(this, format, "DD")) {
-            timeResolution = "days";
+            timeResolution = Constants.TIME_STEP.DAY;
         } else if (Utils.aContainsB.call(this, format, "MM")) {
-            timeResolution = "months";
+            timeResolution = Constants.TIME_STEP.MONTH;
         } else if (Utils.aContainsB.call(this, format, "YYYY")) {
-            timeResolution = "years";
+            timeResolution = Constants.TIME_STEP.YEAR;
         } else {
-            throw new Error();
+            throw new Error("Pattern not supported", "Utils.js");
         }
         return timeResolution;
     };
 
+    /**
+     * Checks if a is contained in the array b.
+     * @function aContainsB
+     * @param {object} a - element
+     * @param {Array} b - array
+     * @return true when a is contained in b otherwise false
+     */
     Utils.aContainsB = function(a, b) {
         return a.indexOf(b) >= 0;
     };
 
+    /**
+     * Convers the time to Moment js.
+     * @function convertToMoment
+     * @param {Moment|Date} time - time to convert
+     * @return {Moment} time as Moment js
+     */
     Utils.convertToMoment = function(time) {
         return time instanceof Moment() ? time : Moment().utc(time);
     };
 
+    /**
+     * Checks if "passive" is supported by.
+     * @function isPassiveSupported
+     * @return {Boolean} true when "passive" mode is supported otherwise false
+     */
     Utils.isPassiveSupported = function() {
         var passiveSupported = false;
 
@@ -582,56 +583,50 @@ define([
         }
     };
 
-    Utils.getBBox = function(geometry) {
-        // Get the coordinates
+    /**
+     * Process all geometries excepted a point.
+     * @param {Object} geometry - geometry 
+     * @returns {Object|undefined} bbox - The bounding box of the geometry when a problem happens with the geometry.
+     * @returns {number} bbox.north - The northest latitude.
+     * @returns {number} bbox.south - The southest latitude.
+     * @returns {number} bbox.west - The westest longitude.
+     * @returns {number} bbox.east - The eastest longitude.   
+     * @throws ReferenceError - Unknown geometry type       
+     */
+    function _processBboxForShape(geometry) {
         var coords;
-        var checkDateLine = true;
-        switch (geometry.type) {
-        case Constants.GEOMETRY.Point:
-            coords = geometry.coordinates;
-            return [coords[0], coords[1], coords[0], coords[1]];
-        case Constants.GEOMETRY.MultiPoint:
-            coords = geometry.coordinates;
-            checkDateLine = false;
-            break;
-        case Constants.GEOMETRY.Polygon:
-            coords = geometry.coordinates[0];
-            break;
-        case Constants.GEOMETRY.MultiPolygon:
-            coords = geometry.coordinates[0][0];
-            break;
-        case Constants.GEOMETRY.LineString:
-            coords = geometry.coordinates;
-            break;
-        case Constants.GEOMETRY.MultiLineString:
-            coords = geometry.coordinates[0];
-            break;
-        }
-
-        if (!coords || coords.length === 0) {
-            return;
-        }
-
-        var minX = coords[0][0];
-        var minY = coords[0][1];
-        var maxX = coords[0][0];
-        var maxY = coords[0][1];
-
-        var numOuterRings =
-            geometry.type === Constants.GEOMETRY.MultiPolygon ||
-            geometry.type === Constants.GEOMETRY.MultiLineString
-                ? geometry.coordinates.length
-                : 1;
+        var checkDateLine;            
+        var numOuterRings = geometry.type === Constants.GEOMETRY.MultiPolygon || 
+        geometry.type === Constants.GEOMETRY.MultiLineString ? geometry.coordinates.length : 1;
+        var minX = Number.MAX_VALUE;
+        var minY = Number.MAX_VALUE;
+        var maxX = Number.MIN_VALUE;
+        var maxY = Number.MIN_VALUE;            
         for (var j = 0; j < numOuterRings; j++) {
             switch (geometry.type) {
+            case Constants.GEOMETRY.MultiPoint:
+                coords = geometry.coordinates;
+                checkDateLine = false;
+                break;  
+            case Constants.GEOMETRY.Polygon:
+                coords = geometry.coordinates[0];
+                checkDateLine = true;
+                break;                              
             case Constants.GEOMETRY.MultiPolygon:
                 coords = geometry.coordinates[j][0];
+                checkDateLine = true;
                 break;
+            case Constants.GEOMETRY.LineString:
+                coords = geometry.coordinates;
+                checkDateLine = true;
+                break;                
             case Constants.GEOMETRY.MultiLineString:
                 coords = geometry.coordinates[j];
+                checkDateLine = true;
                 break;
+            default:
+                throw new ReferenceError("Unknown geometry type : "+geometry.type, "Utils.js");
             }
-
             for (var i = 0; i < coords.length; i++) {
                 minX = Math.min(minX, coords[i][0]);
                 minY = Math.min(minY, coords[i][1]);
@@ -639,22 +634,38 @@ define([
                 maxY = Math.max(maxY, coords[i][1]);
 
                 // Check if the coordinates cross dateline
-                if (
-                    checkDateLine &&
-                    i > 0 &&
-                    UtilsIntersection.isCrossDateLine(
-                        coords[i - 1][0],
-                        coords[i][0]
-                    )
-                ) {
+                if (checkDateLine && i > 0 && UtilsIntersection.isCrossDateLine(coords[i - 1][0], coords[i][0])) {
                     minX = -180;
                     maxX = 180;
                 }
             }
         }
-
         return { north: maxY, south: minY, west: minX, east: maxX };
-    };
+    }
+    
+    /**
+     * Computes the bounding box of the geometry.
+     * @param {Object} geometry
+     * @returns {Object} bbox - The bounding box of the geometry
+     * when a problem happens with the geometry.
+     * @returns {number} bbox.north - The northest latitude.
+     * @returns {number} bbox.south - The southest latitude.
+     * @returns {number} bbox.west - The westest longitude.
+     * @returns {number} bbox.east - The eastest longitude.
+     * @throws ReferenceError - Unknown geometry type     
+     */    
+    Utils.getBBox = function(geometry) {
+        Utils.assert(geometry && geometry.type && geometry.coordinates && geometry.coordinates.length !== 0, 
+            "coordinates and type must be provided in the geometry", "Utils.js"); 
+        var bbox;
+        if (geometry.type === Constants.GEOMETRY.Point) {
+            var coords = geometry.coordinates;
+            bbox =  {west:coords[0], north:coords[1], east:coords[0], south:coords[1]};
+        } else {
+            bbox = _processBboxForShape(geometry);
+        }
+        return bbox;
+    };    
 
     return Utils;
 });
