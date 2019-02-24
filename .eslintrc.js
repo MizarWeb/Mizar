@@ -38,9 +38,5 @@ module.exports = {
             "error",
             "always"
         ],
-	"max-line-length": [
-		true, 
-		120
-	]
     },
 };
