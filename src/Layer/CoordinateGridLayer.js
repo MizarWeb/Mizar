@@ -38,6 +38,7 @@
 define([
     "./AbstractLayer",
     "../Utils/Utils",
+    "../Utils/Numeric",
     "../Renderer/Ray",
     "../Renderer/Program",
     "../Tiling/Mesh",
@@ -48,6 +49,7 @@ define([
 ], function(
     AbstractLayer,
     Utils,
+    Numeric,
     Ray,
     Program,
     Mesh,
@@ -689,51 +691,26 @@ define([
                 // Tesselation
                 var step = this.longitudeSample / this.tesselation;
                 for (i = 0; i < this.tesselation; i++) {
-                    var radPhi = ((phi + i * step) * Math.PI) / 180;
+                    var radPhi = Numeric.toRadian(phi + i * step);
 
                     var sinPhi = Math.sin(radPhi);
                     var cosPhi = Math.cos(radPhi);
 
                     // z is the up vector
-                    var x =
-                        cosPhi *
-                        sinTheta *
-                        this.getGlobe()
-                            .getCoordinateSystem()
-                            .getGeoide()
-                            .getRadius();
-                    var y =
-                        sinPhi *
-                        sinTheta *
-                        this.getGlobe()
-                            .getCoordinateSystem()
-                            .getGeoide()
-                            .getRadius();
-                    var z =
-                        cosTheta *
-                        this.getGlobe()
-                            .getCoordinateSystem()
-                            .getGeoide()
-                            .getRadius();
+                    var radius = this.getGlobe().getCoordinateSystem().getGeoide().getRadius();
+                    var x = cosPhi * sinTheta * radius;
+                    var y = sinPhi * sinTheta * radius;
+                    var z = cosTheta * radius;
 
                     //TODO a modifier
-                    if (
-                        this.gridCrs.getGeoideName() !==
-                        Constants.CRS.Equatorial
-                    ) {
-                        var geo = this.getGlobe()
-                            .getCoordinateSystem()
-                            .from3DToGeo([x, y, z]);
-                        geo = this.getGlobe()
-                            .getCoordinateSystem()
-                            .convert(
-                                geo,
-                                this.gridCrs.getGeoideName(),
-                                Constants.CRS.Equatorial
-                            );
-                        var eq = this.getGlobe()
-                            .getCoordinateSystem()
-                            .fromGeoTo3D(geo);
+                    if (this.gridCrs.getGeoideName() !== Constants.CRS.Equatorial) {
+                        var geo = this.getGlobe().getCoordinateSystem().from3DToGeo([x, y, z]);
+                        geo = this.getGlobe().getCoordinateSystem().convert(
+                            geo,
+                            this.gridCrs.getGeoideName(),
+                            Constants.CRS.Equatorial
+                        );
+                        var eq = this.getGlobe().getCoordinateSystem().fromGeoTo3D(geo);
                         vertexPositionData.push(eq[0], eq[1], eq[2]);
                     } else {
                         vertexPositionData.push(x, y, z);
@@ -744,11 +721,7 @@ define([
 
         var gl = this.getGlobe().getRenderContext().gl;
         gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexBuffer);
-        gl.bufferData(
-            gl.ARRAY_BUFFER,
-            new Float32Array(vertexPositionData),
-            gl.STATIC_DRAW
-        );
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertexPositionData),gl.STATIC_DRAW);
         this.vertexBuffer.itemSize = 3;
         this.vertexBuffer.numItems = vertexPositionData.length / 3;
 
@@ -765,9 +738,7 @@ define([
                 phi < phiStop;
                 phi += this.longitudeSample, longNumber += this.tesselation
             ) {
-                var first =
-                    latNumber * longitudeBands +
-                    (longNumber % (longitudeBands - 1));
+                var first =latNumber * longitudeBands + (longNumber % (longitudeBands - 1));
                 var second = first + longitudeBands;
 
                 // Horizontal lines
@@ -786,11 +757,7 @@ define([
         }
 
         gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indexBuffer);
-        gl.bufferData(
-            gl.ELEMENT_ARRAY_BUFFER,
-            new Uint16Array(indexData),
-            gl.STATIC_DRAW
-        );
+        gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(indexData), gl.STATIC_DRAW);
         this.indexBuffer.itemSize = 1;
         this.indexBuffer.numItems = indexData.length;
     };
@@ -812,14 +779,10 @@ define([
             label = angle + "°";
             break;
         case "HMS":
-            label = this.getGlobe()
-                .getCoordinateSystem()
-                .fromDegreesToHMS(angle);
+            label = this.getGlobe().getCoordinateSystem().fromDegreesToHMS(angle);
             break;
         case "DMS":
-            label = this.getGlobe()
-                .getCoordinateSystem()
-                .fromDegreesToDMS(angle);
+            label = this.getGlobe().getCoordinateSystem().fromDegreesToDMS(angle);
             break;
         default:
             ErrorDialog.open(Constants.LEVEL.ERROR, "Format not supported");
@@ -845,25 +808,18 @@ define([
         var center3d = ray.computePoint(
             ray.sphereIntersect(
                 [0, 0, 0],
-                this.getGlobe()
-                    .getCoordinateSystem()
-                    .getGeoide()
-                    .getRadius()
+                this.getGlobe().getCoordinateSystem().getGeoide().getRadius()
             )
         );
         var geoCenter = [];
-        this.getGlobe()
-            .getCoordinateSystem()
-            .from3DToGeo(center3d, geoCenter);
+        this.getGlobe().getCoordinateSystem().from3DToGeo(center3d, geoCenter);
 
         // Convert geoCenter into grid's coordinate system
-        geoCenter = this.getGlobe()
-            .getCoordinateSystem()
-            .convert(
-                geoCenter,
-                Constants.CRS.Equatorial,
-                this.gridCrs.getGeoideName()
-            );
+        geoCenter = this.getGlobe().getCoordinateSystem().convert(
+            geoCenter,
+            Constants.CRS.Equatorial,
+            this.gridCrs.getGeoideName()
+        );
 
         return geoCenter;
     };
@@ -878,16 +834,12 @@ define([
      * @param {float[]} posGeo Updated geographic position of label
      */
     CoordinateGridLayer.prototype.updateLabel = function(label, posGeo) {
-        posGeo = this.getGlobe()
-            .getCoordinateSystem()
-            .convert(
-                posGeo,
-                this.gridCrs.getGeoideName(),
-                Constants.CRS.Equatorial
-            );
-        var pos3d = this.getGlobe()
-            .getCoordinateSystem()
-            .fromGeoTo3D(posGeo);
+        posGeo = this.getGlobe().getCoordinateSystem().convert(
+            posGeo,
+            this.gridCrs.getGeoideName(),
+            Constants.CRS.Equatorial
+        );
+        var pos3d = this.getGlobe().getCoordinateSystem().fromGeoTo3D(posGeo);
         var vertical = vec3.create();
         vec3.normalize(pos3d, vertical);
 

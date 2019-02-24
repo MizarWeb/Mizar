@@ -20,6 +20,7 @@ define([
     "jquery",
     "underscore-min",
     "../Utils/Utils",
+    "../Utils/Numeric",
     "./AbstractNameResolver",
     "../Utils/Constants",
     "../Gui/dialog/ErrorDialog"
@@ -27,6 +28,7 @@ define([
     $,
     _,
     Utils,
+    Numeric,
     AbstractNameResolver,
     Constants,
     ErrorDialog
@@ -38,20 +40,12 @@ define([
      * this method allows to retrieve it
      */
     var retrieveDictionary = function(context) {
-        var containsDictionary =
-            context
-                .getContextConfiguration()
-                .nameResolver.baseUrl.indexOf("json") >= 0;
+        var containsDictionary = context.getContextConfiguration().nameResolver.baseUrl.indexOf("json") >= 0;
         if (containsDictionary) {
             // Dictionary as json
-            var marsResolverUrl = context.getContextConfiguration().nameResolver
-                .baseUrl; //.replace('mizar_gui', 'mizar_lite');
+            var marsResolverUrl = context.getContextConfiguration().nameResolver.baseUrl;             
 
-            Utils.requestUrl(
-                marsResolverUrl,
-                "json",
-                "application/json",
-                null,
+            Utils.requestUrl(marsResolverUrl, "json", "application/json",null,
                 function(response) {
                     dictionary = response;
                 },
@@ -254,10 +248,7 @@ define([
 
         // Planet resolver(Mars only currently)
         var feature = _.find(dictionary.features, function(f) {
-            var name =
-                f.properties.Name == undefined
-                    ? f.properties.name
-                    : f.properties.Name;
+            var name = f.properties.Name == undefined ? f.properties.name : f.properties.Name;
             var isFound;
             if (name == null) {
                 isFound = false;
@@ -271,10 +262,7 @@ define([
             var lon;
             var lat;
             var distance;
-            if (
-                feature.properties.center_lon == undefined ||
-                feature.properties.center_lat == undefined
-            ) {
+            if (feature.properties.center_lon == undefined || feature.properties.center_lat == undefined) {
                 var centerAndDistance = _computeBarycenterAndDistance.call(
                     this,
                     feature.geometry
@@ -308,14 +296,8 @@ define([
             } else {
                 distance = distance > 180.0 ? 180.0 : distance;
                 // aproximation of the distance in meters
-                distance =
-                    (2 *
-                        Math.PI *
-                        crs.getGeoide().getRealPlanetRadius() *
-                        distance) /
-                    360;
-                distanceCamera =
-                    distance / Math.tan((0.5 * fov * Math.PI) / 180);
+                distance =(2 * Math.PI * crs.getGeoide().getRealPlanetRadius() * distance) / 360;
+                distanceCamera = distance / Math.tan(Numeric.toRadian(0.5 * fov));
             }
 
             zoomTo(

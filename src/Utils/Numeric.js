@@ -68,13 +68,7 @@ define(function() {
     /**
      Cubic interpolation between [a, b], t must be [0, 1]
      */
-    Numeric.cubicInterpolation = function(
-        t,
-        startPos,
-        startVel,
-        endPos,
-        endVel
-    ) {
+    Numeric.cubicInterpolation = function(t, startPos, startVel, endPos, endVel) {
         var t2 = t * t;
         var t3 = t2 * t;
 
@@ -104,30 +98,18 @@ define(function() {
     /**
      Cubic interpolation between [a, b], t must be [0, 1]
      */
-    Numeric.cubicInterpolationDerivative = function(
-        t,
-        startPos,
-        startVel,
-        endPos,
-        endVel
-    ) {
+    Numeric.cubicInterpolationDerivative = function(t, startPos, startVel, endPos, endVel) {
         var t2 = t * t;
 
         // Evaluates the direction
 
-        var M01 =
-            6 * startPos[0] - 6 * endPos[0] + 3 * startVel[0] + 3 * endVel[0];
-        var M11 =
-            6 * startPos[1] - 6 * endPos[1] + 3 * startVel[1] + 3 * endVel[1];
-        var M21 =
-            6 * startPos[2] - 6 * endPos[2] + 3 * startVel[2] + 3 * endVel[2];
+        var M01 = 6 * startPos[0] - 6 * endPos[0] + 3 * startVel[0] + 3 * endVel[0];
+        var M11 = 6 * startPos[1] - 6 * endPos[1] + 3 * startVel[1] + 3 * endVel[1];
+        var M21 = 6 * startPos[2] - 6 * endPos[2] + 3 * startVel[2] + 3 * endVel[2];
 
-        var M02 =
-            -6 * startPos[0] + 6 * endPos[0] - 4 * startVel[0] - 2 * endVel[0];
-        var M12 =
-            -6 * startPos[1] + 6 * endPos[1] - 4 * startVel[1] - 2 * endVel[1];
-        var M22 =
-            -6 * startPos[2] + 6 * endPos[2] - 4 * startVel[2] - 2 * endVel[2];
+        var M02 = -6 * startPos[0] + 6 * endPos[0] - 4 * startVel[0] - 2 * endVel[0];
+        var M12 = -6 * startPos[1] + 6 * endPos[1] - 4 * startVel[1] - 2 * endVel[1];
+        var M22 = -6 * startPos[2] + 6 * endPos[2] - 4 * startVel[2] - 2 * endVel[2];
 
         var direction = vec3.create();
         direction[0] = M01 * t2 + M02 * t + startVel[0];
@@ -318,6 +300,16 @@ define(function() {
             endLongValue = path[1];
         }
         return [startLongValue, endLongValue];
+    };
+
+    Numeric.normalize2D = function(vec, dest) {
+        if (!dest) {
+            dest = vec;
+        }
+        var length = Math.sqrt(vec[0] * vec[0] + vec[1] * vec[1]);
+        dest[0] = vec[0] / length;
+        dest[1] = vec[1] / length;
+        return dest;
     };
 
     /**************************************************************************************************************/

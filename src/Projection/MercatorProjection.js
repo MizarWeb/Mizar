@@ -20,9 +20,10 @@
 define([
     "./AbstractProjection",
     "../Utils/Utils",
+    "../Utils/Numeric",
     "../Utils/Constants",
     "../Renderer/glMatrix"
-], function(AbstractProjection, Utils, Constants) {
+], function(AbstractProjection, Utils, Numeric, Constants) {
     /**
      * Mercator projection configuration
      * @typedef {AbstractProjection.configuration} AbstractProjection.mercator_configuration
@@ -81,8 +82,8 @@ define([
             dest = new Array(3);
         }
 
-        dest[0] = this.lambda0 + (position3d[0] * 180) / Math.PI;
-        dest[1] = (Math.atan(_sinh(position3d[1])) * 180) / Math.PI;
+        dest[0] = this.lambda0 + Numeric.toDegree(position3d[0]);
+        dest[1] = Numeric.toDegree(Math.atan(_sinh(position3d[1])));
         dest[2] = position3d[2];
 
         if (Math.abs(dest[1]) > 85.05) return null;
@@ -107,10 +108,10 @@ define([
             geoPos[1] = -85.05;
         }
 
-        var longInRad = (geoPos[0] * Math.PI) / 180; // longitude
-        var latInRad = (geoPos[1] * Math.PI) / 180; // latitude
+        var longInRad = Numeric.toRadian(geoPos[0]); // longitude
+        var latInRad = Numeric.toRadian(geoPos[1]); // latitude
 
-        var x = longInRad - (this.lambda0 * Math.PI) / 180;
+        var x = longInRad - Numeric.toRadian(this.lambda0);
         var y = Math.log(Math.tan(latInRad) + 1 / Math.cos(latInRad));
 
         dest[0] = x;

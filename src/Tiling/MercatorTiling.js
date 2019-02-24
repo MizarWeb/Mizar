@@ -35,19 +35,19 @@
  * along with GlobWeb. If not, see <http://www.gnu.org/licenses/>.
  ***************************************/
 
-define(["./Tile", "../Utils/Constants","../Renderer/GeoBound", "./GeoTiling"], function(
+define(["./Tile", "../Utils/Constants","../Renderer/GeoBound", "./GeoTiling", "../Utils/Numeric"], function(
     Tile,
     Constants,
     GeoBound,
-    GeoTiling
+    GeoTiling,
+    Numeric
 ) {
     var lon2merc = function(lon) {
         return (lon * 20037508.34) / 180;
     };
 
     var lat2merc = function(lat) {
-        var y =
-            Math.log(Math.tan(((90 + lat) * Math.PI) / 360)) / (Math.PI / 180);
+        var y = Math.log(Math.tan(Numeric.toRadian((90 + lat)))) / (Math.PI / 180);
         return (y * 20037508.34) / 180;
     };
 
@@ -154,7 +154,7 @@ define(["./Tile", "../Utils/Constants","../Renderer/GeoBound", "./GeoTiling"], f
         var tileCoords = [];
         for (var i = 0; i < coordinates.length; i++) {
             var x = (coordinates[i][0] + 180.0) / 360.0;
-            var sinLat = Math.sin((coordinates[i][1] * Math.PI) / 180.0);
+            var sinLat = Math.sin(Numeric.toRadian(coordinates[i][1]));
             var y =
                 0.5 - Math.log((1 + sinLat) / (1 - sinLat)) / (4.0 * Math.PI);
 
@@ -195,7 +195,7 @@ define(["./Tile", "../Utils/Constants","../Renderer/GeoBound", "./GeoTiling"], f
         for (var j = 0; j < size; j++) {
             var n = Math.PI * (1.0 - (2.0 * v) / twoPowLevel);
             var lat = Math.atan(0.5 * (Math.exp(n) - Math.exp(-n)));
-            lat = (lat * 180) / Math.PI;
+            lat = Numeric.toDegree(lat);
 
             //var cosLat = Math.cos(lat);
             //var sinLat = Math.sin(lat);
@@ -347,10 +347,7 @@ define(["./Tile", "../Utils/Constants","../Renderer/GeoBound", "./GeoTiling"], f
      */
     MercatorTiling.prototype._lon2LevelZeroIndex = function(lon) {
         var x = (lon + 180) / 360;
-        return Math.min(
-            this.level0NumTilesX - 1,
-            Math.floor(x * this.level0NumTilesX)
-        );
+        return Math.min(this.level0NumTilesX - 1, Math.floor(x * this.level0NumTilesX));
     };
 
     /**************************************************************************************************************/
@@ -359,14 +356,9 @@ define(["./Tile", "../Utils/Constants","../Renderer/GeoBound", "./GeoTiling"], f
      Locate a level zero tile
      */
     MercatorTiling.prototype._lat2LevelZeroIndex = function(lat) {
-        var sinLatitude = Math.sin((lat * Math.PI) / 180);
-        var y =
-            0.5 -
-            Math.log((1 + sinLatitude) / (1 - sinLatitude)) / (4 * Math.PI);
-        return Math.min(
-            this.level0NumTilesX - 1,
-            Math.floor(y * this.level0NumTilesX)
-        );
+        var sinLatitude = Math.sin(Numeric.toRadian(lat));
+        var y = 0.5 - Math.log((1 + sinLatitude) / (1 - sinLatitude)) / (4 * Math.PI);
+        return Math.min(this.level0NumTilesX - 1, Math.floor(y * this.level0NumTilesX));
     };
 
     /**************************************************************************************************************/

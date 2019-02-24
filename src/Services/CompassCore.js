@@ -21,7 +21,7 @@
 /**
  * Compass module : map control with "north" component
  */
-define(["../Utils/Constants"], function(Constants) {
+define(["../Utils/Constants", "../Utils/Numeric"], function(Constants, Numeric) {
     const MAX_ROTATION = 360;
 
     /**
@@ -48,11 +48,7 @@ define(["../Utils/Constants"], function(Constants) {
 
         var temp = [];
         coordinateSystem.from3DToGeo(up, temp);
-        temp = coordinateSystem.convert(
-            temp,
-            coordinateSystem.getGeoideName(),
-            crs
-        );
+        temp = coordinateSystem.convert(temp, coordinateSystem.getGeoideName(), crs);
         coordinateSystem.fromGeoTo3D(temp, up);
         ctx.getNavigation().moveUpTo(up);
     }
@@ -64,8 +60,7 @@ define(["../Utils/Constants"], function(Constants) {
         var currentHeading = navigation.getHeading();
 
         var upHeading = 0;
-        var degNorth =
-            (currentHeading - upHeading + MAX_ROTATION) % MAX_ROTATION;
+        var degNorth = (currentHeading - upHeading + MAX_ROTATION) % MAX_ROTATION;
 
         var northText = svgDoc.getElementById("NorthText");
         northText.setAttribute("transform", "rotate(" + degNorth + " 40 40)");
@@ -76,8 +71,7 @@ define(["../Utils/Constants"], function(Constants) {
         var currentHeading = navigation.getHeading();
 
         var upHeading = 0;
-        var degNorth =
-            (upHeading - currentHeading + MAX_ROTATION) % MAX_ROTATION;
+        var degNorth = (upHeading - currentHeading + MAX_ROTATION) % MAX_ROTATION;
 
         var northText = svgDoc.getElementById("NorthText");
         northText.setAttribute("transform", "rotate(" + degNorth + " 40 40)");
@@ -86,15 +80,9 @@ define(["../Utils/Constants"], function(Constants) {
     function updateNorthSky() {
         var geo = [];
         var coordinateSystem = ctx.getCoordinateSystem();
-        var center = ctx.getNavigation().center3d
-            ? ctx.getNavigation().center3d
-            : ctx.getNavigation().geoCenter;
+        var center = ctx.getNavigation().center3d ? ctx.getNavigation().center3d : ctx.getNavigation().geoCenter;
         coordinateSystem.from3DToGeo(center, geo);
-        geo = coordinateSystem.convert(
-            geo,
-            crs,
-            coordinateSystem.getGeoideName()
-        );
+        geo = coordinateSystem.convert(geo, crs, coordinateSystem.getGeoideName());
 
         var LHV = [];
         coordinateSystem.getLHVTransform(geo, LHV);
@@ -107,22 +95,17 @@ define(["../Utils/Constants"], function(Constants) {
         vec3.scale(up, coordinateSystem.getGeoide().getRadius());
 
         coordinateSystem.from3DToGeo(up, temp);
-        temp = coordinateSystem.convert(
-            temp,
-            crs,
-            coordinateSystem.getGeoideName()
-        );
+        temp = coordinateSystem.convert(temp, crs, coordinateSystem.getGeoideName());
         coordinateSystem.fromGeoTo3D(temp, up);
         vec3.normalize(up);
         // Find angle between up and north
-        var cosNorth =
-            vec3.dot(up, north) / (vec3.length(up) * vec3.length(north));
+        var cosNorth = vec3.dot(up, north) / (vec3.length(up) * vec3.length(north));
         var radNorth = Math.acos(cosNorth);
 
         if (isNaN(radNorth)) {
             return;
         }
-        var degNorth = (radNorth * 180) / Math.PI;
+        var degNorth = Numeric.toDegree(radNorth);
 
         // Find sign between up and north
         var sign;

@@ -17,7 +17,7 @@
  * along with GlobWeb. If not, see <http://www.gnu.org/licenses/>.
  ***************************************/
 
-define(function() {
+define(["../Utils/Numeric"],function(Numeric) {
     /**************************************************************************************************************/
 
     /** The Constant twoPi. */
@@ -25,9 +25,6 @@ define(function() {
 
     /** The Constant fourPi. */
     var fourPi = 4.0 * Math.PI;
-
-    /** The Constant degToRad. */
-    var degToRad = 180.0 / Math.PI;
 
     /** The Constant psi. */
     var psi = [
@@ -124,20 +121,20 @@ define(function() {
             var J2000 = 1;
             //by setting J2000 = 0, RA-Dec are intended in Equinox 1950.
 
-            a = pos[0] / degToRad - phi[J2000][trType];
-            b = pos[1] / degToRad;
+            a = Numeric.toRadian(pos[0]) - phi[J2000][trType];
+            b = Numeric.toRadian(pos[1]);
             sb = Math.sin(b);
             cb = Math.cos(b);
             cbsa = cb * Math.sin(a);
             b = -stheta[J2000][trType] * cbsa + ctheta[J2000][trType] * sb;
             b = Math.max(-1.0, Math.min(b, 1.0));
-            bo = Math.asin(b) * degToRad;
+            bo = Numeric.toDegree(Math.asin(b));
 
             a = Math.atan2(
                 ctheta[J2000][trType] * cbsa + stheta[J2000][trType] * sb,
                 cb * Math.cos(a)
             );
-            ao = ((a + psi[J2000][trType] + fourPi) % twoPi) * degToRad;
+            ao = Numeric.toDegree((a + psi[J2000][trType] + fourPi) % twoPi);
 
             return [ao, bo];
         }

@@ -20,9 +20,10 @@
 define([
     "./AbstractProjection",
     "../Utils/Utils",
+    "../Utils/Numeric",
     "../Utils/Constants",
     "../Renderer/glMatrix"
-], function(AbstractProjection, Utils, Constants) {
+], function(AbstractProjection, Utils, Numeric, Constants) {
     /**
      * @name PlateProjection
      * @class
@@ -61,8 +62,8 @@ define([
         if (!dest) {
             dest = new Array(3);
         }
-        dest[0] = (position3d[0] * 180) / Math.PI;
-        dest[1] = (position3d[1] * 180) / Math.PI;
+        dest[0] = Numeric.toDegree(position3d[0]);
+        dest[1] = Numeric.toDegree(position3d[1]);
         dest[2] = position3d[2];
 
         return dest;
@@ -76,8 +77,8 @@ define([
         if (!dest) {
             dest = new Array(3);
         }
-        dest[0] = (geoPos[0] * Math.PI) / 180;
-        dest[1] = (geoPos[1] * Math.PI) / 180;
+        dest[0] = Numeric.toRadian(geoPos[0]);
+        dest[1] = Numeric.toRadian(geoPos[1]);
         dest[2] = geoPos[2];
         return dest;
     };

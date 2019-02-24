@@ -20,9 +20,10 @@
 define([
     "./AbstractProjection",
     "../Utils/Utils",
+    "../Utils/Numeric",
     "../Utils/Constants",
     "../Renderer/glMatrix"
-], function(AbstractProjection, Utils, Constants) {
+], function(AbstractProjection, Utils, Numeric, Constants) {
     /**
      * @name AugustProjection
      * @class
@@ -70,8 +71,8 @@ define([
             dest = new Array(3);
         }
 
-        var lambda = (geoPos[0] * Math.PI) / 180; // longitude
-        var phi = (geoPos[1] * Math.PI) / 180; // latitude
+        var lambda = Numeric.toRadian(geoPos[0]); // longitude
+        var phi = Numeric.toRadian(geoPos[1]); // latitude
 
         var tanPhi = Math.tan(phi / 2),
             k = Math.sqrt(1 - tanPhi * tanPhi),

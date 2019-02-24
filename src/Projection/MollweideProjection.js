@@ -20,9 +20,10 @@
 define([
     "./AbstractProjection",
     "../Utils/Utils",
+    "../Utils/Numeric",
     "../Utils/Constants",
     "../Renderer/glMatrix"
-], function(AbstractProjection, Utils, Constants) {
+], function(AbstractProjection, Utils, Numeric, Constants) {
     /**
      * @name MollweideProjection
      * @class
@@ -98,8 +99,8 @@ define([
         var lambda =
             (Math.PI * position3d[0]) / (2 * Math.sqrt(2) * Math.cos(auxTheta));
 
-        dest[0] = (lambda * 180) / Math.PI;
-        dest[1] = (phi * 180) / Math.PI;
+        dest[0] = Numeric.toDegree(lambda);
+        dest[1] = Numeric.toDegree(phi);
         dest[2] = position3d[2];
         return dest;
     };
@@ -113,8 +114,8 @@ define([
             dest = new Array(3);
         }
 
-        var lambda = (geoPos[0] * Math.PI) / 180; // longitude
-        var theta0 = (geoPos[1] * Math.PI) / 180; // latitude
+        var lambda = Numeric.toRadian(geoPos[0]); // longitude
+        var theta0 = Numeric.toRadian(geoPos[1]); // latitude
         var auxTheta = _findTheta(theta0);
 
         // Transfrom to Mollweide coordinate system

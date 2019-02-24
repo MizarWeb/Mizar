@@ -189,10 +189,8 @@ define([
         var factor = this.config.tesselation - 1;
         var tileCoords = [];
         for (var i = 0; i < coordinates.length; i++) {
-            var u =
-                (factor * (coordinates[i][0] - this.geoBound.getWest())) / ul;
-            var v =
-                (factor * (coordinates[i][1] - this.geoBound.getNorth())) / vl;
+            var u = (factor * (coordinates[i][0] - this.geoBound.getWest())) / ul;
+            var v = (factor * (coordinates[i][1] - this.geoBound.getNorth())) / vl;
             tileCoords.push([u, v]);
         }
         return tileCoords;
@@ -216,10 +214,8 @@ define([
         var vertexSize = this.config.vertexSize;
         var size = this.config.tesselation;
         var vertices = new Float32Array(vertexSize * size * (size + 6));
-        var lonStep =
-            (this.geoBound.getEast() - this.geoBound.getWest()) / (size - 1);
-        var latStep =
-            (this.geoBound.getSouth() - this.geoBound.getNorth()) / (size - 1);
+        var lonStep = (this.geoBound.getEast() - this.geoBound.getWest()) / (size - 1);
+        var latStep = (this.geoBound.getSouth() - this.geoBound.getNorth()) / (size - 1);
         //var radius = this.config.coordinateSystem.getGeoide().getRadius();
         //var scale = this.config.coordinateSystem.getGeoide().getHeightScale();
         var offset = 0;

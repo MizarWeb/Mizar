@@ -188,17 +188,6 @@ define([
         return [vec[0] * cs - vec[1] * sn, vec[0] * sn + vec[1] * cs];
     }
 
-    function normalize2D(vec, dest) {
-        if (!dest) {
-            dest = vec;
-        }
-
-        var length = Math.sqrt(vec[0] * vec[0] + vec[1] * vec[1]);
-        dest[0] = vec[0] / length;
-        dest[1] = vec[1] / length;
-        return dest;
-    }
-
     /**********************************************************************************************/
 
     /**

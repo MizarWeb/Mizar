@@ -190,22 +190,11 @@ define([
     /**********************************************************************************************/
 
     function rotateVector2D(vec, theta) {
-        theta = (theta * Math.PI) / 180;
+        theta = Numeric.toRadian(theta);
         var cs = Math.cos(theta);
         var sn = Math.sin(theta);
 
         return [vec[0] * cs - vec[1] * sn, vec[0] * sn + vec[1] * cs];
-    }
-
-    function normalize2D(vec, dest) {
-        if (!dest) {
-            dest = vec;
-        }
-
-        var length = Math.sqrt(vec[0] * vec[0] + vec[1] * vec[1]);
-        dest[0] = vec[0] / length;
-        dest[1] = vec[1] / length;
-        return dest;
     }
 
     /**********************************************************************************************/
@@ -224,7 +213,7 @@ define([
             self.secondPickPoint[0] - self.pickPoint[0],
             self.secondPickPoint[1] - self.pickPoint[1]
         ];
-        normalize2D(diff);
+        Numeric.normalize2D(diff);
 
         // First arrow
         var arrow = rotateVector2D(diff, 30);

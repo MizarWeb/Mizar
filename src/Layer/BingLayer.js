@@ -37,11 +37,12 @@
 
 define([
     "../Utils/Utils",
+    "../Utils/Numeric",
     "./AbstractRasterLayer",
     "../Utils/Constants",
     "../Tiling/MercatorTiling",
     "../Utils/Proxy"
-], function(Utils, AbstractRasterLayer, Constants, MercatorTiling, Proxy) {
+], function(Utils, Numeric, AbstractRasterLayer, Constants, MercatorTiling, Proxy) {
     /**************************************************************************************************************/
     var BingTileSystem = (function() {
         var EarthRadius = 6378137;
@@ -85,7 +86,7 @@ define([
         function GroundResolution(latitude, levelOfDetail) {
             latitude = Clip(latitude, MinLatitude, MaxLatitude);
             return (
-                (Math.cos((latitude * Math.PI) / 180.0) *
+                (Math.cos(Numeric.toRadian(latitude)) *
                     2.0 *
                     Math.PI *
                     EarthRadius) /

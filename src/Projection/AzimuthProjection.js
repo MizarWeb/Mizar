@@ -20,9 +20,10 @@
 define([
     "./AbstractProjection",
     "../Utils/Utils",
+    "../Utils/Numeric",
     "../Utils/Constants",
     "../Renderer/glMatrix"
-], function(AbstractProjection, Utils, Constants) {
+], function(AbstractProjection, Utils, Numeric, Constants) {
     /**
      * Azimuthal projection configuration
      * @typedef {AbstractProjection.configuration} AbstractProjection.azimuth_configuration
@@ -81,8 +82,8 @@ define([
         );
         var o = Math.atan2(position3d[0], -position3d[1]);
 
-        p = (p * 180) / Math.PI;
-        o = (o * 180) / Math.PI;
+        p = Numeric.toDegree(p);
+        o = Numeric.toDegree(o);
 
         o *= this.pole === "south" ? -1 : 1;
 
@@ -106,9 +107,9 @@ define([
             dest = new Array(3);
         }
         var p = this.pole === "south" ? 90 + geoPos[1] : 90 - geoPos[1];
-        p = (p * Math.PI) / 180;
+        p = Numeric.toRadian(p);
 
-        var o = (geoPos[0] * Math.PI) / 180;
+        var o = Numeric.toRadian(geoPos[0]);
         o *= this.pole === "south" ? -1 : 1;
         dest[0] = p * Math.sin(o);
         dest[1] = -p * Math.cos(o);

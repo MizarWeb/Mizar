@@ -19,10 +19,11 @@
 
 define([
     "../Utils/Utils",
+    "../Utils/Numeric",
     "../Navigation/AbstractNavigation",
     "../Renderer/Ray",
     "../Renderer/glMatrix"
-], function(Utils, BaseNavigation, Ray) {
+], function(Utils, Numeric, BaseNavigation, Ray) {
     /**************************************************************************************************************/
 
     /** @export
@@ -62,8 +63,8 @@ define([
      Compute the inverse view matrix
      */
     Navigation.prototype.applyLocalRotation = function(matrix) {
-        mat4.rotate(matrix, (this.heading * Math.PI) / 180.0, [0.0, 0.0, 1.0]);
-        mat4.rotate(matrix, ((90 - this.tilt) * Math.PI) / 180.0, [
+        mat4.rotate(matrix, Numeric.toRadian(this.heading), [0.0, 0.0, 1.0]);
+        mat4.rotate(matrix, Numeric.toRadian((90 - this.tilt)), [
             1.0,
             0.0,
             0.0

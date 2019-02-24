@@ -262,7 +262,7 @@ define([
      * @param {float} vertical Direction angle in degree
      */
     PathAnimation.prototype.setDirectionAngle = function(vertical) {
-        this.centerOffset = Math.tan((parseFloat(vertical) * Math.PI) / 180.0);
+        this.centerOffset = Math.tan(Numeric.toRadian(parseFloat(vertical)));
     };
 
     /**

@@ -35,7 +35,12 @@
  * along with GlobWeb. If not, see <http://www.gnu.org/licenses/>.
  ***************************************/
 
-define(["../Utils/Utils", "../Utils/Constants", "../Gui/dialog/ErrorDialog"], function(Utils, Constants, ErrorDialog) {
+define([
+    "../Utils/Utils", 
+    "../Utils/Numeric",
+    "../Utils/Constants", 
+    "../Gui/dialog/ErrorDialog"
+], function(Utils, Numeric, Constants, ErrorDialog) {
     /**************************************************************************************************************/
 
     /**
@@ -103,7 +108,7 @@ define(["../Utils/Utils", "../Utils/Constants", "../Gui/dialog/ErrorDialog"], fu
         var _getAngle = function(touch1, touch2) {
             var y = touch2.clientY - touch1.clientY,
                 x = touch2.clientX - touch1.clientX;
-            return (Math.atan2(y, x) * 180) / Math.PI;
+            return Numeric.toDegree(Math.atan2(y, x));
         };
 
         /**************************************************************************************************************/

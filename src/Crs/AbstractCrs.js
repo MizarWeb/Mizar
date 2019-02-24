@@ -154,8 +154,8 @@ define([
             dest = mat4.create();
         }
 
-        var longitude = (geo[0] * Math.PI) / 180.0;
-        var latitude = (geo[1] * Math.PI) / 180.0;
+        var longitude = Numeric.toRadian(geo[0]);
+        var latitude = Numeric.toRadian(geo[1]);
 
         var up = [
             Math.cos(longitude) * Math.cos(latitude),
@@ -198,8 +198,8 @@ define([
             dest = mat4.create();
         }
 
-        var longitude = (geo[0] * Math.PI) / 180.0;
-        var latitude = (geo[1] * Math.PI) / 180.0;
+        var longitude = Numeric.toRadian(geo[0]);
+        var latitude = Numeric.toRadian(geo[1]);
 
         var up = [
             Math.cos(longitude) * Math.cos(latitude),

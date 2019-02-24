@@ -180,7 +180,7 @@ define([
 
             cameraHeight: {
                 get: function() {
-                    const tilt = ((90 - this.tilt) * Math.PI) / 180;
+                    const tilt = Numeric.toRadian(90 - this.tilt);
                     const c = Math.cos(tilt);
                     const d = c * this._distance;
                     return d + this.targetHeight;
@@ -612,7 +612,7 @@ define([
             const rc = this.renderContext;
 
             const fov = rc.getFov();
-            const halfFov = fov * 0.5 * Math.PI / 180.0;
+            const halfFov = Numeric.toRadian(fov * 0.5);
 
             this.computeInverseViewMatrix();
             const eye = [
@@ -863,7 +863,7 @@ define([
                 }, ${nh}`);
                 this._distance += this.offset;
             } else {
-                this.tilt = (as * 180) / Math.PI;
+                this.tilt = Numeric.toDegree(as);
                 this.clampTilt();
             }
             this.computeViewMatrix();

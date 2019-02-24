@@ -107,14 +107,13 @@ define([
         //geoPos = coordinateSystem.convert(geoPos, Constants.CRS.Equatorial, coordinateSystem.getGeoideName());
         //geoPos = coordinateSystem.fromEquatorialToGeo(geoPos, null, false);
 
-        var lambda = (geoPos[0] * Math.PI) / 180; // longitude
-        var theta0 = (geoPos[1] * Math.PI) / 180; // latitude
+        var lambda = Numeric.toRadian(geoPos[0]); // longitude
+        var theta0 = Numeric.toRadian(geoPos[1]); // latitude
 
         var auxTheta = _findTheta(theta0);
 
         // Transfrom to Mollweide coordinate system
-        var mollX =
-            ((2 * Math.sqrt(2)) / Math.PI) * lambda * Math.cos(auxTheta);
+        var mollX = ((2 * Math.sqrt(2)) / Math.PI) * lambda * Math.cos(auxTheta);
         var mollY = Math.sqrt(2) * Math.sin(auxTheta);
 
         // Transform to image space
@@ -135,18 +134,16 @@ define([
     function updateNavigation(moll) {
         // Transform to Mollweide space
         center3d.x = (-(moll[0] - halfWidth - halfPaddingX) * 2.8) / halfWidth;
-        center3d.y =
-            (-(moll[1] - halfHeight - halfPaddingY) * 1.38) / halfHeight;
+        center3d.y = (-(moll[1] - halfHeight - halfPaddingY) * 1.38) / halfHeight;
 
         // Transform to geographic coordinate system
         // http://mathworld.wolfram.com/MollweideProjection.html
         var auxTheta = Math.asin(center3d.y / Math.sqrt(2));
 
         var phi = Math.asin((2 * auxTheta + Math.sin(2 * auxTheta)) / Math.PI);
-        var lambda =
-            (Math.PI * center3d.x) / (2 * Math.sqrt(2) * Math.cos(auxTheta));
+        var lambda = (Math.PI * center3d.x) / (2 * Math.sqrt(2) * Math.cos(auxTheta));
 
-        var geo = [(lambda * 180) / Math.PI, (phi * 180) / Math.PI];
+        var geo = [Numeric.toDegree(lambda * 180), Numeric.toDegree(phi)];
 
         // Update navigation
         mizarAPI.getCrs().get3DFromWorld(geo, navigation.center3d);

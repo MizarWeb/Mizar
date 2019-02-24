@@ -96,8 +96,8 @@ define(["./Numeric", "./Constants","../Tiling/HEALPixBase"], function(Numeric, C
      * Convert spherical coordinate to cartesian
      */
     function to3D(pt) {
-        var lon = (pt[0] * Math.PI) / 180;
-        var lat = (pt[1] * Math.PI) / 180;
+        var lon = Numeric.toRadian(pt[0]);
+        var lat = Numeric.toRadian(pt[1]);
         var x = Math.cos(lat) * Math.cos(lon);
         var y = Math.cos(lat) * Math.sin(lon);
         var z = Math.sin(lat);
