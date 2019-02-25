@@ -131,9 +131,7 @@ define([
 
         // Convert to geo and zoom
         var geoPos = [];
-        mizarAPI
-            .getCrs()
-            .getDecimalDegFromSexagesimal([word[0], word[1]], geoPos);
+        mizarAPI.getCrs().getDecimalDegFromSexagesimal([word[0], word[1]], geoPos);
         zoomTo(
             geoPos[0],
             geoPos[1],
@@ -170,13 +168,7 @@ define([
      *        * For debug : healpix(order,pixelIndex)
      *    @fires NameResolver#plugin:not_found
      */
-    function search(
-        objectName,
-        onSuccess,
-        onError,
-        onErrorOutOfBound,
-        onComplete
-    ) {
+    function search(objectName, onSuccess, onError, onErrorOutOfBound, onComplete) {
         // regexp used only to distinct equatorial coordinates and objects
         // TODO more accurate ( "x < 24h", "x < 60mn", etc.. )
         objectName = objectName.replace(/\s{2,}/g, " "); // Replace multiple spaces by a single one
@@ -195,7 +187,9 @@ define([
             zoomToSexagesimal(objectName, onSuccess);
         } else if (matchDegree) {
             zoomToDecimal(matchDegree, onSuccess, onErrorOutOfBound);
-        } else {
+        } else if (searchPlanetProvider(objectName, onSuccess, onErrorOutOfBound)) {
+            //do nothing
+        } else {            
             var options = {
                 objectName: objectName,
                 onError: onError,
@@ -216,11 +210,28 @@ define([
         }
     }
 
+    function searchPlanetProvider(objectName, onSuccess, onErrorOutOfBound) {
+        var planetsLayer = mizarAPI.getLayerByName("Planets");
+        var features = planetsLayer.features;
+        var feature = _.find(features,function(feature){ 
+            var name = feature.properties.name;
+            var coordinates = feature.geometry.coordinates;
+            if (name.toUpperCase() === objectName.toUpperCase()) {
+                return feature;
+            }  
+        }); 
+        var isFound;
+        if(feature != null) {
+            isFound = true;
+            zoomToDecimal(["",feature.geometry.coordinates[0],"",feature.geometry.coordinates[1]], onSuccess, onErrorOutOfBound);
+        } else {
+            isFound = false;
+        }     
+        return isFound;
+    }
+
     function searchLayer(objectName, onSuccess, onError, response) {
-        var layers = mizarAPI.searchOnLayerDescription(
-            objectName,
-            mizarAPI.getActivatedContext().getMode()
-        );
+        var layers = mizarAPI.searchOnLayerDescription(objectName, mizarAPI.getActivatedContext().getMode());
         if (layers.length === 0 && (!response || response.totalResults === 0)) {
             if (onError) {
                 onError();

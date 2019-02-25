@@ -117,10 +117,7 @@ define([
         this.timeTravelValues = null;
 
         // If needed, try to fill time travel parameters
-        if (
-            this.autoFillTimeTravel === true &&
-            this.containsDimension("time")
-        ) {
+        if (this.autoFillTimeTravel === true && this.containsDimension("time")) {
             this.generateTimeTravel(options.dimension.time);
         }
 
@@ -357,10 +354,7 @@ define([
         // we cannot reject the request to the server when the layer is defined as background otherwise there is
         // no image to show and Mizar is waiting for an image
         if (this.allowedHTTPRequest) {
-            if (
-                this.isBackground() ||
-                _tileIsIntersectedFootprint(bound, this.restrictTo)
-            ) {
+            if (this.isBackground() || _tileIsIntersectedFootprint(bound, this.restrictTo)) {
                 bbox =
                     bound.west +
                     "," +

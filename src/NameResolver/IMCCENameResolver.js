@@ -60,10 +60,7 @@ define([
         var onSuccess = options.onSuccess;
         var searchLayer = options.searchLayer;
         var zoomTo = options.zoomTo;
-        var url =
-            "https://api.ssodnet.imcce.fr/quaero/1/sso?q=" +
-            objectName +
-            "&from=Mizar";
+        var url ="https://api.ssodnet.imcce.fr/quaero/1/sso?q=" +objectName +"&from=Mizar";
         $.ajax({
             type: "GET",
             url: Proxy.proxify(url),
@@ -168,18 +165,10 @@ define([
                             }
                         });
                     });
-                    if (
-                        response.type === "FeatureCollection" &&
-                        response.features.length > 0
-                    ) {
+                    if (response.type === "FeatureCollection" && response.features.length > 0) {
                         var firstFeature = response.features[0];
                         var zoomToCallback = function() {
-                            searchLayer(
-                                objectName,
-                                onSuccess,
-                                onError,
-                                response
-                            );
+                            searchLayer(objectName, onSuccess, onError, response);
                         };
                         zoomTo(
                             firstFeature.geometry.coordinates[0],

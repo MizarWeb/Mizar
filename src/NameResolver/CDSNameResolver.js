@@ -124,10 +124,7 @@ define([
                 });
 
                 // Check if response contains features
-                if (
-                    response.type === "FeatureCollection" &&
-                    response.features.length > 0
-                ) {
+                if (response.type === "FeatureCollection" && response.features.length > 0) {
                     var firstFeature = response.features[0];
                     var zoomToCallback = function() {
                         searchLayer(objectName, onSuccess, onError, response);

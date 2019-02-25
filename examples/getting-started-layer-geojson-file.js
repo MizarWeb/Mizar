@@ -38,7 +38,7 @@ mizar.addLayer({
     visible: true,
     style : {
         color:"red",
-        fill:true
+        strokeWidth:5
     }
 });
 
