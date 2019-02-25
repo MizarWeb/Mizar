@@ -128,16 +128,28 @@ define([
         //check if crs is global at the featureCollection
         var crs = featureCollection.crs ? featureCollection.crs : defaultCrs;
 
-        var features = featureCollection.features;
+        var features = featureCollection.features;        
         if (features) {
+            var bbox = [Number.MAX_VALUE, Number.MAX_VALUE, Number.MIN_VALUE, Number.MIN_VALUE];
             for (var i = 0; i < features.length; i++) {
                 this.addFeature(features[i], crs);
+                var tmpBox = Utils.getBBox(features[i].geometry); 
+                bbox[0] = Math.min(bbox[0], tmpBox.west);
+                bbox[1] = Math.min(bbox[1], tmpBox.south);
+                bbox[2] = Math.max(bbox[2], tmpBox.east);
+                bbox[3] = Math.max(bbox[3], tmpBox.north);                  
             }
             // When there is an altitude for a geometry type as point, set this option to make possible
             // intersection algorithm           
             if (_hasPointAltitude(features[0].geometry)) {
                 this.pickingNoDEM = true;
-            }            
+            }
+            this.options.properties = {
+                bbox: bbox,
+                initialRa: (bbox[0] + bbox[2]) * 0.5,
+                initialDec: (bbox[1] + bbox[3]) * 0.5                
+            };
+            this.properties = this.options.properties;        
         }
     };
 

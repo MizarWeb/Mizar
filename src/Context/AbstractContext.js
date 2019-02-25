@@ -216,12 +216,10 @@ define([
             layer.isVisible() &&
             layer.getProperties() &&
             !layer.isBackground() &&
-            layer.getProperties().hasOwnProperty(TARGET_POS.RA) &&
-            layer.getProperties().hasOwnProperty(TARGET_POS.DEC)
+            layer.getProperties().hasOwnProperty("initialRa") &&
+            layer.getProperties().hasOwnProperty("initialDec")
         ) {
-            var fov = layer.getProperties().initialFov
-                ? layer.getProperties().initialFov
-                : layer.getGlobe().getRenderContext().getFov();
+            var fov = layer.getProperties().initialFov ? layer.getProperties().initialFov : layer.getGlobe().getRenderContext().getFov();
             var navigation = layer.callbackContext.getNavigation();
             var center = navigation.getCenter();
             var globeType = layer.globe.getType();
@@ -249,6 +247,10 @@ define([
                     var crs = layer.globe.getCoordinateSystem();
                     var planetRadius = crs.getGeoide().getRealPlanetRadius();
                     var distanceCamera = Utils.computeDistanceCameraFromBbox(bbox, fov, planetRadius, crs.isFlat());
+                    var elevation = layer.globe.getElevation(layer.getProperties().initialRa, layer.getProperties().initialDec);
+                    if (elevation > distanceCamera || distanceCamera === 0) {
+                        distanceCamera = elevation + 100; // we add 100 meters more
+                    }
                     navigation.zoomTo(
                         [
                             layer.getProperties().initialRa,
