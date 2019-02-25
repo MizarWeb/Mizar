@@ -893,7 +893,7 @@ define([
                 $(self.canvas.parentElement).find("#loading").hide();
                 ErrorDialog.open(
                     Constants.LEVEL.ERROR,
-                    "Cannot add the layer " + layer.name ? layer.name : layer.ID + "from " + layer.getBaseUrl(),
+                    "Cannot add the layer " + (layer.name ? layer.name : layer.ID) + "from " + layer.getBaseUrl(),
                     layer.message
                 );
             });               
