@@ -123,14 +123,6 @@ define([
      * @default
      */
     const DEFAULT_TIMETRAVEL_ELT = "timeTravelDiv";
-    /**
-     * @constant
-     * @type{{RA:{string},DEC:{String}}}
-     */
-    const TARGET_POS = {
-        RA: "initialRa",
-        DEC: "initialDec"
-    };
 
     /**
      * @constant
@@ -225,16 +217,25 @@ define([
             var globeType = layer.globe.getType();
             switch (globeType) {
             case Constants.GLOBE.Sky:
-                navigation.zoomTo(
-                    [
-                        layer.getProperties().initialRa,
-                        layer.getProperties().initialDec
-                    ],
-                    {
-                        fov: fov,
-                        duration: DEFAULT_ZOOM_DURATION
-                    }
-                );
+                var bbox = layer.getProperties().bbox;
+                if (
+                    bbox != null &&
+                    UtilsIntersection.isValueBetween(center[0], bbox[0], bbox[2]) &&
+                    UtilsIntersection.isValueBetween(center[1], bbox[1], bbox[3])
+                ) {
+                    // Do not move, we see the target
+                } else {
+                    navigation.zoomTo(
+                        [
+                            layer.getProperties().initialRa,
+                            layer.getProperties().initialDec
+                        ],
+                        {
+                            fov: fov,
+                            duration: DEFAULT_ZOOM_DURATION
+                        }
+                    );
+                }
                 break;
             case Constants.GLOBE.Planet:
                 var bbox = layer.getProperties().bbox;
