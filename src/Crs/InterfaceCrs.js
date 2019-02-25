@@ -160,7 +160,7 @@ Crs.prototype.getGeoideName = function() {};
 
 /**
  * Returns the name of the coordinate reference system.
- * @return {CRS} name of the coordinate reference system
+ * @return {CONTEXT} name of the coordinate reference system
  */
 Crs.prototype.getType = function() {};
 

@@ -134,12 +134,10 @@ define([
         // Update radius
         self.distance = Math.sqrt(
             Math.pow(self.secondPickPoint[0] - self.pickPoint[0], 2) +
-                Math.pow(self.secondPickPoint[1] - self.pickPoint[1], 2)
+            Math.pow(self.secondPickPoint[1] - self.pickPoint[1], 2)
         );
         var dotProduct = vec3.dot(
-            vec3.normalize(
-                mizarAPI.getCrs().get3DFromWorld(self.secondGeoPickPoint)
-            ),
+            vec3.normalize(mizarAPI.getCrs().get3DFromWorld(self.secondGeoPickPoint)),
             vec3.normalize(mizarAPI.getCrs().get3DFromWorld(self.geoPickPoint))
         );
 

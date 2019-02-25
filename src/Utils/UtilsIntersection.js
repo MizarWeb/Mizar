@@ -295,10 +295,12 @@ define(["./Numeric", "./Constants","../Tiling/HEALPixBase"], function(Numeric, C
      * Checks if the 2d screen point is inside (meter-sized) billboard described
      * by its origin  (given by o, see below) and its size in meters.
      *
-     *     *-------*
-     *     |       |
-     *     |       |
-     *     *---o---*
+     *     *---------*        *---------*
+     *     |         |        |         |
+     *     |         |        |    o    |
+     *     |         |        |         |
+     *     *----o----*        *---------*
+     *    planet context      sky context
      *
      * @function isInBillboard
      * @param {Geometry} geometry The geometry to test, in geo coordinates
@@ -313,7 +315,7 @@ define(["./Numeric", "./Constants","../Tiling/HEALPixBase"], function(Numeric, C
         // (which is in geo coordinates) to screen.
         if (!originGeometry._bucket || !originGeometry._bucket.renderer) {
             return false;
-        }
+        }        
 
         const from3dToScreenSpace = function(point) {
             var result = vec3.create();
@@ -361,11 +363,17 @@ define(["./Numeric", "./Constants","../Tiling/HEALPixBase"], function(Numeric, C
         const scaleRadius = crs.getGeoide().getHeightScale();
 
         var billboardSize;
+        var topLeftLocal;
+        var bottomRightLocal;
         if (crs.getType() === Constants.CONTEXT.Planet) {
-            billboardSize = vec3.create([size[0] * scaleRadius, size[1] * scaleRadius, 1.0]);
+            billboardSize = vec3.create([size[0] * scaleRadius, size[1] * scaleRadius, 1.0]);                        
+            topLeftLocal = vec3.create([-0.5, 1.0, 0.0]);
+            bottomRightLocal = vec3.create([0.5, 0.0, 0.0]);
         } else {
             const thetaToDist = 2.0 * Math.PI * scaleRadius / 360.0;
             billboardSize = vec3.create([size[0] * thetaToDist, size[1] * thetaToDist, 1.0]);
+            topLeftLocal = vec3.create([-0.5, 0.5, 0.0]);
+            bottomRightLocal = vec3.create([0.5, -0.5, 0.0]);
         }
 
         const billboardTo3d = function(o, p, size, camRight, camUp) {
@@ -383,11 +391,9 @@ define(["./Numeric", "./Constants","../Tiling/HEALPixBase"], function(Numeric, C
             return result;
         };
 
-        const topLeftLocal = vec3.create([-0.5, 1.0, 0.0]);
         const topLeft3d = billboardTo3d(origin3d, topLeftLocal, billboardSize, camRight, camUp);
         const topLeft2d = from3dToScreenSpace(topLeft3d);
 
-        const bottomRightLocal = vec3.create([0.5, 0.0, 0.0]);
         const bottomRight3d = billboardTo3d(origin3d, bottomRightLocal, billboardSize, camRight, camUp);
         const bottomRight2d = from3dToScreenSpace(bottomRight3d);
 
@@ -397,17 +403,20 @@ define(["./Numeric", "./Constants","../Tiling/HEALPixBase"], function(Numeric, C
         const top = topLeft2d[1];
         const bottom = bottomRight2d[1];
 
+        var isIntersected = false;
         // Check if point is in the 2d bounds
         if (mouse2d[0] > left && mouse2d[0] < right && mouse2d[1] > top && mouse2d[1] < bottom) {
+            if(crs.getType() === Constants.CONTEXT.Sky) {
+                isIntersected = true;
+            } else if (mouse2d[2] < 0.0 || mouse2d[2] > origin2d[2]) {
             // Check the z value, we do not want to pick a point behind the terrain
             // If the z is negative, that means we are picking outside the terrain,
-            // so we always have an intersection
-            if (mouse2d[2] < 0.0 || mouse2d[2] > origin2d[2]) {
-                return true;
-            }
+            // so we always have an intersection            
+                isIntersected = true;
+            } 
         }
 
-        return false;
+        return isIntersected;
     };
 
     return UtilsIntersection;

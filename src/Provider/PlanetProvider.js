@@ -57,8 +57,9 @@ define([
     "./AbstractProvider",
     "../Renderer/FeatureStyle",
     "../Utils/Constants",
-    "../Utils/Numeric"
-], function($, AbstractProvider, FeatureStyle, Constants, Numeric) {
+    "../Utils/Numeric",
+    "./PlanetData"
+], function($, AbstractProvider, FeatureStyle, Constants, Numeric, PlanetData) {
     var self;
     var interval;
     var poiFeatureCollection;
@@ -99,13 +100,15 @@ define([
      * Json template for a point
     */
     function poiDesc(mizarLayer, type, name, obj) {
-        var style;
+        var style;        
         if (type === Constants.GEOMETRY.Point) {
-            style = new FeatureStyle({
-                iconUrl: mizarLayer.style.iconUrl,
-                strokeColor: FeatureStyle.fromStringToColor(obj.color),
-                fillColor: FeatureStyle.fromStringToColor(obj.color)
-            });
+            style = {
+                fillColor: [1,1,1,1],                
+                opacity: 1,
+                useDegreeSize: true,
+                degreeSize: [obj.angularSize[0], obj.angularSize[1]],
+                iconUrl: obj.icon
+            };
         } else {
             style = new FeatureStyle({
                 label: name,
@@ -158,6 +161,7 @@ define([
     // orbital element structure
     function Elem() {
         this.color = ""; // color of the planet
+        this.radius = parseFloat("0"); // planet radius in meters
         this.a = parseFloat("0"); // semi-major axis [AU]
         this.e = parseFloat("0"); // eccentricity of orbit
         this.i = parseFloat("0"); // inclination of orbit [deg]
@@ -231,6 +235,8 @@ define([
             p.O = Numeric.toRadian(48.33167 - (446.3 * cy) / 3600);
             p.w = Numeric.toRadian(77.45645 + (573.57 * cy) / 3600);
             p.L = mod2pi(Numeric.toRadian(252.25084 + (538101628.29 * cy) / 3600));
+            p.radius = [2440530.00, 2438260.00];
+            p.icon = PlanetData.MERCURY;
             break;
         case 1: // Venus
             p.color = "rgb(245,222,179)";
@@ -240,6 +246,8 @@ define([
             p.O = Numeric.toRadian(76.68069 - (996.89 * cy) / 3600);
             p.w = Numeric.toRadian(131.53298 - (108.8 * cy) / 3600);
             p.L = mod2pi(Numeric.toRadian(181.97973 + (210664136.06 * cy) / 3600));
+            p.radius = [6051800.00, 6051800.00];
+            p.icon = PlanetData.VENUS;            
             break;
         case 2: // Earth/Sun
             p.color = "rgb(255,193,37)";
@@ -249,6 +257,8 @@ define([
             p.O = Numeric.toRadian(-11.26064 - (18228.25 * cy) / 3600);
             p.w = Numeric.toRadian(102.94719 + (1198.28 * cy) / 3600);
             p.L = mod2pi(Numeric.toRadian(100.46435 + (129597740.63 * cy) / 3600));
+            p.radius = [695700000.00, 695700000.00];
+            p.icon = PlanetData.SUN;
             break;
         case 3: // Mars
             p.color = "rgb(255,50,50)";
@@ -258,6 +268,8 @@ define([
             p.O = Numeric.toRadian(49.57854 - (1020.19 * cy) / 3600);
             p.w = Numeric.toRadian(336.04084 + (1560.78 * cy) / 3600);
             p.L = mod2pi(Numeric.toRadian(355.45332 + (68905103.78 * cy) / 3600));
+            p.radius = [3396190.00, 3376200.00];
+            p.icon = PlanetData.MARS;
             break;
         case 4: // Jupiter
             p.color = "rgb(255,150,150)";
@@ -267,6 +279,8 @@ define([
             p.O = Numeric.toRadian(100.55615 + (1217.17 * cy) / 3600);
             p.w = Numeric.toRadian(14.75385 + (839.93 * cy) / 3600);
             p.L = mod2pi(Numeric.toRadian(34.40438 + (10925078.35 * cy) / 3600));
+            p.radius = [71492000.00, 66854000.00];
+            p.icon = PlanetData.JUPITER;
             break;
         case 5: // Saturn
             p.color = "rgb(200,150,150)";
@@ -276,6 +290,8 @@ define([
             p.O = Numeric.toRadian(113.71504 - (1591.05 * cy) / 3600);
             p.w = Numeric.toRadian(92.43194 - (1948.89 * cy) / 3600);
             p.L = mod2pi(Numeric.toRadian(49.94432 + (4401052.95 * cy) / 3600));
+            p.radius = [60268000.00 * 2.5, 54364000.00];
+            p.icon = PlanetData.SATURN;
             break;
         case 6: // Uranus
             p.color = "rgb(130,150,255)";
@@ -285,6 +301,8 @@ define([
             p.O = Numeric.toRadian(74.22988 - (1681.4 * cy) / 3600);
             p.w = Numeric.toRadian(170.96424 + (1312.56 * cy) / 3600);
             p.L = mod2pi(Numeric.toRadian(313.23218 + (1542547.79 * cy) / 3600));
+            p.radius = [25559000.00, 24973000.00];
+            p.icon = PlanetData.URANUS;
             break;
         case 7: // Neptune
             p.color = "rgb(100,100,255)";
@@ -294,6 +312,8 @@ define([
             p.O = Numeric.toRadian(131.72169 - (151.25 * cy) / 3600);
             p.w = Numeric.toRadian(44.97135 - (844.43 * cy) / 3600);
             p.L = mod2pi(Numeric.toRadian(304.88003 + (786449.21 * cy) / 3600));
+            p.radius = [24764000.00, 24341000.00];
+            p.icon = PlanetData.NEPTUNE;
             break;
         case 8: // Pluto
             p.color = "rgb(100,100,255)";
@@ -303,6 +323,8 @@ define([
             p.O = Numeric.toRadian(110.30347 - (37.33 * cy) / 3600);
             p.w = Numeric.toRadian(224.06676 - (132.25 * cy) / 3600);
             p.L = mod2pi(Numeric.toRadian(238.92881 + (522747.9 * cy) / 3600));
+            p.radius = [1188300.00, 1188300.00];
+            p.icon = PlanetData.PLUTO;
             break;
         default:
             throw RangeError(
@@ -349,14 +371,8 @@ define([
         var rp = (ap * (1 - ep * ep)) / (1 + ep * Math.cos(vp));
 
         // heliocentric rectangular coordinates of planet
-        var xh =
-            rp *
-            (Math.cos(op) * Math.cos(vp + pp - op) -
-                Math.sin(op) * Math.sin(vp + pp - op) * Math.cos(ip));
-        var yh =
-            rp *
-            (Math.sin(op) * Math.cos(vp + pp - op) +
-                Math.cos(op) * Math.sin(vp + pp - op) * Math.cos(ip));
+        var xh = rp * (Math.cos(op) * Math.cos(vp + pp - op) - Math.sin(op) * Math.sin(vp + pp - op) * Math.cos(ip));
+        var yh = rp * (Math.sin(op) * Math.cos(vp + pp - op) + Math.cos(op) * Math.sin(vp + pp - op) * Math.cos(ip));
         var zh = rp * (Math.sin(vp + pp - op) * Math.sin(ip));
 
         if (p === 2) {
@@ -382,6 +398,9 @@ define([
         obj.dec = Numeric.toDegree(Math.atan(zeq / Math.sqrt(xeq * xeq + yeq * yeq)));
         obj.rvec = Math.sqrt(xeq * xeq + yeq * yeq + zeq * zeq);
         obj.color = planet.color;
+        const distanceMeters = obj.rvec * 1.496e+11;
+        obj.angularSize = [Numeric.toDegree(2 * planet.radius[0] / distanceMeters), Numeric.toDegree(2 * planet.radius[1] / distanceMeters)];
+        obj.icon = planet.icon;
     }
 
     /**
@@ -408,12 +427,7 @@ define([
             pois.push(poi_label);
 
             // Add point itself
-            var poi_point = poiDesc(
-                mizarLayer,
-                Constants.GEOMETRY.Point,
-                pname[p],
-                obj
-            );
+            var poi_point = poiDesc(mizarLayer, Constants.GEOMETRY.Point, pname[p], obj);
             pois.push(poi_point);
         }
 

@@ -92,45 +92,7 @@ define([
             //gl_FragColor = vec4(1.0);
         }`;
 
-        var meterSizeVertexShader = `
-        attribute vec3 vertex;
-        uniform mat4 viewMatrix;
-        uniform mat4 viewProjectionMatrix;
-        uniform vec3 billboardPos;
-        uniform vec2 billboardSize;
-
-        varying vec2 texcoords;
-
-        void main() {
-            vec3 camRight = vec3(viewMatrix[0][0], viewMatrix[1][0], viewMatrix[2][0]);
-            vec3 camUp = vec3(viewMatrix[0][1], viewMatrix[1][1], viewMatrix[2][1]);
-            vec3 x = camRight * vertex.x * billboardSize.x;
-            vec3 y = camUp * vertex.y * billboardSize.y;
-            vec3 pos = billboardPos + x + y;
-
-            gl_Position = viewProjectionMatrix * vec4(pos, 1.0);
-            texcoords = vec2(vertex.x + 0.5, 1.0 - vertex.y);
-        }`;
-
-        // var meterSizeVertexShader = `
-        // attribute vec3 vertex;
-        // uniform mat4 viewMatrix;
-        // uniform mat4 viewProjectionMatrix;
-        // uniform vec3 billboardPos;
-        // uniform vec2 billboardSize;
-
-        // varying vec2 texcoords;
-
-        // void main() {
-        //     vec3 camRight = vec3(viewMatrix[0][0], viewMatrix[1][0], viewMatrix[2][0]);
-        //     vec3 camUp = vec3(viewMatrix[0][1], viewMatrix[1][1], viewMatrix[2][1]);
-        //     vec3 x = camRight * vertex.x * billboardSize.x;
-        //     vec3 y = camUp * vertex.y * billboardSize.y;
-        //     vec3 pos = billboardPos + x + y;
-
-        //     gl_Position = viewProjectionMatrix * vec4(pos, 1.0);
-        //     texcoords = vec2(vertex.x + 0.5, 1.0 - vertex.y - 0.5);
-        // }`;
+        var shader = _selectShader(globe);
 
         var meterSizeFragmentShader = `
         precision lowp float;
@@ -152,29 +114,98 @@ define([
         this.program.createFromSource(vertexShader, fragmentShader);
 
         this.meterSizeProgram = new Program(globe.renderContext);
-        this.meterSizeProgram.createFromSource(meterSizeVertexShader, meterSizeFragmentShader);
+        this.meterSizeProgram.createFromSource(shader.metersVertexShader, meterSizeFragmentShader);
 
         this.defaultTexture = null;
 
+        var gl = globe.tileManager.renderContext.gl;
+        this.rectVertexBuffer = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, this.rectVertexBuffer);
+        gl.bufferData(gl.ARRAY_BUFFER, shader.vertices, gl.STATIC_DRAW);
+    };
+
+
+    /**
+     * Select the right shader according to the type (planet or sky.)
+     * In the planet case, the image is center on the bottom of the image so that the billboard
+     * is on top of the ground
+     * In the sky case, the image is center on the center of image.
+     * @param {Globe} globe 
+     */
+    function _selectShader(globe) {
+        var type = globe.getCoordinateSystem().getType();
+        return (type === Constants.CONTEXT.Sky) ? _useShaderForSky() : _useShaderForPlanet();
+    }
+    /**
+     * Vertex shader center on the image.
+     */
+    function _useShaderForSky() {
+        var meterSizeVertexShader = `
+        attribute vec3 vertex;
+        uniform mat4 viewMatrix;
+        uniform mat4 viewProjectionMatrix;
+        uniform vec3 billboardPos;
+        uniform vec2 billboardSize;
+
+        varying vec2 texcoords;
+
+        void main() {
+            vec3 camRight = vec3(viewMatrix[0][0], viewMatrix[1][0], viewMatrix[2][0]);
+            vec3 camUp = vec3(viewMatrix[0][1], viewMatrix[1][1], viewMatrix[2][1]);
+            vec3 x = camRight * vertex.x * billboardSize.x;
+            vec3 y = camUp * vertex.y * billboardSize.y;
+            vec3 pos = billboardPos + x + y;
+
+            gl_Position = viewProjectionMatrix * vec4(pos, 1.0);
+            texcoords = vec2(vertex.x + 0.5, 1.0 - vertex.y - 0.5);
+        }`;
+        const vertices = new Float32Array([
+            -0.5, -0.5, 0.0,
+            0.5, -0.5, 0.0,
+            0.5, 0.5, 0.0,
+            -0.5, 0.5, 0.0,
+        ]);           
+        return {
+            vertices: vertices,
+            metersVertexShader: meterSizeVertexShader
+        };
+    }
+
+    /**
+     * Vertex shader center on the image.
+     */    
+    function _useShaderForPlanet() {
+        var meterSizeVertexShader = `
+        attribute vec3 vertex;
+        uniform mat4 viewMatrix;
+        uniform mat4 viewProjectionMatrix;
+        uniform vec3 billboardPos;
+        uniform vec2 billboardSize;
+
+        varying vec2 texcoords;
+
+        void main() {
+            vec3 camRight = vec3(viewMatrix[0][0], viewMatrix[1][0], viewMatrix[2][0]);
+            vec3 camUp = vec3(viewMatrix[0][1], viewMatrix[1][1], viewMatrix[2][1]);
+            vec3 x = camRight * vertex.x * billboardSize.x;
+            vec3 y = camUp * vertex.y * billboardSize.y;
+            vec3 pos = billboardPos + x + y;
+
+            gl_Position = viewProjectionMatrix * vec4(pos, 1.0);
+            texcoords = vec2(vertex.x + 0.5, 1.0 - vertex.y);
+        }`;    
+        
         const vertices = new Float32Array([
             -0.5, 0.0, 0.0,
             0.5, 0.0, 0.0,
             0.5, 1.0, 0.0,
             -0.5, 1.0, 0.0,
         ]);
-
-        // const vertices = new Float32Array([
-        //     -0.5, -0.5, 0.0,
-        //     0.5, -0.5, 0.0,
-        //     0.5, 0.5, 0.0,
-        //     -0.5, 0.5, 0.0,
-        // ]);        
-
-        var gl = globe.tileManager.renderContext.gl;
-        this.rectVertexBuffer = gl.createBuffer();
-        gl.bindBuffer(gl.ARRAY_BUFFER, this.rectVertexBuffer);
-        gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
-    };
+        return {
+            vertices: vertices,
+            metersVertexShader: meterSizeVertexShader
+        };                
+    }
 
     Utils.inherits(VectorRenderer, PointSpriteRenderer);
 
@@ -212,7 +243,7 @@ define([
         var crs = globe.getCoordinateSystem();
 
         if (this.bucket.style.useMeterSize) {
-            const elevation = crs.getElevation(globe, geometry) + 200;
+            const elevation = crs.getElevation(globe, geometry);
             const pt = crs.get3DFromWorldInCrs(
                 [geometry.coordinates[0], geometry.coordinates[1], elevation],
                 geometry.crs.properties.name
@@ -232,8 +263,7 @@ define([
             var realPlanetRadius = crs.getGeoide().getRealPlanetRadius();
             var scale = this.bucket.renderer.globe.isSky()
                 ? 0.95
-                : 1.0 +
-                (crs.getElevation(globe, geometry) + 200) / realPlanetRadius;
+                : 1.0 + (crs.getElevation(globe, geometry)) / realPlanetRadius;
             //TODO Instead of 0.95, it should be 0.9995. But with this value, the point is dislayed
             //TODO after order > 5. With order<=5, the image need more control points. Without these
             //TODO control point, the image does not fit perfectly the sphere and the point is behind the image

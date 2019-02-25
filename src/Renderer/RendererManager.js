@@ -89,17 +89,10 @@ define(["../Utils/Constants", "./RasterOverlayRenderer", "./GroundOverlayRendere
                 while (bucketIdx--) {
                     var bucket = buckets[bucketIdx];
                     var layer = bucket.layer;
-                    if (
-                        bucket.style.zIndex ==
-                            Constants.DISPLAY.SELECTED_RASTER &&
-                        bucket.style.zIndex <= Constants.DISPLAY.SELECTED_RASTER
-                    ) {
+                    if (bucket.style.zIndex == Constants.DISPLAY.SELECTED_RASTER && bucket.style.zIndex <= Constants.DISPLAY.SELECTED_RASTER) {
                         bucket.style.zIndex = Constants.DISPLAY.DEFAULT_RASTER;
                     }
-                    if (
-                        layer.getID() === selectedLayer.getID() &&
-                        bucket.style.zIndex <= Constants.DISPLAY.SELECTED_RASTER
-                    ) {
+                    if (layer.getID() === selectedLayer.getID() && bucket.style.zIndex <= Constants.DISPLAY.SELECTED_RASTER) {
                         bucket.style.zIndex = Constants.DISPLAY.SELECTED_RASTER;
                     }
                 }

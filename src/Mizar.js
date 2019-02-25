@@ -1684,11 +1684,7 @@ define([
      *   var planetProvider = ProviderFactory.create(Mizar.PROVIDER.Planet);
      *   this.registerNoStandardDataProvider("planets", planetProvider.loadFiles);
      */
-    Mizar.prototype.registerNoStandardDataProvider = function(
-        type,
-        loadFunc,
-        mode
-    ) {
+    Mizar.prototype.registerNoStandardDataProvider = function(type, loadFunc, mode) {
         var result;
         try {
             _getContext

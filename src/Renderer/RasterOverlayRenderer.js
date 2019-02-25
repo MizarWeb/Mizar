@@ -239,9 +239,7 @@ define([
         var layer = this.bucket.layer;
         layer._numRequests--;
         if (layer.getGlobe() && layer._numRequests === 0) {
-            layer
-                .getGlobe()
-                .publishEvent(Constants.EVENT_MSG.LAYER_END_LOAD, layer);
+            layer.getGlobe().publishEvent(Constants.EVENT_MSG.LAYER_END_LOAD, layer);
         }
     };
 
@@ -542,9 +540,7 @@ define([
         }
 
         if (!tile.extension.renderer) {
-            tile.extension.renderer = new RendererTileData(
-                this.rendererManager
-            );
+            tile.extension.renderer = new RendererTileData(this.rendererManager);
         }
 
         var renderable = bucket.createRenderable();
@@ -632,10 +628,7 @@ define([
      * @param overlay
      * @return {Boolean} Is intersects ?
      */
-    RasterOverlayRenderer.prototype.overlayIntersects = function(
-        bound,
-        overlay
-    ) {
+    RasterOverlayRenderer.prototype.overlayIntersects = function(bound, overlay) {
         if (overlay.coordinates) {
             var c;
             c = this.clipPolygonToSide(0, 1, bound.west, overlay.coordinates);
@@ -675,9 +668,7 @@ define([
      * @memberof RasterOverlayRenderer.prototype
      * @param renderable
      */
-    RasterOverlayRenderer.prototype.requestOverlayTextureForTile = function(
-        renderable
-    ) {
+    RasterOverlayRenderer.prototype.requestOverlayTextureForTile = function(renderable) {
         if (!renderable.request) {
             var imageRequest;
             for (var i = 0; i < this.imageRequests.length; i++) {

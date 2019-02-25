@@ -888,6 +888,7 @@ define([
             _initComponentsVisibility(this.components);
 
             //When base layer failed to load, open error dialog
+            var self = this;
             this.subscribe(Constants.EVENT_MSG.BASE_LAYERS_ERROR, function(layer) {
                 $(self.canvas.parentElement).find("#loading").hide();
                 ErrorDialog.open(
@@ -1244,7 +1245,7 @@ define([
      * @memberof AbstractContext#
      * @abstract
      */
-    AbstractContext.prototype.destroy = function() {
+    AbstractContext.prototype.destroy = function() {        
         this.hide();
         this.trackerDestroy();        
         this.compassDestroy();
@@ -1258,6 +1259,7 @@ define([
         this.mizarConfiguration = null;
         this.ctxOptions = null;
         this.mode = null;
+        var self = this;
         this.unsubscribe(Constants.EVENT_MSG.BASE_LAYERS_READY, function(imagery) {
             // When the background takes time to load, the viewMatrix computed by "computeViewMatrix" is created but
             // with empty values. Because of that, the globe cannot be displayed without moving the camera.
