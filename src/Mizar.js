@@ -764,11 +764,7 @@ define([
      * @private
      */
     function _loadHIPSLayers(Mizar, options) {
-        if (
-            typeof options !== "undefined" &&
-            options.hasOwnProperty("registry") &&
-            options.registry.hasOwnProperty("hips")
-        ) {
+        if ( typeof options !== "undefined" && options.hasOwnProperty("registry") && options.registry.hasOwnProperty("hips")) {
             Utils.requestUrl(
                 options.registry.hips,
                 "json",
@@ -786,10 +782,7 @@ define([
                                 function(hipsServiceUrl) {
                                     if (typeof hipsServiceUrl === "undefined") {
                                         var text = "";
-                                        if (
-                                            typeof hipsLayer.obs_title ===
-                                            "undefined"
-                                        ) {
+                                        if (typeof hipsLayer.obs_title === "undefined") {
                                             text =
                                                 "with ID <b>" +
                                                 hipsLayer.ID +
@@ -838,10 +831,7 @@ define([
      */
     function _createHips(hipsLayer, hipsServiceUrl) {
         try {
-            if (
-                hipsLayer.hasOwnProperty("hips_status") &&
-                hipsLayer.hips_status.match("public") === null
-            ) {
+            if (hipsLayer.hasOwnProperty("hips_status") &&hipsLayer.hips_status.match("public") === null) {
                 return;
             }
             hipsLayer.hips_service_url = hipsServiceUrl;

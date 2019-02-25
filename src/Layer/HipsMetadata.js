@@ -651,13 +651,7 @@ define(["jquery", "../Utils/Constants", "../Gui/dialog/ErrorDialog", "../Utils/P
      * @param requiredKeywordNotFound - Array or required information not found
      * @private
      */
-    function _checkRequiredParameters(
-        hipsMetadata,
-        mandatory,
-        key,
-        description,
-        requiredKeywordNotFound
-    ) {
+    function _checkRequiredParameters(hipsMetadata, mandatory, key, description, requiredKeywordNotFound) {
         if (mandatory === "R" && !hipsMetadata.hasOwnProperty(key)) {
             //Fix for version=1.2
             if (key === "creator_did" && hipsMetadata.hips_version === "1.2") {
@@ -670,10 +664,7 @@ define(["jquery", "../Utils/Constants", "../Gui/dialog/ErrorDialog", "../Utils/P
                 );
             }
             //Fix for version=1.3
-            else if (
-                key === "creator_did" &&
-                hipsMetadata.hips_version === "1.3"
-            ) {
+            else if (key === "creator_did" && hipsMetadata.hips_version === "1.3") {
                 hipsMetadata.creator_did = hipsMetadata.publisher_did;
                 ErrorDialog.open(
                     Constants.LEVEL.WARNING,
@@ -681,10 +672,7 @@ define(["jquery", "../Utils/Constants", "../Gui/dialog/ErrorDialog", "../Utils/P
                         hipsMetadata.obs_title,
                     "please update it - <i>use creator_did=publisher_did</i>"
                 );
-            } else if (
-                key === "obs_title" &&
-                hipsMetadata.hips_version === "1.3"
-            ) {
+            } else if (key === "obs_title" && hipsMetadata.hips_version === "1.3") {
                 hipsMetadata.obs_title = hipsMetadata.obs_collection;
                 ErrorDialog.open(
                     Constants.LEVEL.WARNING,
@@ -694,20 +682,14 @@ define(["jquery", "../Utils/Constants", "../Gui/dialog/ErrorDialog", "../Utils/P
                 );
             }
             //Fox for version 1.4
-            else if (
-                key === "obs_title" &&
-                hipsMetadata.hips_version === "1.4"
-            ) {
+            else if (key === "obs_title" && hipsMetadata.hips_version === "1.4") {
                 hipsMetadata.obs_title = hipsMetadata.obs_collection;
                 ErrorDialog.open(
                     Constants.LEVEL.WARNING,
                     "obs_title not found in v1.4 for " + hipsMetadata.obs_title,
                     "use obs_title, please fix it"
                 );
-            } else if (
-                key === "creator_did" &&
-                hipsMetadata.hips_version === "1.4"
-            ) {
+            } else if (key === "creator_did" && hipsMetadata.hips_version === "1.4") {
                 hipsMetadata.creator_did = hipsMetadata.publisher_did;
                 ErrorDialog.open(
                     Constants.LEVEL.WARNING,
@@ -717,10 +699,7 @@ define(["jquery", "../Utils/Constants", "../Gui/dialog/ErrorDialog", "../Utils/P
                 );
             }
             /// very old version
-            else if (
-                key === "hips_version" &&
-                !hipsMetadata.hasOwnProperty("hips_version")
-            ) {
+            else if (key === "hips_version" &&!hipsMetadata.hasOwnProperty("hips_version")) {
                 hipsMetadata.hips_version = "very old one";
                 ErrorDialog.open(
                     Constants.LEVEL.WARNING,
@@ -728,10 +707,7 @@ define(["jquery", "../Utils/Constants", "../Gui/dialog/ErrorDialog", "../Utils/P
                         hipsMetadata.obs_title,
                     "please update it - <i>use a version in your metadata</i>"
                 );
-            } else if (
-                key === "creator_did" &&
-                !hipsMetadata.hasOwnProperty("hips_version")
-            ) {
+            } else if (key === "creator_did" && !hipsMetadata.hasOwnProperty("hips_version")) {
                 hipsMetadata.creator_did = hipsMetadata.publisher_did;
                 ErrorDialog.open(
                     Constants.LEVEL.WARNING,
@@ -771,14 +747,7 @@ define(["jquery", "../Utils/Constants", "../Gui/dialog/ErrorDialog", "../Utils/P
      * @param valueNotRight - Wrong value
      * @private
      */
-    function _checkValueAmongEnumeratedList(
-        key,
-        valueArray,
-        description,
-        distinctValue,
-        hipsMetadata,
-        valueNotRight
-    ) {
+    function _checkValueAmongEnumeratedList(key, valueArray, description, distinctValue, hipsMetadata, valueNotRight) {
         if (distinctValue !== null && hipsMetadata.hasOwnProperty(key)) {
             if (valueArray) {
                 for (var val in hipsMetadata[key]) {

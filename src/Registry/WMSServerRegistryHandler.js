@@ -48,11 +48,7 @@ define([
      * @memberof WMSServerRegistryHandler#
      */
 
-    WMSServerRegistryHandler.prototype.handleRequest = function(
-        layerDescription,
-        callback,
-        fallback
-    ) {
+    WMSServerRegistryHandler.prototype.handleRequest = function(layerDescription, callback, fallback) {
         try {
             if (layerDescription.type === Constants.LAYER.WMS) {
                 var wmsServer = new WMSServer(

@@ -104,15 +104,9 @@ define([
             options.category = options.hasOwnProperty("category")
                 ? options.category
                 : "Image";
-            var hasPNG =
-                    $.inArray(hipsProperties.HipsTileFormat.png, formats) !==
-                    -1;
-            var hasJPEG =
-                    $.inArray(hipsProperties.HipsTileFormat.jpeg, formats) !==
-                    -1;
-            var hasFits =
-                    $.inArray(hipsProperties.HipsTileFormat.fits, formats) !==
-                    -1;
+            var hasPNG = $.inArray(hipsProperties.HipsTileFormat.png, formats) !== -1;
+            var hasJPEG = $.inArray(hipsProperties.HipsTileFormat.jpeg, formats) !== -1;
+            var hasFits = $.inArray(hipsProperties.HipsTileFormat.fits, formats) !== -1;
             if (options.format) {
                 switch (options.format) {
                 case hipsProperties.HipsTileFormat.png:
