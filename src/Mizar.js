@@ -38,7 +38,8 @@ define([
     "./Gui/dialog/ErrorDialog",
     "./Layer/HipsMetadata",
     "./Time/Time",
-    "./Utils/Proxy"
+    "./Utils/Proxy",
+    "string"
 ], function(
     $,
     _,
@@ -56,7 +57,8 @@ define([
     ErrorDialog,
     HipsMetadata,
     Time,
-    Proxy
+    Proxy,
+    String
 ) {
     /**
      * mizarMode:toggle.<br/>

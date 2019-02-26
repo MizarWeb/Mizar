@@ -212,7 +212,7 @@ define([
 
     function searchPlanetProvider(objectName, onSuccess, onErrorOutOfBound) {
         var planetsLayer = mizarAPI.getLayerByName("Planets");
-        var features = planetsLayer.features;
+        var features = planetsLayer === undefined ? [] : planetsLayer.features;
         var feature = _.find(features,function(feature){ 
             var name = feature.properties.name;
             var coordinates = feature.geometry.coordinates;

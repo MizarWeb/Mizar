@@ -32,7 +32,7 @@ require.config({
         "jquery.ui": "../node_modules/jquery-ui-dist/jquery-ui.min",
         wcs: "../external/wcs",
         samp: "../external/samp",
-        string: "../node_modules/string/dist/string",
+        string: "../node_modules/string/dist/string.min",
         gzip: "../external/gzip.min",
         saveAs: "../node_modules/file-saver/FileSaver.min",
         moment: "../node_modules/moment/min/moment-with-locales.min",
