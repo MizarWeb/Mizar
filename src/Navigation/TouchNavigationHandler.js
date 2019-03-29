@@ -106,8 +106,8 @@ define([
          * Calculate the angle between two coordinates
          */
         var _getAngle = function(touch1, touch2) {
-            var y = touch2.clientY - touch1.clientY,
-                x = touch2.clientX - touch1.clientX;
+            var y = touch2.offsetY - touch1.offsetY,
+                x = touch2.offsetX - touch1.offsetX;
             return Numeric.toDegree(Math.atan2(y, x));
         };
 
@@ -142,15 +142,15 @@ define([
                 Constants.EVENT_MSG.NAVIGATION_STARTED
             );
 
-            _navigation.startInteraction(event.touches[0].clientX, event.touches[0].clientY);
+            _navigation.startInteraction(event.touches[0].offsetX, event.touches[0].offsetY);
 
             // Stop all animations when an event is received
             _navigation.stopAnimations();
             _dx = 0;
             _dy = 0;
             if (event.touches.length === 2) {
-                var dx = event.touches[0].clientX - event.touches[1].clientX;
-                var dy = event.touches[0].clientY - event.touches[1].clientY;
+                var dx = event.touches[0].offsetX - event.touches[1].offsetX;
+                var dy = event.touches[0].offsetY - event.touches[1].offsetY;
                 _lastFingerDistance = Math.sqrt(dx * dx + dy * dy);
                 ErrorDialog.open(Constants.LEVEL.DEBUG, "TouchNavigationHandler.js","Finger distance : " + _lastFingerDistance);
                 _lastAngle = _getRotation(_startTouches, event.touches);
@@ -168,8 +168,8 @@ define([
          Handle touch move event
          */
         var _handleTouchMove = function(event) {
-            _dx = event.touches[0].clientX - _lastTouches[0].clientX;
-            _dy = event.touches[0].clientY - _lastTouches[0].clientY;
+            _dx = event.touches[0].offsetX - _lastTouches[0].offsetX;
+            _dy = event.touches[0].offsetY - _lastTouches[0].offsetY;
             var dx, dy;
             var rotation, fingerDistance, deltaDistance;
 
@@ -180,8 +180,8 @@ define([
             } else {
                 // Depending on direction of two fingers, decide if tilt OR rotation
                 var sameDirection =
-                    (event.touches[0].clientY - _lastTouches[0].clientY) *
-                        (event.touches[1].clientY - _lastTouches[1].clientY) >
+                    (event.touches[0].offsetY - _lastTouches[0].offsetY) *
+                        (event.touches[1].offsetY - _lastTouches[1].offsetY) >
                     0;
                 if (sameDirection) {
                     // Tilt
@@ -203,8 +203,8 @@ define([
                 }
 
                 // Zoom
-                dx = event.touches[0].clientX - event.touches[1].clientX;
-                dy = event.touches[0].clientY - event.touches[1].clientY;
+                dx = event.touches[0].offsetX - event.touches[1].offsetX;
+                dy = event.touches[0].offsetY - event.touches[1].offsetY;
                 fingerDistance = Math.sqrt(dx * dx + dy * dy);
                 deltaDistance = fingerDistance - _lastFingerDistance;
 
@@ -249,8 +249,8 @@ define([
                 var now = Date.now();
                 if (now - _lastTapDate < _doubletap_interval) {
                     var geo = _navigation.ctx.getLonLatFromPixel(
-                        _lastTouches[0].clientX,
-                        _lastTouches[0].clientY
+                        _lastTouches[0].offsetX,
+                        _lastTouches[0].offsetY
                     );
 
                     if (geo) {

@@ -163,8 +163,8 @@ define(["../Utils/Constants"], function(Constants) {
             // Stop all animations when an event is received
             _navigation.stopAnimations();
 
-            _lastMouseX = event.clientX;
-            _lastMouseY = event.clientY;
+            _lastMouseX = event.offsetX;
+            _lastMouseY = event.offsetY;
             _dx = 0;
             _dy = 0;
 
@@ -272,8 +272,8 @@ define(["../Utils/Constants"], function(Constants) {
                 return;
             }
 
-            _dx = event.clientX - _lastMouseX;
-            _dy = event.clientY - _lastMouseY;
+            _dx = event.offsetX - _lastMouseX;
+            _dy = event.offsetY - _lastMouseY;
 
             if (_dx === 0 && _dy === 0) {
                 return;
@@ -405,8 +405,8 @@ define(["../Utils/Constants"], function(Constants) {
                 ret = true;
             }
 
-            _lastMouseX = event.clientX;
-            _lastMouseY = event.clientY;
+            _lastMouseX = event.offsetX;
+            _lastMouseY = event.offsetY;
 
             return ret;
         };

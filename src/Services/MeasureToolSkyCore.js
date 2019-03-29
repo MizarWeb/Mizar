@@ -53,8 +53,8 @@ define([
 
         if (event.type.search("touch") >= 0) {
             self.pickPoint = [
-                event.changedTouches[0].clientX,
-                event.changedTouches[0].clientY
+                event.changedTouches[0].offsetX,
+                event.changedTouches[0].offsetY
             ];
         } else {
             self.pickPoint = [event.layerX, event.layerY];
@@ -78,8 +78,8 @@ define([
             stopPickPoint = mizarAPI
                 .getActivatedContext()
                 .getLonLatFromPixel(
-                    event.changedTouches[0].clientX,
-                    event.changedTouches[0].clientY
+                    event.changedTouches[0].offsetX,
+                    event.changedTouches[0].offsetY
                 );
         } else {
             stopPickPoint = mizarAPI
@@ -115,8 +115,8 @@ define([
         }
         if (event.type.search("touch") >= 0) {
             self.secondPickPoint = [
-                event.changedTouches[0].clientX,
-                event.changedTouches[0].clientY
+                event.changedTouches[0].offsetX,
+                event.changedTouches[0].offsetY
             ];
         } else {
             self.secondPickPoint = [event.layerX, event.layerY];

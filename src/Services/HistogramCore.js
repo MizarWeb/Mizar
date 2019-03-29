@@ -48,8 +48,8 @@ define(["./Triangle"], function(Triangle) {
     function _getMousePos(canvas, evt) {
         var rect = canvas.getBoundingClientRect();
         return {
-            x: evt.clientX - rect.left,
-            y: evt.clientY - rect.top
+            x: evt.offsetX - rect.left,
+            y: evt.offsetY - rect.top
         };
     }
 

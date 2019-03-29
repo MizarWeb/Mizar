@@ -63,15 +63,15 @@ define([
      */
     PositionTracker.prototype.update = function(event) {
         if (event.type.search("touch") >= 0) {
-            event.clientX = event.changedTouches[0].clientX;
-            event.clientY = event.changedTouches[0].clientY;
+            event.offsetX = event.changedTouches[0].offsetX;
+            event.offsetY = event.changedTouches[0].offsetY;
         }
 
         if (document.getElementById(self._getElement())) {
             var $crsInfo = $("#" + self._getElement() + "Info");
             var geoPos = self
                 ._getGlobe()
-                .getLonLatFromPixel(event.clientX, event.clientY);
+                .getLonLatFromPixel(event.offsetX, event.offsetY);
             if (geoPos) {
                 var astro = self.compute([geoPos[0], geoPos[1]]);
                 document.getElementById(self._getElement()).innerHTML =

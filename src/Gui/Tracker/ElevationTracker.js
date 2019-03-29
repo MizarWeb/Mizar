@@ -62,13 +62,13 @@ define([
      */
     ElevationTracker.prototype.update = function(event) {
         if (event.type.search("touch") >= 0) {
-            event.clientX = event.changedTouches[0].clientX;
-            event.clientY = event.changedTouches[0].clientY;
+            event.offsetX = event.changedTouches[0].offsetX;
+            event.offsetY = event.changedTouches[0].offsetY;
         }
         if (document.getElementById(self._getElement()) && self.options.elevationLayer && self.options.elevationLayer.isRequested()) {
             var geoPos = self
                 ._getGlobe()
-                .getLonLatFromPixel(event.clientX, event.clientY);
+                .getLonLatFromPixel(event.offsetX, event.offsetY);
             if (geoPos && self.scale) {
                 var elevation = self.compute([geoPos[0], geoPos[1]]);
                 document.getElementById(self._getElement()).innerHTML =

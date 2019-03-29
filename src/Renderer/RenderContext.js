@@ -349,11 +349,11 @@ define(["jquery","./Frustum", "./glMatrix"], function($, Frustum) {
             pos[1] = event.pageY;
         } else {
             pos[0] =
-                event.clientX +
+                event.offsetX +
                 document.body.scrollLeft +
                 document.documentElement.scrollLeft;
             pos[1] =
-                event.clientY +
+                event.offsetY +
                 document.body.scrollTop +
                 document.documentElement.scrollTop;
         }

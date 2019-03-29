@@ -106,7 +106,7 @@ define(["../Utils/Utils", "../Utils/Constants"], function(Utils, Constants) {
             _navigation.ctx.publish(
                 Constants.EVENT_MSG.NAVIGATION_STARTED
             );
-            _navigation.zoom(factor, null, event.clientX, event.clientY);
+            _navigation.zoom(factor, null, event.offsetX, event.offsetY);
 
             // Stop all animations when an event is received
             _navigation.stopAnimations();
@@ -133,8 +133,8 @@ define(["../Utils/Utils", "../Utils/Constants"], function(Utils, Constants) {
             _navigation.stopAnimations();
 
             if (event.button === _panButton || event.button === _rotateButton) {
-                _lastMouseX = event.clientX;
-                _lastMouseY = event.clientY;
+                _lastMouseX = event.offsetX;
+                _lastMouseY = event.offsetY;
                 _dx = 0;
                 _dy = 0;
 
@@ -199,8 +199,8 @@ define(["../Utils/Utils", "../Utils/Constants"], function(Utils, Constants) {
                 return;
             }
 
-            _dx = event.clientX - _lastMouseX;
-            _dy = event.clientY - _lastMouseY;
+            _dx = event.offsetX - _lastMouseX;
+            _dy = event.offsetY - _lastMouseY;
 
             if (_dx === 0 && _dy === 0) {
                 return;
@@ -209,7 +209,7 @@ define(["../Utils/Utils", "../Utils/Constants"], function(Utils, Constants) {
             var ret = false;
             // Pan
             if (_pressedButton === _panButton) {
-                _navigation.pan(_dx, _dy, event.clientX, event.clientY);
+                _navigation.pan(_dx, _dy, event.offsetX, event.offsetY);
                 ret = true;
             }
             // Rotate
@@ -218,8 +218,8 @@ define(["../Utils/Utils", "../Utils/Constants"], function(Utils, Constants) {
                 ret = true;
             }
 
-            _lastMouseX = event.clientX;
-            _lastMouseY = event.clientY;
+            _lastMouseX = event.offsetX;
+            _lastMouseY = event.offsetY;
 
             return ret;
         };

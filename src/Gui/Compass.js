@@ -95,8 +95,8 @@ define([
      */
     function _handleMouseDown(event, self) {
         if (event.type.search("touch") >= 0) {
-            event.layerX = event.changedTouches[0].clientX;
-            event.layerY = event.changedTouches[0].clientY;
+            event.layerX = event.changedTouches[0].offsetX;
+            event.layerY = event.changedTouches[0].offsetY;
             self._balanceX = event.layerX;
             self._balanceY = event.layerY;
         } else {
@@ -121,8 +121,8 @@ define([
      */
     function _handleMouseMove(event, self) {
         if (event.type.search("touch") >= 0) {
-            event.layerX = event.changedTouches[0].clientX - self._balanceX;
-            event.layerY = event.changedTouches[0].clientY - self._balanceY;
+            event.layerX = event.changedTouches[0].offsetX - self._balanceX;
+            event.layerY = event.changedTouches[0].offsetY - self._balanceY;
         }
 
         if (!self.dragging) {
