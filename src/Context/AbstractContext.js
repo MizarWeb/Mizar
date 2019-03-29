@@ -811,6 +811,9 @@ define([
         canvas.width = width;
         canvas.height = height;
 
+        // Add background color to black to avoid transparency problem with a backgound
+        $(canvas).css("background-color", "black");
+
         // Add some useful css properties to parent element
         if (parentCanvas) {
             parentCanvas.css({position: "relative",overflow: "hidden"});
