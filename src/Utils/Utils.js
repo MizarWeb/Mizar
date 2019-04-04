@@ -483,7 +483,7 @@ define([
         if (isFlat) {
             visibleAngularDistance = angularDistance;
         } else if (angularDistance > 180) {
-            visibleAngularDistance = 360 - angularDistance;
+            visibleAngularDistance = 180;
         } else {
             visibleAngularDistance = angularDistance;
         }
