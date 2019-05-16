@@ -187,8 +187,8 @@ define([
             : hipsMetadata.hips_tile_width;
         options.baseLevel = options.hasOwnProperty("baseLevel")
             ? options.baseLevel
-            : hipsMetadata.hasOwnProperty("hips_order_min") && 
-                ? hipsMetadata.hips_order_min && hipsMetadata.hips_order_min >= 2
+            : hipsMetadata.hasOwnProperty("hips_order_min") && hipsMetadata.hips_order_min >= 2
+                ? hipsMetadata.hips_order_min
                 : 2;
         options.numberOfLevels = options.hasOwnProperty("numberOfLevels")
             ? options.numberOfLevels
