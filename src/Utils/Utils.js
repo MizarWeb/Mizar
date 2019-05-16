@@ -475,10 +475,10 @@ define([
      * @return {float} the distance of the camera in meters.
      */
     Utils.computeDistanceCameraFromBbox = function(bbox, fov, planetRadius, isFlat) {
-        var angularDistance = Math.abs(bbox[2] - bbox[0]);
-        if (UtilsIntersection.isCrossDateLine(bbox[0], bbox[2])) {
-            angularDistance = 360 - angularDistance;
-        }
+        var angularDistance1 = Math.abs(bbox[2] - bbox[0]);
+        var angularDistance2 = Math.abs(bbox[3] - bbox[1]);
+        var angularDistance = Math.max(angularDistance1, angularDistance2);
+
         var visibleAngularDistance;
         if (isFlat) {
             visibleAngularDistance = angularDistance;
@@ -488,8 +488,22 @@ define([
             visibleAngularDistance = angularDistance;
         }
 
-        var distance = (2 * Math.PI * planetRadius * visibleAngularDistance) / 360;
-        return (0.5 * distance) / Math.tan(0.5 * Numeric.toRadian(fov));
+        //     *            *Center       *
+        //      *         * |  *         *
+        //        *     *   | a  *     *
+        //          * * --b------ *  *
+        //           * *          **
+        //            *   *   *  *
+        //             *    | distance surface/camera
+        //               *  |  *
+        //                 * * 
+        //                  Camera
+        
+        var a = planetRadius * Math.cos(Numeric.toRadian(0.5 * visibleAngularDistance));
+        var b = planetRadius * Math.sin(Numeric.toRadian(0.5 * visibleAngularDistance));
+        var c = b / Math.tan(Numeric.toRadian(0.5 * fov));
+        var distance = c - (planetRadius -a);
+        return distance;
     };
 
     /**
