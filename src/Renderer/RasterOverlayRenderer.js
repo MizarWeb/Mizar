@@ -146,7 +146,7 @@ define([
                             const oldRenderable = self.oldRenderables[level][x][y];
                             if (oldRenderable && oldRenderable.ownTexture) {
                                 this.renderable.oldRenderable = oldRenderable;
-                                this.renderable.needsLerp = true;
+				this.renderable.needsLerp = false; // origin : true => Set to false to fix a problem with the interpollation
                                 this.renderable.time = 0.0;
                             }
                         } catch (error) {
