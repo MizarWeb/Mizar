@@ -391,7 +391,10 @@ define([
      */
     WMSLayer.prototype.setParameter = function(paramName, value) {
         if (this._hasToBeRefreshed(paramName, value)) {
-            this.options[paramName] = this.imageLoadedAtTime[paramName];
+            if(this.imageLoadedAtTime[paramName] !== undefined) {
+                this.options[paramName] = this.imageLoadedAtTime[paramName];
+            }
+            
             this.getMapBaseUrl = _queryImage.call(
                 this,
                 this.getBaseUrl(),
