@@ -306,8 +306,8 @@ define([
             var isInTimeDimension = time.isInTimeDefinition(
                 this.getDimensions().time.value
             );
-            value = isInTimeDimension ? time.getDisplayValue() : null;
-            this.allowedHTTPRequest = value !== null;
+            value = isInTimeDimension ? time.date.toISOString() : undefined;
+            this.allowedHTTPRequest = value !== undefined;
         } else if (param === "time") {
             mustBeRefreshed = false;
             return mustBeRefreshed;
@@ -315,7 +315,10 @@ define([
         if (this.imageLoadedAtTime[param] === undefined) {
             // this a new parameter, then we refresh
             mustBeRefreshed = true;
-            this.imageLoadedAtTime[param] = value;
+            if(value !== undefined) {
+                this.imageLoadedAtTime[param] = value;
+            }
+            
         } else if (this.imageLoadedAtTime[param] === value) {
             mustBeRefreshed = false;
         } else {
