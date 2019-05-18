@@ -141,7 +141,7 @@ define([
 
         // time constraints and custom params
         for (var param in this.imageLoadedAtTime) {
-            if (param !== "time" && this.imageLoadedAtTime[param] !== null) {
+            if (param !== "time" && this.imageLoadedAtTime[param] !== undefined) {
                 url = Utils.addParameterTo(
                     url,
                     param,

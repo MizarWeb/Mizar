@@ -183,7 +183,7 @@ define([
 
         // custom params
         for (var param in this.imageLoadedAtTime) {
-            if (param !== "time" && this.imageLoadedAtTime[param] !== null) {
+            if (param !== "time" && this.imageLoadedAtTime[param] !== undefined) {
                 url = Utils.addParameterTo(
                     url,
                     param,
@@ -391,10 +391,7 @@ define([
      */
     WMSLayer.prototype.setParameter = function(paramName, value) {
         if (this._hasToBeRefreshed(paramName, value)) {
-            if(this.imageLoadedAtTime[paramName] !== undefined) {
-                this.options[paramName] = this.imageLoadedAtTime[paramName];
-            }
-            
+            this.options[paramName] = this.imageLoadedAtTime[paramName];                        
             this.getMapBaseUrl = _queryImage.call(
                 this,
                 this.getBaseUrl(),

@@ -300,32 +300,32 @@ define([
      * @private
      */
     AbstractLayer.prototype._hasToBeRefreshed = function(param, value) {
-        var mustBeRefreshed = false;
+        var baseUrlMustBeRefreshed;
         if (param === "time" && this.containsDimension(param)) {
+            // Time is set and we have a temporal layer => refresh base URL
             var time = Time.parse(value);
             var isInTimeDimension = time.isInTimeDefinition(
                 this.getDimensions().time.value
             );
-            value = isInTimeDimension ? time.date.toISOString() : undefined;
-            this.allowedHTTPRequest = value !== undefined;
-        } else if (param === "time") {
-            mustBeRefreshed = false;
-            return mustBeRefreshed;
-        }
-        if (this.imageLoadedAtTime[param] === undefined) {
-            // this a new parameter, then we refresh
-            mustBeRefreshed = true;
-            if(value !== undefined) {
-                this.imageLoadedAtTime[param] = value;
+            if (isInTimeDimension) {
+                this.allowedHTTPRequest = true;
+                baseUrlMustBeRefreshed = this.imageLoadedAtTime[param] !== time.date.toISOString();
+            } else {
+                this.allowedHTTPRequest = false;
+                baseUrlMustBeRefreshed = true;
             }
-            
-        } else if (this.imageLoadedAtTime[param] === value) {
-            mustBeRefreshed = false;
+            this.imageLoadedAtTime[param] = time.date.toISOString();
+        } else if (param === "time") {
+            // no temporal layer but time is asked => no refresh base URL
+            baseUrlMustBeRefreshed = false;
+            this.allowedHTTPRequest = true;
+            this.imageLoadedAtTime[param] = undefined; 
         } else {
-            mustBeRefreshed = true;
-            this.imageLoadedAtTime[param] = value;
+            baseUrlMustBeRefreshed = this.imageLoadedAtTime[param] !== value;
+            this.allowedHTTPRequest = true;
+            this.imageLoadedAtTime[param] = value;         
         }
-        return mustBeRefreshed;
+        return baseUrlMustBeRefreshed;
     };
 
     AbstractLayer.prototype.hasDimension = function() {
