@@ -39,14 +39,15 @@ define(function() {
     /**
      *    Cache storing <AbstractRasterLayer> tile requests in browser's local storage
      *    Due to performance reasons, it's recommended to use it only for tiles of level 0
+     *    @param {Layer} layer
      *    @param options
      *        <ul>
      *            <li>layer: Layer which will contain the given cache(required)</li>
      *            <li>cacheLevel: the maximum level of tiles to be cached</li>
      *        </ul>
      */
-    var Cache = function(options) {
-        this.layer = options.layer;
+    var Cache = function(layer, options) {
+        this.layer = layer;
 
         this.cacheLevel = options.hasOwnProperty("cacheLevel")
             ? options.cacheLevel
@@ -128,6 +129,16 @@ define(function() {
                 JSON.stringify(this._cacheMap)
             );
         }
+    };
+
+    /**************************************************************************************************************/
+
+    /**
+     * Clear cache
+     */
+    Cache.prototype.clear = function() {
+        this._cacheMap = {};       
+        localStorage.clear();
     };
 
     return Cache;

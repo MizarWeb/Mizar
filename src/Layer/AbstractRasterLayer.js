@@ -82,8 +82,7 @@ define([
 
         // Init cache if defined
         if (options.cache) {
-            options.cache.layer = this;
-            this.cache = new Cache(options.cache);
+            this.cache = new Cache(this, options.cache);
         }
 
         // Internal
