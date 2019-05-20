@@ -68,7 +68,7 @@ define(["moment", "../Utils/Constants","../Time/TimeTravelParams"], function(
                 );
             }
             // Month management
-            if (regExpMonth.test(value)) {
+            else if (regExpMonth.test(value)) {
                 date = Moment.utc(value, "YYYY-MM");
                 period = {};
                 period.from = date;
@@ -77,7 +77,7 @@ define(["moment", "../Utils/Constants","../Time/TimeTravelParams"], function(
                 );
             }
             // Day management
-            if (regExpDay.test(value)) {
+            else if (regExpDay.test(value)) {
                 date = Moment.utc(value, "YYYY-MM-DD");
                 period = {};
                 period.from = date;
@@ -87,6 +87,9 @@ define(["moment", "../Utils/Constants","../Time/TimeTravelParams"], function(
             }
             if (date === null) {
                 date = Moment.utc(value);
+                period = {};
+                period.from = date;
+                period.to = date;
             }
         } else {
             date = Moment.utc(value);
