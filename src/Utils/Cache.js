@@ -48,6 +48,7 @@ define(function() {
      */
     var Cache = function(layer, options) {
         this.layer = layer;
+        this.options = options;
 
         this.cacheLevel = options.hasOwnProperty("cacheLevel")
             ? options.cacheLevel
@@ -60,12 +61,6 @@ define(function() {
 
         this._cacheMap = JSON.parse(localStorage.getItem(this.layer.getName()));
 
-        this.imgCanvas = document.createElement("canvas");
-        // Make sure canvas is as big as layer requests
-        this.imgCanvas.width = options.tilePixelSize || 256;
-        this.imgCanvas.height = options.tilePixelSize || 256;
-
-        this.imgContext = this.imgCanvas.getContext("2d");
     };
 
     /**************************************************************************************************************/
@@ -101,11 +96,17 @@ define(function() {
      *    Internal method to generate data url from HTML image object
      */
     Cache.prototype._createDataURL = function(image) {
+        var imgCanvas = document.createElement("canvas");
+        // Make sure canvas is as big as layer requests
+        imgCanvas.width =  this.options.tilePixelSize || 256;
+        imgCanvas.height = this.options.tilePixelSize || 256;
+
+        var imgContext = imgCanvas.getContext("2d");        
         // Draw image into canvas element
-        this.imgContext.drawImage(image, 0, 0, image.width, image.height);
+        imgContext.drawImage(image, 0, 0, image.width, image.height);
 
         // Save image as a data URL
-        return this.imgCanvas.toDataURL("image/png");
+        return imgCanvas.toDataURL("image/png");
     };
 
     /**************************************************************************************************************/
