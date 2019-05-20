@@ -41,7 +41,7 @@ define([
     "./AbstractLayer",
     "../Renderer/RasterOverlayRenderer",
     "../Utils/Cache"
-], function(Utils, Constants, AbstractLayer, RasterOverlayRenderer, Cache) {
+], function (Utils, Constants, AbstractLayer, RasterOverlayRenderer, Cache) {
     /**
      * AbstractRasterLayer configuration
      * @typedef {AbstractLayer.configuration} AbstractRasterLayer.configuration
@@ -66,7 +66,7 @@ define([
      * @constructor
      * @implements {RasterLayer}
      */
-    var AbstractRasterLayer = function(type, options) {
+    var AbstractRasterLayer = function (type, options) {
         options.zIndex = options.zIndex || Constants.DISPLAY.DEFAULT_RASTER;
         AbstractLayer.prototype.constructor.call(this, type, options);
 
@@ -99,7 +99,7 @@ define([
      * @function getInformationType
      * @memberof AbstractRasterLayer#
      */
-    AbstractRasterLayer.prototype.getInformationType = function() {
+    AbstractRasterLayer.prototype.getInformationType = function () {
         return Constants.INFORMATION_TYPE.RASTER;
     };
 
@@ -109,7 +109,7 @@ define([
      * @function loadOverview
      * @memberof AbstractRasterLayer#
      */
-    AbstractRasterLayer.prototype.loadOverview = function() {};
+    AbstractRasterLayer.prototype.loadOverview = function () { };
 
     /**
      * Returns the URL to query the raster.
@@ -117,7 +117,7 @@ define([
      * @returns {string} the URL
      * @memberof AbstractRasterLayer#
      */
-    AbstractRasterLayer.prototype.getUrl = function(tile) {
+    AbstractRasterLayer.prototype.getUrl = function (tile) {
         throw new SyntaxError(
             "getUrl() not implemented",
             "AbstractRasterLayer.js"
@@ -131,7 +131,7 @@ define([
      * @function allowRequest
      * @memberof AbstractRasterLayer#
      */
-    AbstractRasterLayer.prototype.allowRequest = function(url, level) {
+    AbstractRasterLayer.prototype.allowRequest = function (url, level) {
         var request;
         if (this.isBetweenMinMaxLevel(level)) {
             request = url;
@@ -147,7 +147,7 @@ define([
      * @returns {Boolean} true when the tile level is defined between [minLevel,maxLevel] otherwise false.
      * @memberof AbstractRasterLayer#
      */
-    AbstractRasterLayer.prototype.isBetweenMinMaxLevel = function(level) {
+    AbstractRasterLayer.prototype.isBetweenMinMaxLevel = function (level) {
         var isInside;
         if (this.minLevel != null && this.maxLevel != null) {
             isInside = this.minLevel <= level && level <= this.maxLevel;
@@ -169,7 +169,7 @@ define([
      * @param {Globe} g - globe
      * @private
      */
-    AbstractRasterLayer.prototype._attach = function(g) {
+    AbstractRasterLayer.prototype._attach = function (g) {
         if (this.isBackground()) {
             // Override id of background layer because of unicity of background not overlayed layer
             //TODO : check if it is still needed
@@ -196,7 +196,7 @@ define([
      * @memberof AbstractRasterLayer#
      * @private
      */
-    AbstractRasterLayer.prototype._detach = function() {
+    AbstractRasterLayer.prototype._detach = function () {
         // Remove raster from overlay renderer if needed
         if (!this.isBackground() && this.getGlobe().rasterOverlayRenderer) {
             this.getGlobe().rasterOverlayRenderer.removeOverlay(this);

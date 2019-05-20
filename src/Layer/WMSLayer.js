@@ -222,7 +222,6 @@ define([
      * @param {Time.configuration} time - time to query
      */
     WMSLayer.prototype.setTime = function(time) {
-        AbstractLayer.prototype.setTime(time);
         this.setParameter("time", time);
     };
 
@@ -353,30 +352,24 @@ define([
         var url, bbox;
         // we cannot reject the request to the server when the layer is defined as background otherwise there is
         // no image to show and Mizar is waiting for an image
-        if (this.allowedHTTPRequest) {
-            if (this.isBackground() || _tileIsIntersectedFootprint(bound, this.restrictTo)) {
-                bbox =
-                    bound.west +
-                    "," +
-                    bound.south +
-                    "," +
-                    bound.east +
-                    "," +
-                    bound.north;
-                url = this.getMapBaseUrl;
-                url = Utils.addParameterTo(
-                    url,
-                    "transparent",
-                    this.options.transparent
-                );
-                url = Utils.addParameterTo(url, "crs", tile.config.srs);
-                url = Utils.addParameterTo(url, "bbox", bbox);
-            } else {
-                url = null;
-            }
-        } else {
-            url = null;
-        }
+        if (this.isBackground() || _tileIsIntersectedFootprint(bound, this.restrictTo)) {
+            bbox =
+                bound.west +
+                "," +
+                bound.south +
+                "," +
+                bound.east +
+                "," +
+                bound.north;
+            url = this.getMapBaseUrl;
+            url = Utils.addParameterTo(
+                url,
+                "transparent",
+                this.options.transparent
+            );
+            url = Utils.addParameterTo(url, "crs", tile.config.srs);
+            url = Utils.addParameterTo(url, "bbox", bbox);
+        } 
 
         return this.allowRequest(url, tile.level);
     };
@@ -399,7 +392,11 @@ define([
                 this.tilePixelSize,
                 this.options
             );
-            this.forceRefresh();
+            if(this.isBackground()) {
+                //TODO : refresh background without deleting other layers in tiles
+            } else {
+                this.forceRefresh();
+            }           
         }
     };
 

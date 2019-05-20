@@ -500,13 +500,13 @@ define([
     };
 
     AtmosphereLayer.prototype.setTime = function(time) {
-        AbstractLayer.prototype.setTime(time);
         this.setParameter("time", time);
     };
 
     AtmosphereLayer.prototype.setParameter = function(param, value) {
         if (param === "time") {
             var time = Time.parse(value);
+            this.time = time;
             var date = new Date(time.date);
             this.lightDir = _computeLightDir.call(this, date);
             this._skyFromSpaceProgram.apply();

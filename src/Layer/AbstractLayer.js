@@ -177,11 +177,6 @@ define([
         //cache to know which custom (e;g time, style, ...) Raster parameters are send
         this.imageLoadedAtTime = {};
 
-        /**
-         * Used to allow/deny http request
-         * @type {boolean}
-         */
-        this.allowedHTTPRequest = true;
     };
 
     /**
@@ -304,25 +299,15 @@ define([
         if (param === "time" && this.containsDimension(param)) {
             // Time is set and we have a temporal layer => refresh base URL
             var time = Time.parse(value);
-            var isInTimeDimension = time.isInTimeDefinition(
-                this.getDimensions().time.value
-            );
-            if (isInTimeDimension) {
-                this.allowedHTTPRequest = true;
-                baseUrlMustBeRefreshed = this.imageLoadedAtTime[param] !== time.date.toISOString();
-            } else {
-                this.allowedHTTPRequest = false;
-                baseUrlMustBeRefreshed = true;
-            }
+            this.time = time;
+            baseUrlMustBeRefreshed = this.imageLoadedAtTime[param] !== time.date.toISOString();
             this.imageLoadedAtTime[param] = time.date.toISOString();
         } else if (param === "time") {
             // no temporal layer but time is asked => no refresh base URL
             baseUrlMustBeRefreshed = false;
-            this.allowedHTTPRequest = true;
             this.imageLoadedAtTime[param] = undefined; 
         } else {
             baseUrlMustBeRefreshed = this.imageLoadedAtTime[param] !== value;
-            this.allowedHTTPRequest = true;
             this.imageLoadedAtTime[param] = value;         
         }
         return baseUrlMustBeRefreshed;
@@ -398,7 +383,6 @@ define([
         if (this.getGlobe()) {
             var tileManager = this.getGlobe().getTileManager();
             tileManager.updateVisibleTiles(this);
-            this.getGlobe().refresh();
         }
     };
 

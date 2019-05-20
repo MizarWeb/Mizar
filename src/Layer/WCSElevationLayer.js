@@ -259,51 +259,46 @@ define([
     WCSElevationLayer.prototype.getUrl = function(tile) {
         var geoBound = tile.geoBound;
 
-        var url;
-        if (this.allowedHTTPRequest) {
-            url = this.getCoverageBaseUrl;
+        var url = this.getCoverageBaseUrl;
 
-            if (this.options.version.substring(0, 3) === "2.0") {
-                url = Utils.addParameterTo(
-                    url,
-                    "subset",
-                    "x" +
-                        this.options.crs +
-                        "(" +
-                        geoBound.west +
-                        "," +
-                        geoBound.east +
-                        ")"
-                );
-                url = Utils.addParameterTo(
-                    url,
-                    "subset",
-                    "y" +
-                        this.options.crs +
-                        "(" +
-                        geoBound.south +
-                        "," +
-                        geoBound.north +
-                        ")"
-                );
-            } else if (this.options.version.substring(0, 3) === "1.0") {
-                url = Utils.addParameterTo(
-                    url,
-                    "bbox",
+        if (this.options.version.substring(0, 3) === "2.0") {
+            url = Utils.addParameterTo(
+                url,
+                "subset",
+                "x" +
+                    this.options.crs +
+                    "(" +
                     geoBound.west +
-                        "," +
-                        geoBound.south +
-                        "," +
-                        geoBound.east +
-                        "," +
-                        geoBound.north
-                );
-            }
-            this.level = tile.level;
-        } else {
-            url = null;
-            this.level = null;
+                    "," +
+                    geoBound.east +
+                    ")"
+            );
+            url = Utils.addParameterTo(
+                url,
+                "subset",
+                "y" +
+                    this.options.crs +
+                    "(" +
+                    geoBound.south +
+                    "," +
+                    geoBound.north +
+                    ")"
+            );
+        } else if (this.options.version.substring(0, 3) === "1.0") {
+            url = Utils.addParameterTo(
+                url,
+                "bbox",
+                geoBound.west +
+                    "," +
+                    geoBound.south +
+                    "," +
+                    geoBound.east +
+                    "," +
+                    geoBound.north
+            );
         }
+        this.level = tile.level;
+        
         return this.allowRequest(url, tile.level);
     };
 
@@ -328,7 +323,6 @@ define([
     };
 
     WCSElevationLayer.prototype.setTime = function(time) {
-        AbstractLayer.prototype.setTime(time);
         this.setParameter("time", time);
     };
 

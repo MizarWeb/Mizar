@@ -636,7 +636,6 @@ define([
      * @param {Time.configuration} time Time configuration
      */
     OpenSearchLayer.prototype.setTime = function(time) {
-        AbstractLayer.prototype.setTime(time);
         this.setParameter.call(this, "mizar:time", time);
     };
 
@@ -648,6 +647,7 @@ define([
      */
     OpenSearchLayer.prototype.setParameter = function(paramName, value) {
         if (paramName === "mizar:time") {
+            this.time = value;
             value.period.from = Moment(value.period.from).format("YYYY-MM-DD HH:mm");
             value.period.to = Moment(value.period.to).format("YYYY-MM-DD HH:mm");
 

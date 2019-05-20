@@ -152,7 +152,6 @@ define([
     }
 
     WMTSLayer.prototype.setTime = function(time) {
-        AbstractLayer.prototype.setTime(time);
         this.setParameter("time", time);
     };
 
@@ -186,15 +185,10 @@ define([
      * @return {string} Url
      */
     WMTSLayer.prototype.getUrl = function(tile) {
-        var url;
-        if (this.allowedHTTPRequest) {
-            url = this.getTileBaseUrl;
-            url = Utils.addParameterTo(url, "tilematrix", tile.level + 1);
-            url = Utils.addParameterTo(url, "tilecol", tile.x);
-            url = Utils.addParameterTo(url, "tilerow", tile.y);
-        } else {
-            url = null;
-        }
+        var url = this.getTileBaseUrl;
+        url = Utils.addParameterTo(url, "tilematrix", tile.level + 1);
+        url = Utils.addParameterTo(url, "tilecol", tile.x);
+        url = Utils.addParameterTo(url, "tilerow", tile.y);
         return this.allowRequest(url, tile.level);
     };
 
