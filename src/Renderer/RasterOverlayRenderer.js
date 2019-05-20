@@ -140,7 +140,7 @@ define([
                         this.renderable.vTrans = 0.0;
                         this.renderable.updateChildrenTexture();
                         this.renderable.onRequestFinished(true);
-
+                      
                         const { level, x, y } = this.renderable.tile;
                         try {
                             const oldRenderable = self.oldRenderables[level][x][y];
@@ -174,6 +174,7 @@ define([
 
             this.imageRequests.push(imageRequest);
         }
+                      
     };
 
     /**************************************************************************************************************/
@@ -516,7 +517,11 @@ define([
         }
 
         this.removeOverlay(overlay, true);
-        this.addOverlay(overlay);
+        if(overlay.containsDimension("time") && overlay.time && !overlay.time.isInTimeDefinition(overlay.getDimensions().time.value)) {
+            // pass
+        } else if (overlay.isVisible()) {
+            this.addOverlay(overlay);
+        }                                  
     };
 
     /**************************************************************************************************************/
