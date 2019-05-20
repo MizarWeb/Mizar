@@ -215,9 +215,10 @@ define([
             var navigation = layer.callbackContext.getNavigation();
             var center = navigation.getCenter();
             var globeType = layer.globe.getType();
+            var bbox;
             switch (globeType) {
             case Constants.GLOBE.Sky:
-                var bbox = layer.getProperties().bbox;
+                bbox = layer.getProperties().bbox;
                 if (
                     bbox != null &&
                     UtilsIntersection.isValueBetween(center[0], bbox[0], bbox[2]) &&
@@ -238,7 +239,7 @@ define([
                 }
                 break;
             case Constants.GLOBE.Planet:
-                var bbox = layer.getProperties().bbox;
+                bbox = layer.getProperties().bbox;
                 if (
                     UtilsIntersection.isValueBetween(center[0], bbox[0], bbox[2]) &&
                     UtilsIntersection.isValueBetween(center[1], bbox[1], bbox[3])
@@ -437,8 +438,8 @@ define([
         this.time = Time.parse(time);
         for (var i = 0; i < this.layers.length; i++) {
             var layer = this.layers[i];
-            layer.setTime(this.time);
-        }
+            layer.setTime(this.time);            
+        } 
     };
 
     /**
