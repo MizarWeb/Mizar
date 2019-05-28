@@ -32,11 +32,9 @@
  */
 
 define([
-    "jquery",
-    "underscore-min",
     "../Utils/Utils",
     "./AbstractNameResolver"
-], function($, _, Utils, AbstractNameResolver) {
+], function(Utils, AbstractNameResolver) {
     /**************************************************************************************************************/
 
     /**

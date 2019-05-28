@@ -23,13 +23,11 @@
  * @implements {ReverseNameResolver}
  */
 define([
-    "jquery",
-    "underscore-min",
     "../Utils/Constants",
     "../Utils/Utils",
     "./AbstractReverseNameResolver",
     "../Tiling/HEALPixBase"
-], function($, _, Constants, Utils, AbstractReverseNameResolver, HEALPixBase) {
+], function(Constants, Utils, AbstractReverseNameResolver, HEALPixBase) {
     /**************************************************************************************************************/
 
     var HOUR_TO_DEG = 15.0;
@@ -170,6 +168,7 @@ define([
                 var features = {
                     totalResults: 1,
                     type: "FeatureCollection",
+                    copyright : "CDS",
                     features: [
                         {
                             type: "Feature",

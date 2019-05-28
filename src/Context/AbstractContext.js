@@ -179,6 +179,7 @@ define([
         this.positionTracker = _createTrackerPosition.call(this, this.mizarConfiguration);
         this.elevationTracker = _createTrackerElevation.call(this, this.mizarConfiguration, ctxOptions);        
         this.compass = _createCompass.call(this, this.mizarConfiguration);
+
     };
 
     function _initComponentsVisibility(components) {

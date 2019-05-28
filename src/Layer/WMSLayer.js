@@ -256,56 +256,6 @@ define([
         return legend;
     };
 
-    //WMSLayer.prototype.getFeatureInfo = function(position, resolution, callback, fallback) {
-    //    var positionResolution;
-    //    if (resolution) {
-    //        positionResolution = resolution;
-    //    } else {
-    //        positionResolution = {
-    //            longitude:0.0001,
-    //            latitude:0.0001
-    //        }
-    //    }
-    //    var url = this.getMapBaseUrl;
-    //    var baseURL = Utils.parseBaseURL(url);
-    //    var params = Utils.parseQueryString(url);
-    //    params['crs'] = "CRS:84";
-    //    params['query_layers'] = this.options.layers;
-    //    params['request'] = "GetFeatureInfo";
-    //    params['width'] = 2;
-    //    params['height'] = 2;
-    //    params['x'] = 1;
-    //    params['y'] = 1;
-    //    params['bbox'] = position.longitude+","+position.latitude+","+(position.longitude+positionResolution.longitude)+","+(position.latitude+positionResolution.latitude)
-    //
-    //    url = baseURL;
-    //    for(var param in params) {
-    //        url = Utils.addParameterTo(url, param, params[param]);
-    //    }
-    //
-    //    Utils.requestUrl(url, "text", 'text/plain', null,
-    //        function(response, options) {
-    //            var lines = response.trim().split('\n');
-    //            var featuresInfo = {};
-    //            for (var i = 0; i < lines.length; ++i) {
-    //                var layerName;
-    //
-    //                if (lines[i].substring(0, 5) === "Layer") {
-    //                    layerName  = lines[i].match(/'(.*?)'/)[1];
-    //                } else if(lines[i].substring(0, 9) === "  Feature") {
-    //                    featuresInfo[layerName] = [];
-    //                } else if(lines[i].substring(0, 11) === "    value_0") {
-    //                    featuresInfo[layerName].push(parseFloat(lines[i].match(/'(.*?)'/)[1]));
-    //                }
-    //            }
-    //            if(callback) {
-    //                callback(featuresInfo);
-    //            }
-    //        },
-    //        fallback);
-    //
-    //};
-
     /**
      * Sets visible/hidden the layer and the legend related to the layer.
      * To make visible the legend, a <div id="legendDiv"/> must be set in the HTML file.

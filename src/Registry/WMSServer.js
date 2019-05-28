@@ -405,6 +405,96 @@ define([
         }, fallback);
     };
 
+    WMSServer.getXmlFeatureToJson = function(xmlString) {
+        var featureResponse = xmlString.trim();
+        var responseFeature = Utils.xml2json(featureResponse,"");
+        var result = {};
+        for (var elt in responseFeature) {
+            if(elt.includes("_layer")) {
+                var layer = responseFeature[elt];
+                var name = layer["gml:name"];
+                var layerName = elt.replace("_layer","");
+                var featureInLayerName = elt.replace("_layer","_feature");
+                var featureInLayer = layer[featureInLayerName];
+                delete featureInLayer["gml:boundedBy"];
+                featureInLayer.description = name;
+                result[layerName] = featureInLayer;
+            }                        
+        }
+        var feature = {
+            properties: {}
+        };
+        feature.properties = result;
+        feature.properties.title = "Layer Information";
+        return feature;
+    };
+
+    WMSServer.getFeatureInfo = function(baseUrl, bbox, layers, options) {          
+        options = options || {};
+        var url = baseUrl;
+        url = Utils.addParameterTo(url, "service", "wms");
+        url = Utils.addParameterTo(url, "version", "1.3.0");
+        url = Utils.addParameterTo(url, "request", "GetFeatureInfo");
+        
+        if(options.styles) {
+            url = Utils.addParameterTo(url, "styles", options.styles);
+        } else {
+            url = Utils.addParameterTo(url, "styles", "");
+        } 
+
+        if(options.styles) {
+            url = Utils.addParameterTo(url, "crs", options.crs);
+        } else {
+            url = Utils.addParameterTo(url, "crs", "CRS:84");
+        }                 
+        
+        url = Utils.addParameterTo(url, "layers", layers.join());          
+
+        if(options.query_layers) {
+            url = Utils.addParameterTo(url, "query_layers", options.query_layers.join());
+        } else {
+            url = Utils.addParameterTo(url, "query_layers", layers.join());
+        }         
+        
+        if(options.time) {
+            url = Utils.addParameterTo(url, "time", options.time);
+        }
+        
+        if(options.width) {
+            url = Utils.addParameterTo(url, "width", options.width);
+        } else {
+            url = Utils.addParameterTo(url, "width", 3);
+        }   
+        
+        if(options.height) {
+            url = Utils.addParameterTo(url, "height", options.height);
+        } else {
+            url = Utils.addParameterTo(url, "height", 3);
+        }    
+        
+        if(options.x) {
+            url = Utils.addParameterTo(url, "x", options.x);
+        } else {
+            url = Utils.addParameterTo(url, "x", 1);
+        }   
+        
+        if(options.y) {
+            url = Utils.addParameterTo(url, "y", options.y);
+        } else {
+            url = Utils.addParameterTo(url, "y", 1);
+        }                            
+        
+        if(options.format) {
+            url = Utils.addParameterTo(url, "info_format", options.format);
+        } else {
+            url = Utils.addParameterTo(url, "info_format", "application/vnd.ogc.gml");
+        }         
+        
+        url = Utils.addParameterTo(url, "bbox", bbox[0]+","+bbox[1]+","+bbox[2]+","+bbox[3]);      
+
+        return url;
+    };
+
     /**
      * Returns the capabilities
      * @param {string} baseUrl GetCapabilities URL

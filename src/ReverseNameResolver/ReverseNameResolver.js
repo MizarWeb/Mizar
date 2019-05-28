@@ -25,8 +25,9 @@
 define([
     "../Utils/Constants",
     "./DefaultReverseNameResolver",
+    "../Gui/dialog/ErrorDialog",
     "./CDSReverseNameResolver",
-    "../Gui/dialog/ErrorDialog"
+    "./WMSFeatureInfoReverseNameResolver"
 ], function(Constants, DefaultReverseNameResolver, ErrorDialog) {
     var mizarAPI;
     var context;
@@ -53,10 +54,7 @@ define([
             var self = this;
             // TODO: depending on context, send the request
             // Currently only sky context is handled
-            if (
-                mizarAPI.getActivatedContext().getMode() ===
-                Constants.CONTEXT.Sky
-            ) {
+            if (mizarAPI.getActivatedContext().getMode() === Constants.CONTEXT.Sky) {
                 // Find max order
                 var maxOrder = 3;
                 mizarAPI
@@ -77,9 +75,20 @@ define([
                 } else {
                     mizarAPI.publish(
                         Constants.EVENT_MSG.PLUGIN_NOT_FOUND,
-                        "No reserve name resolver found"
+                        "No reverse name resolver found"
                     );
                 }
+            } else if (mizarAPI.getActivatedContext().getMode() === Constants.CONTEXT.Planet) {
+                options.pos = geoPick;
+                options.mizarAPI = mizarAPI;  
+                if (reverseNameResolverImplementation) {
+                    reverseNameResolverImplementation.handle(options);
+                } else {
+                    mizarAPI.publish(
+                        Constants.EVENT_MSG.PLUGIN_NOT_FOUND,
+                        "No reverse name resolver found"
+                    );
+                }                              
             } else {
                 ErrorDialog.open(Constants.LEVEL.DEBUG,"ReverseNameResolver.js","Not implemented yet");
                 if (options && options.error) {

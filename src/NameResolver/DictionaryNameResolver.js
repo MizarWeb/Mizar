@@ -17,7 +17,6 @@
  * along with MIZAR. If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
 define([
-    "jquery",
     "underscore-min",
     "../Utils/Utils",
     "../Utils/Numeric",
@@ -25,7 +24,6 @@ define([
     "../Utils/Constants",
     "../Gui/dialog/ErrorDialog"
 ], function(
-    $,
     _,
     Utils,
     Numeric,

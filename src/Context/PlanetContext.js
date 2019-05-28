@@ -57,13 +57,17 @@ define([
     "../Utils/Utils",
     "./AbstractContext",
     "../Utils/Constants",
-    "../Navigation/NavigationFactory"
+    "../Navigation/NavigationFactory",
+    "../Registry/WMSServer",
+    "../Utils/Numeric"
 ], function(
     $,
     Utils,
     AbstractContext,
     Constants,
-    NavigationFactory
+    NavigationFactory,
+    WMSServer,
+    Numeric
 ) {
     /**
      * Planet context configuration
@@ -105,6 +109,8 @@ define([
                 "2D": Constants.NAVIGATION.FlatNavigation
             }
         );
+
+        
     };
 
     /**

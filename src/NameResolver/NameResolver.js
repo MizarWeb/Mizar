@@ -23,7 +23,6 @@
  * @memberof module:NameResolver
  */
 define([
-    "jquery",
     "underscore-min",
     "../Utils/Constants",
     "../Gui/dialog/ErrorDialog",
@@ -36,7 +35,6 @@ define([
     "./DictionaryNameResolver",
     "./IMCCENameResolver"
 ], function(
-    $,
     _,
     Constants,
     ErrorDialog,
