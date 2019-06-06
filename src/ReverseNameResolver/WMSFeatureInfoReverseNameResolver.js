@@ -142,7 +142,7 @@ define([
                         url = layersByWMSServer[keys[start]];
                         getQueryableLayers(url);
                     } else {
-                        if (options && options.success) {
+                        if (options.success) {
                             options.success({ copyright : "MIZAR", features: featuresInfo });
                         }
                     }
@@ -155,7 +155,6 @@ define([
             );
         }
 
-        var response;
         if (pos != null) {
             var renderCtx = ctx.getRenderContext();
             var fov = renderCtx.getFov();

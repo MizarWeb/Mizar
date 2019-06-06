@@ -614,8 +614,8 @@ define([
             geometry.type === Constants.GEOMETRY.MultiLineString ? geometry.coordinates.length : 1;
         var minX = Number.MAX_VALUE;
         var minY = Number.MAX_VALUE;
-        var maxX = Number.MIN_VALUE;
-        var maxY = Number.MIN_VALUE;
+        var maxX = -1*Number.MAX_VALUE;
+        var maxY = -1*Number.MAX_VALUE;
         for (var j = 0; j < numOuterRings; j++) {
             switch (geometry.type) {
                 case Constants.GEOMETRY.MultiPoint:

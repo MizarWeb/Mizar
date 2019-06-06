@@ -130,7 +130,7 @@ define([
 
         var features = featureCollection.features;        
         if (features) {
-            var bbox = [Number.MAX_VALUE, Number.MAX_VALUE, Number.MIN_VALUE, Number.MIN_VALUE];
+            var bbox = [Number.MAX_VALUE, Number.MAX_VALUE, -1 * Number.MAX_VALUE, -1 * Number.MAX_VALUE];
             for (var i = 0; i < features.length; i++) {
                 this.addFeature(features[i], crs);
                 var tmpBox = Utils.getBBox(features[i].geometry); 

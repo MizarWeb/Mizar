@@ -213,7 +213,6 @@ define([
         var features = planetsLayer === undefined ? [] : planetsLayer.features;
         var feature = _.find(features,function(feature){ 
             var name = feature.properties.name;
-            var coordinates = feature.geometry.coordinates;
             if (name.toUpperCase() === objectName.toUpperCase()) {
                 return feature;
             }  
