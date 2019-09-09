@@ -143,7 +143,7 @@ define([
         var phi = Math.asin((2 * auxTheta + Math.sin(2 * auxTheta)) / Math.PI);
         var lambda = (Math.PI * center3d.x) / (2 * Math.sqrt(2) * Math.cos(auxTheta));
 
-        var geo = [Numeric.toDegree(lambda * 180), Numeric.toDegree(phi)];
+        var geo = [Numeric.toDegree(lambda), Numeric.toDegree(phi)];
 
         // Update navigation
         mizarAPI.getCrs().get3DFromWorld(geo, navigation.center3d);
