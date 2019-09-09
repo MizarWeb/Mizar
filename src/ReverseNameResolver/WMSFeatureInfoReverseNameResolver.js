@@ -76,7 +76,7 @@ define([
      * Draw area on map based on a coordinate and number of pixels of the rectangle
      * @param {AbstractContext} context     
      * @param {float[]} coord - coordinate on the center of the rectangle
-     * @param {[]} nbPixels -  of pixels on the map along longitude and latitude
+     * @param {Array} nbPixels -  of pixels on the map along longitude and latitude
      * @param {Object} resolution - Resolution in degree/pixel along longitude, latitude 
      */
     function _drawAreaOnMap(context, coord, nbPixels, resolution) {
