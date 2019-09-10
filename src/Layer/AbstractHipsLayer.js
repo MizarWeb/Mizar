@@ -78,6 +78,7 @@ define([
             hipsMetadata,
             options.baseUrl
         );
+        
         _overloadHipsMetataByConfiguration.call(
             this,
             options,
@@ -188,11 +189,11 @@ define([
         options.baseLevel = options.hasOwnProperty("baseLevel")
             ? options.baseLevel
             : hipsMetadata.hasOwnProperty("hips_order_min") && hipsMetadata.hips_order_min >= 2
-                ? hipsMetadata.hips_order_min
+                ? parseInt(hipsMetadata.hips_order_min)
                 : 2;
         options.numberOfLevels = options.hasOwnProperty("numberOfLevels")
             ? options.numberOfLevels
-            : hipsMetadata.hips_order;
+            : parseInt(hipsMetadata.hips_order);
         options.name = options.hasOwnProperty("name")
             ? options.name
             : hipsMetadata.obs_title;
@@ -232,8 +233,8 @@ define([
             );
         }
         if (hipsMetadata.hasOwnProperty("obs_initial_fov")) {
-            options.properties.initialFov = parseFloat(
-                hipsMetadata.obs_initial_fov
+            options.properties.initialFov = Math.sqrt( 360 * 360 / Math.PI * parseFloat(
+                hipsMetadata.obs_initial_fov)
             );
         }
         if (hipsMetadata.hasOwnProperty("moc_sky_fraction")) {

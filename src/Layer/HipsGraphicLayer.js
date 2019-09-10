@@ -127,7 +127,7 @@ define([
     HipsGraphicLayer.prototype.loadOverview = function() {
         if (this.isBackground()) {
             this.levelZeroImage.src =
-                this.allowRequest(this.baseUrl) + "/Norder3/Allsky." + this.format;
+                this.allowRequest(this.baseUrl + "/Norder3/Allsky." + this.format);
         }
     };
 
@@ -141,11 +141,11 @@ define([
      * @return {string} Url
      */
     HipsGraphicLayer.prototype.getUrl = function(tile) {
-        var url = this.allowRequest(this.baseUrl);
+        var url = this.baseUrl;
 
         url += "/Norder";
         url += tile.order;
-
+        
         url += "/Dir";
         var indexDirectory = Math.floor(tile.pixelIndex / 10000.0) * 10000.0;
         url += indexDirectory;

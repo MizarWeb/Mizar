@@ -227,13 +227,19 @@ define([
                 ) {
                     // Do not move, we see the target
                 } else {
+                    if(layer.getProperties().moc_sky_fraction != null) {
+                        fov = Math.sqrt(Math.pow(360, 2) / Math.PI * layer.getProperties().moc_sky_fraction);
+                        if (fov > 180) {
+                            fov = 180;
+                        }
+                    }
                     navigation.zoomTo(
                         [
                             layer.getProperties().initialRa,
                             layer.getProperties().initialDec
                         ],
                         {
-                            fov: fov,
+                            fov: fov * 0.5, // not realy the FOV but the Half FOV
                             duration: DEFAULT_ZOOM_DURATION
                         }
                     );
