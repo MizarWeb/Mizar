@@ -265,6 +265,8 @@ define(["jquery","./Frustum", "./glMatrix"], function($, Frustum) {
             }
 
             gl.viewport(0, 0, this.canvas.width, this.canvas.height);
+            gl.enable(WebGLRenderingContext.SCISSOR_TEST);
+            gl.scissor(0, 0, this.canvas.width, this.canvas.height);            
 
             // Update view dependent properties to be used during rendering : view matrix, frustum, projection, etc...
             if (this.cameraUpdateFunction) {
