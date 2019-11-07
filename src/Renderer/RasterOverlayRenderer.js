@@ -519,7 +519,7 @@ define([
         this.removeOverlay(overlay, true);
         if(overlay.containsDimension("time") && overlay.time && !overlay.time.isInTimeDefinition(overlay.getDimensions().time.value)) {
             // pass
-        } else if (overlay.isVisible()) {
+        } else {
             this.addOverlay(overlay);
         }                                  
     };
