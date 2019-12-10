@@ -482,10 +482,10 @@ define([
             var fits = FitsLoader.parseFits(imgRequest.image);
             var fitsData = fits.getHDU().data;
             var bpe = fitsData.arrayType.BYTES_PER_ELEMENT;
-            var float32array, float64array;
+            var float32array;
             var i;
             if (fitsData.arrayType.name === "Float64Array") {
-                float64array = new Float64Array(
+                var float64array = new Float64Array(
                     fitsData.view.buffer,
                     fitsData.begin,
                     fitsData.length / bpe
@@ -495,6 +495,16 @@ define([
                 for (i = 0; i < float64array.length; i++) {
                     float32array[i] = float64array[i];
                 }
+            } else if ( fitsData.arrayType.name == "Int16Array" ) {
+                var int16Array = new Int16Array(
+                    fitsData.view.buffer,
+                    fitsData.begin,
+                    fitsData.length / bpe);
+                float32array = new Float32Array(fitsData.length / bpe);
+                // Create Float32Array from Int16Array
+                for (i = 0; i < int16Array.length; i++) {
+                    float32array[i] = int16Array[i];
+                }
             } else {
                 float32array = new Float32Array(
                     fitsData.view.buffer,
@@ -502,26 +512,6 @@ define([
                     fitsData.length / bpe
                 ); // with gl.FLOAT, bpe = 4
             }
-
-            // // Handle different types/formats.. just in case.
-            // var dataType;
-            // var typedArray;
-            // var gl = this.globe.getRenderContext().gl;
-            // var glType;
-            // if ( fitsData.arrayType.name == "Float32Array" )
-            // {
-            // 	typedArray = new Float32Array( fitsData.view.buffer, fitsData.begin, fitsData.length/fitsData.arrayType.BYTES_PER_ELEMENT );
-            // 	dataType = "float";
-            // 	glType = gl.FLOAT;
-            // 	glFormat = gl.LUMINANCE;
-            // }
-            // else if ( fitsData.arrayType.name == "Uint8Array" )
-            // {
-            // 	typedArray = new Uint8Array( fitsData.view.buffer, fitsData.begin, fitsData.length/fitsData.arrayType.BYTES_PER_ELEMENT )
-            // 	dataType = "int";
-            // 	glType = gl.UNSIGNED_BYTE;
-            // 	glFormat = gl.LUMINANCE;
-            // }
 
             imgRequest.image = {
                 typedArray: float32array,
