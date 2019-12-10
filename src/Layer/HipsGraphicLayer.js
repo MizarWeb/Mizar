@@ -68,68 +68,11 @@ define([
             options
         );
 
-        this._ready = false;
-
-        // allsky
-        this.levelZeroImage = new Image();
-        var self = this;
-        this.levelZeroImage.crossOrigin = "";
-        this.levelZeroImage.onload = function() {
-            self._ready = true;
-
-            // Call callback if set
-            if (options.onready && options.onready instanceof Function) {
-                options.onready(self);
-            }
-
-            // Request a frame
-            if (self.globe) {
-                self.globe.getRenderContext().requestFrame();
-            }
-        };
-        this.levelZeroImage.onerror = function(event) {
-            var error = self.getHipsMetadata();
-            error.message = "Cannot load " + self.levelZeroImage.src;
-            self.globe.publishEvent(
-                Constants.EVENT_MSG.BASE_LAYERS_ERROR,
-                error
-            );
-            self._ready = false;
-            ErrorDialog.open(Constants.LEVEL.WARNING, "Cannot load " + self.levelZeroImage.src);
-        };
     };
 
     /**************************************************************************************************************/
 
     Utils.inherits(AbstractHipsLayer, HipsGraphicLayer);
-
-    /**************************************************************************************************************/
-
-    /**
-     * Attaches the raster layer to the planet.
-     * @function _attach
-     * @memberof HipsGraphicLayer#
-     * @param g Globe
-     * @private
-     */
-    HipsGraphicLayer.prototype._attach = function(g) {
-        AbstractHipsLayer.prototype._attach.call(this, g);
-
-        // Load level zero image now, only for background
-        this.loadOverview();
-    };
-
-    /**
-     * Loads image overview
-     * @function loadOverview
-     * @memberof HipsGraphicLayer
-     */
-    HipsGraphicLayer.prototype.loadOverview = function() {
-        if (this.isBackground()) {
-            this.levelZeroImage.src =
-                this.allowRequest(this.baseUrl + "/Norder3/Allsky." + this.format);
-        }
-    };
 
     /**************************************************************************************************************/
 
@@ -155,101 +98,6 @@ define([
         url += "." + this.format;
 
         return this.allowRequest(url);
-    };
-
-    /**************************************************************************************************************/
-
-    /**
-     * Generates the level0 texture for the tiles.
-     * @function generateLevel0Textures
-     * @memberof HipsGraphicLayer
-     * @param {Tile} tiles
-     * @param {TilePool} tilePool
-     */
-    HipsGraphicLayer.prototype.generateLevel0Textures = function(
-        tiles,
-        tilePool
-    ) {
-        // Create a canvas to build the texture
-        var canvas = document.createElement("canvas");
-        canvas.width = 128;
-        canvas.height = 128;
-        var i, pi, sx, sy, tile;
-        var context = canvas.getContext("2d");
-
-        for (i = 0; i < tiles.length; i++) {
-            tile = tiles[i];
-
-            // Top left
-            pi = tile.pixelIndex * 4;
-            sx = (pi % 27) * 64;
-            sy = Math.floor(pi / 27) * 64;
-            context.drawImage(
-                this.levelZeroImage,
-                sx,
-                sy,
-                64,
-                64,
-                0,
-                0,
-                64,
-                64
-            );
-
-            // Top right
-            pi = tile.pixelIndex * 4 + 2;
-            sx = (pi % 27) * 64;
-            sy = Math.floor(pi / 27) * 64;
-            context.drawImage(
-                this.levelZeroImage,
-                sx,
-                sy,
-                64,
-                64,
-                64,
-                0,
-                64,
-                64
-            );
-
-            // Bottom left
-            pi = tile.pixelIndex * 4 + 1;
-            sx = (pi % 27) * 64;
-            sy = Math.floor(pi / 27) * 64;
-            context.drawImage(
-                this.levelZeroImage,
-                sx,
-                sy,
-                64,
-                64,
-                0,
-                64,
-                64,
-                64
-            );
-
-            // Bottom right
-            pi = tile.pixelIndex * 4 + 3;
-            sx = (pi % 27) * 64;
-            sy = Math.floor(pi / 27) * 64;
-            context.drawImage(
-                this.levelZeroImage,
-                sx,
-                sy,
-                64,
-                64,
-                64,
-                64,
-                64,
-                64
-            );
-
-            var imgData = context.getImageData(0, 0, 128, 128);
-            imgData.dataType = "byte";
-
-            tile.texture = tilePool.createGLTexture(imgData);
-            tile.imageSize = 128;
-        }
     };
 
     /**************************************************************************************************************/
