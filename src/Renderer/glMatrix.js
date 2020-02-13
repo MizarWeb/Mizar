@@ -408,6 +408,23 @@ define([], function() {
         return Math.sqrt(x * x + y * y + z * z);
     };
 
+    /**
+     * Calculates the euclidian squared distance between two vec3
+     *
+     * Params:
+     * @param {vec3} vec First vector
+     * @param {vec3} vec2 Second vector
+     *
+     * @returns {number} Squraed distance between vec and vec2
+     */
+    vec3.squaredDist = function(vec, vec2) {
+        var x = vec2[0] - vec[0],
+            y = vec2[1] - vec[1],
+            z = vec2[2] - vec[2];
+
+        return (x * x + y * y + z * z);
+    };
+
     /** Vector cross product.
      @param v1 vector
      @param v2 another vector
