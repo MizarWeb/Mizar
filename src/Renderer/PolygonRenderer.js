@@ -294,8 +294,15 @@ define([
         var upOffset, lowOffset;
 
         var contours = [];
+
         for (n = 0; n < polygons.length; n++) {
+            const startIdx = contours.length;
             contours = contours.concat(_fixDateLine(polygons[n][0]));
+            const lastIdx = contours.length - 1;
+
+            if (!vec3.equal(contours[startIdx], contours[lastIdx])) {
+                contours.push(contours[startIdx]);
+        }
         }
 
         var offset;
