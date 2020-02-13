@@ -302,7 +302,7 @@ define([
 
             if (!vec3.equal(contours[startIdx], contours[lastIdx])) {
                 contours.push(contours[startIdx]);
-        }
+            }
         }
 
         var offset;
@@ -370,18 +370,21 @@ define([
             }
 
             // Build triangle indices for upper polygon
-            var triangulator = new PNLTRI.Triangulator();
-            var contour = coords.map(function(value) {
-                return { x: value[0], y: value[1] };
-            });
-            var triangList = triangulator.triangulate_polygon([contour]);
-            for (i = 0; i < triangList.length; i++) {
-                this.triIndices.push(
-                    lastIndex + triangList[i][0],
-                    lastIndex + triangList[i][1],
-                    lastIndex + triangList[i][2]
-                );
-                //this.lineIndices.push( lastIndex + triangList[i][0], lastIndex + triangList[i][1], lastIndex + triangList[i][1], lastIndex + triangList[i][2], lastIndex + triangList[i][2], lastIndex + triangList[i][0] );
+
+            if (style.fill) {
+                var triangulator = new PNLTRI.Triangulator();
+                var contour = coords.map(function(value) {
+                    return { x: value[0], y: value[1] };
+                });
+                var triangList = triangulator.triangulate_polygon([contour]);
+                for (i = 0; i < triangList.length; i++) {
+                    this.triIndices.push(
+                        lastIndex + triangList[i][0],
+                        lastIndex + triangList[i][1],
+                        lastIndex + triangList[i][2]
+                    );
+                    //this.lineIndices.push( lastIndex + triangList[i][0], lastIndex + triangList[i][1], lastIndex + triangList[i][1], lastIndex + triangList[i][2], lastIndex + triangList[i][2], lastIndex + triangList[i][0] );
+                }
             }
 
             // Build side triangle indices
@@ -527,16 +530,8 @@ define([
                 false,
                 modelViewProjMatrix
             );
-            gl.uniform4f(
-                program.uniforms.u_color,
-                style.fillColor[0],
-                style.fillColor[1],
-                style.fillColor[2],
-                style.fillColor[3] * renderable.bucket.layer.getOpacity()
-            ); // use fillColor
 
             renderable.bindBuffers(renderContext);
-            gl.lineWidth(style.strokeWidth);
 
             // Setup attributes
             gl.vertexAttribPointer(
@@ -547,29 +542,42 @@ define([
                 4 * renderable.vertexSize,
                 0
             );
-            if (style.extrude) {
-                gl.vertexAttribPointer(
-                    program.attributes.normal,
-                    4,
-                    gl.FLOAT,
-                    false,
-                    4 * renderable.vertexSize,
-                    12
-                );
-                gl.uniform1f(
-                    program.uniforms.extrusionScale,
-                    style.extrusionScale
+
+            if (renderable.triIndices.length > 0) {
+                gl.uniform4f(
+                    program.uniforms.u_color,
+                    style.fillColor[0],
+                    style.fillColor[1],
+                    style.fillColor[2],
+                    style.fillColor[3] * renderable.bucket.layer.getOpacity()
+                ); // use fillColor
+
+                if (style.extrude) {
+                    gl.vertexAttribPointer(
+                        program.attributes.normal,
+                        4,
+                        gl.FLOAT,
+                        false,
+                        4 * renderable.vertexSize,
+                        12
+                    );
+                    gl.uniform1f(
+                        program.uniforms.extrusionScale,
+                        style.extrusionScale
+                    );
+                }
+
+                // Draw
+                gl.drawElements(
+                    gl.TRIANGLES,
+                    renderable.triIndices.length,
+                    renderable.indexType,
+                    0
                 );
             }
 
-            // Draw
-            gl.drawElements(
-                gl.TRIANGLES,
-                renderable.triIndices.length,
-                renderable.indexType,
-                0
-            );
             if (renderable.lineIndices.length > 0) {
+                gl.lineWidth(style.strokeWidth ? style.strokeWidth : 1);
                 gl.uniform4f(
                     program.uniforms.u_color,
                     style.strokeColor[0],
@@ -610,7 +618,7 @@ define([
         return (
             (type === Constants.GEOMETRY.Polygon ||
                 type === Constants.GEOMETRY.MultiPolygon) &&
-            style.fill
+                !style.onTerrain
         );
     };
 
