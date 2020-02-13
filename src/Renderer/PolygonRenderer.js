@@ -167,12 +167,16 @@ define([
                 clippedPolygon.push(newPoint);
                 clippedPolygon.push(p2);
             } else if (firstInside && secondInside) {
-                clippedPolygon.push(p2);
+                clippedPolygon.push(p1);
             } else if (firstInside && !secondInside) {
                 t = (value - val1) / (val2 - val1);
                 newPoint = _createInterpolatedVertex(t, p1, p2);
                 clippedPolygon.push(newPoint);
             }
+        }
+
+        if (!vec3.equal(clippedPolygon[0], clippedPolygon[clippedPolygon.length - 1])) {
+            clippedPolygon.push(clippedPolygon[0]);
         }
 
         return clippedPolygon;
