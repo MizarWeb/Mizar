@@ -361,10 +361,14 @@ define([
             const oldRenderables = this.bucket.renderer.oldRenderables;
             try {
                 const oldRenderable = oldRenderables[tile.level][tile.x][tile.y];
-                if (oldRenderable && oldRenderable.ownTexture) {
-                    const renderable = Object.assign({}, this);
-                    renderable.texture = oldRenderable.ownTexture;
-                    manager.renderables.push(renderable);
+                
+                if (oldRenderable) { 
+                    const sameLayer = oldRenderable.bucket.layer.id === this.bucket.layer.id;
+                    if (sameLayer && oldRenderable.ownTexture) {
+                        const renderable = Object.assign({}, this);
+                        renderable.texture = oldRenderable.ownTexture;
+                        manager.renderables.push(renderable);
+                    }
                 }
             } catch (error) {
                 // do nothing
