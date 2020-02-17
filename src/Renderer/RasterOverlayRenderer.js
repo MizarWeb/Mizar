@@ -465,9 +465,6 @@ define([
      * @param overlay
      */
     RasterOverlayRenderer.prototype.removeOverlay = function(overlay, noDispose) {
-        var index = this.buckets.indexOf(overlay._bucket);
-        this.buckets.splice(index, 1);
-
         var rc = this.tileManager.renderContext;
         var tp = this.tileManager.tilePool;
         this.tileManager.visitTiles(function(tile) {
@@ -521,6 +518,7 @@ define([
         }
 
         this.removeOverlay(overlay, true);
+
         if(overlay.containsDimension("time") && overlay.time && !overlay.time.isInTimeDefinition(overlay.getDimensions().time.value)) {
             // pass
         } else {
