@@ -85,7 +85,7 @@ define([
             this.hipsMetadata
         );
 
-        options.tiling = new HEALPixTiling(options.baseLevel || 2, {
+        options.tiling = new HEALPixTiling(options.baseLevel || 1, {
             coordinateSystem: options.coordinateSystem
         });
         options.icon = options.hasOwnProperty("icon")
@@ -190,7 +190,7 @@ define([
             ? options.baseLevel
             : hipsMetadata.hasOwnProperty("hips_order_min") && hipsMetadata.hips_order_min >= 2
                 ? parseInt(hipsMetadata.hips_order_min)
-                : 2;
+                : 1;
         options.numberOfLevels = options.hasOwnProperty("numberOfLevels")
             ? options.numberOfLevels
             : parseInt(hipsMetadata.hips_order);

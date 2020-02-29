@@ -361,10 +361,14 @@ define([
             const oldRenderables = this.bucket.renderer.oldRenderables;
             try {
                 const oldRenderable = oldRenderables[tile.level][tile.x][tile.y];
-                if (oldRenderable && oldRenderable.ownTexture) {
-                    const renderable = Object.assign({}, this);
-                    renderable.texture = oldRenderable.ownTexture;
-                    manager.renderables.push(renderable);
+                
+                if (oldRenderable) { 
+                    const sameLayer = oldRenderable.bucket.layer.id === this.bucket.layer.id;
+                    if (sameLayer && oldRenderable.ownTexture) {
+                        const renderable = Object.assign({}, this);
+                        renderable.texture = oldRenderable.ownTexture;
+                        manager.renderables.push(renderable);
+                    }
                 }
             } catch (error) {
                 // do nothing
@@ -461,9 +465,6 @@ define([
      * @param overlay
      */
     RasterOverlayRenderer.prototype.removeOverlay = function(overlay, noDispose) {
-        var index = this.buckets.indexOf(overlay._bucket);
-        this.buckets.splice(index, 1);
-
         var rc = this.tileManager.renderContext;
         var tp = this.tileManager.tilePool;
         this.tileManager.visitTiles(function(tile) {
@@ -517,6 +518,7 @@ define([
         }
 
         this.removeOverlay(overlay, true);
+
         if(overlay.containsDimension("time") && overlay.time && !overlay.time.isInTimeDefinition(overlay.getDimensions().time.value)) {
             // pass
         } else {

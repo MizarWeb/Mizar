@@ -75,7 +75,7 @@ define([
         var properties = propertiesObj.getProperties();
         var hips_order = properties.hips_order;
         this.serviceUrl = this.allowRequest(options.baseUrl);
-        this.minOrder = options.minOrder || 2;
+        this.minOrder = options.minOrder || 1;
         this.maxOrder = Number.parseInt(hips_order, 10);
         this.maxRequests = options.maxRequests || 4;
         this.invertY = options.invertY || false;
@@ -520,23 +520,19 @@ define([
      * @return {*}
      */
     HipsCatLayer.prototype.buildUrl = function(tile) {
-        var url;
-        if (tile.order <= 0) {
-            url = this.serviceUrl + "/Norder" + tile.order + "/Allsky.xml";
-        } else {
-            url = this.serviceUrl;
+        var url = this.serviceUrl;
 
-            url += "/Norder";
-            url += tile.order;
+        url += "/Norder";
+        url += tile.order;
 
-            url += "/Dir";
-            var indexDirectory = Math.floor(tile.pixelIndex / 10000) * 10000;
-            url += indexDirectory;
+        url += "/Dir";
+        var indexDirectory = Math.floor(tile.pixelIndex / 10000) * 10000;
+        url += indexDirectory;
 
-            url += "/Npix";
-            url += tile.pixelIndex;
-            url += ".tsv";
-        }
+        url += "/Npix";
+        url += tile.pixelIndex;
+        url += ".tsv";
+    
         return url;
     };
 

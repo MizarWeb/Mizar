@@ -48,7 +48,7 @@ define([
         strokeColor: [0.0, 0.0, 1.0, 1.0],
         fillColor: [0.0, 0.0, 1.0, 1.0],
         zIndex: Constants.DISPLAY.HIGHLIGHTED_VECTOR
-    });    
+    });
 
     /**************************************************************************************************************/
 
@@ -116,7 +116,7 @@ define([
             selectedData.layer.modifyFeatureStyle(
                 selectedData.feature,
                 style
-            );       
+            );
         }
     }
 
@@ -153,7 +153,7 @@ define([
             case Constants.GEOMETRY.Polygon:
             case Constants.GEOMETRY.MultiPolygon:
                 style.strokeColor = strokeColor;
-                style.strokeWidth = style.strokeWidth + 2;                
+                style.strokeWidth = style.strokeWidth + 2;
                 break;
             case Constants.GEOMETRY.Point:
                 style.fillColor = fillColor;
@@ -165,7 +165,7 @@ define([
             selectedData.layer.modifyFeatureStyle(
                 selectedData.feature,
                 style
-            );            
+            );
         }
         globe.refresh();
     }
@@ -211,7 +211,7 @@ define([
                 selectedData.layer.modifyFeatureStyle(
                     selectedData.feature,
                     style
-                );                
+                );
             }
 
             if (selectedData.feature.pickData) {
@@ -392,18 +392,40 @@ define([
                 feature.properties.style.useDegreeSize && feature.properties.style.degreeSize) {
                 return UtilsIntersection.isInBillboard(pickPoint, feature.geometry, feature.properties.style.degreeSize, options.eventPos);
             } else {
-                if (!pickPoint) { return false; }
-                var coord = feature.geometry.coordinates;
-                var point;
-                var pt = [pickPoint[0], pickPoint[1], pickPoint[2]];
-                if (pickingNoDEM === true) {
-                    pt[2] = 0;
-                    point = [coord[0], coord[1], 0];
-                    sizeMultiplicator = 3;
+                const hasPickPoint = pickPoint !== null;
+                const hasElevation = (feature.geometry.coordinates.length >= 3) && (Math.abs(feature.geometry.coordinates[2]) > 1e-3);
+                const pickOnTerrain = (hasPickPoint && !hasElevation) || (hasPickPoint && pickingNoDEM);
+                if (pickOnTerrain) {
+                    var coord = feature.geometry.coordinates;
+                    var point;
+                    var pt = [pickPoint[0], pickPoint[1], pickPoint[2]];
+                    if (pickingNoDEM === true) {
+                        pt[2] = 0;
+                        point = [coord[0], coord[1], 0];
+                        sizeMultiplicator = 3;
+                    } else {
+                        point = coord;
+                    }
+                    return UtilsIntersection.pointInSphere(ctx, pt, point, feature.geometry._bucket.textureHeight * sizeMultiplicator);
                 } else {
-                    point = coord;
+                    const { renderContext, coordinateSystem } = ctx.globe;
+
+                    const p3d = vec3.create();
+                    coordinateSystem.get3DFromWorld(feature.geometry.coordinates, p3d);
+
+                    if (pickingNoDEM) {
+                        p3d[2] = 0.0;
+                        sizeMultiplicator = 3;
+                    }
+
+                    const p2d = renderContext.getPixelFrom3D(p3d[0], p3d[1], p3d[2]);
+
+                    const distSq = vec3.squaredDist([p2d[0], p2d[1], 0], [options.eventPos[0], options.eventPos[1], 0]);
+
+                    const radius = feature.geometry._bucket.textureHeight * sizeMultiplicator;
+
+                    return distSq <= (radius * radius);
                 }
-                return UtilsIntersection.pointInSphere(ctx, pt, point, feature.geometry._bucket.textureHeight * sizeMultiplicator);
             }
         default:
             ErrorDialog.open(Constants.LEVEL.DEBUG, "PickingManagerCore.js", "Picking for " + feature.geometry.type + " is not yet");

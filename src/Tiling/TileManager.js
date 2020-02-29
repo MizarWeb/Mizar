@@ -875,31 +875,6 @@ define([
             return;
         }
 
-        // Specific case when the image provider has a level zero image : generate the texture for each level zero tile
-        if (
-            !this.level0TilesLoaded &&
-            this.imageryProvider &&
-            this.imageryProvider.levelZeroImage
-        ) {
-            this.imageryProvider.generateLevel0Textures(
-                this.level0Tiles,
-                this.tilePool
-            );
-
-            for (var n = this.level0Tiles.length; n--; ) {
-                var tile = this.level0Tiles[n];
-                // Generate the tile without tile request
-                this.generateTile(tile, {});
-            }
-
-            this.level0TilesLoaded = true;
-
-            this.publishEvent(
-                Constants.EVENT_MSG.BASE_LAYERS_READY,
-                this.imageryProvider
-            );
-        }
-
         var stats = this.renderContext.stats;
 
         if (!this.freeze) {

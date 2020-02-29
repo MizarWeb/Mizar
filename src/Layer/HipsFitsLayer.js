@@ -314,164 +314,6 @@ define([
     /**************************************************************************************************************/
 
     /**
-     * Extracts fits data from levelZeroImage.pixels to fitsPixel according to pixel index
-     * @function extractFitsData
-     * @memberof HipsFitsLayer#
-     * @param pi Pixel index
-     * @param fitsPixel Resulting typed vector containing fits data
-     * @param sx X-offset of fitsPixel
-     * @param sy Y-offset of fitsPixel
-     */
-    HipsFitsLayer.prototype.extractFitsData = function(pi, fitsPixel, sx, sy) {
-        var size = 64;
-        var width = this.levelZeroImage.width;
-        var pixels = this.levelZeroImage.pixels;
-
-        var startIndex =
-            size * width * (28 - Math.floor(pi / 27)) + (pi % 27) * size;
-
-        // Extract fits data
-        var typedLine;
-        for (var i = 0; i < size; i++) {
-            typedLine = pixels.subarray(
-                startIndex + i * width,
-                startIndex + i * width + size
-            );
-            fitsPixel.set(typedLine, sy + i * 128 + sx);
-        }
-    };
-
-    /**************************************************************************************************************/
-
-    /**
-     * Generates the level0 texture for the tiles
-     * @function generateLevel0Textures
-     * @memberof HipsFitsLayer#
-     * @param tiles
-     * @param tilePool
-     */
-    HipsFitsLayer.prototype.generateLevel0Textures = function(tiles, tilePool) {
-        var fitsPixel;
-        var pi, sx, sy;
-        var i, tile;
-        var imgData;
-        if (this.format !== "fits") {
-            // Create a canvas to build the texture
-            var canvas = document.createElement("canvas");
-            canvas.width = 128;
-            canvas.height = 128;
-            var context = canvas.getContext("2d");
-
-            for (i = 0; i < tiles.length; i++) {
-                tile = tiles[i];
-
-                // Top left
-                pi = tile.pixelIndex * 4;
-                sx = (pi % 27) * 64;
-                sy = Math.floor(pi / 27) * 64;
-                context.drawImage(
-                    this.levelZeroImage,
-                    sx,
-                    sy,
-                    64,
-                    64,
-                    0,
-                    0,
-                    64,
-                    64
-                );
-
-                // Top right
-                pi = tile.pixelIndex * 4 + 2;
-                sx = (pi % 27) * 64;
-                sy = Math.floor(pi / 27) * 64;
-                context.drawImage(
-                    this.levelZeroImage,
-                    sx,
-                    sy,
-                    64,
-                    64,
-                    64,
-                    0,
-                    64,
-                    64
-                );
-
-                // Bottom left
-                pi = tile.pixelIndex * 4 + 1;
-                sx = (pi % 27) * 64;
-                sy = Math.floor(pi / 27) * 64;
-                context.drawImage(
-                    this.levelZeroImage,
-                    sx,
-                    sy,
-                    64,
-                    64,
-                    0,
-                    64,
-                    64,
-                    64
-                );
-
-                // Bottom right
-                pi = tile.pixelIndex * 4 + 3;
-                sx = (pi % 27) * 64;
-                sy = Math.floor(pi / 27) * 64;
-                context.drawImage(
-                    this.levelZeroImage,
-                    sx,
-                    sy,
-                    64,
-                    64,
-                    64,
-                    64,
-                    64,
-                    64
-                );
-
-                imgData = context.getImageData(0, 0, 128, 128);
-                imgData.dataType = "byte";
-
-                tile.texture = tilePool.createGLTexture(imgData);
-                tile.imageSize = 128;
-            }
-        } else {
-            for (i = 0; i < tiles.length; i++) {
-                tile = tiles[i];
-                fitsPixel = new Float32Array(128 * 128);
-
-                // Top left
-                pi = tile.pixelIndex * 4;
-                this.extractFitsData(pi, fitsPixel, 0, 128 * 64);
-
-                // Top right
-                pi = tile.pixelIndex * 4 + 2;
-                this.extractFitsData(pi, fitsPixel, 64, 128 * 64);
-
-                // Bottom left
-                pi = tile.pixelIndex * 4 + 1;
-                this.extractFitsData(pi, fitsPixel, 0, 0);
-
-                // Bottom right
-                pi = tile.pixelIndex * 4 + 3;
-                this.extractFitsData(pi, fitsPixel, 64, 0);
-
-                imgData = {
-                    typedArray: fitsPixel,
-                    width: 128,
-                    height: 128,
-                    dataType: "float"
-                };
-
-                tile.texture = tilePool.createGLTexture(imgData);
-                tile.imageSize = 128;
-            }
-        }
-    };
-
-    /**************************************************************************************************************/
-
-    /**
      * Handles the fits image.
      * @function handleImage
      * @memberof HipsFitsLayer#
@@ -482,10 +324,10 @@ define([
             var fits = FitsLoader.parseFits(imgRequest.image);
             var fitsData = fits.getHDU().data;
             var bpe = fitsData.arrayType.BYTES_PER_ELEMENT;
-            var float32array, float64array;
+            var float32array;
             var i;
             if (fitsData.arrayType.name === "Float64Array") {
-                float64array = new Float64Array(
+                var float64array = new Float64Array(
                     fitsData.view.buffer,
                     fitsData.begin,
                     fitsData.length / bpe
@@ -495,6 +337,16 @@ define([
                 for (i = 0; i < float64array.length; i++) {
                     float32array[i] = float64array[i];
                 }
+            } else if ( fitsData.arrayType.name == "Int16Array" ) {
+                var int16Array = new Int16Array(
+                    fitsData.view.buffer,
+                    fitsData.begin,
+                    fitsData.length / bpe);
+                float32array = new Float32Array(fitsData.length / bpe);
+                // Create Float32Array from Int16Array
+                for (i = 0; i < int16Array.length; i++) {
+                    float32array[i] = int16Array[i];
+                }
             } else {
                 float32array = new Float32Array(
                     fitsData.view.buffer,
@@ -502,26 +354,6 @@ define([
                     fitsData.length / bpe
                 ); // with gl.FLOAT, bpe = 4
             }
-
-            // // Handle different types/formats.. just in case.
-            // var dataType;
-            // var typedArray;
-            // var gl = this.globe.getRenderContext().gl;
-            // var glType;
-            // if ( fitsData.arrayType.name == "Float32Array" )
-            // {
-            // 	typedArray = new Float32Array( fitsData.view.buffer, fitsData.begin, fitsData.length/fitsData.arrayType.BYTES_PER_ELEMENT );
-            // 	dataType = "float";
-            // 	glType = gl.FLOAT;
-            // 	glFormat = gl.LUMINANCE;
-            // }
-            // else if ( fitsData.arrayType.name == "Uint8Array" )
-            // {
-            // 	typedArray = new Uint8Array( fitsData.view.buffer, fitsData.begin, fitsData.length/fitsData.arrayType.BYTES_PER_ELEMENT )
-            // 	dataType = "int";
-            // 	glType = gl.UNSIGNED_BYTE;
-            // 	glFormat = gl.LUMINANCE;
-            // }
 
             imgRequest.image = {
                 typedArray: float32array,
@@ -569,14 +401,8 @@ define([
         if (this.levelZeroImage && this.levelZeroImage.dispose) {
             this.levelZeroImage.dispose();
         }
-        if (this.levelZeroTexture) {
-            this.getGlobe()
-                .getRenderContext()
-                .gl.deleteTexture(this.levelZeroTexture);
-        }
 
         this.levelZeroImage = null;
-        this.levelZeroTexture = null;
     };
 
     /**************************************************************************************************************/

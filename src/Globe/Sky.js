@@ -110,8 +110,6 @@ define([
             this.baseImagery = null;
         }
 
-        layer.loadOverview();
-
         // Attach the layer to the globe
         this.definedBackgound = true;
         layer.visible = true;
