@@ -48,7 +48,7 @@ import ErrorDialog from "../Gui/dialog/ErrorDialog";
  * @memberof module:Registry
  */
 var LayerRegistryHandler = function (pendingLayers) {
-  AbstractRegistryHandler.prototype.constructor.call();
+  AbstractRegistryHandler.prototype.constructor.call(this);
   this.pendingLayers = pendingLayers;
 };
 

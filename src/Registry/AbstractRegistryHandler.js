@@ -28,16 +28,11 @@ import ErrorDialog from "../Gui/dialog/ErrorDialog";
  */
 
 var AbstractRegistryHandler = function () {
-  // FIXME: Why does this throw ?
-  try {
-    this.next = {
-      handleRequest: function (layerDescription, callback, fallback) {
-        ErrorDialog.open(Constants.LEVEL.DEBUG, "AbstractRegistryHandler.js", "All strategies exhausted.");
-      }
-    };
-  } catch (err) {
-    console.error(err);
-  }
+  this.next = {
+    handleRequest: function (layerDescription, callback, fallback) {
+      ErrorDialog.open(Constants.LEVEL.DEBUG, "AbstractRegistryHandler.js", "All strategies exhausted.");
+    }
+  };
 };
 
 /**

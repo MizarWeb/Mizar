@@ -30,7 +30,7 @@ import WMTSServer from "./WMTSServer";
  * @constructor
  */
 var WMTSServerRegistryHandler = function (pendingLayers) {
-  AbstractRegistryHandler.prototype.constructor.call();
+  AbstractRegistryHandler.prototype.constructor.call(this);
   this.pendingLayers = pendingLayers;
 };
 

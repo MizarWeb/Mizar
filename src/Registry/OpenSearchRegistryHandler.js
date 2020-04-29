@@ -32,7 +32,7 @@ import OpenSearchServer from "./OpenSearchServer";
  * @see {@link WMSServer}
  */
 var OpenSearchRegistryHandler = function (pendingLayers) {
-  AbstractRegistryHandler.prototype.constructor.call();
+  AbstractRegistryHandler.prototype.constructor.call(this);
   this.pendingLayers = pendingLayers;
 };
 

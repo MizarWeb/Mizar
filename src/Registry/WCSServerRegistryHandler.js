@@ -32,7 +32,7 @@ import ErrorDialog from "../Gui/dialog/ErrorDialog";
  * @constructor
  */
 var WCSServerRegistryHandler = function (layers, pendingLayers) {
-  AbstractRegistryHandler.prototype.constructor.call();
+  AbstractRegistryHandler.prototype.constructor.call(this);
   this.layers = layers;
   this.pendingLayers = pendingLayers;
 };

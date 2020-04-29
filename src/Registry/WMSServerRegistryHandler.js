@@ -31,7 +31,7 @@ import WMSServer from "./WMSServer";
  * @see {@link WMSServer}
  */
 var WMSServerRegistryHandler = function (pendingLayers) {
-  AbstractRegistryHandler.prototype.constructor.call();
+  AbstractRegistryHandler.prototype.constructor.call(this);
   this.pendingLayers = pendingLayers;
 };
 

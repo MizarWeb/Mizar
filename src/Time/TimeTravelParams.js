@@ -58,11 +58,8 @@ var TimeTravelParams = function () {
     to: null
   };
 
-  // FIXME: what is intended ?
   // this.currentDisplayDate = moment(this.currentDate).format(moment(this.currentDate).creationData().format);
-  // this.currentDisplayDate = this.currentDate.toLocaleString();
-  this.currentDisplayDate = "INTENDED_STRING_HERE: TimeTravelParams";
-  console.log("TimeTravelParams -> currentDisplayDate", this.currentDisplayDate);
+  this.currentDisplayDate = this.currentDate.toISOString();
   this.minDate = null;
   this.maxDate = null;
 

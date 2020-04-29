@@ -29,7 +29,7 @@ import Constants from "../Utils/Constants";
  * @constructor
  */
 var PendingLayersRegistryHandler = function (pendingLayers, layers) {
-  AbstractRegistryHandler.prototype.constructor.call();
+  AbstractRegistryHandler.prototype.constructor.call(this);
   this.layers = layers;
   this.pendingLayers = pendingLayers;
 };
