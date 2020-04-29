@@ -45,6 +45,8 @@
       "email": "m.gond@akka.eu"
     }
   ],
+  "main": "dist/mizar.esm.js",
+  "module": "dist/mizar.esm.js",
   "browser": "dist/mizar.min.js",
   "directories": {
     "doc": "Markdown documentation",

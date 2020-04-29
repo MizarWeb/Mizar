@@ -15,7 +15,7 @@ export default [
   {
     input: "src/main.js",
     external: ["jquery", "moment", "jquery-ui"],
-    // Minified, browser-friendly UMD build
+    // UMD builds, suitable for use in any environment (including the browser, as a `<script>` tag)
     output: [
       {
         name: "mizar",
@@ -25,17 +25,19 @@ export default [
         // Minify bundle using terser
         plugins: [terser()]
       },
-      // Readable build
+      // Readable UMD build
       {
         name: "mizar",
         file: "dist/mizar.js",
         format: "umd",
         globals
+      },
+      // an ES module bundle, suitable for use in other people's libraries and applications
+      {
+        file: pkg.module,
+        format: "es",
+        globals
       }
-      // CommonJS (for Node)
-      // { file: pkg.main, format: "cjs", globals },
-      // // ES module (for bundlers)
-      // { file: pkg.module, format: "es", globals }
     ],
     plugins: [
       resolve(),

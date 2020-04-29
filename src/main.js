@@ -143,10 +143,7 @@ const MIZAR_NAME_DEV = "Mizar.";
  * @constructor
  */
 
-console.log("Mizar runs");
-
 var Mizar = function (options) {
-  console.log("Mizar()", options);
   Event.prototype.constructor.call(this);
 
   _checkConfiguration(options);
@@ -434,7 +431,7 @@ function _checkConfiguration(options) {
  */
 function _createConfiguration(options) {
   var mizarAPIUrl = _getMizarAPIBaseURL();
-  console.log("function_createConfiguration -> mizarAPIUrl", mizarAPIUrl);
+  console.info("Mizar base URL:", mizarAPIUrl);
   var mizarOptions = {
     canvas: typeof options.canvas === "string" ? document.getElementById(options.canvas) : options.canvas
   };
@@ -1678,8 +1675,5 @@ Mizar.prototype.destroy = function () {
 
 // Make object MIZAR available in caller web page
 window.Mizar = Mizar;
-
-console.log("Mizar", Mizar);
-console.log("window.Mizar", window.Mizar);
 
 export default Mizar;
