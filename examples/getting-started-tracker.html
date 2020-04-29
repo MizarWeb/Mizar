@@ -1,12 +1,13 @@
-<!doctype html>
+<!DOCTYPE html>
 <html>
-
-<head>
+  <head>
     <title>Getting started with tracker</title>
     <link rel="icon" href="favicon.ico" />
-    <meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
-    <meta name="title" content="Getting started with tracker">
-    <meta name="description" content='
+    <meta http-equiv="content-type" content="text/html; charset=ISO-8859-1" />
+    <meta name="title" content="Getting started with tracker" />
+    <meta
+      name="description"
+      content="
     <h2>Introduction</h2>
     This tutorial explains how to use traker
 
@@ -14,25 +15,26 @@
     <br/><br/>
     Look at the code and change it to test it.
     <br/>
-    '>
-</head>
+    "
+    />
+  </head>
 
-<body style="margin: 0; padding: 0;overflow:hidden;">
+  <body style="margin: 0; padding: 0; overflow: hidden;">
     <div id="container">
-        <div class="noSelect" style="position:absolute;left:0;top:0;">
-            <div id="compassDiv">
-            </div>
-        </div>
-        <div>
-            <a href="https://www.cnes.fr" target="_blank"><img src="../logo-cnes.jpg" style="position:absolute;right:5px;bottom:10px;width:100px;"/></a>
-        </div>
-        <div id="tracker" style="position:absolute;right:45%;bottom:10px;color:red">
-            <div id="myPosTracker" class="noSelect">Coordinates</div>
-        </div>
-        <canvas id="MizarCanvas" class="noSelect"></canvas>
+      <div class="noSelect" style="position: absolute; left: 0; top: 0;">
+        <div id="compassDiv"></div>
+      </div>
+      <div>
+        <a href="https://www.cnes.fr" target="_blank"
+          ><img src="../logo-cnes.jpg" style="position: absolute; right: 5px; bottom: 10px; width: 100px;"
+        /></a>
+      </div>
+      <div id="tracker" style="position: absolute; right: 45%; bottom: 10px; color: red;">
+        <div id="myPosTracker" class="noSelect">Coordinates</div>
+      </div>
+      <canvas id="MizarCanvas" class="noSelect"></canvas>
     </div>
     <script type="text/javascript" src="../Mizar.min.js"></script>
     <script type="text/javascript" src="getting-started-tracker.js"></script>
-</body>
-
+  </body>
 </html>

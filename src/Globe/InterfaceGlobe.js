@@ -76,25 +76,25 @@ function Globe() {}
  * Returns the type of globe.
  * @returns {GLOBE} type of globe
  */
-Globe.prototype.getType = function() {};
+Globe.prototype.getType = function () {};
 
 /**
  * Checks if the globe is a {@link module:Globe.Sky sky}.
  * @returns {boolean} true when the globe is a sky otherwise false
  */
-Globe.prototype.isSky = function() {};
+Globe.prototype.isSky = function () {};
 
 /**
  * Checks if the globe is a {@link module:Globe.Planet planet}.
  * @returns {boolean} true when the globe is a planet otherwise false
  */
-Globe.prototype.isPlanet = function() {};
+Globe.prototype.isPlanet = function () {};
 
 /**
  * Returns true when a layer is already defined as background other false.
  * @returns true when a layer is already defined as background other false
  */
-Globe.prototype.hasDefinedBackground = function() {};
+Globe.prototype.hasDefinedBackground = function () {};
 
 /**
  * Registers the layer as a background raster and attach it to the globe.<br/>
@@ -105,13 +105,13 @@ Globe.prototype.hasDefinedBackground = function() {};
  * @fires Context#layer:added
  * @throws {Error} layer must be a Layer object
  */
-Globe.prototype.setBaseImagery = function(layer) {};
+Globe.prototype.setBaseImagery = function (layer) {};
 
 /**
  * Returns the background raster as a layer.
  * @return {AbstractRasterLayer} the raster layer
  */
-Globe.prototype.getBaseImagery = function() {};
+Globe.prototype.getBaseImagery = function () {};
 
 /**
  * Registers the elevation layer and attach it to the globe.<br/>
@@ -119,13 +119,13 @@ Globe.prototype.getBaseImagery = function() {};
  * @returns {WMSElevationLayer|WCSElevationLayer} the used layer
  * @fires Context#layer:removed
  */
-Globe.prototype.setBaseElevation = function(layer) {};
+Globe.prototype.setBaseElevation = function (layer) {};
 
 /**
  * Returns the elevation layer.
  * @returns {WMSElevationLayer|WCSElevationLayer|null} the used layer
  */
-Globe.prototype.getBaseElevation = function() {};
+Globe.prototype.getBaseElevation = function () {};
 
 /**
  * Registers a new layer to globe to be visualized on the globe.<br/>
@@ -144,7 +144,7 @@ Globe.prototype.getBaseElevation = function() {};
  * @fires Context#layer:added
  * @throws {Error} layer must be a {@link Layer} object
  */
-Globe.prototype.addLayer = function(layer) {};
+Globe.prototype.addLayer = function (layer) {};
 
 /**
  * Removes a layer.
@@ -156,21 +156,21 @@ Globe.prototype.addLayer = function(layer) {};
  * @fires Context#layer:removed
  * @throws {Error} layer must be a {@link Layer} object
  */
-Globe.prototype.removeLayer = function(layer) {};
+Globe.prototype.removeLayer = function (layer) {};
 
 /**
  * Adds an animation to be played later on.
  * @param {Animation} anim - the animation to add
  * @throws {Error} anim  must be a {@link Animation} object
  */
-Globe.prototype.addAnimation = function(anim) {};
+Globe.prototype.addAnimation = function (anim) {};
 
 /**
  * Removes an animation.
  * @param {Animation} anim - the animation to remove
  * @throws {Error} anim must be a {@link Animation} object
  */
-Globe.prototype.removeAnimation = function(anim) {};
+Globe.prototype.removeAnimation = function (anim) {};
 
 /**
  * Returns the elevation in meters at a geo position at the defined coordinate reference system.
@@ -179,14 +179,14 @@ Globe.prototype.removeAnimation = function(anim) {};
  * @return {number} the elevation in meter at the position [lon,lat]
  * @throws {Error} lon lat must be numbers
  */
-Globe.prototype.getElevation = function(lon, lat) {};
+Globe.prototype.getElevation = function (lon, lat) {};
 
 /**
  * Returns the viewport geo bound.
  * @param transformCallback Callback transforming the frustum/globe intersection coordinates if needed
  * @return {GeoBound} the geo bound of the viewport
  */
-Globe.prototype.getViewportGeoBound = function(transformCallback) {};
+Globe.prototype.getViewportGeoBound = function (transformCallback) {};
 
 /**
  * Returns the geo position [longitude, latitude] in degree from a pixel.<br/>
@@ -197,7 +197,7 @@ Globe.prototype.getViewportGeoBound = function(transformCallback) {};
  * @return {float[]|null} an array of two numbers [lon,lat] or null if the pixel is not on the globe
  * @throws {Error} x y must be numbers
  */
-Globe.prototype.getLonLatFromPixel = function(x, y) {};
+Globe.prototype.getLonLatFromPixel = function (x, y) {};
 
 /**
  * Returns the pixel coordinates from geo position [longitude, latitude] in degree in the defined coordinate reference
@@ -208,59 +208,59 @@ Globe.prototype.getLonLatFromPixel = function(x, y) {};
  * @return {int[]|null} an array of two numbers [x,y] or null if the pixel is not on the globe
  * @throws {Error} lon lat must be numbers
  */
-Globe.prototype.getPixelFromLonLat = function(lon, lat) {};
+Globe.prototype.getPixelFromLonLat = function (lon, lat) {};
 
 /**
  * Sets the coordinate reference system
  * @param {Crs} coordinateSystem - the coordinate reference system
  * @throws {Error} coordinateSystem must be a {@link Crs} object
  */
-Globe.prototype.setCoordinateSystem = function(coordinateSystem) {};
+Globe.prototype.setCoordinateSystem = function (coordinateSystem) {};
 
 /**
  * Returns the coordinate reference system.
  * @return {Crs} the coordinate reference system
  */
-Globe.prototype.getCoordinateSystem = function() {};
+Globe.prototype.getCoordinateSystem = function () {};
 
 /**
  * Computes the position that intersects between a ray and a sphere or a ray and a plane (according to the CRS).
  * @param {Ray} ray
  * @returns {float[]|null} the position
  */
-Globe.prototype.computeIntersection = function(ray) {};
+Globe.prototype.computeIntersection = function (ray) {};
 
 /**
  * Displays some rendering statistics.
  * @return {string} the statistics
  */
-Globe.prototype.getRenderStats = function() {};
+Globe.prototype.getRenderStats = function () {};
 
 /**
  * Returns the rendering context.
  * @return {RenderContext} the rendering context
  */
-Globe.prototype.getRenderContext = function() {};
+Globe.prototype.getRenderContext = function () {};
 
 /**
  * Sets the rendering context.
  * @param {RenderContext} context - the rendering context
  * @throws {Error} context must be a {@link Context} object
  */
-Globe.prototype.setRenderContext = function(context) {};
+Globe.prototype.setRenderContext = function (context) {};
 
 /**
  * Returns the tile manager.
  * @return {TileManager} Tile manager
  */
-Globe.prototype.getTileManager = function() {};
+Globe.prototype.getTileManager = function () {};
 
 /**
  * Returns the renderer manager.
  * The render manager contains the full list of renders.
  * @return {RendererManager} renderer manager
  */
-Globe.prototype.getRendererManager = function() {};
+Globe.prototype.getRendererManager = function () {};
 
 /**
  * Renders the globe.
@@ -273,12 +273,12 @@ Globe.prototype.getRendererManager = function() {};
  * @fires Context#startBackgroundLoad
  * @fires Context#endBackgroundLoad
  */
-Globe.prototype.render = function() {};
+Globe.prototype.render = function () {};
 
 /**
  * Cleans up every reference to gl objects and unloads all tiles
  */
-Globe.prototype.dispose = function() {};
+Globe.prototype.dispose = function () {};
 
 /**
  * Destroys the globe.
@@ -288,18 +288,18 @@ Globe.prototype.dispose = function() {};
  *     <li>Removing the renderer from all the tiles</li>
  * </ul>
  */
-Globe.prototype.destroy = function() {};
+Globe.prototype.destroy = function () {};
 
 /**
  * Refreshes rendering, must be called when canvas size is modified.
  */
-Globe.prototype.refresh = function() {};
+Globe.prototype.refresh = function () {};
 
 /**
  * Checks if the globe rendering is enabled.
  * @return {boolean} true when the globe rendering is enabled otherwise false
  */
-Globe.prototype.isEnabled = function() {};
+Globe.prototype.isEnabled = function () {};
 
 /**
  * Enables the globe.
@@ -307,7 +307,7 @@ Globe.prototype.isEnabled = function() {};
  * This is used to enable the sky when we use the sphere to map the data. In this way,
  * we see the globe and the sky in the same time.
  */
-Globe.prototype.enable = function() {};
+Globe.prototype.enable = function () {};
 
 /**
  * Disables the globe.
@@ -315,9 +315,9 @@ Globe.prototype.enable = function() {};
  * This method is only overloaded by the sky to make disable the sky when the planet
  * is projected on a map.
  */
-Globe.prototype.disable = function() {};
+Globe.prototype.disable = function () {};
 
 /**
  * TODO : text
  */
-Globe.prototype.hasMesh = function() {};
+Globe.prototype.hasMesh = function () {};

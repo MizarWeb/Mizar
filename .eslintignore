@@ -1,6 +1,2 @@
-**/JsVotable/*
-**/pnltri*.js
-**/rconfig.js
-**/ColladaParser.js
-**/SceneGraph.js
-Mizar.min.js
+dist/**
+*.min.*

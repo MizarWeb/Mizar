@@ -1,12 +1,13 @@
-<!doctype html>
+<!DOCTYPE html>
 <html>
-
-<head>
+  <head>
     <title>Projection</title>
     <link rel="icon" href="favicon.ico" />
-    <meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
-    <meta name="title" content="Projection">
-    <meta name="description" content='
+    <meta http-equiv="content-type" content="text/html; charset=ISO-8859-1" />
+    <meta name="title" content="Projection" />
+    <meta
+      name="description"
+      content="
     <h2>Introduction</h2>
     This tutorial explains how to use different projections
 
@@ -14,38 +15,42 @@
     <br/><br/>
     Look at the code and change it to test it.
     <br/>
-    '>
+    "
+    />
+  </head>
 
-</head>
-
-<body style="margin: 0; padding: 0;overflow:hidden;">
-    <div style="vertical-align: top; text-align: center; margin: 10px; display: inline-block; width: 20%; font-size: xx-small">
-        <h2>Select coordinate system: </h2>
-        <select id="selectProjection">
-            <option>Mercator</option>
-            <option>Plate Carrée</option>
-            <option>August</option>
-            <option>Mollweide</option>
-            <option>Aitoff</option>
-            <option>Azimuth</option>
-        </select>
-        <br/>
-        <div style="margin-top: 5px; text-align: left;">
-            <label>
-                <input id="wireframeVisibility" type="checkbox" checked="checked" />Show wireframe
-            </label>
-            <label>
-                <input id="vectorVisibility" type="checkbox" checked="checked" />Show vector
-            </label>
-        </div>
+  <body style="margin: 0; padding: 0; overflow: hidden;">
+    <div
+      style="
+        vertical-align: top;
+        text-align: center;
+        margin: 10px;
+        display: inline-block;
+        width: 20%;
+        font-size: xx-small;
+      "
+    >
+      <h2>Select coordinate system:</h2>
+      <select id="selectProjection">
+        <option>Mercator</option>
+        <option>Plate Carrée</option>
+        <option>August</option>
+        <option>Mollweide</option>
+        <option>Aitoff</option>
+        <option>Azimuth</option>
+      </select>
+      <br />
+      <div style="margin-top: 5px; text-align: left;">
+        <label> <input id="wireframeVisibility" type="checkbox" checked="checked" />Show wireframe </label>
+        <label> <input id="vectorVisibility" type="checkbox" checked="checked" />Show vector </label>
+      </div>
     </div>
     <div style="display: inline-block; margin: 20px;">
-        <canvas id="MizarCanvas" style="border: none; margin: 0; padding: 0;" width="300" height="200"></canvas>
-        <div id="fps"></div>
+      <canvas id="MizarCanvas" style="border: none; margin: 0; padding: 0;" width="300" height="200"></canvas>
+      <div id="fps"></div>
     </div>
     <div id="posTracker"></div>
     <script type="text/javascript" src="../Mizar.min.js"></script>
-    <script type="text/javascript" src="getting-started-projection-complex.js"></script>    
-</body>
-
+    <script type="text/javascript" src="getting-started-projection-complex.js"></script>
+  </body>
 </html>

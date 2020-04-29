@@ -16,66 +16,55 @@
  * You should have received a copy of the GNU General Public License
  * along with MIZAR. If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
-define([
-    "../Utils/Utils",
-    "./AbstractRegistryHandler",
-    "../Utils/Constants",
-    "../Gui/dialog/ErrorDialog",
-    "./WMTSServer"
-], function(Utils, AbstractRegistryHandler, Constants, ErrorDialog, WMTSServer) {
-    /**
-     * Creates a WMTS handler to create {@link WMTSLayer WMTS layers}
-     * @param {*} pendingLayers
-     * @augments AbstractRegistryHandler
-     * @memberof module:Registry
-     * @see {@link WMTSServer}
-     * @constructor
-     */
-    var WMTSServerRegistryHandler = function(
-        pendingLayers
-    ) {
-        AbstractRegistryHandler.prototype.constructor.call();
-        this.pendingLayers = pendingLayers;
-    };
+import Utils from "../Utils/Utils";
+import AbstractRegistryHandler from "./AbstractRegistryHandler";
+import Constants from "../Utils/Constants";
+import ErrorDialog from "../Gui/dialog/ErrorDialog";
+import WMTSServer from "./WMTSServer";
+/**
+ * Creates a WMTS handler to create {@link WMTSLayer WMTS layers}
+ * @param {*} pendingLayers
+ * @augments AbstractRegistryHandler
+ * @memberof module:Registry
+ * @see {@link WMTSServer}
+ * @constructor
+ */
+var WMTSServerRegistryHandler = function (pendingLayers) {
+  AbstractRegistryHandler.prototype.constructor.call();
+  this.pendingLayers = pendingLayers;
+};
 
-    /**************************************************************************************************************/
+/**************************************************************************************************************/
 
-    Utils.inherits(AbstractRegistryHandler, WMTSServerRegistryHandler);
+Utils.inherits(AbstractRegistryHandler, WMTSServerRegistryHandler);
 
-    /**************************************************************************************************************/
+/**************************************************************************************************************/
 
-    /**
-     * @function handleRequest
-     * @memberof WMTSServerRegistryHandler#
-     */
+/**
+ * @function handleRequest
+ * @memberof WMTSServerRegistryHandler#
+ */
 
-    WMTSServerRegistryHandler.prototype.handleRequest = function(
-        layerDescription,
-        callback,
-        fallback
-    ) {
-        try {
-            if (layerDescription.type === Constants.LAYER.WMTS) {
-                var wmtsServer = new WMTSServer(
-                    layerDescription
-                );
-                var self = this;
-                wmtsServer.createLayers(function(layers) {
-                    //TODO : I loose the callback of pendingLayers
-                    self._handlePendingLayers(self.pendingLayers, layers);
-                    callback(layers);
-                }, fallback);
-            } else {
-                this.next.handleRequest(layerDescription, callback, fallback);
-            }
-        } catch (e) {
-            if (fallback) {
-                fallback(e);
-            } else {
-                ErrorDialog.open(Constants.LEVEL.DEBUG, "WMTSServerRegistryHandler.js", e);
-            }
-        }
-    };
+WMTSServerRegistryHandler.prototype.handleRequest = function (layerDescription, callback, fallback) {
+  try {
+    if (layerDescription.type === Constants.LAYER.WMTS) {
+      var wmtsServer = new WMTSServer(layerDescription);
+      var self = this;
+      wmtsServer.createLayers(function (layers) {
+        //TODO : I loose the callback of pendingLayers
+        self._handlePendingLayers(self.pendingLayers, layers);
+        callback(layers);
+      }, fallback);
+    } else {
+      this.next.handleRequest(layerDescription, callback, fallback);
+    }
+  } catch (e) {
+    if (fallback) {
+      fallback(e);
+    } else {
+      ErrorDialog.open(Constants.LEVEL.DEBUG, "WMTSServerRegistryHandler.js", e);
+    }
+  }
+};
 
-    return WMTSServerRegistryHandler;
-});
+export default WMTSServerRegistryHandler;

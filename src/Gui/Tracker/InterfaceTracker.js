@@ -42,22 +42,22 @@ function Tracker() {}
  * Update the tracker
  * @param {Event} event
  */
-Tracker.prototype.update = function(event) {};
+Tracker.prototype.update = function (event) {};
 
 /**
  * Formats the coordinates from the position for displaying the coordinates on the screen.
  * @param {Coordinates} geoPosition
  * @returns {CoordinatesFormat} Coordinates formatted in the given CRS
  */
-Tracker.prototype.compute = function(geoPosition) {};
+Tracker.prototype.compute = function (geoPosition) {};
 
 /**
  * Attaches the tracker to the globe
  * @param {Globe} globeContext - globe
  */
-Tracker.prototype.attachTo = function(globeContext) {};
+Tracker.prototype.attachTo = function (globeContext) {};
 
 /**
  * Detaches from the globe
  */
-Tracker.prototype.detach = function() {};
+Tracker.prototype.detach = function () {};

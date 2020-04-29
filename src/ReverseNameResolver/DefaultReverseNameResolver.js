@@ -17,76 +17,73 @@
  * along with MIZAR. If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
 
-define([
-    "../Utils/Utils",
-    "./AbstractReverseNameResolver"
-], function(Utils, AbstractReverseNameResolver) {
-    /**************************************************************************************************************/
+import Utils from "../Utils/Utils";
+import AbstractReverseNameResolver from "./AbstractReverseNameResolver";
+/**************************************************************************************************************/
 
-    /**
-     * @name DefaultReverseNameResolver
-     * @class
-     *   Plugin to access to Default reverse name resolver
-     * @augments AbstractReverseNameResolver
-     * @param {Context} options - Context
-     * @memberof module:ReverseNameResolver
-     */
-    var DefaultReverseNameResolver = function(options) {
-        AbstractReverseNameResolver.prototype.constructor.call(this, options);
-    };
+/**
+ * @name DefaultReverseNameResolver
+ * @class
+ *   Plugin to access to Default reverse name resolver
+ * @augments AbstractReverseNameResolver
+ * @param {Context} options - Context
+ * @memberof module:ReverseNameResolver
+ */
+var DefaultReverseNameResolver = function (options) {
+  AbstractReverseNameResolver.prototype.constructor.call(this, options);
+};
 
-    /**************************************************************************************************************/
+/**************************************************************************************************************/
 
-    Utils.inherits(AbstractReverseNameResolver, DefaultReverseNameResolver);
+Utils.inherits(AbstractReverseNameResolver, DefaultReverseNameResolver);
 
-    /**************************************************************************************************************/
+/**************************************************************************************************************/
 
-    /**
-     * @function handle
-     * @memberof DefaultReverseNameResolver#
-     * @param {Object} options
-     */
-    DefaultReverseNameResolver.prototype.handle = function(options) {
-        var self = this;
+/**
+ * @function handle
+ * @memberof DefaultReverseNameResolver#
+ * @param {Object} options
+ */
+DefaultReverseNameResolver.prototype.handle = function (options) {
+  var self = this;
 
-        var maxOrder = options.maxOrder;
-        var equatorialCoordinates = options.equatorialCoordinates;
-        var context = options.context;
+  var maxOrder = options.maxOrder;
+  var equatorialCoordinates = options.equatorialCoordinates;
+  var context = options.context;
 
-        var requestUrl =
-            context.getMizarConfiguration().reverseNameResolver.baseUrl +
-            "/EQUATORIAL/" +
-            equatorialCoordinates[0] +
-            " " +
-            equatorialCoordinates[1] +
-            ";" +
-            maxOrder;
+  var requestUrl =
+    context.getMizarConfiguration().reverseNameResolver.baseUrl +
+    "/EQUATORIAL/" +
+    equatorialCoordinates[0] +
+    " " +
+    equatorialCoordinates[1] +
+    ";" +
+    maxOrder;
 
-        Utils.requestUrl(
-            requestUrl,
-            "text",
-            "text/plain",
-            null,
-            function(response) {
-                if (options && options.success) {
-                    options.success(response);
-                }
-            },
-            function(err) {
-                if (options && options.error) {
-                    options.error(err);
-                }
-            }
-        );
-    };
+  Utils.requestUrl(
+    requestUrl,
+    "text",
+    "text/plain",
+    null,
+    function (response) {
+      if (options && options.success) {
+        options.success(response);
+      }
+    },
+    function (err) {
+      if (options && options.error) {
+        options.error(err);
+      }
+    }
+  );
+};
 
-    /**
-     * @function remove
-     * @memberof DefaultReverseNameResolver#
-     */
-    DefaultReverseNameResolver.prototype.remove = function(options) {};
+/**
+ * @function remove
+ * @memberof DefaultReverseNameResolver#
+ */
+DefaultReverseNameResolver.prototype.remove = function (options) {};
 
-    /**************************************************************************************************************/
+/**************************************************************************************************************/
 
-    return DefaultReverseNameResolver;
-});
+export default DefaultReverseNameResolver;

@@ -34,13 +34,13 @@ function VectorLayer() {}
  * Returns the min level for which the vector is displayed.
  * @returns {int} Returns the min level for which the vector is displayed.
  */
-VectorLayer.prototype.getMinLevel = function() {};
+VectorLayer.prototype.getMinLevel = function () {};
 
 /**
  * Returns the max level for which the vector is not displayed.
  * @returns {int} Returns the max level for which the vector is not displayed.
  */
-VectorLayer.prototype.getMaxLevel = function() {};
+VectorLayer.prototype.getMaxLevel = function () {};
 
 /**
  * Returns the URL to get the vector data.
@@ -49,59 +49,59 @@ VectorLayer.prototype.getMaxLevel = function() {};
  * GeoJson
  * @returns {string|undefined} the URL to get the vector data
  */
-VectorLayer.prototype.getUrl = function() {};
+VectorLayer.prototype.getUrl = function () {};
 
 /**
  * Returns true when data must bil filled by a {@link InterfaceProvider provider}.
  * A provider only fills the data in {@link InterfaceContext#addLayer} method.
  * @returns {boolean} true when data must be filled by a data provider otherwise false
  */
-VectorLayer.prototype.isForDataProvider = function() {};
+VectorLayer.prototype.isForDataProvider = function () {};
 
 /**
  * Returns true when the vertor is not itself a data. For instance, it could be
  * represent a selection, on a distance by an arrow.
  * @returns {boolean} true when the vector is a draw otherwise false
  */
-VectorLayer.prototype.isDraw = function() {};
+VectorLayer.prototype.isDraw = function () {};
 
 /**
  * Sets the vector as a draw.
  * @param {boolean} value
  */
-VectorLayer.prototype.setDraw = function(value) {};
+VectorLayer.prototype.setDraw = function (value) {};
 
 /**
  * Attaches the vector layer to the globe and adds features to the renderers {@link _addFeatureToRenderers}
  * @param {AbstractGlobe} g globe
  * @private
  */
-VectorLayer.prototype._attach = function(g) {};
+VectorLayer.prototype._attach = function (g) {};
 
 /**
  * Detaches the vector layer from the globe ands removes features from the renderers {@link _removeFeatureFromRenderers}
  * @private
  */
-VectorLayer.prototype._detach = function() {};
+VectorLayer.prototype._detach = function () {};
 
 /**
  * {@link addFeature Adds a feature} collection, in GeoJSON format
  * @param {GeoJSON} featureCollection Feature Collection
  */
-VectorLayer.prototype.addFeatureCollection = function(featureCollection) {};
+VectorLayer.prototype.addFeatureCollection = function (featureCollection) {};
 
 /**
  * {@link removeFeature Removes a feature} collection, in GeoJSON format
  * @param {GeoJSON} featureCollection Feature Collection
  */
-VectorLayer.prototype.removeFeatureCollection = function(featureCollection) {};
+VectorLayer.prototype.removeFeatureCollection = function (featureCollection) {};
 
 /**
  * Add a feature to renderers.
  * @param {GeoJSON} feature Feature
  * @private
  */
-VectorLayer.prototype._addFeatureToRenderers = function(feature) {};
+VectorLayer.prototype._addFeatureToRenderers = function (feature) {};
 
 /**
  * Removes a feature from renderers.
@@ -109,34 +109,34 @@ VectorLayer.prototype._addFeatureToRenderers = function(feature) {};
  * @returns {boolean} true when the feature is removed from the globe otherwise false
  * @private
  */
-VectorLayer.prototype._removeFeatureFromRenderers = function(feature) {};
+VectorLayer.prototype._removeFeatureFromRenderers = function (feature) {};
 
 /**
  * Add a feature to the layer
  * @param {GeoJSON} feature Feature
  */
-VectorLayer.prototype.addFeature = function(feature) {};
+VectorLayer.prototype.addFeature = function (feature) {};
 
 /**
  * Removes a feature from the layer.
  * @param {GeoJSON} feature Feature
  */
-VectorLayer.prototype.removeFeature = function(feature) {};
+VectorLayer.prototype.removeFeature = function (feature) {};
 
 /**
  * Removes all features from the layer.
  */
-VectorLayer.prototype.removeAllFeatures = function() {};
+VectorLayer.prototype.removeAllFeatures = function () {};
 
 /**
  * Modifies the feature style for a specific feature.
  * @param {GeoJson} feature feature for which the feature style is modified
  * @param {FeatureStyle} style Feature style
  */
-VectorLayer.prototype.modifyFeatureStyle = function(feature, style) {};
+VectorLayer.prototype.modifyFeatureStyle = function (feature, style) {};
 
 /**
  * Modifies the feature style for all features.
  * @param {FeatureStyle} style Feature style
  */
-VectorLayer.prototype.modifyStyle = function(style) {};
+VectorLayer.prototype.modifyStyle = function (style) {};

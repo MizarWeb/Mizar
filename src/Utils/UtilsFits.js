@@ -16,34 +16,37 @@
  * You should have received a copy of the GNU General Public License
  * along with MIZAR. If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
-define(["wcs"], function(wcs) {
-    var UtilsFits = {};
+// import "../external/wcsjs/wcs";
 
-    function createCoordinate(x, y) {
-        var coordinate = wcs.pixelToCoordinate([x, y]);
-        return [coordinate.ra, coordinate.dec];
-    }
+import wcs from "../external/wcsjs/wcs";
+console.log("WCS", wcs);
 
-    /**
-     *    Get GeoJson polygon coordinates representing fits using wcs data from header
-     */
-    UtilsFits.getPolygonCoordinatesFromFits = function(fits) {
-        var hdu = fits.getHDU();
-        var fitsData = hdu.data;
+var UtilsFits = {};
 
-        // Create mapper
-        var wcs = new WCS.Mapper(hdu.header);
-        var coords = [];
+function createCoordinate(x, y) {
+  var coordinate = wcs.pixelToCoordinate([x, y]);
+  return [coordinate.ra, coordinate.dec];
+}
 
-        // Find coordinates of coming fits
-        coords.push(createCoordinate(0, fitsData.height));
-        coords.push(createCoordinate(fitsData.width, fitsData.height));
-        coords.push(createCoordinate(fitsData.width, 0));
-        coords.push(createCoordinate(0, 0));
-        // Close the polygon
-        coords.push(coords[0]);
-        return coords;
-    };
+/**
+ *    Get GeoJson polygon coordinates representing fits using wcs data from header
+ */
+UtilsFits.getPolygonCoordinatesFromFits = function (fits) {
+  var hdu = fits.getHDU();
+  var fitsData = hdu.data;
 
-    return UtilsFits;
-});
+  // Create mapper
+  //   var wcs = new WCS.Mapper(hdu.header);
+  var coords = [];
+
+  // Find coordinates of coming fits
+  coords.push(createCoordinate(0, fitsData.height));
+  coords.push(createCoordinate(fitsData.width, fitsData.height));
+  coords.push(createCoordinate(fitsData.width, 0));
+  coords.push(createCoordinate(0, 0));
+  // Close the polygon
+  coords.push(coords[0]);
+  return coords;
+};
+
+export default UtilsFits;

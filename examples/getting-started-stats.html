@@ -1,12 +1,13 @@
-<!doctype html>
+<!DOCTYPE html>
 <html>
-
-<head>
+  <head>
     <title>Adding compass</title>
     <link rel="icon" href="favicon.ico" />
-    <meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
-    <meta name="title" content="Adding compass">
-    <meta name="description" content='
+    <meta http-equiv="content-type" content="text/html; charset=ISO-8859-1" />
+    <meta name="title" content="Adding compass" />
+    <meta
+      name="description"
+      content="
     <h2>Introduction</h2>
     This tutorial explains how to display stats
 
@@ -14,28 +15,43 @@
     <br/><br/>
     Look at the code and change it to test it.
     <br/>
-    '>
-</head>
+    "
+    />
+  </head>
 
-<body style="margin: 0; padding: 0;overflow:hidden;">
+  <body style="margin: 0; padding: 0; overflow: hidden;">
     <div id="container">
-        <canvas id="MizarCanvas" class="noSelect"></canvas>
+      <canvas id="MizarCanvas" class="noSelect"></canvas>
 
-        <div>
-            <a href="https://www.cnes.fr" target="_blank"><img src="../logo-cnes.jpg" style="position:absolute;right:5px;bottom:20px;width:100px;" /></a>
-        </div>
-        <div class="noSelect" style="position:absolute;left:0;top:0;">
-            <div id="compassDiv">
-            </div>
-        </div>
-        <div id="tracker" style="position:absolute;right:45%;bottom:25px;color:red">
-            <div id="myPosTracker" class="noSelect">Coordinates</div>
-        </div>
-        <div id="myGlobeAttributions" style="position:absolute;left:0;bottom:25px;"></div>
-        <div id="fps" style="position:absolute;top:10px;right:45%;color:white;-webkit-user-select: none;-moz-user-select: none;-ms-user-select: none;user-select: none;">fps !</div>
+      <div>
+        <a href="https://www.cnes.fr" target="_blank"
+          ><img src="../logo-cnes.jpg" style="position: absolute; right: 5px; bottom: 20px; width: 100px;"
+        /></a>
+      </div>
+      <div class="noSelect" style="position: absolute; left: 0; top: 0;">
+        <div id="compassDiv"></div>
+      </div>
+      <div id="tracker" style="position: absolute; right: 45%; bottom: 25px; color: red;">
+        <div id="myPosTracker" class="noSelect">Coordinates</div>
+      </div>
+      <div id="myGlobeAttributions" style="position: absolute; left: 0; bottom: 25px;"></div>
+      <div
+        id="fps"
+        style="
+          position: absolute;
+          top: 10px;
+          right: 45%;
+          color: white;
+          -webkit-user-select: none;
+          -moz-user-select: none;
+          -ms-user-select: none;
+          user-select: none;
+        "
+      >
+        fps !
+      </div>
     </div>
     <script type="text/javascript" src="../Mizar.min.js"></script>
     <script type="text/javascript" src="getting-started-stats.js"></script>
-</body>
-
+  </body>
 </html>

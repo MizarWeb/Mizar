@@ -35,118 +35,109 @@
  * along with GlobWeb. If not, see <http://www.gnu.org/licenses/>.
  ***************************************/
 
-define([
-    "../Tiling/TileManager",
-    "../Tiling/TilePool",
-    "../Utils/Utils",
-    "./AbstractGlobe",
-    "../Utils/Constants"
-], function(TileManager, TilePool, Utils, AbstractGlobe, Constants) {
-    /**
-     * @name Sky
-     * @class
-     * Create a virtual sky in a HTML canvas element with its own coordinate reference system.
-     *
-     * The sky handles two different grids in the same time in order to display both
-     * the galactic and equatorial rasters.
-     *
-     * @augments AbstractGlobe
-     * @param {AbstractGlobe.configuration} options - Sky configuration
-     * @constructor
-     * @memberof module:Globe
-     */
-    var Sky = function(options) {
-        AbstractGlobe.prototype.constructor.call(
-            this,
-            Constants.GLOBE.Sky,
-            options
-        );
-        this.tilePool = new TilePool(this.renderContext);
+import TileManager from "../Tiling/TileManager";
+import TilePool from "../Tiling/TilePool";
+import Utils from "../Utils/Utils";
+import AbstractGlobe from "./AbstractGlobe";
+import Constants from "../Utils/Constants";
+/**
+ * @name Sky
+ * @class
+ * Create a virtual sky in a HTML canvas element with its own coordinate reference system.
+ *
+ * The sky handles two different grids in the same time in order to display both
+ * the galactic and equatorial rasters.
+ *
+ * @augments AbstractGlobe
+ * @param {AbstractGlobe.configuration} options - Sky configuration
+ * @constructor
+ * @memberof module:Globe
+ */
+var Sky = function (options) {
+  AbstractGlobe.prototype.constructor.call(this, Constants.GLOBE.Sky, options);
+  this.tilePool = new TilePool(this.renderContext);
 
-        this.tileManagers = {
-            Equatorial: this.tileManager,
-            Galactic: new TileManager(this, options)
-        };
+  this.tileManagers = {
+    Equatorial: this.tileManager,
+    Galactic: new TileManager(this, options)
+  };
 
-        this.renderContext.requestFrame();
-    };
+  this.renderContext.requestFrame();
+};
 
-    /**************************************************************************************************************/
-    Utils.inherits(AbstractGlobe, Sky);
+/**************************************************************************************************************/
+Utils.inherits(AbstractGlobe, Sky);
 
-    /**************************************************************************************************************/
+/**************************************************************************************************************/
 
-    /**
-     * @function dispose
-     * @memberof Sky#
-     */
-    Sky.prototype.dispose = function() {
-        for (var x in this.tileManagers) {
-            if (this.tileManagers.hasOwnProperty(x)) {
-                this.tileManagers[x].reset();
-                this.tileManagers[x].tilePool.disposeAll();
-            }
-        }
-    };
+/**
+ * @function dispose
+ * @memberof Sky#
+ */
+Sky.prototype.dispose = function () {
+  for (var x in this.tileManagers) {
+    if (this.tileManagers.hasOwnProperty(x)) {
+      this.tileManagers[x].reset();
+      this.tileManagers[x].tilePool.disposeAll();
+    }
+  }
+};
 
-    /**
-     * @function setBaseImagery
-     * @memberof Sky#
-     * @throws {RangeError} Layer must be set
-     **/
-    Sky.prototype.setBaseImagery = function(layer) {
-        if (layer == null) {
-            throw new RangeError("layer must be exist.", "Sky.js");
-        }
+/**
+ * @function setBaseImagery
+ * @memberof Sky#
+ * @throws {RangeError} Layer must be set
+ **/
+Sky.prototype.setBaseImagery = function (layer) {
+  if (layer == null) {
+    throw new RangeError("layer must be exist.", "Sky.js");
+  }
 
-        if (this.baseImagery === layer) {
-            return;
-        }
+  if (this.baseImagery === layer) {
+    return;
+  }
 
-        if (this.baseImagery) {
-            this.tileManagers[
-                this.baseImagery.tiling.coordinateSystem.getGeoideName()
-            ].setImageryProvider(null);
-            this.baseImagery = null;
-        }
+  if (this.baseImagery) {
+    this.tileManagers[this.baseImagery.tiling.coordinateSystem.getGeoideName()].setImageryProvider(null);
+    this.baseImagery = null;
+  }
 
-        // Attach the layer to the globe
-        this.definedBackgound = true;
-        layer.visible = true;
-        if (layer.isDetached()) {
-            this.addLayer(layer);
-        }
-        this.tileManagers[
-            layer.tiling.coordinateSystem.getGeoideName()
-        ].setImageryProvider(layer);
-        this.baseImagery = layer;
-        this.publishEvent(Constants.EVENT_MSG.LAYER_BACKGROUND_CHANGED, layer);
-    };
+  layer.loadOverview();
 
-    /**
-     * @function render
-     * @memberof Sky#
-     */
-    Sky.prototype.render = function() {
-        // Render tiles manager
-        if (this.isEnabled()) {
-            this.tileManagers[Constants.CRS.Galactic].render();
-            this.tileManagers[Constants.CRS.Equatorial].render();
-        }
-    };
+  // Attach the layer to the globe
+  this.definedBackgound = true;
+  layer.visible = true;
+  if (layer.isDetached()) {
+    this.addLayer(layer);
+  }
+  this.tileManagers[layer.tiling.coordinateSystem.getGeoideName()].setImageryProvider(layer);
+  this.baseImagery = layer;
+  this.publishEvent(Constants.EVENT_MSG.LAYER_BACKGROUND_CHANGED, layer);
+};
 
-    /**
-     * @function destroy
-     * @memberof Sky#
-     */
-    Sky.prototype.destroy = function() {
-        AbstractGlobe.prototype.destroy.call(this);
-        this.tileManagers.Galactic.reset();
-        this.tileManagers.Galactic.tilePool.disposeAll();
-        this.tileManagers = null;
-    };
+/**
+ * @function render
+ * @memberof Sky#
+ */
+Sky.prototype.render = function () {
+  // Render tiles manager
+  if (this.isEnabled()) {
+    this.tileManagers[Constants.CRS.Galactic].render();
+    this.tileManagers[Constants.CRS.Equatorial].render();
+  }
+};
 
-    /**************************************************************************************************************/
+/**
+ * @function destroy
+ * @memberof Sky#
+ */
+Sky.prototype.destroy = function () {
+  AbstractGlobe.prototype.destroy.call(this);
+  this.tileManagers.Galactic.reset();
+  this.tileManagers.Galactic.tilePool.disposeAll();
+  this.tileManagers = null;
+};
 
-    return Sky;
-});
+/**************************************************************************************************************/
+
+export default Sky;

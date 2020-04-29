@@ -1,12 +1,13 @@
-<!doctype html>
+<!DOCTYPE html>
 <html>
-
-<head>
+  <head>
     <title>Getting Started with a spinner</title>
     <link rel="icon" href="favicon.ico" />
-    <meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
-    <meta name="title" content="Getting Started with Earth and Sky">
-    <meta name="description" content='
+    <meta http-equiv="content-type" content="text/html; charset=ISO-8859-1" />
+    <meta name="title" content="Getting Started with Earth and Sky" />
+    <meta
+      name="description"
+      content="
     <h2>Introduction</h2>
     This tutorial explains how to create two contexts with a spinner.
     These two contexts are only displayed when the Earth is laoded.
@@ -17,9 +18,10 @@
     <br/><br/>
     Look at the code and change it to test it.
     <br/>
-    '>
+    "
+    />
     <style>
-    .loader {
+      .loader {
         border: 16px solid #f3f3f3; /* Light grey */
         border-top: 16px solid #3498db; /* Blue */
         border-radius: 50%;
@@ -29,28 +31,32 @@
         margin-top: 50vh; /* poussé de la moitié de hauteur de viewport */
         transform: translateY(-50%);
         margin-left: 50%;
-    }
+      }
 
-    .container {
-        padding:300px;
-    }
+      .container {
+        padding: 300px;
+      }
 
-    @keyframes spin {
-        0% { transform: rotate(0deg); }
-        100% { transform: rotate(360deg); }
-    }
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
     </style>
+  </head>
 
-</head>
-
-<body style="margin: 0; padding: 0;overflow: hidden;">
-    <div id="logo" style="display:none;">
-        <a href="https://www.cnes.fr" target="_blank"><img src="../logo-cnes.jpg" style="position:absolute;right:5px;bottom:10px;width:100px;" /></a>
-    </div> 
-	    <div id="loader" class="loader"></div>   
-	    <canvas  id="MizarCanvas" style="border: none; margin: 0; padding: 0; display:none"></canvas>            
+  <body style="margin: 0; padding: 0; overflow: hidden;">
+    <div id="logo" style="display: none;">
+      <a href="https://www.cnes.fr" target="_blank"
+        ><img src="../logo-cnes.jpg" style="position: absolute; right: 5px; bottom: 10px; width: 100px;"
+      /></a>
+    </div>
+    <div id="loader" class="loader"></div>
+    <canvas id="MizarCanvas" style="border: none; margin: 0; padding: 0; display: none;"></canvas>
     <script type="text/javascript" src="../Mizar.min.js"></script>
     <script type="text/javascript" src="getting-started-loading.js"></script>
-</body>
-
+  </body>
 </html>
