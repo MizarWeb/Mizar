@@ -64,13 +64,13 @@ const ANGLE_CAMERA_POLE = 30.0;
  * @constant
  * @type {string}
  */
-const MIZAR_NAME_PROD = "Mizar.min";
+const MIZAR_NAME_PROD = "mizar.min";
 
 /**
  * @constant
  * @type {string}
  */
-const MIZAR_NAME_DEV = "Mizar.";
+const MIZAR_NAME_DEV = "mizar.";
 
 /**
  *  Mizar input parameters
@@ -379,7 +379,7 @@ Mizar.LEVEL = Constants.LEVEL;
  * @private
  */
 function _extractURLFrom(scripts, scriptName, index) {
-  var mizarSrc = _.find(scripts, function (script) {
+  let mizarSrc = _.find(scripts, function (script) {
     return script.src.indexOf(scriptName) !== -1;
   });
   if (mizarSrc) {
@@ -394,7 +394,7 @@ function _extractURLFrom(scripts, scriptName, index) {
  * @private
  */
 function _getMizarAPIBaseURL() {
-  var scripts = document.getElementsByTagName("script");
+  const scripts = document.getElementsByTagName("script");
   return (
     _extractURLFrom.call(this, scripts, MIZAR_NAME_PROD, -1) ||
     _extractURLFrom.call(this, scripts, MIZAR_NAME_DEV, -2) ||
@@ -430,9 +430,9 @@ function _checkConfiguration(options) {
  * @private
  */
 function _createConfiguration(options) {
-  var mizarAPIUrl = _getMizarAPIBaseURL();
+  const mizarAPIUrl = _getMizarAPIBaseURL();
   console.info("Mizar base URL:", mizarAPIUrl);
-  var mizarOptions = {
+  const mizarOptions = {
     canvas: typeof options.canvas === "string" ? document.getElementById(options.canvas) : options.canvas
   };
   if (options.hasOwnProperty("configuration")) {
@@ -469,9 +469,9 @@ function _switchToContext(context, options) {
     context.globe.isEnable = false;
   }
 
-  var self = this;
-  var mustBeDestroyed = options.hasOwnProperty("mustBeDestroyed") ? options.mustBeDestroyed : false;
-  var mustBeHidden = options.hasOwnProperty("mustBeHidden") ? options.mustBeHidden : false;
+  const self = this;
+  const mustBeDestroyed = options.hasOwnProperty("mustBeDestroyed") ? options.mustBeDestroyed : false;
+  const mustBeHidden = options.hasOwnProperty("mustBeHidden") ? options.mustBeHidden : false;
 
   // Hide sky
   this.getActivatedContext().hide();
@@ -479,8 +479,8 @@ function _switchToContext(context, options) {
   // Hide all additional layers
   this.getActivatedContext().hideAdditionalLayers();
 
-  var viewMatrix;
-  var fov;
+  let viewMatrix;
+  let fov;
   if (context.hasOwnProperty("_oldVM") && context.hasOwnProperty("_oldFov")) {
     viewMatrix = context._oldVM;
     fov = context._oldFov;
@@ -672,7 +672,7 @@ function _skipIfSkyMode() {
  * @private
  */
 function _getHipsServiceUrlArray(hipsLayer) {
-  var hipsServiceUrlArray = [];
+  const hipsServiceUrlArray = [];
 
   if (hipsLayer.hips_service_url) {
     hipsServiceUrlArray.push(hipsLayer.hips_service_url);
@@ -698,7 +698,7 @@ function _checkHipsServiceIsAvailable(hipsServiceUrlArray, callback) {
   if (hipsServiceUrlArray.length === 0) {
     return callback(undefined);
   }
-  var url = hipsServiceUrlArray.shift();
+  const url = hipsServiceUrlArray.shift();
 
   Utils.requestUrl(
     url + "/properties",
@@ -735,10 +735,10 @@ function _loadHIPSLayers(Mizar, options) {
         _.each(
           hipsLayersJSON,
           function (hipsLayer) {
-            var hipsServiceUrlArray = _getHipsServiceUrlArray(hipsLayer);
+            const hipsServiceUrlArray = _getHipsServiceUrlArray(hipsLayer);
             _checkHipsServiceIsAvailable(hipsServiceUrlArray, function (hipsServiceUrl) {
               if (typeof hipsServiceUrl === "undefined") {
-                var text = "";
+                let text = "";
                 if (typeof hipsLayer.obs_title === "undefined") {
                   text = "with ID <b>" + hipsLayer.ID + "</b>";
                 } else {
@@ -779,7 +779,7 @@ function _createHips(hipsLayer, hipsServiceUrl) {
       hipsMetadata: new HipsMetadata(hipsLayer)
     });
   } catch (e) {
-    var name = hipsLayer.obs_title ? hipsLayer.obs_title : hipsLayer.obs_collection;
+    const name = hipsLayer.obs_title ? hipsLayer.obs_title : hipsLayer.obs_collection;
     ErrorDialog.open(
       Constants.LEVEL.ERROR,
       "Hips layer " + name + " not valid for " + hipsLayer.hips_service_url,
@@ -838,7 +838,7 @@ Mizar.prototype.getGroundContext = function () {
  * @private
  */
 function _getContext(mode) {
-  var context;
+  let context;
   switch (mode) {
     case undefined:
       context = this.getActivatedContext();
@@ -899,7 +899,7 @@ Mizar.prototype.getActivatedContext = function () {
  * @throws {RangeError} contextMode not valid - a valid contextMode is included in the list {@link CONTEXT}
  */
 Mizar.prototype.setActivatedContext = function (contextMode) {
-  var result;
+  let result;
   switch (contextMode) {
     case Mizar.CONTEXT.Planet:
       this.activatedContext = this.planetContext;
@@ -926,8 +926,8 @@ Mizar.prototype.setActivatedContext = function (contextMode) {
  * @returns {CONTEXT|null} Returns the mode otherwise null when no created context
  */
 Mizar.prototype.getMode = function () {
-  var result;
-  var context = this.getActivatedContext();
+  let result;
+  const context = this.getActivatedContext();
   if (context) {
     result = context.getMode();
   } else {
@@ -943,8 +943,8 @@ Mizar.prototype.getMode = function () {
  * @memberof Mizar#
  */
 Mizar.prototype.getRenderContext = function () {
-  var result;
-  var context = this.getActivatedContext();
+  let result;
+  const context = this.getActivatedContext();
   if (context) {
     result = context.getRenderContext();
   } else {
@@ -974,8 +974,8 @@ Mizar.prototype.getOptions = function () {
  * @see {@link Mizar#createContext} to create a context
  */
 Mizar.prototype.getCrs = function () {
-  var result;
-  var context = this.getActivatedContext();
+  let result;
+  const context = this.getActivatedContext();
   if (context) {
     result = context.getCoordinateSystem();
   } else {
@@ -994,10 +994,10 @@ Mizar.prototype.getCrs = function () {
  * @see {@link Mizar#createContext}
  */
 Mizar.prototype.setCrs = function (coordinateSystem) {
-  var result;
-  var context = this.getActivatedContext();
+  let result;
+  const context = this.getActivatedContext();
   if (context) {
-    var crs = CoordinateSystemFactory.create(coordinateSystem);
+    const crs = CoordinateSystemFactory.create(coordinateSystem);
     context.setCoordinateSystem(crs);
     result = true;
   } else {
@@ -1048,13 +1048,13 @@ Mizar.prototype.getTime = function () {
  * @memberof Mizar#
  */
 Mizar.prototype.createContext = function (contextMode, options) {
-  var result;
+  let result;
   try {
     options.renderContext = this.renderContext;
     options.timeTravelService = this.getServiceByName(Mizar.SERVICE.TimeTravel);
     options.isMobile = this.getOptions().configuration.isMobile;
 
-    var ctx = this.ContextFactory.create(contextMode, this.getOptions(), options);
+    const ctx = this.ContextFactory.create(contextMode, this.getOptions(), options);
 
     switch (contextMode) {
       case Mizar.CONTEXT.Sky:
@@ -1094,7 +1094,7 @@ Mizar.prototype.createContext = function (contextMode, options) {
  * @fires Context#features:added
  */
 Mizar.prototype.toggleDimension = function () {
-  var result;
+  let result;
   try {
     _skipIfSkyMode.call(this);
     if (this.getCrs().isFlat()) {
@@ -1125,9 +1125,9 @@ Mizar.prototype.toggleDimension = function () {
  * @memberof Mizar#
  */
 Mizar.prototype.toggleToContext = function (context, options) {
-  var result;
+  let result;
   try {
-    var opts = options || {};
+    const opts = options || {};
     _switchToContext.call(this, context, opts);
     result = true;
   } catch (e) {
@@ -1146,8 +1146,8 @@ Mizar.prototype.toggleToContext = function (context, options) {
  * @memberof Mizar#
  */
 Mizar.prototype.getSkyLayers = function () {
-  var result;
-  var context = this.getSkyContext();
+  let result;
+  const context = this.getSkyContext();
   if (context) {
     result = context.getLayers();
   } else {
@@ -1163,8 +1163,8 @@ Mizar.prototype.getSkyLayers = function () {
  * @memberof Mizar#
  */
 Mizar.prototype.getPlanetLayers = function () {
-  var result;
-  var context = this.getPlanetContext();
+  let result;
+  const context = this.getPlanetContext();
   if (context) {
     result = context.getLayers();
   } else {
@@ -1180,8 +1180,8 @@ Mizar.prototype.getPlanetLayers = function () {
  * @memberof Mizar#
  */
 Mizar.prototype.getGroundLayers = function () {
-  var result;
-  var context = this.getGroundContext();
+  let result;
+  const context = this.getGroundContext();
   if (context) {
     result = context.getLayers();
   } else {
@@ -1202,7 +1202,7 @@ Mizar.prototype.getGroundLayers = function () {
  * @see {@link Mizar#createContext} to create a context
  */
 Mizar.prototype.getLayers = function (mode) {
-  var result;
+  let result;
   try {
     result = _getContext.call(this, mode).getLayers();
   } catch (e) {
@@ -1220,8 +1220,8 @@ Mizar.prototype.getLayers = function (mode) {
  * @memberof Mizar#
  */
 Mizar.prototype.setLayerOnTheTop = function (layerID) {
-  var result;
-  var layer = this.getLayerByID(layerID);
+  let result;
+  const layer = this.getLayerByID(layerID);
   if (layer != null) {
     layer.setOnTheTop();
     result = true;
@@ -1256,7 +1256,7 @@ Mizar.prototype.getAllLayers = function () {
  * @see {@link Mizar#createContext} to create a context
  */
 Mizar.prototype.getLayerByID = function (layerID, mode) {
-  var result;
+  let result;
   try {
     result = _getContext.call(this, mode).getLayerByID(layerID);
   } catch (e) {
@@ -1279,7 +1279,7 @@ Mizar.prototype.getLayerByID = function (layerID, mode) {
  * @see {@link Mizar#createContext} to create a context
  */
 Mizar.prototype.getLayerByName = function (layerName, mode) {
-  var result;
+  let result;
   try {
     result = _getContext.call(this, mode).getLayerByName(layerName);
   } catch (e) {
@@ -1335,9 +1335,9 @@ Mizar.prototype.addLayer = function (layerDescription, callback, fallback) {
  * @see {@link Mizar#createContext} to create a context
  */
 Mizar.prototype.removeLayer = function (layerID, mode) {
-  var result;
+  let result;
   try {
-    var removedLayer = _getContext.call(this, mode).removeLayer(layerID);
+    const removedLayer = _getContext.call(this, mode).removeLayer(layerID);
     result = typeof removedLayer !== "undefined";
   } catch (e) {
     result = false;
@@ -1360,9 +1360,9 @@ Mizar.prototype.removeLayer = function (layerID, mode) {
  * @see {@link Mizar#createContext} to create a context
  */
 Mizar.prototype.setBackgroundLayer = function (layerName, mode) {
-  var result;
+  let result;
   try {
-    var gwLayer = _getContext.call(this, mode).setBackgroundLayer(layerName);
+    const gwLayer = _getContext.call(this, mode).setBackgroundLayer(layerName);
     result = typeof gwLayer !== "undefined";
   } catch (e) {
     result = false;
@@ -1384,9 +1384,9 @@ Mizar.prototype.setBackgroundLayer = function (layerName, mode) {
  * @see {@link Mizar#createContext} to create a context
  */
 Mizar.prototype.setBackgroundLayerByID = function (layerID, mode) {
-  var result;
+  let result;
   try {
-    var gwLayer = _getContext.call(this, mode).setBackgroundLayerByID(layerID);
+    const gwLayer = _getContext.call(this, mode).setBackgroundLayerByID(layerID);
     result = typeof gwLayer !== "undefined";
   } catch (e) {
     result = false;
@@ -1408,10 +1408,10 @@ Mizar.prototype.setBackgroundLayerByID = function (layerID, mode) {
  * @see {@link Mizar#createContext}
  */
 Mizar.prototype.setBaseElevation = function (layerName, mode) {
-  var result;
+  let result;
   try {
-    var layer = this.getLayerByName(layerName, mode);
-    var gwLayer = _getContext.call(this, mode).setBaseElevation(layer);
+    const layer = this.getLayerByName(layerName, mode);
+    const gwLayer = _getContext.call(this, mode).setBaseElevation(layer);
     result = typeof gwLayer !== "undefined";
   } catch (e) {
     result = false;
@@ -1447,9 +1447,9 @@ Mizar.prototype.getBaseElevation = function (mode) {
  * @see {@link Mizar#createContext}
  */
 Mizar.prototype.setBaseElevationByID = function (layerID, mode) {
-  var result;
+  let result;
   try {
-    var gwLayer = _getContext.call(this, mode).setBaseElevationByID(layerID);
+    const gwLayer = _getContext.call(this, mode).setBaseElevationByID(layerID);
     result = typeof gwLayer !== "undefined";
   } catch (e) {
     result = false;
@@ -1471,7 +1471,7 @@ Mizar.prototype.setBaseElevationByID = function (layerID, mode) {
  * @see {@link Mizar#createContext}
  */
 Mizar.prototype.searchOnLayerDescription = function (query, mode) {
-  var layers = this.getLayers(mode);
+  const layers = this.getLayers(mode);
   return _.filter(layers, function (layer) {
     return String(layer.getName()).indexOf(query) >= 0 || String(layer.getDescription() || "").indexOf(query) >= 0;
   });
@@ -1486,7 +1486,7 @@ Mizar.prototype.searchOnLayerDescription = function (query, mode) {
  * @memberof Mizar#
  */
 Mizar.prototype.searchSkyLayer = function (query) {
-  var layers = this.getSkyLayers();
+  const layers = this.getSkyLayers();
   return _.filter(layers, function (layer) {
     return String(layer.getName()).indexOf(query) >= 0 || String(layer.getDescription() || "").indexOf(query) >= 0;
   });
@@ -1501,7 +1501,7 @@ Mizar.prototype.searchSkyLayer = function (query) {
  * @memberof Mizar#
  */
 Mizar.prototype.searchPlanetLayer = function (query) {
-  var layers = this.getPlanetLayers();
+  const layers = this.getPlanetLayers();
   //Search by name
   return _.filter(layers, function (layer) {
     return String(layer.getName()).indexOf(query) >= 0 || String(layer.getDescription() || "").indexOf(query) >= 0;
@@ -1526,7 +1526,7 @@ Mizar.prototype.searchPlanetLayer = function (query) {
  *   this.registerNoStandardDataProvider("planets", planetProvider.loadFiles);
  */
 Mizar.prototype.registerNoStandardDataProvider = function (type, loadFunc, mode) {
-  var result;
+  let result;
   try {
     _getContext.call(this, mode).registerNoStandardDataProvider(type, loadFunc);
     result = true;
@@ -1545,7 +1545,7 @@ Mizar.prototype.registerNoStandardDataProvider = function (type, loadFunc, mode)
  * @returns {Object|null} - the service
  */
 Mizar.prototype.getServiceByName = function (serviceName, options) {
-  var result;
+  let result;
   try {
     result = ServiceFactory.create(serviceName, options);
   } catch (e) {
@@ -1566,7 +1566,7 @@ Mizar.prototype.getServiceByName = function (serviceName, options) {
  * @see {@link Stats}
  */
 Mizar.prototype.createStats = function (options) {
-  var result;
+  let result;
   if (this.skyContext) {
     this.Stats = new Stats(this.skyContext, options);
     result = true;
@@ -1599,8 +1599,8 @@ Mizar.prototype.createStats = function (options) {
  * @fires Context#features:added
  */
 Mizar.prototype.render = function () {
-  var result;
-  var renderContext = this.getRenderContext();
+  let result;
+  const renderContext = this.getRenderContext();
   if (renderContext) {
     this.getRenderContext().frame();
     result = true;
@@ -1637,9 +1637,9 @@ Mizar.prototype.dispose = function () {
  * @memberof Mizar#
  */
 Mizar.prototype.reloadLayer = function (layer) {
-  var ctx = this.getActivatedContext();
+  const ctx = this.getActivatedContext();
   if (ctx) {
-    var tileManager = ctx.getTileManager();
+    const tileManager = ctx.getTileManager();
     tileManager.abortLayerRequests(layer);
     layer._detach(ctx.globe);
     layer._attach(ctx.globe);

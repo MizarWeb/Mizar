@@ -27,7 +27,7 @@ import _ from "underscore";
 import Constants from "../Utils/Constants";
 // import JsonProcessor from "../Parser/JsonProcessor";
 import ErrorDialog from "../Gui/dialog/ErrorDialog";
-import "../external/sampjs/samp";
+import "../../external/sampjs/samp";
 
 var mizar;
 var connector; // SAMP connector

@@ -18,7 +18,7 @@
  ******************************************************************************/
 // import "../external/wcsjs/wcs";
 
-import wcs from "../external/wcsjs/wcs";
+import wcs from "../../external/wcsjs/wcs";
 var UtilsFits = {};
 
 function createCoordinate(x, y) {

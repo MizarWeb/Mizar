@@ -23,7 +23,7 @@ import Constants from "../Utils/Constants";
 import ErrorDialog from "../Gui/dialog/ErrorDialog";
 import Proxy from "../Utils/Proxy";
 // import "fitsjs";
-import astro from "../external/fitsjs/fits";
+import astro from "../../external/fitsjs/fits";
 
 /**
  *    Parse fits file

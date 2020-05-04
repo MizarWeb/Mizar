@@ -27,7 +27,7 @@ import _ from "underscore";
 import ErrorDialog from "../Gui/dialog/ErrorDialog";
 import Constants from "../Utils/Constants";
 import Proxy from "../Utils/Proxy";
-import "../external/jquery-loadmask/jquery.loadmask";
+import "../../external/jquery-loadmask/jquery.loadmask";
 var self, mizarAPI, layers, availableLayers;
 
 /**************************************************************************************************************/
