@@ -2,7 +2,7 @@
 <html>
   <head>
     <title>Getting Started with Earth</title>
-    <link rel="icon" href="favicon.ico" />
+    <link rel="icon" href="../static/favicon.ico" />
     <meta http-equiv="content-type" content="text/html; charset=ISO-8859-1" />
     <meta name="title" content="Getting Started with Earth" />
     <meta
@@ -16,6 +16,16 @@
     Look at the code and change it to test it.
     <br/>
     "
+    />
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.css"
+    />
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="https://cdn.jsdelivr.net/gh/wallynm/jquery-loadmask@master/jquery.loadmask.min.css"
     />
     <style>
       div#time {
@@ -65,7 +75,7 @@
   <body style="margin: 0; padding: 0; overflow: hidden;">
     <div>
       <a href="https://www.cnes.fr" target="_blank"
-        ><img src="../logo-cnes.jpg" style="position: absolute; right: 5px; bottom: 10px; width: 100px;"
+        ><img src="../static/logo-cnes.jpg" style="position: absolute; right: 5px; bottom: 10px; width: 100px;"
       /></a>
     </div>
     <div id="time">
@@ -127,7 +137,19 @@
       <input type="button" value="submit" onclick="selectedDate();" />
     </div>
     <canvas id="MizarCanvas" style="border: none; margin: 0; padding: 0;"></canvas>
-    <script type="text/javascript" src="../Mizar.min.js"></script>
+
+    <script
+      type="text/javascript"
+      src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.1/moment-with-locales.min.js"
+    ></script>
+    <script type="text/javascript" src="https://code.jquery.com/jquery-3.x-git.min.js"></script>
+    <script
+      src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"
+      integrity="sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU="
+      crossorigin="anonymous"
+    ></script>
+
+    <script type="text/javascript" src="../dist/mizar.js"></script>
     <script type="text/javascript" src="getting-started-layer-medit-time.js"></script>
   </body>
 </html>

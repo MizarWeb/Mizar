@@ -3,13 +3,13 @@
  * @param {int} val hour [0-24] of the current date
  */
 function sliderChange(val) {
-  var today = new Date();
-  var day = today.getUTCDate();
-  var month = today.getUTCMonth();
-  var year = today.getUTCFullYear();
-  var dateStr = day + "/" + month + "/" + year;
+  const today = new Date();
+  const day = today.getUTCDate();
+  const month = today.getUTCMonth();
+  const year = today.getUTCFullYear();
+  const dateStr = day + "/" + month + "/" + year;
   document.getElementById("timeVal").innerHTML = dateStr + "  " + val + "h";
-  var atmLayer = mizar.getLayerByName("Atmosphere");
+  const atmLayer = mizar.getLayerByName("Atmosphere");
   atmLayer.setParameter("time", getDate(today, val));
 }
 
@@ -57,7 +57,7 @@ mizar.addLayer(
     visible: true
   },
   function (layerID) {
-    var atmLayer = mizar.getLayerByID(layerID);
+    const atmLayer = mizar.getLayerByID(layerID);
     atmLayer.setParameter("time", getDate(new Date(), 0));
   }
 );

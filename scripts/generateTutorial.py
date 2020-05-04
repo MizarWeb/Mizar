@@ -82,7 +82,7 @@ def createNavigation(htmlFile, meta_title, childrens, dst="../tutorials/"):
 createTutoDirectory()
 copyDirectory()
 copyDirectory("../examples/resources", "../tutorials/resources")
-copyfile("../favicon.ico", "../tutorials/favicon.ico")
+copyfile("../static/favicon.ico", "../tutorials/favicon.ico")
 
 filein = open( 'templateCodeMirror.tmpl' )
 src = Template( filein.read() )
