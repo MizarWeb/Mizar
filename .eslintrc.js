@@ -1,8 +1,12 @@
 module.exports = {
+  plugins: ["jest"],
+  extends: ["eslint:recommended", "plugin:jest/recommended"],
   env: {
     browser: true,
     es6: true,
-    jquery: true
+    jquery: true,
+    "jest/globals": true,
+    node: true
   },
   parserOptions: {
     ecmaVersion: 6,
@@ -21,9 +25,13 @@ module.exports = {
     samp: true,
     astro: true
   },
-  extends: "eslint:recommended",
+
   rules: {
+    "no-var": 1,
+    eqeqeq: 1,
+    "prefer-const": 1,
     "no-unused-vars": 1,
+    "no-prototype-builtins": 0,
     "linebreak-style": ["error", "unix"],
     quotes: ["error", "double"],
     semi: ["error", "always"]

@@ -1,2 +1,3 @@
 dist/**
 *.min.*
+*.html
