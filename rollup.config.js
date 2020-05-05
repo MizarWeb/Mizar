@@ -2,6 +2,7 @@ import resolve from "@rollup/plugin-node-resolve";
 import commonjs from "@rollup/plugin-commonjs";
 import babel from "@rollup/plugin-babel";
 import image from "@rollup/plugin-image";
+import inject from "@rollup/plugin-inject";
 import amd from "rollup-plugin-amd";
 import { terser } from "rollup-plugin-terser";
 import visualizer from "rollup-plugin-visualizer";
@@ -52,6 +53,11 @@ export default [
         exclude: ["node_modules/**"],
         // See https://github.com/browserslist/browserslist/
         presets: [["@babel/preset-env", { targets: { browsers: ["> 5%", "Firefox ESR"] }, modules: false }]]
+      }),
+      // Solve JQuery errors when importing the library
+      inject({
+        $: "jquery",
+        JQuery: "jquery"
       }),
       // Allow image importing as base64, use it for convenience but it is not optimal
       image(),

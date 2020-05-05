@@ -39,9 +39,6 @@ import HipsMetadata from "./Layer/HipsMetadata";
 import Time from "./Time/Time";
 import Proxy from "./Utils/Proxy";
 
-// Make sure Jquery is available globally
-global.$ = global.jQuery = $;
-
 /**
  * mizarMode:toggle.<br/>
  * Called when Mizar switches from a context to another context
