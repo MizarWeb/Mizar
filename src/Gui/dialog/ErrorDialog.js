@@ -24,18 +24,18 @@
  */
 import Constants from "../../Utils/Constants";
 import $ from "jquery";
-import "jquery-ui";
-var isDebug = false;
+import "jquery-ui-bundle";
+let isDebug = false;
 
 // The main div for error
-var errorDiv = '<div id="errorDiv" style="text-align: left" title="Error"></div>';
+const errorDiv = '<div id="errorDiv" style="text-align: left" title="Error"></div>';
 
 // Create the div, use jQuery UI dialog
 
-var $text = "";
-var $buttonName = "";
+let $text = "";
+let $buttonName = "";
 
-var $errorDiv = $(errorDiv)
+const $errorDiv = $(errorDiv)
   .appendTo("body")
   .dialog({
     autoOpen: false,
@@ -47,27 +47,27 @@ var $errorDiv = $(errorDiv)
       $text = "";
     }
   });
-var $active = false;
+let $active = false;
 
-var _consoleError = function (txt) {
+const _consoleError = function (txt) {
   if (isDebug) {
     console.error(txt);
   }
 };
 
-var _consoleWarn = function (txt) {
+const _consoleWarn = function (txt) {
   if (isDebug) {
     console.warn(txt);
   }
 };
 
-var _consoleLog = function (txt) {
+const _consoleLog = function (txt) {
   if (isDebug) {
     console.log(txt);
   }
 };
 
-var _recordError = function (html) {
+const _recordError = function (html) {
   $text += html + "<br/>";
   if ($("#warningContainer")) {
     $("#warningContainer").show();
@@ -83,7 +83,7 @@ var _recordError = function (html) {
   }
 };
 
-var _computeMessageHTML = function (message, description) {
+const _computeMessageHTML = function (message, description) {
   if (description != null && message != null) {
     message = message + " - <font style='color:white'>";
     if (typeof description === "string") {
@@ -98,7 +98,7 @@ var _computeMessageHTML = function (message, description) {
   return message;
 };
 
-var _computeMessageASCII = function (message, description) {
+const _computeMessageASCII = function (message, description) {
   if (description != null && message != null) {
     if (typeof description === "string") {
       message = message + ":" + description;
@@ -119,7 +119,7 @@ export default {
    * @param {string} description error description
    */
   open: function (LEVEL, title, description) {
-    var message = "";
+    let message = "";
     if (LEVEL === Constants.LEVEL.WARNING) {
       message = message + "<font style='color:orange'>Warning : " + title + "</font>";
       _consoleWarn(_computeMessageASCII(title, description));

@@ -22,9 +22,9 @@
  * About dialog
  */
 import $ from "jquery";
-import "jquery-ui";
+import "jquery-ui-bundle";
 /*jshint multistr: true */
-var aboutContent =
+const aboutContent =
   '<div id="about" title="About">\
             <p>MIZAR has been developed and is maintained by the CENTRE NATIONAL d\'ETUDES SPATIALES (CNES).</p>\
             <p>Copyright CNES - MIZAR is a module of <a target="_blank" href="http://sitools2.sourceforge.net">SITools2</a>, distributed under GPLV3</p>\
@@ -42,7 +42,7 @@ var aboutContent =
             <span style="font-size: 0.8em;bottom: 5px;right: 5px;position: absolute;">v1.0 - 26.11.2013 - nightly build</span>\
         </div>';
 
-var $about = null;
+let $about = null;
 
 export default {
   /**

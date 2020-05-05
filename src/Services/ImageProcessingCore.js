@@ -23,17 +23,17 @@
  */
 import $ from "jquery";
 import FeatureStyle from "../Renderer/FeatureStyle";
-import "jquery-ui";
+import "jquery-ui-bundle";
 
 /**************************************************************************************************************/
 
-var feature;
-var layer;
-var disable;
-var unselect;
-var $dialog;
-var histogramElement;
-var cutOutElement;
+let feature;
+let layer;
+let disable;
+let unselect;
+let $dialog;
+let histogramElement;
+let cutOutElement;
 
 /**************************************************************************************************************/
 
@@ -95,7 +95,7 @@ function setData(selectedData) {
                    // TODO : disable cutOutElement if feature's url isn't defined
                }*/
 
-  var image = selectedData.feature.properties.style.uniformValues;
+  const image = selectedData.feature.properties.style.uniformValues;
   if (!image) {
     $dialog
       .find(".histogramContent")
@@ -160,7 +160,7 @@ function setImage(image) {
  * @param contrast
  */
 function changeShaderCallback(contrast) {
-  var targetStyle;
+  let targetStyle;
   if (contrast === "raw") {
     targetStyle = new FeatureStyle(feature.properties.style);
     targetStyle.fillShader = {

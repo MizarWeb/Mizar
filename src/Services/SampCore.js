@@ -22,15 +22,15 @@
  * SampCore Module : containing core methods
  */
 import $ from "jquery";
-import "jquery-ui";
-import _ from "underscore";
+import "jquery-ui-bundle";
+// import _ from "underscore";
 import Constants from "../Utils/Constants";
 // import JsonProcessor from "../Parser/JsonProcessor";
 import ErrorDialog from "../Gui/dialog/ErrorDialog";
 import "../../external/sampjs/samp";
 
-var mizar;
-var connector; // SAMP connector
+let mizar;
+let connector; // SAMP connector
 // var pointAtReceived = false; // Parameter avoiding looping while receiving coord.pointAt.sky SAMP event
 //var votable2geojsonBaseUrl;
 
@@ -41,10 +41,10 @@ var connector; // SAMP connector
  */
 function createClientTracker() {
   // Initialize client tracker
-  var clientTracker = new samp.ClientTracker();
+  const clientTracker = new samp.ClientTracker();
 
   // Init available samp income message handlers(as ping, load.votable..)
-  var callHandler = clientTracker.callHandler;
+  const callHandler = clientTracker.callHandler;
   callHandler["samp.app.ping"] = function (senderId, message, isCall) {
     if (isCall) {
       return {
@@ -135,10 +135,10 @@ function createClientTracker() {
 
   callHandler["coord.pointAt.sky"] = function (senderId, message, isCall) {
     pointAtReceived = true;
-    var params = message["samp.params"];
-    var ra = parseFloat(params.ra);
-    var dec = parseFloat(params.dec);
-    var navigation = mizar.getActivatedContext().getNavigation();
+    const params = message["samp.params"];
+    const ra = parseFloat(params.ra);
+    const dec = parseFloat(params.dec);
+    const navigation = mizar.getActivatedContext().getNavigation();
     navigation.zoomTo([ra, dec]);
   };
 
@@ -159,10 +159,10 @@ function createClientTracker() {
  */
 function initSamp(mizarAPI) {
   mizar = mizarAPI;
-  var clientTracker = createClientTracker();
+  const clientTracker = createClientTracker();
 
   // Samp event callbacks
-  var logCc = {
+  const logCc = {
     receiveNotification: function (senderId, message) {
       clientTracker.receiveNotification(senderId, message);
       if (message["samp.mtype"] === "samp.hub.event.subscriptions") {
@@ -184,7 +184,7 @@ function initSamp(mizarAPI) {
   };
 
   // Meta-data
-  var meta = {
+  const meta = {
     "samp.name": "Mizar",
     "samp.description.text": "Module for Interactive visualiZation from Astronomical Repositories",
     "mizar.version": "v1.0",
@@ -193,7 +193,7 @@ function initSamp(mizarAPI) {
   };
 
   // Generate subscriptions map
-  var subs = clientTracker.calculateSubscriptions();
+  const subs = clientTracker.calculateSubscriptions();
 
   connector = new samp.Connector("Mizar", meta, logCc, subs);
 
@@ -217,7 +217,7 @@ export default {
   sendImage: function (url) {
     if (this.isConnected()) {
       // Send message
-      var msg = new samp.Message("image.load.fits", {
+      const msg = new samp.Message("image.load.fits", {
         url: url
       });
       connector.connection.notifyAll([msg]);
@@ -230,7 +230,7 @@ export default {
   sendVOTable: function (layer, url) {
     if (this.isConnected()) {
       // Send message
-      var msg = new samp.Message("table.load.votable", {
+      const msg = new samp.Message("table.load.votable", {
         url: url + "&media=votable"
       });
       connector.connection.notifyAll([msg]);

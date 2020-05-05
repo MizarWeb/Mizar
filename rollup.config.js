@@ -15,7 +15,7 @@ const globals = {
 export default [
   {
     input: "src/main.js",
-    external: ["jquery", "moment", "jquery-ui"],
+    external: ["jquery", "moment", "jquery-ui-bundle"],
     // UMD builds, suitable for use in any environment (including the browser, as a `<script>` tag)
     output: [
       {

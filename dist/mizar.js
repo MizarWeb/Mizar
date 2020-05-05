@@ -1,6 +1,6 @@
 (function (global, factory) {
-  typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory(require('jquery'), require('moment'), require('jquery-ui')) :
-  typeof define === 'function' && define.amd ? define(['jquery', 'moment', 'jquery-ui'], factory) :
+  typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory(require('jquery'), require('moment'), require('jquery-ui-bundle')) :
+  typeof define === 'function' && define.amd ? define(['jquery', 'moment', 'jquery-ui-bundle'], factory) :
   (global = global || self, global.mizar = factory(global.$, global.moment));
 }(this, (function ($, Moment) { 'use strict';
 
@@ -2828,11 +2828,11 @@
     return cosrad;
   };
 
-  var isDebug = false;
-  var errorDiv = "<div id=\"errorDiv\" style=\"text-align: left\" title=\"Error\"></div>";
-  var $text = "";
-  var $buttonName = "";
-  var $errorDiv = $(errorDiv).appendTo("body").dialog({
+  let isDebug = false;
+  const errorDiv = "<div id=\"errorDiv\" style=\"text-align: left\" title=\"Error\"></div>";
+  let $text = "";
+  let $buttonName = "";
+  const $errorDiv = $(errorDiv).appendTo("body").dialog({
     autoOpen: false,
     width: 500,
     minHeight: 300,
@@ -2842,27 +2842,27 @@
       $text = "";
     }
   });
-  var $active = false;
+  let $active = false;
 
-  var _consoleError = function (txt) {
+  const _consoleError = function (txt) {
     if (isDebug) {
       console.error(txt);
     }
   };
 
-  var _consoleWarn = function (txt) {
+  const _consoleWarn = function (txt) {
     if (isDebug) {
       console.warn(txt);
     }
   };
 
-  var _consoleLog = function (txt) {
+  const _consoleLog = function (txt) {
     if (isDebug) {
       console.log(txt);
     }
   };
 
-  var _recordError = function (html) {
+  const _recordError = function (html) {
     $text += html + "<br/>";
 
     if ($("#warningContainer")) {
@@ -2880,7 +2880,7 @@
     }
   };
 
-  var _computeMessageHTML = function (message, description) {
+  const _computeMessageHTML = function (message, description) {
     if (description != null && message != null) {
       message = message + " - <font style='color:white'>";
 
@@ -2898,7 +2898,7 @@
     return message;
   };
 
-  var _computeMessageASCII = function (message, description) {
+  const _computeMessageASCII = function (message, description) {
     if (description != null && message != null) {
       if (typeof description === "string") {
         message = message + ":" + description;
@@ -2914,7 +2914,7 @@
 
   var ErrorDialog = {
     open: function (LEVEL, title, description) {
-      var message = "";
+      let message = "";
 
       if (LEVEL === Constants.LEVEL.WARNING) {
         message = message + "<font style='color:orange'>Warning : " + title + "</font>";
@@ -24091,13 +24091,13 @@
     getCanvas: getCanvas
   };
 
-  var feature;
-  var layer;
-  var disable;
-  var unselect;
-  var $dialog;
-  var histogramElement;
-  var cutOutElement;
+  let feature;
+  let layer;
+  let disable;
+  let unselect;
+  let $dialog;
+  let histogramElement;
+  let cutOutElement;
 
   function toggle() {
     if ($dialog.dialog("isOpen")) {
@@ -24123,7 +24123,7 @@
       cutOutElement.setUrl(selectedData.feature.services.download.url);
     }
 
-    var image = selectedData.feature.properties.style.uniformValues;
+    const image = selectedData.feature.properties.style.uniformValues;
 
     if (!image) {
       $dialog.find(".histogramContent").children("div").fadeOut(function () {
@@ -31573,12 +31573,12 @@
     return jss;
   }();
 
-  var mizar;
-  var connector;
+  let mizar;
+  let connector;
 
   function createClientTracker() {
-    var clientTracker = new samp.ClientTracker();
-    var callHandler = clientTracker.callHandler;
+    const clientTracker = new samp.ClientTracker();
+    const callHandler = clientTracker.callHandler;
 
     callHandler["samp.app.ping"] = function (senderId, message, isCall) {
       if (isCall) {
@@ -31596,10 +31596,10 @@
 
     callHandler["coord.pointAt.sky"] = function (senderId, message, isCall) {
       pointAtReceived = true;
-      var params = message["samp.params"];
-      var ra = parseFloat(params.ra);
-      var dec = parseFloat(params.dec);
-      var navigation = mizar.getActivatedContext().getNavigation();
+      const params = message["samp.params"];
+      const ra = parseFloat(params.ra);
+      const dec = parseFloat(params.dec);
+      const navigation = mizar.getActivatedContext().getNavigation();
       navigation.zoomTo([ra, dec]);
     };
 
@@ -31614,8 +31614,8 @@
 
   function initSamp(mizarAPI) {
     mizar = mizarAPI;
-    var clientTracker = createClientTracker();
-    var logCc = {
+    const clientTracker = createClientTracker();
+    const logCc = {
       receiveNotification: function (senderId, message) {
         clientTracker.receiveNotification(senderId, message);
 
@@ -31635,14 +31635,14 @@
         clientTracker.init(connection);
       }
     };
-    var meta = {
+    const meta = {
       "samp.name": "Mizar",
       "samp.description.text": "Module for Interactive visualiZation from Astronomical Repositories",
       "mizar.version": "v1.0",
       "author.affiliation": "CNES/TPZ",
       "home.page": "http://github.com/MizarWeb"
     };
-    var subs = clientTracker.calculateSubscriptions();
+    const subs = clientTracker.calculateSubscriptions();
     connector = new samp.Connector("Mizar", meta, logCc, subs);
     connector.regTextNodes.push($("#sampResult")[0]);
     return connector;
@@ -31652,7 +31652,7 @@
     initSamp: initSamp,
     sendImage: function (url) {
       if (this.isConnected()) {
-        var msg = new samp.Message("image.load.fits", {
+        const msg = new samp.Message("image.load.fits", {
           url: url
         });
         connector.connection.notifyAll([msg]);
@@ -31663,7 +31663,7 @@
     },
     sendVOTable: function (layer, url) {
       if (this.isConnected()) {
-        var msg = new samp.Message("table.load.votable", {
+        const msg = new samp.Message("table.load.votable", {
           url: url + "&media=votable"
         });
         connector.connection.notifyAll([msg]);
@@ -49791,23 +49791,23 @@
     this.options = null; // we do do not destroy the globe now. It will be destroyed later on in the context
   };
 
-  var crsInfo = "<div id=\"crsInfo\" style=\"text-align: left\" title=\"Coordinate Reference System information\"></div>";
-  var $text$1 = "";
-  var $crsInfo = $(crsInfo).appendTo("body").dialog({
+  const crsInfo = "<div id=\"crsInfo\" style=\"text-align: left\" title=\"Coordinate Reference System information\"></div>";
+  let $text$1 = "";
+  const $crsInfo = $(crsInfo).appendTo("body").dialog({
     autoOpen: false,
     width: 500,
     minHeight: 300,
     maxHeight: 500,
     dialogClass: "crsBox"
   });
-  var $active$1 = false;
+  let $active$1 = false;
   var CrsDialog = {
     open: function (crs) {
       if (this.isActive()) {
         this.destroy();
       }
 
-      var geoBound = crs.getGeoBound();
+      const geoBound = crs.getGeoBound();
       $text$1 += "<p align='center'><u><i><b>" + crs.getName() + " CRS description </b></i></u></p>";
       $text$1 += "<p align='justify'>" + crs.getDescription() + "</p>";
       $text$1 += "<table>" + "<caption><i>Sphere parameters</i></caption>" + "<tr><th>Parameter</th><th>Value</th></tr>" + "<tr><td>Projection</td><td>" + (crs.isProjected() ? crs.getProjection().getName() : "3D") + "</td></tr>" + "<tr><td>radius (meters)</td><td>" + crs.getGeoide().getRealPlanetRadius() + "</td></tr>" + "<tr><td>" + crs.getLongitudeLabel() + "</td><td>[" + geoBound.getWest() + "&deg; , " + geoBound.getEast() + "&deg;]</td></tr>" + "<tr><td>" + crs.getLatitudeLabel() + "</td><td>[" + geoBound.getSouth() + "&deg; , " + geoBound.getNorth() + "&deg;]</td></tr>" + "</table>";
@@ -59389,6 +59389,8 @@
    * You should have received a copy of the GNU General Public License
    * along with MIZAR. If not, see <http://www.gnu.org/licenses/>.
    ******************************************************************************/
+
+  global.$ = global.jQuery = $;
   /**
    * mizarMode:toggle.<br/>
    * Called when Mizar switches from a context to another context

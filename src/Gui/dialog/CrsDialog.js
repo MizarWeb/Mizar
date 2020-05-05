@@ -22,16 +22,16 @@
  * Error dialog module
  */
 import $ from "jquery";
-import "jquery-ui";
+import "jquery-ui-bundle";
 
 // The main div for error
-var crsInfo = '<div id="crsInfo" style="text-align: left" title="Coordinate Reference System information"></div>';
+const crsInfo = '<div id="crsInfo" style="text-align: left" title="Coordinate Reference System information"></div>';
 
 // Create the div, use jQuery UI dialog
 
-var $text = "";
+let $text = "";
 
-var $crsInfo = $(crsInfo).appendTo("body").dialog({
+const $crsInfo = $(crsInfo).appendTo("body").dialog({
   autoOpen: false,
   width: 500,
   minHeight: 300,
@@ -39,7 +39,7 @@ var $crsInfo = $(crsInfo).appendTo("body").dialog({
   dialogClass: "crsBox"
   //beforeClose: function( event, ui ) { $text = ""; }
 });
-var $active = false;
+let $active = false;
 
 export default {
   /**
@@ -51,7 +51,7 @@ export default {
     if (this.isActive()) {
       this.destroy();
     }
-    var geoBound = crs.getGeoBound();
+    const geoBound = crs.getGeoBound();
     $text += "<p align='center'><u><i><b>" + crs.getName() + " CRS description </b></i></u></p>";
     $text += "<p align='justify'>" + crs.getDescription() + "</p>";
     $text +=

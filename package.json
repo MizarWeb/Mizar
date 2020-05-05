@@ -45,9 +45,9 @@
       "email": "m.gond@akka.eu"
     }
   ],
-  "main": "src/main.js",
-  "module": "src/main.js",
-  "browser": "dist/mizar.min.js",
+  "main": "dist/mizar.esm.js",
+  "module": "dist/mizar.esm.js",
+  "browser": "dist/mizar.esm.js",
   "directories": {
     "doc": "Markdown documentation",
     "api_doc": "API documentation",
@@ -63,18 +63,17 @@
   "scripts": {
     "build": "rollup -c",
     "dev": "rollup -c -w",
+    "doc:clean": "rm -rf api_doc && rm -rf tutorials",
+    "doc:gen": "rm -rf api_doc && rm -rf tutorials && cd scripts && python generateTutorial.py && cd .. && jsdoc --readme ./README.md -c jsdoc.conf && cp -r ./tutorials/resources ./api_doc && cp -r ./tutorials/data ./api_doc",
+    "doc:open": "http-server -o ./api_doc/index.html",
     "format": " prettier --write .",
     "lint": "eslint --fix .",
-    "test": "jest ./tests/**",
-    "doc:gen": "rm -rf api_doc && rm -rf tutorials && cd scripts && python generateTutorial.py && cd .. && jsdoc --readme ./README.md -c jsdoc.conf && cp -r ./tutorials/resources ./api_doc && cp -r ./tutorials/data ./api_doc",
-    "doc:clean": "rm -rf api_doc && rm -rf tutorials",
-    "doc:open": "http-server -o ./api_doc/index.html",
-    "stats:open": "sensible-browser ./stats.html"
+    "stats:open": "sensible-browser ./stats.html",
+    "test": "jest ./tests/**"
   },
   "dependencies": {
     "gzip-js": "^0.3.2",
-    "jquery": "^3.1.1",
-    "jquery-ui": "^1.12.1",
+    "jquery-ui-bundle": "^1.12.1-migrate",
     "jscsv": "^1.1.4",
     "jsvotable": "^2.0.2",
     "moment": "^2.22.1",
@@ -95,7 +94,6 @@
     "eslint-plugin-jest": "^23.8.2",
     "http-server": "^0.12.3",
     "jest": "^25.5.2",
-    "jquery-ui-bundle": "^1.12.1-migrate",
     "jsdoc": "^3.6.4",
     "prettier": "^2.0.5",
     "rollup": "^2.7.2",
@@ -105,9 +103,9 @@
     "sanitize-html": "^1.23.0"
   },
   "peerDependencies": {
-    "moment": "^2.22.1",
     "jquery": "^3.1.1",
-    "jquery-ui": "^1.12.1"
+    "jquery-ui-bundle": "^1.12.1-migrate",
+    "moment": "^2.22.1"
   },
   "engines": {
     "node": ">=10"
