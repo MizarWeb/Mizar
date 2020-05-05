@@ -20,7 +20,7 @@ export default [
     output: [
       {
         name: "mizar",
-        file: pkg.browser,
+        file: "dist/mizar.min.js",
         format: "umd",
         globals,
         // Minify bundle using terser
