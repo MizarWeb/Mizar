@@ -5,8 +5,8 @@
 /coverage
 
 # production
-/build
-dist
+# Actually adding builds to version control is done by some other browser libraries
+# dist
 
 # misc
 .DS_Store
