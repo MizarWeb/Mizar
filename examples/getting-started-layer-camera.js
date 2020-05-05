@@ -1,4 +1,4 @@
-var mizar = new Mizar({
+const mizar = new Mizar({
   canvas: "MizarCanvas",
   planetContext: {
     coordinateSystem: {
@@ -15,7 +15,7 @@ mizar.addLayer({
   visible: true
 });
 
-var layerMontpellier;
+let layerMontpellier;
 mizar.addLayer(
   {
     name: "Montpellier",
@@ -29,7 +29,7 @@ mizar.addLayer(
   }
 );
 
-var layerEurope;
+let layerEurope;
 mizar.addLayer(
   {
     name: "Europe",
@@ -49,16 +49,16 @@ mizar.addLayer(
 );
 
 $("#montpellier").change(function () {
-  var montpellier = $(this).val();
-  var checked = document.getElementById("montpellier").checked;
+  const montpellier = $(this).val();
+  const checked = document.getElementById("montpellier").checked;
   if (layerMontpellier) {
     layerMontpellier.setVisible(checked);
   }
 });
 
 $("#europe").change(function () {
-  var europe = $(this).val();
-  var checked = document.getElementById("europe").checked;
+  const europe = $(this).val();
+  const checked = document.getElementById("europe").checked;
   if (layerEurope) {
     layerEurope.setVisible(checked);
   }

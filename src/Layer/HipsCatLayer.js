@@ -25,10 +25,13 @@ import "jscsv/app/JsCsv";
 import Constants from "../Utils/Constants";
 import ErrorDialog from "../Gui/dialog/ErrorDialog";
 import Proxy from "../Utils/Proxy";
+
+import startsImg from "../../static/star.png";
+
 /**************************************************************************************************************/
 
 function _setDefaultOptions(options) {
-  options.icon = options.icon || "css/images/star16x16.png";
+  options.icon = options.icon || startsImg;
   options.background = false;
   options.category = options.category || "Catalog";
   options.pickable = options.pickable || true;
@@ -37,7 +40,7 @@ function _setDefaultOptions(options) {
 
 /**
  * Hips catalogue configuration
- * @typedef {AbstractLayer.configuration} AbstractLayer.hipsCat_configuration
+ * @typedef {AbstractLayer.configuration} AbstractLayerstar.hipsCat_configuration
  * @property {string} serviceUrl - Endpoint to reach the Hips catalogue
  * @property {int} [minOrder = 2] - min order
  * @property {int} [maxRequests = 4] - Max requests in parallel
@@ -51,30 +54,30 @@ function _setDefaultOptions(options) {
  * @memberof module:Layer
  * @see {@link http://www.ivoa.net/documents/HiPS/20170406/index.html Hips standard}
  */
-var HipsCatLayer = function (hipsMetadata, options) {
+const HipsCatLayer = function (hipsMetadata, options) {
   AbstractHipsLayer.prototype.constructor.call(this, hipsMetadata, _setDefaultOptions(options));
-  var i;
-  var propertiesObj = new Properties(this.allowRequest(options.baseUrl) + "/properties");
-  var properties = propertiesObj.getProperties();
-  var hips_order = properties.hips_order;
+  let i;
+  const propertiesObj = new Properties(this.allowRequest(options.baseUrl) + "/properties");
+  const properties = propertiesObj.getProperties();
+  const hips_order = properties.hips_order;
   this.serviceUrl = this.allowRequest(options.baseUrl);
   this.minOrder = options.minOrder || 2;
   this.maxOrder = Number.parseInt(hips_order, 10);
   this.maxRequests = options.maxRequests || 4;
   this.invertY = options.invertY || false;
-  var xhr = new XMLHttpRequest();
+  let xhr = new XMLHttpRequest();
   xhr.open("GET", Proxy.proxify(this.allowRequest(options.baseUrl + "/metadata.xml")), false);
   xhr.setRequestHeader("Accept", "application/xml");
   xhr.send(null);
-  var jsVotable = new JsVotable.Votable(xhr.responseXML);
-  var resource = jsVotable.getResources()[0];
-  var table = resource.getResourcesOrTables()[0];
+  const jsVotable = new JsVotable.Votable(xhr.responseXML);
+  const resource = jsVotable.getResources()[0];
+  const table = resource.getResourcesOrTables()[0];
   this.fields = table.getFields();
   this.raColNumber = null;
   this.decColNumber = null;
   this.sourceId = null;
   for (i = 0; i < this.fields.length; i++) {
-    var ucd = this.fields[i].ucd();
+    const ucd = this.fields[i].ucd();
     if (ucd === "pos.eq.ra;meta.main") {
       this.raColNumber = this.fields[i].name();
     } else if (ucd === "pos.eq.dec;meta.main") {
@@ -115,22 +118,22 @@ Utils.inherits(AbstractHipsLayer, HipsCatLayer);
  */
 var Properties = function (url) {
   this.properties = {};
-  var i;
-  var xhr = new XMLHttpRequest();
+  let i;
+  const xhr = new XMLHttpRequest();
   xhr.open("GET", Proxy.proxify(url), false);
   xhr.setRequestHeader("Accept", "text/plain");
   xhr.send();
-  var content = xhr.responseText;
+  const content = xhr.responseText;
   content.trim();
-  var lines = content.split("\n");
+  const lines = content.split("\n");
   for (i = 0; lines !== null && i < lines.length; i++) {
-    var line = lines[i];
+    const line = lines[i];
     if (line.indexOf("#") > -1 || !line.trim()) {
       continue;
     }
-    var keywordValue = line.split("=");
-    var keyword = keywordValue[0].replace(/^\s+|\s+$/g, "");
-    var value = keywordValue[1].replace(/^\s+|\s+$/g, "");
+    const keywordValue = line.split("=");
+    const keyword = keywordValue[0].replace(/^\s+|\s+$/g, "");
+    const value = keywordValue[1].replace(/^\s+|\s+$/g, "");
     this.properties[keyword] = value;
   }
 };
@@ -176,8 +179,8 @@ HipsCatLayer.prototype._detach = function () {
  * @fires Context#features:added
  */
 HipsCatLayer.prototype.launchRequest = function (tile, url) {
-  var tileData = tile.extension[this.extId];
-  var index = null;
+  const tileData = tile.extension[this.extId];
+  const index = null;
 
   if (this.freeRequests.length === 0) {
     return;
@@ -191,16 +194,16 @@ HipsCatLayer.prototype.launchRequest = function (tile, url) {
     this.getGlobe().publishEvent(Constants.EVENT_MSG.LAYER_START_LOAD, this);
   }
 
-  var xhr = this.freeRequests.pop();
-  var self = this;
+  const xhr = this.freeRequests.pop();
+  const self = this;
   xhr.open("GET", Proxy.proxify(url));
   xhr.setRequestHeader("Accept", "application/xml");
   xhr.send(null);
   xhr.onreadystatechange = function (e) {
     if (xhr.readyState === 4) {
       if (xhr.status === 200) {
-        var response = {};
-        var headerInfo = {
+        const response = {};
+        const headerInfo = {
           name: [],
           datatype: []
         };
@@ -208,8 +211,8 @@ HipsCatLayer.prototype.launchRequest = function (tile, url) {
           headerInfo.name.push(field.name());
           headerInfo.datatype.push(field.datatype());
         });
-        var csv = new CSV.Csv(xhr.response, "\t", headerInfo);
-        var geoJson = csv.getGeoJSon(
+        const csv = new JsCsv.Csv(xhr.response, "\t", headerInfo);
+        const geoJson = csv.getGeoJSon(
           {
             RA: self.raColNumber,
             DEC: self.decColNumber,
@@ -217,7 +220,7 @@ HipsCatLayer.prototype.launchRequest = function (tile, url) {
           },
           "Equatorial"
         );
-        var features = geoJson.features;
+        const features = geoJson.features;
         response.features = features;
         response.totalResults = features.length;
 
@@ -227,11 +230,11 @@ HipsCatLayer.prototype.launchRequest = function (tile, url) {
 
         //self.updateFeatures(response.features);
 
-        var i;
+        let i;
         for (i = response.features.length - 1; i >= 0; i--) {
-          var feature = response.features[i];
+          const feature = response.features[i];
           // Eliminate already added features from response
-          var alreadyAdded = self.featuresSet.hasOwnProperty(feature.id);
+          const alreadyAdded = self.featuresSet.hasOwnProperty(feature.id);
           if (alreadyAdded) response.features.splice(i, 1);
 
           feature.properties.style = this.style;
@@ -269,8 +272,8 @@ HipsCatLayer.prototype.launchRequest = function (tile, url) {
  * @param tile
  */
 HipsCatLayer.prototype.addFeature = function (feature, tile) {
-  var tileData = tile.extension[this.extId];
-  var featureData;
+  const tileData = tile.extension[this.extId];
+  let featureData;
 
   // Add feature if it doesn't exist
   if (!this.featuresSet.hasOwnProperty(feature.id)) {
@@ -300,7 +303,7 @@ HipsCatLayer.prototype.addFeature = function (feature, tile) {
   //this.addFeatureToRenderer(feature, tile);
 
   // MS: Feature could be added from ClusterOpenSearch which have features with different styles
-  var style = feature.properties.style ? feature.properties.style : this.style;
+  const style = feature.properties.style ? feature.properties.style : this.style;
 
   this.getGlobe().getRendererManager().addGeometryToTile(this, feature.geometry, style, tile);
 };
@@ -313,14 +316,14 @@ HipsCatLayer.prototype.addFeature = function (feature, tile) {
  * @param tile
  */
 HipsCatLayer.prototype.removeFeature = function (identifier, tile) {
-  var featureIt = this.featuresSet[identifier];
+  const featureIt = this.featuresSet[identifier];
 
   if (!featureIt) {
     return;
   }
 
   // Remove tile from array
-  var tileIndex = featureIt.tiles.indexOf(tile);
+  const tileIndex = featureIt.tiles.indexOf(tile);
   if (tileIndex >= 0) {
     featureIt.tiles.splice(tileIndex, 1);
   } else {
@@ -332,7 +335,7 @@ HipsCatLayer.prototype.removeFeature = function (identifier, tile) {
     delete this.featuresSet[identifier];
 
     // Remove it from the array by swapping it with the last feature to optimize removal.
-    var lastFeature = this.features.pop();
+    const lastFeature = this.features.pop();
     if (featureIt.index < this.features.length) {
       // Set the last feature at the position of the removed feature
       this.features[featureIt.index] = lastFeature;
@@ -351,11 +354,11 @@ HipsCatLayer.prototype.removeFeature = function (identifier, tile) {
  */
 HipsCatLayer.prototype.modifyFeatureStyle = function (feature, style) {
   feature.properties.style = style;
-  var featureData = this.featuresSet[feature.id];
+  const featureData = this.featuresSet[feature.id];
   if (featureData) {
-    var i;
+    let i;
     for (i = 0; i < featureData.tiles.length; i++) {
-      var tile = featureData.tiles[i];
+      const tile = featureData.tiles[i];
       this.getGlobe().getRendererManager().removeGeometryFromTile(feature.geometry, tile);
       this.getGlobe().getRendererManager().addGeometryToTile(this, feature.geometry, style, tile);
     }
@@ -407,7 +410,7 @@ var OSData = function (layer, tile, p) {
  * @param tile
  */
 OSData.prototype.traverse = function (tile) {
-  var i;
+  let i;
   if (!this.layer.isVisible()) return;
 
   if (tile.state !== Tile.State.LOADED) return;
@@ -432,7 +435,7 @@ OSData.prototype.traverse = function (tile) {
     this.childrenCreated = true;
 
     // HACK : set renderable to have children
-    var renderables = tile.extension.renderer ? tile.extension.renderer.renderables : [];
+    const renderables = tile.extension.renderer ? tile.extension.renderer.renderables : [];
     for (i = 0; i < renderables.length; i++) {
       if (renderables[i].bucket.layer === this.layer) renderables[i].hasChildren = true;
     }
@@ -446,11 +449,11 @@ OSData.prototype.traverse = function (tile) {
  * @param tilePool
  */
 OSData.prototype.dispose = function (renderContext, tilePool) {
-  var i;
+  let i;
   if (this.parent && this.parent.childrenCreated) {
     this.parent.childrenCreated = false;
     // HACK : set renderable to not have children!
-    var renderables = this.parent.tile.extension.renderer ? this.parent.tile.extension.renderer.renderables : [];
+    const renderables = this.parent.tile.extension.renderer ? this.parent.tile.extension.renderer.renderables : [];
     for (i = 0; i < renderables.length; i++) {
       if (renderables[i].bucket.layer === this.layer) renderables[i].hasChildren = false;
     }
@@ -471,7 +474,7 @@ OSData.prototype.dispose = function (renderContext, tilePool) {
  * @return {*}
  */
 HipsCatLayer.prototype.buildUrl = function (tile) {
-  var url;
+  let url;
   if (tile.order <= 0) {
     url = this.serviceUrl + "/Norder" + tile.order + "/Allsky.xml";
   } else {
@@ -481,7 +484,7 @@ HipsCatLayer.prototype.buildUrl = function (tile) {
     url += tile.order;
 
     url += "/Dir";
-    var indexDirectory = Math.floor(tile.pixelIndex / 10000) * 10000;
+    const indexDirectory = Math.floor(tile.pixelIndex / 10000) * 10000;
     url += indexDirectory;
 
     url += "/Npix";
@@ -519,7 +522,7 @@ function _sortTilesByDistance(t1, t2) {
  * @param tiles The array of tiles to render
  */
 HipsCatLayer.prototype.render = function (tiles) {
-  var i;
+  let i;
   if (!this.visible) return;
 
   // Sort tiles
@@ -527,8 +530,8 @@ HipsCatLayer.prototype.render = function (tiles) {
 
   // Load data for the tiles if needed
   for (i = 0; i < this.tilesToLoad.length && this.freeRequests.length > 0; i++) {
-    var tile = this.tilesToLoad[i].tile;
-    var url = this.buildUrl(tile);
+    const tile = this.tilesToLoad[i].tile;
+    const url = this.buildUrl(tile);
     if (url) {
       this.launchRequest(tile, url);
     }

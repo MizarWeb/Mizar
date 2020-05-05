@@ -23,7 +23,10 @@ module.exports = {
     Uint32Array: true,
     WCS: true,
     samp: true,
-    astro: true
+    astro: true,
+    JsCsv: true,
+    JsVotable: true,
+    Mizar: true
   },
 
   rules: {

@@ -1,4 +1,4 @@
-var mizar = new Mizar({
+const mizar = new Mizar({
   canvas: "MizarCanvas",
   planetContext: {
     coordinateSystem: {
@@ -51,9 +51,9 @@ mizar.addLayer(
     visible: true
   },
   function (wireFrameID) {
-    var wireframeLayer = mizar.getLayerByID(wireFrameID);
+    const wireframeLayer = mizar.getLayerByID(wireFrameID);
     $("#wireframeVisibility").change(function () {
-      var isOn = $(this).is(":checked");
+      const isOn = $(this).is(":checked");
       wireframeLayer.setVisible(isOn);
     });
   }
@@ -65,17 +65,17 @@ mizar.addLayer(
     visible: true
   },
   function (layerID) {
-    var styleN = mizar.UtilityFactory.create(Mizar.UTILITY.CreateStyle, {
+    const styleN = mizar.UtilityFactory.create(Mizar.UTILITY.CreateStyle, {
       label: "NORTH",
       pointMaxSize: 4000
     });
 
-    var styleS = mizar.UtilityFactory.create(Mizar.UTILITY.CreateStyle, {
+    const styleS = mizar.UtilityFactory.create(Mizar.UTILITY.CreateStyle, {
       label: "SOUTH",
       pointMaxSize: 4000
     });
 
-    var layer = mizar.getLayerByID(layerID);
+    const layer = mizar.getLayerByID(layerID);
     layer.addFeature({
       geometry: {
         type: "Point",
@@ -97,9 +97,8 @@ mizar.addLayer(
   }
 );
 
-var featureCollection = null;
-var afterLoadVector = function (data) {
-  console.log("Hello JC!!!");
+let featureCollection = null;
+const afterLoadVector = function (data) {
   featureCollection = data;
 };
 
@@ -117,12 +116,12 @@ mizar.addLayer(
     visible: true
   },
   function (layerID) {
-    var vectorLayer = mizar.getLayerByID(layerID);
+    const vectorLayer = mizar.getLayerByID(layerID);
     $("#selectProjection").change(function () {
       // Reset vector layer features
       vectorLayer.removeAllFeatures();
 
-      var coordinateSystem = $(this).val();
+      const coordinateSystem = $(this).val();
       mizar.setCrs({
         geoideName: Mizar.CRS.WGS84,
         projectionName: coordinateSystem
@@ -132,18 +131,18 @@ mizar.addLayer(
     });
 
     $("#vectorVisibility").change(function () {
-      var isOn = $(this).is(":checked");
+      const isOn = $(this).is(":checked");
       vectorLayer.setVisible(isOn);
     });
   }
 );
 
-var cvs = document.getElementById("MizarCanvas");
+const cvs = document.getElementById("MizarCanvas");
 
 // Test to check inverse transformation for each coordinate system
 cvs.onclick = function (event) {
-  var lonlat = mizar.getActivatedContext().getLonLatFromPixel(event.layerX, event.layerY);
+  const lonlat = mizar.getActivatedContext().getLonLatFromPixel(event.layerX, event.layerY);
   if (lonlat) {
-    var pixel = mizar.getActivatedContext().getPixelFromLonLat(lonlat[0], lonlat[1]);
+    const pixel = mizar.getActivatedContext().getPixelFromLonLat(lonlat[0], lonlat[1]);
   }
 };
