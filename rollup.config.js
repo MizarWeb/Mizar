@@ -57,7 +57,7 @@ export default [
       // Solve JQuery errors when importing the library
       inject({
         $: "jquery",
-        JQuery: "jquery"
+        jQuery: "jquery"
       }),
       // Allow image importing as base64, use it for convenience but it is not optimal
       image(),

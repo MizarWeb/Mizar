@@ -31959,7 +31959,7 @@
       element.removeClass("masked-relative");
       element.find("select").removeClass("masked-hidden");
     };
-  })(jQuery);
+  })($);
 
   var self$5, mizarAPI$6, layers, availableLayers;
 
@@ -59389,8 +59389,6 @@
    * You should have received a copy of the GNU General Public License
    * along with MIZAR. If not, see <http://www.gnu.org/licenses/>.
    ******************************************************************************/
-
-  global.$ = global.jQuery = $;
   /**
    * mizarMode:toggle.<br/>
    * Called when Mizar switches from a context to another context
