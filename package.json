@@ -62,14 +62,27 @@
   ],
   "scripts": {
     "build": "rollup -c",
+    "conventional-changelog": "conventional-changelog -p angular -i CHANGELOG.md -s -r 0",
+    "conventional-github-releaser": "conventional-github-releaser -p angular",
+    "deploy:web": "npm run build && npm run jsdoc && mkdir -p $npm_package_config_output && cp ./dist/mizar.min.js $npm_package_config_output && cp README.md $npm_package_config_output && cp ./static/mizar.png $npm_package_config_output && cp -r api_doc $npm_package_config_output",
+    "deploy:web:tmp": "npm run deploy:web --Mizar:output=/tmp/website",
     "dev": "rollup -c -w",
     "doc:clean": "rm -rf api_doc && rm -rf tutorials",
     "doc:gen": "rm -rf api_doc && rm -rf tutorials && cd scripts && python generateTutorial.py && cd .. && jsdoc --readme ./README.md -c jsdoc.conf && cp -r ./tutorials/resources ./api_doc && cp -r ./tutorials/data ./api_doc",
     "doc:open": "http-server -o ./api_doc/index.html",
     "format": " prettier --write .",
     "lint": "eslint --fix .",
+    "major-release": "npm version major && npm publish && git push --follow-tags",
+    "minor-release": "npm version minor && npm publish && git push --follow-tags",
+    "patch-release": "npm version patch && npm publish && git push --follow-tags",
+    "push": "git push --follow-tags",
+    "push:git": "git push --tags origin HEAD:master",
+    "release": "npm run lint && npm run build:prod && npm run license",
     "stats:open": "sensible-browser ./stats.html",
     "test": "jest ./tests/**"
+  },
+  "config": {
+    "output": "./website"
   },
   "dependencies": {
     "gzip-js": "^0.3.2",

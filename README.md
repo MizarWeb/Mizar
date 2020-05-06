@@ -52,18 +52,55 @@ A {@link module:Context context} contains :
 
 _Integration of Mizar api script in HEADER_
 
-```javascript
-<script type="text/javascript" src="mizar.js"></script>
+```html
+<!-- Optionnal stylesheets -->
+<link
+  rel="stylesheet"
+  type="text/css"
+  href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.css"
+/>
+<link
+  rel="stylesheet"
+  type="text/css"
+  href="https://cdn.jsdelivr.net/gh/wallynm/jquery-loadmask@master/jquery.loadmask.min.css"
+/>
+
+<!-- Dependencies -->
+<script
+  src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
+  integrity="sha256-4+XzXVhsDmqanXGHaHvgh1gMQKX40OUvDEBTu8JcmNs="
+  crossorigin="anonymous"
+></script>
+<script
+  src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"
+  integrity="sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU="
+  crossorigin="anonymous"
+></script>
+<script src="https://cdn.jsdelivr.net/npm/moment@2.22.1/moment.min.js"></script>
+<script
+  src="https://cdn.jsdelivr.net/npm/moment@2.22.1/locale/fr.js"
+  integrity="sha256-D0tqyrTQHDExvGYoi+kyInjV47fm30M5qq4whUrMuuE="
+  crossorigin="anonymous"
+></script>
+
+<script type="text/javascript" src="mizar.min.js"></script>
 ```
 
 _Declaration of Mizar canvas in BODY_
 
-```javascript
+```html
 <canvas id="MizarCanvas" style="border: none; margin: 0; padding: 0;"></canvas>
 ```
 
 **Note :**
 By default, the canvas will take the entire window. If you want to limit the canvas size, specify it with the attributes "height" and "width"
+
+### Importing as a module
+
+```javascript
+import Mizar from "mizar";
+// Do not forget to install the peer dependencies in your application
+```
 
 ### Creating a basic Mizar instance
 
