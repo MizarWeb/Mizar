@@ -19,7 +19,7 @@
 import Numeric from "./Numeric";
 import Constants from "./Constants";
 import HEALPixBase from "../Tiling/HEALPixBase";
-var UtilsIntersection = {};
+const UtilsIntersection = {};
 
 UtilsIntersection.convertPolygonToHealpixOrder = function (coordinates, fact, order) {
   return HEALPixBase.convertPolygonToHealpixOrder(coordinates, fact, order);
@@ -33,10 +33,10 @@ UtilsIntersection.convertPolygonToHealpixOrder = function (coordinates, fact, or
  * @returns {boolean}
  */
 UtilsIntersection.pointInLine = function (point, segmentStart, segmentEnd) {
-  var deltax = segmentEnd[0] - segmentStart[0];
-  var deltay, t;
-  var liesInXDir = false;
-  var isIntersect;
+  const deltax = segmentEnd[0] - segmentStart[0];
+  let deltay, t;
+  let liesInXDir = false;
+  let isIntersect;
 
   if (deltax === 0) {
     liesInXDir = point[0] === segmentStart[0];
@@ -63,16 +63,16 @@ UtilsIntersection.pointInLine = function (point, segmentStart, segmentEnd) {
  *    Determine if a point lies inside a sphere of radius depending on viewport
  */
 UtilsIntersection.pointInSphere = function (ctx, point, sphere, pointTextureHeight) {
-  var point3D = [];
-  var sphere3D = [];
+  const point3D = [];
+  const sphere3D = [];
 
   // Compute pixel size vector to offset the points from the earth
-  var pixelSizeVector = ctx.getRenderContext().computePixelSizeVector();
+  const pixelSizeVector = ctx.getRenderContext().computePixelSizeVector();
 
   ctx.getCoordinateSystem().get3DFromWorld(point, point3D);
   ctx.getCoordinateSystem().get3DFromWorld(sphere, sphere3D);
 
-  var radius =
+  const radius =
     pointTextureHeight *
     (pixelSizeVector[0] * sphere3D[0] +
       pixelSizeVector[1] * sphere3D[1] +
@@ -80,7 +80,7 @@ UtilsIntersection.pointInSphere = function (ctx, point, sphere, pointTextureHeig
       pixelSizeVector[3]);
 
   //Calculate the squared distance from the point to the center of the sphere
-  var vecDist = [];
+  let vecDist = [];
   vec3.subtract(point3D, sphere3D, vecDist);
   vecDist = vec3.dot(vecDist, vecDist);
 
@@ -98,25 +98,25 @@ UtilsIntersection.pointInSphere = function (ctx, point, sphere, pointTextureHeig
  * Convert spherical coordinate to cartesian
  */
 function to3D(pt) {
-  var lon = Numeric.toRadian(pt[0]);
-  var lat = Numeric.toRadian(pt[1]);
-  var x = Math.cos(lat) * Math.cos(lon);
-  var y = Math.cos(lat) * Math.sin(lon);
-  var z = Math.sin(lat);
+  const lon = Numeric.toRadian(pt[0]);
+  const lat = Numeric.toRadian(pt[1]);
+  const x = Math.cos(lat) * Math.cos(lon);
+  const y = Math.cos(lat) * Math.sin(lon);
+  const z = Math.sin(lat);
   return [x, y, z];
 }
 
 function greatArcIntersection(a0, a1, b0, b1) {
-  var p = vec3.cross(a0, a1, []);
-  var q = vec3.cross(b0, b1, []);
-  var t = vec3.normalize(vec3.cross(p, q, []));
+  const p = vec3.cross(a0, a1, []);
+  const q = vec3.cross(b0, b1, []);
+  const t = vec3.normalize(vec3.cross(p, q, []));
 
-  var s1 = vec3.dot(vec3.cross(a0, p, []), t);
-  var s2 = vec3.dot(vec3.cross(a1, p, []), t);
-  var s3 = vec3.dot(vec3.cross(b0, q, []), t);
-  var s4 = vec3.dot(vec3.cross(b1, q, []), t);
+  const s1 = vec3.dot(vec3.cross(a0, p, []), t);
+  const s2 = vec3.dot(vec3.cross(a1, p, []), t);
+  const s3 = vec3.dot(vec3.cross(b0, q, []), t);
+  const s4 = vec3.dot(vec3.cross(b1, q, []), t);
 
-  var st = Numeric.sign(-s1) + Numeric.sign(s2) + Numeric.sign(-s3) + Numeric.sign(s4);
+  const st = Numeric.sign(-s1) + Numeric.sign(s2) + Numeric.sign(-s3) + Numeric.sign(s4);
   return Math.abs(st) === 4;
 }
 
@@ -124,13 +124,13 @@ function greatArcIntersection(a0, a1, b0, b1) {
  * Point in ring with spherical geometry
  */
 UtilsIntersection.pointInRing = function (point, ring) {
-  var nvert = ring.length;
-  var nbinter = 0;
+  const nvert = ring.length;
+  let nbinter = 0;
 
-  var p0 = to3D(point);
-  var p1 = to3D([point[0], point[1] + 90]);
+  const p0 = to3D(point);
+  const p1 = to3D([point[0], point[1] + 90]);
 
-  for (var i = 0; i < nvert - 1; i++) {
+  for (let i = 0; i < nvert - 1; i++) {
     if (greatArcIntersection(to3D(ring[i]), to3D(ring[i + 1]), p0, p1)) {
       nbinter++;
     }
@@ -164,12 +164,12 @@ UtilsIntersection.boundsIntersects = function (a, b) {
   if (a.north == null || b.north == null) {
     return false;
   }
-  var xOk =
+  const xOk =
     UtilsIntersection.isValueBetween(a.west, b.west, b.east) ||
     UtilsIntersection.isValueBetween(a.east, b.west, b.east) ||
     (a.west <= b.west && a.east >= b.east);
 
-  var yOk =
+  const yOk =
     UtilsIntersection.isValueBetween(a.north, b.south, b.north) ||
     UtilsIntersection.isValueBetween(a.south, b.south, b.north) ||
     (a.south <= b.south && a.north >= b.north);
@@ -189,7 +189,7 @@ UtilsIntersection.tileIntersectHealpixTile = function (t1, t2) {
     return false;
   }
 
-  var result;
+  let result;
   if (t1.level === t2.level) {
     result = t1.pixelIndex === t2.pixelIndex;
   } else if (t1.level > t2.level) {
@@ -214,7 +214,7 @@ UtilsIntersection.tileIntersectGeoTile = function (t1, t2) {
     return false;
   }
 
-  var result;
+  let result;
   if (t1.level === t2.level) {
     result = t1.x === t2.x && t1.y === t2.y;
   } else if (t1.level > t2.level) {
@@ -247,13 +247,13 @@ UtilsIntersection.tileIntersect = function (t1, t2) {
   if (t1 === null || t2 === null) {
     return false;
   }
-  var result;
+  let result;
   if (t1.type === Constants.TILE.GEO_TILE || t1.type === Constants.TILE.MERCATOR_TILE) {
     result = UtilsIntersection.tileIntersectGeoTile(t1, t2);
   } else if (t1.type === Constants.TILE.HEALPIX_TILE) {
     result = UtilsIntersection.tileIntersectHealpixTile(t1, t2);
   } else {
-    throw new ReferenceError("Unknown tiling", "UtilsIntersection.js");
+    throw new ReferenceError("UtilsIntersection.js: Unknown tiling");
   }
   return result;
 };
@@ -269,9 +269,9 @@ UtilsIntersection.tileIntersects = function (a, b) {
   if (a === null || b === null) {
     return false;
   }
-  var result = false;
-  for (var i = 0; i < b.length && !result; i++) {
-    var tile = b[i];
+  let result = false;
+  for (let i = 0; i < b.length && !result; i++) {
+    const tile = b[i];
     result = UtilsIntersection.tileIntersect(a, tile);
   }
   return result;
@@ -315,7 +315,7 @@ UtilsIntersection.isInBillboard = function (pickPoint, originGeometry, size, eve
   }
 
   const from3dToScreenSpace = function (point) {
-    var result = vec3.create();
+    const result = vec3.create();
 
     const viewMatrix = rc.viewMatrix;
     const projMatrix = rc.projectionMatrix;
@@ -339,7 +339,7 @@ UtilsIntersection.isInBillboard = function (pickPoint, originGeometry, size, eve
   const rc = renderer.tileManager.renderContext;
 
   // Compute mouse position. We do not always use eventPos, to keep the z position.
-  var mouse2d;
+  let mouse2d;
   if (pickPoint) {
     const pickPoint3D = crs.get3DFromWorld(pickPoint);
     mouse2d = from3dToScreenSpace(pickPoint3D);
@@ -359,9 +359,9 @@ UtilsIntersection.isInBillboard = function (pickPoint, originGeometry, size, eve
 
   const scaleRadius = crs.getGeoide().getHeightScale();
 
-  var billboardSize;
-  var topLeftLocal;
-  var bottomRightLocal;
+  let billboardSize;
+  let topLeftLocal;
+  let bottomRightLocal;
   if (crs.getType() === Constants.CONTEXT.Planet) {
     billboardSize = vec3.create([size[0] * scaleRadius, size[1] * scaleRadius, 1.0]);
     topLeftLocal = vec3.create([-0.5, 1.0, 0.0]);
@@ -374,15 +374,15 @@ UtilsIntersection.isInBillboard = function (pickPoint, originGeometry, size, eve
   }
 
   const billboardTo3d = function (o, p, size, camRight, camUp) {
-    var x = vec3.create();
+    const x = vec3.create();
     vec3.scale(camRight, p[0], x);
     vec3.scale(x, size[0]);
 
-    var y = vec3.create();
+    const y = vec3.create();
     vec3.scale(camUp, p[1], y);
     vec3.scale(y, size[1]);
 
-    var result = vec3.create();
+    const result = vec3.create();
     vec3.add(o, x, result);
     vec3.add(result, y);
     return result;
@@ -399,7 +399,7 @@ UtilsIntersection.isInBillboard = function (pickPoint, originGeometry, size, eve
   const top = topLeft2d[1];
   const bottom = bottomRight2d[1];
 
-  var isIntersected = false;
+  let isIntersected = false;
   // Check if point is in the 2d bounds
   if (mouse2d[0] > left && mouse2d[0] < right && mouse2d[1] > top && mouse2d[1] < bottom) {
     if (crs.getType() === Constants.CONTEXT.Sky) {

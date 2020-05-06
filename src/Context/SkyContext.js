@@ -44,10 +44,10 @@ import Constants from "../Utils/Constants";
  * @constructor
  * @memberof module:Context
  */
-var SkyContext = function (mizarConfiguration, options) {
+const SkyContext = function (mizarConfiguration, options) {
   AbstractContext.prototype.constructor.call(this, mizarConfiguration, Constants.CONTEXT.Sky, options);
 
-  var self = this;
+  const self = this;
   this.components = {
     posTrackerInfo: true,
     posTracker: true,
@@ -55,7 +55,7 @@ var SkyContext = function (mizarConfiguration, options) {
     compassDiv: true,
     timeTravelDiv: true
   };
-  var skyOptions = _createSkyConfiguration.call(this, options);
+  const skyOptions = _createSkyConfiguration.call(this, options);
   this.initGlobe(skyOptions, {
     "3D": Constants.NAVIGATION.AstroNavigation
   });
@@ -91,8 +91,8 @@ var SkyContext = function (mizarConfiguration, options) {
  * @private
  */
 function _createSkyConfiguration(options) {
-  var self = this;
-  var skyOptions = {
+  const self = this;
+  const skyOptions = {
     canvas: this.canvas,
     tileErrorTreshold: options.tileErrorTreshold || 1.5,
     continuousRendering: options.continuousRendering || true,
@@ -127,7 +127,7 @@ Utils.inherits(AbstractContext, SkyContext);
  */
 SkyContext.prototype.setCoordinateSystem = function (cs) {
   if (cs.getType() !== this.getMode()) {
-    throw new ReferenceError("incompatible coordinate reference system with Sky context", "SkyContex.js");
+    throw new ReferenceError("SkyContext.js: incompatible coordinate reference system with Sky context");
   }
   this.globe.setCoordinateSystem(cs);
   this.publish(Constants.EVENT_MSG.CRS_MODIFIED, this);

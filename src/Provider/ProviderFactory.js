@@ -53,7 +53,7 @@ export default {
    */
 
   create: function (type, options) {
-    var obj;
+    let obj;
     switch (type) {
       case Constants.PROVIDER.Constellation:
         obj = new ConstellationProvider(options);
@@ -71,7 +71,7 @@ export default {
         obj = new TrajectoryProvider(options);
         break;
       default:
-        throw new RangeError("unable to create the provider " + type, "ProviderFactory.js");
+        throw new RangeError("ProviderFactory.js: unable to create the provider " + type);
     }
     return obj;
   }

@@ -85,10 +85,12 @@
     "output": "./website"
   },
   "dependencies": {
+    "file-saver": "^2.0.2",
     "gzip-js": "^0.3.2",
     "jquery-ui-bundle": "^1.12.1-migrate",
     "jscsv": "^1.1.4",
     "jsvotable": "^2.0.2",
+    "jszip": "^3.4.0",
     "moment": "^2.22.1",
     "underscore": "^1.8.3",
     "wms-capabilities": "^0.3.4",

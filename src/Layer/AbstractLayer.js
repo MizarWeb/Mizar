@@ -104,7 +104,7 @@ const DEFAULT_ICON =
  * @constructor
  * @implements {Layer}
  */
-var AbstractLayer = function (type, options) {
+const AbstractLayer = function (type, options) {
   Event.prototype.constructor.call(this, options);
 
   this.globe = null;
@@ -162,7 +162,7 @@ var AbstractLayer = function (type, options) {
  * @private
  */
 function _createStyle(options) {
-  var style;
+  let style;
   if (options.hasOwnProperty("style")) {
     // we use style from layerDescription.
     style = UtilityFactory.create(Constants.UTILITY.CreateStyle, options.style);
@@ -171,16 +171,16 @@ function _createStyle(options) {
     style = options.style;
   } else {
     // Update layer color
-    var color = _createColor.call(this, options);
+    const color = _createColor.call(this, options);
 
     // Layer opacity must be in range [0, 1]
-    var opacity = _createOpacity.call(this, options);
+    const opacity = _createOpacity.call(this, options);
 
     // Create a default icon if needed.
-    var icon = _createIcon.call(this, options);
+    const icon = _createIcon.call(this, options);
 
     // Create a default zIndex if needed
-    var zIndex = _createZIndex.call(this, options);
+    const zIndex = _createZIndex.call(this, options);
 
     // create default style
     style = UtilityFactory.create(Constants.UTILITY.CreateStyle, {
@@ -196,7 +196,7 @@ function _createStyle(options) {
 }
 
 function _createZIndex(options) {
-  var zIndex;
+  let zIndex;
   if (options.hasOwnProperty("zIndex")) {
     zIndex = options.zIndex;
   } else {
@@ -206,7 +206,7 @@ function _createZIndex(options) {
 }
 
 function _createIcon(options) {
-  var icon;
+  let icon;
   if (options.hasOwnProperty("icon")) {
     icon = options.icon;
   } else {
@@ -222,7 +222,7 @@ function _createIcon(options) {
  * @private
  */
 function _createOpacity(options) {
-  var opacity;
+  let opacity;
   if (options.hasOwnProperty("opacity")) {
     opacity = options.opacity / 100.0;
   } else {
@@ -238,7 +238,7 @@ function _createOpacity(options) {
  * @private
  */
 function _createColor(options) {
-  var color;
+  let color;
   if (options.hasOwnProperty("color")) {
     color =
       options.color instanceof Array
@@ -246,7 +246,7 @@ function _createColor(options) {
         : UtilityFactory.create(Constants.UTILITY.FeatureStyle).fromStringToColor(options.color);
   } else {
     // Generate random color
-    var rgb = Utils.generateColor();
+    const rgb = Utils.generateColor();
     color = rgb.concat([1]);
   }
   return color;
@@ -266,10 +266,10 @@ Utils.inherits(Event, AbstractLayer);
  * @private
  */
 AbstractLayer.prototype._hasToBeRefreshed = function (param, value) {
-  var baseUrlMustBeRefreshed;
+  let baseUrlMustBeRefreshed;
   if (param === "time" && this.containsDimension(param)) {
     // Time is set and we have a temporal layer => refresh base URL
-    var time = Time.parse(value);
+    const time = Time.parse(value);
     this.time = time;
     baseUrlMustBeRefreshed = this.imageLoadedAtTime[param] !== time.date.toISOString();
     this.imageLoadedAtTime[param] = time.date.toISOString();
@@ -303,7 +303,7 @@ AbstractLayer.prototype.containsDimension = function (variable) {
  * @return {string} Short name
  */
 AbstractLayer.prototype.getShortName = function () {
-  var shortName = Utils.formatId(this.name);
+  let shortName = Utils.formatId(this.name);
   if (typeof shortName === "string") {
     shortName = shortName.replace(/[^a-z0-9\s]/gi, "").replace(/[_\s]/g, "-");
   }
@@ -350,7 +350,7 @@ AbstractLayer.prototype.setTime = function (time) {
  */
 AbstractLayer.prototype.forceRefresh = function () {
   if (this.getGlobe()) {
-    var tileManager = this.getGlobe().getTileManager();
+    const tileManager = this.getGlobe().getTileManager();
     tileManager.updateVisibleTiles(this);
   }
 };
@@ -360,10 +360,10 @@ AbstractLayer.prototype.forceRefresh = function () {
  * @memberof AbstractLayer#
  */
 AbstractLayer.prototype.getServicesRunningOnCollection = function () {
-  var layers = [];
-  for (var layerIndex in this.servicesRunningOnCollection) {
-    var layerID = this.servicesRunningOnCollection[layerIndex];
-    var layer = this.callbackContext.getLayerByID(layerID);
+  const layers = [];
+  for (const layerIndex in this.servicesRunningOnCollection) {
+    const layerID = this.servicesRunningOnCollection[layerIndex];
+    const layer = this.callbackContext.getLayerByID(layerID);
     if (layer != null) {
       layers.push(layer);
     }
@@ -376,8 +376,8 @@ AbstractLayer.prototype.getServicesRunningOnCollection = function () {
  * @memberof AbstractLayer#
  */
 AbstractLayer.prototype.removeServicesRunningOnCollection = function () {
-  for (var layerIndex in this.servicesRunningOnCollection) {
-    var layerID = this.servicesRunningOnCollection[layerIndex];
+  for (const layerIndex in this.servicesRunningOnCollection) {
+    const layerID = this.servicesRunningOnCollection[layerIndex];
     this.callbackContext.removeLayer(layerID);
   }
   return this.servicesRunningOnCollection.length === 0;
@@ -396,9 +396,9 @@ AbstractLayer.prototype.hasServicesRunningOnRecords = function () {
  * @memberof AbstractLayer#
  */
 AbstractLayer.prototype.getServicesRunningOnRecords = function () {
-  var layers = [];
-  for (var featureIndex in this.servicesRunningOnRecords) {
-    var featureID = this.servicesRunningOnRecords[featureIndex];
+  let layers = [];
+  for (const featureIndex in this.servicesRunningOnRecords) {
+    const featureID = this.servicesRunningOnRecords[featureIndex];
     layers = layers.concat(this.getServicesRunningOnRecord(featureID));
   }
   return layers;
@@ -409,7 +409,7 @@ AbstractLayer.prototype.getServicesRunningOnRecords = function () {
  * @memberof AbstractLayer#
  */
 AbstractLayer.prototype.removeServicesRunningOnRecords = function () {
-  for (var featureID in this.servicesRunningOnRecords) {
+  for (const featureID in this.servicesRunningOnRecords) {
     this.removeServicesRunningOnRecord(featureID);
   }
   return Object.keys(this.servicesRunningOnRecords).length === 0;
@@ -428,12 +428,12 @@ AbstractLayer.prototype.hasServicesRunningOnRecord = function (featureID) {
  * @memberof AbstractLayer#
  */
 AbstractLayer.prototype.getServicesRunningOnRecord = function (featureID) {
-  var layers = [];
+  const layers = [];
   if (this.hasServicesRunningOnRecord(featureID)) {
-    var servicesForFeatureID = this.servicesRunningOnRecords[featureID];
-    for (var layerIndex in servicesForFeatureID.layerIds) {
-      var layerID = servicesForFeatureID[layerIndex];
-      var layer = this.callbackContext.getLayerByID(layerID);
+    const servicesForFeatureID = this.servicesRunningOnRecords[featureID];
+    for (const layerIndex in servicesForFeatureID.layerIds) {
+      const layerID = servicesForFeatureID[layerIndex];
+      const layer = this.callbackContext.getLayerByID(layerID);
       if (layer != null) {
         layers.push(layer);
       }
@@ -449,9 +449,9 @@ AbstractLayer.prototype.getServicesRunningOnRecord = function (featureID) {
  * @memberof AbstractLayer#
  */
 AbstractLayer.prototype.addServicesRunningOnRecord = function (featureID, layerIDs) {
-  var isAdded;
+  let isAdded;
   if (featureID != null && layerIDs != null && !this.hasServicesRunningOnRecord(featureID)) {
-    var layersIDArray = Array.isArray(layerIDs) ? layerIDs : [layerIDs];
+    const layersIDArray = Array.isArray(layerIDs) ? layerIDs : [layerIDs];
     this.servicesRunningOnRecords[featureID] = {
       layerIds: layersIDArray
     };
@@ -467,11 +467,11 @@ AbstractLayer.prototype.addServicesRunningOnRecord = function (featureID, layerI
  * @memberof AbstractLayer#
  */
 AbstractLayer.prototype.removeServicesRunningOnRecord = function (featureID) {
-  var isRemoved;
+  let isRemoved;
   if (this.hasServicesRunningOnRecord(featureID)) {
-    var servicesForFeatureID = this.servicesRunningOnRecords[featureID];
-    for (var layerIndex in servicesForFeatureID.layerIds) {
-      var layerID = servicesForFeatureID.layerIds[layerIndex];
+    const servicesForFeatureID = this.servicesRunningOnRecords[featureID];
+    for (const layerIndex in servicesForFeatureID.layerIds) {
+      const layerID = servicesForFeatureID.layerIds[layerIndex];
       this.callbackContext.removeLayer(layerID);
     }
     delete this.servicesRunningOnRecords[featureID];
@@ -487,9 +487,9 @@ AbstractLayer.prototype.removeServicesRunningOnRecord = function (featureID) {
  * @memberof AbstractLayer#
  */
 AbstractLayer.prototype.addServicesRunningOnCollection = function (layerIDs) {
-  var isAdded;
+  let isAdded;
   if (layerIDs != null) {
-    var layersIDArray = Array.isArray(layerIDs) ? layerIDs : [layerIDs];
+    const layersIDArray = Array.isArray(layerIDs) ? layerIDs : [layerIDs];
     this.servicesRunningOnCollection = this.servicesRunningOnCollection.concat(layersIDArray);
     isAdded = true;
   } else {
@@ -550,7 +550,7 @@ AbstractLayer.prototype.getName = function () {
  * @abstract
  */
 AbstractLayer.prototype.getInformationType = function () {
-  throw new SyntaxError("getInformationType not implemented", "AbstractLayer.js");
+  throw new Error("AbstractLayer.js: getInformationType not implemented");
 };
 
 /**
@@ -598,7 +598,7 @@ AbstractLayer.prototype.isVisible = function () {
  * @memberof AbstractLayer#
  */
 AbstractLayer.prototype.setOnTheTop = function () {
-  var manager = this.getGlobe().getRendererManager();
+  const manager = this.getGlobe().getRendererManager();
   manager.setSelectedRasterBucket(this);
 };
 
@@ -618,7 +618,7 @@ AbstractLayer.prototype.setVisible = function (arg) {
       this.setOnTheTop();
     }
 
-    var ctxTime = this.callbackContext.getTime();
+    const ctxTime = this.callbackContext.getTime();
     if (ctxTime !== this.time) {
       this.setTime(ctxTime);
     }
@@ -645,7 +645,7 @@ AbstractLayer.prototype.setVisible = function (arg) {
     this.getGlobe().getRenderContext().requestFrame();
     this.publish(Constants.EVENT_MSG.LAYER_VISIBILITY_CHANGED, this);
   } else {
-    throw new TypeError("the parameter of visible should be a boolean", "AbstractLayer.js");
+    throw new TypeError("AbstractLayer.js: the parameter of visible should be a boolean");
   }
 };
 
@@ -663,7 +663,7 @@ AbstractLayer.prototype.getOpacity = function () {
  * @throws {RangeError} opacity - opacity value should be a value in [0..1]
  */
 AbstractLayer.prototype.setOpacity = function (arg) {
-  var style = this.getStyle();
+  const style = this.getStyle();
   style.setOpacity(arg);
   this.getGlobe().getRenderContext().requestFrame();
   this.publish(Constants.EVENT_MSG.LAYER_OPACITY_CHANGED, this);
@@ -831,10 +831,10 @@ AbstractLayer.prototype.generateTimeTravel = function (timeDetails) {
   if (timeDetails) {
     // In a general case, timeDetails.value could have this shape:
     //  val1,val2,min1/max1/step1,val3,min2/max2/step2
-    var timesDefinition = timeDetails.value.split(",");
-    var distinctValues = []; // records the distinct values : val1,val2,val3
-    var sampleValues = []; // records the samples values : min1/max1/step1,min2/max2/step2
-    var timeDefinition;
+    const timesDefinition = timeDetails.value.split(",");
+    const distinctValues = []; // records the distinct values : val1,val2,val3
+    const sampleValues = []; // records the samples values : min1/max1/step1,min2/max2/step2
+    let timeDefinition;
 
     // We need to iter because it is possible that we have a mix of distinct values and sample values
     for (var i = 0; i < timesDefinition.length; i++) {
@@ -859,7 +859,7 @@ AbstractLayer.prototype.generateTimeTravel = function (timeDetails) {
 
     // Add sample values in time travel
     if (sampleValues.length > 0) {
-      var start, end, step, tmpArray, sampleDefinition;
+      let start, end, step, tmpArray, sampleDefinition;
       for (i = 0; i < sampleValues.length; i++) {
         sampleDefinition = sampleValues[i];
         tmpArray = sampleDefinition.split("/");

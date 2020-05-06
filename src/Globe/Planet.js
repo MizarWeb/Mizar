@@ -65,7 +65,7 @@ import Constants from "../Utils/Constants";
  * @constructor
  * @memberof module:Globe
  */
-var Planet = function (options) {
+const Planet = function (options) {
   AbstractGlobe.prototype.constructor.call(this, Constants.GLOBE.Planet, options);
   this.manualRendererlayers = [];
 };
@@ -85,7 +85,7 @@ Utils.inherits(AbstractGlobe, Planet);
  */
 Planet.prototype.setBaseImagery = function (layer) {
   if (layer == null) {
-    throw new RangeError("layer must be exist.", "Planet.js");
+    throw new RangeError("Planet.js: layer must be exist.");
   }
 
   if (layer === this.baseImagery) {
@@ -130,11 +130,11 @@ Planet.prototype.setBaseElevation = function (layer) {
  */
 Planet.prototype.getElevation = function (lon, lat) {
   // Use imagery provider tiling if defined, otherwise use globe default one
-  var tiling = this.tileManager.tiling;
+  let tiling = this.tileManager.tiling;
   if (this.baseImagery) {
     tiling = this.baseImagery.tiling;
   }
-  var levelZeroTile = this.tileManager.level0Tiles[tiling.lonlat2LevelZeroIndex(lon, lat)];
+  const levelZeroTile = this.tileManager.level0Tiles[tiling.lonlat2LevelZeroIndex(lon, lat)];
 
   if (Tile.State && levelZeroTile && levelZeroTile.state === Tile.State.LOADED) {
     return levelZeroTile.getElevation(lon, lat);
@@ -151,7 +151,7 @@ Planet.prototype.render = function () {
   if (this.isEnabled()) {
     // Call pre-renderers (only in 3D mode, no atmosphere for 2D)
     if (!this.coordinateSystem.isFlat()) {
-      for (var i = 0; i < this.preRenderers.length; i++) {
+      for (let i = 0; i < this.preRenderers.length; i++) {
         this.preRenderers[i].preRender();
       }
     }

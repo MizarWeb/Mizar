@@ -44,7 +44,7 @@ import "../Renderer/glMatrix";
  * @throws {ReferenceError} Will throw when option.geoideName, options.geoBound and options.type are not defined
  * @implements {Crs}
  */
-var AbstractCrs = function (options) {
+const AbstractCrs = function (options) {
   this.flat = false;
   this.geoide = null;
   this.type = null;
@@ -58,8 +58,7 @@ var AbstractCrs = function (options) {
     this.geoBound = options.geoBound;
   } else {
     throw new ReferenceError(
-      "The geoide's parameters, the geoBound and the type of context must be defined",
-      AbstractCrs.js
+      "AbstractCrs.js: The geoide's parameters, the geoBound and the type of context must be defined"
     );
   }
 };
@@ -105,13 +104,13 @@ AbstractCrs.prototype.fromGeoTo3D = function (geo, dest) {
     dest[2] = 0;
     return dest;
   }
-  var longInRad = Numeric.toRadian(geo[0]);
-  var latInRad = Numeric.toRadian(geo[1]);
-  var cosLat = Math.cos(latInRad);
+  const longInRad = Numeric.toRadian(geo[0]);
+  const latInRad = Numeric.toRadian(geo[1]);
+  const cosLat = Math.cos(latInRad);
 
   // Take height into account
-  var height = geo.length > 2 ? this.geoide.getHeightScale() * geo[2] : 0;
-  var radius = this.geoide.getRadius() + height;
+  const height = geo.length > 2 ? this.geoide.getHeightScale() * geo[2] : 0;
+  const radius = this.geoide.getRadius() + height;
 
   dest[0] = radius * Math.cos(longInRad) * cosLat;
   dest[1] = radius * Math.sin(longInRad) * cosLat;
@@ -129,9 +128,9 @@ AbstractCrs.prototype.from3DToGeo = function (position3d, dest) {
     dest = new Array(3);
   }
 
-  var r = Math.sqrt(position3d[0] * position3d[0] + position3d[1] * position3d[1] + position3d[2] * position3d[2]);
-  var lon = Math.atan2(position3d[1] / r, position3d[0] / r);
-  var lat = Math.asin(position3d[2] / r);
+  const r = Math.sqrt(position3d[0] * position3d[0] + position3d[1] * position3d[1] + position3d[2] * position3d[2]);
+  const lon = Math.atan2(position3d[1] / r, position3d[0] / r);
+  const lat = Math.asin(position3d[2] / r);
   dest[0] = Numeric.toDegree(lon);
   dest[1] = Numeric.toDegree(lat);
   dest[2] = this.geoide.getRealPlanetRadius() * (r - this.geoide.getRadius());
@@ -147,12 +146,12 @@ AbstractCrs.prototype.getLocalTransform = function (geo, dest) {
     dest = mat4.create();
   }
 
-  var longitude = Numeric.toRadian(geo[0]);
-  var latitude = Numeric.toRadian(geo[1]);
+  const longitude = Numeric.toRadian(geo[0]);
+  const latitude = Numeric.toRadian(geo[1]);
 
-  var up = [Math.cos(longitude) * Math.cos(latitude), Math.sin(longitude) * Math.cos(latitude), Math.sin(latitude)];
-  var east = [-Math.sin(longitude), Math.cos(longitude), 0];
-  var north = vec3.create();
+  const up = [Math.cos(longitude) * Math.cos(latitude), Math.sin(longitude) * Math.cos(latitude), Math.sin(latitude)];
+  const east = [-Math.sin(longitude), Math.cos(longitude), 0];
+  const north = vec3.create();
   vec3.cross(up, east, north);
 
   dest[0] = east[0];
@@ -187,15 +186,15 @@ AbstractCrs.prototype.getLHVTransform = function (geo, dest) {
     dest = mat4.create();
   }
 
-  var longitude = Numeric.toRadian(geo[0]);
-  var latitude = Numeric.toRadian(geo[1]);
+  const longitude = Numeric.toRadian(geo[0]);
+  const latitude = Numeric.toRadian(geo[1]);
 
-  var up = [Math.cos(longitude) * Math.cos(latitude), Math.sin(longitude) * Math.cos(latitude), Math.sin(latitude)];
-  var east = [-Math.sin(longitude), Math.cos(longitude), 0];
-  var north = vec3.create();
+  const up = [Math.cos(longitude) * Math.cos(latitude), Math.sin(longitude) * Math.cos(latitude), Math.sin(latitude)];
+  const east = [-Math.sin(longitude), Math.cos(longitude), 0];
+  const north = vec3.create();
   vec3.cross(up, east, north);
 
-  var pt = this.get3DFromWorld(geo);
+  const pt = this.get3DFromWorld(geo);
 
   dest[0] = east[0];
   dest[1] = east[1];
@@ -261,7 +260,7 @@ AbstractCrs.prototype.getUpVector = function (matrix, v) {
  * @abstract
  */
 AbstractCrs.prototype.formatCoordinates = function (geo) {
-  throw new SyntaxError("Not implemented");
+  throw new Error("Not implemented");
 };
 
 /**
@@ -304,7 +303,7 @@ AbstractCrs.prototype.getWorldFrom3D = function (position3d, dest) {
   if (!dest) {
     dest = new Array(3);
   }
-  var geoPos = this.from3DToGeo(position3d);
+  const geoPos = this.from3DToGeo(position3d);
   this._setupPosAfterTrans(geoPos);
   dest[0] = geoPos[0];
   dest[1] = geoPos[1];
@@ -320,7 +319,7 @@ AbstractCrs.prototype.get3DFromWorld = function (posWorld, dest) {
   if (!dest) {
     dest = vec3.create();
   }
-  var pos = posWorld.slice(0);
+  const pos = posWorld.slice(0);
   this._setupPosBeforeTrans(pos);
   this.fromGeoTo3D(pos, dest);
   return dest;
@@ -334,7 +333,7 @@ AbstractCrs.prototype.get3DFromWorldInCrs = function (posWorld, posCrsID, dest) 
   if (!dest) {
     dest = vec3.create();
   }
-  var posWorldInCurrentCrs = this.convert(posWorld, posCrsID, this.getGeoideName());
+  const posWorldInCurrentCrs = this.convert(posWorld, posCrsID, this.getGeoideName());
   this.get3DFromWorld(posWorldInCurrentCrs, dest);
   return dest;
 };
@@ -346,7 +345,7 @@ AbstractCrs.prototype.get3DFromWorldInCrs = function (posWorld, posCrsID, dest) 
 AbstractCrs.prototype.getSexagesimalFromDeg = function (degPos, dest) {
   dest = dest || [];
 
-  var deg = degPos[0];
+  let deg = degPos[0];
   // RA
   if (deg < 0) {
     deg += 360;
@@ -370,15 +369,15 @@ AbstractCrs.prototype.getDecimalDegFromSexagesimal = function (sexagesimalPos, d
     return stringDegree[0] === "-" ? -1 : 1;
   }
 
-  var longitude = sexagesimalPos[0].split(" ");
+  const longitude = sexagesimalPos[0].split(" ");
   // long
-  var deg = parseFloat(longitude[0]);
-  var min = parseFloat(longitude[1]);
-  var sec = parseFloat(longitude[2]);
+  let deg = parseFloat(longitude[0]);
+  let min = parseFloat(longitude[1]);
+  let sec = parseFloat(longitude[2]);
 
   dest[0] = (deg + min / 60 + sec / 3600) * 15.0;
 
-  var latitude = sexagesimalPos[1].split(" ");
+  const latitude = sexagesimalPos[1].split(" ");
   // lat
   deg = parseFloat(latitude[0]);
   min = parseFloat(latitude[1]);
@@ -399,8 +398,8 @@ AbstractCrs.prototype.convert = function (geo, from, to) {
     return geo;
   }
 
-  var convertedGeo = null;
-  var convertType = null;
+  let convertedGeo = null;
+  let convertType = null;
   switch (from + "2" + to) {
     case Constants.CRS.Galactic + "2" + Constants.CRS.Equatorial:
       convertType = AstroCoordTransform.Type.GAL2EQ;
@@ -424,7 +423,7 @@ AbstractCrs.prototype.convert = function (geo, from, to) {
       convertedGeo = geo;
       break;
     default:
-      throw new RangeError("Conversion " + from + " to " + to + " is not implemented", "AbstractCrs.js");
+      throw new RangeError("AbstractCrs.js: Conversion " + from + " to " + to + " is not implemented");
   }
 
   return convertedGeo;
@@ -446,13 +445,13 @@ AbstractCrs.prototype._pad2Digits = function (number) {
  * @memberof AbstractCrs#
  */
 AbstractCrs.prototype.fromDegreesToHMS = function (degree) {
-  var localDegree = degree / 15;
+  const localDegree = degree / 15;
 
-  var absLon = Math.abs(localDegree);
-  var hours = Math.floor(absLon);
-  var decimal = (absLon - hours) * 60;
-  var min = Math.floor(decimal);
-  var sec = (decimal - min) * 60;
+  const absLon = Math.abs(localDegree);
+  const hours = Math.floor(absLon);
+  const decimal = (absLon - hours) * 60;
+  const min = Math.floor(decimal);
+  const sec = (decimal - min) * 60;
 
   return (
     this._pad2Digits(hours) + "h " + this._pad2Digits(min) + "m " + this._pad2Digits(Numeric.roundNumber(sec, 2)) + "s"
@@ -468,11 +467,11 @@ AbstractCrs.prototype.fromDegreesToDMS = function (degree) {
     return val >= 0 ? "+" : "-";
   }
 
-  var absLat = Math.abs(degree);
-  var deg = Math.floor(absLat);
-  var decimal = (absLat - deg) * 60;
-  var min = Math.floor(decimal);
-  var sec = (decimal - min) * 60;
+  const absLat = Math.abs(degree);
+  const deg = Math.floor(absLat);
+  const decimal = (absLat - deg) * 60;
+  const min = Math.floor(decimal);
+  const sec = (decimal - min) * 60;
 
   return (
     stringSign(degree) +
@@ -492,7 +491,7 @@ AbstractCrs.prototype.fromDegreesToDMS = function (degree) {
  * @abstract
  */
 AbstractCrs.prototype._setupPosBeforeTrans = function (posWorld) {
-  throw new SyntaxError("Not implemented");
+  throw new Error("Not implemented");
 };
 
 /**
@@ -501,7 +500,7 @@ AbstractCrs.prototype._setupPosBeforeTrans = function (posWorld) {
  * @bastract
  */
 AbstractCrs.prototype._setupPosAfterTrans = function (posWorld) {
-  throw new SyntaxError("Not implemented");
+  throw new Error("Not implemented");
 };
 
 /**
@@ -518,7 +517,7 @@ AbstractCrs.prototype.getGeoBound = function () {
  * @abstract
  */
 AbstractCrs.prototype.getName = function () {
-  throw new SyntaxError("Not implemented");
+  throw new Error("Not implemented");
 };
 
 /**
@@ -527,7 +526,7 @@ AbstractCrs.prototype.getName = function () {
  * @abstract
  */
 AbstractCrs.prototype.getDescription = function () {
-  throw new SyntaxError("Not implemented");
+  throw new Error("Not implemented");
 };
 
 /**
@@ -536,7 +535,7 @@ AbstractCrs.prototype.getDescription = function () {
  * @abstract
  */
 AbstractCrs.prototype.getLongitudeLabel = function () {
-  throw new SyntaxError("Not implemented");
+  throw new Error("Not implemented");
 };
 
 /**
@@ -545,7 +544,7 @@ AbstractCrs.prototype.getLongitudeLabel = function () {
  * @abstract
  */
 AbstractCrs.prototype.getLatitudeLabel = function () {
-  throw new SyntaxError("Not implemented");
+  throw new Error("Not implemented");
 };
 
 /**

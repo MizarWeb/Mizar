@@ -37,7 +37,7 @@
 
 import Constants from "../Utils/Constants";
 // Simple colors
-var simple_colors = {
+const simple_colors = {
   aliceblue: "f0f8ff",
   antiquewhite: "faebd7",
   aqua: "00ffff",
@@ -183,9 +183,9 @@ var simple_colors = {
   yellowgreen: "9acd32"
 };
 
-var parseHex = /^(\w{2})(\w{2})(\w{2})$/;
-var parseRgb = /^rgb\((\d{1,3}),\s*(\d{1,3}),\s*(\d{1,3})\)$/;
-var parseRgba = /^rgba\((\d{1,3}),\s*(\d{1,3}),\s*(\d{1,3},\s*(\d{1,3}))\)$/;
+const parseHex = /^(\w{2})(\w{2})(\w{2})$/;
+const parseRgb = /^rgb\((\d{1,3}),\s*(\d{1,3}),\s*(\d{1,3})\)$/;
+const parseRgba = /^rgba\((\d{1,3}),\s*(\d{1,3}),\s*(\d{1,3},\s*(\d{1,3}))\)$/;
 
 /**************************************************************************************************************/
 
@@ -209,7 +209,7 @@ var parseRgba = /^rgba\((\d{1,3}),\s*(\d{1,3}),\s*(\d{1,3},\s*(\d{1,3}))\)$/;
  </ul>
  @constructor
  */
-var FeatureStyle = function (style) {
+const FeatureStyle = function (style) {
   // Color used for lines or polygon outline
   this.strokeColor = [1.0, 0.0, 0.0, 1.0];
   // Color used to fill polygon
@@ -230,7 +230,7 @@ var FeatureStyle = function (style) {
   this.onTerrain = true;
 
   if (style) {
-    for (var s in style) {
+    for (const s in style) {
       if (style.hasOwnProperty(s)) {
         this[s] = style[s];
       }
@@ -246,11 +246,11 @@ var FeatureStyle = function (style) {
  @return {float[]} array with [r,g,b,alpha]
  */
 FeatureStyle.fromStringToColor = function (color_string) {
-  var r = 0,
+  let r = 0,
     g = 0,
     b = 0,
     a = 255;
-  var match;
+  let match;
 
   color_string = color_string.trim();
   color_string = color_string.toLowerCase();
@@ -306,9 +306,9 @@ FeatureStyle.fromStringToColor = function (color_string) {
  @return {string}Color string
  */
 FeatureStyle.fromColorToString = function (color) {
-  var hashColor = "#";
-  for (var i = 0; i < 3; i++) {
-    var component = parseInt(color[i] * 255.0, 10).toString(16);
+  let hashColor = "#";
+  for (let i = 0; i < 3; i++) {
+    const component = parseInt(color[i] * 255.0, 10).toString(16);
     hashColor += component < 10 ? "0" + component : component;
   }
 
@@ -428,7 +428,7 @@ FeatureStyle.prototype.setOpacity = function (opacity) {
   if (typeof opacity === "number") {
     this.opacity = Math.min(1.0, Math.max(0.0, opacity));
   } else {
-    throw new RangeError("opacity value should be a value in [0..1]", "AbstractLayer.js");
+    throw new RangeError("AbstractLayer.js: opacity value should be a value in [0..1]");
   }
 };
 

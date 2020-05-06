@@ -36,7 +36,7 @@ var WCSServer = function (options) {
   } else if (options.baseUrl) {
     options.getCapabilities = WCSServer.getCapabilitiesFromBaseURL(options.baseUrl, options);
   } else {
-    throw new ReferenceError("No URL to access to the server is defined", "WCSServer.js");
+    throw new ReferenceError("WCSServer.js: No URL to access to the server is defined");
   }
   options.describeCoverage = WCSServer.describeCoverageFromBaseURL(options.baseUrl, options);
   this.options = options;
@@ -64,9 +64,9 @@ function _mustBeSkipped(layersFromConf, currentLayer) {
  * @private
  */
 function _bbox(jsonBbox) {
-  var pos = jsonBbox.pos;
-  var pos1 = pos[0]._text.split(" ");
-  var pos2 = pos[1]._text.split(" ");
+  const pos = jsonBbox.pos;
+  const pos1 = pos[0]._text.split(" ");
+  const pos2 = pos[1]._text.split(" ");
   return [parseFloat(pos1[0]), parseFloat(pos1[1]), parseFloat(pos2[0]), parseFloat(pos2[1])];
 }
 
@@ -97,19 +97,19 @@ function _bbox(jsonBbox) {
  * @private
  */
 function _computeCenterBbox(bbox) {
-  var center;
+  let center;
   if (bbox == null) {
     center = [0, 0, 100000];
   } else {
-    var centerLong = 0.5 * (bbox[0] + bbox[2]);
-    var centerLat = 0.5 * (bbox[1] + bbox[3]);
-    var deltaLong = bbox[2] - bbox[0];
+    const centerLong = 0.5 * (bbox[0] + bbox[2]);
+    const centerLat = 0.5 * (bbox[1] + bbox[3]);
+    let deltaLong = bbox[2] - bbox[0];
     if (deltaLong > 180) {
       deltaLong = 180;
     }
-    var deltaLat = bbox[3] - bbox[1];
-    var delta = deltaLong > deltaLat ? deltaLat : deltaLong;
-    var distance = (Math.abs(delta) * 3000000) / 180;
+    const deltaLat = bbox[3] - bbox[1];
+    const delta = deltaLong > deltaLat ? deltaLat : deltaLong;
+    const distance = (Math.abs(delta) * 3000000) / 180;
     center = [centerLong, centerLat, distance];
   }
   return center;
@@ -124,13 +124,13 @@ function _computeCenterBbox(bbox) {
  * @private
  */
 function _timeVal(lonlat) {
-  var values;
+  let values;
   if (lonlat.timePosition == null) {
     values = null;
   } else {
-    var timeArr = [];
-    var time = lonlat.timePosition;
-    for (var i = 0; i < time.length; i++) {
+    const timeArr = [];
+    const time = lonlat.timePosition;
+    for (let i = 0; i < time.length; i++) {
       timeArr.push(time[i]._text);
     }
     values = timeArr.join(",");
@@ -147,20 +147,20 @@ function _timeVal(lonlat) {
  */
 
 WCSServer.prototype.getMetadata = function (callback, fallback) {
-  var self = this;
+  const self = this;
   Utils.requestUrl(
     this.options.getCapabilities,
     "text",
     "application/xml",
     {},
     function (response) {
-      var myOptions = {
+      const myOptions = {
         mergeCDATA: true,
         xmlns: false,
         attrsAsObject: false,
         childrenAsArray: false
       };
-      var metadata = XmlToJson.parseString(response, myOptions);
+      const metadata = XmlToJson.parseString(response, myOptions);
       callback(self.options, metadata);
     },
     function (e) {
@@ -181,20 +181,20 @@ WCSServer.prototype.getMetadata = function (callback, fallback) {
  */
 
 WCSServer.prototype.getCoverage = function (callback, fallback) {
-  var self = this;
+  const self = this;
   Utils.requestUrl(
     this.options.describeCoverage,
     "text",
     "application/xml",
     {},
     function (response) {
-      var myOptions = {
+      const myOptions = {
         mergeCDATA: true,
         xmlns: false,
         attrsAsObject: false,
         childrenAsArray: false
       };
-      var metadata = XmlToJson.parseString(response, myOptions);
+      const metadata = XmlToJson.parseString(response, myOptions);
       callback(self.options, metadata);
     },
     function (e) {
@@ -223,13 +223,13 @@ WCSServer.prototype.getCoverage = function (callback, fallback) {
 WCSServer.prototype.createLayers = function (callback, fallback) {
   this.getMetadata(function (layerDescription, metadata) {
     // extracts layers from layer description if set
-    var layersFromConf = layerDescription.hasOwnProperty("layers")
+    const layersFromConf = layerDescription.hasOwnProperty("layers")
       ? layerDescription.layers.trim().split(/\s*,\s*/)
       : [];
 
     // retrieves the list of layers from capabilities
-    var jsonLayers = [];
-    var contentMetadata = metadata.WCS_Capabilities.ContentMetadata;
+    let jsonLayers = [];
+    const contentMetadata = metadata.WCS_Capabilities.ContentMetadata;
     if (Array.isArray(contentMetadata.CoverageOfferingBrief)) {
       jsonLayers = contentMetadata.CoverageOfferingBrief;
     } else {
@@ -237,10 +237,10 @@ WCSServer.prototype.createLayers = function (callback, fallback) {
     }
 
     // iter on each layer
-    var layers = [];
-    for (var i = 0; i < jsonLayers.length; i++) {
+    const layers = [];
+    for (let i = 0; i < jsonLayers.length; i++) {
       // get a layer
-      var jsonLayer = jsonLayers[i].CoverageOfferingBrief;
+      const jsonLayer = jsonLayers[i].CoverageOfferingBrief;
       if (_mustBeSkipped.call(this, layersFromConf, jsonLayer)) {
         continue;
       }
@@ -254,18 +254,18 @@ WCSServer.prototype.createLayers = function (callback, fallback) {
       }
 
       // no copyright information from WCS capabilities
-      var copyrightURL = null;
+      const copyrightURL = null;
 
       // clone the layerDescription and fill it
-      var layerDesc = Object.assign({}, layerDescription, {});
+      const layerDesc = Object.assign({}, layerDescription, {});
       layerDesc.name = layerDescription.name || jsonLayer.label._text;
       layerDesc.format = layerDescription.format;
       layerDesc.layers = jsonLayer.name._text;
       layerDesc.description = layerDescription.description;
       layerDesc.attribution = attribution;
       layerDesc.copyrightUrl = copyrightURL;
-      var bbox = _bbox.call(this, jsonLayer.lonLatEnvelope);
-      var center = _computeCenterBbox.call(this, bbox);
+      const bbox = _bbox.call(this, jsonLayer.lonLatEnvelope);
+      const center = _computeCenterBbox.call(this, bbox);
       layerDesc.properties = {
         initialRa: center[0],
         initialDec: center[1],
@@ -274,7 +274,7 @@ WCSServer.prototype.createLayers = function (callback, fallback) {
       };
 
       // extract time capabilities and fillt the layer description
-      var timeValue = _timeVal.call(this, jsonLayer.lonLatEnvelope);
+      const timeValue = _timeVal.call(this, jsonLayer.lonLatEnvelope);
       layerDesc.dimension = {};
       if (timeValue != null) {
         layerDesc.dimension.time = {
@@ -296,7 +296,7 @@ WCSServer.prototype.createLayers = function (callback, fallback) {
       }
 
       // create the layer
-      var layer = LayerFactory.create(layerDesc);
+      const layer = LayerFactory.create(layerDesc);
       layers.push(layer);
     }
     callback(layers);
@@ -313,7 +313,7 @@ WCSServer.prototype.createLayers = function (callback, fallback) {
  * @returns {string} describeCoverage URL
  */
 WCSServer.getCapabilitiesFromBaseURL = function (baseUrl, options) {
-  var getCapabilitiesUrl = baseUrl;
+  let getCapabilitiesUrl = baseUrl;
   getCapabilitiesUrl = Utils.addParameterTo(getCapabilitiesUrl, "service", "WCS");
   getCapabilitiesUrl = Utils.addParameterTo(getCapabilitiesUrl, "request", "getCapabilities");
   getCapabilitiesUrl = Utils.addParameterTo(
@@ -334,7 +334,7 @@ WCSServer.getCapabilitiesFromBaseURL = function (baseUrl, options) {
  * @returns {string} describeCoverage URL
  */
 WCSServer.describeCoverageFromBaseURL = function (baseUrl, options) {
-  var describeCoverageUrl = baseUrl;
+  let describeCoverageUrl = baseUrl;
   describeCoverageUrl = Utils.addParameterTo(describeCoverageUrl, "service", "WCS");
   describeCoverageUrl = Utils.addParameterTo(describeCoverageUrl, "request", "describeCoverage");
   describeCoverageUrl = Utils.addParameterTo(

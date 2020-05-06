@@ -53,7 +53,7 @@ import Constants from "../Utils/Constants";
  * @constructor
  * @memberof module:Globe
  */
-var Sky = function (options) {
+const Sky = function (options) {
   AbstractGlobe.prototype.constructor.call(this, Constants.GLOBE.Sky, options);
   this.tilePool = new TilePool(this.renderContext);
 
@@ -75,7 +75,7 @@ Utils.inherits(AbstractGlobe, Sky);
  * @memberof Sky#
  */
 Sky.prototype.dispose = function () {
-  for (var x in this.tileManagers) {
+  for (const x in this.tileManagers) {
     if (this.tileManagers.hasOwnProperty(x)) {
       this.tileManagers[x].reset();
       this.tileManagers[x].tilePool.disposeAll();
@@ -90,7 +90,7 @@ Sky.prototype.dispose = function () {
  **/
 Sky.prototype.setBaseImagery = function (layer) {
   if (layer == null) {
-    throw new RangeError("layer must be exist.", "Sky.js");
+    throw new RangeError("Sky.js: layer must be exist.");
   }
 
   if (this.baseImagery === layer) {

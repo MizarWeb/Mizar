@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with MIZAR. If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
-import $ from "jquery";
+// import $ from "jquery";
 import _ from "underscore";
 import Utils from "../Utils/Utils";
 import LayerFactory from "../Layer/LayerFactory";
@@ -37,7 +37,7 @@ var WMSServer = function (options) {
   } else if (options.baseUrl) {
     options.getCapabilities = WMSServer.getCapabilitiesFromBaseURl(options.baseUrl, options);
   } else {
-    throw new ReferenceError("No URL to access to the server is defined", "WMSLayer.js");
+    throw new ReferenceError("WMSLayer.js: No URL to access to the server is defined");
   }
   this.options = options;
 };
@@ -78,7 +78,7 @@ function _hasGroup(jsonLayer) {
  * @private
  */
 function _computeAttribution(layerDescription, jsonLayers, jsonLayer) {
-  var attribution, logo, title;
+  let attribution, logo, title;
   if (layerDescription.attribution) {
     attribution = layerDescription.attribution;
   } else if (jsonLayer.Attribution != null) {
@@ -111,7 +111,7 @@ function _computeAttribution(layerDescription, jsonLayers, jsonLayer) {
  * @private
  */
 function _computeCopyrightURL(layerDescription, jsonLayers, jsonLayer) {
-  var copyrightURL;
+  let copyrightURL;
   if (layerDescription.copyrightUrl) {
     copyrightURL = layerDescription.copyrightUrl;
   } else if (jsonLayer.Attribution != null) {
@@ -134,8 +134,8 @@ function _computeCopyrightURL(layerDescription, jsonLayers, jsonLayer) {
  * @private
  */
 function _computeCenterBbox(bbox) {
-  var centerLong = 0.5 * (bbox[0] + bbox[2]);
-  var centerLat = 0.5 * (bbox[1] + bbox[3]);
+  const centerLong = 0.5 * (bbox[0] + bbox[2]);
+  const centerLat = 0.5 * (bbox[1] + bbox[3]);
   return [centerLong, centerLat];
 }
 
@@ -149,13 +149,13 @@ function _computeCenterBbox(bbox) {
  */
 
 function _bbox(jsonLayer) {
-  var bbox = jsonLayer.EX_GeographicBoundingBox;
-  var result;
+  const bbox = jsonLayer.EX_GeographicBoundingBox;
+  let result;
   if (bbox == null) {
     result = [-180, -90, 180, 90];
   } else {
-    var long1 = bbox[0] > 180 ? bbox[0] - 360 : bbox[0];
-    var long2 = bbox[2] > 180 ? bbox[2] - 360 : bbox[2];
+    const long1 = bbox[0] > 180 ? bbox[0] - 360 : bbox[0];
+    const long2 = bbox[2] > 180 ? bbox[2] - 360 : bbox[2];
     result = [long1, bbox[1], long2, bbox[3]];
   }
   return result;
@@ -170,14 +170,14 @@ function _bbox(jsonLayer) {
  * @private
  */
 function _bboxGroup(jsonLayer) {
-  var result;
+  let result;
   if (_hasGroup.call(this, jsonLayer)) {
-    var layer, layerBbox;
-    var minLong = 180,
+    let layer, layerBbox;
+    let minLong = 180,
       maxLong = -180,
       minLat = 90,
       maxLat = -90;
-    for (var i = 0; i < jsonLayer.Layer.length; i++) {
+    for (let i = 0; i < jsonLayer.Layer.length; i++) {
       layer = jsonLayer.Layer[i];
       layerBbox = _bbox.call(this, layer);
       minLong = Math.min(minLong, layerBbox[0]);
@@ -201,14 +201,14 @@ function _bboxGroup(jsonLayer) {
  */
 
 WMSServer.prototype.getMetadata = function (callback, fallback) {
-  var self = this;
+  const self = this;
   Utils.requestUrl(
     this.options.getCapabilities,
     "text",
     "application/xml",
     {},
     function (response) {
-      var metadata = new WMSCapabilities().parse(response);
+      const metadata = new WMSCapabilities().parse(response);
       callback(self.options, metadata);
     },
     function (e) {
@@ -243,10 +243,10 @@ function _parseDimension(dimension) {
   if (dimension == null) {
     return null;
   }
-  var dim = {};
-  for (var i = 0; i < dimension.length; i++) {
-    var currentDim = dimension[i];
-    var myDim = {
+  const dim = {};
+  for (let i = 0; i < dimension.length; i++) {
+    const currentDim = dimension[i];
+    const myDim = {
       units: currentDim.units,
       unitSymbol: currentDim.unitSymbol,
       default: currentDim.default,
@@ -270,19 +270,19 @@ function _parseDimension(dimension) {
  * @private
  */
 function _createLayer(layerDescription, jsonLayers, jsonLayer) {
-  var attribution = [];
+  const attribution = [];
   if (_hasGroup.call(this, jsonLayer)) {
-    for (var i = 0; i < jsonLayer.Layer.length; i++) {
-      var layer = jsonLayer.Layer[i];
+    for (let i = 0; i < jsonLayer.Layer.length; i++) {
+      const layer = jsonLayer.Layer[i];
       attribution.push(_computeAttribution.call(this, layerDescription, jsonLayers, layer));
     }
   } else {
     attribution.push(_computeAttribution.call(this, layerDescription, jsonLayers, jsonLayer));
   }
-  var copyrightURL = _computeCopyrightURL.call(this, layerDescription, jsonLayers, jsonLayer);
-  var bbox = _bboxGroup.call(this, jsonLayer);
-  var center = _computeCenterBbox.call(this, bbox);
-  var layerDesc = Object.assign({}, layerDescription, {});
+  const copyrightURL = _computeCopyrightURL.call(this, layerDescription, jsonLayers, jsonLayer);
+  const bbox = _bboxGroup.call(this, jsonLayer);
+  const center = _computeCenterBbox.call(this, bbox);
+  const layerDesc = Object.assign({}, layerDescription, {});
 
   layerDesc.name = layerDescription.name || jsonLayer.Title;
   layerDesc.format = layerDescription.format || "image/png";
@@ -313,9 +313,9 @@ function _createLayer(layerDescription, jsonLayers, jsonLayer) {
  * @private
  */
 function _createLayers(layerDescription, layersFromConf, jsonLayers) {
-  var layers = [];
-  for (var i = 0; i < jsonLayers.Layer.length; i++) {
-    var jsonLayer = jsonLayers.Layer[i];
+  let layers = [];
+  for (let i = 0; i < jsonLayers.Layer.length; i++) {
+    const jsonLayer = jsonLayers.Layer[i];
     if (jsonLayer.Layer != null) {
       layers = layers.concat(_createLayers(layerDescription, layersFromConf, jsonLayer));
     }
@@ -337,32 +337,32 @@ function _createLayers(layerDescription, layersFromConf, jsonLayers) {
 
 WMSServer.prototype.createLayers = function (callback, fallback) {
   this.getMetadata(function (layerDescription, metadata) {
-    var layersFromConf = layerDescription.hasOwnProperty("layers")
+    const layersFromConf = layerDescription.hasOwnProperty("layers")
       ? layerDescription.layers.trim().split(/\s*,\s*/)
       : [];
-    var jsonLayers = metadata.Capability.Layer;
-    var layers = _createLayers(layerDescription, layersFromConf, jsonLayers);
+    const jsonLayers = metadata.Capability.Layer;
+    const layers = _createLayers(layerDescription, layersFromConf, jsonLayers);
     callback(layers);
   }, fallback);
 };
 
 WMSServer.getXmlFeatureToJson = function (xmlString) {
-  var featureResponse = xmlString.trim();
-  var responseFeature = Utils.xml2json(featureResponse, "");
-  var result = {};
-  for (var elt in responseFeature) {
+  const featureResponse = xmlString.trim();
+  const responseFeature = Utils.xml2json(featureResponse, "");
+  const result = {};
+  for (const elt in responseFeature) {
     if (elt.includes("_layer")) {
-      var layer = responseFeature[elt];
-      var name = layer["gml:name"];
-      var layerName = elt.replace("_layer", "");
-      var featureInLayerName = elt.replace("_layer", "_feature");
-      var featureInLayer = layer[featureInLayerName];
+      const layer = responseFeature[elt];
+      const name = layer["gml:name"];
+      const layerName = elt.replace("_layer", "");
+      const featureInLayerName = elt.replace("_layer", "_feature");
+      const featureInLayer = layer[featureInLayerName];
       delete featureInLayer["gml:boundedBy"];
       featureInLayer.description = name;
       result[layerName] = featureInLayer;
     }
   }
-  var feature = {
+  const feature = {
     properties: {}
   };
   feature.properties = result;
@@ -372,7 +372,7 @@ WMSServer.getXmlFeatureToJson = function (xmlString) {
 
 WMSServer.getFeatureInfo = function (baseUrl, bbox, layers, options) {
   options = options || {};
-  var url = baseUrl;
+  let url = baseUrl;
   url = Utils.addParameterTo(url, "service", "wms");
   url = Utils.addParameterTo(url, "version", "1.3.0");
   url = Utils.addParameterTo(url, "request", "GetFeatureInfo");
@@ -446,7 +446,7 @@ WMSServer.getFeatureInfo = function (baseUrl, bbox, layers, options) {
  * @returns {string} describeCoverage URL
  */
 WMSServer.getCapabilitiesFromBaseURl = function (baseUrl, options) {
-  var getCapabilitiesUrl = baseUrl;
+  let getCapabilitiesUrl = baseUrl;
   getCapabilitiesUrl = Utils.addParameterTo(getCapabilitiesUrl, "service", "WMS");
   getCapabilitiesUrl = Utils.addParameterTo(getCapabilitiesUrl, "request", "getCapabilities");
   getCapabilitiesUrl = Utils.addParameterTo(

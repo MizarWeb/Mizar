@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with MIZAR. If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
-import _ from "underscore";
+// import _ from "underscore";
 import Utils from "../Utils/Utils";
 import AbstractRegistryHandler from "./AbstractRegistryHandler";
 import Constants from "../Utils/Constants";
@@ -31,7 +31,7 @@ import ErrorDialog from "../Gui/dialog/ErrorDialog";
  * @memberof module:Registry
  * @constructor
  */
-var WCSServerRegistryHandler = function (layers, pendingLayers) {
+const WCSServerRegistryHandler = function (layers, pendingLayers) {
   AbstractRegistryHandler.prototype.constructor.call(this);
   this.layers = layers;
   this.pendingLayers = pendingLayers;
@@ -51,17 +51,17 @@ Utils.inherits(AbstractRegistryHandler, WCSServerRegistryHandler);
  * @private
  */
 function _destroyTileWireFrame(layers) {
-  var i, layerDescription;
-  var isFound = false;
+  let i, layerDescription;
+  let isFound = false;
   for (i = 0; i < layers.length; i++) {
-    var layer = layers[i];
+    const layer = layers[i];
     if (layer.getType() === Constants.LAYER.TileWireframe) {
       isFound = true;
       break;
     }
   }
   if (isFound) {
-    var layerToRemove = layers[i];
+    const layerToRemove = layers[i];
     layerDescription = layerToRemove.options;
     layerToRemove._detach();
     layers.splice(i, 1);
@@ -80,7 +80,7 @@ function _destroyTileWireFrame(layers) {
  * @private
  */
 function _moveTileWireFrameLayer(layers, AbstractRegistryHandler, callback, fallback) {
-  var layerDescription = _destroyTileWireFrame(layers);
+  const layerDescription = _destroyTileWireFrame(layers);
   if (layerDescription) {
     AbstractRegistryHandler.next.handleRequest(layerDescription, callback, fallback);
   }
@@ -94,8 +94,8 @@ function _moveTileWireFrameLayer(layers, AbstractRegistryHandler, callback, fall
 WCSServerRegistryHandler.prototype.handleRequest = function (layerDescription, callback, fallback) {
   try {
     if (layerDescription.type === Constants.LAYER.WCSElevation) {
-      var wcsServer = new WCSServer(layerDescription);
-      var self = this;
+      const wcsServer = new WCSServer(layerDescription);
+      const self = this;
       wcsServer.createLayers(function (layers) {
         //TODO : I loose the callback of pendingLayers
         self._handlePendingLayers(self.pendingLayers, layers);

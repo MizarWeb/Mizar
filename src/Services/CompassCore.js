@@ -28,10 +28,10 @@ const MAX_ROTATION = 360;
 /**
  *    Private variables
  */
-var parentElement = null;
-var ctx = null;
-var crs = null;
-var svgDoc = null;
+let parentElement = null;
+let ctx = null;
+let crs = null;
+let svgDoc = null;
 
 /**************************************************************************************************************/
 
@@ -41,13 +41,13 @@ var svgDoc = null;
  * @private
  */
 function _alignWithNorth(event) {
-  var coordinateSystem = ctx.getCoordinateSystem();
-  var radius = coordinateSystem.getGeoide().getRadius();
+  const coordinateSystem = ctx.getCoordinateSystem();
+  const radius = coordinateSystem.getGeoide().getRadius();
 
   // scale the up direction to the sphere's surface in order to have the right value after projection.
-  var up = [0, 0, radius];
+  const up = [0, 0, radius];
 
-  var temp = [];
+  let temp = [];
   coordinateSystem.from3DToGeo(up, temp);
   temp = coordinateSystem.convert(temp, coordinateSystem.getGeoideName(), crs);
   coordinateSystem.fromGeoTo3D(temp, up);
@@ -57,42 +57,42 @@ function _alignWithNorth(event) {
 /**************************************************************************************************************/
 
 function updateNorthPlanet() {
-  var navigation = ctx.getNavigation();
-  var currentHeading = navigation.getHeading();
+  const navigation = ctx.getNavigation();
+  const currentHeading = navigation.getHeading();
 
-  var upHeading = 0;
-  var degNorth = (currentHeading - upHeading + MAX_ROTATION) % MAX_ROTATION;
+  const upHeading = 0;
+  const degNorth = (currentHeading - upHeading + MAX_ROTATION) % MAX_ROTATION;
 
-  var northText = svgDoc.getElementById("NorthText");
+  const northText = svgDoc.getElementById("NorthText");
   northText.setAttribute("transform", "rotate(" + degNorth + " 40 40)");
 }
 
 function updateNorthAzimuth() {
-  var navigation = ctx.getNavigation();
-  var currentHeading = navigation.getHeading();
+  const navigation = ctx.getNavigation();
+  const currentHeading = navigation.getHeading();
 
-  var upHeading = 0;
-  var degNorth = (upHeading - currentHeading + MAX_ROTATION) % MAX_ROTATION;
+  const upHeading = 0;
+  const degNorth = (upHeading - currentHeading + MAX_ROTATION) % MAX_ROTATION;
 
-  var northText = svgDoc.getElementById("NorthText");
+  const northText = svgDoc.getElementById("NorthText");
   northText.setAttribute("transform", "rotate(" + degNorth + " 40 40)");
 }
 
 function updateNorthSky() {
-  var geo = [];
-  var coordinateSystem = ctx.getCoordinateSystem();
-  var center = ctx.getNavigation().center3d ? ctx.getNavigation().center3d : ctx.getNavigation().geoCenter;
+  let geo = [];
+  const coordinateSystem = ctx.getCoordinateSystem();
+  const center = ctx.getNavigation().center3d ? ctx.getNavigation().center3d : ctx.getNavigation().geoCenter;
   coordinateSystem.from3DToGeo(center, geo);
   geo = coordinateSystem.convert(geo, crs, coordinateSystem.getGeoideName());
 
-  var LHV = [];
+  const LHV = [];
   coordinateSystem.getLHVTransform(geo, LHV);
 
-  var temp = [];
-  var north = [LHV[4], LHV[5], LHV[6]];
-  var vertical = [LHV[8], LHV[9], LHV[10]];
+  let temp = [];
+  const north = [LHV[4], LHV[5], LHV[6]];
+  const vertical = [LHV[8], LHV[9], LHV[10]];
 
-  var up = vec3.create(ctx.getNavigation().up);
+  const up = vec3.create(ctx.getNavigation().up);
   vec3.scale(up, coordinateSystem.getGeoide().getRadius());
 
   coordinateSystem.from3DToGeo(up, temp);
@@ -100,23 +100,23 @@ function updateNorthSky() {
   coordinateSystem.fromGeoTo3D(temp, up);
   vec3.normalize(up);
   // Find angle between up and north
-  var cosNorth = vec3.dot(up, north) / (vec3.length(up) * vec3.length(north));
-  var radNorth = Math.acos(cosNorth);
+  const cosNorth = vec3.dot(up, north) / (vec3.length(up) * vec3.length(north));
+  const radNorth = Math.acos(cosNorth);
 
   if (isNaN(radNorth)) {
     return;
   }
-  var degNorth = Numeric.toDegree(radNorth);
+  let degNorth = Numeric.toDegree(radNorth);
 
   // Find sign between up and north
-  var sign;
+  let sign;
   vec3.cross(up, north, temp);
   sign = vec3.dot(temp, [vertical[0], vertical[1], vertical[2]]);
   if (sign < 0) {
     degNorth *= -1;
   }
 
-  var northText = svgDoc.getElementById("NorthText");
+  const northText = svgDoc.getElementById("NorthText");
   northText.setAttribute("transform", "rotate(" + degNorth + " 40 40)");
 }
 
@@ -124,7 +124,7 @@ function updateNorthSky() {
  * Function updating the north position on compass
  */
 function updateNorth() {
-  var mode = ctx.getMode();
+  const mode = ctx.getMode();
   switch (mode) {
     case Constants.CONTEXT.Sky:
       updateNorthSky();
@@ -136,7 +136,7 @@ function updateNorth() {
       updateNorthAzimuth();
       break;
     default:
-      throw new RangeError("CompassCore is not supported for this context", "CompassCore.js");
+      throw new RangeError("CompassCore.js: CompassCore is not supported for this context");
   }
 }
 

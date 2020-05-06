@@ -33,7 +33,7 @@ import Proxy from "../Utils/Proxy";
  * @property {string} X-ray - X-ray
  * @property {string} Gamma-ray - Gamma-ray
  */
-var GENERAL_WAVELENGTH = {
+const GENERAL_WAVELENGTH = {
   Radio: "Radio",
   Millimeter: "Millimeter",
   Infrared: "Infrared",
@@ -52,7 +52,7 @@ var GENERAL_WAVELENGTH = {
  * @property {string} ecliptic - ecliptic
  * @property {string} horizontalLocal - horizontalLocal
  */
-var HIPS_FRAME = {
+const HIPS_FRAME = {
   equatorial: Constants.CRS.Equatorial,
   galactic: Constants.CRS.Galactic,
   ecliptic: "ecliptic",
@@ -67,7 +67,7 @@ var HIPS_FRAME = {
  * @property {string} fits - fits
  * @property {string} tsv - tsv
  */
-var HIPS_TILE_FORMAT = {
+const HIPS_TILE_FORMAT = {
   jpeg: "jpeg",
   png: "png",
   fits: "fits",
@@ -81,7 +81,7 @@ var HIPS_TILE_FORMAT = {
  * @property {string} nearest - nearest
  * @property {string} bilinear - bilinear
  */
-var SAMPLING = {
+const SAMPLING = {
   none: "non",
   nearest: "nearest",
   bilinear: "bilinear"
@@ -96,7 +96,7 @@ var SAMPLING = {
  * @property {string} border_fading - border_fading
  * @property {string} custom - custom
  */
-var PIXEL_OVERLAY = {
+const PIXEL_OVERLAY = {
   add: "add",
   mean: "mean",
   first: "first",
@@ -111,7 +111,7 @@ var PIXEL_OVERLAY = {
  * @property {string} hips_estimation - hips_estimation
  * @property {string} fits_keyword - fits_keyword
  */
-var SKY_VAL = {
+const SKY_VAL = {
   none: "none",
   hips_estimation: "hips_estimation",
   fits_keyword: "fits_keyword"
@@ -125,7 +125,7 @@ var SKY_VAL = {
  * @property {string} catalog - catalog
  * @property {string} meta - meta
  */
-var DATA_PRODUCT_TYPE = {
+const DATA_PRODUCT_TYPE = {
   image: "image",
   cube: "cube",
   catalog: "catalog",
@@ -138,7 +138,7 @@ var DATA_PRODUCT_TYPE = {
  * @property {string} color - color
  * @property {string} live - live
  */
-var SUB_TYPE_DATA = {
+const SUB_TYPE_DATA = {
   color: "color",
   live: "live"
 };
@@ -204,7 +204,7 @@ var SUB_TYPE_DATA = {
  * @property {string} [addendum_did] - In case of “live” HiPS, creator_did of the added HiPS
  * @property {float} [moc_sky_fraction] - Fraction of the sky covers by the MOC associated to the HiPS – Format: real between 0 and 1
  */
-var HipsVersion_1_4 = {
+const HipsVersion_1_4 = {
   creator_did: ["R", "Unique ID of the HiPS - Format: IVOID - Ex : ivo://CDS/P/2MASS/J", false, null, null, false],
   publisher_id: [null, "Unique ID of the HiPS publisher – Format: IVOID - Ex : ivo://CDS", false, null, null, false],
   obs_collection: [null, "Short name of original data set – Format: one word – Ex : 2MASS", false, null, null, false],
@@ -461,9 +461,9 @@ function _transformAStringToArray(valueArray, key, hipsMetadata) {
 function _checkValueAmongEnumeratedList(key, valueArray, description, distinctValue, hipsMetadata, valueNotRight) {
   if (distinctValue !== null && hipsMetadata.hasOwnProperty(key)) {
     if (valueArray) {
-      for (var val in hipsMetadata[key]) {
+      for (const val in hipsMetadata[key]) {
         if (hipsMetadata[key].hasOwnProperty(val)) {
-          var format = hipsMetadata[key][val];
+          const format = hipsMetadata[key][val];
           if (!distinctValue.hasOwnProperty(format)) {
             valueNotRight.push(
               'The value "' + hipsMetadata[key] + '" of ' + key + " (" + description + ") is not correct. "
@@ -501,10 +501,15 @@ function _fillWithDefaultValue(key, defaultValue, hipsMetadata) {
  * @throws RangeError - "unvalid hips metadata"
  */
 function _validateAndFixHips(hipsMetadata) {
-  var requiredKeywordNotFound = [];
-  var valueNotRight = [];
-  var values, mandatory, description, isMutiple, defaultValue, distinctValue, valueArray;
-  for (var key in HipsVersion_1_4) {
+  const requiredKeywordNotFound = [];
+  const valueNotRight = [];
+  let values,
+    mandatory,
+    description,
+    defaultValue,
+    valueArray;
+    //  isMutiple, distinctValue
+  for (const key in HipsVersion_1_4) {
     if (HipsVersion_1_4.hasOwnProperty(key)) {
       values = HipsVersion_1_4[key];
       mandatory = values[0];
@@ -527,18 +532,17 @@ function _validateAndFixHips(hipsMetadata) {
     }
   }
   if (requiredKeywordNotFound.length > 0 || valueNotRight.length > 0) {
-    var name = hipsMetadata.obs_title ? hipsMetadata.obs_title : hipsMetadata.obs_collection;
-    var url = hipsMetadata.hips_service_url ? hipsMetadata.hips_service_url : this.baseUrl;
+    const name = hipsMetadata.obs_title ? hipsMetadata.obs_title : hipsMetadata.obs_collection;
+    const url = hipsMetadata.hips_service_url ? hipsMetadata.hips_service_url : this.baseUrl;
     throw new RangeError(
-      "unvalid hips metadata for " +
+      "HipsMetadata.js: unvalid hips metadata for " +
         name +
         " (" +
         url +
         "): \n" +
         requiredKeywordNotFound.toString() +
         "\n" +
-        valueNotRight.toString(),
-      "HipsMetadata.js"
+        valueNotRight.toString()
     );
   }
 }
@@ -550,7 +554,7 @@ function _validateAndFixHips(hipsMetadata) {
  * @return {*}
  */
 function _loadHipsProperties(baseUrl) {
-  var properties = $.ajax({
+  const properties = $.ajax({
     type: "GET",
     datatype: "text",
     url: Proxy.proxify(baseUrl + "/properties"),
@@ -560,9 +564,9 @@ function _loadHipsProperties(baseUrl) {
     }
   }).responseText;
   if (typeof properties === "undefined") {
-    throw new ReferenceError("Unable to load the Hips at " + baseUrl, "HipsMetadata.js");
+    throw new ReferenceError("HipsMetadata.js: Unable to load the Hips at " + baseUrl);
   }
-  var hipsProperties = _parseProperties.call(this, properties);
+  const hipsProperties = _parseProperties.call(this, properties);
   _validateAndFixHips.call(this, hipsProperties);
   return hipsProperties;
 }
@@ -573,9 +577,9 @@ function _loadHipsProperties(baseUrl) {
  * @return {{}}
  */
 function _parseProperties(propertiestext) {
-  var propertyMap = {};
-  var lines = propertiestext.split(/\r?\n/);
-  var currentLine = "";
+  const propertyMap = {};
+  const lines = propertiestext.split(/\r?\n/);
+  let currentLine = "";
   $.each(lines, function (i, value) {
     //check if it is a comment line
     if (!/^\s*(#|!|$)/.test(value)) {
@@ -588,8 +592,8 @@ function _parseProperties(propertiestext) {
         currentLine = currentLine.replace(/\\$/, "");
       } else {
         /^\s*((?:[^\s:=\\]|\\.)+)\s*[:=\s]\s*(.*)$/.test(currentLine); // sub-matches pick out key and value
-        var nkey = RegExp.$1;
-        var nvalue = RegExp.$2;
+        const nkey = RegExp.$1;
+        const nvalue = RegExp.$2;
         if (propertyMap.hasOwnProperty(nkey)) {
           propertyMap[nkey] = propertyMap[nkey].isPrototypeOf(Array)
             ? propertyMap[nkey].push(nvalue)
@@ -614,7 +618,7 @@ function _parseProperties(propertiestext) {
  * @param baseUrl
  * @constructor
  */
-var HipsMetadata = function (baseUrl) {
+const HipsMetadata = function (baseUrl) {
   if (baseUrl == null) {
     // nothing to do
   } else if (typeof baseUrl === "string") {

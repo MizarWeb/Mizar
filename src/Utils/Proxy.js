@@ -16,8 +16,8 @@
  * You should have received a copy of the GNU General Public License
  * along with MIZAR. If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
-var _proxyUse = false;
-var _proxyUrl = "";
+let _proxyUse = false;
+let _proxyUrl = "";
 
 export default {
   /**
@@ -28,7 +28,7 @@ export default {
    */
   setProxyUse: function (proxyUse) {
     if (typeof proxyUse !== "boolean") {
-      throw new TypeError("proxyUse must be a boolean", "Proxy.js");
+      throw new TypeError("Proxy.js: proxyUse must be a boolean");
     }
     _proxyUse = proxyUse;
   },
@@ -41,7 +41,7 @@ export default {
    */
   setProxyUrl: function (proxyUrl) {
     if (typeof proxyUrl !== "string") {
-      throw new TypeError("proxyUrl must be a string", "Proxy.js");
+      throw new TypeError("Proxy.js: proxyUrl must be a string");
     }
     _proxyUrl = proxyUrl;
   },
@@ -56,7 +56,7 @@ export default {
     if (typeof url !== "string") {
       return url;
     }
-    var proxifiedUrl;
+    let proxifiedUrl;
     if (_proxyUse === true) {
       if (url.toLowerCase().startsWith("http") === false) {
         proxifiedUrl = url;

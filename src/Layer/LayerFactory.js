@@ -47,7 +47,7 @@ import OpenSearchRequestPool from "./OpenSearch/OpenSearchRequestPool";
 const openSearchRequestPool = new OpenSearchRequestPool();
 
 function createHips(hipsMetadata, options) {
-  var hipsProperties;
+  let hipsProperties;
   if (typeof hipsMetadata === "undefined") {
     hipsProperties = new HipsMetadata(options.baseUrl);
   } else if (hipsMetadata instanceof HipsMetadata) {
@@ -57,19 +57,21 @@ function createHips(hipsMetadata, options) {
     hipsProperties.setMetadata(hipsMetadata);
   }
 
-  var metadata = hipsProperties.getHipsMetadata();
+  const metadata = hipsProperties.getHipsMetadata();
 
-  var formats = options.hasOwnProperty("hips_tile_format") ? options.hips_tile_format : metadata.hips_tile_format;
-  var dataProducts = options.hasOwnProperty("dataproduct_type") ? options.dataproduct_type : metadata.dataproduct_type;
+  const formats = options.hasOwnProperty("hips_tile_format") ? options.hips_tile_format : metadata.hips_tile_format;
+  const dataProducts = options.hasOwnProperty("dataproduct_type")
+    ? options.dataproduct_type
+    : metadata.dataproduct_type;
 
-  var layer;
+  let layer;
 
   switch (dataProducts) {
     case hipsProperties.DataProductType.catalog:
       layer = createHipsCats(metadata, options);
       break;
     case hipsProperties.DataProductType.cube:
-      throw new RangeError("Hips : cannot handle cube dataproduct", "LayerFactor.js");
+      throw new RangeError("LayerFactory.js: Hips : cannot handle cube dataproduct");
     case hipsProperties.DataProductType.image:
       options.category = options.hasOwnProperty("category") ? options.category : "Image";
       var hasPNG = $.inArray(hipsProperties.HipsTileFormat.png, formats) !== -1;
@@ -108,9 +110,9 @@ function createHips(hipsMetadata, options) {
       }
       break;
     case hipsProperties.DataProductType.meta:
-      throw new RangeError("Hips : cannot handle META dataproduct", "LayerFactor.js");
+      throw new RangeError("LayerFactory.js: ips : cannot handle META dataproduct");
     default:
-      throw new RangeError("Hips : Unknown dataproduct type", "LayerFactor.js");
+      throw new RangeError("LayerFactory.js: Hips : Unknown dataproduct type");
   }
   //if(fileExists(options.baseUrl+"/Moc.fits") === 200) {
   //    options.serviceUrl = options.baseUrl+"/Moc.fits";
@@ -142,7 +144,7 @@ function createHipsCats(hipsMetadata, options) {
 function createMoc(options) {
   options.style.fill = true;
   options.style.fillColor[3] = 0.3; // make transparent
-  var layer = new MocLayer(options);
+  const layer = new MocLayer(options);
   layer.dataType = "line";
   return layer;
 }
@@ -157,7 +159,7 @@ function createMoc(options) {
      */
 function createOpenSearch(options) {
   options.openSearchRequestPool = openSearchRequestPool;
-  var layer = new OpenSearchLayer(options);
+  const layer = new OpenSearchLayer(options);
   if (options.displayProperties) {
     layer.displayProperties = options.displayProperties;
   }
@@ -193,7 +195,7 @@ export default {
    * @see {@link module:Layer.WMTSLayer WMTSLayer} : A layer to draw predefined tiles coming from a WMTS server
    */
   create: function (options) {
-    var layer;
+    let layer;
     switch (options.type) {
       case Constants.LAYER.WMS:
         layer = new WMSLayer(options);
@@ -248,7 +250,7 @@ export default {
         layer = createOpenSearch(options);
         break;
       default:
-        throw new RangeError("Unable to create the layer " + options.type, "LayerFactor.js");
+        throw new RangeError("LayerFactory.js: Unable to create the layer " + options.type);
     }
     return layer;
   }

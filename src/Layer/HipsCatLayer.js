@@ -180,7 +180,7 @@ HipsCatLayer.prototype._detach = function () {
  */
 HipsCatLayer.prototype.launchRequest = function (tile, url) {
   const tileData = tile.extension[this.extId];
-  const index = null;
+  // const index = null;
 
   if (this.freeRequests.length === 0) {
     return;

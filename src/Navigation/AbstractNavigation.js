@@ -70,7 +70,7 @@ import "../Renderer/glMatrix";
  * @implements {Navigation}
  *
  */
-var AbstractNavigation = function (type, ctx, options) {
+const AbstractNavigation = function (type, ctx, options) {
   Event.prototype.constructor.call(this);
   this.type = type;
   this.ctx = ctx;
@@ -102,9 +102,9 @@ var AbstractNavigation = function (type, ctx, options) {
  * @private
  */
 function _addInertiaEffect(options) {
-  var inertia;
+  let inertia;
   if (options.inertia) {
-    var inertiaOptions = options.inertiaAnimation || {};
+    const inertiaOptions = options.inertiaAnimation || {};
     inertiaOptions.nav = this;
     inertia = AnimationFactory.create(Constants.ANIMATION.Inertia, inertiaOptions);
     const self = this;
@@ -128,7 +128,7 @@ function _addInertiaEffect(options) {
  * @private
  */
 function _createHandlers(options) {
-  var handlers;
+  let handlers;
   // Create default handlers if none are created in options
   if (options.handlers) {
     handlers = options.handlers;
@@ -151,7 +151,7 @@ function _createHandlers(options) {
  * @private
  */
 function _addDefaultHandlers(options) {
-  var defaultHandlers = [
+  const defaultHandlers = [
     NavigationHandlerFactory.create(Constants.HANDLER.Mouse, options.mouse || null),
     NavigationHandlerFactory.create(Constants.HANDLER.Keyboard, options.keyboard || null)
   ];
@@ -177,7 +177,7 @@ AbstractNavigation.prototype.initTouchNavigation = function () {
     inversed: this.ctx.globe.isSky(),
     zoomOnDblClick: true
   };
-  var self = this;
+  const self = this;
   window.addEventListener(
     "orientationchange",
     function () {
@@ -215,7 +215,7 @@ AbstractNavigation.prototype.getOptions = function () {
  */
 AbstractNavigation.prototype.start = function () {
   // Install handlers
-  for (var i = 0; i < this.handlers.length; i++) {
+  for (let i = 0; i < this.handlers.length; i++) {
     this.handlers[i].install(this);
   }
 };
@@ -227,7 +227,7 @@ AbstractNavigation.prototype.start = function () {
  */
 AbstractNavigation.prototype.stop = function () {
   // Uninstall handlers
-  for (var i = 0; i < this.handlers.length; i++) {
+  for (let i = 0; i < this.handlers.length; i++) {
     this.handlers[i].uninstall();
   }
 };
@@ -266,7 +266,7 @@ AbstractNavigation.prototype.getFov = function () {
  * @abstract
  */
 AbstractNavigation.prototype.moveUpTo = function (vec, duration) {
-  throw new SyntaxError("moveUpTo not implemented", "AbstractNavigation.js");
+  throw new Error("AbstractNavigation.js: moveUpTo not implemented");
 };
 
 /**
@@ -291,7 +291,7 @@ AbstractNavigation.prototype.getCenter = function () {
  * @memberof AbstractNavigation#
  */
 AbstractNavigation.prototype.rotate = function (dx, dy) {
-  throw new SyntaxError("rotate is not implemented", "AbstractNavigation.js");
+  throw new Error("AbstractNavigation.js: rotate is not implemented");
 };
 
 /**
@@ -303,7 +303,7 @@ AbstractNavigation.prototype.rotate = function (dx, dy) {
  * @memberof AbstractNavigation#
  */
 AbstractNavigation.prototype.pan = function (dx, dy) {
-  throw new SyntaxError("pan is not implemented", "AbstractNavigation.js");
+  throw new Error("AbstractNavigation.js: pan is not implemented");
 };
 
 /**
@@ -315,7 +315,7 @@ AbstractNavigation.prototype.pan = function (dx, dy) {
  * @memberof AbstractNavigation#
  */
 AbstractNavigation.prototype.zoom = function (delta, scale) {
-  throw new SyntaxError("zoom is not implemented", "AbstractNavigation.js");
+  throw new Error("AbstractNavigation.js: zoom is not implemented");
 };
 
 /**
@@ -327,7 +327,7 @@ AbstractNavigation.prototype.zoom = function (delta, scale) {
  * @memberof AbstractNavigation#
  */
 AbstractNavigation.prototype.zoomTo = function (geoPos, options) {
-  throw new SyntaxError("zoomTo is not implemented", "AbstractNavigation.js");
+  throw new Error("AbstractNavigation.js: zoomTo is not implemented");
 };
 
 /**
@@ -337,7 +337,7 @@ AbstractNavigation.prototype.zoomTo = function (geoPos, options) {
  * @abstract
  */
 AbstractNavigation.prototype.computeViewMatrix = function () {
-  throw new SyntaxError("computeViewMatrix not implemented", "AbstractNavigation.js");
+  throw new Error("AbstractNavigation.js: computeViewMatrix not implemented");
 };
 
 /**
@@ -355,27 +355,27 @@ AbstractNavigation.prototype.computeViewMatrix = function () {
  * @memberof AbstractNavigation#
  */
 AbstractNavigation.prototype.toViewMatrix = function (mat, fov, duration, callback) {
-  var navigation = this;
-  var vm = this.renderContext.getViewMatrix();
+  const navigation = this;
+  const vm = this.renderContext.getViewMatrix();
 
-  var srcViewMatrix = mat4.toMat3(vm);
-  var srcQuat = quat4.fromRotationMatrix(srcViewMatrix);
-  var destViewMatrix = mat4.toMat3(mat);
-  var destQuat = quat4.fromRotationMatrix(destViewMatrix);
-  var destFov = fov || 45;
+  const srcViewMatrix = mat4.toMat3(vm);
+  const srcQuat = quat4.fromRotationMatrix(srcViewMatrix);
+  const destViewMatrix = mat4.toMat3(mat);
+  const destQuat = quat4.fromRotationMatrix(destViewMatrix);
+  const destFov = fov || 45;
   duration = duration || 1000;
 
   // Animate rotation matrix(with quaternion support), translation and fov
-  var startValue = [srcQuat, [vm[12], vm[13], vm[14]], navigation.getRenderContext().getFov()];
-  var endValue = [destQuat, [mat[12], mat[13], mat[14]], destFov];
-  var animation = AnimationFactory.create(Constants.ANIMATION.Segmented, {
+  const startValue = [srcQuat, [vm[12], vm[13], vm[14]], navigation.getRenderContext().getFov()];
+  const endValue = [destQuat, [mat[12], mat[13], mat[14]], destFov];
+  const animation = AnimationFactory.create(Constants.ANIMATION.Segmented, {
     duration: duration,
     valueSetter: function (value) {
       // Update rotation matrix
-      var newRotationMatrix = quat4.toMat4(value[0]);
+      const newRotationMatrix = quat4.toMat4(value[0]);
 
       // Need to transpose the new rotation matrix due to bug in glMatrix
-      var viewMatrix = mat4.transpose(newRotationMatrix);
+      const viewMatrix = mat4.transpose(newRotationMatrix);
 
       // Update translation
       viewMatrix[12] = value[1][0];
@@ -394,14 +394,14 @@ AbstractNavigation.prototype.toViewMatrix = function (mat, fov, duration, callba
 
   // Add segment
   animation.addSegment(0.0, startValue, 1.0, endValue, function (t, a, b) {
-    var pt = Numeric.easeOutQuad(t);
-    var resQuat = quat4.create();
+    const pt = Numeric.easeOutQuad(t);
+    const resQuat = quat4.create();
     quat4.slerp(a[0], b[0], pt, resQuat);
 
-    var resTranslate = vec3.create();
+    const resTranslate = vec3.create();
     vec3.lerp(a[1], b[1], pt, resTranslate);
 
-    var resFov = Numeric.lerp(pt, a[2], b[2]);
+    const resFov = Numeric.lerp(pt, a[2], b[2]);
     return [
       resQuat, // quaternions
       resTranslate, // translate

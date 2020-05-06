@@ -117,9 +117,9 @@ const DEFAULT_ZOOM_DURATION = 3000;
  * @implements {Context}
  * @listens Layer#baseLayersReady
  */
-var AbstractContext = function (mizarConfiguration, mode, ctxOptions) {
+const AbstractContext = function (mizarConfiguration, mode, ctxOptions) {
   Event.prototype.constructor.call(this);
-  var self = this;
+  const self = this;
   this.time = Time.parse(Moment().toISOString());
   this.globe = null; // Sky or globe
   this.navigation = null;
@@ -155,7 +155,7 @@ var AbstractContext = function (mizarConfiguration, mode, ctxOptions) {
 
 function _initComponentsVisibility(components) {
   // Show UI components depending on its state
-  for (var componentId in components) {
+  for (const componentId in components) {
     if (_isDivExist(componentId)) {
       if (components[componentId]) {
         $("#" + componentId).fadeIn(1000);
@@ -183,13 +183,13 @@ function _handleCameraWhenLayerAdded(layer) {
     layer.getProperties().hasOwnProperty("initialRa") &&
     layer.getProperties().hasOwnProperty("initialDec")
   ) {
-    var fov = layer.getProperties().initialFov
+    let fov = layer.getProperties().initialFov
       ? layer.getProperties().initialFov
       : layer.getGlobe().getRenderContext().getFov();
-    var navigation = layer.callbackContext.getNavigation();
-    var center = navigation.getCenter();
-    var globeType = layer.globe.getType();
-    var bbox;
+    const navigation = layer.callbackContext.getNavigation();
+    const center = navigation.getCenter();
+    const globeType = layer.globe.getType();
+    let bbox;
     switch (globeType) {
       case Constants.GLOBE.Sky:
         bbox = layer.getProperties().bbox;
@@ -220,10 +220,10 @@ function _handleCameraWhenLayerAdded(layer) {
         ) {
           // Do not move, we see the target
         } else {
-          var crs = layer.globe.getCoordinateSystem();
-          var planetRadius = crs.getGeoide().getRealPlanetRadius();
-          var distanceCamera = Utils.computeDistanceCameraFromBbox(bbox, fov, planetRadius, crs.isFlat());
-          var elevation = layer.globe.getElevation(layer.getProperties().initialRa, layer.getProperties().initialDec);
+          const crs = layer.globe.getCoordinateSystem();
+          const planetRadius = crs.getGeoide().getRealPlanetRadius();
+          let distanceCamera = Utils.computeDistanceCameraFromBbox(bbox, fov, planetRadius, crs.isFlat());
+          const elevation = layer.globe.getElevation(layer.getProperties().initialRa, layer.getProperties().initialDec);
           if (elevation > distanceCamera || distanceCamera === 0) {
             distanceCamera = elevation + 100; // we add 100 meters more
           }
@@ -234,7 +234,7 @@ function _handleCameraWhenLayerAdded(layer) {
         }
         break;
       default:
-        throw new SyntaxError("type " + globeType + " is not implemented", "AbstractContext.js");
+        throw new Error("AbstractContext.js: type " + globeType + " is not implemented");
     }
   }
 }
@@ -325,7 +325,7 @@ function _createCompass(mizarConfiguration) {
  */
 function _createTimeTravel(mizarConfiguration) {
   try {
-    var crs;
+    let crs;
     if (this.mode === Constants.CONTEXT.Sky) {
       crs = Constants.CRS.Equatorial;
     } else {
@@ -396,8 +396,8 @@ AbstractContext.prototype.getTime = function () {
  */
 AbstractContext.prototype.setTime = function (time) {
   this.time = Time.parse(time);
-  for (var i = 0; i < this.layers.length; i++) {
-    var layer = this.layers[i];
+  for (let i = 0; i < this.layers.length; i++) {
+    const layer = this.layers[i];
     layer.setTime(this.time);
   }
 };
@@ -432,7 +432,7 @@ AbstractContext.prototype._showUpError = function (err) {
  */
 AbstractContext.prototype._fillDataProvider = function (layer, mizarDescription) {
   if (mizarDescription.data && this.dataProviders[mizarDescription.data.type]) {
-    var callback = this.dataProviders[mizarDescription.data.type];
+    const callback = this.dataProviders[mizarDescription.data.type];
     callback(layer, mizarDescription.data);
   }
 };
@@ -443,10 +443,10 @@ AbstractContext.prototype._fillDataProvider = function (layer, mizarDescription)
  * @memberof AbstractContext#
  */
 AbstractContext.prototype.getDataProviderLayers = function () {
-  var dpLayers = [];
-  var layers = this.getLayers();
-  var i = layers.length;
-  var layer = layers[i];
+  const dpLayers = [];
+  const layers = this.getLayers();
+  let i = layers.length;
+  let layer = layers[i];
   while (layer) {
     if (
       layer.hasOwnProperty("options") &&
@@ -580,12 +580,12 @@ AbstractContext.prototype.getLayerByName = function (layerName) {
  * @memberof AbstractContext#
  */
 AbstractContext.prototype.addLayer = function (layerDescription, callback, fallback) {
-  var pendingLayersHandler = new PendingLayersRegistryHandler(this.pendingLayers, this.layers);
-  var wmsServerHandler = new WMSServerRegistryHandler(this.pendingLayers);
-  var wmtsServerHandler = new WMTSServerRegistryHandler(this.pendingLayers);
-  var wcsServerHandler = new WCSServerRegistryHandler(this.layers, this.pendingLayers);
-  var openSearchServerHandler = new OpenSearchRegistryHandler(this.pendingLayers);
-  var layerHandler = new LayerRegistryHandler(this.pendingLayers);
+  const pendingLayersHandler = new PendingLayersRegistryHandler(this.pendingLayers, this.layers);
+  const wmsServerHandler = new WMSServerRegistryHandler(this.pendingLayers);
+  const wmtsServerHandler = new WMTSServerRegistryHandler(this.pendingLayers);
+  const wcsServerHandler = new WCSServerRegistryHandler(this.layers, this.pendingLayers);
+  const openSearchServerHandler = new OpenSearchRegistryHandler(this.pendingLayers);
+  const layerHandler = new LayerRegistryHandler(this.pendingLayers);
 
   pendingLayersHandler.setNext(wmsServerHandler);
   wmsServerHandler.setNext(wmtsServerHandler);
@@ -593,12 +593,12 @@ AbstractContext.prototype.addLayer = function (layerDescription, callback, fallb
   wcsServerHandler.setNext(openSearchServerHandler);
   openSearchServerHandler.setNext(layerHandler);
 
-  var self = this;
+  const self = this;
   pendingLayersHandler.handleRequest(
     layerDescription,
     function (layers) {
-      for (var i = 0; i < layers.length; i++) {
-        var layer = layers[i];
+      for (let i = 0; i < layers.length; i++) {
+        const layer = layers[i];
         layer.callbackContext = self;
 
         self.layers.push(layer);
@@ -652,13 +652,13 @@ AbstractContext.prototype.addLayer = function (layerDescription, callback, fallb
 
 AbstractContext.prototype.getLinkedLayers = function (layerID) {
   // Search linked layers
-  var indexes = $.map(this.layers, function (obj, index) {
+  const indexes = $.map(this.layers, function (obj, index) {
     if (obj.linkedTo === layerID) {
       return index;
     }
   });
-  var linkedLayers = [];
-  for (var i = 0; i < indexes.length; i++) {
+  const linkedLayers = [];
+  for (let i = 0; i < indexes.length; i++) {
     linkedLayers.push(this.layers[indexes[i]]);
   }
   return linkedLayers;
@@ -669,15 +669,15 @@ AbstractContext.prototype.getLinkedLayers = function (layerID) {
  * @memberof AbstractContext#
  */
 AbstractContext.prototype.removeLayer = function (layerID) {
-  var removedLayer = null;
-  var indexes = $.map(this.layers, function (obj, index) {
+  let removedLayer = null;
+  const indexes = $.map(this.layers, function (obj, index) {
     if (obj.ID === layerID) {
       return index;
     }
   });
   if (indexes.length > 0) {
     // At least one layer to remove
-    var removedLayers = this.layers.splice(indexes[0], 1);
+    const removedLayers = this.layers.splice(indexes[0], 1);
     removedLayer = removedLayers[0];
     if (removedLayer.autoFillTimeTravel === true) {
       this.timeTravelService.update({
@@ -686,7 +686,7 @@ AbstractContext.prototype.removeLayer = function (layerID) {
         }
       });
     }
-    var tileManager = this.getTileManager();
+    const tileManager = this.getTileManager();
     tileManager.abortLayerRequests(removedLayer);
     removedLayer.unsubscribe(Constants.EVENT_MSG.LAYER_VISIBILITY_CHANGED, _handleCameraWhenLayerAdded);
     ServiceFactory.create(Constants.SERVICE.PickingManager).removePickableLayer(removedLayer);
@@ -701,10 +701,10 @@ AbstractContext.prototype.removeLayer = function (layerID) {
  * @memberof AbstractContext#
  */
 AbstractContext.prototype.removeAllLayers = function () {
-  var nbLayers = this.layers.length;
+  let nbLayers = this.layers.length;
   while (nbLayers != 0) {
-    var layerIndex = nbLayers - 1;
-    var layerID = this.layers[layerIndex].ID;
+    const layerIndex = nbLayers - 1;
+    const layerID = this.layers[layerIndex].ID;
     if (this.attributionHandler != null) this.attributionHandler.removeAttribution(this.layers[layerIndex]);
     this.removeLayer(layerID);
     nbLayers--;
@@ -750,8 +750,8 @@ AbstractContext.prototype.refresh = function () {
  * @param {?Object} canvas.parentElement HTML object
  */
 AbstractContext.prototype.initCanvas = function (canvas) {
-  var width, height;
-  var parentCanvas = $(canvas.parentElement);
+  let width, height;
+  const parentCanvas = $(canvas.parentElement);
 
   $(canvas.parentElement).find("#loading").show();
 
@@ -788,8 +788,8 @@ AbstractContext.prototype.initCanvas = function (canvas) {
   }
 
   // Define on resize function
-  var self = this;
-  var onResize = function () {
+  const self = this;
+  const onResize = function () {
     if (parentCanvas && parentCanvas.attr("height") && parentCanvas.attr("width")) {
       // Embedded
       canvas.width = parentCanvas.width();
@@ -803,7 +803,7 @@ AbstractContext.prototype.initCanvas = function (canvas) {
   };
 
   // Take into account window resize 1s after resizing stopped
-  var timer;
+  let timer;
   $(window).resize(function () {
     if (timer) {
       clearTimeout(timer);
@@ -832,7 +832,7 @@ AbstractContext.prototype.initCanvas = function (canvas) {
 AbstractContext.prototype.initGlobe = function (globeOptions, navigationMode) {
   try {
     this.globe = GlobeFactory.create(this.mode, globeOptions);
-    var navigationType = this.getCoordinateSystem().isFlat() ? navigationMode["2D"] : navigationMode["3D"];
+    const navigationType = this.getCoordinateSystem().isFlat() ? navigationMode["2D"] : navigationMode["3D"];
     this.navigation = NavigationFactory.create(
       navigationType,
       this,
@@ -865,7 +865,7 @@ AbstractContext.prototype.initGlobe = function (globeOptions, navigationMode) {
     _initComponentsVisibility(this.components);
 
     //When base layer failed to load, open error dialog
-    var self = this;
+    const self = this;
     this.subscribe(Constants.EVENT_MSG.BASE_LAYERS_ERROR, function (layer) {
       $(self.canvas.parentElement).find("#loading").hide();
       ErrorDialog.open(
@@ -913,7 +913,7 @@ AbstractContext.prototype.show = function () {
  */
 AbstractContext.prototype.showComponents = function () {
   // Show UI components depending on its state
-  for (var componentId in this.components) {
+  for (const componentId in this.components) {
     if (_isDivExist(componentId) && this.components[componentId]) {
       $("#" + componentId).fadeIn(1000);
     }
@@ -926,7 +926,7 @@ AbstractContext.prototype.showComponents = function () {
  */
 AbstractContext.prototype.hideComponents = function (uiArray) {
   // Hide all the UI components
-  for (var componentId in this.components) {
+  for (const componentId in this.components) {
     if (_isDivExist(componentId) && $.inArray(componentId, uiArray) === -1) {
       $("#" + componentId).fadeOut();
     }
@@ -942,7 +942,7 @@ AbstractContext.prototype.hide = function () {
   this.navigation.stop();
 
   // Hide all the UI components
-  for (var componentId in this.components) {
+  for (const componentId in this.components) {
     if (_isDivExist(componentId)) {
       $("#" + componentId).fadeOut();
     }
@@ -954,7 +954,7 @@ AbstractContext.prototype.hide = function () {
  * @memberof AbstractContext#
  */
 AbstractContext.prototype.setComponentVisibility = function (componentId, isVisible) {
-  var component = $("#" + componentId);
+  const component = $("#" + componentId);
   if (isVisible) {
     component.show();
   } else {
@@ -992,9 +992,9 @@ AbstractContext.prototype.showAdditionalLayers = function () {
  * @memberof AbstractContext#
  */
 AbstractContext.prototype.hideAdditionalLayers = function () {
-  var self = this;
+  const self = this;
   this.visibleLayers = [];
-  var gwLayers = this.getAdditionalLayers();
+  const gwLayers = this.getAdditionalLayers();
   _.each(gwLayers, function (layer) {
     if (layer.isVisible()) {
       layer.setVisible(false);
@@ -1009,7 +1009,7 @@ AbstractContext.prototype.hideAdditionalLayers = function () {
  */
 AbstractContext.prototype.setBackgroundLayer = function (survey) {
   // Find the layer by name among all the layers
-  var gwLayer = this.getLayerByName(survey);
+  const gwLayer = this.getLayerByName(survey);
   if (gwLayer) {
     _removeRasterOverlay.call(this, gwLayer);
     this._getGlobe().setBaseImagery(gwLayer);
@@ -1025,7 +1025,7 @@ AbstractContext.prototype.setBackgroundLayer = function (survey) {
  */
 AbstractContext.prototype.setBackgroundLayerByID = function (surveyID) {
   // Find the layer by name among all the layers
-  var gwLayer = this.getLayerByID(surveyID);
+  const gwLayer = this.getLayerByID(surveyID);
   if (gwLayer) {
     _removeRasterOverlay.call(this, gwLayer);
     this._getGlobe().setBaseImagery(gwLayer);
@@ -1068,14 +1068,14 @@ AbstractContext.prototype.disable = function () {
   if (this.compass) {
     this.compass.detach();
   }
-  var i = 0;
-  var layer = this.layers[i];
+  let i = 0;
+  let layer = this.layers[i];
   while (layer) {
     if (this.attributionHandler != null) this.attributionHandler.disable(layer);
     layer = this.layers[++i];
   }
-  var renderers = this.getRenderContext().renderers;
-  for (var j = 0; j < renderers.length; j++) {
+  const renderers = this.getRenderContext().renderers;
+  for (let j = 0; j < renderers.length; j++) {
     if (renderers[j].getType() === this.getMode()) {
       renderers[j].disable();
     }
@@ -1094,8 +1094,8 @@ AbstractContext.prototype.enable = function () {
 
   if (this.compass != null) this.compass.attachTo(this);
 
-  var i = 0;
-  var layer = this.layers[i];
+  let i = 0;
+  let layer = this.layers[i];
   while (layer) {
     if (layer.isPickable()) {
       ServiceFactory.create(Constants.SERVICE.PickingManager).addPickableLayer(layer);
@@ -1103,7 +1103,7 @@ AbstractContext.prototype.enable = function () {
     if (this.AttributionHandler != null) this.attributionHandler.enable(layer);
     layer = this.layers[++i];
   }
-  var renderers = this.getRenderContext().renderers;
+  const renderers = this.getRenderContext().renderers;
   for (i = 0; i < renderers.length; i++) {
     if (renderers[i].getType() === this.getMode()) {
       renderers[i].enable();
@@ -1126,7 +1126,7 @@ AbstractContext.prototype.getMode = function () {
  * @abstract
  */
 AbstractContext.prototype.setCoordinateSystem = function (cs) {
-  throw new SyntaxError("CRS not implemented", "AbstractContext.js");
+  throw new Error("AbstractContext.js: CRS not implemented");
 };
 
 /**
@@ -1234,7 +1234,7 @@ AbstractContext.prototype.destroy = function () {
   this.mizarConfiguration = null;
   this.ctxOptions = null;
   this.mode = null;
-  var self = this;
+  const self = this;
   this.unsubscribe(Constants.EVENT_MSG.BASE_LAYERS_READY, function (imagery) {
     // When the background takes time to load, the viewMatrix computed by "computeViewMatrix" is created but
     // with empty values. Because of that, the globe cannot be displayed without moving the camera.

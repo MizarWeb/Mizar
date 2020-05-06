@@ -34,11 +34,11 @@
  * @memberof module:Crs
  * @todo add flattening parameter
  */
-var Geoide = function (options) {
+const Geoide = function (options) {
   this.radius = options && options.hasOwnProperty("radius") ? options.radius : null;
   this.realPlanetRadius = options && options.hasOwnProperty("realPlanetRadius") ? options.realPlanetRadius : null;
   if (this.radius === null || this.realPlanetRadius === null) {
-    throw new ReferenceError("Radius and realPlanetRadius must be set to define a geoide", "Geoide.js");
+    throw new ReferenceError("Geoide.js: Radius and realPlanetRadius must be set to define a geoide");
   }
   this.heightScale = this.radius / this.realPlanetRadius;
 };

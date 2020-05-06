@@ -38,7 +38,7 @@ import AzimuthProjection from "./AzimuthProjection";
  * @private
  */
 function _createProjection(projectionName, options) {
-  var cs;
+  let cs;
   switch (projectionName) {
     case Constants.PROJECTION.Aitoff:
       cs = new AitoffProjection(options);
@@ -59,7 +59,7 @@ function _createProjection(projectionName, options) {
       cs = new PlateProjection(options);
       break;
     default:
-      throw new RangeError("Unable to create the projection " + options.projectionName, "ProjectionFactory.js");
+      throw new RangeError("ProjectionFactory.js: Unable to create the projection " + options.projectionName);
   }
   return cs;
 }
@@ -74,12 +74,12 @@ export default {
    * @alias module:Projection.ProjectionFactory.create
    */
   create: function (options) {
-    var cs;
+    let cs;
 
     if (options && options.projectionName) {
       cs = _createProjection(options.projectionName, options);
     } else {
-      throw new ReferenceError("Unable to get options.projectionName", "ProjectionFactory.js");
+      throw new ReferenceError("ProjectionFactory.js: Unable to get options.projectionName");
     }
 
     return cs;

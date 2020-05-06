@@ -29,7 +29,7 @@ import Utils from "../../Utils/Utils";
  * @throws {ReferenceError} Can't get the element name
  * @implements {Tracker}
  */
-var AbstractTracker = function (options) {
+const AbstractTracker = function (options) {
   this.options = options;
   this.context = null;
   this.navigation = null;
@@ -104,7 +104,7 @@ AbstractTracker.prototype._getElement = function () {
  * @abstract
  */
 AbstractTracker.prototype.update = function (event) {
-  throw new SyntaxError("update from AbstractTracker not implemented", "AbstractTracker.js");
+  throw new Error("AbstractTracker.js: update from AbstractTracker not implemented");
 };
 
 /**
@@ -113,7 +113,7 @@ AbstractTracker.prototype.update = function (event) {
  * @abstract
  */
 AbstractTracker.prototype.compute = function (geoPosition) {
-  throw new SyntaxError("compute from AbstractTracker not implemented", "AbstractTracker.js");
+  throw new Error("AbstractTracker.js: compute from AbstractTracker not implemented");
 };
 
 /**
@@ -125,7 +125,7 @@ AbstractTracker.prototype.attachTo = function (context) {
   this._setNavigation(context.getNavigation());
   this._getGlobe().getRenderContext().canvas.addEventListener("mousemove", this.update);
   if (this.options.isMobile) {
-    var passiveSupported = Utils.isPassiveSupported();
+    const passiveSupported = Utils.isPassiveSupported();
     this._getGlobe()
       .getRenderContext()
       .canvas.addEventListener(
