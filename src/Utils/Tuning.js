@@ -35,90 +35,83 @@
  * along with GlobWeb. If not, see <http://www.gnu.org/licenses/>.
  ***************************************/
 
-define(["../Utils/Constants","../Gui/dialog/ErrorDialog"],function(Constants, ErrorDialog) {
-    /**
-     @name Tuning
-     @class
-         Get some statistics
-     @constructor
-    */
-    var Tuning = function() {
-        var self = this;
-    };
+import Constants from "../Utils/Constants";
+import ErrorDialog from "../Gui/dialog/ErrorDialog";
+/**
+ @name Tuning
+ @class
+     Get some statistics
+ @constructor
+*/
+var Tuning = function () {
+  var self = this;
+};
 
-    /**************************************************************************************************************/
+/**************************************************************************************************************/
 
-    /**
-     Start measuring time
-     */
-    Tuning.prototype.start = function(name, index) {
-        var completeName = name;
-        if (typeof index !== "undefined") {
-            completeName += index;
-        }
+/**
+ Start measuring time
+ */
+Tuning.prototype.start = function (name, index) {
+  var completeName = name;
+  if (typeof index !== "undefined") {
+    completeName += index;
+  }
 
-        this[completeName] = Date.now();
-    };
+  this[completeName] = Date.now();
+};
 
-    /**************************************************************************************************************/
+/**************************************************************************************************************/
 
-    /**
-     End measuring time
-     */
-    Tuning.prototype.end = function(name, index) {
-        var completeName = name;
-        var isIndex = typeof index !== "undefined";
-        if (isIndex) {
-            completeName += index;
-        }
+/**
+ End measuring time
+ */
+Tuning.prototype.end = function (name, index) {
+  var completeName = name;
+  var isIndex = typeof index !== "undefined";
+  if (isIndex) {
+    completeName += index;
+  }
 
-        var time = Date.now() - this[completeName];
-        this[completeName] = time;
+  var time = Date.now() - this[completeName];
+  this[completeName] = time;
 
-        if (isIndex) {
-            if (typeof this["sum" + name] === "undefined") {
-                this["sum" + name] = 0;
-                this["nb" + name] = 0;
-            }
-            this["sum" + name] += time;
-            this["nb" + name]++;
-        }
+  if (isIndex) {
+    if (typeof this["sum" + name] === "undefined") {
+      this["sum" + name] = 0;
+      this["nb" + name] = 0;
+    }
+    this["sum" + name] += time;
+    this["nb" + name]++;
+  }
 
-        return time;
-    };
+  return time;
+};
 
-    /**************************************************************************************************************/
+/**************************************************************************************************************/
 
-    /**
-     Print stats in an HTML element
-     */
-    Tuning.prototype.print = function(name, index) {
-        var completeName = name;
-        var isIndex = typeof index !== "undefined";
-        if (isIndex) {
-            completeName = name += index;
-        }
-        ErrorDialog.open(Constants.LEVEL.DEBUG, "Elapsed [" + completeName + "] = " + this[completeName]);
+/**
+ Print stats in an HTML element
+ */
+Tuning.prototype.print = function (name, index) {
+  var completeName = name;
+  var isIndex = typeof index !== "undefined";
+  if (isIndex) {
+    completeName = name += index;
+  }
+  ErrorDialog.open(Constants.LEVEL.DEBUG, "Elapsed [" + completeName + "] = " + this[completeName]);
 
-        if (!isIndex) {
-            if (typeof this["sum" + name] !== "undefined") {
-                var avg = this["sum" + name] / this["nb" + name];
-                ErrorDialog.open(Constants.LEVEL.DEBUG,
-                    "Average [" +
-                        name +
-                        "] = " +
-                        avg +
-                        " (" +
-                        this["nb" + name] +
-                        " / " +
-                        this["sum" + name] +
-                        ")"
-                );
-            }
-        }
-    };
+  if (!isIndex) {
+    if (typeof this["sum" + name] !== "undefined") {
+      var avg = this["sum" + name] / this["nb" + name];
+      ErrorDialog.open(
+        Constants.LEVEL.DEBUG,
+        "Average [" + name + "] = " + avg + " (" + this["nb" + name] + " / " + this["sum" + name] + ")"
+      );
+    }
+  }
+};
 
-    /**************************************************************************************************************/
+/**************************************************************************************************************/
 
-    return Tuning;
-});
+export default Tuning;

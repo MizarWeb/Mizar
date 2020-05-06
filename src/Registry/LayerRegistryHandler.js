@@ -34,68 +34,51 @@
  * @module Registry
  * @implements {RegistryHandler}
  */
-define([
-    "../Utils/Utils",
-    "./AbstractRegistryHandler",
-    "../Layer/LayerFactory",
-    "../Utils/Constants",
-    "../Gui/dialog/ErrorDialog"
-], function(
-    Utils,
-    AbstractRegistryHandler,
-    LayerFactory,
-    Constants,
-    ErrorDialog
-) {
-    /**
-     * @class
-     * This handler processes the layerdescription as a simple {@link LayerFactory}
-     * @param {string[]} pendingLayers List of pending layer description
-     * @augments AbstractRegistryHandler
-     * @constructor
-     * @memberof module:Registry
-     */
-    var LayerRegistryHandler = function(pendingLayers) {
-        AbstractRegistryHandler.prototype.constructor.call();
-        this.pendingLayers = pendingLayers;
-    };
+import Utils from "../Utils/Utils";
+import AbstractRegistryHandler from "./AbstractRegistryHandler";
+import LayerFactory from "../Layer/LayerFactory";
+import Constants from "../Utils/Constants";
+import ErrorDialog from "../Gui/dialog/ErrorDialog";
+/**
+ * @class
+ * This handler processes the layerdescription as a simple {@link LayerFactory}
+ * @param {string[]} pendingLayers List of pending layer description
+ * @augments AbstractRegistryHandler
+ * @constructor
+ * @memberof module:Registry
+ */
+var LayerRegistryHandler = function (pendingLayers) {
+  AbstractRegistryHandler.prototype.constructor.call(this);
+  this.pendingLayers = pendingLayers;
+};
 
-    /**************************************************************************************************************/
+/**************************************************************************************************************/
 
-    Utils.inherits(AbstractRegistryHandler, LayerRegistryHandler);
+Utils.inherits(AbstractRegistryHandler, LayerRegistryHandler);
 
-    /**************************************************************************************************************/
+/**************************************************************************************************************/
 
-    /**
-     * @function handleRequest
-     * @memberof LayerRegistryHandler#
-     */
+/**
+ * @function handleRequest
+ * @memberof LayerRegistryHandler#
+ */
 
-    LayerRegistryHandler.prototype.handleRequest = function(
-        layerDescription,
-        callback,
-        fallback
-    ) {
-        var layers = [];
-        try {
-            var layer = LayerFactory.create(layerDescription);
-            layers.push(layer);
-            this._handlePendingLayers(this.pendingLayers, layers);
-            callback(layers);
-        } catch (e) {
-            if (e instanceof RangeError && this.next != null) {
-                this.next.handleRequest(layerDescription, callback, fallback);
-            } else if (fallback) {
-                fallback(e);
-            } else {
-                ErrorDialog.open(
-                    Constants.LEVEL.DEBUG,
-                    "Unknown error in LayerRegistryHanlder",
-                    e
-                );
-            }
-        }
-    };
+LayerRegistryHandler.prototype.handleRequest = function (layerDescription, callback, fallback) {
+  var layers = [];
+  try {
+    var layer = LayerFactory.create(layerDescription);
+    layers.push(layer);
+    this._handlePendingLayers(this.pendingLayers, layers);
+    callback(layers);
+  } catch (e) {
+    if (e instanceof RangeError && this.next != null) {
+      this.next.handleRequest(layerDescription, callback, fallback);
+    } else if (fallback) {
+      fallback(e);
+    } else {
+      ErrorDialog.open(Constants.LEVEL.DEBUG, "Unknown error in LayerRegistryHanlder", e);
+    }
+  }
+};
 
-    return LayerRegistryHandler;
-});
+export default LayerRegistryHandler;

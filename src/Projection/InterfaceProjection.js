@@ -67,13 +67,13 @@ function Projection() {}
  * Returns the projection center.
  * @returns {float[]} the projection center (longitude in degree, latitude in degree)
  */
-Projection.prototype.getProjectionCenter = function() {};
+Projection.prototype.getProjectionCenter = function () {};
 
 /**
  * Returns the geobound
  * @returns {GeoBound}
  */
-Projection.prototype.getGeoBound = function() {};
+Projection.prototype.getGeoBound = function () {};
 
 /**
  * Unprojects coordinates from a given 2D map to world coordinates
@@ -81,7 +81,7 @@ Projection.prototype.getGeoBound = function() {};
  * @param {float[]} dest - physical position (longitude in degree, latitude in degree, altitude in meter)
  * @returns {float[]} physical position (longitude in degree, latitude in degree, altitude in meter)
  */
-Projection.prototype.unProject = function(position3d, dest) {};
+Projection.prototype.unProject = function (position3d, dest) {};
 
 /**
  * Projects the world coordinates to a given 2D map
@@ -89,10 +89,10 @@ Projection.prototype.unProject = function(position3d, dest) {};
  * @param {float[]} dest - position on the map (x in pixel, y in pixel, altitude in meter)
  * @returns {float[]} position on the map (x in pixel, y in pixel, altitude in meter)
  */
-Projection.prototype.project = function(geoPos, dest) {};
+Projection.prototype.project = function (geoPos, dest) {};
 
 /**
  * Name of the projection
  * @returns {PROJECTION} projection's name
  */
-Projection.prototype.getName = function() {};
+Projection.prototype.getName = function () {};

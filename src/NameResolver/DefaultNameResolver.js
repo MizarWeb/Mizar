@@ -31,91 +31,84 @@
  * @implements {NameResolver}
  */
 
-define([
-    "../Utils/Utils",
-    "./AbstractNameResolver"
-], function(Utils, AbstractNameResolver) {
-    /**************************************************************************************************************/
+import Utils from "../Utils/Utils";
+import AbstractNameResolver from "./AbstractNameResolver";
+/**************************************************************************************************************/
 
-    /**
-     * @name DefaultNameResolver
-     * @class
-     *  Plugin to access to default name resolver
-     * @augments AbstractNameResolver
-     * @param {Context} options - Context
-     * @memberof module:NameResolver
-     * @constructor
-     */
-    var DefaultNameResolver = function(options) {
-        AbstractNameResolver.prototype.constructor.call(this, options);
-    };
+/**
+ * @name DefaultNameResolver
+ * @class
+ *  Plugin to access to default name resolver
+ * @augments AbstractNameResolver
+ * @param {Context} options - Context
+ * @memberof module:NameResolver
+ * @constructor
+ */
+var DefaultNameResolver = function (options) {
+  AbstractNameResolver.prototype.constructor.call(this, options);
+};
 
-    /**************************************************************************************************************/
+/**************************************************************************************************************/
 
-    Utils.inherits(AbstractNameResolver, DefaultNameResolver);
+Utils.inherits(AbstractNameResolver, DefaultNameResolver);
 
-    /**************************************************************************************************************/
+/**************************************************************************************************************/
 
-    /**
-     * Convert passed url into an url understandable by the service (input transformer)
-     * @function handle
-     * @memberof DefaultNameResolver#
-     */
-    DefaultNameResolver.prototype.handle = function(options) {
-        var context = this.ctx;
-        var objectName = options.objectName;
-        var onError = options.onError;
-        var onComplete = options.onComplete;
-        var onSuccess = options.onSuccess;
-        var searchLayer = options.searchLayer;
-        var zoomTo = options.zoomTo;
+/**
+ * Convert passed url into an url understandable by the service (input transformer)
+ * @function handle
+ * @memberof DefaultNameResolver#
+ */
+DefaultNameResolver.prototype.handle = function (options) {
+  var context = this.ctx;
+  var objectName = options.objectName;
+  var onError = options.onError;
+  var onComplete = options.onComplete;
+  var onSuccess = options.onSuccess;
+  var searchLayer = options.searchLayer;
+  var zoomTo = options.zoomTo;
 
-        var url =
-            context.getMizarConfiguration().nameResolver.baseUrl +
-            "/" +
-            objectName +
-            "/EQUATORIAL";
-        Utils.requestUrl(
-            url,
-            "text",
-            "text/plain",
-            null,
-            function(response) {
-                // Check if response contains features
-                if (response.type === "FeatureCollection") {
-                    var firstFeature = response.features[0];
-                    var zoomToCallback = function() {
-                        searchLayer(objectName, onSuccess, onError, response);
-                    };
-                    zoomTo(
-                        firstFeature.geometry.coordinates[0],
-                        firstFeature.geometry.coordinates[1],
-                        null,
-                        zoomToCallback,
-                        response
-                    );
-                } else {
-                    onError();
-                }
-            },
-            function(err) {
-                searchLayer(objectName, onSuccess, onError);
-            },
-            function(xhr, textStatus) {
-                if (onComplete) {
-                    onComplete(xhr);
-                }
-            }
+  var url = context.getMizarConfiguration().nameResolver.baseUrl + "/" + objectName + "/EQUATORIAL";
+  Utils.requestUrl(
+    url,
+    "text",
+    "text/plain",
+    null,
+    function (response) {
+      // Check if response contains features
+      if (response.type === "FeatureCollection") {
+        var firstFeature = response.features[0];
+        var zoomToCallback = function () {
+          searchLayer(objectName, onSuccess, onError, response);
+        };
+        zoomTo(
+          firstFeature.geometry.coordinates[0],
+          firstFeature.geometry.coordinates[1],
+          null,
+          zoomToCallback,
+          response
         );
-    };
+      } else {
+        onError();
+      }
+    },
+    function (err) {
+      searchLayer(objectName, onSuccess, onError);
+    },
+    function (xhr, textStatus) {
+      if (onComplete) {
+        onComplete(xhr);
+      }
+    }
+  );
+};
 
-    /**
-     * @function remove
-     * @memberof DefaultNameResolver#
-     */
-    DefaultNameResolver.prototype.remove = function() {};
+/**
+ * @function remove
+ * @memberof DefaultNameResolver#
+ */
+DefaultNameResolver.prototype.remove = function () {};
 
-    /**************************************************************************************************************/
+/**************************************************************************************************************/
 
-    return DefaultNameResolver;
-});
+export default DefaultNameResolver;

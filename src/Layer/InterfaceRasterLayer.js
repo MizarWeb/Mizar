@@ -35,28 +35,28 @@ function RasterLayer() {}
  * @param {Tile} tile for which the URL is created
  * @returns {string} the URL
  */
-RasterLayer.prototype.getUrl = function(tile) {};
+RasterLayer.prototype.getUrl = function (tile) {};
 
 /**
  * Returns the Url when the tile level is between [minLevel, maxLevel]
  * @param url url
  * @returns {string} the Url when the tile level is between [minLevel, maxLevel]
  */
-RasterLayer.prototype.allowRequest = function(url, level) {};
+RasterLayer.prototype.allowRequest = function (url, level) {};
 
 /**
  * Returns true when the tile is defined between [minLevel,maxLevel] otherwise false.
  * @param level level of the tile
  * @returns {Boolean} true when the tile level is defined between [minLevel,maxLevel] otherwise false.
  */
-RasterLayer.prototype.isBetweenMinMaxLevel = function(level) {};
+RasterLayer.prototype.isBetweenMinMaxLevel = function (level) {};
 
 /**
  * Attaches the raster layer to the globe and creates an overlay if needed.
  * @param {Globe} g - globe
  * @private
  */
-RasterLayer.prototype._attach = function(g) {};
+RasterLayer.prototype._attach = function (g) {};
 
 /**************************************************************************************************************/
 
@@ -64,4 +64,4 @@ RasterLayer.prototype._attach = function(g) {};
  * Detaches the raster layer from the globe and removes the overlay is needed
  * @private
  */
-RasterLayer.prototype._detach = function() {};
+RasterLayer.prototype._detach = function () {};

@@ -17,81 +17,73 @@
  * along with GlobWeb. If not, see <http://www.gnu.org/licenses/>.
  ***************************************/
 
-define([
-    "./AbstractProjection",
-    "../Utils/Utils",
-    "../Utils/Numeric",
-    "../Utils/Constants",
-    "../Renderer/glMatrix"
-], function(AbstractProjection, Utils, Numeric, Constants) {
-    /**
-     * @name PlateProjection
-     * @class
-     *    The Plate coordinate system is a coordinate reference system. It is composed of :
-     * <ul>
-     * <li>a reference frame : the reference geoid, which is set as parameter of the options object,</li>
-     * <li>a projection : the Plate carrée projection.</li>
-     * </ul>
-     * <img src="../doc/images/platecarré.png" width="200px"/>
-     * @augments AbstractProjection
-     * @param {AbstractProjection.configuration} [options] - No options.
-     * @constructor
-     * @see {@link https://en.wikipedia.org/wiki/Mollweide_projection}
-     * @memberof module:Projection
-     */
-    var PlateProjection = function(options) {
-        AbstractProjection.prototype.constructor.call(
-            this,
-            [0, 0],
-            [-180, -90, 180, 90],
-            options
-        );
-    };
+import AbstractProjection from "./AbstractProjection";
+import Utils from "../Utils/Utils";
+import Numeric from "../Utils/Numeric";
+import Constants from "../Utils/Constants";
+import "../Renderer/glMatrix";
+/**
+ * @name PlateProjection
+ * @class
+ *    The Plate coordinate system is a coordinate reference system. It is composed of :
+ * <ul>
+ * <li>a reference frame : the reference geoid, which is set as parameter of the options object,</li>
+ * <li>a projection : the Plate carrée projection.</li>
+ * </ul>
+ * <img src="../doc/images/platecarré.png" width="200px"/>
+ * @augments AbstractProjection
+ * @param {AbstractProjection.configuration} [options] - No options.
+ * @constructor
+ * @see {@link https://en.wikipedia.org/wiki/Mollweide_projection}
+ * @memberof module:Projection
+ */
+var PlateProjection = function (options) {
+  AbstractProjection.prototype.constructor.call(this, [0, 0], [-180, -90, 180, 90], options);
+};
 
-    /**************************************************************************************************************/
+/**************************************************************************************************************/
 
-    Utils.inherits(AbstractProjection, PlateProjection);
+Utils.inherits(AbstractProjection, PlateProjection);
 
-    /**************************************************************************************************************/
+/**************************************************************************************************************/
 
-    /**
-     * @function unProject
-     * @memberof PlateProjection#
-     */
-    PlateProjection.prototype.unProject = function(position3d, dest) {
-        if (!dest) {
-            dest = new Array(3);
-        }
-        dest[0] = Numeric.toDegree(position3d[0]);
-        dest[1] = Numeric.toDegree(position3d[1]);
-        dest[2] = position3d[2];
+/**
+ * @function unProject
+ * @memberof PlateProjection#
+ */
+PlateProjection.prototype.unProject = function (position3d, dest) {
+  if (!dest) {
+    dest = new Array(3);
+  }
+  dest[0] = Numeric.toDegree(position3d[0]);
+  dest[1] = Numeric.toDegree(position3d[1]);
+  dest[2] = position3d[2];
 
-        return dest;
-    };
+  return dest;
+};
 
-    /**
-     * @function project
-     * @memberof PlateProjection#
-     */
-    PlateProjection.prototype.project = function(geoPos, dest) {
-        if (!dest) {
-            dest = new Array(3);
-        }
-        dest[0] = Numeric.toRadian(geoPos[0]);
-        dest[1] = Numeric.toRadian(geoPos[1]);
-        dest[2] = geoPos[2];
-        return dest;
-    };
+/**
+ * @function project
+ * @memberof PlateProjection#
+ */
+PlateProjection.prototype.project = function (geoPos, dest) {
+  if (!dest) {
+    dest = new Array(3);
+  }
+  dest[0] = Numeric.toRadian(geoPos[0]);
+  dest[1] = Numeric.toRadian(geoPos[1]);
+  dest[2] = geoPos[2];
+  return dest;
+};
 
-    /**
-     * @function getName
-     * @memberof PlateProjection#
-     */
-    PlateProjection.prototype.getName = function() {
-        return Constants.PROJECTION.Plate;
-    };
+/**
+ * @function getName
+ * @memberof PlateProjection#
+ */
+PlateProjection.prototype.getName = function () {
+  return Constants.PROJECTION.Plate;
+};
 
-    /**************************************************************************************************************/
+/**************************************************************************************************************/
 
-    return PlateProjection;
-});
+export default PlateProjection;

@@ -1,24 +1,47 @@
-<!doctype html>
+<!DOCTYPE html>
 <html>
-
-<head>
+  <head>
     <title>API version</title>
-    <link rel="icon" href="favicon.ico" />
-    <meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
-    <meta name="title" content="API version">
-    <meta name="description" content='
+    <link rel="icon" href="../static/favicon.ico" />
+    <meta http-equiv="content-type" content="text/html; charset=ISO-8859-1" />
+    <meta name="title" content="API version" />
+    <meta
+      name="description"
+      content="
     <h2>Introduction</h2>
     This tutorial is a short explanation on how to retrieve the current version of Mizar.
 
     <h2>Code in Mizar</h2>
-    The first step is to include the Mizar.min.js file. Then call Mizar.VERSION attribute.
-    '
-</head>
+    The first step is to include the Mizar.min.js file. Then call Mizar.VERSION attribute. "
+    />
 
-<body style="margin: 0; padding: 0;">
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.css"
+    />
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="https://cdn.jsdelivr.net/gh/wallynm/jquery-loadmask@master/jquery.loadmask.min.css"
+    />
+  </head>
+
+  <body style="margin: 0; padding: 0;">
     <div id="version"></div>
-    <script type="text/javascript" src="../Mizar.min.js"></script>
-    <script type="text/javascript" src="getting-started-version.js"></script>    
-</body>
 
+    <script
+      type="text/javascript"
+      src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.1/moment-with-locales.min.js"
+    ></script>
+    <script type="text/javascript" src="https://code.jquery.com/jquery-3.x-git.min.js"></script>
+    <script
+      src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"
+      integrity="sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU="
+      crossorigin="anonymous"
+    ></script>
+
+    <script type="text/javascript" src="../dist/mizar.js"></script>
+    <script type="text/javascript" src="getting-started-version.js"></script>
+  </body>
 </html>

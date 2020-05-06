@@ -1,0 +1,6 @@
+{
+  // Tell VSCode to load jest global variables
+  "typeAcquisition": {
+    "include": ["jest"]
+  }
+}

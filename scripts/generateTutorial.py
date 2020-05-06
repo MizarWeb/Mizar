@@ -48,7 +48,9 @@ def getMeta(doc):
     body=""
     for nodeElt in node:
         if nodeElt.tag != "script":
-            body = body+etree.tostring(nodeElt).strip()
+            # `method="c14n"` keeps empty tags instead of auto-closing them
+            body = body + etree.tostring(nodeElt, method="c14n").strip()
+           
     return [meta_title, meta_description, childrens, css, body]
 
 def createHtmlPages(htmlFile, jsFile, meta_title, meta_desc, css, body, dst="../tutorials/"):
@@ -82,7 +84,7 @@ def createNavigation(htmlFile, meta_title, childrens, dst="../tutorials/"):
 createTutoDirectory()
 copyDirectory()
 copyDirectory("../examples/resources", "../tutorials/resources")
-copyfile("../favicon.ico", "../tutorials/favicon.ico")
+copyfile("../static/favicon.ico", "../tutorials/favicon.ico")
 
 filein = open( 'templateCodeMirror.tmpl' )
 src = Template( filein.read() )

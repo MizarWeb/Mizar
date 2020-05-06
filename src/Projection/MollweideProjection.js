@@ -17,127 +17,115 @@
  * along with GlobWeb. If not, see <http://www.gnu.org/licenses/>.
  ***************************************/
 
-define([
-    "./AbstractProjection",
-    "../Utils/Utils",
-    "../Utils/Numeric",
-    "../Utils/Constants",
-    "../Renderer/glMatrix"
-], function(AbstractProjection, Utils, Numeric, Constants) {
-    /**
-     * @name MollweideProjection
-     * @class
-     *    The Mollweide coordinate system is a coordinate reference system. It is composed of :
-     * <ul>
-     * <li>a reference frame : the reference geoid, which is set as parameter of the options object,</li>
-     * <li>a projection : the Mollweide projection.</li>
-     * </ul>
-     * The Mollweide projection is an equal-area, pseudocylindrical map projection generally used for global maps of
-     * the world or night sky.<br/>
-     * <img src="../doc/images/mollweide.png" width="200px"/>
-     * @augments AbstractProjection
-     * @param {AbstractProjection.configuration} [options] - No options.
-     * @constructor
-     * @see {@link https://en.wikipedia.org/wiki/Mollweide_projection}
-     * @memberof module:Projection
-     */
-    var MollweideProjection = function(options) {
-        AbstractProjection.prototype.constructor.call(
-            this,
-            [0, 0],
-            [-180, -90, 180, 90],
-            options
-        );
-    };
+import AbstractProjection from "./AbstractProjection";
+import Utils from "../Utils/Utils";
+import Numeric from "../Utils/Numeric";
+import Constants from "../Utils/Constants";
+import "../Renderer/glMatrix";
+/**
+ * @name MollweideProjection
+ * @class
+ *    The Mollweide coordinate system is a coordinate reference system. It is composed of :
+ * <ul>
+ * <li>a reference frame : the reference geoid, which is set as parameter of the options object,</li>
+ * <li>a projection : the Mollweide projection.</li>
+ * </ul>
+ * The Mollweide projection is an equal-area, pseudocylindrical map projection generally used for global maps of
+ * the world or night sky.<br/>
+ * <img src="../doc/images/mollweide.png" width="200px"/>
+ * @augments AbstractProjection
+ * @param {AbstractProjection.configuration} [options] - No options.
+ * @constructor
+ * @see {@link https://en.wikipedia.org/wiki/Mollweide_projection}
+ * @memberof module:Projection
+ */
+var MollweideProjection = function (options) {
+  AbstractProjection.prototype.constructor.call(this, [0, 0], [-180, -90, 180, 90], options);
+};
 
-    /**************************************************************************************************************/
+/**************************************************************************************************************/
 
-    Utils.inherits(AbstractProjection, MollweideProjection);
+Utils.inherits(AbstractProjection, MollweideProjection);
 
-    /**************************************************************************************************************/
+/**************************************************************************************************************/
 
-    /**
-     *  Newton-Raphson method to find auxiliary theta needed for mollweide x/y computation
-     *  @see https://en.wikipedia.org/wiki/Mollweide_projection
-     */
-    function _findTheta(lat) {
-        // Avoid divide by zero
-        if (Math.abs(lat) === Math.PI / 2) {
-            return lat;
-        }
+/**
+ *  Newton-Raphson method to find auxiliary theta needed for mollweide x/y computation
+ *  @see https://en.wikipedia.org/wiki/Mollweide_projection
+ */
+function _findTheta(lat) {
+  // Avoid divide by zero
+  if (Math.abs(lat) === Math.PI / 2) {
+    return lat;
+  }
 
-        var epsilon = 0.001;
-        var thetaN = lat; // n
-        var thetaN1; // n+1
+  var epsilon = 0.001;
+  var thetaN = lat; // n
+  var thetaN1; // n+1
 
-        do {
-            var twoThetaN = 2 * thetaN;
-            thetaN = thetaN1;
-            if (!thetaN) {
-                thetaN = lat;
-            }
-            thetaN1 =
-                twoThetaN / 2 -
-                (twoThetaN + Math.sin(twoThetaN) - Math.PI * Math.sin(lat)) /
-                    (2 + 2 * Math.cos(twoThetaN));
-        } while (Math.abs(thetaN1 - thetaN) >= epsilon);
-
-        return thetaN1;
+  do {
+    var twoThetaN = 2 * thetaN;
+    thetaN = thetaN1;
+    if (!thetaN) {
+      thetaN = lat;
     }
+    thetaN1 =
+      twoThetaN / 2 - (twoThetaN + Math.sin(twoThetaN) - Math.PI * Math.sin(lat)) / (2 + 2 * Math.cos(twoThetaN));
+  } while (Math.abs(thetaN1 - thetaN) >= epsilon);
 
-    /**
-     * @function unProject
-     * @memberof MollweideProjection#
-     */
-    MollweideProjection.prototype.unProject = function(position3d, dest) {
-        if (!dest) {
-            dest = new Array(3);
-        }
+  return thetaN1;
+}
 
-        var auxTheta = Math.asin(position3d[1] / Math.sqrt(2));
-        var phi = Math.asin((2 * auxTheta + Math.sin(2 * auxTheta)) / Math.PI);
-        var lambda =
-            (Math.PI * position3d[0]) / (2 * Math.sqrt(2) * Math.cos(auxTheta));
+/**
+ * @function unProject
+ * @memberof MollweideProjection#
+ */
+MollweideProjection.prototype.unProject = function (position3d, dest) {
+  if (!dest) {
+    dest = new Array(3);
+  }
 
-        dest[0] = Numeric.toDegree(lambda);
-        dest[1] = Numeric.toDegree(phi);
-        dest[2] = position3d[2];
-        return dest;
-    };
+  var auxTheta = Math.asin(position3d[1] / Math.sqrt(2));
+  var phi = Math.asin((2 * auxTheta + Math.sin(2 * auxTheta)) / Math.PI);
+  var lambda = (Math.PI * position3d[0]) / (2 * Math.sqrt(2) * Math.cos(auxTheta));
 
-    /**
-     * @function project
-     * @memberof MollweideProjection#
-     */
-    MollweideProjection.prototype.project = function(geoPos, dest) {
-        if (!dest) {
-            dest = new Array(3);
-        }
+  dest[0] = Numeric.toDegree(lambda);
+  dest[1] = Numeric.toDegree(phi);
+  dest[2] = position3d[2];
+  return dest;
+};
 
-        var lambda = Numeric.toRadian(geoPos[0]); // longitude
-        var theta0 = Numeric.toRadian(geoPos[1]); // latitude
-        var auxTheta = _findTheta(theta0);
+/**
+ * @function project
+ * @memberof MollweideProjection#
+ */
+MollweideProjection.prototype.project = function (geoPos, dest) {
+  if (!dest) {
+    dest = new Array(3);
+  }
 
-        // Transfrom to Mollweide coordinate system
-        var mollX =
-            ((2 * Math.sqrt(2)) / Math.PI) * lambda * Math.cos(auxTheta);
-        var mollY = Math.sqrt(2) * Math.sin(auxTheta);
+  var lambda = Numeric.toRadian(geoPos[0]); // longitude
+  var theta0 = Numeric.toRadian(geoPos[1]); // latitude
+  var auxTheta = _findTheta(theta0);
 
-        dest[0] = mollX;
-        dest[1] = mollY;
-        dest[2] = geoPos[2];
-        return dest;
-    };
+  // Transfrom to Mollweide coordinate system
+  var mollX = ((2 * Math.sqrt(2)) / Math.PI) * lambda * Math.cos(auxTheta);
+  var mollY = Math.sqrt(2) * Math.sin(auxTheta);
 
-    /**
-     * @function getName
-     * @memberof MollweideProjection#
-     */
-    MollweideProjection.prototype.getName = function() {
-        return Constants.PROJECTION.Mollweide;
-    };
+  dest[0] = mollX;
+  dest[1] = mollY;
+  dest[2] = geoPos[2];
+  return dest;
+};
 
-    /**************************************************************************************************************/
+/**
+ * @function getName
+ * @memberof MollweideProjection#
+ */
+MollweideProjection.prototype.getName = function () {
+  return Constants.PROJECTION.Mollweide;
+};
 
-    return MollweideProjection;
-});
+/**************************************************************************************************************/
+
+export default MollweideProjection;

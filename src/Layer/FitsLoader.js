@@ -19,85 +19,80 @@
 
 /*global define: false */
 
-define(["../Utils/Constants","../Gui/dialog/ErrorDialog","../Utils/Proxy","fits"], function(Constants, ErrorDialog, Proxy) {
-    /**
-     *    Parse fits file
-     *
-     *    @param response XHR response containing fits
-     *
-     *    @return Parsed data
-     */
-    function parseFits(response) {
-        var FITS = astro.FITS;
-        // Initialize the FITS.File object using
-        // the array buffer returned from the XHR
-        var fits = new FITS.File(response);
-        // Grab the first HDU with a data unit
-        var hdu = fits.getHDU();
-        var data = hdu.data;
+import Constants from "../Utils/Constants";
+import ErrorDialog from "../Gui/dialog/ErrorDialog";
+import Proxy from "../Utils/Proxy";
+// import "fitsjs";
+import astro from "../../external/fitsjs/fits";
 
-        var swapPixels = new Uint8Array(
-            data.view.buffer,
-            data.begin,
-            data.length
-        ); // with gl.UNSIGNED_byte
+/**
+ *    Parse fits file
+ *
+ *    @param response XHR response containing fits
+ *
+ *    @return Parsed data
+ */
+function parseFits(response) {
+  var FITS = astro.FITS;
+  // Initialize the FITS.File object using
+  // the array buffer returned from the XHR
+  var fits = new FITS.File(response);
+  // Grab the first HDU with a data unit
+  var hdu = fits.getHDU();
+  var data = hdu.data;
 
-        var bpe;
-        if (data.arrayType) {
-            bpe = data.arrayType.BYTES_PER_ELEMENT;
-        } else {
-            bpe = Math.abs(hdu.header.BITPIX) / 8;
-        }
-        for (var i = 0; i < swapPixels.length; i += bpe) {
-            var temp;
-            // Swap to little-endian
-            for (var j = 0; j < bpe / 2; j++) {
-                temp = swapPixels[i + j];
-                swapPixels[i + j] = swapPixels[i + bpe - 1 - j];
-                swapPixels[i + bpe - 1 - j] = temp;
-            }
-        }
+  var swapPixels = new Uint8Array(data.view.buffer, data.begin, data.length); // with gl.UNSIGNED_byte
 
-        return fits;
+  var bpe;
+  if (data.arrayType) {
+    bpe = data.arrayType.BYTES_PER_ELEMENT;
+  } else {
+    bpe = Math.abs(hdu.header.BITPIX) / 8;
+  }
+  for (var i = 0; i < swapPixels.length; i += bpe) {
+    var temp;
+    // Swap to little-endian
+    for (var j = 0; j < bpe / 2; j++) {
+      temp = swapPixels[i + j];
+      swapPixels[i + j] = swapPixels[i + bpe - 1 - j];
+      swapPixels[i + bpe - 1 - j] = temp;
     }
+  }
 
-    var loadFits = function(
-        url,
-        successCallback,
-        failCallback,
-        onprogressCallback
-    ) {
-        var xhr = new XMLHttpRequest();
-        xhr.onreadystatechange = function(e) {
-            if (xhr.readyState === 4) {
-                if (xhr.status === 200) {
-                    if (xhr.response) {
-                        var fits = parseFits(xhr.response);
-                        if (successCallback) {
-                            successCallback(fits);
-                        }
-                    }
-                } else {
-                    ErrorDialog.open(Constants.LEVEL.ERROR, "Error while loading " + url);
-                    if (failCallback) {
-                        failCallback();
-                    }
-                }
-            }
-        };
+  return fits;
+}
 
-        // Define default on progress function, otherwise
-        // Firefox won't take Content-length header into account
-        // so evt.lengthComputable will be always set to false..
-        xhr.onprogress = function(evt) {};
-        xhr.open("GET", Proxy.proxify(url));
-        xhr.responseType = "arraybuffer";
-        xhr.send();
-        return xhr;
-    };
+var loadFits = function (url, successCallback, failCallback, onprogressCallback) {
+  var xhr = new XMLHttpRequest();
+  xhr.onreadystatechange = function (e) {
+    if (xhr.readyState === 4) {
+      if (xhr.status === 200) {
+        if (xhr.response) {
+          var fits = parseFits(xhr.response);
+          if (successCallback) {
+            successCallback(fits);
+          }
+        }
+      } else {
+        ErrorDialog.open(Constants.LEVEL.ERROR, "Error while loading " + url);
+        if (failCallback) {
+          failCallback();
+        }
+      }
+    }
+  };
 
-    return {
-        loadFits: loadFits,
-        parseFits: parseFits
-    };
-});
+  // Define default on progress function, otherwise
+  // Firefox won't take Content-length header into account
+  // so evt.lengthComputable will be always set to false..
+  xhr.onprogress = function (evt) {};
+  xhr.open("GET", Proxy.proxify(url));
+  xhr.responseType = "arraybuffer";
+  xhr.send();
+  return xhr;
+};
+
+export default {
+  loadFits: loadFits,
+  parseFits: parseFits
+};

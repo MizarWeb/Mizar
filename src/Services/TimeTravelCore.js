@@ -21,120 +21,114 @@
 /**
  * Compass module : map control with "north" component
  */
-define(["../Time/TimeTravelParams", "../Utils/Constants"], function(
-    TimeTravelParams,
-    Constants
-) {
-    /**
-     *    Private variables
-     */
+import TimeTravelParams from "../Time/TimeTravelParams";
+import Constants from "../Utils/Constants";
+/**
+ *    Private variables
+ */
 
-    var params = new TimeTravelParams();
+var params = new TimeTravelParams();
 
-    var parentElement = null;
-    var ctx = null;
+var parentElement = null;
+var ctx = null;
 
-    /**************************************************************************************************************/
+/**************************************************************************************************************/
 
-    /**
-     * Go Rewind
-     * @fires Context#globalTime:changed
-     */
-    function goRewind() {
-        params.rewind();
+/**
+ * Go Rewind
+ * @fires Context#globalTime:changed
+ */
+function goRewind() {
+  params.rewind();
+}
+
+/**
+ * Go Forward
+ * @fires Context#globalTime:changed
+ */
+function goForward() {
+  params.forward();
+}
+
+/**
+ * Choose time
+ *
+ */
+function chooseTime(date) {
+  if (date instanceof Date || typeof date === "string") {
+    params.setCurrentDate(date);
+  }
+}
+
+/**************************************************************************************************************/
+
+/**
+ *    Remove time travel element
+ *
+ */
+function remove() {
+  ctx.unsubscribe(Constants.EVENT_MSG.GLOBAL_TIME_FORWARD, goForward);
+  ctx.unsubscribe(Constants.EVENT_MSG.GLOBAL_TIME_REWIND, goRewind);
+  ctx.unsubscribe(Constants.EVENT_MSG.GLOBAL_TIME_SET, chooseTime);
+  document.getElementById(parentElement).innerHTML = "";
+}
+
+/**************************************************************************************************************/
+
+/**
+ *    reset values
+ *
+ */
+function reset() {
+  params.reset();
+}
+
+/**
+ *    update
+ *
+ */
+function update(parameters) {
+  params.update(parameters);
+}
+
+/**
+ *    get current date
+ *
+ */
+function getCurrentDate() {
+  return params.getCurrentDate();
+}
+
+function isCurrentDateTheFirst() {
+  return params.isCurrentDateTheFirst();
+}
+
+function isCurrentDateTheLast() {
+  return params.isCurrentDateTheLast();
+}
+
+/**************************************************************************************************************/
+
+export default {
+  init: function (options) {
+    parentElement = options.element;
+    ctx = options.ctx;
+    params.setContext(ctx);
+
+    // subscribe
+    if (ctx) {
+      ctx.subscribe(Constants.EVENT_MSG.GLOBAL_TIME_FORWARD, goForward);
+      ctx.subscribe(Constants.EVENT_MSG.GLOBAL_TIME_REWIND, goRewind);
+      ctx.subscribe(Constants.EVENT_MSG.GLOBAL_TIME_SET, chooseTime);
     }
-
-    /**
-     * Go Forward
-     * @fires Context#globalTime:changed
-     */
-    function goForward() {
-        params.forward();
-    }
-
-    /**
-     * Choose time
-     *
-     */
-    function chooseTime(date) {
-        if (date instanceof Date || typeof date === "string") {
-            params.setCurrentDate(date);
-        }
-    }
-
-    /**************************************************************************************************************/
-
-    /**
-     *    Remove time travel element
-     *
-     */
-    function remove() {
-        ctx.unsubscribe(Constants.EVENT_MSG.GLOBAL_TIME_FORWARD, goForward);
-        ctx.unsubscribe(Constants.EVENT_MSG.GLOBAL_TIME_REWIND, goRewind);
-        ctx.unsubscribe(Constants.EVENT_MSG.GLOBAL_TIME_SET, chooseTime);
-        document.getElementById(parentElement).innerHTML = "";
-    }
-
-    /**************************************************************************************************************/
-
-    /**
-     *    reset values
-     *
-     */
-    function reset() {
-        params.reset();
-    }
-
-    /**
-     *    update
-     *
-     */
-    function update(parameters) {
-        params.update(parameters);
-    }
-
-    /**
-     *    get current date
-     *
-     */
-    function getCurrentDate() {
-        return params.getCurrentDate();
-    }
-
-    function isCurrentDateTheFirst() {
-        return params.isCurrentDateTheFirst();
-    }
-
-    function isCurrentDateTheLast() {
-        return params.isCurrentDateTheLast();
-    }
-
-    /**************************************************************************************************************/
-
-    return {
-        init: function(options) {
-            parentElement = options.element;
-            ctx = options.ctx;
-            params.setContext(ctx);
-
-            // subscribe
-            if (ctx) {
-                ctx.subscribe(
-                    Constants.EVENT_MSG.GLOBAL_TIME_FORWARD,
-                    goForward
-                );
-                ctx.subscribe(Constants.EVENT_MSG.GLOBAL_TIME_REWIND, goRewind);
-                ctx.subscribe(Constants.EVENT_MSG.GLOBAL_TIME_SET, chooseTime);
-            }
-        },
-        reset: reset,
-        update: update,
-        goForward: goForward,
-        goRewind: goRewind,
-        isCurrentDateTheFirst: isCurrentDateTheFirst,
-        isCurrentDateTheLast: isCurrentDateTheLast,
-        chooseTime: chooseTime,
-        remove: remove,
-        getCurrentDate: getCurrentDate
-    };
-});
+  },
+  reset: reset,
+  update: update,
+  goForward: goForward,
+  goRewind: goRewind,
+  isCurrentDateTheFirst: isCurrentDateTheFirst,
+  isCurrentDateTheLast: isCurrentDateTheLast,
+  chooseTime: chooseTime,
+  remove: remove,
+  getCurrentDate: getCurrentDate
+};

@@ -1,12 +1,13 @@
-<!doctype html>
+<!DOCTYPE html>
 <html>
-
-<head>
+  <head>
     <title>Getting Started with Mars</title>
-    <link rel="icon" href="favicon.ico" />
-    <meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
-    <meta name="title" content="Getting Started with Mars">
-    <meta name="description" content='
+    <link rel="icon" href="../static/favicon.ico" />
+    <meta http-equiv="content-type" content="text/html; charset=ISO-8859-1" />
+    <meta name="title" content="Getting Started with Mars" />
+    <meta
+      name="description"
+      content="
     <h2>Introduction</h2>
     This tutorial explains how ot use a simple WMS
 
@@ -14,31 +15,95 @@
     <br/><br/>
     Look at the code and change it to test it.
     <br/>
-    '>
+    "
+    />
 
-</head>
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.css"
+    />
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="https://cdn.jsdelivr.net/gh/wallynm/jquery-loadmask@master/jquery.loadmask.min.css"
+    />
+  </head>
 
-<body style="margin: 0; padding: 0; overflow: hidden;">
+  <body style="margin: 0; padding: 0; overflow: hidden;">
     <div id="container">
-        <div id="fps" style="position:absolute;bottom:10px;right:0px;color:white;-webkit-user-select: none;-moz-user-select: none;-ms-user-select: none;user-select: none;">fps !</div>
-        <div id="posTracker" style="position:absolute;top:10px;left:45%;height:50px;color:white;-webkit-user-select: none;-moz-user-select: none;-ms-user-select: none;user-select: none;">Coordinates</div>
-        
-        <!-- <div id="container" width="400" height="200">-->
-        <div style="color:white;position:absolute;top:10px;left:20px">
-            <fieldset id="layers">
-                <legend>Select the layers to add/remove</legend>
-            </fieldset>
-        </div>
-        <div>
-            <a href="https://www.cnes.fr" target="_blank"><img src="../logo-cnes.jpg" style="position:absolute;left:5px;bottom:10px;width:50px;" /></a>
-        </div>
-        <canvas id="MizarCanvas"></canvas>
-        <div id="message" style="position:absolute;bottom:10px;left:45%;color:white;-webkit-user-select: none;-moz-user-select: none;-ms-user-select: none;user-select: none;">
-        </div>
+      <div
+        id="fps"
+        style="
+          position: absolute;
+          bottom: 10px;
+          right: 0px;
+          color: white;
+          -webkit-user-select: none;
+          -moz-user-select: none;
+          -ms-user-select: none;
+          user-select: none;
+        "
+      >
+        fps !
+      </div>
+      <div
+        id="posTracker"
+        style="
+          position: absolute;
+          top: 10px;
+          left: 45%;
+          height: 50px;
+          color: white;
+          -webkit-user-select: none;
+          -moz-user-select: none;
+          -ms-user-select: none;
+          user-select: none;
+        "
+      >
+        Coordinates
+      </div>
+
+      <!-- <div id="container" width="400" height="200">-->
+      <div style="color: white; position: absolute; top: 10px; left: 20px;">
+        <fieldset id="layers">
+          <legend>Select the layers to add/remove</legend>
+        </fieldset>
+      </div>
+      <div>
+        <a href="https://www.cnes.fr" target="_blank"
+          ><img src="../static/logo-cnes.jpg" style="position: absolute; left: 5px; bottom: 10px; width: 50px;"
+        /></a>
+      </div>
+      <canvas id="MizarCanvas"></canvas>
+      <div
+        id="message"
+        style="
+          position: absolute;
+          bottom: 10px;
+          left: 45%;
+          color: white;
+          -webkit-user-select: none;
+          -moz-user-select: none;
+          -ms-user-select: none;
+          user-select: none;
+        "
+      ></div>
     </div>
     <br />
-    <script type="text/javascript" src="../Mizar.min.js"></script>
-    <script type="text/javascript" src="getting-started-wms.js"></script>
-</body>
 
+    <script
+      type="text/javascript"
+      src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.1/moment-with-locales.min.js"
+    ></script>
+    <script type="text/javascript" src="https://code.jquery.com/jquery-3.x-git.min.js"></script>
+    <script
+      src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"
+      integrity="sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU="
+      crossorigin="anonymous"
+    ></script>
+
+    <script type="text/javascript" src="../dist/mizar.js"></script>
+    <script type="text/javascript" src="getting-started-wms.js"></script>
+  </body>
 </html>

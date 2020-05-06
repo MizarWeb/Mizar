@@ -2,6 +2,7 @@
 
 <title>Getting started with Earth</title>
 <meta charset="utf-8" />
+
 <link rel=stylesheet href="./resources/docs.css">
 
 <link rel=stylesheet href=./resources/codemirror.css>
@@ -18,7 +19,7 @@
         border: 1px solid black;
         font-size: xx-small;
     }
-
+    
     iframe {
         width: 49%;
         float: left;
@@ -28,7 +29,6 @@
     }
 </style>
 
-
 <article>
     $article
     <textarea id=code name=code>
@@ -37,28 +37,34 @@
 
         <head>
             <title>$title</title>
-            <meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">                   
-            $css                 
+            <meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
+            <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.css" />
+            <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/gh/wallynm/jquery-loadmask@master/jquery.loadmask.min.css" /> $css
         </head>
-
 
         <body style="margin: 0; padding: 0;">
             $body
-            <script type="text/javascript" src="../Mizar.min.js"></script>
+
+            <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.1/moment-with-locales.min.js"></script>
+            <script type="text/javascript" src="https://code.jquery.com/jquery-3.x-git.min.js"></script>
+            <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js" integrity="sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU=" crossorigin="anonymous"></script>
+
+            <script type="text/javascript" src="../dist/mizar.js"></script>
             <script type="text/javascript">
                 $script_js
             </script>
         </body>
+
         </html>
     </textarea>
-    <iframe id=preview></iframe>
+    <iframe id="preview"></iframe>
     <script>
         var delay;
         // Initialize CodeMirror editor with a nice html5 canvas demo.
         var editor = CodeMirror.fromTextArea(document.getElementById('code'), {
             mode: 'text/html'
         });
-        editor.on("change", function () {
+        editor.on("change", function() {
             clearTimeout(delay);
             delay = setTimeout(updatePreview, 300);
         });

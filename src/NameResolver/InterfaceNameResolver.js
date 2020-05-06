@@ -34,9 +34,9 @@ function NameResolver() {}
  * @param {Function} options.searchLayer - Layer where the research is done
  * @param {Function} options.zoomTo - ZoomTo function
  */
-NameResolver.prototype.handle = function(options) {};
+NameResolver.prototype.handle = function (options) {};
 
 /**
  * Code to execute when remove
  */
-NameResolver.prototype.remove = function() {};
+NameResolver.prototype.remove = function () {};

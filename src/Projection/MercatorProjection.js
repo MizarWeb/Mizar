@@ -17,118 +17,110 @@
  * along with GlobWeb. If not, see <http://www.gnu.org/licenses/>.
  ***************************************/
 
-define([
-    "./AbstractProjection",
-    "../Utils/Utils",
-    "../Utils/Numeric",
-    "../Utils/Constants",
-    "../Renderer/glMatrix"
-], function(AbstractProjection, Utils, Numeric, Constants) {
-    /**
-     * Mercator projection configuration
-     * @typedef {AbstractProjection.configuration} AbstractProjection.mercator_configuration
-     * @property {float} [lambda0 = 0.0] - the longitude of an arbitrary central meridian usually(but not always) Greenwich, in degrees
-     * (default value is 0)
-     */
+import AbstractProjection from "./AbstractProjection";
+import Utils from "../Utils/Utils";
+import Numeric from "../Utils/Numeric";
+import Constants from "../Utils/Constants";
+import "../Renderer/glMatrix";
+/**
+ * Mercator projection configuration
+ * @typedef {AbstractProjection.configuration} AbstractProjection.mercator_configuration
+ * @property {float} [lambda0 = 0.0] - the longitude of an arbitrary central meridian usually(but not always) Greenwich, in degrees
+ * (default value is 0)
+ */
 
-    /**
-     * @name MercatorProjection
-     * @class
-     *    The Mercator coordinate system is a coordinate reference system. It is composed of :
-     * <ul>
-     * <li>a reference frame : the reference geoide, which is set as parameter of the options object,</li>
-     * <li>a projection : the Mercator projection.</li>
-     * </ul>
-     * The Mercator projection is a cylindrical map projection presented by the Flemish geographer and cartographer
-     * Gerardus Mercator in 1569. It became the standard map projection for nautical purposes because of its ability to
-     * represent lines of constant course<br/>
-     * <img src="../doc/images/mercator.png" width="200px"/>
-     * @augments AbstractProjection
-     * @param {AbstractProjection.mercator_configuration} [options] - Mercator projection configuration.
-     * @see {@link https://en.wikipedia.org/wiki/Mercator_projection}
-     * @constructor
-     * @memberof module:Projection
-     */
-    var MercatorProjection = function(options) {
-        AbstractProjection.prototype.constructor.call(
-            this,
-            [0, 0],
-            [-180, -80, 180, 84],
-            options
-        );
-        this.lambda0 = options && options.lambda0 ? options.lambda0 : 0.0; // Greenwich (i.e., zero)
-    };
+/**
+ * @name MercatorProjection
+ * @class
+ *    The Mercator coordinate system is a coordinate reference system. It is composed of :
+ * <ul>
+ * <li>a reference frame : the reference geoide, which is set as parameter of the options object,</li>
+ * <li>a projection : the Mercator projection.</li>
+ * </ul>
+ * The Mercator projection is a cylindrical map projection presented by the Flemish geographer and cartographer
+ * Gerardus Mercator in 1569. It became the standard map projection for nautical purposes because of its ability to
+ * represent lines of constant course<br/>
+ * <img src="../doc/images/mercator.png" width="200px"/>
+ * @augments AbstractProjection
+ * @param {AbstractProjection.mercator_configuration} [options] - Mercator projection configuration.
+ * @see {@link https://en.wikipedia.org/wiki/Mercator_projection}
+ * @constructor
+ * @memberof module:Projection
+ */
+var MercatorProjection = function (options) {
+  AbstractProjection.prototype.constructor.call(this, [0, 0], [-180, -80, 180, 84], options);
+  this.lambda0 = options && options.lambda0 ? options.lambda0 : 0.0; // Greenwich (i.e., zero)
+};
 
-    /**************************************************************************************************************/
+/**************************************************************************************************************/
 
-    Utils.inherits(AbstractProjection, MercatorProjection);
+Utils.inherits(AbstractProjection, MercatorProjection);
 
-    /**************************************************************************************************************/
+/**************************************************************************************************************/
 
-    /**
-     *  Hyperbolic sine
-     */
-    var _sinh = function(x) {
-        var expY = Math.exp(x);
-        return (expY - 1 / expY) / 2;
-    };
+/**
+ *  Hyperbolic sine
+ */
+var _sinh = function (x) {
+  var expY = Math.exp(x);
+  return (expY - 1 / expY) / 2;
+};
 
-    /**
-     * @function unProject
-     * @memberof MercatorProjection#
-     */
-    MercatorProjection.prototype.unProject = function(position3d, dest) {
-        if (!dest) {
-            dest = new Array(3);
-        }
+/**
+ * @function unProject
+ * @memberof MercatorProjection#
+ */
+MercatorProjection.prototype.unProject = function (position3d, dest) {
+  if (!dest) {
+    dest = new Array(3);
+  }
 
-        dest[0] = this.lambda0 + Numeric.toDegree(position3d[0]);
-        dest[1] = Numeric.toDegree(Math.atan(_sinh(position3d[1])));
-        dest[2] = position3d[2];
+  dest[0] = this.lambda0 + Numeric.toDegree(position3d[0]);
+  dest[1] = Numeric.toDegree(Math.atan(_sinh(position3d[1])));
+  dest[2] = position3d[2];
 
-        if (Math.abs(dest[1]) > 85.05) return null;
+  if (Math.abs(dest[1]) > 85.05) return null;
 
-        return dest;
-    };
+  return dest;
+};
 
-    /**
-     * @function project
-     * @memberof MercatorProjection#
-     */
-    MercatorProjection.prototype.project = function(geoPos, dest) {
-        if (!dest) {
-            dest = new Array(3);
-        }
+/**
+ * @function project
+ * @memberof MercatorProjection#
+ */
+MercatorProjection.prototype.project = function (geoPos, dest) {
+  if (!dest) {
+    dest = new Array(3);
+  }
 
-        // Clamp latitude values, since mercator converges to infinity at poles
-        if (geoPos[1] > 85.05) {
-            geoPos[1] = 85.05;
-        }
-        if (geoPos[1] < -85.05) {
-            geoPos[1] = -85.05;
-        }
+  // Clamp latitude values, since mercator converges to infinity at poles
+  if (geoPos[1] > 85.05) {
+    geoPos[1] = 85.05;
+  }
+  if (geoPos[1] < -85.05) {
+    geoPos[1] = -85.05;
+  }
 
-        var longInRad = Numeric.toRadian(geoPos[0]); // longitude
-        var latInRad = Numeric.toRadian(geoPos[1]); // latitude
+  var longInRad = Numeric.toRadian(geoPos[0]); // longitude
+  var latInRad = Numeric.toRadian(geoPos[1]); // latitude
 
-        var x = longInRad - Numeric.toRadian(this.lambda0);
-        var y = Math.log(Math.tan(latInRad) + 1 / Math.cos(latInRad));
+  var x = longInRad - Numeric.toRadian(this.lambda0);
+  var y = Math.log(Math.tan(latInRad) + 1 / Math.cos(latInRad));
 
-        dest[0] = x;
-        dest[1] = y;
-        dest[2] = geoPos[2];
-        return dest;
-    };
+  dest[0] = x;
+  dest[1] = y;
+  dest[2] = geoPos[2];
+  return dest;
+};
 
-    /**
-     * @function getName
-     * @memberof MercatorProjection#
-     */
-    MercatorProjection.prototype.getName = function() {
-        return Constants.PROJECTION.Mercator;
-    };
+/**
+ * @function getName
+ * @memberof MercatorProjection#
+ */
+MercatorProjection.prototype.getName = function () {
+  return Constants.PROJECTION.Mercator;
+};
 
-    /**************************************************************************************************************/
+/**************************************************************************************************************/
 
-    return MercatorProjection;
-});
+export default MercatorProjection;

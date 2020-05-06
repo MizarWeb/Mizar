@@ -22,181 +22,167 @@
 /**
  * Error dialog module
  */
-define(["../../Utils/Constants", "jquery", "jquery.ui"], function(
-    Constants,
-    $
-) {
-    var isDebug = false;
+import Constants from "../../Utils/Constants";
+import $ from "jquery";
+import "jquery-ui-bundle";
+let isDebug = false;
 
-    // The main div for error
-    var errorDiv =
-        "<div id=\"errorDiv\" style=\"text-align: left\" title=\"Error\"></div>";
+// The main div for error
+const errorDiv = '<div id="errorDiv" style="text-align: left" title="Error"></div>';
 
-    // Create the div, use jQuery UI dialog
+// Create the div, use jQuery UI dialog
 
-    var $text = "";
-    var $buttonName = "";
+let $text = "";
+let $buttonName = "";
 
-    var $errorDiv = $(errorDiv)
-        .appendTo("body")
-        .dialog({
-            autoOpen: false,
-            width: 500,
-            minHeight: 300,
-            maxHeight: 500,
-            dialogClass: "errorBox",
-            beforeClose: function(event, ui) {
-                $text = "";
-            }
-        });
-    var $active = false;
+const $errorDiv = $(errorDiv)
+  .appendTo("body")
+  .dialog({
+    autoOpen: false,
+    width: 500,
+    minHeight: 300,
+    maxHeight: 500,
+    dialogClass: "errorBox",
+    beforeClose: function (event, ui) {
+      $text = "";
+    }
+  });
+let $active = false;
 
-    var _consoleError = function(txt) {
-        if (isDebug) {            
-            console.error(txt);
-        }
-    };
+const _consoleError = function (txt) {
+  if (isDebug) {
+    console.error(txt);
+  }
+};
 
-    var _consoleWarn = function(txt) {
-        if (isDebug) {
-            console.warn(txt);
-        }
-    };  
-    
-    var _consoleLog = function(txt) {
-        if (isDebug) {
-            console.log(txt);
-        }
-    };      
+const _consoleWarn = function (txt) {
+  if (isDebug) {
+    console.warn(txt);
+  }
+};
 
-    var _recordError = function(html) {
-        $text += html + "<br/>";
-        if ($("#warningContainer")) {
-            $("#warningContainer").show();
-            $errorDiv.on("dialogclose", function(event) {
-                if ($buttonName) {
-                    $buttonName.hide();
-                }
-            });
-        }
-        if ($active === true) {
-            $errorDiv.html($text).dialog("open");
-            $errorDiv.scrollTop(5000);
-        }
-    };
+const _consoleLog = function (txt) {
+  if (isDebug) {
+    console.log(txt);
+  }
+};
 
-    var _computeMessageHTML = function(message, description) {
-        if (description != null && message != null) {
-            message = message + " - <font style='color:white'>";
-            if (typeof description === "string") {
-                message = message + description;
-            } else if(description.message) {
-                message = message + description.message;
-            } else {
-                message = message + JSON.stringify(description);
-            }
-            message = message + "</font>";
-        }  
-        return message;      
-    };
+const _recordError = function (html) {
+  $text += html + "<br/>";
+  if ($("#warningContainer")) {
+    $("#warningContainer").show();
+    $errorDiv.on("dialogclose", function (event) {
+      if ($buttonName) {
+        $buttonName.hide();
+      }
+    });
+  }
+  if ($active === true) {
+    $errorDiv.html($text).dialog("open");
+    $errorDiv.scrollTop(5000);
+  }
+};
 
-    var _computeMessageASCII = function(message, description) {
-        if (description != null && message != null) {  
-            if (typeof description === "string") {
-                message = message + ":" + description;
-            } else if(description.message) {
-                message = message +":" + description.message;
-            } else {
-                message = message + ":" + JSON.stringify(description);
-            }                      
-        }  
-        return message;      
-    };  
+const _computeMessageHTML = function (message, description) {
+  if (description != null && message != null) {
+    message = message + " - <font style='color:white'>";
+    if (typeof description === "string") {
+      message = message + description;
+    } else if (description.message) {
+      message = message + description.message;
+    } else {
+      message = message + JSON.stringify(description);
+    }
+    message = message + "</font>";
+  }
+  return message;
+};
 
+const _computeMessageASCII = function (message, description) {
+  if (description != null && message != null) {
+    if (typeof description === "string") {
+      message = message + ":" + description;
+    } else if (description.message) {
+      message = message + ":" + description.message;
+    } else {
+      message = message + ":" + JSON.stringify(description);
+    }
+  }
+  return message;
+};
 
-    return {
-        /**
-         * Open dialog
-         * @param {LEVEL} LEVEL Log level
-         * @param {string} title error title
-         * @param {string} description error description
-         */
-        open: function(LEVEL, title, description) {
-            var message = "";
-            if (LEVEL === Constants.LEVEL.WARNING) {
-                message =
-                    message +
-                    "<font style='color:orange'>Warning : " +
-                    title +
-                    "</font>";
-                _consoleWarn(_computeMessageASCII(title, description));
-                _recordError(_computeMessageHTML(message, description));                
-            } else if (LEVEL === Constants.LEVEL.ERROR) {
-                message =
-                    message +
-                    "<font style='color:red'>Error : " +
-                    title +
-                    "</font>";
-                _consoleError(_computeMessageASCII(title, description));
-                _recordError(_computeMessageHTML(message, description));
-            } else if (LEVEL === Constants.LEVEL.DEBUG) {
-                _consoleLog(_computeMessageASCII(title, description));
-            } else {
-                throw new TypeError("LEVEL must be set with a valid value", "ErrorDialog.js");
-            }
-                      
-        },
-        /**
-         * View the messages in the GUI.
-         */
-        view: function() {
-            $errorDiv.html($text).dialog("open");
-            $errorDiv.scrollTop(5000);
-            $active = true;
-        },
-        /**
-         * Hides the GUI
-         */
-        hide: function() {
-            $errorDiv.dialog("close");
-            $active = false;
-        },
-        /**
-         * GUI is active ?
-         * @return {boolean} true when the GUI is shown otherwise false
-         */
-        isActive: function() {
-            return $active;
-        },
-        /**
-         * Sets the icon.
-         * @param {string} ID
-         */
-        setIcon: function(buttonName) {
-            $buttonName = $(buttonName);
-        },
-        /**
-         * Has error.
-         * @returns {boolean} true when error otherise false
-         */
-        hasError: function() {
-            return $text.length > 0;
-        },
-        /**
-         * Returns the message
-         * @returns {string} the message
-         */
-        getTxt: function() {
-            return $text;
-        },
-        /**
-         * Sets debug enable/disable.
-         * By default debug is disable.
-         * @param {boolean} debug Set to true to show debug message in the console otherwise False 
-         */
-        setDebug: function(debug) {
-            isDebug = debug;
-        }
-
-    };
-});
+export default {
+  /**
+   * Open dialog
+   * @param {LEVEL} LEVEL Log level
+   * @param {string} title error title
+   * @param {string} description error description
+   */
+  open: function (LEVEL, title, description) {
+    let message = "";
+    if (LEVEL === Constants.LEVEL.WARNING) {
+      message = message + "<font style='color:orange'>Warning : " + title + "</font>";
+      _consoleWarn(_computeMessageASCII(title, description));
+      _recordError(_computeMessageHTML(message, description));
+    } else if (LEVEL === Constants.LEVEL.ERROR) {
+      message = message + "<font style='color:red'>Error : " + title + "</font>";
+      _consoleError(_computeMessageASCII(title, description));
+      _recordError(_computeMessageHTML(message, description));
+    } else if (LEVEL === Constants.LEVEL.DEBUG) {
+      _consoleLog(_computeMessageASCII(title, description));
+    } else {
+      throw new TypeError("LEVEL must be set with a valid value", "ErrorDialog.js");
+    }
+  },
+  /**
+   * View the messages in the GUI.
+   */
+  view: function () {
+    $errorDiv.html($text).dialog("open");
+    $errorDiv.scrollTop(5000);
+    $active = true;
+  },
+  /**
+   * Hides the GUI
+   */
+  hide: function () {
+    $errorDiv.dialog("close");
+    $active = false;
+  },
+  /**
+   * GUI is active ?
+   * @return {boolean} true when the GUI is shown otherwise false
+   */
+  isActive: function () {
+    return $active;
+  },
+  /**
+   * Sets the icon.
+   * @param {string} ID
+   */
+  setIcon: function (buttonName) {
+    $buttonName = $(buttonName);
+  },
+  /**
+   * Has error.
+   * @returns {boolean} true when error otherise false
+   */
+  hasError: function () {
+    return $text.length > 0;
+  },
+  /**
+   * Returns the message
+   * @returns {string} the message
+   */
+  getTxt: function () {
+    return $text;
+  },
+  /**
+   * Sets debug enable/disable.
+   * By default debug is disable.
+   * @param {boolean} debug Set to true to show debug message in the console otherwise False
+   */
+  setDebug: function (debug) {
+    isDebug = debug;
+  }
+};

@@ -17,34 +17,32 @@
  * along with GlobWeb. If not, see <http://www.gnu.org/licenses/>.
  ***************************************/
 
-define(function() {
-    /**************************************************************************************************************/
+/**************************************************************************************************************/
 
-    /**
-     * @name AbstractProvider
-     * @class
-     *  Abstract Provider constructor
-     * @param {object} options
-     * @implements {Provider}
-     */
-    var AbstractProvider = function(options) {
-        this.options = options;
-    };
+/**
+ * @name AbstractProvider
+ * @class
+ *  Abstract Provider constructor
+ * @param {object} options
+ * @implements {Provider}
+ */
+var AbstractProvider = function (options) {
+  this.options = options;
+};
 
-    /**
-     * @function loadFiles
-     * @memberof Provider#
-     * @abstract
-     */
-    AbstractProvider.prototype.loadFiles = function(layer, configuration) {};
+/**
+ * @function loadFiles
+ * @memberof Provider#
+ * @abstract
+ */
+AbstractProvider.prototype.loadFiles = function (layer, configuration) {};
 
-    /**
-     * @function handleFeatures
-     * @memberof Provider#
-     */
-    AbstractProvider.prototype.handleFeatures = function(layer) {};
+/**
+ * @function handleFeatures
+ * @memberof Provider#
+ */
+AbstractProvider.prototype.handleFeatures = function (layer) {};
 
-    /**************************************************************************************************************/
+/**************************************************************************************************************/
 
-    return AbstractProvider;
-});
+export default AbstractProvider;
