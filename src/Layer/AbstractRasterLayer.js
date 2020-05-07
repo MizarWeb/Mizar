@@ -116,7 +116,7 @@ AbstractRasterLayer.prototype.loadOverview = function () {};
  * @memberof AbstractRasterLayer#
  */
 AbstractRasterLayer.prototype.getUrl = function (tile) {
-  throw new SyntaxError("getUrl() not implemented", "AbstractRasterLayer.js");
+  throw new SyntaxError("AbstractRasterLayer.js: getUrl() not implemented");
 };
 
 /**

@@ -37,7 +37,7 @@ var AbstractReverseNameResolver = function (options) {
  * @abstract
  */
 AbstractReverseNameResolver.prototype.handle = function () {
-  throw new SyntaxError("handle from AbstractReverseNameResolver not implemented", "AbstractReverseNameResolver.js");
+  throw new SyntaxError("AbstractReverseNameResolver.js: handle from AbstractReverseNameResolver not implemented");
 };
 
 /**
@@ -46,7 +46,7 @@ AbstractReverseNameResolver.prototype.handle = function () {
  * @abstract
  */
 AbstractReverseNameResolver.prototype.remove = function () {
-  throw new SyntaxError("remove from AbstractReverseNameResolver not implemented", "AbstractReverseNameResolver.js");
+  throw new SyntaxError("AbstractReverseNameResolver.js: remove from AbstractReverseNameResolver not implemented");
 };
 
 /**************************************************************************************************************/

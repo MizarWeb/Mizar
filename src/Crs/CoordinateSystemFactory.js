@@ -72,7 +72,7 @@ function _createCrs(geoideName, options) {
       break;
     // Unknown geoide name
     default:
-      throw new RangeError("Datum " + geoideName + " not implemented", "CoordinateSystemFactory.js");
+      throw new RangeError("CoordinateSystemFactory.js: Datum " + geoideName + " not implemented");
   }
   return cs;
 }

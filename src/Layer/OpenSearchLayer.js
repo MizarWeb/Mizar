@@ -983,7 +983,7 @@ OpenSearchLayer.prototype.setVisible = function (arg) {
     }
     this.publish(Constants.EVENT_MSG.LAYER_VISIBILITY_CHANGED, this);
   } else {
-    throw new TypeError("the parameter of setVisible should be a boolean", "AbstractLayer.js");
+    throw new TypeError("AbstractLayer.js: the parameter of setVisible should be a boolean");
   }
 };
 
@@ -1010,7 +1010,7 @@ OpenSearchLayer.prototype.setOpacity = function (arg) {
 
     AbstractLayer.prototype.setOpacity.call(this, arg);
   } else {
-    throw new RangeError("opacity value should be a value in [0..1]", "AbstractLayer.js");
+    throw new RangeError("AbstractLayer.js: opacity value should be a value in [0..1]");
   }
 };
 

@@ -69,7 +69,7 @@ function createHips(hipsMetadata, options) {
       layer = createHipsCats(metadata, options);
       break;
     case hipsProperties.DataProductType.cube:
-      throw new RangeError("Hips : cannot handle cube dataproduct", "LayerFactor.js");
+      throw new RangeError("LayerFactor.js: Hips : cannot handle cube dataproduct");
     case hipsProperties.DataProductType.image:
       options.category = options.hasOwnProperty("category") ? options.category : "Image";
       var hasPNG = $.inArray(hipsProperties.HipsTileFormat.png, formats) !== -1;
@@ -108,9 +108,9 @@ function createHips(hipsMetadata, options) {
       }
       break;
     case hipsProperties.DataProductType.meta:
-      throw new RangeError("Hips : cannot handle META dataproduct", "LayerFactor.js");
+      throw new RangeError("LayerFactor.js: Hips : cannot handle META dataproduct");
     default:
-      throw new RangeError("Hips : Unknown dataproduct type", "LayerFactor.js");
+      throw new RangeError("LayerFactor.js: Hips : Unknown dataproduct type");
   }
   //if(fileExists(options.baseUrl+"/Moc.fits") === 200) {
   //    options.serviceUrl = options.baseUrl+"/Moc.fits";
@@ -248,7 +248,7 @@ export default {
         layer = createOpenSearch(options);
         break;
       default:
-        throw new RangeError("Unable to create the layer " + options.type, "LayerFactor.js");
+        throw new RangeError("LayerFactor.js: Unable to create the layer " + options.type);
     }
     return layer;
   }

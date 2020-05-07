@@ -104,7 +104,7 @@ AbstractTracker.prototype._getElement = function () {
  * @abstract
  */
 AbstractTracker.prototype.update = function (event) {
-  throw new SyntaxError("update from AbstractTracker not implemented", "AbstractTracker.js");
+  throw new SyntaxError("AbstractTracker.js: update from AbstractTracker not implemented");
 };
 
 /**
@@ -113,7 +113,7 @@ AbstractTracker.prototype.update = function (event) {
  * @abstract
  */
 AbstractTracker.prototype.compute = function (geoPosition) {
-  throw new SyntaxError("compute from AbstractTracker not implemented", "AbstractTracker.js");
+  throw new SyntaxError("AbstractTracker.js: compute from AbstractTracker not implemented");
 };
 
 /**

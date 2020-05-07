@@ -530,15 +530,14 @@ function _validateAndFixHips(hipsMetadata) {
     var name = hipsMetadata.obs_title ? hipsMetadata.obs_title : hipsMetadata.obs_collection;
     var url = hipsMetadata.hips_service_url ? hipsMetadata.hips_service_url : this.baseUrl;
     throw new RangeError(
-      "unvalid hips metadata for " +
+      "HipsMetadata.js: unvalid hips metadata for " +
         name +
         " (" +
         url +
         "): \n" +
         requiredKeywordNotFound.toString() +
         "\n" +
-        valueNotRight.toString(),
-      "HipsMetadata.js"
+        valueNotRight.toString()
     );
   }
 }

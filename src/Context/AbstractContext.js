@@ -234,7 +234,7 @@ function _handleCameraWhenLayerAdded(layer) {
         }
         break;
       default:
-        throw new SyntaxError("type " + globeType + " is not implemented", "AbstractContext.js");
+        throw new SyntaxError("AbstractContext.js: type " + globeType + " is not implemented");
     }
   }
 }
@@ -1126,7 +1126,7 @@ AbstractContext.prototype.getMode = function () {
  * @abstract
  */
 AbstractContext.prototype.setCoordinateSystem = function (cs) {
-  throw new SyntaxError("CRS not implemented", "AbstractContext.js");
+  throw new SyntaxError("AbstractContext.js: CRS not implemented");
 };
 
 /**

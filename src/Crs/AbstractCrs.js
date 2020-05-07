@@ -424,7 +424,7 @@ AbstractCrs.prototype.convert = function (geo, from, to) {
       convertedGeo = geo;
       break;
     default:
-      throw new RangeError("Conversion " + from + " to " + to + " is not implemented", "AbstractCrs.js");
+      throw new RangeError("AbstractCrs.js: Conversion " + from + " to " + to + " is not implemented");
   }
 
   return convertedGeo;
