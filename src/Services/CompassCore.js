@@ -136,7 +136,7 @@ function updateNorth() {
       updateNorthAzimuth();
       break;
     default:
-      throw new RangeError("CompassCore is not supported for this context", "CompassCore.js");
+      throw new RangeError("CompassCore.js: CompassCore is not supported for this context");
   }
 }
 

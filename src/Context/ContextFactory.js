@@ -58,8 +58,9 @@ export default {
         break;
       default:
         throw new RangeError(
-          "The type " + type + " is not allowed, A valid type is included in the list Constants.CONTEXT",
-          "ContextFactory.js"
+          "ContextFactory.js: The type " +
+            type +
+            " is not allowed, A valid type is included in the list Constants.CONTEXT"
         );
     }
     return obj;

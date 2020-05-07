@@ -126,7 +126,7 @@ Utils.inherits(AbstractContext, GroundContext);
  */
 GroundContext.prototype.setCoordinateSystem = function (cs) {
   if (cs.getType() !== this.getMode()) {
-    throw new RangeError("incompatible coordinate reference system with Sky context", "GroundContext.js");
+    throw new RangeError("GroundContext.js: incompatible coordinate reference system with Sky context");
   }
   this.globe.setCoordinateSystem(cs);
   this.publish(Constants.EVENT_MSG.CRS_MODIFIED, this);

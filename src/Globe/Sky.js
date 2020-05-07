@@ -90,7 +90,7 @@ Sky.prototype.dispose = function () {
  **/
 Sky.prototype.setBaseImagery = function (layer) {
   if (layer == null) {
-    throw new RangeError("layer must be exist.", "Sky.js");
+    throw new RangeError("Sky.js: layer must be exist.");
   }
 
   if (this.baseImagery === layer) {

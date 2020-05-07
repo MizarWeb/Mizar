@@ -266,7 +266,7 @@ AbstractNavigation.prototype.getFov = function () {
  * @abstract
  */
 AbstractNavigation.prototype.moveUpTo = function (vec, duration) {
-  throw new SyntaxError("moveUpTo not implemented", "AbstractNavigation.js");
+  throw new SyntaxError("AbstractNavigation.js: moveUpTo not implemented");
 };
 
 /**
@@ -291,7 +291,7 @@ AbstractNavigation.prototype.getCenter = function () {
  * @memberof AbstractNavigation#
  */
 AbstractNavigation.prototype.rotate = function (dx, dy) {
-  throw new SyntaxError("rotate is not implemented", "AbstractNavigation.js");
+  throw new SyntaxError("AbstractNavigation.js: rotate is not implemented");
 };
 
 /**
@@ -303,7 +303,7 @@ AbstractNavigation.prototype.rotate = function (dx, dy) {
  * @memberof AbstractNavigation#
  */
 AbstractNavigation.prototype.pan = function (dx, dy) {
-  throw new SyntaxError("pan is not implemented", "AbstractNavigation.js");
+  throw new SyntaxError("AbstractNavigation.js: pan is not implemented");
 };
 
 /**
@@ -315,7 +315,7 @@ AbstractNavigation.prototype.pan = function (dx, dy) {
  * @memberof AbstractNavigation#
  */
 AbstractNavigation.prototype.zoom = function (delta, scale) {
-  throw new SyntaxError("zoom is not implemented", "AbstractNavigation.js");
+  throw new SyntaxError("AbstractNavigation.js: zoom is not implemented");
 };
 
 /**
@@ -327,7 +327,7 @@ AbstractNavigation.prototype.zoom = function (delta, scale) {
  * @memberof AbstractNavigation#
  */
 AbstractNavigation.prototype.zoomTo = function (geoPos, options) {
-  throw new SyntaxError("zoomTo is not implemented", "AbstractNavigation.js");
+  throw new SyntaxError("AbstractNavigation.js: zoomTo is not implemented");
 };
 
 /**
@@ -337,7 +337,7 @@ AbstractNavigation.prototype.zoomTo = function (geoPos, options) {
  * @abstract
  */
 AbstractNavigation.prototype.computeViewMatrix = function () {
-  throw new SyntaxError("computeViewMatrix not implemented", "AbstractNavigation.js");
+  throw new SyntaxError("AbstractNavigation.js: computeViewMatrix not implemented");
 };
 
 /**

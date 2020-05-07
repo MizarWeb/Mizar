@@ -59,7 +59,7 @@ function _createProjection(projectionName, options) {
       cs = new PlateProjection(options);
       break;
     default:
-      throw new RangeError("Unable to create the projection " + options.projectionName, "ProjectionFactory.js");
+      throw new RangeError("ProjectionFactory.js: Unable to create the projection " + options.projectionName);
   }
   return cs;
 }

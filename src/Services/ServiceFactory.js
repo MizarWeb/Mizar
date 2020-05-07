@@ -103,7 +103,7 @@ export default {
         obj = FitsHips;
         break;
       default:
-        throw new RangeError("Cannot retrieve service " + serviceType, "ServiceFactory.js");
+        throw new RangeError("ServiceFactory.js: Cannot retrieve service " + serviceType);
     }
     return obj;
   }

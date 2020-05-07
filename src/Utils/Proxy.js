@@ -28,7 +28,7 @@ export default {
    */
   setProxyUse: function (proxyUse) {
     if (typeof proxyUse !== "boolean") {
-      throw new TypeError("proxyUse must be a boolean", "Proxy.js");
+      throw new TypeError("Proxy.js: proxyUse must be a boolean");
     }
     _proxyUse = proxyUse;
   },
@@ -41,7 +41,7 @@ export default {
    */
   setProxyUrl: function (proxyUrl) {
     if (typeof proxyUrl !== "string") {
-      throw new TypeError("proxyUrl must be a string", "Proxy.js");
+      throw new TypeError("Proxy.js: proxyUrl must be a string");
     }
     _proxyUrl = proxyUrl;
   },

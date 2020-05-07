@@ -85,7 +85,7 @@ Utils.inherits(AbstractGlobe, Planet);
  */
 Planet.prototype.setBaseImagery = function (layer) {
   if (layer == null) {
-    throw new RangeError("layer must be exist.", "Planet.js");
+    throw new RangeError("Planet.js: layer must be exist.");
   }
 
   if (layer === this.baseImagery) {

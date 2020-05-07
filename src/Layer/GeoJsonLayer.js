@@ -42,7 +42,7 @@ var GeoJsonLayer = function (options) {
 function _checkValidGeoJson(feature) {
   var geometry = feature.geometry;
   if (!geometry || !geometry.type) {
-    throw new RangeError("Invalid GeoJson", "GeoJsonLayer.js");
+    throw new RangeError("GeoJsonLayer.js: Invalid GeoJson");
   }
 }
 

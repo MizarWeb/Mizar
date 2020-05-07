@@ -2931,7 +2931,7 @@
       } else if (LEVEL === Constants.LEVEL.DEBUG) {
         _consoleLog(_computeMessageASCII(title, description));
       } else {
-        throw new TypeError("LEVEL must be set with a valid value", "ErrorDialog.js");
+        throw new TypeError("ErrorDialog.js: LEVEL must be set with a valid value");
       }
     },
     view: function () {
@@ -4152,7 +4152,7 @@
      */
     setProxyUse: function (proxyUse) {
       if (typeof proxyUse !== "boolean") {
-        throw new TypeError("proxyUse must be a boolean", "Proxy.js");
+        throw new TypeError("Proxy.js: proxyUse must be a boolean");
       }
 
       _proxyUse = proxyUse;
@@ -4167,7 +4167,7 @@
      */
     setProxyUrl: function (proxyUrl) {
       if (typeof proxyUrl !== "string") {
-        throw new TypeError("proxyUrl must be a string", "Proxy.js");
+        throw new TypeError("Proxy.js: proxyUrl must be a string");
       }
 
       _proxyUrl = proxyUrl;
@@ -4390,7 +4390,7 @@
 
 
   Utils.parseQuery = function (str) {
-    if (typeof str != "string" || str.length == 0) return {};
+    if (typeof str !== "string" || str.length == 0) return {};
     var s = str.split("&");
     var s_length = s.length;
     var bit,
@@ -4403,7 +4403,7 @@
       first = decodeURIComponent(bit[0]);
       if (first.length == 0) continue;
       second = decodeURIComponent(bit[1]);
-      if (typeof query[first] == "undefined") query[first] = second;else if (query[first] instanceof Array) query[first].push(second);else query[first] = [query[first], second];
+      if (typeof query[first] === "undefined") query[first] = second;else if (query[first] instanceof Array) query[first].push(second);else query[first] = [query[first], second];
     }
 
     return query;
@@ -4736,7 +4736,7 @@
     } else if (Utils.aContainsB.call(this, format, "YYYY")) {
       timeResolution = Constants.TIME_STEP.YEAR;
     } else {
-      throw new Error("Pattern not supported", "Utils.js");
+      throw new Error("Utils.js: Pattern not supported");
     }
 
     return timeResolution;
@@ -5014,13 +5014,13 @@
           for (var i = 0, n = o.length; i < n; i++) o[i] = X.toJson(o[i], "", ind + "\t");
 
           json += (name ? ":[" : "[") + (o.length > 1 ? "\n" + ind + "\t" + o.join(",\n" + ind + "\t") + "\n" + ind : o.join("")) + "]";
-        } else if (o == null) json += (name && ":") + "null";else if (typeof o == "object") {
+        } else if (o == null) json += (name && ":") + "null";else if (typeof o === "object") {
           var arr = [];
 
           for (var m in o) arr[arr.length] = X.toJson(o[m], m, ind + "\t");
 
           json += (name ? ":{" : "{") + (arr.length > 1 ? "\n" + ind + "\t" + arr.join(",\n" + ind + "\t") + "\n" + ind : arr.join("")) + "}";
-        } else if (typeof o == "string") json += (name && ":") + '"' + o.toString() + '"';else json += (name && ":") + o.toString();
+        } else if (typeof o === "string") json += (name && ":") + '"' + o.toString() + '"';else json += (name && ":") + o.toString();
 
         return json;
       },
@@ -13073,7 +13073,7 @@
         break;
 
       default:
-        throw new RangeError("Conversion " + from + " to " + to + " is not implemented", "AbstractCrs.js");
+        throw new RangeError("AbstractCrs.js: Conversion " + from + " to " + to + " is not implemented");
     }
 
     return convertedGeo;
@@ -14090,7 +14090,7 @@
 
 
   AbstractProjection.prototype.unProject = function (position3d, dest) {
-    throw new SyntaxError("unProject not implemented", "AbstractProjection.js");
+    throw new SyntaxError("AbstractNavigation.js: unProject not implemented");
   };
   /**
    * @function project
@@ -14100,7 +14100,7 @@
 
 
   AbstractProjection.prototype.project = function (geoPos, dest) {
-    throw new SyntaxError("project not implemented", "AbstractProjection.js");
+    throw new SyntaxError("AbstractNavigation.js: project not implemented");
   };
   /**
    * @function getName
@@ -14110,7 +14110,7 @@
 
 
   AbstractProjection.prototype.getName = function () {
-    throw new SyntaxError("getName not implemented", "AbstractProjection.js");
+    throw new SyntaxError("AbstractNavigation.js: getName not implemented");
   };
 
   /***************************************
@@ -14858,7 +14858,7 @@
         break;
 
       default:
-        throw new RangeError("Unable to create the projection " + options.projectionName, "ProjectionFactory.js");
+        throw new RangeError("ProjectionFactory.js: Unable to create the projection " + options.projectionName);
     }
 
     return cs;
@@ -15474,7 +15474,7 @@
       // Unknown geoide name
 
       default:
-        throw new RangeError("Datum " + geoideName + " not implemented", "CoordinateSystemFactory.js");
+        throw new RangeError("CoordinateSystemFactory.js: Datum " + geoideName + " not implemented");
     }
 
     return cs;
@@ -16492,7 +16492,7 @@
 
 
   AbstractGlobe.prototype.setBaseImagery = function (layer) {
-    throw new SyntaxError("setBaseImagery Not implemented", "AbstractGlobe.js");
+    throw new SyntaxError("AbstractGlobe.js: setBaseImagery Not implemented");
   };
   /**
    * @function getBaseImagery
@@ -16511,7 +16511,7 @@
 
 
   AbstractGlobe.prototype.setBaseElevation = function (layer) {
-    throw new SyntaxError("setBaseElevation Not implemented", "AbstractGlobe.js");
+    throw new SyntaxError("AbstractGlobe.js: setBaseElevation Not implemented");
   };
   /**
    * @function getBaseElevation
@@ -16617,7 +16617,7 @@
 
 
   AbstractGlobe.prototype.getElevation = function (lon, lat) {
-    throw new SyntaxError("getElevation Not implemented", "AbstractGlobe.js");
+    throw new SyntaxError("AbstractGlobe.js: getElevation Not implemented");
   };
   /**
    * @function getViewportGeoBound
@@ -16815,7 +16815,7 @@
 
 
   AbstractGlobe.prototype.render = function () {
-    throw new SyntaxError("render Not implemented", "AbstractGlobe.js");
+    throw new SyntaxError("AbstractGlobe.js: render Not implemented");
   };
   /**
    * @function dispose
@@ -16990,7 +16990,7 @@
 
   Planet.prototype.setBaseImagery = function (layer) {
     if (layer == null) {
-      throw new RangeError("layer must be exist.", "Planet.js");
+      throw new RangeError("Planet.js: layer must be exist.");
     }
 
     if (layer === this.baseImagery) {
@@ -17154,7 +17154,7 @@
 
   Sky.prototype.setBaseImagery = function (layer) {
     if (layer == null) {
-      throw new RangeError("layer must be exist.", "Sky.js");
+      throw new RangeError("Sky.js: layer must be exist.");
     }
 
     if (this.baseImagery === layer) {
@@ -19707,7 +19707,7 @@
 
 
   AbstractNavigation.prototype.moveUpTo = function (vec, duration) {
-    throw new SyntaxError("moveUpTo not implemented", "AbstractNavigation.js");
+    throw new SyntaxError("AbstractNavigation.js: moveUpTo not implemented");
   };
   /**
    * Returns the center of the field of view.
@@ -19731,7 +19731,7 @@
 
 
   AbstractNavigation.prototype.rotate = function (dx, dy) {
-    throw new SyntaxError("rotate is not implemented", "AbstractNavigation.js");
+    throw new SyntaxError("AbstractNavigation.js: rotate is not implemented");
   };
   /**
    * Pans the camera to a direction up/down or left/right with the same distance from the object
@@ -19744,7 +19744,7 @@
 
 
   AbstractNavigation.prototype.pan = function (dx, dy) {
-    throw new SyntaxError("pan is not implemented", "AbstractNavigation.js");
+    throw new SyntaxError("AbstractNavigation.js: pan is not implemented");
   };
   /**
    * Applies zooming.
@@ -19757,7 +19757,7 @@
 
 
   AbstractNavigation.prototype.zoom = function (delta, scale) {
-    throw new SyntaxError("zoom is not implemented", "AbstractNavigation.js");
+    throw new SyntaxError("AbstractNavigation.js: zoom is not implemented");
   };
   /**
    * Zooms to a 2D position (longitude, latitude).
@@ -19770,7 +19770,7 @@
 
 
   AbstractNavigation.prototype.zoomTo = function (geoPos, options) {
-    throw new SyntaxError("zoomTo is not implemented", "AbstractNavigation.js");
+    throw new SyntaxError("AbstractNavigation.js: zoomTo is not implemented");
   };
   /**
    * Computes the view matrix
@@ -19781,7 +19781,7 @@
 
 
   AbstractNavigation.prototype.computeViewMatrix = function () {
-    throw new SyntaxError("computeViewMatrix not implemented", "AbstractNavigation.js");
+    throw new SyntaxError("AbstractNavigation.js: computeViewMatrix not implemented");
   };
   /**
    * Callback at the end of animation (when stop method is called).
@@ -22747,7 +22747,7 @@
     if (typeof opacity === "number") {
       this.opacity = Math.min(1.0, Math.max(0.0, opacity));
     } else {
-      throw new RangeError("opacity value should be a value in [0..1]", "AbstractLayer.js");
+      throw new RangeError("AbstractLayer.js: opacity value should be a value in [0..1]");
     }
   };
 
@@ -25423,7 +25423,7 @@
           break;
 
         default:
-          throw new RangeError("Cannot create the utility " + type, "UtilityFactory.js");
+          throw new RangeError("UtilityFactory.js: Cannot create the utility " + type);
       }
 
       return obj;
@@ -26001,7 +26001,7 @@
 
 
   AbstractLayer.prototype.getInformationType = function () {
-    throw new SyntaxError("getInformationType not implemented", "AbstractLayer.js");
+    throw new SyntaxError("AbstractLayer.js: getInformationType not implemented");
   };
   /**
    * @function getAttribution
@@ -26105,7 +26105,7 @@
       this.getGlobe().getRenderContext().requestFrame();
       this.publish(Constants.EVENT_MSG.LAYER_VISIBILITY_CHANGED, this);
     } else {
-      throw new TypeError("the parameter of visible should be a boolean", "AbstractLayer.js");
+      throw new TypeError("AbstractLayer.js: the parameter of visible should be a boolean");
     }
   };
   /**
@@ -29283,7 +29283,7 @@
 
       this.publish(Constants.EVENT_MSG.LAYER_VISIBILITY_CHANGED, this);
     } else {
-      throw new TypeError("the parameter of setVisible should be a boolean", "AbstractLayer.js");
+      throw new TypeError("AbstractLayer.js: the parameter of setVisible should be a boolean");
     }
   };
   /**************************************************************************************************************/
@@ -29312,7 +29312,7 @@
 
       AbstractLayer.prototype.setOpacity.call(this, arg);
     } else {
-      throw new RangeError("opacity value should be a value in [0..1]", "AbstractLayer.js");
+      throw new RangeError("AbstractLayer.js: opacity value should be a value in [0..1]");
     }
   };
   /**************************************************************************************************************/
@@ -39140,7 +39140,7 @@
 
 
   AbstractNameResolver.prototype.handle = function (options) {
-    throw new SyntaxError("handle from NameResolver not implemented", "AbstractNameResolver.js");
+    throw new SyntaxError("AbstractNameResolver.js: handle from NameResolver not implemented");
   };
   /**
    * @function remove
@@ -39150,7 +39150,7 @@
 
 
   AbstractNameResolver.prototype.remove = function () {
-    throw new SyntaxError("remove from NameResolver not implemented", "AbstractNameResolver.js");
+    throw new SyntaxError("AbstractNameResolver.js: remove from NameResolver not implemented");
   };
 
   /*******************************************************************************
@@ -40251,7 +40251,7 @@
 
 
   AbstractReverseNameResolver.prototype.handle = function () {
-    throw new SyntaxError("handle from AbstractReverseNameResolver not implemented", "AbstractReverseNameResolver.js");
+    throw new SyntaxError("AbstractReverseNameResolver.js: handle from AbstractReverseNameResolver not implemented");
   };
   /**
    * @function remove
@@ -40261,7 +40261,7 @@
 
 
   AbstractReverseNameResolver.prototype.remove = function () {
-    throw new SyntaxError("remove from AbstractReverseNameResolver not implemented", "AbstractReverseNameResolver.js");
+    throw new SyntaxError("AbstractReverseNameResolver.js: remove from AbstractReverseNameResolver not implemented");
   };
 
   /*******************************************************************************
@@ -40778,7 +40778,7 @@
 
 
   AbstractRasterLayer.prototype.getUrl = function (tile) {
-    throw new SyntaxError("getUrl() not implemented", "AbstractRasterLayer.js");
+    throw new SyntaxError("AbstractRasterLayer.js: getUrl() not implemented");
   };
   /**
    * Returns the Url when the tile level is between [minLevel, maxLevel]
@@ -44927,7 +44927,7 @@
     if (requiredKeywordNotFound.length > 0 || valueNotRight.length > 0) {
       var name = hipsMetadata.obs_title ? hipsMetadata.obs_title : hipsMetadata.obs_collection;
       var url = hipsMetadata.hips_service_url ? hipsMetadata.hips_service_url : this.baseUrl;
-      throw new RangeError("unvalid hips metadata for " + name + " (" + url + "): \n" + requiredKeywordNotFound.toString() + "\n" + valueNotRight.toString(), "HipsMetadata.js");
+      throw new RangeError("HipsMetadata.js: unvalid hips metadata for " + name + " (" + url + "): \n" + requiredKeywordNotFound.toString() + "\n" + valueNotRight.toString());
     }
   }
   /**
@@ -51140,7 +51140,7 @@
     var geometry = feature.geometry;
 
     if (!geometry || !geometry.type) {
-      throw new RangeError("Invalid GeoJson", "GeoJsonLayer.js");
+      throw new RangeError("GeoJsonLayer.js: Invalid GeoJson");
     }
   }
   /**
@@ -51685,7 +51685,7 @@
         break;
 
       case hipsProperties.DataProductType.cube:
-        throw new RangeError("Hips : cannot handle cube dataproduct", "LayerFactor.js");
+        throw new RangeError("LayerFactor.js: Hips : cannot handle cube dataproduct");
 
       case hipsProperties.DataProductType.image:
         options.category = options.hasOwnProperty("category") ? options.category : "Image";
@@ -51732,10 +51732,10 @@
         break;
 
       case hipsProperties.DataProductType.meta:
-        throw new RangeError("Hips : cannot handle META dataproduct", "LayerFactor.js");
+        throw new RangeError("LayerFactor.js: Hips : cannot handle META dataproduct");
 
       default:
-        throw new RangeError("Hips : Unknown dataproduct type", "LayerFactor.js");
+        throw new RangeError("LayerFactor.js: Hips : Unknown dataproduct type");
     } //if(fileExists(options.baseUrl+"/Moc.fits") === 200) {
     //    options.serviceUrl = options.baseUrl+"/Moc.fits";
     //    layer.services.push(this.createMoc(options));
@@ -51896,7 +51896,7 @@
           break;
 
         default:
-          throw new RangeError("Unable to create the layer " + options.type, "LayerFactor.js");
+          throw new RangeError("LayerFactor.js: Unable to create the layer " + options.type);
       }
 
       return layer;
@@ -53902,7 +53902,7 @@
           break;
 
         default:
-          throw new RangeError("Cannot retrieve service " + serviceType, "ServiceFactory.js");
+          throw new RangeError("ServiceFactory.js: Cannot retrieve service " + serviceType);
       }
 
       return obj;
@@ -56274,7 +56274,7 @@
         break;
 
       default:
-        throw new RangeError("CompassCore is not supported for this context", "CompassCore.js");
+        throw new RangeError("CompassCore.js: CompassCore is not supported for this context");
     }
   }
 
@@ -56655,7 +56655,7 @@
 
 
   AbstractTracker.prototype.update = function (event) {
-    throw new SyntaxError("update from AbstractTracker not implemented", "AbstractTracker.js");
+    throw new SyntaxError("AbstractTracker.js: update from AbstractTracker not implemented");
   };
   /**
    * @function compute
@@ -56665,7 +56665,7 @@
 
 
   AbstractTracker.prototype.compute = function (geoPosition) {
-    throw new SyntaxError("compute from AbstractTracker not implemented", "AbstractTracker.js");
+    throw new SyntaxError("AbstractTracker.js: compute from AbstractTracker not implemented");
   };
   /**
    * @function attachTo
@@ -64075,7 +64075,7 @@
           break;
 
         default:
-          throw new SyntaxError("type " + globeType + " is not implemented", "AbstractContext.js");
+          throw new SyntaxError("AbstractContext.js: type " + globeType + " is not implemented");
       }
     }
   }
@@ -64670,7 +64670,7 @@
   };
 
   AbstractContext.prototype.setCoordinateSystem = function (cs) {
-    throw new SyntaxError("CRS not implemented", "AbstractContext.js");
+    throw new SyntaxError("AbstractContext.js: CRS not implemented");
   };
 
   AbstractContext.prototype.getNavigation = function () {
@@ -64944,7 +64944,7 @@
 
   PlanetContext.prototype.setBaseElevation = function (layer) {
     if (layer.getType() !== Constants.LAYER.WCSElevation && layer.getType() !== Constants.LAYER.WMSElevation) {
-      throw new TypeError("The provided layer ID=" + layer.getID() + " has a type +" + layer.getType() + " instead of WCSElevation or WMSElevation", "PlanetContext.js");
+      throw new TypeError("PlanetContext.js: The provided layer ID=" + layer.getID() + " has a type +" + layer.getType() + " instead of WCSElevation or WMSElevation");
     }
 
     this.globe.setBaseElevation(layer);
@@ -64986,7 +64986,7 @@
 
   PlanetContext.prototype.setCoordinateSystem = function (newCrs) {
     if (newCrs.getType() !== this.getMode()) {
-      throw new RangeError("incompatible coordinate reference system with Planet context", "PlanetContext.js");
+      throw new RangeError("PlanetContext.js: incompatible coordinate reference system with Planet context");
     } // Change navigation
 
 
@@ -65288,7 +65288,7 @@
 
   GroundContext.prototype.setCoordinateSystem = function (cs) {
     if (cs.getType() !== this.getMode()) {
-      throw new RangeError("incompatible coordinate reference system with Sky context", "GroundContext.js");
+      throw new RangeError("GroundContext.js: incompatible coordinate reference system with Sky context");
     }
 
     this.globe.setCoordinateSystem(cs);
@@ -65348,7 +65348,7 @@
           break;
 
         default:
-          throw new RangeError("The type " + type + " is not allowed, A valid type is included in the list Constants.CONTEXT", "ContextFactory.js");
+          throw new RangeError("ContextFactory.js: The type " + type + " is not allowed, A valid type is included in the list Constants.CONTEXT");
       }
 
       return obj;
@@ -66124,7 +66124,7 @@
           break;
 
         default:
-          throw new RangeError("unable to create the provider " + type, "ProviderFactory.js");
+          throw new RangeError("ProviderFactory.js: unable to create the provider " + type);
       }
 
       return obj;
@@ -66688,7 +66688,7 @@
     if (typeof options === "undefined") {
       throw new ReferenceError("No option found", "Mizar.js");
     } else if (typeof options.canvas === "undefined") {
-      throw new TypeError("Canvas not defined", "Mizar.js");
+      throw new TypeError("main.js: Canvas not defined");
     }
   }
   /**
@@ -66946,7 +66946,7 @@
 
   function _skipIfSkyMode() {
     if (this.getActivatedContext().getMode() === Mizar.CONTEXT.Sky) {
-      throw new RangeError("Toggle Dimension is not implemented for Sky", "Mizar.js");
+      throw new RangeError("main.js: Toggle Dimension is not implemented for Sky");
     }
   }
   /**
@@ -67138,7 +67138,7 @@
         break;
 
       default:
-        throw new RangeError("The mode " + mode + " is not allowed, A valid mode is included in the list CONTEXT", "Mizar.js");
+        throw new RangeError("main.js: The mode " + mode + " is not allowed, A valid mode is included in the list CONTEXT");
     }
 
     return context;
@@ -67373,7 +67373,7 @@
           break;
 
         default:
-          throw new RangeError("Unknown contextMode '" + contextMode + "'", "Mizar.js");
+          throw new RangeError("main.js: Unknown contextMode '" + contextMode + "'");
       }
 
       this.renderContext = ctx.getRenderContext();

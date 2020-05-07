@@ -46,7 +46,7 @@ export default {
         obj = Utils;
         break;
       default:
-        throw new RangeError("Cannot create the utility " + type, "UtilityFactory.js");
+        throw new RangeError("UtilityFactory.js: Cannot create the utility " + type);
     }
     return obj;
   }

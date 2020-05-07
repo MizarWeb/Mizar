@@ -68,7 +68,7 @@ AbstractProjection.prototype.getGeoBound = function () {
  * @abstract
  */
 AbstractProjection.prototype.unProject = function (position3d, dest) {
-  throw new SyntaxError("unProject not implemented", "AbstractProjection.js");
+  throw new SyntaxError("AbstractNavigation.js: unProject not implemented");
 };
 
 /**
@@ -77,7 +77,7 @@ AbstractProjection.prototype.unProject = function (position3d, dest) {
  * @abstract
  */
 AbstractProjection.prototype.project = function (geoPos, dest) {
-  throw new SyntaxError("project not implemented", "AbstractProjection.js");
+  throw new SyntaxError("AbstractNavigation.js: project not implemented");
 };
 
 /**
@@ -86,7 +86,7 @@ AbstractProjection.prototype.project = function (geoPos, dest) {
  * @abstract
  */
 AbstractProjection.prototype.getName = function () {
-  throw new SyntaxError("getName not implemented", "AbstractProjection.js");
+  throw new SyntaxError("AbstractNavigation.js: getName not implemented");
 };
 
 /**************************************************************************************************************/

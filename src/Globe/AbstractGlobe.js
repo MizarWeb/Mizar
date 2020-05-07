@@ -229,7 +229,7 @@ AbstractGlobe.prototype.hasDefinedBackground = function () {
  * @abstract
  */
 AbstractGlobe.prototype.setBaseImagery = function (layer) {
-  throw new SyntaxError("setBaseImagery Not implemented", "AbstractGlobe.js");
+  throw new SyntaxError("AbstractGlobe.js: setBaseImagery Not implemented");
 };
 
 /**
@@ -246,7 +246,7 @@ AbstractGlobe.prototype.getBaseImagery = function () {
  * @abstract
  */
 AbstractGlobe.prototype.setBaseElevation = function (layer) {
-  throw new SyntaxError("setBaseElevation Not implemented", "AbstractGlobe.js");
+  throw new SyntaxError("AbstractGlobe.js: setBaseElevation Not implemented");
 };
 
 /**
@@ -359,7 +359,7 @@ AbstractGlobe.prototype.removeAnimation = function (anim) {
  * @abstract
  */
 AbstractGlobe.prototype.getElevation = function (lon, lat) {
-  throw new SyntaxError("getElevation Not implemented", "AbstractGlobe.js");
+  throw new SyntaxError("AbstractGlobe.js: getElevation Not implemented");
 };
 
 /**
@@ -578,7 +578,7 @@ AbstractGlobe.prototype.getRendererManager = function () {
  * @abstract
  */
 AbstractGlobe.prototype.render = function () {
-  throw new SyntaxError("render Not implemented", "AbstractGlobe.js");
+  throw new SyntaxError("AbstractGlobe.js: render Not implemented");
 };
 
 /**

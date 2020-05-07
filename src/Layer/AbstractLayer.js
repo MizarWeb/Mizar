@@ -550,7 +550,7 @@ AbstractLayer.prototype.getName = function () {
  * @abstract
  */
 AbstractLayer.prototype.getInformationType = function () {
-  throw new SyntaxError("getInformationType not implemented", "AbstractLayer.js");
+  throw new SyntaxError("AbstractLayer.js: getInformationType not implemented");
 };
 
 /**
@@ -645,7 +645,7 @@ AbstractLayer.prototype.setVisible = function (arg) {
     this.getGlobe().getRenderContext().requestFrame();
     this.publish(Constants.EVENT_MSG.LAYER_VISIBILITY_CHANGED, this);
   } else {
-    throw new TypeError("the parameter of visible should be a boolean", "AbstractLayer.js");
+    throw new TypeError("AbstractLayer.js: the parameter of visible should be a boolean");
   }
 };
 

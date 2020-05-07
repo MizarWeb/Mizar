@@ -214,12 +214,11 @@ Utils.inherits(AbstractContext, PlanetContext);
 PlanetContext.prototype.setBaseElevation = function (layer) {
   if (layer.getType() !== Constants.LAYER.WCSElevation && layer.getType() !== Constants.LAYER.WMSElevation) {
     throw new TypeError(
-      "The provided layer ID=" +
+      "PlanetContext.js: The provided layer ID=" +
         layer.getID() +
         " has a type +" +
         layer.getType() +
-        " instead of WCSElevation or WMSElevation",
-      "PlanetContext.js"
+        " instead of WCSElevation or WMSElevation"
     );
   }
   this.globe.setBaseElevation(layer);
@@ -255,7 +254,7 @@ PlanetContext.prototype.getBaseElevation = function () {
  */
 PlanetContext.prototype.setCoordinateSystem = function (newCrs) {
   if (newCrs.getType() !== this.getMode()) {
-    throw new RangeError("incompatible coordinate reference system with Planet context", "PlanetContext.js");
+    throw new RangeError("PlanetContext.js: incompatible coordinate reference system with Planet context");
   }
   // Change navigation
   var geoCenter;
