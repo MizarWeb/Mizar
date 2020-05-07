@@ -42,7 +42,7 @@ import UtilsIntersection from "./UtilsIntersection";
 import Constants from "./Constants";
 import NetworkError from "../Error/NetworkError";
 import Proxy from "../Utils/Proxy";
-const Utils = {};
+var Utils = {};
 
 /**
  * Inherits from an object
@@ -60,14 +60,14 @@ Utils.inherits = function (base, sub) {
  *    returns [r, g, b] values from 0 to 255
  */
 function hsv_to_rgb(h, s, v) {
-  const h_i = Math.floor(h * 6);
-  const f = h * 6 - h_i;
-  const p = v * (1 - s);
-  const q = v * (1 - f * s);
-  const t = v * (1 - (1 - f) * s);
-  let r;
-  let g;
-  let b;
+  var h_i = Math.floor(h * 6);
+  var f = h * 6 - h_i;
+  var p = v * (1 - s);
+  var q = v * (1 - f * s);
+  var t = v * (1 - (1 - f) * s);
+  var r;
+  var g;
+  var b;
   switch (h_i) {
     case 0:
       r = v;
@@ -113,8 +113,8 @@ function hsv_to_rgb(h, s, v) {
  */
 Utils.generateColor = function () {
   //use golden ratio
-  const golden_ratio_conjugate = 0.618033988749895;
-  let h = Math.random();
+  var golden_ratio_conjugate = 0.618033988749895;
+  var h = Math.random();
   h += golden_ratio_conjugate;
   h %= 1;
   return hsv_to_rgb(h, 0.5, 0.95);
@@ -126,7 +126,7 @@ Utils.generateColor = function () {
  * @return {string} HTML identifier
  */
 Utils.formatId = function (id) {
-  let result;
+  var result;
   if (typeof id === "string") {
     result = id.replace(/\s{1,}|\.{1,}|\[{1,}|\]{1,}|\({1,}|\){1,}|~{1,}|\+{1,}|°{1,}|-{1,}|'{1,}|"{1,}/g, "");
   } else {
@@ -155,24 +155,28 @@ Utils.isValueBetween = function (v, min, max) {
  * @return {string} base URL
  */
 Utils.computeBaseUrlFromCapabilities = function (capabilitiesUrl, parameters) {
-  Utils.assert(capabilitiesUrl !== null && capabilitiesUrl.length > 0, "capabilitiesUrl must not be empty", "Utils.js");
+  Utils.assert(
+    capabilitiesUrl !== null && capabilitiesUrl.length !== 0,
+    "capabilitiesUrl must not be empty",
+    "Utils.js"
+  );
 
-  let url = capabilitiesUrl;
+  var url = capabilitiesUrl;
   if (url.indexOf("?") > -1) {
     url = url.substr(0, url.indexOf("?"));
   }
   // url cannot be undefined because we need to query a getCapabilities or something else with a parameter
-  const queryString = capabilitiesUrl.replace(url + "?", "") || capabilitiesUrl;
-  const query = Utils.parseQuery(queryString);
+  var queryString = capabilitiesUrl.replace(url + "?", "") || capabilitiesUrl;
+  var query = Utils.parseQuery(queryString);
   // we delete all parameters required by a standard.
-  for (let i = 0; i < parameters.length; i++) {
-    const parameter = parameters[i];
+  for (var i = 0; i < parameters.length; i++) {
+    var parameter = parameters[i];
     delete query[parameter];
   }
   // we build the new Url with remaining parameters.
-  let nbParameter = 0;
-  for (const key in query) {
-    const value = query[key];
+  var nbParameter = 0;
+  for (var key in query) {
+    var value = query[key];
     if (nbParameter == 0) {
       url = url + "?" + key + "=" + value;
     } else {
@@ -191,19 +195,19 @@ Utils.computeBaseUrlFromCapabilities = function (capabilitiesUrl, parameters) {
  * @return {{}} a hash of parameter/value
  */
 Utils.parseQuery = function (str) {
-  if (typeof str !== "string" || str.length == 0) return {};
-  const s = str.split("&");
-  const s_length = s.length;
-  let bit,
+  if (typeof str != "string" || str.length == 0) return {};
+  var s = str.split("&");
+  var s_length = s.length;
+  var bit,
     query = {},
     first,
     second;
-  for (let i = 0; i < s_length; i++) {
+  for (var i = 0; i < s_length; i++) {
     bit = s[i].split("=");
     first = decodeURIComponent(bit[0]);
     if (first.length == 0) continue;
     second = decodeURIComponent(bit[1]);
-    if (typeof query[first] === "undefined") query[first] = second;
+    if (typeof query[first] == "undefined") query[first] = second;
     else if (query[first] instanceof Array) query[first].push(second);
     else query[first] = [query[first], second];
   }
@@ -219,7 +223,7 @@ Utils.parseQuery = function (str) {
  * @return {string} url updated
  */
 Utils.addParameterTo = function (url, name, value) {
-  let separator = "&";
+  var separator = "&";
   if (typeof url !== "string" || url.indexOf("?", 0) === -1) {
     separator = "?";
   }
@@ -233,8 +237,8 @@ Utils.addParameterTo = function (url, name, value) {
  * @return {string} the base URL
  */
 Utils.parseBaseURL = function (url) {
-  let result;
-  const index = url.indexOf("?");
+  var result;
+  var index = url.indexOf("?");
   if (index == -1) {
     result = url;
   } else {
@@ -250,11 +254,11 @@ Utils.parseBaseURL = function (url) {
  * @return {{}} parameters of the query string
  */
 Utils.parseQueryString = function (url) {
-  const queryString = url.substring(url.indexOf("?") + 1).split("&");
-  const params = {};
-  let pair;
+  var queryString = url.substring(url.indexOf("?") + 1).split("&");
+  var params = {};
+  var pair;
   // march and parse
-  for (let i = queryString.length - 1; i >= 0; i--) {
+  for (var i = queryString.length - 1; i >= 0; i--) {
     pair = queryString[i].split("=");
     params[decodeURIComponent(pair[0])] = decodeURIComponent(pair[1] || "");
   }
@@ -286,8 +290,8 @@ Utils.requestUrl = function (url, datatype, acceptDatatype, options, callback, f
       }
     },
     error: function (xhr, ajaxOptions, thrownError) {
-      let message;
-      let code;
+      var message;
+      var code;
       if (xhr.status === 0) {
         message = "Unreachable URL or No 'Access-Control-Allow-Origin' header is present on the " + url;
         code = 0;
@@ -341,9 +345,9 @@ Utils.requestUrl = function (url, datatype, acceptDatatype, options, callback, f
  * @private
  */
 function _UT(date) {
-  const hour = date.getUTCHours();
-  const min = date.getUTCMinutes();
-  const sec = date.getUTCSeconds();
+  var hour = date.getUTCHours();
+  var min = date.getUTCMinutes();
+  var sec = date.getUTCSeconds();
   return hour + min / 60 + sec / 3600;
 }
 
@@ -355,9 +359,9 @@ function _UT(date) {
  * @private
  */
 function _J0(date) {
-  const year = date.getUTCFullYear();
-  const month = date.getUTCMonth() + 1;
-  const day = date.getUTCDate();
+  var year = date.getUTCFullYear();
+  var month = date.getUTCMonth() + 1;
+  var day = date.getUTCDate();
   //var UT = _UT(date);
   //TODO check 1721013.5 should be -730531.5 !!!
   return (
@@ -390,8 +394,8 @@ Utils.JD = function (date) {
  */
 function _GST0(date) {
   //JC is Julian centuries between the Julian day J0 and J2000(2,451,545.0)
-  const julianCentury = (_J0(date) - 2451545.0) / 36525;
-  const GST0 =
+  var julianCentury = (_J0(date) - 2451545.0) / 36525;
+  var GST0 =
     100.4606184 +
     36000.77004 * julianCentury +
     0.000387933 * julianCentury * julianCentury -
@@ -439,7 +443,7 @@ Utils.SHA = function (ra) {
  * @returns {number} Greenwich Hour Angle in decimal degree
  */
 Utils.GHA = function (date, ra) {
-  const GHA_Aries = (15.0 * Utils.GST(date) * 24.0) / 360.0;
+  var GHA_Aries = (15.0 * Utils.GST(date) * 24.0) / 360.0;
   return (Utils.SHA(ra) + GHA_Aries) % 360;
 };
 
@@ -451,9 +455,9 @@ Utils.GHA = function (date, ra) {
  * @returns {{x: float, y: float, z: float}} the cartesian coordinates
  */
 Utils.longLat2XYZ = function (longitude, latitude) {
-  const latInRadians = Numeric.toRadian(latitude);
-  const longInRadians = Numeric.toRadian(longitude);
-  const cosLat = Math.cos(latInRadians);
+  var latInRadians = Numeric.toRadian(latitude);
+  var longInRadians = Numeric.toRadian(longitude);
+  var cosLat = Math.cos(latInRadians);
   return {
     x: cosLat * Math.cos(longInRadians),
     y: cosLat * Math.sin(longInRadians),
@@ -471,11 +475,11 @@ Utils.longLat2XYZ = function (longitude, latitude) {
  * @return {float} the distance of the camera in meters.
  */
 Utils.computeDistanceCameraFromBbox = function (bbox, fov, planetRadius, isFlat) {
-  const angularDistance1 = Math.abs(bbox[2] - bbox[0]);
-  const angularDistance2 = Math.abs(bbox[3] - bbox[1]);
-  const angularDistance = Math.max(angularDistance1, angularDistance2);
+  var angularDistance1 = Math.abs(bbox[2] - bbox[0]);
+  var angularDistance2 = Math.abs(bbox[3] - bbox[1]);
+  var angularDistance = Math.max(angularDistance1, angularDistance2);
 
-  let visibleAngularDistance;
+  var visibleAngularDistance;
   if (isFlat) {
     visibleAngularDistance = angularDistance;
   } else if (angularDistance > 180) {
@@ -495,10 +499,10 @@ Utils.computeDistanceCameraFromBbox = function (bbox, fov, planetRadius, isFlat)
   //                 * *
   //                  Camera
 
-  const a = planetRadius * Math.cos(Numeric.toRadian(0.5 * visibleAngularDistance));
-  const b = planetRadius * Math.sin(Numeric.toRadian(0.5 * visibleAngularDistance));
-  const c = b / Math.tan(Numeric.toRadian(0.5 * fov));
-  const distance = c - (planetRadius - a);
+  var a = planetRadius * Math.cos(Numeric.toRadian(0.5 * visibleAngularDistance));
+  var b = planetRadius * Math.sin(Numeric.toRadian(0.5 * visibleAngularDistance));
+  var c = b / Math.tan(Numeric.toRadian(0.5 * fov));
+  var distance = c - (planetRadius - a);
   return distance;
 };
 
@@ -510,7 +514,7 @@ Utils.computeDistanceCameraFromBbox = function (bbox, fov, planetRadius, isFlat)
  * @throws {Error} pattern not supported
  */
 Utils.formatResolution = function (format) {
-  let timeResolution;
+  var timeResolution;
   if (Utils.aContainsB.call(this, format, "ss")) {
     timeResolution = Constants.TIME_STEP.SECOND;
   } else if (Utils.aContainsB.call(this, format, "mm")) {
@@ -556,10 +560,10 @@ Utils.convertToMoment = function (time) {
  * @return {Boolean} true when "passive" mode is supported otherwise false
  */
 Utils.isPassiveSupported = function () {
-  let passiveSupported = false;
+  var passiveSupported = false;
 
   try {
-    const options = Object.defineProperty({}, "passive", {
+    var options = Object.defineProperty({}, "passive", {
       get: function () {
         passiveSupported = true;
         return passiveSupported;
@@ -601,17 +605,17 @@ Utils.assert = function (condition, message, filename) {
  * @throws ReferenceError - Unknown geometry type
  */
 function _processBboxForShape(geometry) {
-  let coords;
-  let checkDateLine;
-  const numOuterRings =
+  var coords;
+  var checkDateLine;
+  var numOuterRings =
     geometry.type === Constants.GEOMETRY.MultiPolygon || geometry.type === Constants.GEOMETRY.MultiLineString
       ? geometry.coordinates.length
       : 1;
-  let minX = Number.MAX_VALUE;
-  let minY = Number.MAX_VALUE;
-  let maxX = -1 * Number.MAX_VALUE;
-  let maxY = -1 * Number.MAX_VALUE;
-  for (let j = 0; j < numOuterRings; j++) {
+  var minX = Number.MAX_VALUE;
+  var minY = Number.MAX_VALUE;
+  var maxX = -1 * Number.MAX_VALUE;
+  var maxY = -1 * Number.MAX_VALUE;
+  for (var j = 0; j < numOuterRings; j++) {
     switch (geometry.type) {
       case Constants.GEOMETRY.MultiPoint:
         coords = geometry.coordinates;
@@ -634,9 +638,9 @@ function _processBboxForShape(geometry) {
         checkDateLine = true;
         break;
       default:
-        throw new ReferenceError("Utils.js: Unknown geometry type : " + geometry.type);
+        throw new ReferenceError("Unknown geometry type : " + geometry.type, "Utils.js");
     }
-    for (let i = 0; i < coords.length; i++) {
+    for (var i = 0; i < coords.length; i++) {
       minX = Math.min(minX, coords[i][0]);
       minY = Math.min(minY, coords[i][1]);
       maxX = Math.max(maxX, coords[i][0]);
@@ -670,13 +674,13 @@ function _processBboxForShape(geometry) {
  */
 Utils.getBBox = function (geometry) {
   Utils.assert(
-    geometry && geometry.type && geometry.coordinates && geometry.coordinates.length > 0,
+    geometry && geometry.type && geometry.coordinates && geometry.coordinates.length !== 0,
     "coordinates and type must be provided in the geometry",
     "Utils.js"
   );
-  let bbox;
+  var bbox;
   if (geometry.type === Constants.GEOMETRY.Point) {
-    const coords = geometry.coordinates;
+    var coords = geometry.coordinates;
     bbox = {
       west: coords[0],
       north: coords[1],
@@ -697,7 +701,7 @@ Version: 0.9
     Web:     http://goessner.net/ 
 */
 function parseXml(xml) {
-  let dom = null;
+  var dom = null;
   if (window.DOMParser) {
     try {
       dom = new DOMParser().parseFromString(xml, "text/xml");
@@ -727,19 +731,19 @@ Version: 0.9
     Web:     http://goessner.net/ 
 */
 Utils.xml2json = function (xmlString, tab) {
-  let xml = parseXml(xmlString);
+  var xml = parseXml(xmlString);
   var X = {
     toObj: function (xml) {
-      let o = {};
+      var o = {};
       if (xml.nodeType == 1) {
         // element node ..
         if (xml.attributes.length)
           // element with attributes  ..
-          for (let i = 0; i < xml.attributes.length; i++)
+          for (var i = 0; i < xml.attributes.length; i++)
             o["@" + xml.attributes[i].nodeName] = (xml.attributes[i].nodeValue || "").toString();
         if (xml.firstChild) {
           // element has child nodes ..
-          let textChild = 0,
+          var textChild = 0,
             cdataChild = 0,
             hasElementChild = false;
           for (var n = xml.firstChild; n; n = n.nextSibling) {
@@ -789,45 +793,45 @@ Utils.xml2json = function (xmlString, tab) {
       return o;
     },
     toJson: function (o, name, ind) {
-      let json = name ? '"' + name + '"' : "";
+      var json = name ? '"' + name + '"' : "";
       if (o instanceof Array) {
-        for (let i = 0, n = o.length; i < n; i++) o[i] = X.toJson(o[i], "", ind + "\t");
+        for (var i = 0, n = o.length; i < n; i++) o[i] = X.toJson(o[i], "", ind + "\t");
         json +=
           (name ? ":[" : "[") +
           (o.length > 1 ? "\n" + ind + "\t" + o.join(",\n" + ind + "\t") + "\n" + ind : o.join("")) +
           "]";
       } else if (o == null) json += (name && ":") + "null";
-      else if (typeof o === "object") {
-        const arr = [];
-        for (const m in o) arr[arr.length] = X.toJson(o[m], m, ind + "\t");
+      else if (typeof o == "object") {
+        var arr = [];
+        for (var m in o) arr[arr.length] = X.toJson(o[m], m, ind + "\t");
         json +=
           (name ? ":{" : "{") +
           (arr.length > 1 ? "\n" + ind + "\t" + arr.join(",\n" + ind + "\t") + "\n" + ind : arr.join("")) +
           "}";
-      } else if (typeof o === "string") json += (name && ":") + '"' + o.toString() + '"';
+      } else if (typeof o == "string") json += (name && ":") + '"' + o.toString() + '"';
       else json += (name && ":") + o.toString();
       return json;
     },
     innerXml: function (node) {
-      let s = "";
+      var s = "";
       if ("innerHTML" in node) s = node.innerHTML;
       else {
         var asXml = function (n) {
-          let s = "";
+          var s = "";
           if (n.nodeType == 1) {
             s += "<" + n.nodeName;
-            for (let i = 0; i < n.attributes.length; i++)
+            for (var i = 0; i < n.attributes.length; i++)
               s += " " + n.attributes[i].nodeName + '="' + (n.attributes[i].nodeValue || "").toString() + '"';
             if (n.firstChild) {
               s += ">";
-              for (let c = n.firstChild; c; c = c.nextSibling) s += asXml(c);
+              for (var c = n.firstChild; c; c = c.nextSibling) s += asXml(c);
               s += "</" + n.nodeName + ">";
             } else s += "/>";
           } else if (n.nodeType == 3) s += n.nodeValue;
           else if (n.nodeType == 4) s += "<![CDATA[" + n.nodeValue + "]]>";
           return s;
         };
-        for (let c = node.firstChild; c; c = c.nextSibling) s += asXml(c);
+        for (var c = node.firstChild; c; c = c.nextSibling) s += asXml(c);
       }
       return s;
     },
@@ -836,12 +840,12 @@ Utils.xml2json = function (xmlString, tab) {
     },
     removeWhite: function (e) {
       e.normalize();
-      for (let n = e.firstChild; n; ) {
+      for (var n = e.firstChild; n; ) {
         if (n.nodeType == 3) {
           // text node
           if (!n.nodeValue.match(/[^ \f\n\r\t\v]/)) {
             // pure whitespace text node
-            const nxt = n.nextSibling;
+            var nxt = n.nextSibling;
             e.removeChild(n);
             n = nxt;
           } else n = n.nextSibling;
@@ -858,7 +862,7 @@ Utils.xml2json = function (xmlString, tab) {
   if (xml.nodeType == 9)
     // document node
     xml = xml.documentElement;
-  const json = X.toObj(X.removeWhite(xml));
+  var json = X.toObj(X.removeWhite(xml));
   return json;
 };
 

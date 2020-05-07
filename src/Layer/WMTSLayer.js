@@ -36,7 +36,7 @@
  ***************************************/
 
 import Utils from "../Utils/Utils";
-// import AbstractLayer from "./AbstractLayer";
+import AbstractLayer from "./AbstractLayer";
 import AbstractRasterLayer from "./AbstractRasterLayer";
 import Constants from "../Utils/Constants";
 /**
@@ -87,7 +87,7 @@ import Constants from "../Utils/Constants";
  * @see {@link http://www.opengeospatial.org/standards/wmts WMTS} standard
  * @see {@link http://www.opengeospatial.org/standards/sld SLD} standard
  */
-const WMTSLayer = function (options) {
+var WMTSLayer = function (options) {
   AbstractRasterLayer.prototype.constructor.call(this, Constants.LAYER.WMTS, options);
   this.getTileBaseUrl = _queryImage.call(this, this.getBaseUrl(), options);
   this.imageLoadedAtTime = null;
@@ -100,7 +100,7 @@ Utils.inherits(AbstractRasterLayer, WMTSLayer);
 /**************************************************************************************************************/
 
 function _queryImage(baseUrl, options) {
-  let url = baseUrl;
+  var url = baseUrl;
   url = Utils.addParameterTo(url, "service", "wmts");
   url = Utils.addParameterTo(url, "version", options.version || "1.0.0");
   url = Utils.addParameterTo(url, "request", "GetTile");
@@ -119,7 +119,7 @@ function _queryImage(baseUrl, options) {
   }
 
   //custom params
-  for (const param in this.imageLoadedAtTime) {
+  for (var param in this.imageLoadedAtTime) {
     if (param !== "time" && this.imageLoadedAtTime[param] !== undefined) {
       url = Utils.addParameterTo(url, param, this.imageLoadedAtTime[param]);
     }
@@ -133,7 +133,7 @@ WMTSLayer.prototype.setTime = function (time) {
 };
 
 WMTSLayer.getCapabilitiesFromBaseURl = function (baseUrl, options) {
-  let getCapabilitiesUrl = baseUrl;
+  var getCapabilitiesUrl = baseUrl;
   getCapabilitiesUrl = Utils.addParameterTo(getCapabilitiesUrl, "service", "WMTS");
   getCapabilitiesUrl = Utils.addParameterTo(getCapabilitiesUrl, "request", "getCapabilities");
   getCapabilitiesUrl = Utils.addParameterTo(
@@ -154,7 +154,7 @@ WMTSLayer.getCapabilitiesFromBaseURl = function (baseUrl, options) {
  * @return {string} Url
  */
 WMTSLayer.prototype.getUrl = function (tile) {
-  let url = this.getTileBaseUrl;
+  var url = this.getTileBaseUrl;
   url = Utils.addParameterTo(url, "tilematrix", tile.level + 1);
   url = Utils.addParameterTo(url, "tilecol", tile.x);
   url = Utils.addParameterTo(url, "tilerow", tile.y);

@@ -36,7 +36,7 @@ import "../Renderer/glMatrix";
  * @constructor
  * @memberof module:Projection
  */
-const AugustProjection = function (options) {
+var AugustProjection = function (options) {
   AbstractProjection.prototype.constructor.call(this, [0, 0], [-180, -90, 180, 90], options);
 };
 
@@ -52,7 +52,7 @@ Utils.inherits(AbstractProjection, AugustProjection);
  * @throws "must be implemented"
  */
 AugustProjection.prototype.unProject = function (position3d, dest) {
-  throw new Error("must be implemented");
+  throw new SyntaxError("must be implemented");
 };
 
 /**
@@ -64,10 +64,10 @@ AugustProjection.prototype.project = function (geoPos, dest) {
     dest = new Array(3);
   }
 
-  let lambda = Numeric.toRadian(geoPos[0]); // longitude
-  const phi = Numeric.toRadian(geoPos[1]); // latitude
+  var lambda = Numeric.toRadian(geoPos[0]); // longitude
+  var phi = Numeric.toRadian(geoPos[1]); // latitude
 
-  const tanPhi = Math.tan(phi / 2),
+  var tanPhi = Math.tan(phi / 2),
     k = Math.sqrt(1 - tanPhi * tanPhi),
     c = 1 + k * Math.cos((lambda /= 2)),
     x = (Math.sin(lambda) * k) / c,

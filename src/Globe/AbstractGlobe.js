@@ -56,7 +56,7 @@ import "../Renderer/glMatrix";
  * @see {@link module:Crs.CoordinateSystemFactory}
  * @implements {Globe}
  */
-const AbstractGlobe = function (type, options) {
+var AbstractGlobe = function (type, options) {
   Utils.assert(
     type === Constants.GLOBE.Sky || type === Constants.GLOBE.Planet || type === Constants.GLOBE.Ground,
     "Type must be a value of Contants.GLOBE for " + this.constructor.name,
@@ -110,7 +110,7 @@ const AbstractGlobe = function (type, options) {
  * @private
  */
 function _computeIntersection(ray, crs) {
-  let intersection;
+  var intersection;
   if (crs.isFlat()) {
     intersection = ray.planeIntersect([0, 0, 0], [0, 0, 1]);
   } else {
@@ -129,8 +129,8 @@ function _computeIntersection(ray, crs) {
  */
 function _computePosition(ray, intersection, crs) {
   if (intersection >= 0) {
-    const pos = crs.getWorldFrom3D(ray.computePoint(intersection));
-    const geoBound = crs.getGeoBound();
+    var pos = crs.getWorldFrom3D(ray.computePoint(intersection));
+    var geoBound = crs.getGeoBound();
     if (
       !pos ||
       pos[0] < geoBound[0] ||
@@ -156,29 +156,29 @@ function _computePosition(ray, intersection, crs) {
  * @private
  */
 function _updateTileIndexInGeometry(tileManager) {
-  const postRenderers = tileManager.postRenderers;
-  let postRendererIdx = postRenderers.length;
+  var postRenderers = tileManager.postRenderers;
+  var postRendererIdx = postRenderers.length;
   // we use while, this is the fastest loop in Javascript https://jsperf.com/fastest-array-loops-in-javascript/32
   while (postRendererIdx--) {
     // we iterate on renderers
-    const postRenderer = postRenderers[postRendererIdx];
+    var postRenderer = postRenderers[postRendererIdx];
     if (postRenderer instanceof RendererManager) {
       // we look for RendererManager because this one contains geometry
-      const rendererManager = postRenderers[postRendererIdx];
-      const vectors = rendererManager.renderers;
-      let vectorIdx = vectors.length;
+      var rendererManager = postRenderers[postRendererIdx];
+      var vectors = rendererManager.renderers;
+      var vectorIdx = vectors.length;
       while (vectorIdx--) {
         // we iterate on vector
-        const vector = vectors[vectorIdx];
+        var vector = vectors[vectorIdx];
         if (vector.levelZeroTiledGeometries && vector.levelZeroTiledGeometries.length > 0) {
           // we retrieve the geometries
-          const geometries = vector.levelZeroTiledGeometries;
-          let geometryIdx = geometries.length;
+          var geometries = vector.levelZeroTiledGeometries;
+          var geometryIdx = geometries.length;
           while (geometryIdx--) {
             // we iterate on each geometry to update the indexed tile related to the geometry
             // the (0,0) is 0, the (1,0) is 1, ....
-            const geometry = geometries[geometryIdx];
-            const tileIndices =
+            var geometry = geometries[geometryIdx];
+            var tileIndices =
               vector.maxTilePerGeometry > 0 ? tileManager.tiling.getOverlappedLevelZeroTiles(geometry) : null;
             // update
             geometry._tileIndices = tileIndices;
@@ -229,7 +229,7 @@ AbstractGlobe.prototype.hasDefinedBackground = function () {
  * @abstract
  */
 AbstractGlobe.prototype.setBaseImagery = function (layer) {
-  throw new Error("AbstractGlobe.js: setBaseImagery Not implemented");
+  throw new SyntaxError("setBaseImagery Not implemented", "AbstractGlobe.js");
 };
 
 /**
@@ -246,7 +246,7 @@ AbstractGlobe.prototype.getBaseImagery = function () {
  * @abstract
  */
 AbstractGlobe.prototype.setBaseElevation = function (layer) {
-  throw new Error("AbstractGlobe.js: setBaseElevation Not implemented");
+  throw new SyntaxError("setBaseElevation Not implemented", "AbstractGlobe.js");
 };
 
 /**
@@ -267,7 +267,7 @@ AbstractGlobe.prototype.addLayer = function (layer) {
     "layer must be an AbstractLayer object in addLayer for " + this.constructor.name,
     "AbstractGlobe.js"
   );
-  const globe = this;
+  var globe = this;
   if (layer.isVectorLayer()) {
     if (layer.isForDataProvider() || layer.isDraw()) {
       layer.id = globe.nbCreatedLayers;
@@ -359,7 +359,7 @@ AbstractGlobe.prototype.removeAnimation = function (anim) {
  * @abstract
  */
 AbstractGlobe.prototype.getElevation = function (lon, lat) {
-  throw new Error("AbstractGlobe.js: getElevation Not implemented");
+  throw new SyntaxError("getElevation Not implemented", "AbstractGlobe.js");
 };
 
 /**
@@ -367,12 +367,12 @@ AbstractGlobe.prototype.getElevation = function (lon, lat) {
  * @memberof AbstractGlobe#
  */
 AbstractGlobe.prototype.getViewportGeoBound = function (transformCallback) {
-  const rc = this.renderContext;
-  const tmpMat = mat4.create();
+  var rc = this.renderContext;
+  var tmpMat = mat4.create();
 
   // Compute eye in world space
   mat4.inverse(rc.viewMatrix, tmpMat);
-  const eye = [tmpMat[12], tmpMat[13], tmpMat[14]];
+  var eye = [tmpMat[12], tmpMat[13], tmpMat[14]];
 
   // Compute the inverse of view/proj matrix
   mat4.multiply(rc.projectionMatrix, rc.viewMatrix, tmpMat);
@@ -380,33 +380,33 @@ AbstractGlobe.prototype.getViewportGeoBound = function (transformCallback) {
 
   // Transform the four corners of the frustum into world space
   // and then for each corner compute the intersection of ray starting from the eye with the earth
-  const points = [
+  var points = [
     [-1, -1, 1, 1],
     [1, -1, 1, 1],
     [-1, 1, 1, 1],
     [1, 1, 1, 1]
   ];
-  const earthCenter = [0, 0, 0];
-  for (let i = 0; i < 4; i++) {
+  var earthCenter = [0, 0, 0];
+  for (var i = 0; i < 4; i++) {
     mat4.multiplyVec4(tmpMat, points[i]);
     vec3.scale(points[i], 1.0 / points[i][3]);
     vec3.subtract(points[i], eye, points[i]);
     vec3.normalize(points[i]);
 
-    const ray = new Ray(eye, points[i]);
-    const t = ray.sphereIntersect(earthCenter, this.coordinateSystem.getGeoide().getRadius());
+    var ray = new Ray(eye, points[i]);
+    var t = ray.sphereIntersect(earthCenter, this.coordinateSystem.getGeoide().getRadius());
     //var t = ray.sphereIntersect(earthCenter, 15);
     if (t < 0.0) {
       return null;
     }
-    const pos3d = ray.computePoint(t);
+    var pos3d = ray.computePoint(t);
     points[i] = this.coordinateSystem.from3DToGeo(pos3d);
     if (transformCallback) {
       points[i] = transformCallback(points[i]);
     }
   }
 
-  const geoBound = new GeoBound();
+  var geoBound = new GeoBound();
   geoBound.computeFromCoordinates(points);
 
   return geoBound;
@@ -432,7 +432,7 @@ AbstractGlobe.prototype.getLonLatFromPixel = function (x, y) {
     return this.cachedPickingValue.lonLat;
   }
 
-  const ray = Ray.createFromPixel(this.renderContext, x, y);
+  var ray = Ray.createFromPixel(this.renderContext, x, y);
   const lonLat = this.computeIntersection(ray);
 
   this.cachedPickingValue = {
@@ -454,7 +454,7 @@ AbstractGlobe.prototype.getPixelFromLonLat = function (lon, lat) {
     "(lon,lat) from getPixelFromLonLat must be numbers for " + this.constructor.name,
     "AbstractGlobe.js"
   );
-  const pos3d = vec3.create();
+  var pos3d = vec3.create();
   this.coordinateSystem.get3DFromWorld([lon, lat], pos3d);
   return this.renderContext.getPixelFrom3D(pos3d[0], pos3d[1], pos3d[2]);
 };
@@ -469,7 +469,7 @@ AbstractGlobe.prototype.setCoordinateSystem = function (coordinateSystem) {
     "coordinateSystem must be a Crs object in setCoordinateSystem for " + this.constructor.name,
     "AbstractGlobe.js"
   );
-  const oldCrs = this.coordinateSystem;
+  var oldCrs = this.coordinateSystem;
   this.coordinateSystem = coordinateSystem;
   this.dispose();
   this.tileManager.tileConfig.coordinateSystem = coordinateSystem;
@@ -501,11 +501,11 @@ AbstractGlobe.prototype.getCoordinateSystem = function () {
  * @memberof AbstractGlobe#
  */
 AbstractGlobe.prototype.computeIntersection = function (ray) {
-  let intersection;
+  var intersection;
 
   if (this.hasMesh()) {
     intersection = Number.MAX_VALUE;
-    for (let i = 0; i < this.tileManager.level0Tiles.length; ++i) {
+    for (var i = 0; i < this.tileManager.level0Tiles.length; ++i) {
       const tile = this.tileManager.level0Tiles[i];
       const t = tile.intersect(ray, this.tileManager.tileIndexBuffer.indices, this.renderContext);
       if (t < intersection && t >= 0) {
@@ -521,7 +521,7 @@ AbstractGlobe.prototype.computeIntersection = function (ray) {
   }
 
   // console.log("intersection",intersection);
-  const result = _computePosition.call(this, ray, intersection, this.coordinateSystem);
+  var result = _computePosition.call(this, ray, intersection, this.coordinateSystem);
   // console.log("result",result);
   // console.log("=================================");
   return result;
@@ -578,7 +578,7 @@ AbstractGlobe.prototype.getRendererManager = function () {
  * @abstract
  */
 AbstractGlobe.prototype.render = function () {
-  throw new Error("AbstractGlobe.js: render Not implemented");
+  throw new SyntaxError("render Not implemented", "AbstractGlobe.js");
 };
 
 /**

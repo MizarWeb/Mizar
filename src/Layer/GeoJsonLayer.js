@@ -28,7 +28,7 @@ import Constants from "../Utils/Constants";
  * @constructor
  * @memberof module:Layer
  */
-const GeoJsonLayer = function (options) {
+var GeoJsonLayer = function (options) {
   AbstractVectorLayer.prototype.constructor.call(this, Constants.LAYER.GeoJSON, options);
   this.gid = 0;
 };
@@ -40,9 +40,9 @@ const GeoJsonLayer = function (options) {
  * @private
  */
 function _checkValidGeoJson(feature) {
-  const geometry = feature.geometry;
+  var geometry = feature.geometry;
   if (!geometry || !geometry.type) {
-    throw new RangeError("GeoJsonLayer.js: Invalid GeoJson");
+    throw new RangeError("Invalid GeoJson", "GeoJsonLayer.js");
   }
 }
 
@@ -106,10 +106,10 @@ Utils.inherits(AbstractVectorLayer, GeoJsonLayer);
 GeoJsonLayer.prototype.addFeatureCollection = function (featureCollection) {
   // Note : use property defined as ['']  to avoid renaming when compiled in advanced mode with the closure compiler
   if (featureCollection == null) {
-    throw new ReferenceError("GeoJsonLayer.js: Error, featureCollection is null");
+    throw new ReferenceError("Error, featureCollection is null", "GeoJsonLayer.js");
   }
 
-  const defaultCrs = {
+  var defaultCrs = {
     type: "name",
     properties: {
       name: Constants.CRS.WGS84
@@ -117,14 +117,14 @@ GeoJsonLayer.prototype.addFeatureCollection = function (featureCollection) {
   };
 
   //check if crs is global at the featureCollection
-  const crs = featureCollection.crs ? featureCollection.crs : defaultCrs;
+  var crs = featureCollection.crs ? featureCollection.crs : defaultCrs;
 
-  const features = featureCollection.features;
+  var features = featureCollection.features;
   if (features) {
-    const bbox = [Number.MAX_VALUE, Number.MAX_VALUE, -1 * Number.MAX_VALUE, -1 * Number.MAX_VALUE];
-    for (let i = 0; i < features.length; i++) {
+    var bbox = [Number.MAX_VALUE, Number.MAX_VALUE, -1 * Number.MAX_VALUE, -1 * Number.MAX_VALUE];
+    for (var i = 0; i < features.length; i++) {
       this.addFeature(features[i], crs);
-      const tmpBox = Utils.getBBox(features[i].geometry);
+      var tmpBox = Utils.getBBox(features[i].geometry);
       bbox[0] = Math.min(bbox[0], tmpBox.west);
       bbox[1] = Math.min(bbox[1], tmpBox.south);
       bbox[2] = Math.max(bbox[2], tmpBox.east);

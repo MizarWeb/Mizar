@@ -64,7 +64,7 @@ import Cache from "../Utils/Cache";
  * @constructor
  * @implements {RasterLayer}
  */
-const AbstractRasterLayer = function (type, options) {
+var AbstractRasterLayer = function (type, options) {
   options.zIndex = options.zIndex || Constants.DISPLAY.DEFAULT_RASTER;
   AbstractLayer.prototype.constructor.call(this, type, options);
 
@@ -116,7 +116,7 @@ AbstractRasterLayer.prototype.loadOverview = function () {};
  * @memberof AbstractRasterLayer#
  */
 AbstractRasterLayer.prototype.getUrl = function (tile) {
-  throw new Error("AbstractRasterLayer.js: getUrl() not implemented");
+  throw new SyntaxError("getUrl() not implemented", "AbstractRasterLayer.js");
 };
 
 /**
@@ -127,7 +127,7 @@ AbstractRasterLayer.prototype.getUrl = function (tile) {
  * @memberof AbstractRasterLayer#
  */
 AbstractRasterLayer.prototype.allowRequest = function (url, level) {
-  let request;
+  var request;
   if (this.isBetweenMinMaxLevel(level)) {
     request = url;
   } else {
@@ -143,7 +143,7 @@ AbstractRasterLayer.prototype.allowRequest = function (url, level) {
  * @memberof AbstractRasterLayer#
  */
 AbstractRasterLayer.prototype.isBetweenMinMaxLevel = function (level) {
-  let isInside;
+  var isInside;
   if (this.minLevel != null && this.maxLevel != null) {
     isInside = this.minLevel <= level && level <= this.maxLevel;
   } else if (this.minLevel != null) {
@@ -175,7 +175,7 @@ AbstractRasterLayer.prototype._attach = function (g) {
   if (!this.isBackground()) {
     // Create the renderer if needed
     if (!g.rasterOverlayRenderer) {
-      const renderer = new RasterOverlayRenderer(g);
+      var renderer = new RasterOverlayRenderer(g);
       g.getRendererManager().renderers.push(renderer);
       g.rasterOverlayRenderer = renderer;
     }

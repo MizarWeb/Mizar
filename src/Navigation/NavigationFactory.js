@@ -62,7 +62,7 @@ export default {
    * @throws {RangeError} Type not valid - a valid type is included in the list {@link NAVIGATION}
    */
   create: function (type, ctx, options) {
-    let obj;
+    var obj;
     switch (type) {
       case Constants.NAVIGATION.AstroNavigation:
         obj = new AstroNavigation(ctx, options);
@@ -78,7 +78,8 @@ export default {
         break;
       default:
         throw new RangeError(
-          "NavigationFactory.js: The type " + type + " is not allowed, A valid type is included in the list NAVIGATION"
+          "The type " + type + " is not allowed, A valid type is included in the list NAVIGATION",
+          "NavigationFactory.js"
         );
     }
     return obj;

@@ -41,7 +41,7 @@ export default {
    * @throws {RangeError} Type not valid - a valid type is included in the list {@link HANDLER}
    */
   create: function (type, options) {
-    let obj;
+    var obj;
     switch (type) {
       case Constants.HANDLER.GoogleMouse:
         obj = new GoogleMouseNavigationHandler(options);
@@ -57,9 +57,8 @@ export default {
         break;
       default:
         throw RangeError(
-          "NavigationHandlerFactory.js: The type " +
-            type +
-            " is not allowed, A valid type is included in the list Constants.HANDLER"
+          "The type " + type + " is not allowed, A valid type is included in the list Constants.HANDLER",
+          "NavigationHandlerFactory.js"
         );
     }
     return obj;

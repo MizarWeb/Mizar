@@ -52,24 +52,24 @@
  * @implements {Provider}
  * @todo Describes here and link to the tutos about Animation
  */
-// import $ from "jquery";
+import $ from "jquery";
 import AbstractProvider from "./AbstractProvider";
 import FeatureStyle from "../Renderer/FeatureStyle";
 import Constants from "../Utils/Constants";
 import Numeric from "../Utils/Numeric";
 import PlanetData from "./PlanetData";
-let self;
-let interval;
-let poiFeatureCollection;
-const RADS = Math.PI / 180; // convert degrees to radians
-const EPS = 1.0e-12; // machine error constant
-const pname = new Array("Mercury", "Venus", "Sun", "Mars", "Jupiter", "Saturn", "Uranus", "Neptune", "Pluto");
+var self;
+var interval;
+var poiFeatureCollection;
+var RADS = Math.PI / 180; // convert degrees to radians
+var EPS = 1.0e-12; // machine error constant
+var pname = new Array("Mercury", "Venus", "Sun", "Mars", "Jupiter", "Saturn", "Uranus", "Neptune", "Pluto");
 
 function frealstr(num, width, fract) {
-  const str = num.toFixed(fract);
-  const len = str.length;
-  let real = "";
-  let i;
+  var str = num.toFixed(fract);
+  var len = str.length;
+  var real = "";
+  var i;
 
   for (i = 0; i < width - len; i++) {
     // append leading spaces
@@ -88,7 +88,7 @@ function frealstr(num, width, fract) {
  * Json template for a point
  */
 function poiDesc(mizarLayer, type, name, obj) {
-  let style;
+  var style;
   if (type === Constants.GEOMETRY.Point) {
     style = {
       fillColor: [1, 1, 1, 1],
@@ -133,7 +133,7 @@ function Coord() {
 
 // day number to/from J2000 (Jan 1.5, 2000)
 function day_number(y, m, d, hour, mins) {
-  const h = hour + mins / 60;
+  var h = hour + mins / 60;
   return (
     367 * y - Math.floor((7 * (y + Math.floor((m + 9) / 12))) / 4) + Math.floor((275 * m) / 9) + d - 730531.5 + h / 24
   );
@@ -155,7 +155,7 @@ function Elem() {
 
 // return the integer part of a number
 function abs_floor(x) {
-  let r;
+  var r;
   if (x >= 0.0) {
     r = Math.floor(x);
   } else {
@@ -166,8 +166,8 @@ function abs_floor(x) {
 
 // return an angle in the range 0 to 2pi radians
 function mod2pi(x) {
-  const b = x / (2 * Math.PI);
-  let a = 2 * Math.PI * (b - abs_floor(b));
+  var b = x / (2 * Math.PI);
+  var a = 2 * Math.PI * (b - abs_floor(b));
   if (a < 0) {
     a = 2 * Math.PI + a;
   }
@@ -178,10 +178,10 @@ function mod2pi(x) {
 //  M - mean anomaly in radians
 //  e - orbit eccentricity
 function true_anomaly(M, e) {
-  let V, E1;
+  var V, E1;
 
   // initial approximation of eccentric anomaly
-  let E = M + e * Math.sin(M) * (1.0 + e * Math.cos(M));
+  var E = M + e * Math.sin(M) * (1.0 + e * Math.cos(M));
 
   do // iterate to improve accuracy
   {
@@ -207,7 +207,7 @@ function true_anomaly(M, e) {
  * @throws {RangeError} function mean_elements() failed!
  */
 function mean_elements(p, i, d) {
-  const cy = d / 36525; // centuries since J2000
+  var cy = d / 36525; // centuries since J2000
 
   switch (i) {
     case 0: // Mercury
@@ -317,43 +317,43 @@ function mean_elements(p, i, d) {
 // compute RA, DEC, and distance of planet-p for day number-d
 // result returned in structure obj in degrees and astronomical units
 function get_coord(obj, p, d) {
-  const planet = new Elem();
+  var planet = new Elem();
   mean_elements(planet, p, d);
-  const ap = planet.a;
-  const ep = planet.e;
-  const ip = planet.i;
-  const op = planet.O;
-  const pp = planet.w;
-  const lp = planet.L;
+  var ap = planet.a;
+  var ep = planet.e;
+  var ip = planet.i;
+  var op = planet.O;
+  var pp = planet.w;
+  var lp = planet.L;
 
-  const earth = new Elem();
+  var earth = new Elem();
   mean_elements(earth, 2, d);
-  const ae = earth.a;
-  const ee = earth.e;
+  var ae = earth.a;
+  var ee = earth.e;
   //var ie = earth.i;
   //var oe = earth.O;
-  const pe = earth.w;
-  const le = earth.L;
+  var pe = earth.w;
+  var le = earth.L;
 
   // position of Earth in its orbit
-  const me = mod2pi(le - pe);
-  const ve = true_anomaly(me, ee);
-  const re = (ae * (1 - ee * ee)) / (1 + ee * Math.cos(ve));
+  var me = mod2pi(le - pe);
+  var ve = true_anomaly(me, ee);
+  var re = (ae * (1 - ee * ee)) / (1 + ee * Math.cos(ve));
 
   // heliocentric rectangular coordinates of Earth
-  const xe = re * Math.cos(ve + pe);
-  const ye = re * Math.sin(ve + pe);
-  const ze = 0.0;
+  var xe = re * Math.cos(ve + pe);
+  var ye = re * Math.sin(ve + pe);
+  var ze = 0.0;
 
   // position of planet in its orbit
-  const mp = mod2pi(lp - pp);
-  const vp = true_anomaly(mp, planet.e);
-  const rp = (ap * (1 - ep * ep)) / (1 + ep * Math.cos(vp));
+  var mp = mod2pi(lp - pp);
+  var vp = true_anomaly(mp, planet.e);
+  var rp = (ap * (1 - ep * ep)) / (1 + ep * Math.cos(vp));
 
   // heliocentric rectangular coordinates of planet
-  let xh = rp * (Math.cos(op) * Math.cos(vp + pp - op) - Math.sin(op) * Math.sin(vp + pp - op) * Math.cos(ip));
-  let yh = rp * (Math.sin(op) * Math.cos(vp + pp - op) + Math.cos(op) * Math.sin(vp + pp - op) * Math.cos(ip));
-  let zh = rp * (Math.sin(vp + pp - op) * Math.sin(ip));
+  var xh = rp * (Math.cos(op) * Math.cos(vp + pp - op) - Math.sin(op) * Math.sin(vp + pp - op) * Math.cos(ip));
+  var yh = rp * (Math.sin(op) * Math.cos(vp + pp - op) + Math.cos(op) * Math.sin(vp + pp - op) * Math.cos(ip));
+  var zh = rp * (Math.sin(vp + pp - op) * Math.sin(ip));
 
   if (p === 2) {
     // earth --> compute sun
@@ -363,15 +363,15 @@ function get_coord(obj, p, d) {
   }
 
   // convert to geocentric rectangular coordinates
-  const xg = xh - xe;
-  const yg = yh - ye;
-  const zg = zh - ze;
+  var xg = xh - xe;
+  var yg = yh - ye;
+  var zg = zh - ze;
 
   // rotate around x axis from ecliptic to equatorial coords
-  const ecl = 23.439281 * RADS; //value for J2000.0 frame
-  const xeq = xg;
-  const yeq = yg * Math.cos(ecl) - zg * Math.sin(ecl);
-  const zeq = yg * Math.sin(ecl) + zg * Math.cos(ecl);
+  var ecl = 23.439281 * RADS; //value for J2000.0 frame
+  var xeq = xg;
+  var yeq = yg * Math.cos(ecl) - zg * Math.sin(ecl);
+  var zeq = yg * Math.sin(ecl) + zg * Math.cos(ecl);
 
   // find the RA and DEC from the rectangular equatorial coords
   obj.ra = Numeric.toDegree(mod2pi(Math.atan2(yeq, xeq)));
@@ -389,28 +389,28 @@ function get_coord(obj, p, d) {
 /**
  *    Handle features on layer
  */
-const computePositions = function (mizarLayer) {
-  const pois = [];
-  const now = new Date();
-  const year = now.getUTCFullYear();
-  const month = now.getUTCMonth() + 1;
-  const day = now.getUTCDate();
-  const hour = now.getUTCHours();
-  const mins = now.getUTCMinutes();
-  const secs = now.getUTCSeconds();
+var computePositions = function (mizarLayer) {
+  var pois = [];
+  var now = new Date();
+  var year = now.getUTCFullYear();
+  var month = now.getUTCMonth() + 1;
+  var day = now.getUTCDate();
+  var hour = now.getUTCHours();
+  var mins = now.getUTCMinutes();
+  var secs = now.getUTCSeconds();
 
   // compute day number for date/time
-  const dn = day_number(year, month, day, hour, mins + secs / 60);
-  const obj = new Coord();
+  var dn = day_number(year, month, day, hour, mins + secs / 60);
+  var obj = new Coord();
   // compute location of objects
-  for (let p = 0; p < 9; p++) {
+  for (var p = 0; p < 9; p++) {
     get_coord(obj, p, dn);
     // Add label
-    const poi_label = poiDesc(mizarLayer, "Label", pname[p], obj);
+    var poi_label = poiDesc(mizarLayer, "Label", pname[p], obj);
     pois.push(poi_label);
 
     // Add point itself
-    const poi_point = poiDesc(mizarLayer, Constants.GEOMETRY.Point, pname[p], obj);
+    var poi_point = poiDesc(mizarLayer, Constants.GEOMETRY.Point, pname[p], obj);
     pois.push(poi_point);
   }
 
@@ -435,7 +435,7 @@ const computePositions = function (mizarLayer) {
  * @memberof module:Provider
  * @see http://www.abecedarical.com/javascript/script_planet_orbits.html
  */
-const PlanetProvider = function (options) {
+var PlanetProvider = function (options) {
   AbstractProvider.prototype.constructor.call(this, options);
   self = this;
 };
@@ -472,15 +472,15 @@ PlanetProvider.prototype.handleFeatures = function (layer) {
  * @returns {float[]} the Sun position
  */
 PlanetProvider.prototype.getSunPosition = function (date) {
-  const year = date.getUTCFullYear();
-  const month = date.getUTCMonth() + 1;
-  const day = date.getUTCDate();
-  const hour = date.getUTCHours();
-  const mins = date.getUTCMinutes();
-  const secs = date.getUTCSeconds();
+  var year = date.getUTCFullYear();
+  var month = date.getUTCMonth() + 1;
+  var day = date.getUTCDate();
+  var hour = date.getUTCHours();
+  var mins = date.getUTCMinutes();
+  var secs = date.getUTCSeconds();
   // compute day number for date/time
-  const dn = day_number(year, month, day, hour, mins + secs / 60);
-  const obj = new Coord();
+  var dn = day_number(year, month, day, hour, mins + secs / 60);
+  var obj = new Coord();
   get_coord(obj, 2, dn);
   return obj;
 };

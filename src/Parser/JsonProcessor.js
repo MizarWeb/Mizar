@@ -29,15 +29,15 @@ import HipsLayer from "../Layer/HipsGraphicLayer";
 import Constants from "../Utils/Constants";
 import ErrorDialog from "../Gui/dialog/ErrorDialog";
 import CoordinateSystemFactory from "../Crs/CoordinateSystemFactory";
-let gid = 0;
+var gid = 0;
 
 /**
  * Handle services of feature
  * @fires Context#layer:add
  */
 function handleServices(gwLayer, feature) {
-  for (const x in feature.services) {
-    const service = feature.services[x];
+  for (var x in feature.services) {
+    var service = feature.services[x];
     if (!gwLayer.subLayers) {
       gwLayer.subLayers = [];
     }
@@ -76,7 +76,7 @@ export default {
    */
   handleFeatureCollection: function (gwLayer, featureCollection) {
     // Default CRS according to GeoJSON specification
-    const defaultCrs = {
+    var defaultCrs = {
       type: "name",
       properties: {
         name: Constants.CRS.WGS84
@@ -84,25 +84,25 @@ export default {
     };
 
     if (featureCollection === null || featureCollection === undefined) {
-      throw new ReferenceError("JsonProcessor.js: Error, featureCollection is null");
+      throw new ReferenceError("Error, featureCollection is null", "JsonProcessor.js");
     }
 
     //check if crs is global at the featureCollection
-    const crs = featureCollection.crs ? featureCollection.crs : defaultCrs;
+    var crs = featureCollection.crs ? featureCollection.crs : defaultCrs;
 
     gwLayer.coordinateSystem = CoordinateSystemFactory.create({
       geoideName: crs.properties.name
     });
 
-    const features = featureCollection.features;
+    var features = featureCollection.features;
     if (features === null || features === undefined) {
       ErrorDialog.open(Constants.LEVEL.ERROR, "Error, no feature in featureCollection : ", featureCollection);
       return;
     }
-    let i;
+    var i;
 
     for (i = 0; i < features.length; i++) {
-      const currentFeature = features[i];
+      var currentFeature = features[i];
 
       switch (currentFeature.geometry.type) {
         case Constants.GEOMETRY.Point:

@@ -25,7 +25,7 @@ import Utils from "./Utils";
 import FeatureStyle from "../Renderer/FeatureStyle";
 export default {
   create: function (type, options) {
-    let obj;
+    var obj;
     switch (type) {
       case Constants.UTILITY.Fits:
         obj = UtilsFits;
@@ -46,7 +46,7 @@ export default {
         obj = Utils;
         break;
       default:
-        throw new RangeError("UtilityFactory.js: Cannot create the utility " + type);
+        throw new RangeError("Cannot create the utility " + type, "UtilityFactory.js");
     }
     return obj;
   }

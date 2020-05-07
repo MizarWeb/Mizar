@@ -20,7 +20,7 @@
 import Utils from "../Utils/Utils";
 import AbstractContext from "./AbstractContext";
 import Constants from "../Utils/Constants";
-// import TimeTravel from "../Gui/TimeTravel";
+import TimeTravel from "../Gui/TimeTravel";
 /**
  * ground context configuration
  * @typedef {Object} AbstractContext.groundContext
@@ -46,9 +46,9 @@ import Constants from "../Utils/Constants";
  * @constructor
  * @memberof module:Context
  */
-const GroundContext = function (mizarConfiguration, options) {
+var GroundContext = function (mizarConfiguration, options) {
   AbstractContext.prototype.constructor.call(this, mizarConfiguration, Constants.CONTEXT.Ground, options);
-  const self = this;
+  var self = this;
 
   this.components = {
     posTrackerInfo: false,
@@ -58,7 +58,7 @@ const GroundContext = function (mizarConfiguration, options) {
     timeTravelDiv: false
   };
 
-  const groundOptions = _createGroundConfiguration.call(this, options);
+  var groundOptions = _createGroundConfiguration.call(this, options);
   this.initGlobe(groundOptions, {
     "3D": Constants.NAVIGATION.GroundNavigation
   });
@@ -94,7 +94,7 @@ const GroundContext = function (mizarConfiguration, options) {
  * @private
  */
 function _createGroundConfiguration(options) {
-  const self = this;
+  var self = this;
   return {
     tileErrorTreshold: options.tileErrorTreshold || 3,
     continuousRendering: options.continuousRendering || false,
@@ -126,7 +126,7 @@ Utils.inherits(AbstractContext, GroundContext);
  */
 GroundContext.prototype.setCoordinateSystem = function (cs) {
   if (cs.getType() !== this.getMode()) {
-    throw new RangeError("GroundContext.js: incompatible coordinate reference system with Sky context");
+    throw new RangeError("incompatible coordinate reference system with Sky context", "GroundContext.js");
   }
   this.globe.setCoordinateSystem(cs);
   this.publish(Constants.EVENT_MSG.CRS_MODIFIED, this);

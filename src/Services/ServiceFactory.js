@@ -55,7 +55,7 @@ import TimeTravelCore from "../Services/TimeTravelCore";
 
 export default {
   create: function (serviceType, userOptions) {
-    let obj;
+    var obj;
     switch (serviceType) {
       case Constants.SERVICE.FitsVisu:
         obj = FitsVisu;
@@ -103,7 +103,7 @@ export default {
         obj = FitsHips;
         break;
       default:
-        throw new RangeError("ServiceFactory.js: Cannot retrieve service " + serviceType);
+        throw new RangeError("Cannot retrieve service " + serviceType, "ServiceFactory.js");
     }
     return obj;
   }

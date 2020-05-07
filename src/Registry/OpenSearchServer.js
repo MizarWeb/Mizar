@@ -14,14 +14,14 @@ import OpenSearchForm from "../Layer/OpenSearch/OpenSearchForm";
  * @memberof module:Registry
  * @constructor
  */
-const OpenSearchServer = function (options) {
+var OpenSearchServer = function (options) {
   // when url contains .xml, it means that the XML descriptor is there
   if (options.baseUrl && options.baseUrl.indexOf(".xml") !== -1) {
     options.getCapabilities = options.baseUrl;
   }
 
   if (!options.getCapabilities) {
-    throw new ReferenceError("OpenSearchServer.js: No URL to access to the server is defined");
+    throw new ReferenceError("No URL to access to the server is defined", "OpenSearchServer.js");
   }
   this.options = options;
 };
@@ -35,7 +35,7 @@ const OpenSearchServer = function (options) {
  * @private
  */
 function _createLayer(layerDescription, openSearchRoot) {
-  const layerDesc = Object.assign({}, layerDescription, {});
+  var layerDesc = Object.assign({}, layerDescription, {});
   layerDesc.name = layerDescription.name || OpenSearchUtils.getValue(openSearchRoot, "ShortName");
   layerDesc.description = layerDescription.description || OpenSearchUtils.getValue(openSearchRoot, "Description");
   layerDesc.attribution = layerDescription.attribution || OpenSearchUtils.getValue(openSearchRoot, "Attribution");
@@ -45,7 +45,7 @@ function _createLayer(layerDescription, openSearchRoot) {
   layerDesc.properties.syndicationRight = OpenSearchUtils.getValue(openSearchRoot, "SyndicationRight");
   layerDesc.properties.developper = OpenSearchUtils.getValue(openSearchRoot, "Developper");
 
-  const urls = openSearchRoot.Url;
+  var urls = openSearchRoot.Url;
   layerDesc.services = {};
   layerDesc.services.queryForm = new OpenSearchForm(urls, "application/json");
   OpenSearchUtils.initNavigationValues(layerDesc.services.queryForm);
@@ -63,29 +63,29 @@ function _createLayer(layerDescription, openSearchRoot) {
 
 OpenSearchServer.prototype.createLayers = function (callback, fallback) {
   this.getMetadata(function (layerDescription, metadata) {
-    const layers = [];
-    const jsonLayer = metadata.OpenSearchDescription;
-    const layer = _createLayer(layerDescription, jsonLayer);
+    var layers = [];
+    var jsonLayer = metadata.OpenSearchDescription;
+    var layer = _createLayer(layerDescription, jsonLayer);
     layers.push(layer);
     callback(layers);
   }, fallback);
 };
 
 OpenSearchServer.prototype.getMetadata = function (callback, fallback) {
-  const self = this;
+  var self = this;
   Utils.requestUrl(
     this.options.getCapabilities,
     "text",
     "application/xml",
     {},
     function (response) {
-      const myOptions = {
+      var myOptions = {
         mergeCDATA: true,
         xmlns: false,
         attrsAsObject: false,
         childrenAsArray: false
       };
-      const metadata = XmlToJson.parseString(response, myOptions);
+      var metadata = XmlToJson.parseString(response, myOptions);
       callback(self.options, metadata);
     },
     function (e) {

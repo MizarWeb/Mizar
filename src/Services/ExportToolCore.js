@@ -16,6 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with MIZAR. If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
+/*global define: false */
 
 /**
  * Tool designed to select areas on planet
@@ -23,14 +24,11 @@
 
 import $ from "jquery";
 import _ from "underscore";
-import FileSaver from "file-saver";
 import ErrorDialog from "../Gui/dialog/ErrorDialog";
 import Constants from "../Utils/Constants";
 import Proxy from "../Utils/Proxy";
-// FIXME: JSZIp throws a lot of build warnings
-import JSZip from "jszip";
 import "../../external/jquery-loadmask/jquery.loadmask";
-let self, mizarAPI, layers, availableLayers;
+var self, mizarAPI, layers, availableLayers;
 
 /**************************************************************************************************************/
 
@@ -66,12 +64,14 @@ function exportSelection(event) {
 
   $("body").mask("Exporting data...");
 
+  var JSZip = JSZip;
+
   // creating empty archive
-  const zip = new JSZip();
+  var zip = new JSZip();
 
   // getting all visible and displayed layers
-  const backgroundLayers = [];
-  const dataLayers = [];
+  var backgroundLayers = [];
+  var dataLayers = [];
   _.each(availableLayers, function (layer) {
     if ($("#" + layer.layerId).is(":checked")) {
       if (layer.getType() === Constants.LAYER.OpenSearch || layer.getType() === Constants.LAYER.GeoJSON) {
@@ -84,7 +84,7 @@ function exportSelection(event) {
   });
 
   // Adding a middle point the bbox to be sure no data/image will be omitted
-  const middlePoint = [
+  var middlePoint = [
     (self.coordinates[0][1] + self.coordinates[1][1]) / 2,
     (self.coordinates[0][0] + self.coordinates[3][0]) / 2,
     0
@@ -92,10 +92,10 @@ function exportSelection(event) {
   self.coordinates.push(middlePoint);
 
   // getting data url from layer using tile and bbox coordinates
-  const tileLayerFeatures = [];
+  var tileLayerFeatures = [];
   _.each(dataLayers, function (dataLayer, index) {
-    for (let i = 0; i < self.coordinates.length; i++) {
-      const tile = mizarAPI
+    for (var i = 0; i < self.coordinates.length; i++) {
+      var tile = mizarAPI
         .getActivatedContext()
         .getTileManager()
         .getVisibleTile(self.coordinates[i][0], self.coordinates[i][1]);
@@ -104,22 +104,22 @@ function exportSelection(event) {
         return;
       }
 
-      const osData = tile.extension[dataLayer.extId];
+      var osData = tile.extension[dataLayer.extId];
 
       if (!_.isEmpty(osData) && !_.isEmpty(osData.featureIds)) {
         _.each(osData.featureIds, function (fId) {
-          const featureSet = dataLayer.featuresSet[fId];
+          var featureSet = dataLayer.featuresSet[fId];
           if (!_.isEmpty(featureSet)) {
-            const feature = dataLayer.features[featureSet.index];
+            var feature = dataLayer.features[featureSet.index];
 
-            let isIncluded = true;
+            var isIncluded = true;
             switch (feature.geometry.type) {
               case Constants.GEOMETRY.Point:
                 isIncluded = self.checkIfPointInBbox(feature.geometry.coordinates, self.coordinates);
                 break;
 
               case Constants.GEOMETRY.Polygon:
-                for (let i = 0; i < feature.geometry.coordinates.length; i++) {
+                for (var i = 0; i < feature.geometry.coordinates.length; i++) {
                   if (!isIncluded) {
                     return;
                   }
@@ -145,16 +145,16 @@ function exportSelection(event) {
 
   // Adding features archive
   _.each(tileLayerFeatures, function (feature) {
-    const folder = zip.folder(feature.parentInformation.category + "/" + feature.parentInformation.name);
+    var folder = zip.folder(feature.parentInformation.category + "/" + feature.parentInformation.name);
 
     // Adding a copyright file into each folder
     if (!_.isEmpty(feature.parentInformation.copyright) || !_.isEmpty(feature.parentInformation.copyrightUrl)) {
-      const copyright =
+      var copyright =
         "Copyright : " + feature.parentInformation.copyright + " - link : " + feature.parentInformation.copyrightUrl;
       folder.file(feature.parentInformation.name + ".txt", copyright);
     }
 
-    const featureToStringify = {
+    var featureToStringify = {
       geometry: {
         coordinates: feature.geometry.coordinates,
         gid: feature.geometry.gid,
@@ -177,16 +177,16 @@ function exportSelection(event) {
   if (backgroundLayers.length === 0) {
     self.downloadArchive(zip);
   } else {
-    let numberOfImages = 0;
-    let imageNotFound = false;
+    var numberOfImages = 0;
+    var imageNotFound = false;
     // get images url from Background layer
     _.each(backgroundLayers, function (backgroundLayer, index) {
       backgroundLayer.urlImages = [];
       backgroundLayer.images = [];
 
-      for (let i = 0; i < self.coordinates.length; i++) {
+      for (var i = 0; i < self.coordinates.length; i++) {
         // Retrieve the tile according to a
-        const tile = mizarAPI
+        var tile = mizarAPI
           .getActivatedContext()
           .getTileManager()
           .getVisibleTile(self.coordinates[i][0], self.coordinates[i][1]);
@@ -196,9 +196,9 @@ function exportSelection(event) {
         }
 
         numberOfImages++;
-        const url = backgroundLayer.getUrl(tile);
+        var url = backgroundLayer.getUrl(tile);
 
-        const image = new Image();
+        var image = new Image();
         image.aborted = false;
         image.crossOrigin = "";
         image.backgroundName = backgroundLayer.name;
@@ -243,9 +243,11 @@ function exportSelection(event) {
  * @param zip
  */
 function downloadArchive(zip) {
-  const date = new Date();
-  const currentDate = $.datepicker.formatDate("yy/mm/dd " + date.getHours() + ":" + date.getMinutes(), date);
-  const readme =
+  var saveAs = saveAs;
+
+  var date = new Date();
+  var currentDate = $.datepicker.formatDate("yy/mm/dd " + date.getHours() + ":" + date.getMinutes(), date);
+  var readme =
     "Date : " +
     currentDate +
     "\n" +
@@ -256,10 +258,10 @@ function downloadArchive(zip) {
 
   zip.file("README.txt", readme);
 
-  const content = zip.generate({
+  var content = zip.generate({
     type: "blob"
   });
-  FileSaver.saveAs(content, "archive_" + currentDate + ".zip");
+  saveAs(content, "archive_" + currentDate + ".zip");
   $("body").unmask();
 }
 
@@ -287,7 +289,7 @@ function checkIfPointInBbox(point, bbox) {
  * @param zip
  */
 function addImageToArchive(img, zip) {
-  const folder = zip.folder(img.parentFolder);
+  var folder = zip.folder(img.parentFolder);
   folder.file(img.imageName, self.getBase64Image(img), {
     base64: true
   });
@@ -302,19 +304,19 @@ function addImageToArchive(img, zip) {
  */
 function getBase64Image(img) {
   // Create an empty canvas element
-  const canvas = document.createElement("canvas");
+  var canvas = document.createElement("canvas");
   canvas.width = img.width;
   canvas.height = img.height;
 
   // Copy the image contents to the canvas
-  const ctx = canvas.getContext("2d");
+  var ctx = canvas.getContext("2d");
   ctx.drawImage(img, 0, 0);
 
   // Get the data-URL formatted image
   // Firefox supports PNG and JPEG. You could check img.src to
   // guess the original format, but be aware the using "image/jpg"
   // will re-encode the image.
-  const dataURL = canvas.toDataURL("image/png");
+  var dataURL = canvas.toDataURL("image/png");
 
   return dataURL.replace(/^data:image\/(png|jpg);base64,/, "");
 }

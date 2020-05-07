@@ -131,7 +131,7 @@ export default {
     } else if (LEVEL === Constants.LEVEL.DEBUG) {
       _consoleLog(_computeMessageASCII(title, description));
     } else {
-      throw new TypeError("ErrorDialog.js: LEVEL must be set with a valid value");
+      throw new TypeError("LEVEL must be set with a valid value", "ErrorDialog.js");
     }
   },
   /**

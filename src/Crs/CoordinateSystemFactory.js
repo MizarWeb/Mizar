@@ -40,7 +40,7 @@ import SunCrs from "./SunCrs";
  * @private
  */
 function _createCrs(geoideName, options) {
-  let cs;
+  var cs;
   switch (geoideName) {
     case Constants.CRS.Equatorial:
       cs = new EquatorialCrs(options);
@@ -72,7 +72,7 @@ function _createCrs(geoideName, options) {
       break;
     // Unknown geoide name
     default:
-      throw new RangeError("CoordinateSystemFactory.js: Datum " + geoideName + " not implemented");
+      throw new RangeError("Datum " + geoideName + " not implemented", "CoordinateSystemFactory.js");
   }
   return cs;
 }
@@ -93,11 +93,11 @@ export default {
    * @throws {RangeError} Will throw an error when options.projectionName is not part of {@link PROJECTION}
    */
   create: function (options) {
-    let cs;
+    var cs;
     if (options.geoideName) {
       cs = _createCrs(options.geoideName, options);
     } else {
-      throw new ReferenceError("CoordinateSystemFactory.js: geoideName not defined in " + JSON.stringify(options));
+      throw new ReferenceError("geoideName not defined in " + JSON.stringify(options), "CoordinateSystemFactory.js");
     }
 
     if (options.projectionName) {

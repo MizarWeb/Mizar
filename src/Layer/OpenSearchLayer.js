@@ -99,7 +99,7 @@ import Moment from "moment";
  * @param {int} [options.heatmapMaxLevel=5] The maximum level where the heatmap can be displayed
  * @memberof module:Layer
  */
-const OpenSearchLayer = function (options) {
+var OpenSearchLayer = function (options) {
   options.zIndex = options.zIndex || Constants.DISPLAY.DEFAULT_VECTOR;
   AbstractLayer.prototype.constructor.call(this, Constants.LAYER.OpenSearch, options);
 
@@ -193,9 +193,9 @@ OpenSearchLayer.TileState = {
 };
 
 function _fixCrossLine(features) {
-  let len = features.length;
+  var len = features.length;
   while (len--) {
-    const currentFeature = features[len];
+    var currentFeature = features[len];
 
     if (currentFeature.geometry) {
       switch (currentFeature.geometry.type) {
@@ -207,7 +207,7 @@ function _fixCrossLine(features) {
           break;
         case Constants.GEOMETRY.Polygon:
           var ring = currentFeature.geometry.coordinates[0];
-          for (let j = 0; j < ring.length; j++) {
+          for (var j = 0; j < ring.length; j++) {
             // Convert to geographic to simplify picking
             if (ring[j][0] > 180) {
               ring[j][0] -= 360;
@@ -222,7 +222,7 @@ function _fixCrossLine(features) {
 }
 
 function _getColorForPercentage(pct, colormap) {
-  const colors = colormap.slice(0);
+  var colors = colormap.slice(0);
   colors.sort(function (c0, c1) {
     return c0.pct - c1.pct;
   });
@@ -230,14 +230,14 @@ function _getColorForPercentage(pct, colormap) {
   const length = colors.length;
 
   // Find the pct bounds
-  let color;
+  var color;
   // Pct is outside colormap bounds
   if (colors[0].pct > pct) {
     color = colors[0].color;
   } else if (colors[length - 1].pct < pct) {
     color = colors[length - 1].color;
   } else {
-    for (let i = 0; i < length - 1; ++i) {
+    for (var i = 0; i < length - 1; ++i) {
       const p0 = colors[i].pct;
       const p1 = colors[i + 1].pct;
 
@@ -267,14 +267,14 @@ function _sortTilesByDistance(t1, t2) {
 
 function _computeGeometryExtent(geometry) {
   //TODO : To be modified according to the planet CRS.
-  const result = {
+  var result = {
     east: -180,
     west: +180,
     north: -90,
     south: +90
   };
-  for (let i = 0; i < geometry.coordinates[0].length; i++) {
-    const coord = geometry.coordinates[0][i];
+  for (var i = 0; i < geometry.coordinates[0].length; i++) {
+    var coord = geometry.coordinates[0][i];
     result.south = coord[1] < result.south ? coord[1] : result.south;
     result.north = coord[1] > result.north ? coord[1] : result.north;
     result.east = coord[0] > result.east ? coord[0] : result.east;
@@ -318,14 +318,14 @@ function _removeFeature(layer, featureId, tile) {
 
 function _removeFeatures(layer) {
   for (const id in layer.featuresSet) {
-    for (let tileIndex = layer.featuresSet[id].tiles.length - 1; tileIndex >= 0; --tileIndex) {
+    for (var tileIndex = layer.featuresSet[id].tiles.length - 1; tileIndex >= 0; --tileIndex) {
       _removeFeature(layer, id, layer.featuresSet[id].tiles[tileIndex]);
     }
   }
 
   layer.featuresSet = {};
 
-  for (let i = 0; i < layer.tilesLoaded.length; i++) {
+  for (var i = 0; i < layer.tilesLoaded.length; i++) {
     layer.tilesLoaded[i].tile.osState[layer.getID()] = OpenSearchLayer.TileState.NOT_LOADED;
   }
   layer.tilesLoaded = [];
@@ -360,17 +360,17 @@ function _removeTile(layer, tile) {
 }
 
 function _removeFeaturesOutside(layer, tiles) {
-  let maxLevel = 0;
-  for (const t of tiles) {
+  var maxLevel = 0;
+  for (var t of tiles) {
     if (maxLevel < t.level) {
       maxLevel = t.level;
     }
   }
 
-  for (let i = 0; i < layer.tilesLoaded.length; i++) {
-    const tile = layer.tilesLoaded[i].tile;
+  for (var i = 0; i < layer.tilesLoaded.length; i++) {
+    var tile = layer.tilesLoaded[i].tile;
 
-    let remove = tile.level > maxLevel;
+    var remove = tile.level > maxLevel;
 
     if (!remove) {
       remove = !UtilsIntersection.tileIntersects(tile, tiles);
@@ -383,9 +383,9 @@ function _removeFeaturesOutside(layer, tiles) {
 }
 
 function _addFeature(layer, feature, tile) {
-  let featureData;
+  var featureData;
 
-  const style = feature.properties.style ? feature.properties.style : layer.style;
+  var style = feature.properties.style ? feature.properties.style : layer.style;
   style.opacity = layer.getOpacity();
 
   // fix geometry gid
@@ -423,8 +423,8 @@ function _addFeature(layer, feature, tile) {
   tile.associatedFeaturesId.push(feature.id);
 
   if (feature.geometry.type === "GeometryCollection") {
-    const geoms = feature.geometry.geometries;
-    for (let i = 0; i < geoms.length; i++) {
+    var geoms = feature.geometry.geometries;
+    for (var i = 0; i < geoms.length; i++) {
       layer.getGlobe().getRendererManager().addGeometryToTile(layer, geoms[i], style, tile);
     }
   } else {
@@ -451,9 +451,9 @@ function _cleanCache(layer) {
 }
 
 function _prepareParameters(layer, tile) {
-  let param; // param managed
-  let code; // param code
-  for (let i = 0; i < layer.getServices().queryForm.parameters.length; i++) {
+  var param; // param managed
+  var code; // param code
+  for (var i = 0; i < layer.getServices().queryForm.parameters.length; i++) {
     param = layer.getServices().queryForm.parameters[i];
     code = param.value;
     code = code.replace("?}", "}");
@@ -462,7 +462,7 @@ function _prepareParameters(layer, tile) {
       param.currentValue =
         tile.geoBound.west + "," + tile.geoBound.south + "," + tile.geoBound.east + "," + tile.geoBound.north;
     } else if (code === "{geo:geometry}" && tile.type === Constants.TILE.HEALPIX_TILE) {
-      const corners = tile.getCorners();
+      var corners = tile.getCorners();
       param.currentValue =
         "POLYGON((" +
         corners[0][0] +
@@ -490,19 +490,19 @@ function _prepareParameters(layer, tile) {
 }
 
 function _addFeatureToRenderersCurrentLevel(layer, feature) {
-  const geometry = feature.geometry;
+  var geometry = feature.geometry;
 
   // Manage style, if undefined try with properties, otherwise use defaultStyle
-  let style = layer.style;
-  const props = feature.properties;
+  var style = layer.style;
+  var props = feature.properties;
   if (props && props.style) {
     style = props.style;
   }
 
   // Manage geometry collection
   if (geometry.type === "GeometryCollection") {
-    const geoms = geometry.geometries;
-    for (let i = 0; i < geoms.length; i++) {
+    var geoms = geometry.geometries;
+    for (var i = 0; i < geoms.length; i++) {
       layer.getGlobe().getRendererManager().addGeometryCurrentLevel(layer, geoms[i], style);
     }
   } else {
@@ -520,15 +520,15 @@ function _buildUrl(layer, tile, count) {
   if (!layer.getServices().hasOwnProperty("queryForm")) {
     return null;
   }
-  let url = layer.getServices().queryForm.template;
+  var url = layer.getServices().queryForm.template;
 
   // Prepare parameters for this tile
   _prepareParameters(layer, tile);
 
   // Check each parameter
-  let param; // param managed
-  let currentValue; // value set
-  for (let i = 0; i < layer.getServices().queryForm.parameters.length; i++) {
+  var param; // param managed
+  var currentValue; // value set
+  for (var i = 0; i < layer.getServices().queryForm.parameters.length; i++) {
     param = layer.getServices().queryForm.parameters[i];
     if (param.name === "maxRecords" && count) {
       currentValue = count;
@@ -560,7 +560,7 @@ function _isTileLoaded(tilesLoaded, key) {
 }
 
 function _removeFeaturesExternalFov(layer, tiles) {
-  let doRemove = false;
+  var doRemove = false;
   if (layer.lastRemovingDateTime === null) {
     doRemove = true;
   } else {
@@ -587,9 +587,9 @@ function _initOsState(layer, tile) {
 }
 
 function _computeStats(layer) {
-  let nb = 0;
-  for (let i = 0; i < layer.tilesLoaded.length; i++) {
-    const tileLoaded = layer.tilesLoaded[i].tile;
+  var nb = 0;
+  for (var i = 0; i < layer.tilesLoaded.length; i++) {
+    var tileLoaded = layer.tilesLoaded[i].tile;
     if (tileLoaded.associatedFeaturesId) {
       nb = nb + tileLoaded.associatedFeaturesId.length;
     }
@@ -597,9 +597,9 @@ function _computeStats(layer) {
 }
 
 function _requestTile(layer, tile, count) {
-  const url = _buildUrl(layer, tile, count);
+  var url = _buildUrl(layer, tile, count);
   if (url !== null) {
-    const cachedTile = layer.cache.getCacheFromKey(url);
+    var cachedTile = layer.cache.getCacheFromKey(url);
     if (cachedTile == null) {
       // cache
       tile.osState[layer.getID()] = OpenSearchLayer.TileState.LOADING;
@@ -671,7 +671,7 @@ OpenSearchLayer.prototype.setParameter = function (paramName, value) {
  * @fires OpenSearchLayer#updateStatsAttribute
  */
 OpenSearchLayer.prototype.nextPage = function () {
-  let num = OpenSearchUtils.getCurrentValue(this.getServices().queryForm, "startPage");
+  var num = OpenSearchUtils.getCurrentValue(this.getServices().queryForm, "startPage");
   // If not specified, set default to 1
   if (num === null || typeof num === "undefined") {
     num = 1;
@@ -687,7 +687,7 @@ OpenSearchLayer.prototype.nextPage = function () {
   });
 
   this.forceRefresh = true;
-  for (let i = 0; i < this.tilesLoaded.length; i++) {
+  for (var i = 0; i < this.tilesLoaded.length; i++) {
     this.tilesLoaded[i].tile.osState[this.getID()] = OpenSearchLayer.TileState.NOT_LOADED;
   }
   this.getGlobe().getRenderContext().requestFrame();
@@ -724,7 +724,7 @@ OpenSearchLayer.prototype._detach = function () {
 
 OpenSearchLayer.prototype.modifyFeatureStyle = function (feature, style, useFeatureStyle) {
   if (useFeatureStyle && feature.properties.style) {
-    for (const key in feature.properties.style) {
+    for (var key in feature.properties.style) {
       if (!feature.properties.style.hasOwnProperty(key)) continue;
 
       style[key] = feature.properties.style[key];
@@ -733,7 +733,7 @@ OpenSearchLayer.prototype.modifyFeatureStyle = function (feature, style, useFeat
 
   const rm = this.getGlobe().getRendererManager();
   if (this.featuresSet[feature.id]) {
-    for (const tile of this.featuresSet[feature.id].tiles) {
+    for (var tile of this.featuresSet[feature.id].tiles) {
       try {
         rm.removeGeometryFromTile(feature.geometry, tile);
         rm.addGeometryToTile(this, feature.geometry, style, tile);
@@ -756,9 +756,9 @@ OpenSearchLayer.prototype.loadQuicklook = function (feature, url) {
   this.currentIdDisplayed = feature.id;
 
   // Get quad coordinates
-  const coordinates = feature.geometry.coordinates[0];
-  const quad = [];
-  for (let i = 0; i < 4; i++) {
+  var coordinates = feature.geometry.coordinates[0];
+  var quad = [];
+  for (var i = 0; i < 4; i++) {
     quad[i] = coordinates[i];
   }
 
@@ -848,9 +848,9 @@ OpenSearchLayer.prototype.render = function (tiles) {
 
   // Check if we have features that might be missing
   if (Object.keys(this.featuresAddedToNotLoadedTiles).length > 0) {
-    for (const tile of tiles) {
+    for (var tile of tiles) {
       if (tile.state === Tile.State.LOADED && this.featuresAddedToNotLoadedTiles[tile.key]) {
-        for (const feature of this.featuresAddedToNotLoadedTiles[tile.key]) {
+        for (var feature of this.featuresAddedToNotLoadedTiles[tile.key]) {
           _addFeature(this, feature, tile);
         }
         delete this.featuresAddedToNotLoadedTiles[tile.key];
@@ -867,7 +867,7 @@ OpenSearchLayer.prototype.render = function (tiles) {
     this.forceRefresh = false;
   }
 
-  const localTiles = tiles.slice(0);
+  var localTiles = tiles.slice(0);
 
   // Sort tiles in order to load the first tiles closed to the camera
   localTiles.sort(_sortTilesByDistance);
@@ -889,7 +889,7 @@ OpenSearchLayer.prototype.render = function (tiles) {
     if (this.previousLevel !== undefined && this.previousLevel !== null) {
       if (this.heatmapTiles && this.heatmapTiles[this.previousLevel]) {
         const oldKeys = Object.keys(this.heatmapTiles[this.previousLevel]);
-        for (let i = oldKeys.length - 1; i >= 0; --i) {
+        for (var i = oldKeys.length - 1; i >= 0; --i) {
           const key = oldKeys[i];
           const heatmapData = this.heatmapTiles[this.previousLevel][key];
           if (heatmapData.feature) _removeFeature(this, heatmapData.feature.id, heatmapData.tile);
@@ -910,8 +910,8 @@ OpenSearchLayer.prototype.render = function (tiles) {
 
   this.previousLevel = this.currentLevel;
   this.previousKey = this.currentKey;
-  for (let j = 0; j < localTiles.length; j++) {
-    const currentTile = localTiles[j];
+  for (var j = 0; j < localTiles.length; j++) {
+    var currentTile = localTiles[j];
 
     _initOsState(this, currentTile);
     switch (currentTile.osState[this.getID()]) {
@@ -965,9 +965,9 @@ OpenSearchLayer.prototype.setVisible = function (arg) {
     }
     this.visible = arg;
 
-    const linkedLayers = this.callbackContext.getLinkedLayers(this.ID);
+    var linkedLayers = this.callbackContext.getLinkedLayers(this.ID);
     // Change for wms linked layers
-    for (let i = 0; i < linkedLayers.length; i++) {
+    for (var i = 0; i < linkedLayers.length; i++) {
       linkedLayers[i].setVisible(arg);
     }
 
@@ -983,7 +983,7 @@ OpenSearchLayer.prototype.setVisible = function (arg) {
     }
     this.publish(Constants.EVENT_MSG.LAYER_VISIBILITY_CHANGED, this);
   } else {
-    throw new TypeError("AbstractLayer.js: the parameter of setVisible should be a boolean");
+    throw new TypeError("the parameter of setVisible should be a boolean", "AbstractLayer.js");
   }
 };
 
@@ -995,14 +995,14 @@ OpenSearchLayer.prototype.setVisible = function (arg) {
  */
 OpenSearchLayer.prototype.setOpacity = function (arg) {
   if (typeof arg === "number" && arg >= 0.0 && arg <= 1.0) {
-    const targetStyle = new FeatureStyle(this.getStyle());
+    var targetStyle = new FeatureStyle(this.getStyle());
     targetStyle.setOpacity(arg);
 
     for (var i = 0; i < this.features.length; i++) {
       this.modifyFeatureStyle(this.features[i], targetStyle, true);
     }
 
-    const linkedLayers = this.callbackContext.getLinkedLayers(this.getID());
+    var linkedLayers = this.callbackContext.getLinkedLayers(this.getID());
     // Change for wms linked layers
     for (i = 0; i < linkedLayers.length; i++) {
       linkedLayers[i].getStyle().setOpacity(arg);
@@ -1010,7 +1010,7 @@ OpenSearchLayer.prototype.setOpacity = function (arg) {
 
     AbstractLayer.prototype.setOpacity.call(this, arg);
   } else {
-    throw new RangeError("AbstractLayer.js: opacity value should be a value in [0..1]");
+    throw new RangeError("opacity value should be a value in [0..1]", "AbstractLayer.js");
   }
 };
 
@@ -1040,10 +1040,10 @@ OpenSearchLayer.prototype.resetAll = function () {
  * @fires Context#layer:added
  */
 OpenSearchLayer.prototype.loadWMS = function (selectedData) {
-  const extent = _computeGeometryExtent(selectedData.feature.geometry);
-  const endpoint = selectedData.feature.properties.services.browse.layer.url;
-  const name = selectedData.layer.name + " (WMS)";
-  const layerDescription = {
+  var extent = _computeGeometryExtent(selectedData.feature.geometry);
+  var endpoint = selectedData.feature.properties.services.browse.layer.url;
+  var name = selectedData.layer.name + " (WMS)";
+  var layerDescription = {
     type: "WMS",
     name: name,
     baseUrl: endpoint,
@@ -1054,12 +1054,12 @@ OpenSearchLayer.prototype.loadWMS = function (selectedData) {
     background: false,
     linkedTo: selectedData.layer.ID
   };
-  const self = this;
+  var self = this;
   selectedData.layer.callbackContext.addLayer(layerDescription, function (layerID) {
     // Add feature id of wms into list a current WMS displayed
     self.addServicesRunningOnRecord(selectedData.feature.id, layerID);
 
-    const layer = self.callbackContext.getLayerByID(layerID);
+    var layer = self.callbackContext.getLayerByID(layerID);
     layer.setOnTheTop();
 
     if (typeof self.callbackContext !== "undefined") {
@@ -1127,7 +1127,7 @@ OpenSearchLayer.prototype.unloadWMS = function (selectedData) {
  * @fires OpenSearchLayer#updateStatsAttribute
  */
 OpenSearchLayer.prototype.computeFeaturesResponse = function (features, tile, nbFeaturesTotalPerTile) {
-  let ableToContinue = true;
+  var ableToContinue = true;
 
   const { level, key } = tile;
 
@@ -1164,7 +1164,7 @@ OpenSearchLayer.prototype.computeFeaturesResponse = function (features, tile, nb
   this.nbFeaturesTotal += nbFeaturesTotalPerTile;
 
   // For each feature...
-  for (const feature of features) {
+  for (var feature of features) {
     try {
       _addFeature(this, feature, tile);
     } catch (error) {
@@ -1206,7 +1206,7 @@ OpenSearchLayer.prototype.computeFeaturesResponse = function (features, tile, nb
  * @memberof OpenSearchLayer#
  */
 OpenSearchLayer.prototype.buildHeatmap = function () {
-  let total = 0;
+  var total = 0;
 
   const heatmapData = this.heatmapTiles[this.currentLevel];
 

@@ -37,7 +37,7 @@
 
 import Utils from "../Utils/Utils";
 import Constants from "../Utils/Constants";
-// import UtilsIntersection from "../Utils/UtilsIntersection";
+import UtilsIntersection from "../Utils/UtilsIntersection";
 import Tile from "./Tile";
 import GeoBound from "../Renderer/GeoBound";
 import HEALPixBase from "./HEALPixBase";
@@ -45,7 +45,7 @@ import "../Renderer/glMatrix";
 /** @constructor
      Tile constructor
      */
-const GeoTile = function (geoBound, level, x, y) {
+var GeoTile = function (geoBound, level, x, y) {
   // Call ancestor constructor
   Tile.prototype.constructor.call(this);
   this.bound = this.geoBound = geoBound;
@@ -68,25 +68,25 @@ GeoTile.prototype = new Tile();
      */
 GeoTile.prototype.getElevation = function (lon, lat) {
   // Get the lon/lat in coordinates between [0,1] in the tile
-  const u = (lon - this.geoBound.getWest()) / (this.geoBound.getEast() - this.geoBound.getWest());
-  const v = (lat - this.geoBound.getNorth()) / (this.geoBound.getSouth() - this.geoBound.getNorth());
+  var u = (lon - this.geoBound.getWest()) / (this.geoBound.getEast() - this.geoBound.getWest());
+  var v = (lat - this.geoBound.getNorth()) / (this.geoBound.getSouth() - this.geoBound.getNorth());
 
   // Quick fix when lat is on the border of the tile
-  const childIndex = (v >= 1 ? 1 : Math.floor(2 * v)) * 2 + Math.floor(2 * u);
+  var childIndex = (v >= 1 ? 1 : Math.floor(2 * v)) * 2 + Math.floor(2 * u);
 
   if (this.children && this.children[childIndex] && this.children[childIndex].state === Tile.State.LOADED) {
     return this.children[childIndex].getElevation(lon, lat);
   }
 
-  const tess = this.config.tesselation;
-  const i = Math.floor(u * tess);
-  const j = Math.floor(v * tess);
+  var tess = this.config.tesselation;
+  var i = Math.floor(u * tess);
+  var j = Math.floor(v * tess);
 
-  const vo = this.config.vertexSize * (j * tess + i);
-  const vertex = [this.vertices[vo], this.vertices[vo + 1], this.vertices[vo + 2]];
+  var vo = this.config.vertexSize * (j * tess + i);
+  var vertex = [this.vertices[vo], this.vertices[vo + 1], this.vertices[vo + 2]];
   mat4.multiplyVec3(this.matrix, vertex);
 
-  const geo = this.config.coordinateSystem.getWorldFrom3D(vertex);
+  var geo = this.config.coordinateSystem.getWorldFrom3D(vertex);
   return geo[2];
 };
 
@@ -101,30 +101,30 @@ GeoTile.prototype.getKey = function () {
      */
 GeoTile.prototype.createChildren = function () {
   // Create the children
-  const lonCenter = (this.geoBound.getEast() + this.geoBound.getWest()) * 0.5;
-  const latCenter = (this.geoBound.getNorth() + this.geoBound.getSouth()) * 0.5;
+  var lonCenter = (this.geoBound.getEast() + this.geoBound.getWest()) * 0.5;
+  var latCenter = (this.geoBound.getNorth() + this.geoBound.getSouth()) * 0.5;
 
-  const level = this.level + 1;
+  var level = this.level + 1;
 
-  const tile00 = new GeoTile(
+  var tile00 = new GeoTile(
     new GeoBound(this.geoBound.getWest(), latCenter, lonCenter, this.geoBound.getNorth()),
     level,
     2 * this.x,
     2 * this.y
   );
-  const tile10 = new GeoTile(
+  var tile10 = new GeoTile(
     new GeoBound(lonCenter, latCenter, this.geoBound.getEast(), this.geoBound.getNorth()),
     level,
     2 * this.x + 1,
     2 * this.y
   );
-  const tile01 = new GeoTile(
+  var tile01 = new GeoTile(
     new GeoBound(this.geoBound.getWest(), this.geoBound.getSouth(), lonCenter, latCenter),
     level,
     2 * this.x,
     2 * this.y + 1
   );
-  const tile11 = new GeoTile(
+  var tile11 = new GeoTile(
     new GeoBound(lonCenter, this.geoBound.getSouth(), this.geoBound.getEast(), latCenter),
     level,
     2 * this.x + 1,
@@ -147,13 +147,13 @@ GeoTile.prototype.createChildren = function () {
      Used by renderers algorithm to clamp coordinates on the tile
      */
 GeoTile.prototype.lonlat2tile = function (coordinates) {
-  const ul = this.geoBound.getEast() - this.geoBound.getWest();
-  const vl = this.geoBound.getSouth() - this.geoBound.getNorth();
-  const factor = this.config.tesselation - 1;
-  const tileCoords = [];
-  for (let i = 0; i < coordinates.length; i++) {
-    const u = (factor * (coordinates[i][0] - this.geoBound.getWest())) / ul;
-    const v = (factor * (coordinates[i][1] - this.geoBound.getNorth())) / vl;
+  var ul = this.geoBound.getEast() - this.geoBound.getWest();
+  var vl = this.geoBound.getSouth() - this.geoBound.getNorth();
+  var factor = this.config.tesselation - 1;
+  var tileCoords = [];
+  for (var i = 0; i < coordinates.length; i++) {
+    var u = (factor * (coordinates[i][0] - this.geoBound.getWest())) / ul;
+    var v = (factor * (coordinates[i][1] - this.geoBound.getNorth())) / vl;
     tileCoords.push([u, v]);
   }
   return tileCoords;
@@ -167,43 +167,43 @@ GeoTile.prototype.lonlat2tile = function (coordinates) {
 GeoTile.prototype.generateVertices = function (elevations) {
   // Compute tile matrix
   this.matrix = this.config.coordinateSystem.getLHVTransform(this.geoBound.getCenter());
-  const invMatrix = mat4.create();
+  var invMatrix = mat4.create();
   mat4.inverse(this.matrix, invMatrix);
   this.inverseMatrix = invMatrix;
 
   // Build the vertices
-  const vertexSize = this.config.vertexSize;
-  const size = this.config.tesselation;
-  const vertices = new Float32Array(vertexSize * size * (size + 6));
-  const lonStep = (this.geoBound.getEast() - this.geoBound.getWest()) / (size - 1);
-  const latStep = (this.geoBound.getSouth() - this.geoBound.getNorth()) / (size - 1);
+  var vertexSize = this.config.vertexSize;
+  var size = this.config.tesselation;
+  var vertices = new Float32Array(vertexSize * size * (size + 6));
+  var lonStep = (this.geoBound.getEast() - this.geoBound.getWest()) / (size - 1);
+  var latStep = (this.geoBound.getSouth() - this.geoBound.getNorth()) / (size - 1);
   //var radius = this.config.coordinateSystem.getGeoide().getRadius();
   //var scale = this.config.coordinateSystem.getGeoide().getHeightScale();
-  let offset = 0;
+  var offset = 0;
 
   // Optimized build for sphere coordinates : uncomment if needed
-  let lat = this.geoBound.getNorth(); /* * Math.PI / 180.0*/
+  var lat = this.geoBound.getNorth(); /* * Math.PI / 180.0*/
   // latStep = latStep * Math.PI / 180.0;
   // lonStep = lonStep * Math.PI / 180.0;
-  const pos3d = [0.0, 0.0, 0.0];
-  for (let j = 0; j < size; j++) {
+  var pos3d = [0.0, 0.0, 0.0];
+  for (var j = 0; j < size; j++) {
     //var cosLat = Math.cos( lat );
     //var sinLat = Math.sin( lat );
 
-    let lon = this.geoBound.getWest(); /* * Math.PI / 180.0*/
+    var lon = this.geoBound.getWest(); /* * Math.PI / 180.0*/
 
-    for (let i = 0; i < size; i++) {
+    for (var i = 0; i < size; i++) {
       // var height = elevations ? scale * elevations[ offset ] : 0.0;
       // var x = (radius + height) * Math.cos( lon ) * cosLat;
       // var y = (radius + height) * Math.sin( lon ) * cosLat;
       // var z = (radius + height) * sinLat;
 
-      const height = elevations ? elevations[offset] : 0.0;
+      var height = elevations ? elevations[offset] : 0.0;
       this.config.coordinateSystem.get3DFromWorld([lon, lat, height], pos3d);
-      const x = pos3d[0];
-      const y = pos3d[1];
-      const z = pos3d[2];
-      const vi = offset * vertexSize;
+      var x = pos3d[0];
+      var y = pos3d[1];
+      var z = pos3d[2];
+      var vi = offset * vertexSize;
       vertices[vi] = invMatrix[0] * x + invMatrix[4] * y + invMatrix[8] * z + invMatrix[12];
       vertices[vi + 1] = invMatrix[1] * x + invMatrix[5] * y + invMatrix[9] * z + invMatrix[13];
       vertices[vi + 2] = invMatrix[2] * x + invMatrix[6] * y + invMatrix[10] * z + invMatrix[14];
@@ -223,7 +223,7 @@ GeoTile.prototype.generateVertices = function (elevations) {
 /** @constructor
      GeoTiling constructor
      */
-const GeoTiling = function (nx, ny) {
+var GeoTiling = function (nx, ny) {
   this.level0NumTilesX = nx;
   this.level0NumTilesY = ny;
 };
@@ -238,12 +238,12 @@ GeoTiling.prototype.generateLevelZeroTiles = function (config) {
   config.cullSign = 1;
   config.srs = "CRS:84";
 
-  const level0Tiles = [];
+  var level0Tiles = [];
 
-  const latStep =
+  var latStep =
     (config.coordinateSystem.getGeoBound().getNorth() - config.coordinateSystem.getGeoBound().getSouth()) /
     this.level0NumTilesY;
-  const lonStep =
+  var lonStep =
     (config.coordinateSystem.getGeoBound().getEast() - config.coordinateSystem.getGeoBound().getWest()) /
     this.level0NumTilesX;
 
@@ -251,15 +251,15 @@ GeoTiling.prototype.generateLevelZeroTiles = function (config) {
   this.latStart = config.coordinateSystem.getGeoBound().getSouth();
   this.latDelta = config.coordinateSystem.getGeoBound().getNorth() - config.coordinateSystem.getGeoBound().getSouth();
 
-  for (let j = 0; j < this.level0NumTilesY; j++) {
-    for (let i = 0; i < this.level0NumTilesX; i++) {
-      const geoBound = new GeoBound(
+  for (var j = 0; j < this.level0NumTilesY; j++) {
+    for (var i = 0; i < this.level0NumTilesX; i++) {
+      var geoBound = new GeoBound(
         config.coordinateSystem.getGeoBound().getWest() + i * lonStep,
         config.coordinateSystem.getGeoBound().getNorth() - (j + 1) * latStep,
         config.coordinateSystem.getGeoBound().getWest() + (i + 1) * lonStep,
         config.coordinateSystem.getGeoBound().getNorth() - j * latStep
       );
-      const tile = new GeoTile(geoBound, 0, i, j);
+      var tile = new GeoTile(geoBound, 0, i, j);
       tile.config = config;
       level0Tiles.push(tile);
     }
@@ -285,7 +285,7 @@ GeoTiling.prototype._lon2LevelZeroIndex = function (lon) {
      */
 GeoTiling.prototype._lat2LevelZeroIndex = function (lat) {
   // Take into account a partial bbox for GeoTiling
-  const topLat = this.latStart + this.latDelta;
+  var topLat = this.latStart + this.latDelta;
   return Math.min(this.level0NumTilesY - 1, Math.floor(((topLat - lat) * this.level0NumTilesY) / this.latDelta));
 };
 /**************************************************************************************************************/
@@ -303,14 +303,14 @@ GeoTiling.prototype.lonlat2LevelZeroIndex = function (lon, lat) {
      Get the overlapped tile by the given geometry
      */
 GeoTiling.prototype.getOverlappedLevelZeroTiles = function (geometry) {
-  const tileIndices = [];
-  const bbox = Utils.getBBox(geometry);
-  const i1 = this._lon2LevelZeroIndex(bbox.west);
-  const j1 = this._lat2LevelZeroIndex(bbox.north);
-  const i2 = this._lon2LevelZeroIndex(bbox.east);
-  const j2 = this._lat2LevelZeroIndex(bbox.south);
-  for (let j = j1; j <= j2; j++) {
-    for (let i = i1; i <= i2; i++) {
+  var tileIndices = [];
+  var bbox = Utils.getBBox(geometry);
+  var i1 = this._lon2LevelZeroIndex(bbox.west);
+  var j1 = this._lat2LevelZeroIndex(bbox.north);
+  var i2 = this._lon2LevelZeroIndex(bbox.east);
+  var j2 = this._lat2LevelZeroIndex(bbox.south);
+  for (var j = j1; j <= j2; j++) {
+    for (var i = i1; i <= i2; i++) {
       tileIndices.push(j * this.level0NumTilesX + i);
     }
   }
@@ -323,10 +323,10 @@ GeoTiling.prototype.getOverlappedLevelZeroTiles = function (geometry) {
      Return tile of given longitude/latitude from tiles array if exists, null otherwise
      */
 GeoTiling.prototype.findInsideTile = function (lon, lat, tiles) {
-  let tile = null;
+  var tile = null;
   for (var i = 0; i < tiles.length; i++) {
     tile = tiles[i];
-    const index = HEALPixBase.lonLat2pix(tile.order, lon, lat);
+    var index = HEALPixBase.lonLat2pix(tile.order, lon, lat);
     if (index === tile.pixelIndex) {
       return tile;
     }
@@ -334,8 +334,7 @@ GeoTiling.prototype.findInsideTile = function (lon, lat, tiles) {
   // index not found, check with lon lat
   for (i = 0; i < tiles.length; i++) {
     tile = tiles[i];
-    const found =
-      lat <= tile.bound.north && lat >= tile.bound.south && lon <= tile.bound.east && lon >= tile.bound.west;
+    var found = lat <= tile.bound.north && lat >= tile.bound.south && lon <= tile.bound.east && lon >= tile.bound.west;
     if (found === true) {
       return tile;
     }

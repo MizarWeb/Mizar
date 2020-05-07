@@ -40,7 +40,7 @@ import GeoBound from "../Renderer/GeoBound";
  * @constructor
  * @implements {Projection}
  */
-const AbstractProjection = function (projectionCenter, geoBound, options) {
+var AbstractProjection = function (projectionCenter, geoBound, options) {
   this.geoBound = new GeoBound(geoBound[0], geoBound[1], geoBound[2], geoBound[3]);
   this.projectionCenter = projectionCenter;
   this.options = options || {};
@@ -68,7 +68,7 @@ AbstractProjection.prototype.getGeoBound = function () {
  * @abstract
  */
 AbstractProjection.prototype.unProject = function (position3d, dest) {
-  throw new Error("AbstractProjection.js: unProject not implemented");
+  throw new SyntaxError("unProject not implemented", "AbstractProjection.js");
 };
 
 /**
@@ -77,7 +77,7 @@ AbstractProjection.prototype.unProject = function (position3d, dest) {
  * @abstract
  */
 AbstractProjection.prototype.project = function (geoPos, dest) {
-  throw new Error("AbstractProjection.js: project not implemented");
+  throw new SyntaxError("project not implemented", "AbstractProjection.js");
 };
 
 /**
@@ -86,7 +86,7 @@ AbstractProjection.prototype.project = function (geoPos, dest) {
  * @abstract
  */
 AbstractProjection.prototype.getName = function () {
-  throw new Error("AbstractProjection.js: getName not implemented");
+  throw new SyntaxError("getName not implemented", "AbstractProjection.js");
 };
 
 /**************************************************************************************************************/

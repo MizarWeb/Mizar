@@ -61,7 +61,7 @@ import HipsMetadata from "./HipsMetadata";
  * @throws ReferenceError - Some required parameters are missing
  * @constructor
  */
-const AbstractHipsLayer = function (hipsMetadata, options) {
+var AbstractHipsLayer = function (hipsMetadata, options) {
   _checkAndSetDefaultOptions.call(this, options);
   this.hipsMetadata = _createMetadata.call(this, hipsMetadata, options.baseUrl);
 
@@ -107,7 +107,7 @@ const AbstractHipsLayer = function (hipsMetadata, options) {
  */
 function _checkAndSetDefaultOptions(options) {
   if (!options) {
-    throw new ReferenceError("AbstractHipsLayer.js: Some required parameters are missing");
+    throw new ReferenceError("Some required parameters are missing", "AbstractHipsLayer.js");
   } else {
     options.category = options.category || "Image";
     options.pickable = options.pickable || false;
@@ -122,9 +122,9 @@ function _checkAndSetDefaultOptions(options) {
  * @private
  */
 function _createMetadata(hipsMetadata, baseUrl) {
-  let metadata = hipsMetadata;
+  var metadata = hipsMetadata;
   if (typeof metadata === "undefined") {
-    const hipsProperties = new HipsMetadata(baseUrl);
+    var hipsProperties = new HipsMetadata(baseUrl);
     metadata = hipsProperties.getHipsMetadata();
   }
   return metadata;

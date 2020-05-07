@@ -57,9 +57,8 @@ import Utils from "../Utils/Utils";
 import AbstractContext from "./AbstractContext";
 import Constants from "../Utils/Constants";
 import NavigationFactory from "../Navigation/NavigationFactory";
-// import WMSServer from "../Registry/WMSServer";
-// import Numeric from "../Utils/Numeric";
-
+import WMSServer from "../Registry/WMSServer";
+import Numeric from "../Utils/Numeric";
 /**
  * Planet context configuration
  * @typedef {Object} AbstractContext.planetContext
@@ -81,9 +80,9 @@ import NavigationFactory from "../Navigation/NavigationFactory";
  * @constructor
  * @memberof module:Context
  */
-const PlanetContext = function (mizarConfiguration, options) {
+var PlanetContext = function (mizarConfiguration, options) {
   AbstractContext.prototype.constructor.call(this, mizarConfiguration, Constants.CONTEXT.Planet, options);
-  const self = this;
+  var self = this;
   this.components = {
     posTrackerInfo: true,
     posTracker: true,
@@ -92,7 +91,7 @@ const PlanetContext = function (mizarConfiguration, options) {
     timeTravelDiv: true
   };
 
-  const planetOptions = _createPlanetConfiguration.call(this, options);
+  var planetOptions = _createPlanetConfiguration.call(this, options);
   this.initGlobe(planetOptions, {
     "3D": Constants.NAVIGATION.PlanetNavigation,
     "2D": Constants.NAVIGATION.FlatNavigation
@@ -127,7 +126,7 @@ const PlanetContext = function (mizarConfiguration, options) {
  * @private
  */
 function _createPlanetConfiguration(options) {
-  const self = this;
+  var self = this;
   return {
     tileErrorTreshold: options.tileErrorTreshold || 3,
     continuousRendering: options.continuousRendering || false,
@@ -155,7 +154,7 @@ function _createPlanetConfiguration(options) {
  * @private
  */
 function _computeGeoCenter(crs) {
-  let geoCenter;
+  var geoCenter;
   if (crs.isFlat()) {
     geoCenter = crs.getWorldFrom3D(this.navigation.center);
   } else {
@@ -171,7 +170,7 @@ function _computeGeoCenter(crs) {
  * @returns {Object} navigation options
  */
 function _propagateNavOptions(options) {
-  const navOptions = {};
+  var navOptions = {};
   navOptions.inertia = options.hasOwnProperty("inertia") ? options.inertia : false;
   if (options.hasOwnProperty("mouse")) {
     navOptions.mouse = options.mouse;
@@ -215,11 +214,12 @@ Utils.inherits(AbstractContext, PlanetContext);
 PlanetContext.prototype.setBaseElevation = function (layer) {
   if (layer.getType() !== Constants.LAYER.WCSElevation && layer.getType() !== Constants.LAYER.WMSElevation) {
     throw new TypeError(
-      "PlanetContext.js: The provided layer ID=" +
+      "The provided layer ID=" +
         layer.getID() +
         " has a type +" +
         layer.getType() +
-        " instead of WCSElevation or WMSElevation"
+        " instead of WCSElevation or WMSElevation",
+      "PlanetContext.js"
     );
   }
   this.globe.setBaseElevation(layer);
@@ -234,7 +234,7 @@ PlanetContext.prototype.setBaseElevation = function (layer) {
  */
 PlanetContext.prototype.setBaseElevationByID = function (layerID) {
   // Find the layer by name among all the layers
-  const layer = this.getLayerByID(layerID);
+  var layer = this.getLayerByID(layerID);
   if (layer) {
     this.setBaseElevation(layer);
   }
@@ -255,13 +255,13 @@ PlanetContext.prototype.getBaseElevation = function () {
  */
 PlanetContext.prototype.setCoordinateSystem = function (newCrs) {
   if (newCrs.getType() !== this.getMode()) {
-    throw new RangeError("PlanetContext.js: incompatible coordinate reference system with Planet context");
+    throw new RangeError("incompatible coordinate reference system with Planet context", "PlanetContext.js");
   }
   // Change navigation
-  let geoCenter;
-  let geoDistance;
+  var geoCenter;
+  var geoDistance;
 
-  const self = this;
+  var self = this;
   $(self.canvas.parentElement).find("#loading").show();
 
   // Compute current position and distance in order to set them in the new navigation related to the
@@ -275,7 +275,7 @@ PlanetContext.prototype.setCoordinateSystem = function (newCrs) {
 
   // Creates the options for the new navigation related to the new coordinate reference system.
   // We only keep the inertia and the options for the mouse
-  const navOptions = _propagateNavOptions.call(this, this.navigation.getOptions());
+  var navOptions = _propagateNavOptions.call(this, this.navigation.getOptions());
 
   try {
     // Create a new navigation related to the new coordinate reference system

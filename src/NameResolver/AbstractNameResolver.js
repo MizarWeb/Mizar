@@ -25,7 +25,7 @@
  * @param {Context} options - Context
  * @implements {NameResolver}
  */
-const AbstractNameResolver = function (options) {
+var AbstractNameResolver = function (options) {
   this.ctx = options;
 };
 
@@ -37,7 +37,7 @@ const AbstractNameResolver = function (options) {
  * @abstract
  */
 AbstractNameResolver.prototype.handle = function (options) {
-  throw new Error("AbstractNameResolver.js: handle from NameResolver not implemented");
+  throw new SyntaxError("handle from NameResolver not implemented", "AbstractNameResolver.js");
 };
 
 /**
@@ -46,7 +46,7 @@ AbstractNameResolver.prototype.handle = function (options) {
  * @abstract
  */
 AbstractNameResolver.prototype.remove = function () {
-  throw new Error("AbstractNameResolver.js: remove from NameResolver not implemented");
+  throw new SyntaxError("remove from NameResolver not implemented", "AbstractNameResolver.js");
 };
 
 /**************************************************************************************************************/

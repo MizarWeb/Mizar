@@ -36,7 +36,7 @@ var WMTSServer = function (options) {
   } else if (options.baseUrl) {
     options.getCapabilities = WMTSServer.getCapabilitiesFromBaseURl(options.baseUrl, options);
   } else {
-    throw new ReferenceError("WMSLayer.js: No URL to access to the server is defined");
+    throw new ReferenceError("No URL to access to the server is defined", "WMSLayer.js");
   }
   this.options = options;
 };
@@ -67,21 +67,21 @@ function _mustBeSkipped(layersFromConf, currentLayer) {
  */
 
 WMTSServer.prototype.getMetadata = function (callback, fallback) {
-  const self = this;
+  var self = this;
   Utils.requestUrl(
     this.options.getCapabilities,
     "text",
     "application/xml",
     {},
     function (response) {
-      const myOptions = {
+      var myOptions = {
         mergeCDATA: true,
         xmlns: false,
         attrsAsObject: false,
         childrenAsArray: false
       };
-      const result = XmlToJson.parseString(response, myOptions);
-      const metadata = new WMTSMetadata(result);
+      var result = XmlToJson.parseString(response, myOptions);
+      var metadata = new WMTSMetadata(result);
       callback(self.options, metadata);
     },
     function (e) {
@@ -103,13 +103,13 @@ WMTSServer.prototype.getMetadata = function (callback, fallback) {
 
 WMTSServer.prototype.createLayers = function (callback, fallback) {
   this.getMetadata(function (layerDescription, metadata) {
-    const layersFromConf = layerDescription.hasOwnProperty("layers")
+    var layersFromConf = layerDescription.hasOwnProperty("layers")
       ? layerDescription.layers.trim().split(/\s*,\s*/)
       : [];
-    const jsonLayers = metadata.contents;
-    const layers = [];
-    for (let i = 0; i < jsonLayers.layers.length; i++) {
-      const jsonLayer = jsonLayers.layers[i];
+    var jsonLayers = metadata.contents;
+    var layers = [];
+    for (var i = 0; i < jsonLayers.layers.length; i++) {
+      var jsonLayer = jsonLayers.layers[i];
       if (_mustBeSkipped.call(this, layersFromConf, jsonLayer)) {
         continue;
       }
@@ -120,9 +120,9 @@ WMTSServer.prototype.createLayers = function (callback, fallback) {
         attribution = null;
       }
 
-      const copyrightURL = null;
+      var copyrightURL = null;
 
-      const layerDesc = Object.assign({}, layerDescription, {});
+      var layerDesc = Object.assign({}, layerDescription, {});
       layerDesc.name = layerDescription.name || jsonLayer.identifier;
       layerDesc.format = layerDescription.format || "image/png";
       layerDesc.layers = jsonLayer.title;
@@ -131,7 +131,7 @@ WMTSServer.prototype.createLayers = function (callback, fallback) {
       layerDesc.attribution = attribution;
       layerDesc.copyrightUrl = copyrightURL;
 
-      const layer = LayerFactory.create(layerDesc);
+      var layer = LayerFactory.create(layerDesc);
       layers.push(layer);
     }
     callback(layers);
@@ -149,7 +149,7 @@ WMTSServer.prototype.createLayers = function (callback, fallback) {
  */
 
 WMTSServer.getCapabilitiesFromBaseURl = function (baseUrl, options) {
-  let getCapabilitiesUrl = baseUrl;
+  var getCapabilitiesUrl = baseUrl;
   getCapabilitiesUrl = Utils.addParameterTo(getCapabilitiesUrl, "service", "WMTS");
   getCapabilitiesUrl = Utils.addParameterTo(getCapabilitiesUrl, "request", "getCapabilities");
   getCapabilitiesUrl = Utils.addParameterTo(

@@ -25,7 +25,7 @@
  * @param {Context} options - context
  * @implements {ReverseNameResolver}
  */
-const AbstractReverseNameResolver = function (options) {
+var AbstractReverseNameResolver = function (options) {
   this.ctx = options;
 };
 
@@ -37,7 +37,7 @@ const AbstractReverseNameResolver = function (options) {
  * @abstract
  */
 AbstractReverseNameResolver.prototype.handle = function () {
-  throw new Error("AbstractReverseNameResolver.js: handle from AbstractReverseNameResolver not implemented");
+  throw new SyntaxError("handle from AbstractReverseNameResolver not implemented", "AbstractReverseNameResolver.js");
 };
 
 /**
@@ -46,7 +46,7 @@ AbstractReverseNameResolver.prototype.handle = function () {
  * @abstract
  */
 AbstractReverseNameResolver.prototype.remove = function () {
-  throw new Error("AbstractReverseNameResolver.js: remove from AbstractReverseNameResolver not implemented");
+  throw new SyntaxError("remove from AbstractReverseNameResolver not implemented", "AbstractReverseNameResolver.js");
 };
 
 /**************************************************************************************************************/

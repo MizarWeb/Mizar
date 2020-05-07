@@ -413,9 +413,9 @@ function _getMizarAPIBaseURL() {
  */
 function _checkConfiguration(options) {
   if (typeof options === "undefined") {
-    throw new ReferenceError("main.js: No option found");
+    throw new ReferenceError("No option found", "Mizar.js");
   } else if (typeof options.canvas === "undefined") {
-    throw new TypeError("main.js: Canvas not defined");
+    throw new TypeError("Canvas not defined", "Mizar.js");
   } else {
     // do nothing
   }
@@ -659,7 +659,7 @@ function _project2AzimuthOrPlate(lookAt) {
  */
 function _skipIfSkyMode() {
   if (this.getActivatedContext().getMode() === Mizar.CONTEXT.Sky) {
-    throw new RangeError("main.js: Toggle Dimension is not implemented for Sky");
+    throw new RangeError("Toggle Dimension is not implemented for Sky", "Mizar.js");
   }
 }
 
@@ -854,7 +854,8 @@ function _getContext(mode) {
       break;
     default:
       throw new RangeError(
-        "main.js: The mode " + mode + " is not allowed, A valid mode is included in the list CONTEXT"
+        "The mode " + mode + " is not allowed, A valid mode is included in the list CONTEXT",
+        "Mizar.js"
       );
   }
   return context;
@@ -879,7 +880,7 @@ Mizar.prototype.getActivatedContext = function () {
       } else if (this.groundContext != null) {
         this.activatedContext = this.groundContext;
       } else {
-        throw new ReferenceError("main.js: No created context");
+        throw new ReferenceError("No created context", "Mizar.js");
       }
     }
   } catch (e) {
@@ -1067,7 +1068,7 @@ Mizar.prototype.createContext = function (contextMode, options) {
         this.groundContext = ctx;
         break;
       default:
-        throw new RangeError("main.js: Unknown contextMode '" + contextMode + "'");
+        throw new RangeError("Unknown contextMode '" + contextMode + "'", "Mizar.js");
     }
     this.renderContext = ctx.getRenderContext();
     result = true;
