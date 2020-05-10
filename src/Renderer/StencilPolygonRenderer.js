@@ -41,7 +41,7 @@ import RenderContext from "./RenderContext";
 import VectorRenderer from "./VectorRenderer";
 import RendererManager from "./RendererManager";
 import Program from "./Program";
-import PNLTRI from "./pnltri";
+import PNLTRI from "pnltri";
 import ErrorDialog from "../Gui/dialog/ErrorDialog";
 /**************************************************************************************************************/
 /**

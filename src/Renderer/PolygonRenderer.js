@@ -41,7 +41,7 @@ import VectorRenderer from "./VectorRenderer";
 import RendererManager from "./RendererManager";
 import Program from "./Program";
 import BatchRenderable from "./BatchRenderable";
-import PNLTRI from "./pnltri";
+import PNLTRI from "pnltri";
 import GeoBound from "./GeoBound";
 /**************************************************************************************************************/
 /**
