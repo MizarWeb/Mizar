@@ -35,8 +35,6 @@
  * along with GlobWeb. If not, see <http://www.gnu.org/licenses/>.
  ***************************************/
 
-/*global define: false */
-
 import Numeric from "../Utils/Numeric";
 import Constants from "../Utils/Constants";
 import ErrorDialog from "../Gui/dialog/ErrorDialog";

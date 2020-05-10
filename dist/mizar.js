@@ -2828,8 +2828,28 @@
     return cosrad;
   };
 
-  let isDebug = false;
-  const errorDiv = "<div id=\"errorDiv\" style=\"text-align: left\" title=\"Error\"></div>";
+  /*******************************************************************************
+   * Copyright 2017, 2018 CNES - CENTRE NATIONAL d'ETUDES SPATIALES
+   *
+   * This file is part of MIZAR.
+   *
+   * MIZAR is free software: you can redistribute it and/or modify
+   * it under the terms of the GNU General Public License as published by
+   * the Free Software Foundation, either version 3 of the License, or
+   * (at your option) any later version.
+   *
+   * MIZAR is distributed in the hope that it will be useful,
+   * but WITHOUT ANY WARRANTY; without even the implied warranty of
+   * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+   * GNU General Public License for more details.
+   *
+   * You should have received a copy of the GNU General Public License
+   * along with SITools2. If not, see <http://www.gnu.org/licenses/>.
+   ******************************************************************************/
+  let isDebug = false; // The main div for error
+
+  const errorDiv = '<div id="errorDiv" style="text-align: left" title="Error"></div>'; // Create the div, use jQuery UI dialog
+
   let $text = "";
   let $buttonName = "";
   const $errorDiv = $(errorDiv).appendTo("body").dialog({
@@ -2913,6 +2933,12 @@
   };
 
   var ErrorDialog = {
+    /**
+     * Open dialog
+     * @param {LEVEL} LEVEL Log level
+     * @param {string} title error title
+     * @param {string} description error description
+     */
     open: function (LEVEL, title, description) {
       let message = "";
 
@@ -2934,27 +2960,61 @@
         throw new TypeError("ErrorDialog.js: LEVEL must be set with a valid value");
       }
     },
+
+    /**
+     * View the messages in the GUI.
+     */
     view: function () {
       $errorDiv.html($text).dialog("open");
       $errorDiv.scrollTop(5000);
       $active = true;
     },
+
+    /**
+     * Hides the GUI
+     */
     hide: function () {
       $errorDiv.dialog("close");
       $active = false;
     },
+
+    /**
+     * GUI is active ?
+     * @return {boolean} true when the GUI is shown otherwise false
+     */
     isActive: function () {
       return $active;
     },
+
+    /**
+     * Sets the icon.
+     * @param {string} ID
+     */
     setIcon: function (buttonName) {
       $buttonName = $(buttonName);
     },
+
+    /**
+     * Has error.
+     * @returns {boolean} true when error otherise false
+     */
     hasError: function () {
       return $text.length > 0;
     },
+
+    /**
+     * Returns the message
+     * @returns {string} the message
+     */
     getTxt: function () {
       return $text;
     },
+
+    /**
+     * Sets debug enable/disable.
+     * By default debug is disable.
+     * @param {boolean} debug Set to true to show debug message in the console otherwise False
+     */
     setDebug: function (debug) {
       isDebug = debug;
     }
@@ -22792,6 +22852,26 @@
     this.onTerrain = value;
   };
 
+  /*******************************************************************************
+   * Copyright 2017, 2018 CNES - CENTRE NATIONAL d'ETUDES SPATIALES
+   *
+   * This file is part of MIZAR.
+   *
+   * MIZAR is free software: you can redistribute it and/or modify
+   * it under the terms of the GNU General Public License as published by
+   * the Free Software Foundation, either version 3 of the License, or
+   * (at your option) any later version.
+   *
+   * MIZAR is distributed in the hope that it will be useful,
+   * but WITHOUT ANY WARRANTY; without even the implied warranty of
+   * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+   * GNU General Public License for more details.
+   *
+   * You should have received a copy of the GNU General Public License
+   * along with MIZAR. If not, see <http://www.gnu.org/licenses/>.
+   ******************************************************************************/
+  /**************************************************************************************************************/
+
   var transferFonctions = {
     linear: [],
     asin: [],
@@ -22817,15 +22897,15 @@
               break;
 
             case "asin":
-              val[i] = Math.log(v + Math.sqrt(Math.pow(v, 2) + 1));
+              val[i] = Math.log(v + Math.sqrt(Math.pow(v, 2) + 1.0));
               break;
 
             case "log":
-              val[i] = Math.log(v / 10 + 1);
+              val[i] = Math.log(v / 10.0 + 1);
               break;
 
             case "sqrt":
-              val[i] = Math.sqrt(v / 10);
+              val[i] = Math.sqrt(v / 10.0);
               break;
 
             case "sqr":
@@ -22840,15 +22920,16 @@
           if (val[i] > max) {
             max = val[i];
           }
-        }
+        } // Normalize between [0..256]
+
 
         for (i = 0; i < 256; i++) {
-          v = 256 * ((val[i] - min) / (max - min));
+          v = 256 * ((val[i] - min) / (max - min)); // Clamp
 
-          if (v > 256) {
-            v = 256;
-          } else if (v < 0) {
-            v = 0;
+          if (v > 256.0) {
+            v = 256.0;
+          } else if (v < 0.0) {
+            v = 0.0;
           }
 
           transferFonctions[x][i] = Math.floor(v);
@@ -22857,34 +22938,53 @@
     }
   };
 
-  computeTransferFunctions();
+  computeTransferFunctions(); // Contstant colormaps
+
   var colormaps = {
+    // composantes de la table 'Fire' (ImageJ)
     fire: {
       red: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 4, 7, 10, 13, 16, 19, 22, 25, 28, 31, 34, 37, 40, 43, 46, 49, 52, 55, 58, 61, 64, 67, 70, 73, 76, 79, 82, 85, 88, 91, 94, 98, 101, 104, 107, 110, 113, 116, 119, 122, 125, 128, 131, 134, 137, 140, 143, 146, 148, 150, 152, 154, 156, 158, 160, 162, 163, 164, 166, 167, 168, 170, 171, 173, 174, 175, 177, 178, 179, 181, 182, 184, 185, 186, 188, 189, 190, 192, 193, 195, 196, 198, 199, 201, 202, 204, 205, 207, 208, 209, 210, 212, 213, 214, 215, 217, 218, 220, 221, 223, 224, 226, 227, 229, 230, 231, 233, 234, 235, 237, 238, 240, 241, 243, 244, 246, 247, 249, 250, 252, 252, 252, 253, 253, 253, 254, 254, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255],
       green: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 3, 5, 7, 8, 10, 12, 14, 16, 19, 21, 24, 27, 29, 32, 35, 37, 40, 43, 46, 48, 51, 54, 57, 59, 62, 65, 68, 70, 73, 76, 79, 81, 84, 87, 90, 92, 95, 98, 101, 103, 105, 107, 109, 111, 113, 115, 117, 119, 121, 123, 125, 127, 129, 131, 133, 134, 136, 138, 140, 141, 143, 145, 147, 148, 150, 152, 154, 155, 157, 159, 161, 162, 164, 166, 168, 169, 171, 173, 175, 176, 178, 180, 182, 184, 186, 188, 190, 191, 193, 195, 197, 199, 201, 203, 205, 206, 208, 210, 212, 213, 215, 217, 219, 220, 222, 224, 226, 228, 230, 232, 234, 235, 237, 239, 241, 242, 244, 246, 248, 248, 249, 250, 251, 252, 253, 254, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255],
       blue: [0, 7, 15, 22, 30, 38, 45, 53, 61, 65, 69, 74, 78, 82, 87, 91, 96, 100, 104, 108, 113, 117, 121, 125, 130, 134, 138, 143, 147, 151, 156, 160, 165, 168, 171, 175, 178, 181, 185, 188, 192, 195, 199, 202, 206, 209, 213, 216, 220, 220, 221, 222, 223, 224, 225, 226, 227, 224, 222, 220, 218, 216, 214, 212, 210, 206, 202, 199, 195, 191, 188, 184, 181, 177, 173, 169, 166, 162, 158, 154, 151, 147, 143, 140, 136, 132, 129, 125, 122, 118, 114, 111, 107, 103, 100, 96, 93, 89, 85, 82, 78, 74, 71, 67, 64, 60, 56, 53, 49, 45, 42, 38, 35, 31, 27, 23, 20, 16, 12, 8, 5, 4, 3, 3, 2, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 8, 13, 17, 21, 26, 30, 35, 42, 50, 58, 66, 74, 82, 90, 98, 105, 113, 121, 129, 136, 144, 152, 160, 167, 175, 183, 191, 199, 207, 215, 223, 227, 231, 235, 239, 243, 247, 251, 255, 255, 255, 255, 255, 255, 255, 255]
     },
+    // composantes de la table EOSB (IDL color table 27)
     eosb: {
       red: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 9, 18, 27, 36, 45, 49, 57, 72, 81, 91, 100, 109, 118, 127, 136, 131, 139, 163, 173, 182, 191, 200, 209, 218, 227, 213, 221, 255, 255, 255, 255, 255, 255, 255, 255, 229, 229, 255, 255, 255, 255, 255, 255, 255, 255, 229, 229, 255, 255, 255, 255, 255, 255, 255, 255, 229, 229, 255, 255, 255, 255, 255, 255, 255, 255, 229, 229, 255, 255, 255, 255, 255, 255, 255, 255, 229, 229, 255, 255, 255, 255, 255, 255, 255, 255, 229, 229, 255, 255, 255, 255, 255, 255, 255, 255, 229, 229, 255, 255, 255, 255, 255, 255, 255, 255, 229, 229, 255, 255, 255, 255, 255, 255, 255, 255, 229, 229, 255, 253, 251, 249, 247, 245, 243, 241, 215, 214, 235, 234, 232, 230, 228, 226, 224, 222, 198, 196, 216, 215, 213, 211, 209, 207, 205, 203, 181, 179, 197, 196, 194, 192, 190, 188, 186, 184, 164, 162, 178, 176, 175, 173, 171, 169, 167, 165, 147, 145, 159, 157, 156, 154, 152, 150, 148, 146, 130, 128, 140, 138, 137, 135, 133, 131, 129, 127, 113, 111, 121, 119, 117, 117],
       green: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 15, 23, 31, 39, 47, 55, 57, 64, 79, 87, 95, 103, 111, 119, 127, 135, 129, 136, 159, 167, 175, 183, 191, 199, 207, 215, 200, 207, 239, 247, 255, 255, 255, 255, 255, 255, 229, 229, 255, 255, 255, 255, 255, 255, 255, 255, 229, 229, 255, 255, 255, 255, 255, 255, 255, 255, 229, 229, 255, 250, 246, 242, 238, 233, 229, 225, 198, 195, 212, 208, 204, 199, 195, 191, 187, 182, 160, 156, 169, 165, 161, 157, 153, 148, 144, 140, 122, 118, 127, 125, 123, 121, 119, 116, 114, 112, 99, 97, 106, 104, 102, 99, 97, 95, 93, 91, 80, 78, 84, 82, 80, 78, 76, 74, 72, 70, 61, 59, 63, 61, 59, 57, 55, 53, 50, 48, 42, 40, 42, 40, 38, 36, 33, 31, 29, 27, 22, 21, 21, 19, 16, 14, 12, 13, 8, 6, 3, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
       blue: [116, 121, 127, 131, 136, 140, 144, 148, 153, 157, 145, 149, 170, 174, 178, 182, 187, 191, 195, 199, 183, 187, 212, 216, 221, 225, 229, 233, 238, 242, 221, 225, 255, 247, 239, 231, 223, 215, 207, 199, 172, 164, 175, 167, 159, 151, 143, 135, 127, 119, 100, 93, 95, 87, 79, 71, 63, 55, 47, 39, 28, 21, 15, 7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
     },
+    // tableau des composantes pour Stern
     stern: {
       red: [0, 18, 36, 54, 72, 90, 108, 127, 145, 163, 199, 217, 235, 254, 249, 244, 239, 234, 229, 223, 218, 213, 208, 203, 197, 192, 187, 182, 177, 172, 161, 156, 151, 146, 140, 135, 130, 125, 120, 115, 109, 104, 99, 94, 89, 83, 78, 73, 68, 63, 52, 47, 42, 37, 32, 26, 21, 16, 11, 6, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126, 128, 129, 130, 131, 132, 133, 134, 135, 136, 137, 139, 140, 141, 142, 143, 144, 145, 146, 147, 148, 149, 150, 151, 152, 153, 154, 155, 156, 157, 158, 160, 161, 162, 163, 164, 165, 166, 167, 168, 169, 170, 171, 172, 173, 174, 175, 176, 177, 178, 179, 181, 182, 183, 184, 185, 186, 187, 188, 189, 190, 192, 193, 194, 195, 196, 197, 198, 199, 200, 201, 203, 204, 205, 206, 207, 208, 209, 210, 211, 212, 213, 214, 215, 216, 217, 218, 219, 220, 221, 222, 224, 225, 226, 227, 228, 229, 230, 231, 232, 233, 234, 235, 236, 237, 238, 239, 240, 241, 242, 243, 245, 246, 247, 248, 249, 250, 251, 252, 253, 254],
       green: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126, 128, 129, 130, 131, 132, 133, 134, 135, 136, 137, 139, 140, 141, 142, 143, 144, 145, 146, 147, 148, 149, 150, 151, 152, 153, 154, 155, 156, 157, 158, 160, 161, 162, 163, 164, 165, 166, 167, 168, 169, 170, 171, 172, 173, 174, 175, 176, 177, 178, 179, 181, 182, 183, 184, 185, 186, 187, 188, 189, 190, 192, 193, 194, 195, 196, 197, 198, 199, 200, 201, 203, 204, 205, 206, 207, 208, 209, 210, 211, 212, 213, 214, 215, 216, 217, 218, 219, 220, 221, 222, 224, 225, 226, 227, 228, 229, 230, 231, 232, 233, 234, 235, 236, 237, 238, 239, 240, 241, 242, 243, 245, 246, 247, 248, 249, 250, 251, 252, 253, 254],
       blue: [0, 1, 3, 5, 7, 9, 11, 13, 15, 17, 21, 23, 25, 27, 29, 31, 33, 35, 37, 39, 41, 43, 45, 47, 49, 51, 53, 55, 57, 59, 63, 65, 67, 69, 71, 73, 75, 77, 79, 81, 83, 85, 87, 89, 91, 93, 95, 97, 99, 101, 105, 107, 109, 111, 113, 115, 117, 119, 121, 123, 127, 129, 131, 133, 135, 137, 139, 141, 143, 145, 149, 151, 153, 155, 157, 159, 161, 163, 165, 167, 169, 171, 173, 175, 177, 179, 181, 183, 185, 187, 191, 193, 195, 197, 199, 201, 203, 205, 207, 209, 211, 213, 215, 217, 219, 221, 223, 225, 227, 229, 233, 235, 237, 239, 241, 243, 245, 247, 249, 251, 255, 251, 247, 243, 238, 234, 230, 226, 221, 217, 209, 204, 200, 196, 192, 187, 183, 179, 175, 170, 166, 162, 158, 153, 149, 145, 141, 136, 132, 128, 119, 115, 111, 107, 102, 98, 94, 90, 85, 81, 77, 73, 68, 64, 60, 56, 51, 47, 43, 39, 30, 26, 22, 17, 13, 9, 5, 0, 3, 7, 15, 19, 22, 26, 30, 34, 38, 41, 45, 49, 57, 60, 64, 68, 72, 76, 79, 83, 87, 91, 95, 98, 102, 106, 110, 114, 117, 121, 125, 129, 137, 140, 144, 148, 152, 156, 159, 163, 167, 171, 175, 178, 182, 186, 190, 194, 197, 201, 205, 209, 216, 220, 224, 228, 232, 235, 239, 243, 247, 251]
     },
+    // composantes de la table rainbow (IDL color table 13)
     rainbow: {
       red: [0, 4, 9, 13, 18, 22, 27, 31, 36, 40, 45, 50, 54, 58, 61, 64, 68, 69, 72, 74, 77, 79, 80, 82, 83, 85, 84, 86, 87, 88, 86, 87, 87, 87, 85, 84, 84, 84, 83, 79, 78, 77, 76, 71, 70, 68, 66, 60, 58, 55, 53, 46, 43, 40, 36, 33, 25, 21, 16, 12, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 8, 12, 21, 25, 29, 33, 42, 46, 51, 55, 63, 67, 72, 76, 80, 89, 93, 97, 101, 110, 114, 119, 123, 131, 135, 140, 144, 153, 157, 161, 165, 169, 178, 182, 187, 191, 199, 203, 208, 212, 221, 225, 229, 233, 242, 246, 250, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255],
       green: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 8, 16, 21, 25, 29, 38, 42, 46, 51, 55, 63, 67, 72, 76, 84, 89, 93, 97, 106, 110, 114, 119, 127, 131, 135, 140, 144, 152, 157, 161, 165, 174, 178, 182, 187, 195, 199, 203, 208, 216, 220, 225, 229, 233, 242, 246, 250, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 250, 242, 238, 233, 229, 221, 216, 212, 208, 199, 195, 191, 187, 178, 174, 170, 165, 161, 153, 148, 144, 140, 131, 127, 123, 119, 110, 106, 102, 97, 89, 85, 80, 76, 72, 63, 59, 55, 51, 42, 38, 34, 29, 21, 17, 12, 8, 0],
       blue: [0, 3, 7, 10, 14, 19, 23, 28, 32, 38, 43, 48, 53, 59, 63, 68, 72, 77, 81, 86, 91, 95, 100, 104, 109, 113, 118, 122, 127, 132, 136, 141, 145, 150, 154, 159, 163, 168, 173, 177, 182, 186, 191, 195, 200, 204, 209, 214, 218, 223, 227, 232, 236, 241, 245, 250, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 246, 242, 238, 233, 225, 220, 216, 212, 203, 199, 195, 191, 187, 178, 174, 170, 165, 157, 152, 148, 144, 135, 131, 127, 123, 114, 110, 106, 102, 97, 89, 84, 80, 76, 67, 63, 59, 55, 46, 42, 38, 34, 25, 21, 16, 12, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
     },
+    // Simple grey levels
     grey: {
       red: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126, 127, 128, 129, 130, 131, 132, 133, 134, 135, 136, 137, 138, 139, 140, 141, 142, 143, 144, 145, 146, 147, 148, 149, 150, 151, 152, 153, 154, 155, 156, 157, 158, 159, 160, 161, 162, 163, 164, 165, 166, 167, 168, 169, 170, 171, 172, 173, 174, 175, 176, 177, 178, 179, 180, 181, 182, 183, 184, 185, 186, 187, 188, 189, 190, 191, 192, 193, 194, 195, 196, 197, 198, 199, 200, 201, 202, 203, 204, 205, 206, 207, 208, 209, 210, 211, 212, 213, 214, 215, 216, 217, 218, 219, 220, 221, 222, 223, 224, 225, 226, 227, 228, 229, 230, 231, 232, 233, 234, 235, 236, 237, 238, 239, 240, 241, 242, 243, 244, 245, 246, 247, 248, 249, 250, 251, 252, 253, 254, 255],
       green: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126, 127, 128, 129, 130, 131, 132, 133, 134, 135, 136, 137, 138, 139, 140, 141, 142, 143, 144, 145, 146, 147, 148, 149, 150, 151, 152, 153, 154, 155, 156, 157, 158, 159, 160, 161, 162, 163, 164, 165, 166, 167, 168, 169, 170, 171, 172, 173, 174, 175, 176, 177, 178, 179, 180, 181, 182, 183, 184, 185, 186, 187, 188, 189, 190, 191, 192, 193, 194, 195, 196, 197, 198, 199, 200, 201, 202, 203, 204, 205, 206, 207, 208, 209, 210, 211, 212, 213, 214, 215, 216, 217, 218, 219, 220, 221, 222, 223, 224, 225, 226, 227, 228, 229, 230, 231, 232, 233, 234, 235, 236, 237, 238, 239, 240, 241, 242, 243, 244, 245, 246, 247, 248, 249, 250, 251, 252, 253, 254, 255],
       blue: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126, 127, 128, 129, 130, 131, 132, 133, 134, 135, 136, 137, 138, 139, 140, 141, 142, 143, 144, 145, 146, 147, 148, 149, 150, 151, 152, 153, 154, 155, 156, 157, 158, 159, 160, 161, 162, 163, 164, 165, 166, 167, 168, 169, 170, 171, 172, 173, 174, 175, 176, 177, 178, 179, 180, 181, 182, 183, 184, 185, 186, 187, 188, 189, 190, 191, 192, 193, 194, 195, 196, 197, 198, 199, 200, 201, 202, 203, 204, 205, 206, 207, 208, 209, 210, 211, 212, 213, 214, 215, 216, 217, 218, 219, 220, 221, 222, 223, 224, 225, 226, 227, 228, 229, 230, 231, 232, 233, 234, 235, 236, 237, 238, 239, 240, 241, 242, 243, 244, 245, 246, 247, 248, 249, 250, 251, 252, 253, 254, 255]
     }
   };
+  /**
+   *    Create texture from array
+   *    TODO : maybe move this function to renderContext ?
+   *
+   *    @param gl Context
+   *    @param dataArray Array creating the texture
+   *    @param format Content format(gl.LUMINANCE, gl.RGB...)
+   *    @param dataType Type of data(gl.UNSIGNED_BYTE or gl.FLOAT)
+   *    @param width Width of texture
+   *    @param height Height of texture
+   *
+   *    @return GLTexture, or null caused by not supported format
+   */
 
   function _textureFromPixelArray(gl, dataArray, format, dataType, width, height) {
     var dataTypedArray;
@@ -22901,7 +23001,8 @@
 
     var texture = gl.createTexture();
     gl.bindTexture(gl.TEXTURE_2D, texture);
-    gl.texImage2D(gl.TEXTURE_2D, 0, format, width, height, 0, format, dataType, dataTypedArray);
+    gl.texImage2D(gl.TEXTURE_2D, 0, format, width, height, 0, format, dataType, dataTypedArray); // NPOT properties
+
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
@@ -22910,6 +23011,12 @@
   }
 
   var ColorMap = {
+    /**
+     *    Create custom colormap with equidistant intervals
+     *
+     *    @param name Colormap name
+     *    @param colors The array of colors defining the colormap(must have length at least >=2)
+     */
     addCustomColormap: function (name, colors) {
       if (colors.length < 2) {
         ErrorDialog.open(Constants.LEVEL.DEBUG, "ColorMap.js", "Colors length must be >= 2");
@@ -22936,11 +23043,19 @@
           colormap.green.push(Numeric.lerp(j / end, c1[1], c2[1]));
           colormap.blue.push(Numeric.lerp(j / end, c1[2], c2[2]));
         }
-      }
+      } // Add to colormaps object
+
 
       colormaps[name] = colormap;
     },
+
+    /**
+     * Generate colormap
+     */
     generateColormap: function (gl, transferFonction, colormap, inverse) {
+      // var pas1 = 128./(tr1-tr0);
+      // var pas2 = 128./(tr2-tr1);
+      // Get transfer function
       var fctGap = transferFonctions[transferFonction];
       var cm = [];
       var Sr, Sg, Sb;
@@ -22950,7 +23065,11 @@
       var max = Sr.length - 1;
 
       for (var i = 0; i < 256; i++) {
-        var j = fctGap[i];
+        // int j= i<tr0 ? 0 :
+        //       i<tr1 ? (int)Math.round((i-tr0)*pas1) :
+        //       i<tr2 ? 128+(int)Math.round((i-tr1)*pas2) :
+        //               max;
+        var j = fctGap[i]; // Clamp
 
         if (j > max) {
           j = max;
@@ -22962,12 +23081,14 @@
 
         if (inverse) {
           j = max - j;
-        }
+        } // Normalize between [0..1]
 
-        cm[i * 3] = Sr[j] / 256;
-        cm[i * 3 + 1] = Sg[j] / 256;
-        cm[i * 3 + 2] = Sb[j] / 256;
-      }
+
+        cm[i * 3] = Sr[j] / 256.0;
+        cm[i * 3 + 1] = Sg[j] / 256.0;
+        cm[i * 3 + 2] = Sb[j] / 256.0;
+      } // Create new texture
+
 
       return _textureFromPixelArray(gl, cm, gl.RGB, gl.FLOAT, cm.length / 3, 1);
     }
@@ -23491,12 +23612,42 @@
 
   var astro$1 = new astro();
 
+  /***************************************
+   * Copyright 2011, 2012 GlobWeb contributors.
+   *
+   * This file is part of GlobWeb.
+   *
+   * GlobWeb is free software: you can redistribute it and/or modify
+   * it under the terms of the GNU Lesser General Public License as published by
+   * the Free Software Foundation, version 3 of the License, or
+   * (at your option) any later version.
+   *
+   * GlobWeb is distributed in the hope that it will be useful,
+   * but WITHOUT ANY WARRANTY; without even the implied warranty of
+   * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+   * GNU Lesser General Public License for more details.
+   *
+   * You should have received a copy of the GNU General Public License
+   * along with GlobWeb. If not, see <http://www.gnu.org/licenses/>.
+   ***************************************/
+  /**
+   *    Parse fits file
+   *
+   *    @param response XHR response containing fits
+   *
+   *    @return Parsed data
+   */
+
   function parseFits(response) {
-    var FITS = astro$1.FITS;
-    var fits = new FITS.File(response);
+    var FITS = astro$1.FITS; // Initialize the FITS.File object using
+    // the array buffer returned from the XHR
+
+    var fits = new FITS.File(response); // Grab the first HDU with a data unit
+
     var hdu = fits.getHDU();
     var data = hdu.data;
-    var swapPixels = new Uint8Array(data.view.buffer, data.begin, data.length);
+    var swapPixels = new Uint8Array(data.view.buffer, data.begin, data.length); // with gl.UNSIGNED_byte
+
     var bpe;
 
     if (data.arrayType) {
@@ -23506,7 +23657,7 @@
     }
 
     for (var i = 0; i < swapPixels.length; i += bpe) {
-      var temp;
+      var temp; // Swap to little-endian
 
       for (var j = 0; j < bpe / 2; j++) {
         temp = swapPixels[i + j];
@@ -23539,7 +23690,10 @@
           }
         }
       }
-    };
+    }; // Define default on progress function, otherwise
+    // Firefox won't take Content-length header into account
+    // so evt.lengthComputable will be always set to false..
+
 
     xhr.onprogress = function (evt) {};
 
@@ -23554,9 +23708,39 @@
     parseFits: parseFits
   };
 
+  /*******************************************************************************
+   * Copyright 2017, 2018 CNES - CENTRE NATIONAL d'ETUDES SPATIALES
+   *
+   * This file is part of MIZAR.
+   *
+   * MIZAR is free software: you can redistribute it and/or modify
+   * it under the terms of the GNU General Public License as published by
+   * the Free Software Foundation, either version 3 of the License, or
+   * (at your option) any later version.
+   *
+   * MIZAR is distributed in the hope that it will be useful,
+   * but WITHOUT ANY WARRANTY; without even the implied warranty of
+   * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+   * GNU General Public License for more details.
+   *
+   * You should have received a copy of the GNU General Public License
+   * along with MIZAR. If not, see <http://www.gnu.org/licenses/>.
+   ******************************************************************************/
+  // import astro from '../external/fitsjs/fits';
+
   var mizarAPI;
+  /**********************************************************************************************/
+
+  /**
+   *    Send XHR request for FITS file
+   *    @param featureData Feature data(layer,feature)
+   *    @param {string} url Url of fits file
+   *    @param {Function} preprocessing function if needed
+   *    @fires Mizar#image:downloaded
+   */
 
   function computeFits(featureData, url, preprocessing) {
+    // Store xhr on feature data object to cancel it if needed
     featureData.xhr = FitsLoader.loadFits(url, function (fits) {
       delete featureData.xhr;
       var fitsData = fits.getHDU().data;
@@ -23569,18 +23753,39 @@
     });
     mizarAPI.publish(Constants.EVENT_MSG.IMAGE_DOWNLOADED, featureData);
   }
+  /**********************************************************************************************/
+
+  /**
+   *    Send XHR request for quicklook file
+   *    @param featureData Feature data(layer,feature)
+   *    @param {string} url Url of quicklook file
+   *    @fires Mizar#image:downloaded
+   */
+
 
   function computeQuicklook(featureData, url) {
     handleQuicklook(featureData, url);
     mizarAPI.publish(Constants.EVENT_MSG.IMAGE_DOWNLOADED, featureData);
   }
+  /**********************************************************************************************/
+
+  /**
+   * Handle fits data on the given feature
+   * @param fitsData
+   * @param featureData
+   * @returns {Image} image
+   */
+
 
   function handleFits(fitsData, featureData) {
-    var typedArray = new Float32Array(fitsData.view.buffer, fitsData.begin, fitsData.length / 4);
+    // Create new image coming from Fits
+    var typedArray = new Float32Array(fitsData.view.buffer, fitsData.begin, fitsData.length / 4); // with gl.FLOAT
+
     var gl = mizarAPI.getRenderContext().gl;
     var image = new DynamicImage(mizarAPI.getRenderContext(), typedArray, gl.LUMINANCE, gl.FLOAT, fitsData.width, fitsData.height);
     var feature = featureData.feature;
-    var layer = featureData.layer;
+    var layer = featureData.layer; // Attach texture to style
+
     var targetStyle;
 
     if (feature.properties.style) {
@@ -23592,7 +23797,7 @@
     targetStyle.fillTexture = image.texture;
     targetStyle.uniformValues = image;
     targetStyle.fill = true;
-    layer.modifyFeatureStyle(feature, targetStyle);
+    layer.modifyFeatureStyle(feature, targetStyle); // Store image url for zScale processing
 
     if (feature.services) {
       image.url = feature.services.download.url;
@@ -23600,6 +23805,12 @@
 
     return image;
   }
+  /**
+   * Handle quicklook data on the given feature
+   * @param featureData
+   * @returns {Image} image
+   */
+
 
   function handleQuicklook(featureData, url) {
     var feature = featureData.feature;
@@ -23609,12 +23820,22 @@
       layer.loadQuicklook(feature, url);
     }
   }
+  /**********************************************************************************************/
+
 
   function parseFits$1(response) {
     return FitsLoader.parseFits(response);
   }
+  /**********************************************************************************************/
+
+  /**
+   * Remove fits texture from feature
+   * @param featureData
+   */
+
 
   function removeFitsFromRenderer(featureData) {
+    // Abort xhr if inprogress
     if (featureData.xhr) {
       featureData.xhr.abort();
       delete featureData.xhr;
@@ -23624,7 +23845,8 @@
 
     if (featureData.feature.properties.style.uniformValues) {
       featureData.feature.properties.style.uniformValues.dispose();
-    }
+    } // TODO : style could still contain fillTextures, is it normal ?
+
 
     var texture = featureData.feature.properties.style.fillTexture;
 
@@ -23634,7 +23856,8 @@
 
     var targetStyle = new FeatureStyle(featureData.feature.properties.style);
     targetStyle.fillTexture = null;
-    targetStyle.fill = false;
+    targetStyle.fill = false; // Remove rendering
+
     targetStyle.fillShader = {
       fragmentCode: null,
       updateUniforms: null
@@ -23642,22 +23865,53 @@
     delete targetStyle.uniformValues;
     featureData.layer.modifyFeatureStyle(featureData.feature, targetStyle);
   }
+  /**********************************************************************************************/
+
 
   var FitsVisu = {
+    /**
+     * Initialize ImageManagerCore
+     * @param m
+     * @param configuration
+     */
     init: function (m, configuration) {
       mizarAPI = m;
     },
+
+    /**********************************************************************************************/
+
+    /**
+     * Hide image
+     * @param {Feature} featureData
+     */
     hideImage: function (featureData) {
       var style = new FeatureStyle(featureData.feature.properties.style);
       style.fill = false;
       featureData.layer.modifyFeatureStyle(featureData.feature, style);
     },
+
+    /**********************************************************************************************/
+
+    /**
+     * Show image
+     * @param {Feature} featureData
+     */
     showImage: function (featureData) {
+      // Attach texture to style
       var targetStyle = new FeatureStyle(featureData.feature.properties.style);
       targetStyle.fill = true;
       featureData.layer.modifyFeatureStyle(featureData.feature, targetStyle);
     },
+
+    /**********************************************************************************************/
+
+    /**
+     * Remove image from renderer
+     * @param {Feature} featureData
+     * @fires Mizar#image:removed
+     */
     removeImage: function (featureData) {
+      // Publish event that the image of the given feature will be removed
       mizarAPI.publish(Constants.EVENT_MSG.IMAGE_REMOVED, featureData);
 
       if (featureData.isFits) {
@@ -23679,11 +23933,21 @@
 
       mizarAPI.getActivatedContext().refresh();
     },
+
+    /**********************************************************************************************/
+
+    /**
+     *    Start download of texture
+     *    @param {Feature} featureData
+     *    @fires Mizar#image:added
+     */
     addImage: function (featureData) {
-      var feature = featureData.feature;
+      var feature = featureData.feature; // Set fill to true while loading
+
       var style = new FeatureStyle(feature.properties.style);
       var url = null;
-      style.fill = true;
+      style.fill = true; // Publish event that the image for the given feature will be loaded
+
       mizarAPI.publish(Constants.EVENT_MSG.IMAGE_ADDED, featureData);
 
       if (featureData.isFits) {
@@ -23699,7 +23963,7 @@
           url = feature.properties.quicklook;
         }
 
-        this.computeQuicklook(featureData, url);
+        this.computeQuicklook(featureData, url); // For DEBUG : 'upload/ADP_WFI_30DOR_RGB_V1.0_degraded.jpg';
 
         if (featureData.isWms) {
           $("#quicklookWms").addClass("selected");
@@ -23717,6 +23981,7 @@
     handleQuicklook: handleQuicklook,
     parseFits: parseFits$1
   };
+  /**********************************************************************************************/
 
   var mizarAPI$1;
   /**
@@ -23780,6 +24045,34 @@
     removeFitsLayer: _removeFitsLayer
   };
 
+  /*******************************************************************************
+   * Copyright 2017, 2018 CNES - CENTRE NATIONAL d'ETUDES SPATIALES
+   *
+   * This file is part of MIZAR.
+   *
+   * MIZAR is free software: you can redistribute it and/or modify
+   * it under the terms of the GNU General Public License as published by
+   * the Free Software Foundation, either version 3 of the License, or
+   * (at your option) any later version.
+   *
+   * MIZAR is distributed in the hope that it will be useful,
+   * but WITHOUT ANY WARRANTY; without even the implied warranty of
+   * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+   * GNU General Public License for more details.
+   *
+   * You should have received a copy of the GNU General Public License
+   * along with MIZAR. If not, see <http://www.gnu.org/licenses/>.
+   ******************************************************************************/
+
+  /**
+   * Triangle Object use in Histogram classe
+   */
+
+  /**************************************************************************************************************/
+
+  /**
+   *    Test returning true if p1 and p2 are both lying on the same side of a-b, false otherwise
+   */
   function _sameSide(p1, p2, a, b) {
     var temp1 = [];
     var temp2 = [];
@@ -23790,32 +24083,76 @@
     vec3.cross(temp1, vec3.subtract(p2, a, temp3), cp2);
     return vec3.dot(cp1, cp2) >= 0;
   }
+  /**************************************************************************************************************/
+
+  /**
+   *    Private function to check if point is inside the given triangle
+   *    If the point was on the same side of a-b as c and is also on the same side of b-c as a and on the same side of c-a as b, then it is in the triangle
+   */
+
 
   function _pointInTriangle(p, a, b, c) {
     return _sameSide(p, a, b, c) && _sameSide(p, b, a, c) && _sameSide(p, c, a, b);
   }
+  /**************************************************************************************************************/
+
+  /**
+   *    Isoscele triangle object for thresholds manipulation
+   *
+   *    @param a Pointer of threshold pointing on histogram
+   *    @param b Isoscele point 1
+   *    @param c Isoscele point 2
+   */
+
 
   var Triangle = function (a, b, c) {
     this.initA = a.slice(0);
     this.initB = b.slice(0);
     this.initC = c.slice(0);
-    this.a = a;
-    this.b = b;
-    this.c = c;
+    this.a = a; // Pointer to histogram
+
+    this.b = b; // Isoscele point 1
+
+    this.c = c; // Isoscele point 2
+
     this.dragging = false;
     this.hover = false;
     this.halfWidth = Math.abs((c[0] - b[0]) / 2);
   };
+  /**************************************************************************************************************/
+
+  /**
+   *    Reset to initial position
+   */
+
 
   Triangle.prototype.reset = function () {
     this.a = this.initA.slice(0);
     this.b = this.initB.slice(0);
     this.c = this.initC.slice(0);
   };
+  /**************************************************************************************************************/
+
+  /**
+   *    Test if triangle contains the given point
+   *    @param {Array} p point
+   */
+
 
   Triangle.prototype.contains = function (p) {
     return _pointInTriangle(p, this.a, this.b, this.c);
   };
+  /**************************************************************************************************************/
+
+  /**
+   * Draw the triangle
+   * @param ctx the context
+   * @param options
+   *      <ul>
+   *          <li>draggingColor : color used when moving triangle</li>
+   *          <li>noDraggingColor : color used when triangle do not move</li>
+   */
+
 
   Triangle.prototype.draw = function (ctx, options) {
     if (!options) {
@@ -23840,6 +24177,14 @@
       ctx.stroke();
     }
   };
+  /**************************************************************************************************************/
+
+  /**
+   *    Modify triangle's position by the given "pointer" point
+   *    (could be modified only by X-axis)
+   *    @param {Array} point point
+   */
+
 
   Triangle.prototype.modifyPosition = function (point) {
     this.a[0] = point[0];
@@ -23847,16 +24192,45 @@
     this.c[0] = point[0] + this.halfWidth;
   };
 
+  /*******************************************************************************
+   * Copyright 2017, 2018 CNES - CENTRE NATIONAL d'ETUDES SPATIALES
+   *
+   * This file is part of MIZAR.
+   *
+   * MIZAR is free software: you can redistribute it and/or modify
+   * it under the terms of the GNU General Public License as published by
+   * the Free Software Foundation, either version 3 of the License, or
+   * (at your option) any later version.
+   *
+   * MIZAR is distributed in the hope that it will be useful,
+   * but WITHOUT ANY WARRANTY; without even the implied warranty of
+   * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+   * GNU General Public License for more details.
+   *
+   * You should have received a copy of the GNU General Public License
+   * along with MIZAR. If not, see <http://www.gnu.org/licenses/>.
+   ******************************************************************************/
+
   var nbBins;
   var self$1;
   var canvas;
   var hist = [];
-  var hmax;
+  var hmax; // histogram max to scale in image space
+  // Origin histogram point
+
   var originX;
   var originY;
   var hwidth;
   var paddingBottom;
   var triangleHalfWidth;
+  /**************************************************************************************************************/
+
+  /**
+   * Get mouse position on canvas
+   * @param {HTMLElement} canvas
+   * @param {Event} evt
+   * @returns {{x: number, y: number}}
+   */
 
   function _getMousePos(canvas, evt) {
     var rect = canvas.getBoundingClientRect();
@@ -23879,6 +24253,8 @@
       self$1.maxThreshold.draw(self$1.ctx);
     }
   }
+  /**************************************************************************************************************/
+
 
   function _handleMouseUp(evt) {
     self$1.minThreshold.dragging = false;
@@ -23892,13 +24268,15 @@
       self$1.onUpdate(min, max);
     }
   }
+  /**************************************************************************************************************/
+
 
   function _handleMouseMove(evt) {
     var mousePos = _getMousePos(canvas, evt);
 
-    self$1.ctx.clearRect(0, originY, canvas.width, paddingBottom);
+    self$1.ctx.clearRect(0.0, originY, canvas.width, paddingBottom);
     self$1.minThreshold.hover = self$1.minThreshold.contains([mousePos.x, mousePos.y, 0]);
-    self$1.maxThreshold.hover = self$1.maxThreshold.contains([mousePos.x, mousePos.y, 0]);
+    self$1.maxThreshold.hover = self$1.maxThreshold.contains([mousePos.x, mousePos.y, 0]); // Draw threshold controls
 
     if (self$1.minThreshold.dragging && mousePos.x >= self$1.minThreshold.initA[0] && mousePos.x < self$1.maxThreshold.a[0]) {
       self$1.minThreshold.modifyPosition([mousePos.x, self$1.minThreshold.a[1]]);
@@ -23908,22 +24286,38 @@
       self$1.maxThreshold.modifyPosition([mousePos.x, self$1.maxThreshold.a[1]]);
     }
 
-    self$1.drawThresholdControls();
+    self$1.drawThresholdControls(); // Don't draw histogram values if the mouse is out of histogram canvas
 
-    if (mousePos.y > canvas.height || mousePos.y < 0 || mousePos.x > originX + nbBins || mousePos.x < originX) {
+    if (mousePos.y > canvas.height || mousePos.y < 0.0 || mousePos.x > originX + nbBins || mousePos.x < originX) {
       return;
-    }
+    } // Draw the text indicating the histogram value on mouse position
+
 
     self$1.ctx.font = "8pt Calibri";
     self$1.ctx.fillStyle = "yellow";
     var thresholdValue = self$1.getHistValue([mousePos.x, mousePos.y]);
-    self$1.ctx.fillText(thresholdValue, canvas.width / 2 - 15, originY + paddingBottom);
+    self$1.ctx.fillText(thresholdValue, canvas.width / 2 - 15.0, originY + paddingBottom); // Draw a tiny line indicating the mouse position on X-axis
+
     self$1.ctx.fillRect(mousePos.x, originY, 1, 2);
   }
+  /**************************************************************************************************************/
+
+  /**
+   * Get histogram value from the given X-position on canvas
+   * @param {Array} position
+   * @returns {number} value
+   */
+
 
   function getHistValue(position) {
-    return Math.floor(((position[0] - originX) / 256 * (this.image.tmax - this.image.tmin) + this.image.tmin) * Math.pow(10, this.accuracy)) / Math.pow(10, this.accuracy);
+    return Math.floor(((position[0] - originX) / 256.0 * (this.image.tmax - this.image.tmin) + this.image.tmin) * Math.pow(10, this.accuracy)) / Math.pow(10, this.accuracy);
   }
+  /**************************************************************************************************************/
+
+  /**
+   * Init Thresholds by creating to
+   */
+
 
   function initThresholds() {
     originY = canvas.height - paddingBottom;
@@ -23931,11 +24325,24 @@
     this.minThreshold = new Triangle([originX, originY + 1, 0], [originX - triangleHalfWidth, originY + paddingBottom - 1, 0], [originX + triangleHalfWidth, originY + paddingBottom - 1, 0]);
     this.maxThreshold = new Triangle([hwidth, originY + 1, 0], [hwidth - triangleHalfWidth, originY + paddingBottom - 1, 0], [hwidth + triangleHalfWidth, originY + paddingBottom - 1, 0]);
   }
+  /**************************************************************************************************************/
+
 
   function drawThresholdControls() {
     this.minThreshold.draw(this.ctx, {});
     this.maxThreshold.draw(this.ctx, {});
   }
+  /**************************************************************************************************************/
+
+  /**
+   * Draw histogram
+   * @param {Object} options
+   *        <ul>
+   *            <li>color: inside graph color</li>
+   *        </ul>
+   *
+   */
+
 
   function drawHistogram(options) {
     if (options == null) {
@@ -23945,26 +24352,48 @@
     this.ctx.fillStyle = options.color || "blue";
 
     for (var i = 0; i < hist.length; i++) {
+      // Scale to y-axis height
       var rectHeight = hist[i] / hmax * originY;
       this.ctx.fillRect(originX + i, originY, 1, -rectHeight);
     }
   }
+  /**************************************************************************************************************/
+
+  /**
+   *    Draw histogram axis
+   */
+
 
   function drawAxes() {
     var leftY, rightX;
     leftY = 0;
-    rightX = originX + hwidth;
+    rightX = originX + hwidth; // Draw y axis.
+
     this.ctx.beginPath();
     this.ctx.moveTo(originX, leftY);
-    this.ctx.lineTo(originX, originY);
+    this.ctx.lineTo(originX, originY); // Draw x axis.
+
     this.ctx.moveTo(originX, originY);
-    this.ctx.lineTo(rightX, originY);
+    this.ctx.lineTo(rightX, originY); // Define style and stroke lines.
+
     this.ctx.closePath();
     this.ctx.strokeStyle = "#fff";
     this.ctx.stroke();
   }
+  /**************************************************************************************************************/
+
+  /**
+   *    Draw transfer function(linear, log, asin, sqrt, sqr)
+   *    @param {Object} options
+   *        <ul>
+   *            <li>color: transfer stroke color</li>
+   *        </ul>
+   */
+
 
   function drawTransferFunction(options) {
+    // Draw transfer functions
+    // "Grey" colormap for now(luminance curve only)
     if (options == null) {
       options = {};
     }
@@ -23982,11 +24411,11 @@
           break;
 
         case "log":
-          scaledValue = Math.log(value / 10 + 1) / Math.log(nbBins / 10 + 1) * originY;
+          scaledValue = Math.log(value / 10.0 + 1) / Math.log(nbBins / 10.0 + 1) * originY;
           break;
 
         case "sqrt":
-          scaledValue = Math.sqrt(value / 10) / Math.sqrt(nbBins / 10) * originY;
+          scaledValue = Math.sqrt(value / 10.0) / Math.sqrt(nbBins / 10.0) * originY;
           break;
 
         case "sqr":
@@ -23994,7 +24423,7 @@
           break;
 
         case "asin":
-          scaledValue = Math.log(value + Math.sqrt(Math.pow(value, 2) + 1)) / Math.log(nbBins + Math.sqrt(Math.pow(nbBins, 2) + 1)) * originY;
+          scaledValue = Math.log(value + Math.sqrt(Math.pow(value, 2) + 1.0)) / Math.log(nbBins + Math.sqrt(Math.pow(nbBins, 2) + 1.0)) * originY;
           break;
       }
 
@@ -24005,6 +24434,12 @@
       this.ctx.fillRect(posX, scaledValue, 1, 1);
     }
   }
+  /**************************************************************************************************************/
+
+  /**
+   *    Draw the histogram in canvas
+   */
+
 
   function draw() {
     this.ctx.clearRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);
@@ -24013,23 +24448,33 @@
     this.drawAxes();
     this.drawThresholdControls();
   }
+  /**************************************************************************************************************/
+
+  /**
+   *    TODO : create different module
+   *    Compute histogram values
+   */
+
 
   function compute() {
-    var image = this.image;
+    var image = this.image; // Initialize histogram
+
     hist = new Array(nbBins);
 
     for (var i = 0; i < hist.length; i++) {
       hist[i] = 0;
-    }
+    } // Compute histogram
+
 
     hmax = Number.MIN_VALUE;
 
     for (i = 0; i < image.pixels.length; i++) {
-      var val = image.pixels[i];
+      var val = image.pixels[i]; // Skip NaN
 
       if (isNaN(val)) {
         continue;
-      }
+      } // Take only values which belongs to the interval [tmin,tmax]
+
 
       if (val < image.tmin) {
         continue;
@@ -24037,15 +24482,17 @@
 
       if (val >= image.tmax) {
         continue;
-      }
+      } // Scale to [0,255]
+
 
       var bin = Math.floor(nbBins * (val - image.tmin) / (image.tmax - image.tmin));
-      hist[bin]++;
+      hist[bin]++; // Compute histogram max value
 
       if (hist[bin] > hmax) {
         hmax = hist[bin];
       }
-    }
+    } // Logarithmic scale for better layout
+
 
     for (i = 0; i < hist.length; i++) {
       hist[i] = Math.log(1 + hist[i]);
@@ -24053,6 +24500,13 @@
 
     hmax = Math.log(1 + hmax);
   }
+  /**************************************************************************************************************/
+
+  /**
+   *    Set image
+   *    @param {Image} image
+   */
+
 
   function setImage(image) {
     this.image = image;
@@ -24061,20 +24515,39 @@
   function getCanvas() {
     return canvas;
   }
+  /**************************************************************************************************************/
+
 
   var HistogramCore = {
+    /**
+     *    Histogram contructor
+     *    @param options Histogram options
+     *        <ul>
+     *            <li>canvas: The canvas context where to draw Histogram</li>
+     *            <li>image: The image which is represented by current histogram(required)</li>
+     *            <li>nbBins: Number of bins, representing the sampling of histogram(optional)</li>
+     *            <li>onUpdate: On update callback
+     *            <li>accuracy: The accuracy of histogram(numbers after floating point)
+     *            <li>paddingBottom: space at the bottom
+     *            <li>triangleHalfWidth: half width of the triangle to draw
+     *            <li>originX
+     *        </ul>
+     */
     init: function (options) {
       this.image = options.image;
       this.onUpdate = options.onUpdate;
       this.accuracy = options.accuracy || 6;
       self$1 = this;
       nbBins = options.nbBins || 256;
-      paddingBottom = options.paddingBottom || 15;
-      originX = options.originX || 5;
-      triangleHalfWidth = options.triangleHalfWidth || 5;
+      paddingBottom = options.paddingBottom || 15.0;
+      originX = options.originX || 5.0;
+      triangleHalfWidth = options.triangleHalfWidth || 5; // Init canvas
+
       canvas = document.getElementById(options.canvas);
-      canvas.addEventListener("mousemove", _handleMouseMove);
-      canvas.addEventListener("mousedown", _handleMouseDown);
+      canvas.addEventListener("mousemove", _handleMouseMove); // Handle threshold controller selection
+
+      canvas.addEventListener("mousedown", _handleMouseDown); // Update histogram on mouseup
+
       canvas.addEventListener("mouseup", _handleMouseUp);
       this.ctx = canvas.getContext("2d");
       this.initThresholds();
@@ -24091,6 +24564,26 @@
     getCanvas: getCanvas
   };
 
+  /*******************************************************************************
+   * Copyright 2017, 2018 CNES - CENTRE NATIONAL d'ETUDES SPATIALES
+   *
+   * This file is part of MIZAR.
+   *
+   * MIZAR is free software: you can redistribute it and/or modify
+   * it under the terms of the GNU General Public License as published by
+   * the Free Software Foundation, either version 3 of the License, or
+   * (at your option) any later version.
+   *
+   * MIZAR is distributed in the hope that it will be useful,
+   * but WITHOUT ANY WARRANTY; without even the implied warranty of
+   * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+   * GNU General Public License for more details.
+   *
+   * You should have received a copy of the GNU General Public License
+   * along with MIZAR. If not, see <http://www.gnu.org/licenses/>.
+   ******************************************************************************/
+  /**************************************************************************************************************/
+
   let feature;
   let layer;
   let disable;
@@ -24098,6 +24591,11 @@
   let $dialog;
   let histogramElement;
   let cutOutElement;
+  /**************************************************************************************************************/
+
+  /**
+   *    Toggle visibility of dialog
+   */
 
   function toggle() {
     if ($dialog.dialog("isOpen")) {
@@ -24106,6 +24604,14 @@
       $dialog.dialog("open");
     }
   }
+  /**************************************************************************************************************/
+
+  /**
+   *    Set data to process
+   *
+   *    @param selectedData Object containing feature and layer extracted by <PickingManager>
+   */
+
 
   function setData(selectedData) {
     if (feature && feature.properties.identifier === selectedData.feature.properties.identifier) {
@@ -24122,6 +24628,10 @@
     if (selectedData.feature.services) {
       cutOutElement.setUrl(selectedData.feature.services.download.url);
     }
+    /** else {
+                     // TODO : disable cutOutElement if feature's url isn't defined
+                 }*/
+
 
     const image = selectedData.feature.properties.style.uniformValues;
 
@@ -24133,6 +24643,14 @@
       this.setImage(image);
     }
   }
+  /**************************************************************************************************************/
+
+  /**
+   * Set image on the Histogram element
+   *
+   * @param image
+   */
+
 
   function setImage$1(image) {
     histogramElement.setImage(image);
@@ -24145,12 +24663,31 @@
       $(this).siblings("div").fadeIn();
     });
   }
+  /**************************************************************************************************************/
+
 
   var ImageProcessingCore = {
+    /**
+     *    Init ImageProcessingCore
+     *
+     *    @param options
+     *        <ul>
+     *            <li>feature: The feature to process
+     *            <li>layer: The layer to which the feature belongs to
+     *            <li>disable: Disable callback</li>
+     *            <li>unselect: Unselect callback</li>
+     *        </ul>
+     *    @param {HTMLElement} $dl dialogElement
+     *    @param {HTMLElement} $histoElmt histogramElement
+     *    @param {HTMLElement} $cutOutElmt cutOutElement
+     *
+     */
     init: function (options, $dl, histoElmt, cutOutElmt) {
       if (options) {
+        //this.id = options.id;
         feature = options.feature || null;
-        layer = options.layer || null;
+        layer = options.layer || null; // Callbacks
+
         disable = options.disable || null;
         unselect = options.unselect || null;
       }
@@ -26385,6 +26922,7 @@
    * You should have received a copy of the GNU General Public License
    * along with MIZAR. If not, see <http://www.gnu.org/licenses/>.
    ******************************************************************************/
+
   /**
    * AbstractVectorLayer layer configuration
    * @typedef {AbstractVectorLayer.configuration} AbstractLayer.vector_configuration
@@ -26803,7 +27341,32 @@
 
   Utils.inherits(AbstractVectorLayer, VectorLayer);
 
+  /*******************************************************************************
+   * Copyright 2017, 2018 CNES - CENTRE NATIONAL d'ETUDES SPATIALES
+   *
+   * This file is part of MIZAR.
+   *
+   * MIZAR is free software: you can redistribute it and/or modify
+   * it under the terms of the GNU General Public License as published by
+   * the Free Software Foundation, either version 3 of the License, or
+   * (at your option) any later version.
+   *
+   * MIZAR is distributed in the hope that it will be useful,
+   * but WITHOUT ANY WARRANTY; without even the implied warranty of
+   * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+   * GNU General Public License for more details.
+   *
+   * You should have received a copy of the GNU General Public License
+   * along with MIZAR. If not, see <http://www.gnu.org/licenses/>.
+   ******************************************************************************/
   var navigation, mizarAPI$2, onselect, measureLayer, self$2, dragging;
+  /**********************************************************************************************/
+
+  /**
+   * Get first Geo pick point in terms of cursor position
+   * @param event
+   * @returns {Array} geoPickPoint geo position on the planet
+   */
 
   function _handleMouseDown$1(event) {
     event.preventDefault();
@@ -26832,18 +27395,26 @@
 
     return self$2.geoPickPoint;
   }
+  /**
+   * Close the measure with the last point
+   * @param event
+   */
+
 
   function _handleMouseUp$1(event) {
-    event.preventDefault();
+    event.preventDefault(); // Compute geo radius
+
     var stopPickPoint;
 
     if (event.type.search("touch") >= 0) {
       stopPickPoint = mizarAPI$2.getActivatedContext().getLonLatFromPixel(event.changedTouches[0].offsetX, event.changedTouches[0].offsetY);
     } else {
       stopPickPoint = mizarAPI$2.getActivatedContext().getLonLatFromPixel(event.layerX, event.layerY);
-    }
+    } // No point found, picking was not on planet but sky
+
 
     if (!_$1.isEmpty(stopPickPoint)) {
+      // Find angle between start and stop vectors which is in fact the radius
       var dotProduct = vec3.dot(vec3.normalize(mizarAPI$2.getCrs().get3DFromWorld(stopPickPoint)), vec3.normalize(mizarAPI$2.getCrs().get3DFromWorld(self$2.geoPickPoint)));
       var theta = Math.acos(dotProduct);
       self$2.geoDistance = Numeric.toDegree(theta);
@@ -26856,6 +27427,11 @@
     navigation.start();
     dragging = false;
   }
+  /**
+   * Update drawing and label in terms of current point
+   * @param event
+   */
+
 
   function _handleMouseMove$1(event) {
     event.preventDefault();
@@ -26876,7 +27452,9 @@
       self$2.secondGeoPickPoint = mizarAPI$2.getActivatedContext().getLonLatFromPixel(self$2.secondPickPoint[0], self$2.secondPickPoint[1]);
     } else {
       return;
-    }
+    } //self.storeDistanceAndElevation(self.geoPickPoint, self.secondGeoPickPoint);
+    // Update radius
+
 
     self$2.distance = Math.sqrt(Math.pow(self$2.secondPickPoint[0] - self$2.pickPoint[0], 2) + Math.pow(self$2.secondPickPoint[1] - self$2.pickPoint[1], 2));
     var dotProduct;
@@ -26891,6 +27469,8 @@
     self$2.geoDistance = Numeric.toDegree(theta);
     updateMeasure();
   }
+  /**********************************************************************************************/
+
 
   function rotateVector2D(vec, theta) {
     theta = Numeric.toRadian(theta);
@@ -26898,17 +27478,26 @@
     var sn = Math.sin(theta);
     return [vec[0] * cs - vec[1] * sn, vec[0] * sn + vec[1] * cs];
   }
+  /**********************************************************************************************/
+
+  /**
+   * Computes the measure for the given pick point depending on the second point (used to draw)
+   * @returns {Array} points to draw
+   */
+
 
   function computeMeasure() {
     var geoDiff = [self$2.secondGeoPickPoint[0] - self$2.geoPickPoint[0], self$2.secondGeoPickPoint[1] - self$2.geoPickPoint[1], 0];
     var diff = vec3.create(geoDiff);
     var length = vec3.length(diff);
     vec3.normalize(diff);
-    vec3.scale(diff, length * 0.001);
+    vec3.scale(diff, length * 0.001); // First arrow
+
     var arrow = rotateVector2D(diff, 30);
     var arrow2 = rotateVector2D(diff, -30);
     arrow = [self$2.geoPickPoint[0] + 10 * arrow[0], self$2.geoPickPoint[1] + 10 * arrow[1]];
-    arrow2 = [self$2.geoPickPoint[0] + 10 * arrow2[0], self$2.geoPickPoint[1] + 10 * arrow2[1]];
+    arrow2 = [self$2.geoPickPoint[0] + 10 * arrow2[0], self$2.geoPickPoint[1] + 10 * arrow2[1]]; // Second arrow
+
     var diff2 = [-diff[0], -diff[1]];
     var arrow3 = rotateVector2D(diff2, 30);
     var arrow4 = rotateVector2D(diff2, -30);
@@ -26917,6 +27506,8 @@
     var points = [[arrow[0], arrow[1], null], [self$2.geoPickPoint[0], self$2.geoPickPoint[1], null], [arrow2[0], arrow2[1], null], [self$2.geoPickPoint[0], self$2.geoPickPoint[1], null], [self$2.secondGeoPickPoint[0], self$2.secondGeoPickPoint[1], null], [arrow3[0], arrow3[1], null], [self$2.secondGeoPickPoint[0], self$2.secondGeoPickPoint[1], null], [arrow4[0], arrow4[1], null]];
     return points;
   }
+  /**********************************************************************************************/
+
 
   function remove() {
     self$2.clear();
@@ -26969,19 +27560,32 @@
       }
     };
   }
+  /**
+   *    Updates measure coordinates
+   */
+
 
   function updateMeasure() {
-    self$2.clear();
+    self$2.clear(); // Create measurement and  apply elevation to all point of displayed arrow
+
     var coordinates = self$2.computeMeasure();
-    self$2.measureFeature = createGeoJsonMeasurement(coordinates);
+    self$2.measureFeature = createGeoJsonMeasurement(coordinates); // Create measurement label
+
     var center = [(self$2.secondPickPoint[0] + self$2.pickPoint[0]) / 2, (self$2.secondPickPoint[1] + self$2.pickPoint[1]) / 2];
     var geoCenter = mizarAPI$2.getActivatedContext().getLonLatFromPixel(center[0], center[1]);
     var distance = self$2.calculateDistanceElevation(self$2.geoPickPoint, self$2.secondGeoPickPoint);
     distance = Numeric.roundNumber(distance.toFixed(3), 2);
-    self$2.measureLabel = createGeoJsonLabel(geoCenter, distance);
+    self$2.measureLabel = createGeoJsonLabel(geoCenter, distance); // add measurement and label to the the GeoJson collection
+
     measureLayer.addFeature(self$2.measureFeature);
     measureLayer.addFeature(self$2.measureLabel);
   }
+  /**************************************************************************************************************/
+
+  /**
+   *    Clear measureFeature and measureLabel
+   */
+
 
   function clear() {
     if (self$2.measureFeature) {
@@ -26992,17 +27596,31 @@
       measureLayer.removeFeature(self$2.measureLabel);
     }
   }
+  /**************************************************************************************************************/
+
+  /**
+   * Calculate intermediaries elevation points to increase drawing precision
+   *
+   * @param {Object} options
+   *              <ul>
+   *                  <li>nbPoints : number of intermediary points to compute</li>
+   *              </ul>
+   * @param {Array} firstPoint
+   * @param {Array} secondPoint
+   * @return {Array} intermediatePoints
+   */
+
 
   function calculateIntermediateElevationPoint(options, firstPoint, secondPoint) {
     var nbPoints = options.nbPoints | 50;
     var deltaX = firstPoint[0] - secondPoint[0];
     var intervalX;
 
-    if (deltaX > 180) {
-      deltaX = 360 - deltaX;
+    if (deltaX > 180.0) {
+      deltaX = 360.0 - deltaX;
       intervalX = -deltaX / nbPoints;
-    } else if (deltaX < -180) {
-      deltaX = 360 + deltaX;
+    } else if (deltaX < -180.0) {
+      deltaX = 360.0 + deltaX;
       intervalX = deltaX / nbPoints;
     } else {
       intervalX = deltaX / nbPoints;
@@ -27015,9 +27633,9 @@
     for (var i = 1; i < nbPoints; i++) {
       var x = intermediatePoints[i - 1][0] - intervalX;
 
-      if (x > 180) {
+      if (x > 180.0) {
         x = x - 360;
-      } else if (x < -180) {
+      } else if (x < -180.0) {
         x = x + 360;
       }
 
@@ -27028,6 +27646,16 @@
     intermediatePoints[nbPoints] = secondPoint;
     return intermediatePoints;
   }
+  /**
+   * Calculate distance elevation from a point
+   *
+   * url calcul distance : http://www.movable-type.co.uk/scripts/latlong.html
+   *
+   * @param {Array} firstPoint
+   * @param {Array} secondPoint
+   * @returns {number} distance elevation in kilometers
+   */
+
 
   function calculateDistanceElevation(firstPoint, secondPoint) {
     var R = mizarAPI$2.getCrs().getGeoide().getRealPlanetRadius();
@@ -27040,6 +27668,12 @@
     var distance = R * c;
     return distance / 1000;
   }
+  /**
+   * Calculate distance and elevation for a given point and store it
+   * @param {Array} firstPoint
+   * @param {Array} secondPoint
+   */
+
 
   function storeDistanceAndElevation(firstPoint, secondPoint) {
     var distance = self$2.calculateDistanceElevation(firstPoint, secondPoint);
@@ -27050,11 +27684,18 @@
     var pointElevation = [distance, elevation];
     self$2.elevations.push(pointElevation);
   }
+  /**
+   * Updates Mizar context
+   * @param {Mizar} mizar
+   * @fires Context#backgroundLayer:added
+   * @fires Context#layer:added
+   */
+
 
   function updateContext(mizar) {
     mizarAPI$2 = mizar;
     navigation = mizarAPI$2.getActivatedContext().getNavigation();
-    dragging = false;
+    dragging = false; // Layer containing measure feature
 
     if (!measureLayer) {
       measureLayer = new VectorLayer();
@@ -27073,7 +27714,8 @@
       navigation = mizarAPI$2.getActivatedContext().getNavigation();
       onselect = options.onselect;
       self$2 = this;
-      dragging = false;
+      dragging = false; // Layer containing measure feature
+
       measureLayer = mizarAPI$2.LayerFactory.create({
         type: Constants.LAYER.Vector,
         visible: true
@@ -27096,7 +27738,32 @@
     storeDistanceAndElevation: storeDistanceAndElevation
   };
 
+  /*******************************************************************************
+   * Copyright 2017, 2018 CNES8 CNES - CENTRE NATIONAL d'ETUDES SPATIALES
+   *
+   * This file is part of MIZAR.
+   *
+   * MIZAR is free software: you can redistribute it and/or modify
+   * it under the terms of the GNU General Public License as published by
+   * the Free Software Foundation, either version 3 of the License, or
+   * (at your option) any later version.
+   *
+   * MIZAR is distributed in the hope that it will be useful,
+   * but WITHOUT ANY WARRANTY; without even the implied warranty of
+   * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+   * GNU General Public License for more details.
+   *
+   * You should have received a copy of the GNU General Public License
+   * along with MIZAR. If not, see <http://www.gnu.org/licenses/>.
+   ******************************************************************************/
   var mizarAPI$3, navigation$1, onselect$1, measureLayer$1, self$3, dragging$1;
+  /**********************************************************************************************/
+
+  /**
+   * Get first Geo pick point in terms of cursor position
+   * @param event
+   * @returns {Array} geoPickPoint geo position on the planet
+   */
 
   function _handleMouseDown$2(event) {
     event.preventDefault();
@@ -27105,7 +27772,8 @@
       return;
     }
 
-    self$3.distance = 0;
+    self$3.distance = 0; // Disable standard navigation events
+
     navigation$1.stop();
     dragging$1 = true;
     self$3.elevations = [];
@@ -27118,13 +27786,19 @@
 
     self$3.geoPickPoint = mizarAPI$3.getActivatedContext().getLonLatFromPixel(self$3.pickPoint[0], self$3.pickPoint[1]);
   }
+  /**
+   * Close the measure with the last point
+   * @param event
+   */
+
 
   function _handleMouseUp$2(event) {
     event.preventDefault();
 
     if (!self$3.activated) {
       return;
-    }
+    } // Compute geo radius
+
 
     var stopPickPoint;
 
@@ -27132,7 +27806,8 @@
       stopPickPoint = mizarAPI$3.getActivatedContext().getLonLatFromPixel(event.changedTouches[0].offsetX, event.changedTouches[0].offsetY);
     } else {
       stopPickPoint = mizarAPI$3.getActivatedContext().getLonLatFromPixel(event.layerX, event.layerY);
-    }
+    } // Find angle between start and stop vectors which is in fact the radius
+
 
     var dotProduct = vec3.dot(vec3.normalize(mizarAPI$3.getCrs().get3DFromWorld(stopPickPoint)), vec3.normalize(mizarAPI$3.getCrs().get3DFromWorld(self$3.geoPickPoint)));
     var theta = Math.acos(dotProduct);
@@ -27140,11 +27815,17 @@
 
     if (onselect$1) {
       onselect$1();
-    }
+    } // Enable standard navigation events
+
 
     navigation$1.start();
     dragging$1 = false;
   }
+  /**
+   * Update drawing and label in terms of current point
+   * @param event
+   */
+
 
   function _handleMouseMove$2(event) {
     event.preventDefault();
@@ -27159,26 +27840,40 @@
       self$3.secondPickPoint = [event.layerX, event.layerY];
     }
 
-    self$3.secondGeoPickPoint = mizarAPI$3.getActivatedContext().getLonLatFromPixel(self$3.secondPickPoint[0], self$3.secondPickPoint[1]);
+    self$3.secondGeoPickPoint = mizarAPI$3.getActivatedContext().getLonLatFromPixel(self$3.secondPickPoint[0], self$3.secondPickPoint[1]); //self.storeDistanceAndElevation(self.geoPickPoint, self.secondGeoPickPoint);
+    // Update radius
+
     self$3.distance = Math.sqrt(Math.pow(self$3.secondPickPoint[0] - self$3.pickPoint[0], 2) + Math.pow(self$3.secondPickPoint[1] - self$3.pickPoint[1], 2));
     var dotProduct = vec3.dot(vec3.normalize(mizarAPI$3.getCrs().get3DFromWorld(self$3.secondGeoPickPoint)), vec3.normalize(mizarAPI$3.getCrs().get3DFromWorld(self$3.geoPickPoint)));
     var theta = Math.acos(dotProduct);
     self$3.geoDistance = Numeric.toDegree(theta);
     self$3.updateMeasure();
   }
+  /**************************************************************************************************************/
+
+  /**
+   * Transform coordinates to the right world space dimension
+   * @param points
+   * @returns {Array} points  points transformed
+   */
+
 
   function computeIntersection(points) {
     var rc = self$3.renderContext;
-    var tmpMat = mat4.create();
+    var tmpMat = mat4.create(); // Computes eye in world space
+
     mat4.inverse(rc.viewMatrix, tmpMat);
-    var eye = [tmpMat[12], tmpMat[13], tmpMat[14]];
+    var eye = [tmpMat[12], tmpMat[13], tmpMat[14]]; // Computes the inverse of view/proj matrix
+
     mat4.multiply(rc.projectionMatrix, rc.viewMatrix, tmpMat);
-    mat4.inverse(tmpMat);
+    mat4.inverse(tmpMat); // Transforms the four corners of measured shape into world space
+    // and then for each corner computes the intersection of ray starting from the eye to the sphere
+
     var worldCenter = [0, 0, 0];
 
     for (var i = 0; i < points.length; i++) {
       mat4.multiplyVec4(tmpMat, points[i]);
-      vec3.scale(points[i], 1 / points[i][3]);
+      vec3.scale(points[i], 1.0 / points[i][3]);
       vec3.subtract(points[i], eye, points[i]);
       vec3.normalize(points[i]);
       var ray = new Ray(eye, points[i]);
@@ -27188,6 +27883,8 @@
 
     return points;
   }
+  /**********************************************************************************************/
+
 
   function rotateVector2D$1(vec, theta) {
     theta = Numeric.toRadian(theta);
@@ -27195,13 +27892,22 @@
     var sn = Math.sin(theta);
     return [vec[0] * cs - vec[1] * sn, vec[0] * sn + vec[1] * cs];
   }
+  /**********************************************************************************************/
+
+  /**
+   * Computes the measure for the given pick point depending on the second point (used to draw)
+   * @returns {Array} points to draw
+   */
+
 
   function computeMeasure$1() {
-    var rc = self$3.renderContext;
+    var rc = self$3.renderContext; // Scale to [-1,1]
+
     var widthScale = 2 / rc.canvas.width;
     var heightScale = 2 / rc.canvas.height;
     var diff = [self$3.secondPickPoint[0] - self$3.pickPoint[0], self$3.secondPickPoint[1] - self$3.pickPoint[1]];
-    Numeric.normalize2D(diff);
+    Numeric.normalize2D(diff); // First arrow
+
     var arrow = rotateVector2D$1(diff, 30);
     var arrow2 = rotateVector2D$1(diff, -30);
     arrow = [self$3.pickPoint[0] + 10 * arrow[0], self$3.pickPoint[1] + 10 * arrow[1]];
@@ -27215,10 +27921,17 @@
     this.computeIntersection(points);
     return points;
   }
+  /**********************************************************************************************/
+
+  /**
+   *    Updates measure coordinates
+   */
+
 
   function updateMeasure$1() {
     self$3.clear();
-    var coordinates = self$3.computeMeasure();
+    var coordinates = self$3.computeMeasure(); // Close the polygon
+
     coordinates.push(coordinates[0]);
     self$3.measureFeature = {
       geometry: {
@@ -27265,6 +27978,12 @@
     measureLayer$1.addFeature(self$3.measureFeature);
     measureLayer$1.addFeature(self$3.measureLabel);
   }
+  /**************************************************************************************************************/
+
+  /**
+   *    Clear measureFeature and measureLabel
+   */
+
 
   function clear$1() {
     if (self$3.measureFeature) {
@@ -27282,19 +28001,32 @@
   }
 
   var MeasureToolSkyCore = {
+    /**
+     * @fires Context#backgroundLayer:added
+     * @fires Context#layer:added
+     */
     init: function (options) {
       mizarAPI$3 = options.mizar;
       navigation$1 = mizarAPI$3.getActivatedContext().getNavigation();
       onselect$1 = options.onselect;
       self$3 = this;
-      dragging$1 = false;
+      dragging$1 = false; // Layer containing measure feature
+
       measureLayer$1 = mizarAPI$3.LayerFactory.create({
         type: Constants.LAYER.Vector,
         visible: true
       });
       mizarAPI$3.getSkyContext().addDraw(measureLayer$1);
       this.activated = false;
-      this.renderContext = mizarAPI$3.getRenderContext();
+      this.renderContext = mizarAPI$3.getRenderContext(); // Measure attributes
+
+      /*this.pickPoint; // Window pick point
+              this.secondPickPoint; // Window second pick point
+              this.geoPickPoint; // Pick point in geographic reference
+              this.secondGeoPickPoint; // Pick point in geographic reference
+              this.measureLabel;
+              */
+
       this.elevations = [];
       this.measureFeature = null;
     },
@@ -27663,8 +28395,34 @@
     }
   };
 
+  /*******************************************************************************
+   * Copyright 2017, 2018 CNES - CENTRE NATIONAL d'ETUDES SPATIALES
+   *
+   * This file is part of MIZAR.
+   *
+   * MIZAR is free software: you can redistribute it and/or modify
+   * it under the terms of the GNU General Public License as published by
+   * the Free Software Foundation, either version 3 of the License, or
+   * (at your option) any later version.
+   *
+   * MIZAR is distributed in the hope that it will be useful,
+   * but WITHOUT ANY WARRANTY; without even the implied warranty of
+   * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+   * GNU General Public License for more details.
+   *
+   * You should have received a copy of the GNU General Public License
+   * along with MIZAR. If not, see <http://www.gnu.org/licenses/>.
+   ******************************************************************************/
   var mizarAPI$4;
   var coverageServiceUrl;
+  /**************************************************************************************************************/
+
+  /**
+   *    Create moc sublayer
+   *
+   *    @param layer Parent layer
+   *    @fires Context#layer:add
+   */
 
   function createMocSublayer(layer, successCallback, errorCallback) {
     var ID;
@@ -27686,24 +28444,38 @@
 
     return ID;
   }
+  /**************************************************************************************************************/
+
+  /**
+   *    Handle moc layer as a sublayer
+   *
+   *    @param layer Parent layer
+   *    @param mocServiceUrl Url to moc service
+   *    @fires Context#backgroundLayer:added
+   *    @fires Context#layer:added
+   */
+
 
   function handleMocLayer(layer, mocServiceUrl) {
-    var style;
+    var style; // checks if style is defined
 
     if (layer.getStyle()) {
       style = layer.getStyle();
       style.fill = true;
 
       if (style.hasOwnProperty("fillColor")) {
+        // add transparency when fill color is defined
         style.fillColor[3] = 0.3;
       } else {
-        style.fillColor = [1, 0, 0, 0.3];
+        // no predefined color, set one
+        style.fillColor = [1.0, 0.0, 0.0, 0.3];
       }
     } else {
+      // no style, create a new one.
       style = new FeatureStyle({
         rendererHint: "Basic",
         fill: true,
-        fillColor: [1, 0, 0, 0.3]
+        fillColor: [1.0, 0.0, 0.0, 0.3]
       });
     }
 
@@ -27715,12 +28487,26 @@
     });
     return ID;
   }
+  /**************************************************************************************************************/
+
+  /**
+   *    Search moc sublayer
+   *    @return    Moc layer if found, null otherwise
+   */
+
 
   function findMocSublayer(layerID) {
     return mizarAPI$4.getLayerByID(layerID);
   }
+  /**************************************************************************************************************/
+
+  /**
+   *    Intersect layers
+   */
+
 
   function intersectLayers(layersToIntersect) {
+    // Construct url & layerNames
     var url = coverageServiceUrl;
     var layerNames = "";
 
@@ -27733,7 +28519,8 @@
         url += ";";
         layerNames += " x ";
       }
-    }
+    } // Create intersection MOC layer
+
 
     var intersectionLayer = new MocLayer({
       name: "Intersection( " + layerNames + " )",
@@ -27741,7 +28528,7 @@
       style: new FeatureStyle({
         rendererHint: "Basic",
         fill: true,
-        fillColor: [1, 0, 0, 0.3]
+        fillColor: [1.0, 0.0, 0.0, 0.3]
       }),
       visible: false
     });
@@ -27749,16 +28536,39 @@
     intersectionLayer.describeUrl = url;
     return intersectionLayer;
   }
+  /**************************************************************************************************************/
+
 
   var MocBase = {
     init: function (m, options) {
-      mizarAPI$4 = m;
+      mizarAPI$4 = m; //coverageServiceUrl = "TODO must use AbstractLayer to get info";//options.coverageService.baseUrl;
+      //TODO must use AbstractLayer to get this information
     },
     createMocSublayer: createMocSublayer,
     findMocSublayer: findMocSublayer,
+    //getSkyCoverage: getSkyCoverage,
+    //requestSkyCoverage: requestSkyCoverage,
     intersectLayers: intersectLayers
   };
 
+  /*******************************************************************************
+   * Copyright 2017, 2018 CNES - CENTRE NATIONAL d'ETUDES SPATIALES
+   *
+   * This file is part of MIZAR.
+   *
+   * MIZAR is free software: you can redistribute it and/or modify
+   * it under the terms of the GNU General Public License as published by
+   * the Free Software Foundation, either version 3 of the License, or
+   * (at your option) any later version.
+   *
+   * MIZAR is distributed in the hope that it will be useful,
+   * but WITHOUT ANY WARRANTY; without even the implied warranty of
+   * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+   * GNU General Public License for more details.
+   *
+   * You should have received a copy of the GNU General Public License
+   * along with MIZAR. If not, see <http://www.gnu.org/licenses/>.
+   ******************************************************************************/
   var mizarAPI$5;
   var mizarBaseUrl;
   var navigation$2;
@@ -27772,15 +28582,23 @@
   var context;
   var self$4;
   var imageObj;
+  /**
+   *  Newton-Raphson method to find auxiliary theta needed for mollweide x/y computation
+   *  @param lat latitude
+   *  @see https://en.wikipedia.org/wiki/Mollweide_projection
+   *  @return theta
+   */
 
   function _findTheta$1(lat) {
+    // Avoid divide by zero
     if (Math.abs(lat) === Math.PI / 2) {
       return lat;
     }
 
     var epsilon = 0.001;
-    var thetaN;
-    var thetaN1;
+    var thetaN; // n
+
+    var thetaN1; // n+1
 
     do {
       thetaN = thetaN1;
@@ -27795,6 +28613,15 @@
 
     return thetaN1;
   }
+  /**********************************************************************************************/
+
+  /**
+   *  Canvas 2D point
+   *  @param {Object} options
+   *      <ul>
+   *          <li>options : x,y, color, size</li>
+   */
+
 
   var Point = function (options) {
     this.x = options.x | 0;
@@ -27808,37 +28635,72 @@
       }
     }
   };
+  /**********************************************************************************************/
+
+  /**
+   *  Compute mollweide position for given 3D position
+   *  @param {Array} pos position
+   *  @return {Array} x,y coordinates
+   */
+
 
   function computeMollweidePosition(pos) {
     var coordinateSystem = mizarAPI$5.getCrs();
     var geoPos = coordinateSystem.getWorldFrom3D(pos);
-    if (geoPos[0] > 180) geoPos[0] -= 360;
-    var lambda = Numeric.toRadian(geoPos[0]);
-    var theta0 = Numeric.toRadian(geoPos[1]);
+    if (geoPos[0] > 180) geoPos[0] -= 360; //var geoPos = coordinateSystem.from3DToEquatorial(pos, null, false);
+    //geoPos = coordinateSystem.convert(geoPos, Constants.CRS.Equatorial, coordinateSystem.getGeoideName());
+    //geoPos = coordinateSystem.fromEquatorialToGeo(geoPos, null, false);
 
-    var auxTheta = _findTheta$1(theta0);
+    var lambda = Numeric.toRadian(geoPos[0]); // longitude
+
+    var theta0 = Numeric.toRadian(geoPos[1]); // latitude
+
+    var auxTheta = _findTheta$1(theta0); // Transfrom to Mollweide coordinate system
+
 
     var mollX = 2 * Math.sqrt(2) / Math.PI * lambda * Math.cos(auxTheta);
-    var mollY = Math.sqrt(2) * Math.sin(auxTheta);
+    var mollY = Math.sqrt(2) * Math.sin(auxTheta); // Transform to image space
+    //    2.8: max x value in Mollweide projection
+    //    1.38: max y value in Mollweide projection
+
     var x = -mollX * halfWidth / 2.8 + halfWidth + halfPaddingX;
     var y = -mollY * halfHeight / 1.38 + halfHeight + halfPaddingY;
     return [x, y];
   }
+  /**********************************************************************************************/
+
+  /**
+   *  Update navigation eye for the given mouse coordinates
+   *  @param {Array} moll
+   */
+
 
   function updateNavigation(moll) {
+    // Transform to Mollweide space
     center3d.x = -(moll[0] - halfWidth - halfPaddingX) * 2.8 / halfWidth;
-    center3d.y = -(moll[1] - halfHeight - halfPaddingY) * 1.38 / halfHeight;
+    center3d.y = -(moll[1] - halfHeight - halfPaddingY) * 1.38 / halfHeight; // Transform to geographic coordinate system
+    // http://mathworld.wolfram.com/MollweideProjection.html
+
     var auxTheta = Math.asin(center3d.y / Math.sqrt(2));
     var phi = Math.asin((2 * auxTheta + Math.sin(2 * auxTheta)) / Math.PI);
     var lambda = Math.PI * center3d.x / (2 * Math.sqrt(2) * Math.cos(auxTheta));
-    var geo = [Numeric.toDegree(lambda), Numeric.toDegree(phi)];
+    var geo = [Numeric.toDegree(lambda), Numeric.toDegree(phi)]; // Update navigation
+
     mizarAPI$5.getCrs().get3DFromWorld(geo, navigation$2.center3d);
     navigation$2.computeViewMatrix();
   }
+  /**********************************************************************************************/
+
+  /**
+   *  Function updating the position of center of camera on mollweide element
+   */
+
 
   function updateMollweideFov() {
+    // Reinit canvas
     context.clearRect(0, 0, context.canvas.width, context.canvas.height);
-    context.drawImage(imageObj, 0, 0);
+    context.drawImage(imageObj, 0, 0); // Draw fov
+
     context.fillStyle = "rgb(255,0,0)";
     var stepX = mizarAPI$5.getRenderContext().canvas.clientWidth / (tesselation - 1);
     var stepY = mizarAPI$5.getRenderContext().canvas.clientHeight / (tesselation - 1);
@@ -27847,19 +28709,25 @@
     var mPos;
 
     for (var i = 0; i < tesselation; i++) {
+      // Width
       for (var j = 0; j < tesselation; j++) {
+        // Height
         ray = Ray.createFromPixel(mizarAPI$5.getRenderContext(), i * stepX, j * stepY);
         pos3d = ray.computePoint(ray.sphereIntersect([0, 0, 0], mizarAPI$5.getCrs().getGeoide().getRadius()));
-        mPos = computeMollweidePosition(pos3d);
+        mPos = computeMollweidePosition(pos3d); // Draw on canvas 2d
+
         context.fillRect(mPos[0], mPos[1], 2, 2);
       }
-    }
+    } // Draw center
+
 
     context.fillStyle = center3d.color;
     mPos = computeMollweidePosition(navigation$2.center3d);
     center3d.x = mPos[0] - center3d.size / 2;
-    center3d.y = mPos[1] - center3d.size / 2;
-    context.fillRect(mPos[0] - center3d.size / 2, mPos[1] - center3d.size / 2, center3d.size, center3d.size);
+    center3d.y = mPos[1] - center3d.size / 2; // Draw on canvas 2d
+
+    context.fillRect(mPos[0] - center3d.size / 2, mPos[1] - center3d.size / 2, center3d.size, center3d.size); // Update fov degrees
+
     var fov = navigation$2.getFov();
     var fovx = Numeric.roundNumber(fov[0], 2);
     fovx = mizarAPI$5.getCrs().fromDegreesToDMS(fovx);
@@ -27871,21 +28739,29 @@
   function updateGalaxyProjection(ctx) {
     $(self$4.getImageObj()).attr("src", mizarBaseUrl + "css/images/MollweideSky_" + ctx.getCoordinateSystem().getGeoideName() + ".png");
   }
+  /**********************************************************************************************/
+
 
   var MollweideViewerCore = {
     init: function (options) {
       mizarAPI$5 = options.mizar;
-      mizarBaseUrl = options.mizarBaseUrl;
+      mizarBaseUrl = options.mizarBaseUrl; // Init options
+
       navigation$2 = mizarAPI$5.getActivatedContext().getNavigation();
       halfPaddingX = 16;
-      halfPaddingY = 8;
+      halfPaddingY = 8; // Grid background dimensions
+
       halfHeight = 50;
-      halfWidth = 100;
-      tesselation = 9;
+      halfWidth = 100; // Level of tesselation to represent fov
+
+      tesselation = 9; // Must be >= 2
+      // Center of fov
+
       center3d = new Point({
         size: 5,
         color: "rgb(255,255,0)"
-      });
+      }); // Init image background
+
       canvas$1 = document.getElementById("mollweideCanvas");
       context = canvas$1.getContext("2d");
       self$4 = this;
@@ -31575,11 +32451,39 @@
     return jss;
   }();
 
+  /*******************************************************************************
+   * Copyright 2017, 2018 CNES - CENTRE NATIONAL d'ETUDES SPATIALES
+   *
+   * This file is part of MIZAR.
+   *
+   * MIZAR is free software: you can redistribute it and/or modify
+   * it under the terms of the GNU General Public License as published by
+   * the Free Software Foundation, either version 3 of the License, or
+   * (at your option) any later version.
+   *
+   * MIZAR is distributed in the hope that it will be useful,
+   * but WITHOUT ANY WARRANTY; without even the implied warranty of
+   * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+   * GNU General Public License for more details.
+   *
+   * You should have received a copy of the GNU General Public License
+   * along with MIZAR. If not, see <http://www.gnu.org/licenses/>.
+   ******************************************************************************/
   let mizar;
-  let connector;
+  let connector; // SAMP connector
+  // var pointAtReceived = false; // Parameter avoiding looping while receiving coord.pointAt.sky SAMP event
+  //var votable2geojsonBaseUrl;
+
+  /**************************************************************************************************************/
+
+  /**
+   *    Create SAMP ClientTracker object which handles incoming messages
+   */
 
   function createClientTracker() {
-    const clientTracker = new samp.ClientTracker();
+    // Initialize client tracker
+    const clientTracker = new samp.ClientTracker(); // Init available samp income message handlers(as ping, load.votable..)
+
     const callHandler = clientTracker.callHandler;
 
     callHandler["samp.app.ping"] = function (senderId, message, isCall) {
@@ -31591,10 +32495,77 @@
     };
 
     callHandler["table.load.votable"] = function (senderId, message, isCall) {
-      ErrorDialog.open(Constants.LEVEL.ERROR, "votable2geojson plugin base url isn't defined");
-    };
+      //if (votable2geojsonBaseUrl) {
+      //TODO : convert in GeoJson
+      //var params = message["samp.params"];
+      //var origUrl = params.url;
+      //var proxyUrl = clientTracker.connection.translateUrl(origUrl);
+      //Utils.convertVotable2JsonFromURL(proxyUrl, function (response) {
+      // Add feature collection
+      //    JsonProcessor.handleFeatureCollection(sampLayer, response);
+      //    sampLayer.addFeatureCollection(response);
+      //});
+      //} else {
+      ErrorDialog.open(Constants.LEVEL.ERROR, "votable2geojson plugin base url isn't defined"); //}
+    }; // callHandler["table.highlight.row"] = function(senderId, message, isCall) {
+    // 	var params = message["samp.params"];
+    // 	var url = params['url'];
+    // 	var row = params['row'];
+    // 	if ( highlightedData )
+    // 	{
+    // 		highlightedData.layer.modifyFeatureStyle( highlightedData.feature, highlightedData.layer.style );
+    // 	}
+    // 	if ( tables[url] )
+    // 	{
+    // 		var layer = tables[url].layer;
+    // 		var feature = tables[url].features[parseInt(row)];
+    // 		layer.modifyFeatureStyle( feature, highlightStyle );
+    // 		highlightedData = {
+    // 			layer: layer,
+    // 			feature: feature
+    // 		}
+    // 		var barycenter = Utils.computeGeometryBarycenter( feature.geometry );
+    // 		navigation.zoomTo( barycenter, (navigation.renderContext.fov < 1. ? navigation.renderContext.fov : 1.), 300. );
+    // 	}
+    // };
 
-    callHandler["image.load.fits"] = function (senderId, message, isCall) {};
+
+    callHandler["image.load.fits"] = function (senderId, message, isCall) {// var params = message["samp.params"];
+      //
+      // // Create feature
+      // var feature = {
+      //     "geometry": {
+      //         "gid": params.name,
+      //         "coordinates": [],
+      //         "type": "Polygon"
+      //     },
+      //     "properties": {
+      //         "identifier": params.name
+      //     },
+      //     "services": {
+      //         "download": {
+      //             "mimetype": "image/fits",
+      //             "url": params['image-id']
+      //         }
+      //     },
+      //     "type": "Feature"
+      // };
+      //
+      // // Get fits texture from url
+      // var featureData = {
+      //     layer: sampLayer,
+      //     feature: feature,
+      //     isFits: true
+      // };
+      // var url = sitoolsBaseUrl + "/proxy?external_url=" + encodeURIComponent(params['image-id']);
+      // mizar.publish("image:add", featureData);
+      // imageManager.computeFits(featureData, url, function (featureData, fits) {
+      //     // Update feature coordinates according to Fits header
+      //     var coords = Utils.getPolygonCoordinatesFromFits(fits);
+      //     featureData.feature.geometry.coordinates = [coords];
+      //     sampLayer.addFeature(featureData.feature);
+      // });
+    };
 
     callHandler["coord.pointAt.sky"] = function (senderId, message, isCall) {
       pointAtReceived = true;
@@ -31606,6 +32577,7 @@
     };
 
     callHandler["samp.hub.event.unregister"] = function (senderId, message, isCall) {
+      // Update jQuery UI buttons
       $("#registerSamp").removeAttr("disabled").button("refresh");
       $("#unregisterSamp").attr("disabled", "disabled").button("refresh");
       $("#sampInvoker").toggleClass("selected");
@@ -31613,15 +32585,23 @@
 
     return clientTracker;
   }
+  /**************************************************************************************************************/
+
+  /**
+   *    Init SAMP connector
+   */
+
 
   function initSamp(mizarAPI) {
     mizar = mizarAPI;
-    const clientTracker = createClientTracker();
+    const clientTracker = createClientTracker(); // Samp event callbacks
+
     const logCc = {
       receiveNotification: function (senderId, message) {
         clientTracker.receiveNotification(senderId, message);
 
         if (message["samp.mtype"] === "samp.hub.event.subscriptions") {
+          // Update jQuery UI buttons
           $("#unregisterSamp").removeAttr("disabled").button("refresh");
           $("#registerSamp").attr("disabled", "disabled").button("refresh");
           $("#sampInvoker").addClass("selected");
@@ -31636,24 +32616,36 @@
       init: function (connection) {
         clientTracker.init(connection);
       }
-    };
+    }; // Meta-data
+
     const meta = {
       "samp.name": "Mizar",
       "samp.description.text": "Module for Interactive visualiZation from Astronomical Repositories",
       "mizar.version": "v1.0",
       "author.affiliation": "CNES/TPZ",
       "home.page": "http://github.com/MizarWeb"
-    };
+    }; // Generate subscriptions map
+
     const subs = clientTracker.calculateSubscriptions();
-    connector = new samp.Connector("Mizar", meta, logCc, subs);
+    connector = new samp.Connector("Mizar", meta, logCc, subs); // Uncomment for automatic registration(check every 2 sec if Hub is available)
+    // Adjusts page content depending on whether the hub exists or not.
+    // var configureSampEnabled = function(isHubRunning) {
+    //     // TODO
+    // };
+    // connector.onHubAvailability(configureSampEnabled, 2000);
+    // Registration status element is updated by samp.js
+
     connector.regTextNodes.push($("#sampResult")[0]);
     return connector;
   }
+  /**************************************************************************************************************/
+
 
   var SampCore = {
     initSamp: initSamp,
     sendImage: function (url) {
       if (this.isConnected()) {
+        // Send message
         const msg = new samp.Message("image.load.fits", {
           url: url
         });
@@ -31665,30 +32657,108 @@
     },
     sendVOTable: function (layer, url) {
       if (this.isConnected()) {
+        // Send message
         const msg = new samp.Message("table.load.votable", {
           url: url + "&media=votable"
         });
-        connector.connection.notifyAll([msg]);
+        connector.connection.notifyAll([msg]); // Part used to highlighting
+        // $.ajax({
+        // 	type: "GET",
+        // 	url: url,
+        // 	success: function(response) {
+        // 		if ( response.totalResults > 0 )
+        // 		{
+        // 			// Store table to be able to highlight features later
+        // 			tables[ url+'&media=votable' ] = {
+        // 				layer: layer,
+        // 				features: []
+        // 			};
+        // 			for ( var i=0; i<response.features.length; i++ )
+        // 			{
+        // 				var feature = response.features[i];
+        // 				tables[url+'&media=votable'].features.push(feature);
+        // 			}
+        // 		}
+        // 		// Send message
+        // 		var msg = new samp.Message("table.load.votable", {url: url+"&media=votable"});
+        // 		connector.connection.notifyAll([msg]);
+        // 	},
+        // 	error: function(thrownError)
+        // 	{
+        // 		console.error(thrownError);
+        // 	}
+        // });
+
         return "VOTable has been sent";
       } else {
         return "Connect to SAMP Hub first";
       }
     },
-    highlightFeature: function (layer, feature) {},
+    // Commented part is used for highlighting feature which wasn't implemented due to
+    // difficulty of SAMP protocol (client doesn't know the feature from row)
+    highlightFeature: function (layer, feature) {
+      /**if (this.isConnected()) {
+                  // for ( var url in tables )
+                  // {
+                  // 	var table = tables[url];
+                  // 	if ( layer == table.layer )
+                  // 	{
+                  // 		var featureToHighlight = _.filter( table.features, function(x){ return(feature.properties.identifier == x.properties.identifier) } );
+                  // 		if ( featureToHighlight.length )
+                  // 		{
+                  // var featureRow = table.features.indexOf(featureToHighlight[0]);
+                  // var msg = new samp.Message("table.highlight.row", {url: url, row: featureRow.toString()});
+                  // connector.connection.notifyAll([msg]);
+                  // 		}
+                  // 	}
+                  // }
+              }
+              */
+    },
     isConnected: function () {
       return connector.connection;
     }
   };
 
+  /*******************************************************************************
+   * Copyright 2017, 2018 CNES - CENTRE NATIONAL d'ETUDES SPATIALES
+   *
+   * This file is part of MIZAR.
+   *
+   * MIZAR is free software: you can redistribute it and/or modify
+   * it under the terms of the GNU General Public License as published by
+   * the Free Software Foundation, either version 3 of the License, or
+   * (at your option) any later version.
+   *
+   * MIZAR is distributed in the hope that it will be useful,
+   * but WITHOUT ANY WARRANTY; without even the implied warranty of
+   * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+   * GNU General Public License for more details.
+   *
+   * You should have received a copy of the GNU General Public License
+   * along with MIZAR. If not, see <http://www.gnu.org/licenses/>.
+   ******************************************************************************/
   var ctx$1, navigation$3, onselect$2;
+  /**
+   *    @constructor
+   *    @param options Configuration options
+   *        <ul>
+   *            <li>planet: planet</li>
+   *            <li>navigation: Navigation</li>
+   *            <li>onselect: On selection callback</li>
+   *            <li>style: Selection tool style</li>
+   *        </ul>
+   */
 
   var SelectionToolCore = function (options) {
+    // Required options
     ctx$1 = options.ctx;
     navigation$3 = ctx$1.getNavigation();
     onselect$2 = options.onselect;
     this.activated = options.activated || false;
     this.renderContext = ctx$1.getRenderContext();
-    this.coordinateSystem = ctx$1.getCoordinateSystem();
+    this.coordinateSystem = ctx$1.getCoordinateSystem(); // Set style
+
     var style;
 
     if (options.style) {
@@ -31697,17 +32767,23 @@
       style = new FeatureStyle();
     }
 
-    style.zIndex = Constants.DISPLAY.SELECTED_VECTOR;
+    style.zIndex = Constants.DISPLAY.SELECTED_VECTOR; // Layer containing selection feature
+
     this.selectionLayer = new VectorLayer({
       style: style,
       visible: true
     });
     ctx$1.addDraw(this.selectionLayer);
-    this.selectionFeature = null;
-    this.radius = null;
-    this.pickPoint = null;
-    this.geoRadius = null;
-    this.geoPickPoint = null;
+    this.selectionFeature = null; // Selection attributes
+
+    this.radius = null; // Window radius
+
+    this.pickPoint = null; // Window pick point
+
+    this.geoRadius = null; // Radius in geographic reference
+
+    this.geoPickPoint = null; // Pick point in geographic reference
+
     var self = this;
     var dragging = false;
     var state;
@@ -31717,14 +32793,16 @@
 
       if (!self.activated && !self.selectionFeature) {
         return;
-      }
+      } // Dragging : moving/resizing OR drawing selection
+
 
       if (self.activated) {
+        // Draw
         navigation$3.stop();
         dragging = true;
         self.pickPoint = pickPoint;
         self.geoPickPoint = geoPickPoint;
-        self.radius = 0;
+        self.radius = 0.0;
         state = "resize";
       } else {
         var pickIsInside = UtilsIntersection.pointInRing(geoPickPoint, self.selectionFeature.geometry.coordinates[0]);
@@ -31734,8 +32812,9 @@
         }
 
         navigation$3.stop();
-        dragging = true;
-        var inside = false;
+        dragging = true; // Resize/move
+
+        var inside = false; // Check if user clicked on one of control points
 
         for (var i = 0; i < self.selectionFeature.geometry.coordinates[0].length; i++) {
           var controlPoint = self.selectionFeature.geometry.coordinates[0][i];
@@ -31757,11 +32836,13 @@
       var geoPickPoint = ctx$1.getLonLatFromPixel(event.layerX, event.layerY);
 
       if (state === "resize") {
+        // Update radius
         self.radius = Math.sqrt(Math.pow(event.layerX - self.pickPoint[0], 2) + Math.pow(event.layerY - self.pickPoint[1], 2));
         self.computeGeoRadius(geoPickPoint);
       } else if (state === "move") {
+        // Update pick point position
         self.pickPoint = [event.layerX, event.layerY];
-        self.geoPickPoint = ctx$1.getLonLatFromPixel(event.layerX, event.layerY);
+        self.geoPickPoint = ctx$1.getLonLatFromPixel(event.layerX, event.layerY); // TODO: scale radius of selection shape if fov has been changed(or not?)
       }
 
       self.updateSelection();
@@ -31775,34 +32856,55 @@
 
       if (self.activated && onselect$2) {
         onselect$2(coordinates);
-      }
+      } // Reactivate standard navigation events
+
 
       navigation$3.start();
       dragging = false;
     });
   };
+  /**********************************************************************************************/
+
+  /**
+   *    Compute selection tool radius between pickPoint and the given point
+   *    @param {Array} pt point
+   */
+
 
   SelectionToolCore.prototype.computeGeoRadius = function (pt) {
+    // Find angle between start and stop vectors which is in fact the radius
     var dotProduct = vec3.dot(vec3.normalize(this.coordinateSystem.get3DFromWorld(pt)), vec3.normalize(this.coordinateSystem.get3DFromWorld(this.geoPickPoint)));
     var theta = Math.acos(dotProduct);
     this.geoRadius = Numeric.toDegree(theta);
   };
+  /**********************************************************************************************/
+
+  /**
+   *    Compute selection for the given pick point depending on radius
+   *    @return {Array} points
+   */
+
 
   SelectionToolCore.prototype.computeSelection = function () {
     var rc = this.renderContext;
-    var tmpMat = mat4.create();
+    var tmpMat = mat4.create(); // Compute eye in world space
+
     mat4.inverse(rc.viewMatrix, tmpMat);
-    var eye = [tmpMat[12], tmpMat[13], tmpMat[14]];
+    var eye = [tmpMat[12], tmpMat[13], tmpMat[14]]; // Compute the inverse of view/proj matrix
+
     mat4.multiply(rc.projectionMatrix, rc.viewMatrix, tmpMat);
-    mat4.inverse(tmpMat);
+    mat4.inverse(tmpMat); // Scale to [-1,1]
+
     var widthScale = 2 / rc.canvas.width;
     var heightScale = 2 / rc.canvas.height;
-    var points = [[(this.pickPoint[0] - this.radius) * widthScale - 1, (rc.canvas.height - this.pickPoint[1] - this.radius) * heightScale - 1, 1, 1], [(this.pickPoint[0] - this.radius) * widthScale - 1, (rc.canvas.height - this.pickPoint[1] + this.radius) * heightScale - 1, 1, 1], [(this.pickPoint[0] + this.radius) * widthScale - 1, (rc.canvas.height - this.pickPoint[1] + this.radius) * heightScale - 1, 1, 1], [(this.pickPoint[0] + this.radius) * widthScale - 1, (rc.canvas.height - this.pickPoint[1] - this.radius) * heightScale - 1, 1, 1]];
+    var points = [[(this.pickPoint[0] - this.radius) * widthScale - 1.0, (rc.canvas.height - this.pickPoint[1] - this.radius) * heightScale - 1.0, 1, 1], [(this.pickPoint[0] - this.radius) * widthScale - 1.0, (rc.canvas.height - this.pickPoint[1] + this.radius) * heightScale - 1.0, 1, 1], [(this.pickPoint[0] + this.radius) * widthScale - 1.0, (rc.canvas.height - this.pickPoint[1] + this.radius) * heightScale - 1.0, 1, 1], [(this.pickPoint[0] + this.radius) * widthScale - 1.0, (rc.canvas.height - this.pickPoint[1] - this.radius) * heightScale - 1.0, 1, 1]]; // Transform the four corners of selection shape into world space
+    // and then for each corner compute the intersection of ray starting from the eye with the sphere
+
     var worldCenter = [0, 0, 0];
 
     for (var i = 0; i < 4; i++) {
       mat4.multiplyVec4(tmpMat, points[i]);
-      vec3.scale(points[i], 1 / points[i][3]);
+      vec3.scale(points[i], 1.0 / points[i][3]);
       vec3.subtract(points[i], eye, points[i]);
       vec3.normalize(points[i]);
       var ray = new Ray(eye, points[i]);
@@ -31812,13 +32914,20 @@
 
     return points;
   };
+  /**************************************************************************************************************/
+
+  /**
+   *    Update selection coordinates
+   */
+
 
   SelectionToolCore.prototype.updateSelection = function () {
     if (this.selectionFeature) {
       this.selectionLayer.removeFeature(this.selectionFeature);
     }
 
-    var coordinates = this.computeSelection();
+    var coordinates = this.computeSelection(); // Close the polygon
+
     coordinates.push(coordinates[0]);
     this.selectionFeature = {
       geometry: {
@@ -31836,16 +32945,29 @@
     };
     this.selectionLayer.addFeature(this.selectionFeature);
   };
+  /**************************************************************************************************************/
+
+  /**
+   *    Activate/desactivate the tool
+   */
+
 
   SelectionToolCore.prototype.toggle = function () {
     this.activated = !this.activated;
 
     if (this.activated) {
+      // TODO : Find more sexy image for cursor
       $(this.renderContext.canvas).css("cursor", "url(css/images/selectionCursor.png)");
     } else {
       $(this.renderContext.canvas).css("cursor", "default");
     }
   };
+  /**************************************************************************************************************/
+
+  /**
+   *    Clear selection
+   */
+
 
   SelectionToolCore.prototype.clear = function () {
     if (this.selectionFeature) {
@@ -52573,9 +53695,22 @@
       mizarAPI$8 = m;
       this.setContext(mizarAPI$8.getActivatedContext());
     },
+
+    /**************************************************************************************************************/
+
+    /**
+     *    Send request to reverse name resolver service for the given gepoint
+     *    @param geoPick    Geographic position of point of interest
+     *    @param options
+     *        <li>success: Function called on success with the response of server as argument</li>
+     *        <li>error: Function called on error with the xhr object as argument</li>
+     *    @fires Mizar#plugin:not_found
+     */
     sendRequest: function (geoPick, options) {
+      // Currently only sky context is handled
 
       if (mizarAPI$8.getActivatedContext().getMode() === Constants.CONTEXT.Sky) {
+        // Find max order
         var maxOrder = 3;
         mizarAPI$8.getActivatedContext().getTileManager().visitTiles(function (tile) {
           if (maxOrder < tile.order) {
@@ -52608,14 +53743,20 @@
         }
       }
     },
+
+    /**
+     *    Set new context
+     */
     setContext: function (ctx) {
-      context$2 = ctx;
+      context$2 = ctx; //instantiate reverse name resolver nameResolverImplementation object
+
       var reverseNameResolverClass;
 
       if (typeof context$2.getContextConfiguration().reverseNameResolver !== "undefined") {
         reverseNameResolverClass = commonjsRequire(context$2.getContextConfiguration().reverseNameResolver.jsObject);
         reverseNameResolverImplementation = new reverseNameResolverClass(context$2);
       } else {
+        //Use default reverse name resolver if none defined...
         reverseNameResolverImplementation = new DefaultReverseNameResolver(context$2);
       }
     }
@@ -53372,37 +54513,114 @@
     return result;
   };
 
+  /*******************************************************************************
+   * Copyright 2017, 2018 CNES - CENTRE NATIONAL d'ETUDES SPATIALES
+   *
+   * This file is part of MIZAR.
+   *
+   * MIZAR is free software: you can redistribute it and/or modify
+   * it under the terms of the GNU General Public License as published by
+   * the Free Software Foundation, either version 3 of the License, or
+   * (at your option) any later version.
+   *
+   * MIZAR is distributed in the hope that it will be useful,
+   * but WITHOUT ANY WARRANTY; without even the implied warranty of
+   * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+   * GNU General Public License for more details.
+   *
+   * You should have received a copy of the GNU General Public License
+   * along with MIZAR. If not, see <http://www.gnu.org/licenses/>.
+   ******************************************************************************/
+  /**
+   * @name TimeTravelParams
+   * @class
+   * Management of time travel
+   */
+
   var TimeTravelParams$1 = function () {
     this.currentDate = new Date();
     this.currentPeriod = {
       from: null,
       to: null
-    };
+    }; // this.currentDisplayDate = moment(this.currentDate).format(moment(this.currentDate).creationData().format);
+
     this.currentDisplayDate = this.currentDate.toISOString();
     this.minDate = null;
     this.maxDate = null;
-    this.ctx = null;
-    this.samples = [];
-    this.enumeratedValues = new TimeEnumerated();
+    this.ctx = null; // List of samples
+
+    this.samples = []; // Enumerated values
+
+    this.enumeratedValues = new TimeEnumerated(); // TODO: internationalized
+
     Moment.locale("fr");
   };
+  /**************************************************************************************************************/
+
+  /**
+   * Set the context
+   * @function setContext
+   * @param ctx Context context
+   * @memberof TimeTravelParams#
+   */
+
 
   TimeTravelParams$1.prototype.setContext = function (ctx) {
     this.ctx = ctx;
     this.apply();
   };
+  /**************************************************************************************************************/
+
+  /**
+   * Set the current date
+   * @function setCurrentDate
+   * @param date Date current date
+   * @memberof TimeTravelParams#
+   */
+
 
   TimeTravelParams$1.prototype.setCurrentDate = function (date) {
     this.currentDate = Moment.utc(date);
   };
+  /**************************************************************************************************************/
+
+  /**
+   * Get the current date
+   * @function getCurrentDate
+   * @return Date current date
+   * @memberof TimeTravelParams#
+   */
+
 
   TimeTravelParams$1.prototype.getCurrentDate = function () {
     return this.currentDate;
   };
+  /**************************************************************************************************************/
+
+  /**
+   * Get the current period
+   * @function getCurrentPeriod
+   * @return {Json} period { "from", "to" }
+   * @memberof TimeTravelParams#
+   */
+
 
   TimeTravelParams$1.prototype.getCurrentPeriod = function () {
     return this.currentPeriod;
   };
+  /**************************************************************************************************************/
+
+  /**
+   * Add a sample
+   * @function addSample
+   * @param {Date} start Start date
+   * @param {Date} end End date
+   * @param {string} stepKind Step kind
+   * @param {Integer} stepValue Step value
+   * @param {string} ID Layer ID
+   * @memberof TimeTravelParams#
+   */
+
 
   TimeTravelParams$1.prototype.addSample = function (start, end, stepKind, stepValue, ID) {
     var sample = new TimeSample();
@@ -53413,6 +54631,15 @@
     sample.setLayerID(ID);
     this.samples.push(sample);
   };
+  /**************************************************************************************************************/
+
+  /**
+   * Add values
+   * @function add values
+   * @param {Json} parameters Parameters
+   * @memberof TimeTravelParams#
+   */
+
 
   TimeTravelParams$1.prototype.addValues = function (parameters) {
     if (!parameters) {
@@ -53422,8 +54649,10 @@
     var saveCurrentValue = this.currentDate;
 
     if (parameters.enumeratedValues) {
+      // Add to enumerated
       this.enumeratedValues.addEnumeratedValuesForID(parameters.enumeratedValues, parameters.ID);
     } else if (parameters.start && parameters.end && parameters.stepKind && parameters.stepValue && parameters.ID) {
+      // Add a new sample
       this.addSample(parameters.start, parameters.end, parameters.stepKind, parameters.stepValue, parameters.ID);
     } else {
       ErrorDialog.open(Constants.LEVEL.WARNING, "Can't understand add values for time travel with parameters : " + parameters);
@@ -53431,6 +54660,15 @@
 
     this.setToNearestValue(saveCurrentValue);
   };
+  /**************************************************************************************************************/
+
+  /**
+   * Remove values
+   * @function remove values
+   * @param {Json} parameters Parameters
+   * @memberof TimeTravelParams#
+   */
+
 
   TimeTravelParams$1.prototype.removeValues = function (parameters) {
     if (!parameters) {
@@ -53440,7 +54678,9 @@
     var saveCurrentValue = this.currentDate;
 
     if (parameters.ID) {
-      this.enumeratedValues.removeEnumeratedValuesForID(parameters.ID);
+      // Remove values into enumerated values
+      this.enumeratedValues.removeEnumeratedValuesForID(parameters.ID); // Remove samples with ID
+
       var newSamples = [];
 
       for (var i = 0; i < this.samples.length; i++) {
@@ -53454,6 +54694,15 @@
 
     this.setToNearestValue(saveCurrentValue);
   };
+  /**************************************************************************************************************/
+
+  /**
+   * Get next date
+   * @function getNextDate
+   * @return {Date} Date
+   * @memberof TimeTravelParams#
+   */
+
 
   TimeTravelParams$1.prototype.getNextDate = function (date) {
     var minDate = {
@@ -53490,6 +54739,15 @@
 
     return minDate;
   };
+  /**************************************************************************************************************/
+
+  /**
+   * Get previous date
+   * @function getNextDate
+   * @return {Date} Date
+   * @memberof TimeTravelParams#
+   */
+
 
   TimeTravelParams$1.prototype.getPreviousDate = function (date) {
     var minDate = {
@@ -53526,12 +54784,22 @@
 
     return minDate;
   };
+  /**************************************************************************************************************/
+
+  /**
+   * Set to nearest value (call only for enumerated)
+   * @function setToNearestValue
+   * @param {Date} date date
+   * @memberof TimeTravelParams#
+   */
+
 
   TimeTravelParams$1.prototype.setToNearestValue = function (date) {
     var previousExistingDate = this.getPreviousDate(date);
     var nextExistingDate = this.getNextDate(date);
 
     if (previousExistingDate.date === null && nextExistingDate.date === null) {
+      // No date found
       this.currentDate = new Date();
       this.currentDisplayDate = Moment(this.currentDate).format("Do MMM Y");
       this.currentPeriod = {
@@ -53539,14 +54807,17 @@
         to: this.currentDate
       };
     } else if (previousExistingDate.date === null) {
+      // Only before
       this.currentDate = nextExistingDate.date;
       this.currentDisplayDate = nextExistingDate.display;
       this.currentPeriod = nextExistingDate.period;
     } else if (nextExistingDate.date === null) {
+      // Only after
       this.currentDate = previousExistingDate.date;
       this.currentDisplayDate = previousExistingDate.display;
       this.currentPeriod = previousExistingDate.period;
     } else {
+      // Search nearest
       var deltaPrevious = Math.abs(date - previousExistingDate.date);
       var deltaNext = Math.abs(nextExistingDate.date - date);
 
@@ -53563,6 +54834,15 @@
 
     this.apply();
   };
+  /**************************************************************************************************************/
+
+  /**
+   * Update
+   * @function update
+   * @param {Json} parameters Parameters
+   * @memberof TimeTravelParams#
+   */
+
 
   TimeTravelParams$1.prototype.update = function (parameters) {
     if (!parameters) {
@@ -53575,12 +54855,23 @@
 
     if (parameters.remove) {
       this.removeValues(parameters.remove);
-    }
+    } // update metadata
+
 
     this.minDate = this.getMinDate();
-    this.maxDate = this.getMaxDate();
+    this.maxDate = this.getMaxDate(); // apply !
+
     this.apply();
   };
+  /**************************************************************************************************************/
+
+  /**
+   * Apply current date to IHM (launch event)
+   * @function apply
+   * @memberof TimeTravelParams#
+   * @fires Context#globalTime:changed
+   */
+
 
   TimeTravelParams$1.prototype.apply = function () {
     var details = {
@@ -53590,6 +54881,15 @@
     };
     this.ctx.publish(Constants.EVENT_MSG.GLOBAL_TIME_CHANGED, details);
   };
+  /**************************************************************************************************************/
+
+  /**
+   * Rewind to previous time step
+   * @function rewind
+   * @memberof TimeTravelParams#
+   * @fires Context#globalTime:changed
+   */
+
 
   TimeTravelParams$1.prototype.rewind = function () {
     if (!this.isEmpty()) {
@@ -53603,6 +54903,15 @@
       }
     }
   };
+  /**************************************************************************************************************/
+
+  /**
+   * Forward to next time step
+   * @function forward
+   * @memberof TimeTravelParams#
+   * @fires Context#globalTime:changed
+   */
+
 
   TimeTravelParams$1.prototype.forward = function () {
     if (!this.isEmpty()) {
@@ -53616,9 +54925,20 @@
       }
     }
   };
+  /**************************************************************************************************************/
+
+  /**
+   * Get date formated (when there is no enumerated values)
+   * @function getDateFormated
+   * @param {Date} date Date
+   * @return String Date formated
+   * @memberof TimeTravelParams#
+   */
+
 
   TimeTravelParams$1.prototype.getDateFormated = function (date) {
-    var formatPattern;
+    // Check with STEP kind value
+    var formatPattern; // = "LLLL";
 
     if (this.stepKind === Constants.TIME_STEP.YEAR) {
       formatPattern = "Y";
@@ -53636,10 +54956,41 @@
 
     return Moment.utc(this.currentDate).format(formatPattern);
   };
+  /**************************************************************************************************************/
+
+  /**
+   * Return date to display on IHM
+   * @function getCurrentDisplayDate
+   * @return String Date formated
+   * @memberof TimeTravelParams#
+   */
+
 
   TimeTravelParams$1.prototype.getCurrentDisplayDate = function () {
     return this.currentDisplayDate;
+    /*
+      var result = null;
+      if (this.stepKind === Constants.TIME_STEP.ENUMERATED) {
+          if (this.enumeratedValues.length>0) {
+              result = this.enumeratedValues[this.currentIndex].display;
+          } else {
+              result = this.getDateFormated(new Date());
+          }
+      } else {
+          result = this.getDateFormated(this.currentDate);
+      }
+      return result;
+      */
   };
+  /**************************************************************************************************************/
+
+  /**
+   * Is current date the first ?
+   * @function isCurrentDateTheFirst
+   * @return boolean If the current date is the first of range
+   * @memberof TimeTravelParams#
+   */
+
 
   TimeTravelParams$1.prototype.isCurrentDateTheFirst = function () {
     if (this.isEmpty() === true) {
@@ -53651,6 +55002,15 @@
 
     return this.isFirstDate;
   };
+  /**************************************************************************************************************/
+
+  /**
+   * Is current date the last ?
+   * @function isCurrentDateTheLast
+   * @return boolean If the current date is the last of range
+   * @memberof TimeTravelParams#
+   */
+
 
   TimeTravelParams$1.prototype.isCurrentDateTheLast = function () {
     if (this.isEmpty() === true) {
@@ -53662,6 +55022,15 @@
 
     return this.isLastDate;
   };
+  /**************************************************************************************************************/
+
+  /**
+   * Get min date
+   * @function getMinDate
+   * @return {Date} Min date or null
+   * @memberof TimeTravelParams#
+   */
+
 
   TimeTravelParams$1.prototype.getMinDate = function () {
     var result = null;
@@ -53683,6 +55052,15 @@
 
     return result;
   };
+  /**************************************************************************************************************/
+
+  /**
+   * Get max date
+   * @function getMaxDate
+   * @return {Date} Max date or null
+   * @memberof TimeTravelParams#
+   */
+
 
   TimeTravelParams$1.prototype.getMaxDate = function () {
     var result = null;
@@ -53704,11 +55082,57 @@
 
     return result;
   };
+  /**************************************************************************************************************/
+
+  /**
+   * Is time travel empty ?
+   * @function toString
+   * @return {Boolean} Is time travel empty
+   * @memberof TimeTravelParams#
+   */
+
 
   TimeTravelParams$1.prototype.isEmpty = function () {
     var hasSamples = this.samples && this.samples.length > 0;
     return !hasSamples && this.enumeratedValues.isEmpty();
   };
+  /**************************************************************************************************************/
+  // /**
+  //  * Get all steps
+  //  * @function toString
+  //  * @return {string} String representation
+  //  * @memberof TimeTravelParams#
+  //  */
+  // TimeTravelParams.prototype.getAllSteps = function () {
+  //     throw "TimeTravelParams.getAllSteps : deactivated because too long to execute";
+  //     var res = [];
+  //     var aDate = this.minDate;
+  //     res.push(aDate);
+  //     var nextDate = this.getNextDate(
+  //         moment(aDate).add(1, Constants.TIME_STEP.MILLISECOND)
+  //     );
+  //     while (nextDate.date !== null) {
+  //         aDate = nextDate.date;
+  //         res.push(aDate);
+  //         if (res.length % 500 === 0) {
+  //             console.log(res.length);
+  //         }
+  //         nextDate = this.getNextDate(
+  //             moment(aDate).add(1, Constants.TIME_STEP.MILLISECOND)
+  //         );
+  //     }
+  //     return res;
+  // };
+
+  /**************************************************************************************************************/
+
+  /**
+   * Get string representation
+   * @function toString
+   * @return {string} String representation
+   * @memberof TimeTravelParams#
+   */
+
 
   TimeTravelParams$1.prototype.toString = function () {
     var res = "";
@@ -53729,23 +55153,68 @@
     return res;
   };
 
+  /*******************************************************************************
+   * Copyright 2017, 2018 CNES - CENTRE NATIONAL d'ETUDES SPATIALES
+   *
+   * This file is part of MIZAR.
+   *
+   * MIZAR is free software: you can redistribute it and/or modify
+   * it under the terms of the GNU General Public License as published by
+   * the Free Software Foundation, either version 3 of the License, or
+   * (at your option) any later version.
+   *
+   * MIZAR is distributed in the hope that it will be useful,
+   * but WITHOUT ANY WARRANTY; without even the implied warranty of
+   * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+   * GNU General Public License for more details.
+   *
+   * You should have received a copy of the GNU General Public License
+   * along with MIZAR. If not, see <http://www.gnu.org/licenses/>.
+   ******************************************************************************/
+  /**
+   *    Private variables
+   */
+
   var params = new TimeTravelParams$1();
   var parentElement = null;
   var ctx$2 = null;
+  /**************************************************************************************************************/
+
+  /**
+   * Go Rewind
+   * @fires Context#globalTime:changed
+   */
 
   function goRewind() {
     params.rewind();
   }
+  /**
+   * Go Forward
+   * @fires Context#globalTime:changed
+   */
+
 
   function goForward() {
     params.forward();
   }
+  /**
+   * Choose time
+   *
+   */
+
 
   function chooseTime(date) {
     if (date instanceof Date || typeof date === "string") {
       params.setCurrentDate(date);
     }
   }
+  /**************************************************************************************************************/
+
+  /**
+   *    Remove time travel element
+   *
+   */
+
 
   function remove$2() {
     ctx$2.unsubscribe(Constants.EVENT_MSG.GLOBAL_TIME_FORWARD, goForward);
@@ -53753,14 +55222,31 @@
     ctx$2.unsubscribe(Constants.EVENT_MSG.GLOBAL_TIME_SET, chooseTime);
     document.getElementById(parentElement).innerHTML = "";
   }
+  /**************************************************************************************************************/
+
+  /**
+   *    reset values
+   *
+   */
+
 
   function reset() {
     params.reset();
   }
+  /**
+   *    update
+   *
+   */
+
 
   function update(parameters) {
     params.update(parameters);
   }
+  /**
+   *    get current date
+   *
+   */
+
 
   function getCurrentDate() {
     return params.getCurrentDate();
@@ -53773,12 +55259,14 @@
   function isCurrentDateTheLast() {
     return params.isCurrentDateTheLast();
   }
+  /**************************************************************************************************************/
+
 
   var TimeTravelCore = {
     init: function (options) {
       parentElement = options.element;
       ctx$2 = options.ctx;
-      params.setContext(ctx$2);
+      params.setContext(ctx$2); // subscribe
 
       if (ctx$2) {
         ctx$2.subscribe(Constants.EVENT_MSG.GLOBAL_TIME_FORWARD, goForward);
@@ -56185,15 +57673,45 @@
     }
   };
 
+  /*******************************************************************************
+   * Copyright 2017, 2018 CNES - CENTRE NATIONAL d'ETUDES SPATIALES
+   *
+   * This file is part of MIZAR.
+   *
+   * MIZAR is free software: you can redistribute it and/or modify
+   * it under the terms of the GNU General Public License as published by
+   * the Free Software Foundation, either version 3 of the License, or
+   * (at your option) any later version.
+   *
+   * MIZAR is distributed in the hope that it will be useful,
+   * but WITHOUT ANY WARRANTY; without even the implied warranty of
+   * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+   * GNU General Public License for more details.
+   *
+   * You should have received a copy of the GNU General Public License
+   * along with MIZAR. If not, see <http://www.gnu.org/licenses/>.
+   ******************************************************************************/
   const MAX_ROTATION = 360;
+  /**
+   *    Private variables
+   */
+
   var parentElement$1 = null;
   var ctx$3 = null;
   var crs = null;
   var svgDoc = null;
+  /**************************************************************************************************************/
+
+  /**
+   * Aligns with north.
+   * @param {object} event
+   * @private
+   */
 
   function _alignWithNorth(event) {
     var coordinateSystem = ctx$3.getCoordinateSystem();
-    var radius = coordinateSystem.getGeoide().getRadius();
+    var radius = coordinateSystem.getGeoide().getRadius(); // scale the up direction to the sphere's surface in order to have the right value after projection.
+
     var up = [0, 0, radius];
     var temp = [];
     coordinateSystem.from3DToGeo(up, temp);
@@ -56201,6 +57719,8 @@
     coordinateSystem.fromGeoTo3D(temp, up);
     ctx$3.getNavigation().moveUpTo(up);
   }
+  /**************************************************************************************************************/
+
 
   function updateNorthPlanet() {
     var navigation = ctx$3.getNavigation();
@@ -56236,7 +57756,8 @@
     coordinateSystem.from3DToGeo(up, temp);
     temp = coordinateSystem.convert(temp, crs, coordinateSystem.getGeoideName());
     coordinateSystem.fromGeoTo3D(temp, up);
-    vec3.normalize(up);
+    vec3.normalize(up); // Find angle between up and north
+
     var cosNorth = vec3.dot(up, north) / (vec3.length(up) * vec3.length(north));
     var radNorth = Math.acos(cosNorth);
 
@@ -56244,7 +57765,8 @@
       return;
     }
 
-    var degNorth = Numeric.toDegree(radNorth);
+    var degNorth = Numeric.toDegree(radNorth); // Find sign between up and north
+
     var sign;
     vec3.cross(up, north, temp);
     sign = vec3.dot(temp, [vertical[0], vertical[1], vertical[2]]);
@@ -56256,6 +57778,10 @@
     var northText = svgDoc.getElementById("NorthText");
     northText.setAttribute("transform", "rotate(" + degNorth + " 40 40)");
   }
+  /**
+   * Function updating the north position on compass
+   */
+
 
   function updateNorth() {
     var mode = ctx$3.getMode();
@@ -56277,14 +57803,25 @@
         throw new RangeError("CompassCore.js: CompassCore is not supported for this context");
     }
   }
+  /**************************************************************************************************************/
+
+  /**
+   *    Remove compass element
+   *
+   */
+
 
   function remove$3() {
     document.getElementById(parentElement$1).innerHTML = "";
   }
+  /**************************************************************************************************************/
+
 
   var CompassCore = {
     init: function (options) {
-      parentElement$1 = options.element;
+      parentElement$1 = options.element; //ctx = options.ctx;
+      //crs = ctx.getCoordinateSystem().getGeoideName();
+      //svgDoc = options.svgDoc;
     },
     setSvg: function (svg) {
       svgDoc = svg;
@@ -56298,9 +57835,38 @@
     remove: remove$3
   };
 
+  /*******************************************************************************
+   * Copyright 2017, 2018 CNES - CENTRE NATIONAL d'ETUDES SPATIALES
+   *
+   * This file is part of MIZAR.
+   *
+   * MIZAR is free software: you can redistribute it and/or modify
+   * it under the terms of the GNU General Public License as published by
+   * the Free Software Foundation, either version 3 of the License, or
+   * (at your option) any later version.
+   *
+   * MIZAR is distributed in the hope that it will be useful,
+   * but WITHOUT ANY WARRANTY; without even the implied warranty of
+   * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+   * GNU General Public License for more details.
+   *
+   * You should have received a copy of the GNU General Public License
+   * along with MIZAR. If not, see <http://www.gnu.org/licenses/>.
+   ******************************************************************************/
   const COMPASS_SVG = "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9Im5vIj8+Cjw/eG1sLXN0eWxlc2hlZXQgdHlwZT0idGV4dC9jc3MiIGhyZWY9ImNvbXBhc3MuY3NzIj8+PHN2ZwogICB4bWxuczpkYz0iaHR0cDovL3B1cmwub3JnL2RjL2VsZW1lbnRzLzEuMS8iCiAgIHhtbG5zOmNjPSJodHRwOi8vY3JlYXRpdmVjb21tb25zLm9yZy9ucyMiCiAgIHhtbG5zOnJkZj0iaHR0cDovL3d3dy53My5vcmcvMTk5OS8wMi8yMi1yZGYtc3ludGF4LW5zIyIKICAgeG1sbnM6c3ZnPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIKICAgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIgogICB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayIKICAgeG1sbnM6c29kaXBvZGk9Imh0dHA6Ly9zb2RpcG9kaS5zb3VyY2Vmb3JnZS5uZXQvRFREL3NvZGlwb2RpLTAuZHRkIgogICB4bWxuczppbmtzY2FwZT0iaHR0cDovL3d3dy5pbmtzY2FwZS5vcmcvbmFtZXNwYWNlcy9pbmtzY2FwZSIKICAgd2lkdGg9IjUyMCIKICAgaGVpZ2h0PSI1MjAiCiAgIGlkPSJzdmcyIgogICB2ZXJzaW9uPSIxLjEiCiAgIGlua3NjYXBlOnZlcnNpb249IjAuNDguMSByOTc2MCIKICAgc29kaXBvZGk6ZG9jbmFtZT0iY29tcGFzc05vcnRoMi5zdmciCiAgIHZpZXdCb3g9Ii0yMjAgLTIyMCA1MjAgNTIwIj4KICA8bWV0YWRhdGEKICAgICBpZD0ibWV0YWRhdGE0NSI+CiAgICA8cmRmOlJERj4KICAgICAgPGNjOldvcmsKICAgICAgICAgcmRmOmFib3V0PSIiPgogICAgICAgIDxkYzpmb3JtYXQ+aW1hZ2Uvc3ZnK3htbDwvZGM6Zm9ybWF0PgogICAgICAgIDxkYzp0eXBlCiAgICAgICAgICAgcmRmOnJlc291cmNlPSJodHRwOi8vcHVybC5vcmcvZGMvZGNtaXR5cGUvU3RpbGxJbWFnZSIgLz4KICAgICAgICA8ZGM6dGl0bGUgLz4KICAgICAgPC9jYzpXb3JrPgogICAgPC9yZGY6UkRGPgogIDwvbWV0YWRhdGE+CiAgPGRlZnMKICAgICBpZD0iZGVmczQzIj4KICAgIDxyYWRpYWxHcmFkaWVudAogICAgICAgaWQ9ImdyYWQxIgogICAgICAgY3g9IjAiCiAgICAgICBjeT0iMCIKICAgICAgIHI9IjIwNyIKICAgICAgIGZ4PSIwIgogICAgICAgZnk9IjAiCiAgICAgICBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+CiAgICAgIDxzdG9wCiAgICAgICAgIG9mZnNldD0iMC43NSIKICAgICAgICAgaWQ9InN0b3A2IgogICAgICAgICBzdHlsZT0ic3RvcC1jb2xvcjojZmZmZmZmO3N0b3Atb3BhY2l0eTowIiAvPgogICAgICA8c3RvcAogICAgICAgICBvZmZzZXQ9IjAuOTQ5OTk5OTkiCiAgICAgICAgIGlkPSJzdG9wOCIKICAgICAgICAgc3R5bGU9InN0b3AtY29sb3I6I2ZmOTkwMDtzdG9wLW9wYWNpdHk6MSIgLz4KICAgICAgPHN0b3AKICAgICAgICAgb2Zmc2V0PSIxMDAlIgogICAgICAgICBzdHlsZT0ic3RvcC1jb2xvcjpyZ2IoMjU1LCAyNTUsIDI1NSk7c3RvcC1vcGFjaXR5OjAiCiAgICAgICAgIGlkPSJzdG9wMTAiIC8+CiAgICA8L3JhZGlhbEdyYWRpZW50PgogIDwvZGVmcz4KICA8c29kaXBvZGk6bmFtZWR2aWV3CiAgICAgcGFnZWNvbG9yPSIjZmZmZmZmIgogICAgIGJvcmRlcmNvbG9yPSIjNjY2NjY2IgogICAgIGJvcmRlcm9wYWNpdHk9IjEiCiAgICAgb2JqZWN0dG9sZXJhbmNlPSIxMCIKICAgICBncmlkdG9sZXJhbmNlPSIxMCIKICAgICBndWlkZXRvbGVyYW5jZT0iMTAiCiAgICAgaW5rc2NhcGU6cGFnZW9wYWNpdHk9IjAiCiAgICAgaW5rc2NhcGU6cGFnZXNoYWRvdz0iMiIKICAgICBpbmtzY2FwZTp3aW5kb3ctd2lkdGg9IjEyODAiCiAgICAgaW5rc2NhcGU6d2luZG93LWhlaWdodD0iMTAwMCIKICAgICBpZD0ibmFtZWR2aWV3NDEiCiAgICAgc2hvd2dyaWQ9ImZhbHNlIgogICAgIGlua3NjYXBlOnpvb209IjAuNDEzMTgxODMiCiAgICAgaW5rc2NhcGU6Y3g9IjEwMy43NDIwNiIKICAgICBpbmtzY2FwZTpjeT0iNDguNTQ5MDc0IgogICAgIGlua3NjYXBlOndpbmRvdy14PSIwIgogICAgIGlua3NjYXBlOndpbmRvdy15PSIyNCIKICAgICBpbmtzY2FwZTp3aW5kb3ctbWF4aW1pemVkPSIxIgogICAgIGlua3NjYXBlOmN1cnJlbnQtbGF5ZXI9IkVhc3QiCiAgICAgc2hvd2d1aWRlcz0idHJ1ZSIKICAgICBpbmtzY2FwZTpndWlkZS1iYm94PSJ0cnVlIj4KICAgIDxpbmtzY2FwZTpncmlkCiAgICAgICB0eXBlPSJ4eWdyaWQiCiAgICAgICBpZD0iZ3JpZDMwMTAiCiAgICAgICBlbXBzcGFjaW5nPSI1IgogICAgICAgdmlzaWJsZT0idHJ1ZSIKICAgICAgIGVuYWJsZWQ9InRydWUiCiAgICAgICBzbmFwdmlzaWJsZWdyaWRsaW5lc29ubHk9InRydWUiIC8+CiAgPC9zb2RpcG9kaTpuYW1lZHZpZXc+CiAgPGcKICAgICBpZD0iT3V0ZXJDaXJjbGUiCiAgICAgdHJhbnNmb3JtPSJtYXRyaXgoMS4xNDI4MTM4LDAsMCwxLjEwNTc4OCwwLjMwODI3MzYsNC42MTQ3ODQpIj4KICAgIDxnCiAgICAgICBpZD0iZzMyNjciCiAgICAgICBzdHlsZT0ib3BhY2l0eTowLjYiPgogICAgICA8Y2lyY2xlCiAgICAgICAgIHNvZGlwb2RpOnJ5PSIyMDciCiAgICAgICAgIHNvZGlwb2RpOnJ4PSIyMDciCiAgICAgICAgIHNvZGlwb2RpOmN5PSIwIgogICAgICAgICBzb2RpcG9kaTpjeD0iMCIKICAgICAgICAgY3k9IjAiCiAgICAgICAgIGN4PSIwIgogICAgICAgICBkPSJtIDIwNywwIGMgMCwxMTQuMzIyOTQgLTkyLjY3NzA2LDIwNyAtMjA3LDIwNyAtMTE0LjMyMjk0LDAgLTIwNywtOTIuNjc3MDYgLTIwNywtMjA3IDAsLTExNC4zMjI5NCA5Mi42NzcwNiwtMjA3IDIwNywtMjA3IDExNC4zMjI5NCwwIDIwNyw5Mi42NzcwNiAyMDcsMjA3IHoiCiAgICAgICAgIGlkPSJjaXJjbGUyNCIKICAgICAgICAgcj0iMjA3IgogICAgICAgICBzdHlsZT0ib3BhY2l0eTowLjc1O2ZpbGw6dXJsKCNncmFkMSkiCiAgICAgICAgIHRyYW5zZm9ybT0ibWF0cml4KDEuMTA1MjI3OSwwLDAsMS4xMDUyMjc5LDM0LDMyKSIgLz4KICAgIDwvZz4KICAgIDxnCiAgICAgICBpZD0iZzE4IgogICAgICAgc3R5bGU9InN0cm9rZTojZmZmZmZmO3N0cm9rZS13aWR0aDoxMCIKICAgICAgIHRyYW5zZm9ybT0ibWF0cml4KDAuOTY1NTg4OTksMCwwLDAuOTcxMzI0MTUsMzQsMzIpIj4KICAgICAgPGNpcmNsZQogICAgICAgICByPSIyMTEiCiAgICAgICAgIGlkPSJjaXJjbGUyMCIKICAgICAgICAgZD0ibSAyMTEsMCBjIDAsMTE2LjUzMjA4IC05NC40Njc5MiwyMTEgLTIxMSwyMTEgLTExNi41MzIwOCwwIC0yMTEsLTk0LjQ2NzkyIC0yMTEsLTIxMSAwLC0xMTYuNTMyMDggOTQuNDY3OTIsLTIxMSAyMTEsLTIxMSAxMTYuNTMyMDgsMCAyMTEsOTQuNDY3OTIgMjExLDIxMSB6IgogICAgICAgICBjeD0iMCIKICAgICAgICAgY3k9IjAiCiAgICAgICAgIHNvZGlwb2RpOmN4PSIwIgogICAgICAgICBzb2RpcG9kaTpjeT0iMCIKICAgICAgICAgc29kaXBvZGk6cng9IjIxMSIKICAgICAgICAgc29kaXBvZGk6cnk9IjIxMSIgLz4KICAgIDwvZz4KICA8L2c+CiAgPGcKICAgICBpZD0iU291dGgiCiAgICAgY2xhc3M9ImFycm93IgogICAgIHRyYW5zZm9ybT0idHJhbnNsYXRlKDM5LjU3ODM4MywzNi45NzA0MzUpIj4KICAgIDxwYXRoCiAgICAgICBzdHlsZT0iZmlsbDojZmZmZmZmO3N0cm9rZTojZmZmZmZmO3N0cm9rZS13aWR0aDoxIgogICAgICAgaW5rc2NhcGU6Y29ubmVjdG9yLWN1cnZhdHVyZT0iMCIKICAgICAgIGlkPSJIYWxmQXJyb3ciCiAgICAgICBkPSJNIDM5LjQxNiw5NS4xNiBDIDMzLjY1LDEwMy45NSAzMC43NiwxMTAuNSAyOC45MywxMTcuMTggMTUuMjQsMTEzLjQzIDEzLjU0LDEyNy4xNSAyMy4wNCwxMzEgMTMuNzEsMTQ1LjggNy44NCwxNzMuOTMgMCwyMTIgTCAwLDEwMyBhIDEwMywxMDMgMCAwIDAgMzkuNDE2LC03Ljg0IHoiIC8+CiAgICA8dXNlCiAgICAgICBoZWlnaHQ9IjQ0MCIKICAgICAgIHdpZHRoPSI0NDAiCiAgICAgICB5PSIwIgogICAgICAgeD0iMCIKICAgICAgIGlkPSJzb3V0aCIKICAgICAgIHRyYW5zZm9ybT0ibWF0cml4KC0xLDAsMCwxLDIsMCkiCiAgICAgICB4bGluazpocmVmPSIjSGFsZkFycm93IiAvPgogIDwvZz4KICA8ZwogICAgIGlkPSJFYXN0IgogICAgIGNsYXNzPSJhcnJvdyIKICAgICB0cmFuc2Zvcm09Im1hdHJpeCgwLDEsLTEsMCwzOC44MDYyMSwzNy4yMjA0MjkpIj4KICAgIDxwYXRoCiAgICAgICBzdHlsZT0iZmlsbDojZmZmZmZmO3N0cm9rZTojZmZmZmZmO3N0cm9rZS13aWR0aDoxIgogICAgICAgaW5rc2NhcGU6Y29ubmVjdG9yLWN1cnZhdHVyZT0iMCIKICAgICAgIGlkPSJIYWxmQXJyb3ctNiIKICAgICAgIGQ9Ik0gMzkuNDE2LDk1LjE2IEMgMzMuNjUsMTAzLjk1IDMwLjc2LDExMC41IDI4LjkzLDExNy4xOCAxNS4yNCwxMTMuNDMgMTMuNTQsMTI3LjE1IDIzLjA0LDEzMSAxMy43MSwxNDUuOCA3Ljg0LDE3My45MyAwLDIxMiBMIDAsMTAzIGEgMTAzLDEwMyAwIDAgMCAzOS40MTYsLTcuODQgeiIgLz4KICAgIDx1c2UKICAgICAgIGhlaWdodD0iNDQwIgogICAgICAgd2lkdGg9IjQ0MCIKICAgICAgIHk9IjAiCiAgICAgICB4PSIwIgogICAgICAgc3R5bGU9ImZpbGw6I2ZmZmZmZiIKICAgICAgIGlkPSJzb3V0aC01IgogICAgICAgdHJhbnNmb3JtPSJtYXRyaXgoLTEsMCwwLDEsMiwwKSIKICAgICAgIHhsaW5rOmhyZWY9IiNIYWxmQXJyb3ctNiIgLz4KICA8L2c+CiAgPGcKICAgICBpZD0iTm9ydGgiCiAgICAgY2xhc3M9ImFycm93IgogICAgIHRyYW5zZm9ybT0ibWF0cml4KC0xLDAsMCwtMSw0MS45MDI3OCw0My43ODMzNzYpIj4KICAgIDxwYXRoCiAgICAgICBzdHlsZT0iZmlsbDojZmZmZmZmO3N0cm9rZTojZmZmZmZmO3N0cm9rZS13aWR0aDoxIgogICAgICAgaW5rc2NhcGU6Y29ubmVjdG9yLWN1cnZhdHVyZT0iMCIKICAgICAgIGlkPSJIYWxmQXJyb3ctNi0wIgogICAgICAgZD0iTSAzOS40MTYsOTUuMTYgQyAzMy42NSwxMDMuOTUgMzAuNzYsMTEwLjUgMjguOTMsMTE3LjE4IDE1LjI0LDExMy40MyAxMy41NCwxMjcuMTUgMjMuMDQsMTMxIDEzLjcxLDE0NS44IDcuODQsMTczLjkzIDAsMjEyIEwgMCwxMDMgYSAxMDMsMTAzIDAgMCAwIDM5LjQxNiwtNy44NCB6IiAvPgogICAgPHVzZQogICAgICAgaGVpZ2h0PSI0NDAiCiAgICAgICB3aWR0aD0iNDQwIgogICAgICAgeT0iMCIKICAgICAgIHg9IjAiCiAgICAgICBzdHlsZT0iZmlsbDojZmZmZmZmIgogICAgICAgaWQ9InNvdXRoLTUtNiIKICAgICAgIHRyYW5zZm9ybT0ibWF0cml4KC0xLDAsMCwxLDIsMCkiCiAgICAgICB4bGluazpocmVmPSIjSGFsZkFycm93LTYtMCIgLz4KICA8L2c+CiAgPGcKICAgICBpZD0iV2VzdCIKICAgICBjbGFzcz0iYXJyb3ciCiAgICAgdHJhbnNmb3JtPSJtYXRyaXgoMCwtMSwxLDAsMzcuMzc0NzU4LDM5LjU0NzAyMykiPgogICAgPHBhdGgKICAgICAgIHN0eWxlPSJmaWxsOiNmZmZmZmY7c3Ryb2tlOiNmZmZmZmY7c3Ryb2tlLXdpZHRoOjEiCiAgICAgICBpbmtzY2FwZTpjb25uZWN0b3ItY3VydmF0dXJlPSIwIgogICAgICAgaWQ9IkhhbGZBcnJvdy02LTAtNSIKICAgICAgIGQ9Ik0gMzkuNDE2LDk1LjE2IEMgMzMuNjUsMTAzLjk1IDMwLjc2LDExMC41IDI4LjkzLDExNy4xOCAxNS4yNCwxMTMuNDMgMTMuNTQsMTI3LjE1IDIzLjA0LDEzMSAxMy43MSwxNDUuOCA3Ljg0LDE3My45MyAwLDIxMiBMIDAsMTAzIGEgMTAzLDEwMyAwIDAgMCAzOS40MTYsLTcuODQgeiIgLz4KICAgIDx1c2UKICAgICAgIGhlaWdodD0iNDQwIgogICAgICAgd2lkdGg9IjQ0MCIKICAgICAgIHk9IjAiCiAgICAgICB4PSIwIgogICAgICAgaWQ9InNvdXRoLTUtNi0yIgogICAgICAgdHJhbnNmb3JtPSJtYXRyaXgoLTEsMCwwLDEsMiwwKSIKICAgICAgIHhsaW5rOmhyZWY9IiNIYWxmQXJyb3ctNi0wLTUiIC8+CiAgPC9nPgogIDx0ZXh0CiAgICAgeG1sOnNwYWNlPSJwcmVzZXJ2ZSIKICAgICBzdHlsZT0iZm9udC1zaXplOjkwcHg7Zm9udC1zdHlsZTpub3JtYWw7Zm9udC12YXJpYW50Om5vcm1hbDtmb250LXdlaWdodDpib2xkO2ZvbnQtc3RyZXRjaDpub3JtYWw7dGV4dC1hbGlnbjpzdGFydDtsaW5lLWhlaWdodDoxMjkuOTk5OTk1MjMlO2xldHRlci1zcGFjaW5nOjBweDt3b3JkLXNwYWNpbmc6MHB4O3dyaXRpbmctbW9kZTpsci10Yjt0ZXh0LWFuY2hvcjpzdGFydDtmaWxsOiNmZjdmMmE7ZmlsbC1vcGFjaXR5OjE7c3Ryb2tlOm5vbmU7Zm9udC1mYW1pbHk6VGltZXMgTmV3IFJvbWFuOy1pbmtzY2FwZS1mb250LXNwZWNpZmljYXRpb246J1RpbWVzIE5ldyBSb21hbiwgQm9sZCciCiAgICAgeD0iMTkuMjU0ODc1IgogICAgIHk9Ii0xNjMuMDY2NzYiCiAgICAgaWQ9Ik5vcnRoVGV4dCIKICAgICBzb2RpcG9kaTpsaW5lc3BhY2luZz0iMTMwJSIKICAgICB0cmFuc2Zvcm09InNjYWxlKDEuMDA4MzY2NSwwLjk5MTcwMjkyKSI+PHRzcGFuCiAgICAgICBzb2RpcG9kaTpyb2xlPSJsaW5lIgogICAgICAgaWQ9InRzcGFuMzAyNCIKICAgICAgIHg9IjE5LjI1NDg3NSIKICAgICAgIHk9Ii0xNjMuMDY2NzYiCiAgICAgICBzdHlsZT0iZm9udC1zaXplOjgwcHg7Zm9udC1zdHlsZTpub3JtYWw7Zm9udC12YXJpYW50Om5vcm1hbDtmb250LXdlaWdodDpib2xkO2ZvbnQtc3RyZXRjaDpub3JtYWw7dGV4dC1hbGlnbjpzdGFydDtsaW5lLWhlaWdodDoxMjkuOTk5OTk1MjMlO3dyaXRpbmctbW9kZTpsci10Yjt0ZXh0LWFuY2hvcjpzdGFydDtmaWxsOiNmZjdmMmE7c3Ryb2tlOiMwMDAwMDA7c3Ryb2tlLXdpZHRoOjFweDtmb250LWZhbWlseTpUaW1lcyBOZXcgUm9tYW47LWlua3NjYXBlLWZvbnQtc3BlY2lmaWNhdGlvbjonVGltZXMgTmV3IFJvbWFuLCBCb2xkJyI+TjwvdHNwYW4+PC90ZXh0PgogIDxnCiAgICAgaWQ9IklubmVyQ2lyY2xlIgogICAgIHN0eWxlPSJvcGFjaXR5OjAuNiIKICAgICB0cmFuc2Zvcm09InRyYW5zbGF0ZSgzOS4yNjA3MjYsNDEuMjEwMTIxKSI+CiAgICA8ZwogICAgICAgc3R5bGU9ImZpbGw6bm9uZTtzdHJva2U6I2ZmZmZmZjtzdHJva2Utd2lkdGg6OCIKICAgICAgIGlkPSJnNyI+CiAgICAgIDxjaXJjbGUKICAgICAgICAgc29kaXBvZGk6cng9Ijc1IgogICAgICAgICBzb2RpcG9kaTpjeT0iMCIKICAgICAgICAgY3k9IjAiCiAgICAgICAgIGN4PSIwIgogICAgICAgICBkPSJNIDc1LDAgQyA3NSw0MS40MjEzNTYgNDEuNDIxMzU2LDc1IDAsNzUgLTQxLjQyMTM1Niw3NSAtNzUsNDEuNDIxMzU2IC03NSwwIGMgMCwtNDEuNDIxMzU2IDMzLjU3ODY0NCwtNzUgNzUsLTc1IDQxLjQyMTM1NiwwIDc1LDMzLjU3ODY0NCA3NSw3NSB6IgogICAgICAgICBpZD0iY2lyY2xlOSIKICAgICAgICAgcj0iNzUiCiAgICAgICAgIHNvZGlwb2RpOmN4PSIwIgogICAgICAgICBzb2RpcG9kaTpyeT0iNzUiIC8+CiAgICA8L2c+CiAgICA8ZwogICAgICAgc3R5bGU9ImZpbGw6bm9uZTtzdHJva2U6IzFiMWIxYjtzdHJva2Utd2lkdGg6MSIKICAgICAgIGlkPSJnMTEiPgogICAgICA8Y2lyY2xlCiAgICAgICAgIHNvZGlwb2RpOnJ5PSI3MSIKICAgICAgICAgc29kaXBvZGk6cng9IjcxIgogICAgICAgICBzb2RpcG9kaTpjeT0iMCIKICAgICAgICAgc29kaXBvZGk6Y3g9IjAiCiAgICAgICAgIGN5PSIwIgogICAgICAgICBjeD0iMCIKICAgICAgICAgZD0iTSA3MSwwIEMgNzEsMzkuMjEyMjE3IDM5LjIxMjIxNyw3MSAwLDcxIC0zOS4yMTIyMTcsNzEgLTcxLDM5LjIxMjIxNyAtNzEsMCBjIDAsLTM5LjIxMjIxNyAzMS43ODc3ODMsLTcxIDcxLC03MSAzOS4yMTIyMTcsMCA3MSwzMS43ODc3ODMgNzEsNzEgeiIKICAgICAgICAgaWQ9ImNpcmNsZTEzIgogICAgICAgICByPSI3MSIgLz4KICAgICAgPGNpcmNsZQogICAgICAgICBzb2RpcG9kaTpyeT0iNzkiCiAgICAgICAgIHNvZGlwb2RpOnJ4PSI3OSIKICAgICAgICAgc29kaXBvZGk6Y3k9IjAiCiAgICAgICAgIHNvZGlwb2RpOmN4PSIwIgogICAgICAgICBjeT0iMCIKICAgICAgICAgY3g9IjAiCiAgICAgICAgIGQ9Ik0gNzksMCBDIDc5LDQzLjYzMDQ5NSA0My42MzA0OTUsNzkgMCw3OSAtNDMuNjMwNDk1LDc5IC03OSw0My42MzA0OTUgLTc5LDAgYyAwLC00My42MzA0OTUgMzUuMzY5NTA1LC03OSA3OSwtNzkgNDMuNjMwNDk1LDAgNzksMzUuMzY5NTA1IDc5LDc5IHoiCiAgICAgICAgIGlkPSJjaXJjbGUxNSIKICAgICAgICAgcj0iNzkiIC8+CiAgICA8L2c+CiAgPC9nPgo8L3N2Zz4K";
+  /**
+   * Create a compass Widget
+   * @param options
+   * @throws {ReferenceError} can't get the div to insert the compass
+   * @throws {ReferenceError} Can't get the element name
+   * @constructor
+   * @fires Context#modifiedNavigation
+   */
 
   var Compass = function (options) {
+    /**
+     *    Private variables
+     */
     this.svgDoc = null;
     this.panFactor = options.panFactor ? options.panFactor : 30;
     this.parentElement = options.element;
@@ -56319,7 +57885,9 @@
     this.south = null;
     this.north = null;
     this.northText = null;
-    this.outerCircle = null;
+    this.outerCircle = null; //var self = this;
+    // Add compass object to parent element
+    // Don't use <object> HTML tag due to cross-origin nature of svg
 
     if (this.parentElement == null) {
       throw new ReferenceError("Can't get the element name from the options parameters");
@@ -56329,6 +57897,15 @@
 
     this.init();
   };
+  /**************************************************************************************************************/
+
+  /**
+   * Handles mouse down event.
+   * @param {Event} event
+   * @param {Compass} self
+   * @private
+   */
+
 
   function _handleMouseDown$3(event, self) {
     if (event.type.search("touch") >= 0) {
@@ -56350,6 +57927,13 @@
     self._dx = 0;
     self._dy = 0;
   }
+  /**
+   * Handles mouse move event.
+   * @param {Event} event
+   * @param {Compass} self
+   * @private
+   */
+
 
   function _handleMouseMove$3(event, self) {
     if (event.type.search("touch") >= 0) {
@@ -56363,67 +57947,125 @@
 
     var _outerCircleRadius = self.outerCircle.ownerSVGElement.clientWidth / 2;
 
-    var c = self._lastMouseX * (event.layerY - _outerCircleRadius) - self._lastMouseY * (event.layerX - _outerCircleRadius);
+    var c = self._lastMouseX * (event.layerY - _outerCircleRadius) - self._lastMouseY * (event.layerX - _outerCircleRadius); // c>0 -> clockwise, counterclockwise otherwise
+
     self.ctx.getNavigation().rotate(c, 0);
     self._lastMouseX = event.layerX - _outerCircleRadius;
     self._lastMouseY = event.layerY - _outerCircleRadius;
     CompassCore.updateNorth();
   }
+  /**
+   * Handles mouse up event.
+   * @param {Event} event
+   * @param {Compass} self
+   * @private
+   */
+
 
   function _handleMouseUp$3(event, self) {
     event.preventDefault();
-    self.dragging = false;
+    self.dragging = false; // TODO add inertia
   }
+  /**
+   * Updates north compass from east move.
+   * @param {Compass} self
+   * @private
+   */
+
 
   function _updateNorthFromEast(self) {
-    self.ctx.getNavigation().pan(self.panFactor, 0);
+    self.ctx.getNavigation().pan(self.panFactor, 0.0);
     CompassCore.updateNorth();
   }
+  /**
+   * Updates north compass from west move.
+   * @param {Compass} self
+   * @private
+   */
+
 
   function _updateNorthFromWest(self) {
-    self.ctx.getNavigation().pan(-self.panFactor, 0);
+    self.ctx.getNavigation().pan(-self.panFactor, 0.0);
     CompassCore.updateNorth();
   }
+  /**
+   * Updates north compass from north move.
+   * @param {Compass} self
+   * @private
+   */
+
 
   function _updateNorthFromNorth(self) {
     self.ctx.getNavigation().pan(0, self.panFactor);
     CompassCore.updateNorth();
   }
+  /**
+   * Updates north compass from south move.
+   * @param {Compass} self
+   * @private
+   */
+
 
   function _updateNorthFromSouth(self) {
     self.ctx.getNavigation().pan(0, -self.panFactor);
     CompassCore.updateNorth();
   }
+  /**
+   * Init compass.
+   */
+
 
   Compass.prototype.init = function () {
     CompassCore.init({
       element: this.parentElement
     });
   };
+  /**
+   *    Remove compass element
+   */
+
 
   Compass.prototype.remove = CompassCore.remove;
   Compass.prototype.setCtx = CompassCore.setCtx;
   Compass.prototype.setSvg = CompassCore.setSvg;
+  /**************************************************************************************************************/
+
+  /**
+   * Attachs the compass to the context.
+   * @function attachTo
+   * @memberof Compass#
+   */
 
   Compass.prototype.attachTo = function (context) {
     var self = this;
     this.ctx = context;
     this.setCtx(context);
     $.get(COMPASS_SVG, function (response) {
+      // Import contents of the svg document into this document
       self.svgDoc = document.importNode(response.documentElement, true);
       self.ctx = context;
-      self.east = self.svgDoc.getElementById("East");
-      self.west = self.svgDoc.getElementById("West");
-      self.south = self.svgDoc.getElementById("South");
-      self.north = self.svgDoc.getElementById("North");
+      /* Svg interactive elements */
+
+      self.east = self.svgDoc.getElementById("East"); //get the inner element by id
+
+      self.west = self.svgDoc.getElementById("West"); //get the inner element by id
+
+      self.south = self.svgDoc.getElementById("South"); //get the inner element by id
+
+      self.north = self.svgDoc.getElementById("North"); //get the inner element by id
+
       self.northText = self.svgDoc.getElementById("NorthText");
-      self.outerCircle = self.svgDoc.getElementById("OuterCircle");
+      self.outerCircle = self.svgDoc.getElementById("OuterCircle"); // Update width/height
+
       self.svgDoc.height.baseVal.value = 100;
-      self.svgDoc.width.baseVal.value = 100;
-      document.getElementById(self.parentElement).innerHTML = "<div id=\"objectCompass\"></div>";
+      self.svgDoc.width.baseVal.value = 100; // Append the imported SVG root element to the appropriate HTML element
+
+      document.getElementById(self.parentElement).innerHTML = '<div id="objectCompass"></div>';
       $("#objectCompass").append(self.svgDoc);
-      self.setSvg(self.svgDoc);
-      self.options.svgDoc = self.svgDoc;
+      self.setSvg(self.svgDoc); //self.setCtx(self.ctx);
+
+      self.options.svgDoc = self.svgDoc; //self.attachTo(self.ctx);
+
       self.svgDoc.addEventListener("mousedown", function (event) {
         _handleMouseDown$3(event, self);
       });
@@ -56465,13 +58107,21 @@
         self.northText.addEventListener("touchstart", CompassCore._alignWithNorth, passiveSupported ? {
           passive: true
         } : false);
-      }
+      } // Update fov when moving
+
 
       self.ctx.subscribe(Constants.EVENT_MSG.NAVIGATION_MODIFIED, CompassCore.updateNorth);
-      self.ctx.subscribe(Constants.EVENT_MSG.CRS_MODIFIED, CompassCore.updateNorth);
+      self.ctx.subscribe(Constants.EVENT_MSG.CRS_MODIFIED, CompassCore.updateNorth); // Publish modified event to update compass north
+
       $("#" + self.parentElement).css("display", "block");
     }, "xml");
   };
+  /**
+   * Detaches the tracker from the context.
+   * @function detach
+   * @memberof Compass#
+   */
+
 
   Compass.prototype.detach = function () {
     var self = this;
@@ -56514,12 +58164,19 @@
       this.northText.removeEventListener("touchstart", CompassCore._alignWithNorth, passiveSupported ? {
         passive: true
       } : false);
-    }
+    } // Update fov when moving
+
 
     this.ctx.unsubscribe(Constants.EVENT_MSG.NAVIGATION_MODIFIED, CompassCore.updateNorth);
     this.ctx.unsubscribe(Constants.EVENT_MSG.CRS_MODIFIED, CompassCore.updateNorth);
     this.ctx = null;
   };
+  /**
+   * Destroys the elements.
+   * @function destroy
+   * @memberof Compass#
+   */
+
 
   Compass.prototype.destroy = function () {
     this.detach();
@@ -56715,17 +58372,43 @@
     this.options = null; // we do do not destroy the globe now. It will be destroyed later on in the context
   };
 
-  const crsInfo = "<div id=\"crsInfo\" style=\"text-align: left\" title=\"Coordinate Reference System information\"></div>";
+  /*******************************************************************************
+   * Copyright 2017, 2018 CNES - CENTRE NATIONAL d'ETUDES SPATIALES
+   *
+   * This file is part of MIZAR.
+   *
+   * MIZAR is free software: you can redistribute it and/or modify
+   * it under the terms of the GNU General Public License as published by
+   * the Free Software Foundation, either version 3 of the License, or
+   * (at your option) any later version.
+   *
+   * MIZAR is distributed in the hope that it will be useful,
+   * but WITHOUT ANY WARRANTY; without even the implied warranty of
+   * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+   * GNU General Public License for more details.
+   *
+   * You should have received a copy of the GNU General Public License
+   * along with SITools2. If not, see <http://www.gnu.org/licenses/>.
+   ******************************************************************************/
+
+  const crsInfo = '<div id="crsInfo" style="text-align: left" title="Coordinate Reference System information"></div>'; // Create the div, use jQuery UI dialog
+
   let $text$1 = "";
   const $crsInfo = $(crsInfo).appendTo("body").dialog({
     autoOpen: false,
     width: 500,
     minHeight: 300,
     maxHeight: 500,
-    dialogClass: "crsBox"
+    dialogClass: "crsBox" //beforeClose: function( event, ui ) { $text = ""; }
+
   });
   let $active$1 = false;
   var CrsDialog = {
+    /**
+     *    Open dialog
+     *
+     *    @param html HTML text
+     */
     open: function (crs) {
       if (this.isActive()) {
         this.destroy();
@@ -57016,15 +58699,48 @@
     self$8 = null;
   };
 
+  /*******************************************************************************
+   * Copyright 2017, 2018 CNES - CENTRE NATIONAL d'ETUDES SPATIALES
+   *
+   * This file is part of MIZAR.
+   *
+   * MIZAR is free software: you can redistribute it and/or modify
+   * it under the terms of the GNU General Public License as published by
+   * the Free Software Foundation, either version 3 of the License, or
+   * (at your option) any later version.
+   *
+   * MIZAR is distributed in the hope that it will be useful,
+   * but WITHOUT ANY WARRANTY; without even the implied warranty of
+   * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+   * GNU General Public License for more details.
+   *
+   * You should have received a copy of the GNU General Public License
+   * along with MIZAR. If not, see <http://www.gnu.org/licenses/>.
+   ******************************************************************************/
+  /**
+   *    Private variables
+   */
+
   var parentElement$2 = null;
   var ctx$4 = null;
   const REWIND_SVG = "data:image/svg+xml;base64,PHN2ZyBmaWxsPSIjMDAwMDAwIiBoZWlnaHQ9IjI0IiB2aWV3Qm94PSIwIDAgMjQgMjQiIHdpZHRoPSIyNCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4gICAgPHBhdGggZD0iTTExIDE4VjZsLTguNSA2IDguNSA2em0uNS02bDguNSA2VjZsLTguNSA2eiIvPiAgICA8cGF0aCBkPSJNMCAwaDI0djI0SDB6IiBmaWxsPSJub25lIi8+PC9zdmc+";
   const FORWARD_SVG = "data:image/svg+xml;base64,PHN2ZyBmaWxsPSIjMDAwMDAwIiBoZWlnaHQ9IjI0IiB2aWV3Qm94PSIwIDAgMjQgMjQiIHdpZHRoPSIyNCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4gICAgPHBhdGggZD0iTTQgMThsOC41LTZMNCA2djEyem05LTEydjEybDguNS02TDEzIDZ6Ii8+ICAgIDxwYXRoIGQ9Ik0wIDBoMjR2MjRIMHoiIGZpbGw9Im5vbmUiLz48L3N2Zz4=";
   const HOUR_GLASS_SVG = "data:image/svg+xml;base64,PHN2ZyBmaWxsPSIjMDAwMDAwIiBoZWlnaHQ9IjI0IiB2aWV3Qm94PSIwIDAgMjQgMjQiIHdpZHRoPSIyNCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4gICAgPHBhdGggZD0iTTYgMnY2aC4wMUw2IDguMDEgMTAgMTJsLTQgNCAuMDEuMDFINlYyMmgxMnYtNS45OWgtLjAxTDE4IDE2bC00LTQgNC0zLjk5LS4wMS0uMDFIMThWMkg2em0xMCAxNC41VjIwSDh2LTMuNWw0LTQgNCA0em0tNC01bC00LTRWNGg4djMuNWwtNCA0eiIvPiAgICA8cGF0aCBkPSJNMCAwaDI0djI0SDBWMHoiIGZpbGw9Im5vbmUiLz48L3N2Zz4=";
+  /**
+   * Create a time travel Widget
+   * @param options
+   * @throws {ReferenceError} Can't get the Div to insert the time tracker
+   * @throws {ReferenceError} Can't get the element name
+   * @constructor
+   * @fires Context#globalTime:set
+   * @fires Context#globalTime:rewind
+   * @fires Context#globalTime:forward
+   */
 
   var TimeTravel = function (options) {
     parentElement$2 = options.element;
-    ctx$4 = options.ctx;
+    ctx$4 = options.ctx; // Add compass object to parent element
+    // Don't use <object> HTML tag due to cross-origin nature of svg
 
     if (parentElement$2 == null) {
       throw new ReferenceError("Can't get the element name from the options parameters");
@@ -57035,7 +58751,7 @@
     var svgRewindDoc = null;
     var svgForwardDoc = null;
     var svgHourGlassDoc = null;
-    document.getElementById(parentElement$2).innerHTML = "<div id=\"objectForward\"></div><div id=\"objectHourGlass\"></div><div id=\"objectRewind\"></div>";
+    document.getElementById(parentElement$2).innerHTML = '<div id="objectForward"></div><div id="objectHourGlass"></div><div id="objectRewind"></div>';
 
     var _handleMouseUp = function (name) {
       ctx$4.publish(name, ctx$4);
@@ -57056,9 +58772,12 @@
     ctx$4.subscribe(Constants.EVENT_MSG.GLOBAL_TIME_CHANGED, this.updateDisplayDate);
     TimeTravelCore.init(options);
     $.get(HOUR_GLASS_SVG, function (response) {
-      svgHourGlassDoc = document.importNode(response.documentElement, true);
+      // Import contents of the svg document into this document
+      svgHourGlassDoc = document.importNode(response.documentElement, true); // Update width/height
+
       svgHourGlassDoc.height.baseVal.value = 32;
-      svgHourGlassDoc.width.baseVal.value = 32;
+      svgHourGlassDoc.width.baseVal.value = 32; // Append the imported SVG root element to the appropriate HTML element
+
       $("#objectHourGlass").append(svgHourGlassDoc);
       options.svgHourGlassDoc = svgHourGlassDoc;
       $("#objectHourGlass svg").css({
@@ -57072,9 +58791,12 @@
       }
     }, "xml");
     $.get(REWIND_SVG, function (response) {
-      svgRewindDoc = document.importNode(response.documentElement, true);
+      // Import contents of the svg document into this document
+      svgRewindDoc = document.importNode(response.documentElement, true); // Update width/height
+
       svgRewindDoc.height.baseVal.value = 32;
-      svgRewindDoc.width.baseVal.value = 32;
+      svgRewindDoc.width.baseVal.value = 32; // Append the imported SVG root element to the appropriate HTML element
+
       $("#objectRewind").append(svgRewindDoc);
       $("#objectRewind svg").css({
         float: "right",
@@ -57088,9 +58810,12 @@
       }
     }, "xml");
     $.get(FORWARD_SVG, function (response) {
-      svgForwardDoc = document.importNode(response.documentElement, true);
+      // Import contents of the svg document into this document
+      svgForwardDoc = document.importNode(response.documentElement, true); // Update width/height
+
       svgForwardDoc.height.baseVal.value = 32;
-      svgForwardDoc.width.baseVal.value = 32;
+      svgForwardDoc.width.baseVal.value = 32; // Append the imported SVG root element to the appropriate HTML element
+
       $("#objectForward").append(svgForwardDoc);
       $("#objectForward svg").css({
         float: "right",
@@ -57104,6 +58829,15 @@
       }
     }, "xml");
   };
+  /**************************************************************************************************************/
+
+  /**
+   * Update display date and send current date to context
+   * @function updateDisplayDate
+   * @param {Time.configuration} date Time configuration
+   * @memberof TimeTravel#
+   */
+
 
   TimeTravel.prototype.updateDisplayDate = function (date) {
     if (document.getElementById("textTimeTravelDiv") !== null) {
@@ -57169,6 +58903,10 @@
       }
     });
   };
+  /**
+   *    functions
+   */
+
 
   TimeTravel.prototype.remove = TimeTravelCore.remove;
   TimeTravel.prototype.goRewind = TimeTravelCore.goRewind;
@@ -64780,6 +66518,8 @@
    * You should have received a copy of the GNU General Public License
    * along with MIZAR. If not, see <http://www.gnu.org/licenses/>.
    ******************************************************************************/
+  // import Numeric from "../Utils/Numeric";
+
   /**
    * Planet context configuration
    * @typedef {Object} AbstractContext.planetContext
@@ -65182,6 +66922,7 @@
    * You should have received a copy of the GNU General Public License
    * along with MIZAR. If not, see <http://www.gnu.org/licenses/>.
    ******************************************************************************/
+
   /**
    * ground context configuration
    * @typedef {Object} AbstractContext.groundContext

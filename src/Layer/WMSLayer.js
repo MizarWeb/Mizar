@@ -36,7 +36,7 @@
  ***************************************/
 
 import Utils from "../Utils/Utils";
-import AbstractLayer from "./AbstractLayer";
+// import AbstractLayer from "./AbstractLayer";
 import AbstractRasterLayer from "./AbstractRasterLayer";
 import GeoTiling from "../Tiling/GeoTiling";
 import UtilsIntersection from "../Utils/UtilsIntersection";

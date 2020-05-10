@@ -38,7 +38,7 @@
 import Tile from "./Tile";
 import HEALPixBase from "./HEALPixBase";
 import GeoBound from "../Renderer/GeoBound";
-import Numeric from "../Utils/Numeric";
+// import Numeric from "../Utils/Numeric";
 import Constants from "../Utils/Constants";
 import ErrorDialog from "../Gui/dialog/ErrorDialog";
 /**

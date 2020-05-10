@@ -17,8 +17,6 @@
  * along with GlobWeb. If not, see <http://www.gnu.org/licenses/>.
  ***************************************/
 
-/*global define: false */
-
 /**
  *    JSON processor module
  *

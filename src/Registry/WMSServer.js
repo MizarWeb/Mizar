@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with MIZAR. If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
-import $ from "jquery";
+// import $ from "jquery";
 import _ from "underscore";
 import Utils from "../Utils/Utils";
 import LayerFactory from "../Layer/LayerFactory";

@@ -20,7 +20,7 @@
 import Utils from "../Utils/Utils";
 import AbstractLayer from "./AbstractLayer";
 import Constants from "../Utils/Constants";
-import FeatureStyle from "../Renderer/FeatureStyle";
+// import FeatureStyle from "../Renderer/FeatureStyle";
 /**
  * AbstractVectorLayer layer configuration
  * @typedef {AbstractVectorLayer.configuration} AbstractLayer.vector_configuration

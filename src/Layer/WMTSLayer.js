@@ -36,7 +36,7 @@
  ***************************************/
 
 import Utils from "../Utils/Utils";
-import AbstractLayer from "./AbstractLayer";
+// import AbstractLayer from "./AbstractLayer";
 import AbstractRasterLayer from "./AbstractRasterLayer";
 import Constants from "../Utils/Constants";
 /**
