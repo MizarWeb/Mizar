@@ -195,7 +195,7 @@ Utils.computeBaseUrlFromCapabilities = function (capabilitiesUrl, parameters) {
  * @return {{}} a hash of parameter/value
  */
 Utils.parseQuery = function (str) {
-  if (typeof str !== "string" || str.length == 0) return {};
+  if (typeof str != "string" || str.length == 0) return {};
   var s = str.split("&");
   var s_length = s.length;
   var bit,
@@ -207,7 +207,7 @@ Utils.parseQuery = function (str) {
     first = decodeURIComponent(bit[0]);
     if (first.length == 0) continue;
     second = decodeURIComponent(bit[1]);
-    if (typeof query[first] === "undefined") query[first] = second;
+    if (typeof query[first] == "undefined") query[first] = second;
     else if (query[first] instanceof Array) query[first].push(second);
     else query[first] = [query[first], second];
   }
@@ -528,7 +528,7 @@ Utils.formatResolution = function (format) {
   } else if (Utils.aContainsB.call(this, format, "YYYY")) {
     timeResolution = Constants.TIME_STEP.YEAR;
   } else {
-    throw new Error("Utils.js: Pattern not supported");
+    throw new Error("Pattern not supported", "Utils.js");
   }
   return timeResolution;
 };
@@ -801,14 +801,14 @@ Utils.xml2json = function (xmlString, tab) {
           (o.length > 1 ? "\n" + ind + "\t" + o.join(",\n" + ind + "\t") + "\n" + ind : o.join("")) +
           "]";
       } else if (o == null) json += (name && ":") + "null";
-      else if (typeof o === "object") {
+      else if (typeof o == "object") {
         var arr = [];
         for (var m in o) arr[arr.length] = X.toJson(o[m], m, ind + "\t");
         json +=
           (name ? ":{" : "{") +
           (arr.length > 1 ? "\n" + ind + "\t" + arr.join(",\n" + ind + "\t") + "\n" + ind : arr.join("")) +
           "}";
-      } else if (typeof o === "string") json += (name && ":") + '"' + o.toString() + '"';
+      } else if (typeof o == "string") json += (name && ":") + '"' + o.toString() + '"';
       else json += (name && ":") + o.toString();
       return json;
     },
