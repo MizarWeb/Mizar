@@ -37,7 +37,7 @@
 
 import Utils from "../Utils/Utils";
 import Constants from "../Utils/Constants";
-import UtilsIntersection from "../Utils/UtilsIntersection";
+// import UtilsIntersection from "../Utils/UtilsIntersection";
 import Tile from "./Tile";
 import GeoBound from "../Renderer/GeoBound";
 import HEALPixBase from "./HEALPixBase";

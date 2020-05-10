@@ -57,8 +57,9 @@ import Utils from "../Utils/Utils";
 import AbstractContext from "./AbstractContext";
 import Constants from "../Utils/Constants";
 import NavigationFactory from "../Navigation/NavigationFactory";
-import WMSServer from "../Registry/WMSServer";
-import Numeric from "../Utils/Numeric";
+// import WMSServer from "../Registry/WMSServer";
+// import Numeric from "../Utils/Numeric";
+
 /**
  * Planet context configuration
  * @typedef {Object} AbstractContext.planetContext
