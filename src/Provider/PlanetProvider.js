@@ -52,7 +52,7 @@
  * @implements {Provider}
  * @todo Describes here and link to the tutos about Animation
  */
-import $ from "jquery";
+// import $ from "jquery";
 import AbstractProvider from "./AbstractProvider";
 import FeatureStyle from "../Renderer/FeatureStyle";
 import Constants from "../Utils/Constants";
