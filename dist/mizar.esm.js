@@ -30552,7 +30552,7 @@ function getPickableLayers() {
 
 
 function blurSelectedFeature() {
-  var selectedData = this.getSelection()[this.stackSelectionIndex];
+  var selectedData = getSelection()[stackSelectionIndex];
 
   if (selectedData) {
     var style = new FeatureStyle(selectedData.feature.properties.style);
@@ -30562,12 +30562,12 @@ function blurSelectedFeature() {
       case Constants.GEOMETRY.MultiLineString:
       case Constants.GEOMETRY.Polygon:
       case Constants.GEOMETRY.MultiPolygon:
-        style.strokeColor = this.selectedStyle.strokeColor;
+        style.strokeColor = selectedStyle.strokeColor;
         break;
 
       case Constants.GEOMETRY.Point:
         // Use stroke color while reverting
-        style.fillColor = this.selectedStyle.fillColor;
+        style.fillColor = selectedStyle.fillColor;
         break;
     }
 
@@ -30593,12 +30593,12 @@ function focusFeatureByIndex(index, options) {
   } // Update highlight color
 
 
-  var strokeColor = options.color ? FeatureStyle.fromStringToColor(options.color) : this.highlightedSelectedStyle.strokeColor;
-  var fillColor = options.color ? FeatureStyle.fromStringToColor(options.color) : this.highlightedSelectedStyle.fillColor;
-  var selectedData = this.getSelection()[index];
+  var strokeColor = options.color ? FeatureStyle.fromStringToColor(options.color) : highlightedSelectedStyle.strokeColor;
+  var fillColor = options.color ? FeatureStyle.fromStringToColor(options.color) : highlightedSelectedStyle.fillColor;
+  var selectedData = getSelection()[index];
 
   if (selectedData) {
-    this.stackSelectionIndex = index;
+    stackSelectionIndex = index;
     var style = new FeatureStyle(selectedData.feature.properties.style);
 
     switch (selectedData.feature.geometry.type) {
@@ -30615,7 +30615,7 @@ function focusFeatureByIndex(index, options) {
         break;
     }
 
-    style.zIndex = this.highlightedSelectedStyle.zIndex;
+    style.zIndex = highlightedSelectedStyle.zIndex;
     selectedData.layer.modifyFeatureStyle(selectedData.feature, style);
   }
 
@@ -30640,8 +30640,8 @@ function getSelection() {
 
 
 function blurSelection() {
-  for (var i = 0; i < this.getSelection().length; i++) {
-    var selectedData = this.getSelection()[i];
+  for (var i = 0; i < getSelection().length; i++) {
+    var selectedData = getSelection()[i];
     var style = new FeatureStyle(selectedData.feature.properties.style);
 
     switch (selectedData.feature.geometry.type) {
@@ -30696,16 +30696,16 @@ function focusSelection(newSelection) {
       case Constants.GEOMETRY.MultiLineString:
       case Constants.GEOMETRY.Polygon:
       case Constants.GEOMETRY.MultiPolygon:
-        style.strokeColor = this.selectedStyle.strokeColor;
+        style.strokeColor = selectedStyle.strokeColor;
         style.strokeWidth = style.strokeWidth + 1;
         break;
 
       case Constants.GEOMETRY.Point:
-        style.fillColor = this.selectedStyle.fillColor;
+        style.fillColor = selectedStyle.fillColor;
         break;
     }
 
-    style.zIndex = this.selectedStyle.zIndex;
+    style.zIndex = selectedStyle.zIndex;
     selectedData.layer.modifyFeatureStyle(selectedData.feature, style);
   }
   /*            for (var layerID in focusLayers) {
@@ -30726,8 +30726,8 @@ function focusSelection(newSelection) {
 
 
 function clearSelection() {
-  this.blurSelection();
-  this.setSelection([]);
+  blurSelection();
+  setSelection([]);
 }
 /**************************************************************************************************************/
 
@@ -30810,7 +30810,7 @@ function featureIsPicked(feature, pickPoint, pickingNoDEM, options) {
         if (UtilsIntersection.pointInLine(pickPoint, feat, featNext)) {
           return true;
         }
-      } //var ring = this.fixDateLine(pickPoint, feature['geometry']['coordinates'][0]);
+      } //var ring = fixDateLine(pickPoint, feature['geometry']['coordinates'][0]);
 
 
       break;
@@ -30838,7 +30838,7 @@ function featureIsPicked(feature, pickPoint, pickingNoDEM, options) {
         return false;
       }
 
-      ring = this.fixDateLine(pickPoint, feature.geometry.coordinates[0]);
+      ring = fixDateLine(pickPoint, feature.geometry.coordinates[0]);
       return UtilsIntersection.pointInRing(pickPoint, ring);
 
     case Constants.GEOMETRY.MultiPolygon:
@@ -30847,7 +30847,7 @@ function featureIsPicked(feature, pickPoint, pickingNoDEM, options) {
       }
 
       for (p = 0; p < feature.geometry.coordinates.length; p++) {
-        ring = this.fixDateLine(pickPoint, feature.geometry.coordinates[p][0]);
+        ring = fixDateLine(pickPoint, feature.geometry.coordinates[p][0]);
 
         if (UtilsIntersection.pointInRing(pickPoint, ring)) {
           return true;
@@ -30899,7 +30899,7 @@ function featureIsPicked(feature, pickPoint, pickingNoDEM, options) {
 
 function computeFilterPickSelection(pickPoint, options) {
   ErrorDialog.open(Constants.LEVEL.WARNING, "PickingManagerCore", "computeFilterPickSelection: This function is deprecated. Please use computePickSelection instead.");
-  var selection = this.computePickSelection(pickPoint, options);
+  var selection = computePickSelection(pickPoint, options);
   var returnedSelection = [];
 
   for (var i = 0; i < selection.length; i++) {
@@ -30921,8 +30921,8 @@ function computePickSelection(pickPoint, options) {
   var selectedTile = pickPoint ? globe.tileManager.getVisibleTile(pickPoint[0], pickPoint[1]) : undefined;
   const tileData = selectedTile ? selectedTile.extension.renderer : null;
 
-  for (i = 0; i < this.getPickableLayers().length; i++) {
-    var pickableLayer = this.getPickableLayers()[i];
+  for (i = 0; i < getPickableLayers().length; i++) {
+    var pickableLayer = getPickableLayers()[i];
 
     if (pickableLayer.isVisible() && pickableLayer.globe === globe) {
       if (pickableLayer instanceof OpenSearchLayer) {
@@ -30965,7 +30965,7 @@ function computePickSelection(pickPoint, options) {
             }
           }
 
-          if (this.featureIsPicked(feature, pickPoint, pickableLayer.pickingNoDEM, localOptions)) {
+          if (featureIsPicked(feature, pickPoint, pickableLayer.pickingNoDEM, localOptions)) {
             feature.pickData = {
               picked: true,
               index: newSelection.length,
@@ -30983,7 +30983,7 @@ function computePickSelection(pickPoint, options) {
         for (j = 0; j < pickableLayer.features.length; j++) {
           feature = pickableLayer.features[j];
 
-          if (this.featureIsPicked(feature, pickPoint, pickableLayer.pickingNoDEM, options)) {
+          if (featureIsPicked(feature, pickPoint, pickableLayer.pickingNoDEM, options)) {
             newSelection.push({
               feature: feature,
               layer: pickableLayer
@@ -51860,7 +51860,7 @@ HipsCatLayer.prototype._detach = function () {
 
 
 HipsCatLayer.prototype.launchRequest = function (tile, url) {
-  const tileData = tile.extension[this.extId];
+  const tileData = tile.extension[this.extId]; // const index = null;
 
   if (this.freeRequests.length === 0) {
     return;
