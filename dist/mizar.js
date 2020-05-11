@@ -46023,7 +46023,7 @@
   function _validateAndFixHips(hipsMetadata) {
     var requiredKeywordNotFound = [];
     var valueNotRight = [];
-    var values, mandatory, description, defaultValue, distinctValue, valueArray;
+    var values, mandatory, description, defaultValue, distinctValue, valueArray; //  isMutiple,
 
     for (var key in HipsVersion_1_4) {
       if (HipsVersion_1_4.hasOwnProperty(key)) {
