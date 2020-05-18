@@ -17,7 +17,7 @@
  * along with MIZAR. If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
 define([
-    "underscore-min",
+    "underscore",
     "./AbstractRasterLayer",
     "../Utils/Utils",
     "../Utils/Constants",

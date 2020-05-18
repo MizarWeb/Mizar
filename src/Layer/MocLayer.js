@@ -37,7 +37,7 @@
 
 define([
     "jquery",
-    "underscore-min",
+    "underscore",
     "./AbstractLayer",
     "../Utils/Constants",
     "../Renderer/FeatureStyle",

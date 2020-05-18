@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with MIZAR. If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
-define(["underscore-min","../../Utils/Constants", "../../Gui/dialog/ErrorDialog"], function(_, Constants, ErrorDialog) {
+define(["underscore","../../Utils/Constants", "../../Gui/dialog/ErrorDialog"], function(_, Constants, ErrorDialog) {
     /**
      * @name OpenSearchCache
      * @class

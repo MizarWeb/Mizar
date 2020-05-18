@@ -27,7 +27,7 @@ require.config({
         "JsCsv": "JsCsv",    
         path: "../node_modules/path/path",
         fits: "../external/fits",
-        "underscore-min": "../node_modules/underscore/underscore-min",
+        "underscore": "../node_modules/underscore/underscore-min",
         jquery: "../node_modules/jquery/dist/jquery.min",
         "jquery.ui": "../node_modules/jquery-ui-dist/jquery-ui.min",
         wcs: "../external/wcs",
@@ -45,12 +45,6 @@ require.config({
 
     },
     shim: {
-        "underscore-min": {
-            exports: "_",
-            init: function() {
-                return _.noConflict();
-            }
-        },
         jquery: {
             exports: "$"
         },

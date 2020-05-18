@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with MIZAR. If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
-define(["jquery","underscore-min","./OpenSearchParam", "./OpenSearchUtils"], function(
+define(["jquery","underscore","./OpenSearchParam", "./OpenSearchUtils"], function(
     $,
     _,
     OpenSearchParam,

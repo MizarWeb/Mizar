@@ -36,7 +36,7 @@
  ***************************************/
 
 define([
-    "underscore-min",
+    "underscore",
     "../Utils/Event",
     "moment",
     "../Time/Time",

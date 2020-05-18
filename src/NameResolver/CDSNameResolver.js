@@ -19,7 +19,7 @@
 
 define([
     "jquery",
-    "underscore-min",
+    "underscore",
     "../Utils/Constants",
     "../Utils/Utils",
     "./AbstractNameResolver"

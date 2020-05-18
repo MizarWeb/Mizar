@@ -23,7 +23,7 @@
  */
 
 define([
-    "underscore-min",
+    "underscore",
     "../Utils/Constants",
     "../Layer/VectorLayer",
     "../Utils/Numeric",

@@ -18,7 +18,7 @@
  ******************************************************************************/
 define([
     "jquery",
-    "underscore-min",
+    "underscore",
     "../Utils/Utils",
     "../Layer/LayerFactory",
     "wms-capabilities"
