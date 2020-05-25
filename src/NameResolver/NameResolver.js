@@ -23,7 +23,7 @@
  * @memberof module:NameResolver
  */
 define([
-    "underscore-min",
+    "underscore",
     "../Utils/Constants",
     "../Gui/dialog/ErrorDialog",
     "../Renderer/FeatureStyle",

@@ -35,7 +35,7 @@
  * along with GlobWeb. If not, see <http://www.gnu.org/licenses/>.
  ***************************************/
 
-define(["underscore-min","./HEALPixTables", "../Utils/Long", "../Utils/CircleFinder", "../Utils/Constants", "../Gui/dialog/ErrorDialog"], function(
+define(["underscore","./HEALPixTables", "../Utils/Long", "../Utils/CircleFinder", "../Utils/Constants", "../Gui/dialog/ErrorDialog"], function(
     _,
     HealPixTables,
     Long,

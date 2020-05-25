@@ -17,7 +17,7 @@
  * along with MIZAR. If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
 define([
-    "underscore-min",
+    "underscore",
     "../Utils/Utils",
     "xmltojson",
     "../Layer/LayerFactory"

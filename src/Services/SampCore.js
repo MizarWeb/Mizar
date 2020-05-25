@@ -23,7 +23,7 @@
  */
 define([
     "jquery",
-    "underscore-min",
+    "underscore",
     "../Utils/Constants",
     "../Parser/JsonProcessor",
     "../Gui/dialog/ErrorDialog",

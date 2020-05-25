@@ -24,7 +24,7 @@
 
 define([
     "jquery",
-    "underscore-min",
+    "underscore",
     "jszip",
     "saveAs",
     "../Gui/dialog/ErrorDialog",

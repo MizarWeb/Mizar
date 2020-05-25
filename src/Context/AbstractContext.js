@@ -18,7 +18,7 @@
  ******************************************************************************/
 define([
     "jquery",
-    "underscore-min",
+    "underscore",
     "../Utils/Event",
     "moment",
     "../Utils/Utils",

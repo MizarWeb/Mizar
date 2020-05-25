@@ -23,7 +23,7 @@
  */
 define([
     "jquery",
-    "underscore-min",
+    "underscore",
     "./Context/ContextFactory",
     "./Layer/LayerFactory",
     "./Crs/CoordinateSystemFactory",
