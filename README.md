@@ -99,7 +99,6 @@ By default, the canvas will take the entire window. If you want to limit the can
 
 ```javascript
 import Mizar from "mizar";
-// Do not forget to install the peer dependencies in your application
 ```
 
 ### Creating a basic Mizar instance
