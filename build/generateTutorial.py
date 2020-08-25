@@ -27,28 +27,28 @@ def getMeta(doc):
     childrens = []
     meta_title_element = doc.xpath("//meta[@name='title']")
     meta_title = meta_title_element[0].get('content').strip()
-
+    
     meta_children_elements = doc.xpath("//meta[@name='children']")
     for elt in meta_children_elements:
         childrens.append(elt.get('content'.strip()))
-
+    
     meta_description_element = doc.xpath("//meta[@name='description']")
     if len(meta_description_element) == 0:
         meta_description = ""
     else:
         meta_description = meta_description_element[0].get('content').strip()
-
+    
     css_element = doc.xpath("//html/head/style")
     if len(css_element) == 0:
         css = ""
     else:
         css = etree.tostring(css_element[0]).strip()
-
+    
     node = doc.xpath("//html/body/*")
     body=""
     for nodeElt in node:
         if nodeElt.tag != "script":
-            body = body+etree.tostring(nodeElt).strip()
+            body = body + etree.tostring(nodeElt, encoding="unicode").strip()
     return [meta_title, meta_description, childrens, css, body]
 
 def createHtmlPages(htmlFile, jsFile, meta_title, meta_desc, css, body, dst="../tutorials/"):
