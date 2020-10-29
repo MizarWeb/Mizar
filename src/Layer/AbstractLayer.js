@@ -135,7 +135,8 @@ define([
         this.background = this.options.background || false;
         this.category = this.options.background
             ? "background"
-            : this.options.category;
+            : this.options.category;        
+        this.index = this.options.index || "none";
         this.coordinateSystem = this.options.coordinateSystem;
         this.format = this.options.format || "";
         this.baseUrl = this.options.baseUrl || "";
@@ -234,7 +235,7 @@ define([
 
     function _createIcon(options) {
         var icon;
-        if (options.hasOwnProperty("icon")) {
+        if (options.hasOwnProperty("icon") && options.icon != null) {
             icon = options.icon;
         } else {
             icon = DEFAULT_ICON;
