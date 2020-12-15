@@ -13,7 +13,7 @@ def getJsFiles(mydir="../examples"):
         if file.endswith(".js"):
             files.append(os.path.join(mydir, file))
     return files
-    
+
 def copyDirectory(src="../examples/data", dest="../tutorials/data"):
     copy_tree(src, dest)
 
@@ -48,9 +48,7 @@ def getMeta(doc):
     body=""
     for nodeElt in node:
         if nodeElt.tag != "script":
-            # `method="c14n"` keeps empty tags instead of auto-closing them
-            body = body + etree.tostring(nodeElt, method="c14n").strip()
-           
+            body = body + etree.tostring(nodeElt, encoding="unicode").strip()
     return [meta_title, meta_description, childrens, css, body]
 
 def createHtmlPages(htmlFile, jsFile, meta_title, meta_desc, css, body, dst="../tutorials/"):
@@ -64,8 +62,8 @@ def createHtmlPages(htmlFile, jsFile, meta_title, meta_desc, css, body, dst="../
     }
     result = src.substitute(d)
     basename = os.path.basename(htmlFile)
-    file = open(dst+basename,"w") 
-    file.write(result)    
+    file = open(dst+basename,"w")
+    file.write(result)
     file.close()
 
 def createNavigation(htmlFile, meta_title, childrens, dst="../tutorials/"):
@@ -76,8 +74,8 @@ def createNavigation(htmlFile, meta_title, childrens, dst="../tutorials/"):
         result["children"] = childrens
     basename = os.path.basename(htmlFile)
     basename = basename.replace(".html",".json")
-    file = open(dst+basename,"w") 
-    file.write(json.dumps(result))    
+    file = open(dst+basename,"w")
+    file.write(json.dumps(result))
     file.close()
 
 
@@ -99,4 +97,4 @@ for jsFile in jsFiles:
         createHtmlPages(htmlFile, jsFile, meta_title, meta_desc, css, body)
         createNavigation(htmlFile, meta_title, childrens)
     except Exception as message:
-        print("Error with "+jsFile+" : "+str(message)) 
+        print("Error with "+jsFile+" : "+str(message))
