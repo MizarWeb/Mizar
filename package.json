@@ -103,7 +103,7 @@
     "@babel/plugin-transform-modules-commonjs": "^7.12.1",
     "@babel/preset-env": "^7.12.10",
     "@rollup/plugin-babel": "^5.2.2",
-    "@rollup/plugin-commonjs": "^17.0.0",
+    "@rollup/plugin-commonjs": "^11.1.0",
     "@rollup/plugin-image": "^2.0.6",
     "@rollup/plugin-inject": "^4.0.2",
     "@rollup/plugin-node-resolve": "^11.0.1",

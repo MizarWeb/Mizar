@@ -25372,13 +25372,12 @@ var ImageProcessingCore = {
 
 var commonjsGlobal = typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {};
 
-function createCommonjsModule(fn) {
-  var module = { exports: {} };
-	return fn(module, module.exports), module.exports;
+function createCommonjsModule(fn, module) {
+	return module = { exports: {} }, fn(module, module.exports), module.exports;
 }
 
-function commonjsRequire (target) {
-	throw new Error('Could not dynamically require "' + target + '". Please configure the dynamicRequireTargets option of @rollup/plugin-commonjs appropriately for this require call to behave properly.');
+function commonjsRequire () {
+	throw new Error('Dynamic requires are not currently supported by @rollup/plugin-commonjs');
 }
 
 var wcs = createCommonjsModule(function (module, exports) {
@@ -41625,24 +41624,6 @@ IMCCENameResolver.prototype.handle = function (options) {
 
 IMCCENameResolver.prototype.remove = function () {};
 
-/*******************************************************************************
- * Copyright 2017, 2018 CNES - CENTRE NATIONAL d'ETUDES SPATIALES
- *
- * This file is part of MIZAR.
- *
- * MIZAR is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * MIZAR is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with MIZAR. If not, see <http://www.gnu.org/licenses/>.
- ******************************************************************************/
 /**
  * plugin:not_found.<br/>
  * Called when no plugin is found whereas it is requested
@@ -41991,7 +41972,7 @@ var NameResolver = {
     var nameResolverClass;
 
     if (typeof context$1.getContextConfiguration().nameResolver !== "undefined") {
-      nameResolverClass = require(context$1.getContextConfiguration().nameResolver.jsObject);
+      nameResolverClass = commonjsRequire(context$1.getContextConfiguration().nameResolver.jsObject);
       isDefaultNameResolver = false;
       nameResolverImplementation = new nameResolverClass(context$1);
     } else {
@@ -47209,7 +47190,10 @@ var crc32 = createCommonjsModule(function (module) {
 	module.exports.table = crcTable;
 }());
 });
+var crc32_1 = crc32.direct;
+var crc32_2 = crc32.table;
 
+var rawinflate = createCommonjsModule(function (module) {
 /*
  * $Id: rawinflate.js,v 0.2 2009/03/01 18:32:24 dankogai Exp $
  *
@@ -47217,7 +47201,6 @@ var crc32 = createCommonjsModule(function (module) {
  * http://www.onicos.com/staff/iz/amuse/javascript/expert/inflate.txt
  */
 
-var rawinflate = createCommonjsModule(function (module) {
 /* Copyright (C) 1999 Masanao Izumo <iz@onicos.co.jp>
  * Version: 1.0.0.1
  * LastModified: Dec 25 1999
@@ -48025,6 +48008,7 @@ var rawinflate = createCommonjsModule(function (module) {
 }());
 });
 
+var rawdeflate = createCommonjsModule(function (module) {
 /*
  * $Id: rawdeflate.js,v 0.3 2009/03/01 19:05:05 dankogai Exp dankogai $
  *
@@ -48032,7 +48016,6 @@ var rawinflate = createCommonjsModule(function (module) {
  *   http://www.onicos.com/staff/iz/amuse/javascript/expert/deflate.txt
  */
 
-var rawdeflate = createCommonjsModule(function (module) {
 /* Copyright (C) 1999 Masanao Izumo <iz@onicos.co.jp>
  * Version: 1.0.1
  * LastModified: Dec 25 1999
@@ -49678,6 +49661,7 @@ var rawdeflate = createCommonjsModule(function (module) {
 	module.exports.DEFAULT_LEVEL = DEFAULT_LEVEL;
 }());
 });
+var rawdeflate_1 = rawdeflate.DEFAULT_LEVEL;
 
 var deflateJs = createCommonjsModule(function (module) {
 (function () {
@@ -49967,6 +49951,9 @@ var gzip = createCommonjsModule(function (module) {
 	};
 }());
 });
+var gzip_1 = gzip.zip;
+var gzip_2 = gzip.unzip;
+var gzip_3 = gzip.DEFAULT_LEVEL;
 
 /*******************************************************************************
  * Copyright 2017, 2018 CNES - CENTRE NATIONAL d'ETUDES SPATIALES
@@ -53708,11 +53695,6 @@ var LayerFactory = {
   }
 };
 
-/*
- BSD-2-Clause
- @preserve
-*/
-
 var wmsCapabilities_min = createCommonjsModule(function (module, exports) {
 (function(f,m){module.exports=m();})(commonjsGlobal,function(){function f(a){return void 0!==a}function m(a,c,b){if(a.nodeType===u.CDATA_SECTION||a.nodeType===u.TEXT)c?b.push(String(a.nodeValue).replace(/(\r\n|\r|\n)/g,"")):b.push(a.nodeValue);else for(a=a.firstChild;a;a=a.nextSibling)m(a,c,b);return b}function F(a){for(a=a.nextElementSibling||a.nextSibling;a&&
 a.nodeType!==u.ELEMENT;)a=a.nextSibling;return a}function h(a,c,b){b=f(b)?b:{};var d;var n=0;for(d=a.length;n<d;++n)b[a[n]]=c;return b}function A(a,c){return function(b,d){b=a.call(f(c)?c:this,b,d);f(b)&&d[d.length-1].push(b);}}function l(a,c,b,d,e){d.push(a);for(a=b.firstElementChild||b.firstChild;a&&a.nodeType!==u.ELEMENT;)a=a.nextSibling;for(;a;a=F(a))b=c[a.namespaceURI||null],f(b)&&(b=b[a.localName],f(b)&&b.call(e,a,d));return d.pop()}function b(a,c,b){return function(d,e){var n=a.call(f(b)?b:
@@ -54375,24 +54357,6 @@ WMSFeatureInfoReverseNameResolver.prototype.handle = function (options) {
 
 WMSFeatureInfoReverseNameResolver.prototype.remove = function (options) {};
 
-/*******************************************************************************
- * Copyright 2017, 2018 CNES - CENTRE NATIONAL d'ETUDES SPATIALES
- *
- * This file is part of MIZAR.
- *
- * MIZAR is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * MIZAR is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with MIZAR. If not, see <http://www.gnu.org/licenses/>.
- ******************************************************************************/
 var mizarAPI$8;
 var context$2;
 var reverseNameResolverImplementation = null;
@@ -54459,7 +54423,7 @@ var ReverseNameResolver = {
     var reverseNameResolverClass;
 
     if (typeof context$2.getContextConfiguration().reverseNameResolver !== "undefined") {
-      reverseNameResolverClass = require(context$2.getContextConfiguration().reverseNameResolver.jsObject);
+      reverseNameResolverClass = commonjsRequire(context$2.getContextConfiguration().reverseNameResolver.jsObject);
       reverseNameResolverImplementation = new reverseNameResolverClass(context$2);
     } else {
       //Use default reverse name resolver if none defined...
@@ -56253,6 +56217,7 @@ WMSServerRegistryHandler.prototype.handleRequest = function (layerDescription, c
   }
 };
 
+var xmlToJSON_1 = createCommonjsModule(function (module) {
 /* Copyright 2015 William Summers, MetaTribal LLC
  * adapted from https://developer.mozilla.org/en-US/docs/JXON
  *
@@ -56268,8 +56233,6 @@ WMSServerRegistryHandler.prototype.handleRequest = function (layerDescription, c
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-var xmlToJSON_1 = createCommonjsModule(function (module) {
 /**
  * @author William Summers
  *
@@ -63573,6 +63536,7 @@ PNLTRI.Triangulator.prototype = {
   exports.PNLTRI = PNLTRI;
 }
 });
+var pnltri_1 = pnltri.PNLTRI;
 
 /*******************************************************************************
  * Copyright 2017, 2018 CNES - CENTRE NATIONAL d'ETUDES SPATIALES
