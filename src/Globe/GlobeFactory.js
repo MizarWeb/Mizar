@@ -22,41 +22,36 @@
  * Factory to create a globe.
  * @memberof module:Globe
  */
-define(["./Planet", "./Sky", "../Utils/Constants"], function(
-    Planet,
-    Sky,
-    Constants
-) {
-    return {
-        /**
-         * Creates a specific globe based on its type (e.g sky, planet).
-         * @param {GLOBE} type - the type of globe
-         * @param {AbstractGlobe.configuration} options - options to configure a globe
-         * @return {Globe} a globe
-         * @alias module:Globe.GlobeFactory.create
-         * @throws {RangeError} Will throw an error when the type is not part of {@link GLOBE}
-         * @see {@link module:Globe.Planet Planet}
-         * @see {@link module:Globe.Sky Sky}
-         */
-        create: function(type, options) {
-            var obj;
-            switch (type) {
-            case Constants.GLOBE.Planet:
-                obj = new Planet(options);
-                break;
-            case Constants.GLOBE.Sky:
-                obj = new Sky(options);
-                break;
-            default:
-                throw RangeError(
-                    "The type " +
-                            type +
-                            " is not allowed, A valid type is included in the list GLOBE",
-                    "GlobeFactory.js"
-                );
-            }
+import Planet from "./Planet";
+import Sky from "./Sky";
+import Constants from "../Utils/Constants";
+export default {
+  /**
+   * Creates a specific globe based on its type (e.g sky, planet).
+   * @param {GLOBE} type - the type of globe
+   * @param {AbstractGlobe.configuration} options - options to configure a globe
+   * @return {Globe} a globe
+   * @alias module:Globe.GlobeFactory.create
+   * @throws {RangeError} Will throw an error when the type is not part of {@link GLOBE}
+   * @see {@link module:Globe.Planet Planet}
+   * @see {@link module:Globe.Sky Sky}
+   */
+  create: function (type, options) {
+    var obj;
+    switch (type) {
+      case Constants.GLOBE.Planet:
+        obj = new Planet(options);
+        break;
+      case Constants.GLOBE.Sky:
+        obj = new Sky(options);
+        break;
+      default:
+        throw RangeError(
+          "The type " + type + " is not allowed, A valid type is included in the list GLOBE",
+          "GlobeFactory.js"
+        );
+    }
 
-            return obj;
-        }
-    };
-});
+    return obj;
+  }
+};

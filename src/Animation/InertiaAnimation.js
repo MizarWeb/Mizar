@@ -53,155 +53,140 @@
  * @implements {Animation}
  *
  */
-define(["../Utils/Utils", "./AbstractAnimation"], function(
-    Utils,
-    AbstractAnimation
-) {
-    /**************************************************************************************************************/
+import Utils from "../Utils/Utils";
+import AbstractAnimation from "./AbstractAnimation";
+/**************************************************************************************************************/
 
-    /**
-     * @constant
-     * @type {float}
-     * @default
-     */
-    const EPSILON = 0.1;
+/**
+ * @constant
+ * @type {float}
+ * @default
+ */
+const EPSILON = 0.1;
 
-    /**
-     * Default panFactor value
-     * @constant
-     * @type {number}
-     * @default
-     */
-    const PAN_FACTOR = 0.95;
+/**
+ * Default panFactor value
+ * @constant
+ * @type {number}
+ * @default
+ */
+const PAN_FACTOR = 0.95;
 
-    /**
-     * Default rotateFactor value
-     * @constant
-     * @type {number}
-     * @default
-     */
-    const ROTATE_FACTOR = 0.95;
+/**
+ * Default rotateFactor value
+ * @constant
+ * @type {number}
+ * @default
+ */
+const ROTATE_FACTOR = 0.95;
 
-    /**
-     * Default zoomFactor value
-     * @constant
-     * @type {number}
-     * @default
-     */
-    const ZOOM_FACTOR = 0.5;
+/**
+ * Default zoomFactor value
+ * @constant
+ * @type {number}
+ * @default
+ */
+const ZOOM_FACTOR = 0.5;
 
-    /**
-     * Inertia animation configuration
-     * @typedef {Object} AbstractAnimation.inertia_configuration
-     * @property {Navigation} nav - Navigation object that applies the transformations.
-     * @property {float} [panFactor=0.95] - Pan Factor which is included in [0..1]. - 1 is sensible to the pan
-     * @property {float} [zoomFactor=0.50] - Zoom Factor which is included in [0..1]. - 1 is sensible to the zoom
-     * @property {float} [rotateFactor=0.95] - Rotate Factor which is included in [0..1]. - 1 is sensible to the rotation
-     */
+/**
+ * Inertia animation configuration
+ * @typedef {Object} AbstractAnimation.inertia_configuration
+ * @property {Navigation} nav - Navigation object that applies the transformations.
+ * @property {float} [panFactor=0.95] - Pan Factor which is included in [0..1]. - 1 is sensible to the pan
+ * @property {float} [zoomFactor=0.50] - Zoom Factor which is included in [0..1]. - 1 is sensible to the zoom
+ * @property {float} [rotateFactor=0.95] - Rotate Factor which is included in [0..1]. - 1 is sensible to the rotation
+ */
 
-    /**
-     * @name InertiaAnimation
-     * @class
-     * Animation simulating inertia for camera's navigation.
-     * Inertia is its tendency to retain its velocity: in the absence of external influence, the camera's motion
-     * persists in an uniform rectilinear motion.
-     * @augments AbstractAnimation
-     * @param {AbstractAnimation.inertia_configuration} options Configuration of the Inertia animation
-     * @constructor
-     * @memberof module:Animation
-     */
-    var InertiaAnimation = function(options) {
-        Utils.assert(
-            options.nav != null,
-            "nav is required in constructor",
-            "InertiaAnimation.js"
-        );
-        AbstractAnimation.prototype.constructor.call(this);
-        this.panFactor = options.hasOwnProperty("panFactor")
-            ? options.panFactor
-            : PAN_FACTOR;
-        this.rotateFactor = options.hasOwnProperty("rotateFactor")
-            ? options.rotateFactor
-            : ROTATE_FACTOR;
-        this.zoomFactor = options.hasOwnProperty("zoomFactor")
-            ? options.zoomFactor
-            : ZOOM_FACTOR;        
+/**
+ * @name InertiaAnimation
+ * @class
+ * Animation simulating inertia for camera's navigation.
+ * Inertia is its tendency to retain its velocity: in the absence of external influence, the camera's motion
+ * persists in an uniform rectilinear motion.
+ * @augments AbstractAnimation
+ * @param {AbstractAnimation.inertia_configuration} options Configuration of the Inertia animation
+ * @constructor
+ * @memberof module:Animation
+ */
+var InertiaAnimation = function (options) {
+  Utils.assert(options.nav != null, "nav is required in constructor", "InertiaAnimation.js");
+  AbstractAnimation.prototype.constructor.call(this);
+  this.panFactor = options.hasOwnProperty("panFactor") ? options.panFactor : PAN_FACTOR;
+  this.rotateFactor = options.hasOwnProperty("rotateFactor") ? options.rotateFactor : ROTATE_FACTOR;
+  this.zoomFactor = options.hasOwnProperty("zoomFactor") ? options.zoomFactor : ZOOM_FACTOR;
 
-        this.type = null;
-        this.dx = 0;
-        this.dy = 0;
-        this.navigation = options.nav;
-        this.renderContext = options.nav.getRenderContext();
-    };
+  this.type = null;
+  this.dx = 0;
+  this.dy = 0;
+  this.navigation = options.nav;
+  this.renderContext = options.nav.getRenderContext();
+};
 
-    /**************************************************************************************************************/
+/**************************************************************************************************************/
 
-    Utils.inherits(AbstractAnimation, InertiaAnimation);
+Utils.inherits(AbstractAnimation, InertiaAnimation);
 
-    /**************************************************************************************************************/
+/**************************************************************************************************************/
 
-    /**
-     * Updates the inertia.
-     * @function update
-     * @memberof InertiaAnimation#
-     */
-    InertiaAnimation.prototype.update = function(now) {
-        var hasToStop = false;
+/**
+ * Updates the inertia.
+ * @function update
+ * @memberof InertiaAnimation#
+ */
+InertiaAnimation.prototype.update = function (now) {
+  var hasToStop = false;
 
-        switch (this.type) {
-        case "pan":
-            this.navigation.pan(this.dx, this.dy);
-            this.dx *= this.panFactor;
-            this.dy *= this.panFactor;
-            hasToStop =
-                    Math.abs(this.dx) < EPSILON && Math.abs(this.dy) < EPSILON;
-            break;
-        case "rotate":
-            this.navigation.rotate(this.dx, this.dy);
-            this.dx *= this.rotateFactor;
-            this.dy *= this.rotateFactor;
-            hasToStop =
-                    Math.abs(this.dx) < EPSILON && Math.abs(this.dy) < EPSILON;
-            break;
-        case "zoom":
-            this.navigation.zoom(this.dx);
-            this.dx *= this.zoomFactor;
-            hasToStop = Math.abs(this.dx) < EPSILON;
-            break;
-        default:
-        }
-        this.navigation.getRenderContext().requestFrame();
+  switch (this.type) {
+    case "pan":
+      this.navigation.pan(this.dx, this.dy);
+      this.dx *= this.panFactor;
+      this.dy *= this.panFactor;
+      hasToStop = Math.abs(this.dx) < EPSILON && Math.abs(this.dy) < EPSILON;
+      break;
+    case "rotate":
+      this.navigation.rotate(this.dx, this.dy);
+      this.dx *= this.rotateFactor;
+      this.dy *= this.rotateFactor;
+      hasToStop = Math.abs(this.dx) < EPSILON && Math.abs(this.dy) < EPSILON;
+      break;
+    case "zoom":
+      this.navigation.zoom(this.dx);
+      this.dx *= this.zoomFactor;
+      hasToStop = Math.abs(this.dx) < EPSILON;
+      break;
+    default:
+  }
+  this.navigation.getRenderContext().requestFrame();
 
-        if (hasToStop) {
-            this.stop();
-        }
-    };
+  if (hasToStop) {
+    this.stop();
+  }
+};
 
-    /**************************************************************************************************************/
+/**************************************************************************************************************/
 
-    /**
-     * Launches the animation.
-     * @function launch
-     * @param {string} type Type of inertia
-     * <ul>
-     *   <li>pan</li>
-     *   <li>rotate</li>
-     *   <li>zoom</li>
-     * </ul>
-     * @param {int} dx x of inertiaVector Vector of movement in window coordinates(for pan and rotate inertia)
-     * @param {int} dy x of inertiaVector Vector of movement in window coordinates(for pan and rotate inertia)
-     * @memberof InertiaAnimation#
-     */
-    InertiaAnimation.prototype.launch = function(type, dx, dy) {
-        // Set first value
-        this.type = type;
-        this.dx = dx;
-        this.dy = dy;
+/**
+ * Launches the animation.
+ * @function launch
+ * @param {string} type Type of inertia
+ * <ul>
+ *   <li>pan</li>
+ *   <li>rotate</li>
+ *   <li>zoom</li>
+ * </ul>
+ * @param {int} dx x of inertiaVector Vector of movement in window coordinates(for pan and rotate inertia)
+ * @param {int} dy x of inertiaVector Vector of movement in window coordinates(for pan and rotate inertia)
+ * @memberof InertiaAnimation#
+ */
+InertiaAnimation.prototype.launch = function (type, dx, dy) {
+  // Set first value
+  this.type = type;
+  this.dx = dx;
+  this.dy = dy;
 
-        this.start();
-    };
+  this.start();
+};
 
-    /**************************************************************************************************************/
+/**************************************************************************************************************/
 
-    return InertiaAnimation;
-});
+export default InertiaAnimation;

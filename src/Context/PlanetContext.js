@@ -52,282 +52,251 @@
  * @module Context
  * @implements {Context}
  */
-define([
-    "jquery",
-    "../Utils/Utils",
-    "./AbstractContext",
-    "../Utils/Constants",
-    "../Navigation/NavigationFactory",
-    "../Registry/WMSServer",
-    "../Utils/Numeric"
-], function(
-    $,
-    Utils,
-    AbstractContext,
-    Constants,
-    NavigationFactory,
-    WMSServer,
-    Numeric
-) {
-    /**
-     * Planet context configuration
-     * @typedef {Object} AbstractContext.planetContext
-     * @property {float} [tileErrorTreshold=3]
-     * @property {float} [continuousRendering=false]
-     * @property {RenderContext} [renderContext] - Context rendering
-     * @property {AbstractProjection.configuration|AbstractProjection.azimuth_configuration|AbstractProjection.mercator_configuration} coordinateSystem - CRS configuration
-     * @property {AbstractNavigation.planet_configuration|AbstractNavigation.flat_configuration} navigation - navigation configuration
-     */
+import $ from "jquery";
+import Utils from "../Utils/Utils";
+import AbstractContext from "./AbstractContext";
+import Constants from "../Utils/Constants";
+import NavigationFactory from "../Navigation/NavigationFactory";
+// import WMSServer from "../Registry/WMSServer";
+// import Numeric from "../Utils/Numeric";
 
-    /**
-     * @name PlanetContext
-     * @class
-     * Virtual globe where the camera is outside the globe.
-     * When an error happens at the initialisation, a message is displayed
-     * @augments AbstractContext
-     * @param {Mizar.configuration} mizarConfiguration - mizar configuration
-     * @param {AbstractContext.planetContext} options - planet context configuration
-     * @constructor
-     * @memberof module:Context
-     */
-    var PlanetContext = function(mizarConfiguration, options) {
-        AbstractContext.prototype.constructor.call(this, mizarConfiguration, Constants.CONTEXT.Planet, options);
-        var self = this;
-        this.components = {
-            posTrackerInfo: true,
-            posTracker: true,
-            elevTracker: true,
-            compassDiv: true,
-            timeTravelDiv: true
-        };
+/**
+ * Planet context configuration
+ * @typedef {Object} AbstractContext.planetContext
+ * @property {float} [tileErrorTreshold=3]
+ * @property {float} [continuousRendering=false]
+ * @property {RenderContext} [renderContext] - Context rendering
+ * @property {AbstractProjection.configuration|AbstractProjection.azimuth_configuration|AbstractProjection.mercator_configuration} coordinateSystem - CRS configuration
+ * @property {AbstractNavigation.planet_configuration|AbstractNavigation.flat_configuration} navigation - navigation configuration
+ */
 
-        var planetOptions = _createPlanetConfiguration.call(this, options);
-        this.initGlobe(
-            planetOptions, 
-            {
-                "3D": Constants.NAVIGATION.PlanetNavigation, 
-                "2D": Constants.NAVIGATION.FlatNavigation
-            }
-        );
+/**
+ * @name PlanetContext
+ * @class
+ * Virtual globe where the camera is outside the globe.
+ * When an error happens at the initialisation, a message is displayed
+ * @augments AbstractContext
+ * @param {Mizar.configuration} mizarConfiguration - mizar configuration
+ * @param {AbstractContext.planetContext} options - planet context configuration
+ * @constructor
+ * @memberof module:Context
+ */
+var PlanetContext = function (mizarConfiguration, options) {
+  AbstractContext.prototype.constructor.call(this, mizarConfiguration, Constants.CONTEXT.Planet, options);
+  var self = this;
+  this.components = {
+    posTrackerInfo: true,
+    posTracker: true,
+    elevTracker: true,
+    compassDiv: true,
+    timeTravelDiv: true
+  };
 
-        
-    };
+  var planetOptions = _createPlanetConfiguration.call(this, options);
+  this.initGlobe(planetOptions, {
+    "3D": Constants.NAVIGATION.PlanetNavigation,
+    "2D": Constants.NAVIGATION.FlatNavigation
+  });
+};
 
-    /**
-     * Planet configuration data model
-     * @typedef {Object} AbstractGlobe.dm_planet
-     * @property {Object} canvas - canvas object
-     * @property {int} tileErrorTreshold - tile error treshold
-     * @property {boolean} continuousRendering - continuous rendering
-     * @property {renderContext|null} renderContext - Rendering context
-     * @property {AbstractCrs.crsFactory} coordinateSystem - Coordinate reference system of the planet
-     * @property {string} shadersPath = "../../shaders/" - Shaders location
-     * @property {boolean} lighting = false - Lighting
-     * @property {float[]} backgroundColor = [0.0, 0.0, 0.0, 1.0] - Background color
-     * @property {int} minFar = 0
-     * @property {int[]} defaultColor = [200, 200, 200, 255] - Default color
-     * @property {boolean} renderTileWithoutTexture = true
-     * @property {function} publishEvent - Callback
-     */
+/**
+ * Planet configuration data model
+ * @typedef {Object} AbstractGlobe.dm_planet
+ * @property {Object} canvas - canvas object
+ * @property {int} tileErrorTreshold - tile error treshold
+ * @property {boolean} continuousRendering - continuous rendering
+ * @property {renderContext|null} renderContext - Rendering context
+ * @property {AbstractCrs.crsFactory} coordinateSystem - Coordinate reference system of the planet
+ * @property {string} shadersPath = "../../shaders/" - Shaders location
+ * @property {boolean} lighting = false - Lighting
+ * @property {float[]} backgroundColor = [0.0, 0.0, 0.0, 1.0] - Background color
+ * @property {int} minFar = 0
+ * @property {int[]} defaultColor = [200, 200, 200, 255] - Default color
+ * @property {boolean} renderTileWithoutTexture = true
+ * @property {function} publishEvent - Callback
+ */
 
-    /**
-     * Creates planet configuration
-     * @param {Object} options
-     * @param {int} [options.tileErrorTreshold = 3] - Tile error treshold
-     * @param {boolean} [options.continuousRendering = false] - continuous rendering
-     * @param {renderContext} [options.renderContext] - Rendering context
-     * @param {Crs} options.coordinateSystem - Coordinate reference system of the planet
-     * @returns {AbstractGlobe.dm_planet} Planet data model.
-     * @private
-     */
-    function _createPlanetConfiguration(options) {
-        var self = this;
-        return {
-            tileErrorTreshold: options.tileErrorTreshold || 3,
-            continuousRendering: options.continuousRendering || false,
-            renderContext: options.renderContext,
-            canvas: this.canvas,
-            isMobile: options.isMobile || false,
-            coordinateSystem: options.coordinateSystem,
-            shadersPath: this.mizarConfiguration.mizarAPIUrl + "shaders/",
-            lighting: false,
-            backgroundColor: [0.0, 0.0, 0.0, 1.0],
-            minFar: 0,
-            defaultColor: [200, 200, 200, 255],
-            renderTileWithoutTexture: true,
-            //todofl : redondance car params identiques
-            publishEvent: function(message, object) {
-                self.publish(message, object);
-            }
-        };
+/**
+ * Creates planet configuration
+ * @param {Object} options
+ * @param {int} [options.tileErrorTreshold = 3] - Tile error treshold
+ * @param {boolean} [options.continuousRendering = false] - continuous rendering
+ * @param {renderContext} [options.renderContext] - Rendering context
+ * @param {Crs} options.coordinateSystem - Coordinate reference system of the planet
+ * @returns {AbstractGlobe.dm_planet} Planet data model.
+ * @private
+ */
+function _createPlanetConfiguration(options) {
+  var self = this;
+  return {
+    tileErrorTreshold: options.tileErrorTreshold || 3,
+    continuousRendering: options.continuousRendering || false,
+    renderContext: options.renderContext,
+    canvas: this.canvas,
+    isMobile: options.isMobile || false,
+    coordinateSystem: options.coordinateSystem,
+    shadersPath: this.mizarConfiguration.mizarAPIUrl + "shaders/",
+    lighting: false,
+    backgroundColor: [0.0, 0.0, 0.0, 1.0],
+    minFar: 0,
+    defaultColor: [200, 200, 200, 255],
+    renderTileWithoutTexture: true,
+    //todofl : redondance car params identiques
+    publishEvent: function (message, object) {
+      self.publish(message, object);
     }
+  };
+}
 
-    /**
-     * Computes GeoCenter according to the coordinate reference system.
-     * @param {Crs} crs - coordinate reference system
-     * @returns {float[]} geocenter
-     * @private
-     */
-    function _computeGeoCenter(crs) {
-        var geoCenter;
-        if (crs.isFlat()) {
-            geoCenter = crs.getWorldFrom3D(this.navigation.center);
-        } else {
-            geoCenter = this.navigation.geoCenter;
-        }
-        return geoCenter;
-    }
+/**
+ * Computes GeoCenter according to the coordinate reference system.
+ * @param {Crs} crs - coordinate reference system
+ * @returns {float[]} geocenter
+ * @private
+ */
+function _computeGeoCenter(crs) {
+  var geoCenter;
+  if (crs.isFlat()) {
+    geoCenter = crs.getWorldFrom3D(this.navigation.center);
+  } else {
+    geoCenter = this.navigation.geoCenter;
+  }
+  return geoCenter;
+}
 
-    /**
-     * Propagates navigation options (inertia and mouse) when the coordinate reference system changes.
-     * @param {AbstractNavigation.configuration} options - Navigation configuration
-     * @private
-     * @returns {Object} navigation options
-     */
-    function _propagateNavOptions(options) {
-        var navOptions = {};
-        navOptions.inertia = options.hasOwnProperty("inertia") ? options.inertia : false;
-        if (options.hasOwnProperty("mouse")) {
-            navOptions.mouse = options.mouse;
-        }
-        return navOptions;
-    }
+/**
+ * Propagates navigation options (inertia and mouse) when the coordinate reference system changes.
+ * @param {AbstractNavigation.configuration} options - Navigation configuration
+ * @private
+ * @returns {Object} navigation options
+ */
+function _propagateNavOptions(options) {
+  var navOptions = {};
+  navOptions.inertia = options.hasOwnProperty("inertia") ? options.inertia : false;
+  if (options.hasOwnProperty("mouse")) {
+    navOptions.mouse = options.mouse;
+  }
+  return navOptions;
+}
 
-    /**
-     * Updates the navigation according to the new coordinate reference system and the current settings
-     * of the previous coordinate reference system
-     * @param {Crs} newCrs -  the new coordinate reference system
-     * @param {float[]} geoCenter - Current geo center of the camera in the previous coordinate reference system
-     * @param {float} geoDistance - Distance from the globe's surface of the camera in the previous coordinate reference system
-     * @param {Object} navOptions - Navigation's options
-     * @param {boolean} [navOptions.inertia=false] - Inertia
-     * @param {Object} [navOptions.mouse] - Mouse's configuration
-     * @private
-     */
-    function _updateNavForNewCrs(newCrs, geoCenter, geoDistance, navOptions) {
-        if (newCrs.isFlat()) {
-            this.navigation = NavigationFactory.create(
-                Constants.NAVIGATION.FlatNavigation,
-                this,
-                navOptions
-            );
-            this.navigation.center = newCrs.get3DFromWorld(geoCenter);
-        } else {
-            this.navigation = NavigationFactory.create(
-                Constants.NAVIGATION.PlanetNavigation,
-                this,
-                navOptions
-            );
-            this.navigation.geoCenter = geoCenter;
-        }
-        this.navigation.distance =
-            geoDistance * newCrs.getGeoide().getHeightScale();
-    }
+/**
+ * Updates the navigation according to the new coordinate reference system and the current settings
+ * of the previous coordinate reference system
+ * @param {Crs} newCrs -  the new coordinate reference system
+ * @param {float[]} geoCenter - Current geo center of the camera in the previous coordinate reference system
+ * @param {float} geoDistance - Distance from the globe's surface of the camera in the previous coordinate reference system
+ * @param {Object} navOptions - Navigation's options
+ * @param {boolean} [navOptions.inertia=false] - Inertia
+ * @param {Object} [navOptions.mouse] - Mouse's configuration
+ * @private
+ */
+function _updateNavForNewCrs(newCrs, geoCenter, geoDistance, navOptions) {
+  if (newCrs.isFlat()) {
+    this.navigation = NavigationFactory.create(Constants.NAVIGATION.FlatNavigation, this, navOptions);
+    this.navigation.center = newCrs.get3DFromWorld(geoCenter);
+  } else {
+    this.navigation = NavigationFactory.create(Constants.NAVIGATION.PlanetNavigation, this, navOptions);
+    this.navigation.geoCenter = geoCenter;
+  }
+  this.navigation.distance = geoDistance * newCrs.getGeoide().getHeightScale();
+}
 
-    /**************************************************************************************************************/
+/**************************************************************************************************************/
 
-    Utils.inherits(AbstractContext, PlanetContext);
+Utils.inherits(AbstractContext, PlanetContext);
 
-    /**************************************************************************************************************/
+/**************************************************************************************************************/
 
-    /**
-     * @function setBaseElevation
-     * @memberof PlanetContext#
-     * @throws {TypeError} The provided error is not a WCSElevation or a WMSElevation
-     */
-    PlanetContext.prototype.setBaseElevation = function(layer) {
-        if (
-            layer.getType() !== Constants.LAYER.WCSElevation &&
-            layer.getType() !== Constants.LAYER.WMSElevation
-        ) {
-            throw new TypeError(
-                "The provided layer ID=" +
-                    layer.getID() +
-                    " has a type +" +
-                    layer.getType() +
-                    " instead of WCSElevation or WMSElevation",
-                "PlanetContext.js"
-            );
-        }
-        this.globe.setBaseElevation(layer);
-        if (this.elevationTracker != null) {
-            this.elevationTracker.setScaleLayer(layer);
-        }
-    };
+/**
+ * @function setBaseElevation
+ * @memberof PlanetContext#
+ * @throws {TypeError} The provided error is not a WCSElevation or a WMSElevation
+ */
+PlanetContext.prototype.setBaseElevation = function (layer) {
+  if (layer.getType() !== Constants.LAYER.WCSElevation && layer.getType() !== Constants.LAYER.WMSElevation) {
+    throw new TypeError(
+      "PlanetContext.js: The provided layer ID=" +
+        layer.getID() +
+        " has a type +" +
+        layer.getType() +
+        " instead of WCSElevation or WMSElevation"
+    );
+  }
+  this.globe.setBaseElevation(layer);
+  if (this.elevationTracker != null) {
+    this.elevationTracker.setScaleLayer(layer);
+  }
+};
 
-    /**
-     * @function setBaseElevationByID
-     * @memberof PlanetContext#
-     */
-    PlanetContext.prototype.setBaseElevationByID = function(layerID) {
-        // Find the layer by name among all the layers
-        var layer = this.getLayerByID(layerID);
-        if (layer) {
-            this.setBaseElevation(layer);
-        }
-        return layer;
-    };
+/**
+ * @function setBaseElevationByID
+ * @memberof PlanetContext#
+ */
+PlanetContext.prototype.setBaseElevationByID = function (layerID) {
+  // Find the layer by name among all the layers
+  var layer = this.getLayerByID(layerID);
+  if (layer) {
+    this.setBaseElevation(layer);
+  }
+  return layer;
+};
 
-    /**
-     * @function getBaseElevation
-     * @memberof PlanetContext#
-     */
-    PlanetContext.prototype.getBaseElevation = function() {
-        return this.globe.getBaseElevation();
-    };
+/**
+ * @function getBaseElevation
+ * @memberof PlanetContext#
+ */
+PlanetContext.prototype.getBaseElevation = function () {
+  return this.globe.getBaseElevation();
+};
 
-    /**
-     * @function setCoordinateSystem
-     * @memberof PlanetContext#
-     */
-    PlanetContext.prototype.setCoordinateSystem = function(newCrs) {
-        if (newCrs.getType() !== this.getMode()) {
-            throw new RangeError(
-                "incompatible coordinate reference system with Planet context",
-                "PlanetContext.js"
-            );
-        }
-        // Change navigation
-        var geoCenter;
-        var geoDistance;
+/**
+ * @function setCoordinateSystem
+ * @memberof PlanetContext#
+ */
+PlanetContext.prototype.setCoordinateSystem = function (newCrs) {
+  if (newCrs.getType() !== this.getMode()) {
+    throw new RangeError("PlanetContext.js: incompatible coordinate reference system with Planet context");
+  }
+  // Change navigation
+  var geoCenter;
+  var geoDistance;
 
-        var self = this;
-        $(self.canvas.parentElement).find("#loading").show();
+  var self = this;
+  $(self.canvas.parentElement).find("#loading").show();
 
-        // Compute current position and distance in order to set them in the new navigation related to the
-        // new coordinate reference system
-        geoCenter = _computeGeoCenter.call(this,this.globe.getCoordinateSystem());
-        geoDistance = this.navigation.distance / this.globe.getCoordinateSystem().getGeoide().getHeightScale();
+  // Compute current position and distance in order to set them in the new navigation related to the
+  // new coordinate reference system
+  geoCenter = _computeGeoCenter.call(this, this.globe.getCoordinateSystem());
+  geoDistance = this.navigation.distance / this.globe.getCoordinateSystem().getGeoide().getHeightScale();
 
-        // Update the coordinate reference system
-        this.globe.setCoordinateSystem(newCrs);
-        this.navigation.stop();
+  // Update the coordinate reference system
+  this.globe.setCoordinateSystem(newCrs);
+  this.navigation.stop();
 
-        // Creates the options for the new navigation related to the new coordinate reference system.
-        // We only keep the inertia and the options for the mouse
-        var navOptions = _propagateNavOptions.call(this, this.navigation.getOptions());
+  // Creates the options for the new navigation related to the new coordinate reference system.
+  // We only keep the inertia and the options for the mouse
+  var navOptions = _propagateNavOptions.call(this, this.navigation.getOptions());
 
-        try {
-            // Create a new navigation related to the new coordinate reference system
-            _updateNavForNewCrs.call(this, newCrs, geoCenter, geoDistance, navOptions);
-        } catch (err) {
-            this._showUpError(err);
-        }
+  try {
+    // Create a new navigation related to the new coordinate reference system
+    _updateNavForNewCrs.call(this, newCrs, geoCenter, geoDistance, navOptions);
+  } catch (err) {
+    this._showUpError(err);
+  }
 
-        if (this.positionTracker) {
-            this.positionTracker.detach();
-            this.positionTracker.attachTo(this);
-        }
+  if (this.positionTracker) {
+    this.positionTracker.detach();
+    this.positionTracker.attachTo(this);
+  }
 
-        if (this.elevationTracker) {
-            this.elevationTracker.detach();
-            this.elevationTracker.attachTo(this);
-        }
+  if (this.elevationTracker) {
+    this.elevationTracker.detach();
+    this.elevationTracker.attachTo(this);
+  }
 
-        this.navigation.computeViewMatrix();
-        this.publish(Constants.EVENT_MSG.CRS_MODIFIED, this);
-    };
+  this.navigation.computeViewMatrix();
+  this.publish(Constants.EVENT_MSG.CRS_MODIFIED, this);
+};
 
-    /**************************************************************************************************************/
-    return PlanetContext;
-});
+/**************************************************************************************************************/
+export default PlanetContext;

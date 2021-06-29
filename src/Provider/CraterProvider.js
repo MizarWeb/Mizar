@@ -16,93 +16,82 @@
  * You should have received a copy of the GNU General Public License
  * along with MIZAR. If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
-define([
-    "jquery",
-    "./AbstractProvider",
-    "../Utils/Utils",
-    "../Renderer/FeatureStyle",
-    "../Utils/Constants",
-    "../Gui/dialog/ErrorDialog"
-], function($, AbstractProvider, Utils, FeatureStyle, Constants, ErrorDialog) {
-    const DEFAULT_STROKE_COLOR = [1.0, 1.0, 1.0, 1.0];
+// import $ from "jquery";
+import AbstractProvider from "./AbstractProvider";
+import Utils from "../Utils/Utils";
+import FeatureStyle from "../Renderer/FeatureStyle";
+import Constants from "../Utils/Constants";
+import ErrorDialog from "../Gui/dialog/ErrorDialog";
+const DEFAULT_STROKE_COLOR = [1.0, 1.0, 1.0, 1.0];
 
-    var self;
-    var featureCollection;
+var self;
+var featureCollection;
 
-    /**
-     * @name CraterProvider
-     * @class
-     *   Displays the name of the crater
-     * @param {object} options
-     * @augments AbstractProvider
-     * @constructor
-     * @memberof module:Provider
-     */
-    var CraterProvider = function(options) {
-        AbstractProvider.prototype.constructor.call(this, options);
-        self = this;
-    };
+/**
+ * @name CraterProvider
+ * @class
+ *   Displays the name of the crater
+ * @param {object} options
+ * @augments AbstractProvider
+ * @constructor
+ * @memberof module:Provider
+ */
+var CraterProvider = function (options) {
+  AbstractProvider.prototype.constructor.call(this, options);
+  self = this;
+};
 
-    /*******************************************************************************/
-    Utils.inherits(AbstractProvider, CraterProvider);
-    /*******************************************************************************/
+/*******************************************************************************/
+Utils.inherits(AbstractProvider, CraterProvider);
+/*******************************************************************************/
 
-    /**
-     * @function loadFiles
-     * @param {Layer} layer - mizar Layer
-     * @param {Object} configuration - configuration
-     * @param {string} configuration.url - URL of the GeoJSON file
-     * @memberof CraterProvider#
-     */
-    CraterProvider.prototype.loadFiles = function(layer, configuration) {
-        Utils.requestUrl(
-            configuration.url,
-            "text",
-            "text/plain",
-            null,
-            function(response) {
-                if (typeof response === "string") {
-                    featureCollection = JSON.parse(response);
-                } else {
-                    featureCollection = response;
-                }
-                self.handleFeatures(layer);
-            },
-            function(err) {
-                ErrorDialog.open(
-                    Constants.LEVEL.ERROR,
-                    "Failed ot request " + configuration.url,
-                    err
-                );
-            }
-        );
-    };
+/**
+ * @function loadFiles
+ * @param {Layer} layer - mizar Layer
+ * @param {Object} configuration - configuration
+ * @param {string} configuration.url - URL of the GeoJSON file
+ * @memberof CraterProvider#
+ */
+CraterProvider.prototype.loadFiles = function (layer, configuration) {
+  Utils.requestUrl(
+    configuration.url,
+    "text",
+    "text/plain",
+    null,
+    function (response) {
+      if (typeof response === "string") {
+        featureCollection = JSON.parse(response);
+      } else {
+        featureCollection = response;
+      }
+      self.handleFeatures(layer);
+    },
+    function (err) {
+      ErrorDialog.open(Constants.LEVEL.ERROR, "Failed ot request " + configuration.url, err);
+    }
+  );
+};
 
-    /**
-     * @function handleFeatures
-     * @memberof CraterProvider#
-     */
-    CraterProvider.prototype.handleFeatures = function(layer) {
-        var crs = featureCollection.crs;
-        var features = featureCollection.features;
-        var ptMaxSize = layer.options.pointMaxSize
-            ? layer.options.pointMaxSize
-            : 20;
-        var strokeColor = layer.getStyle().getStrokeColor()
-            ? layer.getStyle().getStrokeColor()
-            : DEFAULT_STROKE_COLOR;
-        for (var i = 0; i < features.length; i++) {
-            var currentFeature = features[i];
-            currentFeature.geometry.crs = crs;
-            var craterName = currentFeature.properties.name;
-            currentFeature.properties.style = new FeatureStyle({
-                label: craterName,
-                strokeColor: strokeColor,
-                pointMaxSize: ptMaxSize
-            });
-        }
-        layer.addFeatureCollection(featureCollection);
-    };
+/**
+ * @function handleFeatures
+ * @memberof CraterProvider#
+ */
+CraterProvider.prototype.handleFeatures = function (layer) {
+  var crs = featureCollection.crs;
+  var features = featureCollection.features;
+  var ptMaxSize = layer.options.pointMaxSize ? layer.options.pointMaxSize : 20;
+  var strokeColor = layer.getStyle().getStrokeColor() ? layer.getStyle().getStrokeColor() : DEFAULT_STROKE_COLOR;
+  for (var i = 0; i < features.length; i++) {
+    var currentFeature = features[i];
+    currentFeature.geometry.crs = crs;
+    var craterName = currentFeature.properties.name;
+    currentFeature.properties.style = new FeatureStyle({
+      label: craterName,
+      strokeColor: strokeColor,
+      pointMaxSize: ptMaxSize
+    });
+  }
+  layer.addFeatureCollection(featureCollection);
+};
 
-    return CraterProvider;
-});
+export default CraterProvider;

@@ -39,10 +39,10 @@ function Provider() {}
  * @param {Layer} layer
  * @param {Object} configuration
  */
-Provider.prototype.loadFiles = function(layer, configuration) {};
+Provider.prototype.loadFiles = function (layer, configuration) {};
 
 /**
  * Process data and add them to the layer
  * @param {Layer} layer
  */
-Provider.prototype.handleFeatures = function(layer) {};
+Provider.prototype.handleFeatures = function (layer) {};

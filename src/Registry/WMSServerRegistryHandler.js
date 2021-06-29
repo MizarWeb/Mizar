@@ -16,61 +16,56 @@
  * You should have received a copy of the GNU General Public License
  * along with MIZAR. If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
-define([
-    "../Utils/Utils",
-    "./AbstractRegistryHandler",
-    "../Utils/Constants",
-    "../Gui/dialog/ErrorDialog",
-    "./WMSServer"
-], function(Utils, AbstractRegistryHandler, Constants, ErrorDialog, WMSServer) {
-    /**
-     * @class
-     * Creates a WMS handler to create {@link WMSLayer WMS layers}
-     * @param {*} pendingLayers
-     * @augments AbstractRegistryHandler
-     * @memberof module:Registry
-     * @constructor
-     * @see {@link WMSServer}
-     */
-    var WMSServerRegistryHandler = function(pendingLayers) {
-        AbstractRegistryHandler.prototype.constructor.call();
-        this.pendingLayers = pendingLayers;
-    };
+import Utils from "../Utils/Utils";
+import AbstractRegistryHandler from "./AbstractRegistryHandler";
+import Constants from "../Utils/Constants";
+import ErrorDialog from "../Gui/dialog/ErrorDialog";
+import WMSServer from "./WMSServer";
+/**
+ * @class
+ * Creates a WMS handler to create {@link WMSLayer WMS layers}
+ * @param {*} pendingLayers
+ * @augments AbstractRegistryHandler
+ * @memberof module:Registry
+ * @constructor
+ * @see {@link WMSServer}
+ */
+var WMSServerRegistryHandler = function (pendingLayers) {
+  AbstractRegistryHandler.prototype.constructor.call(this);
+  this.pendingLayers = pendingLayers;
+};
 
-    /**************************************************************************************************************/
+/**************************************************************************************************************/
 
-    Utils.inherits(AbstractRegistryHandler, WMSServerRegistryHandler);
+Utils.inherits(AbstractRegistryHandler, WMSServerRegistryHandler);
 
-    /**************************************************************************************************************/
+/**************************************************************************************************************/
 
-    /**
-     * @function handleRequest
-     * @memberof WMSServerRegistryHandler#
-     */
+/**
+ * @function handleRequest
+ * @memberof WMSServerRegistryHandler#
+ */
 
-    WMSServerRegistryHandler.prototype.handleRequest = function(layerDescription, callback, fallback) {
-        try {
-            if (layerDescription.type === Constants.LAYER.WMS) {
-                var wmsServer = new WMSServer(
-                    layerDescription
-                );
-                var self = this;
-                wmsServer.createLayers(function(layers) {
-                    //TODO : I loose the callback of pendingLayers
-                    self._handlePendingLayers(self.pendingLayers, layers);
-                    callback(layers);
-                }, fallback);
-            } else {
-                this.next.handleRequest(layerDescription, callback, fallback);
-            }
-        } catch (e) {
-            if (fallback) {
-                fallback(e);
-            } else {
-                ErrorDialog.open(Constants.LEVEL.DEBUG, "WMSServerRegistryHandler.js", e);
-            }
-        }
-    };
+WMSServerRegistryHandler.prototype.handleRequest = function (layerDescription, callback, fallback) {
+  try {
+    if (layerDescription.type === Constants.LAYER.WMS) {
+      var wmsServer = new WMSServer(layerDescription);
+      var self = this;
+      wmsServer.createLayers(function (layers) {
+        //TODO : I loose the callback of pendingLayers
+        self._handlePendingLayers(self.pendingLayers, layers);
+        callback(layers);
+      }, fallback);
+    } else {
+      this.next.handleRequest(layerDescription, callback, fallback);
+    }
+  } catch (e) {
+    if (fallback) {
+      fallback(e);
+    } else {
+      ErrorDialog.open(Constants.LEVEL.DEBUG, "WMSServerRegistryHandler.js", e);
+    }
+  }
+};
 
-    return WMSServerRegistryHandler;
-});
+export default WMSServerRegistryHandler;

@@ -16,596 +16,577 @@
  * You should have received a copy of the GNU General Public License
  * along with MIZAR. If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
-define([
-    "../Renderer/FeatureStyle",
-    "../Layer/OpenSearchLayer",
-    "../Utils/UtilsIntersection",
-    "../Utils/Constants",
-    "../Gui/dialog/ErrorDialog"
-], function(
-    FeatureStyle,
-    OpenSearchLayer,
-    UtilsIntersection,
-    Constants,
-    ErrorDialog
-) {
-    const DEFAULT_SIZE_MULTIPLICATOR = 1;
+import FeatureStyle from "../Renderer/FeatureStyle";
+import OpenSearchLayer from "../Layer/OpenSearchLayer";
+import UtilsIntersection from "../Utils/UtilsIntersection";
+import Constants from "../Utils/Constants";
+import ErrorDialog from "../Gui/dialog/ErrorDialog";
+const DEFAULT_SIZE_MULTIPLICATOR = 1;
 
-    var ctx;
-    var globe;
+var ctx;
+var globe;
 
-    var pickableLayers = [];
-    var selection = [];
-    var stackSelectionIndex = -1;
+var pickableLayers = [];
+var selection = [];
+var stackSelectionIndex = -1;
 
-    var selectedStyle = new FeatureStyle({
-        strokeColor: [1.0, 0.0, 0.0, 1.0],
-        fillColor: [1.0, 1.0, 0.0, 1.0],
-        zIndex: Constants.DISPLAY.SELECTED_VECTOR
-    });
-
-    var highlightedSelectedStyle = new FeatureStyle({
-        strokeColor: [0.0, 0.0, 1.0, 1.0],
-        fillColor: [0.0, 0.0, 1.0, 1.0],
-        zIndex: Constants.DISPLAY.HIGHLIGHTED_VECTOR
-    });
-
-    /**************************************************************************************************************/
-
-    /**
-     *    Add pickable layer to the pickableLayers list
-     *    @function addPickableLayer
-     *    @param {AbstractLayer} layer
-     */
-    function addPickableLayer(layer) {
-        if (pickableLayers.indexOf(layer) === -1) {
-            pickableLayers.push(layer);
-        } else {
-            ErrorDialog.open(Constants.LEVEL.DEBUG, "PickingManagerCore.js", layer.name + " has been already added");
-        }
-    }
-
-    /**************************************************************************************************************/
-
-    /**
-     *    Remove pickable layers
-     *    @param {AbstractLayer} layer
-     */
-    function removePickableLayer(layer) {
-        for (var i = 0; i < pickableLayers.length; i++) {
-            if (layer.id === pickableLayers[i].id) {
-                pickableLayers.splice(i, 1);
-            }
-        }
-    }
-
-    /**************************************************************************************************************/
-
-    /**
-     * Get the list of pickable layers
-     * @returns {Array} pickableLayers
-     */
-    function getPickableLayers() {
-        return pickableLayers;
-    }
-
-    /**************************************************************************************************************/
-
-    /**
-     *    Revert style of selected feature
-     */
-    function blurSelectedFeature() {
-        var selectedData = this.getSelection()[this.stackSelectionIndex];
-        if (selectedData) {
-            var style = new FeatureStyle(selectedData.feature.properties.style);
-            switch (selectedData.feature.geometry.type) {
-            case Constants.GEOMETRY.LineString:
-            case Constants.GEOMETRY.MultiLineString:
-            case Constants.GEOMETRY.Polygon:
-            case Constants.GEOMETRY.MultiPolygon:
-                style.strokeColor = this.selectedStyle.strokeColor;
-                break;
-            case Constants.GEOMETRY.Point:
-                // Use stroke color while reverting
-                style.fillColor = this.selectedStyle.fillColor;
-                break;
-            default:
-                break;
-            }
-            style.zIndex = selectedStyle.zIndex;
-            selectedData.layer.modifyFeatureStyle(
-                selectedData.feature,
-                style
-            );
-        }
-    }
-
-    /**************************************************************************************************************/
-
-    /**
-     *    Apply selected style to the feature by the given index in selection array
-     *
-     *    @param index Index of feature in selection array
-     *    @param options
-     *        <li>isExclusive : Boolean indicating if the focus is exclusive</li>
-     *        <li>color : Highlight color</li>
-     */
-    function focusFeatureByIndex(index, options) {
-        if (options.isExclusive) {
-            blurSelection();
-        }
-
-        // Update highlight color
-        var strokeColor = options.color
-            ? FeatureStyle.fromStringToColor(options.color)
-            : this.highlightedSelectedStyle.strokeColor;
-        var fillColor = options.color
-            ? FeatureStyle.fromStringToColor(options.color)
-            : this.highlightedSelectedStyle.fillColor;
-
-        var selectedData = this.getSelection()[index];
-        if (selectedData) {
-            this.stackSelectionIndex = index;
-            var style = new FeatureStyle(selectedData.feature.properties.style);
-            switch (selectedData.feature.geometry.type) {
-            case Constants.GEOMETRY.LineString:
-            case Constants.GEOMETRY.MultiLineString:
-            case Constants.GEOMETRY.Polygon:
-            case Constants.GEOMETRY.MultiPolygon:
-                style.strokeColor = strokeColor;
-                style.strokeWidth = style.strokeWidth + 2;
-                break;
-            case Constants.GEOMETRY.Point:
-                style.fillColor = fillColor;
-                break;
-            default:
-                break;
-            }
-            style.zIndex = this.highlightedSelectedStyle.zIndex;
-            selectedData.layer.modifyFeatureStyle(
-                selectedData.feature,
-                style
-            );
-        }
-        globe.refresh();
-    }
-
-    /**************************************************************************************************************/
-
-    /**
-     * Get the current selection
-     * @returns {Array}
-     */
-    function getSelection() {
-        return selection;
-    }
-
-    /**************************************************************************************************************/
-
-    /**
-     *    Revert style of selection
-     */
-    function blurSelection() {
-        for (var i = 0; i < this.getSelection().length; i++) {
-            var selectedData = this.getSelection()[i];
-            var style = new FeatureStyle(selectedData.feature.properties.style);
-            switch (selectedData.feature.geometry.type) {
-            case Constants.GEOMETRY.LineString:
-            case Constants.GEOMETRY.MultiLineString:
-            case Constants.GEOMETRY.Polygon:
-            case Constants.GEOMETRY.MultiPolygon:
-                style.strokeColor = selectedData.layer.getStyle().strokeColor;
-                style.strokeWidth = selectedData.layer.getStyle().strokeWidth;
-                break;
-            case Constants.GEOMETRY.Point:
-                // Use stroke color while reverting
-                style.fillColor = selectedData.feature.properties.style.strokeColor;
-                break;
-            default:
-                break;
-            }
-            style.zIndex = selectedData.layer.getStyle().zIndex;
-
-            if (selectedData.layer.getGlobe()) {
-                // Layer is still attached to globe
-                selectedData.layer.modifyFeatureStyle(
-                    selectedData.feature,
-                    style
-                );
-            }
-
-            if (selectedData.feature.pickData) {
-                delete selectedData.feature.pickData;
-            }
-        }
-    }
-
-    /**************************************************************************************************************/
-
-    /**
-     *    Apply style to selection
-     *    @param {Array} newSelection selection of data
-     */
-    function focusSelection(newSelection) {
-        var style;
-        //var focusLayers = {};
-        for (var i = 0; i < newSelection.length; i++) {
-            var selectedData = newSelection[i];
-            if (selectedData.feature.properties.style) {
-                style = new FeatureStyle(selectedData.feature.properties.style);
-            } else {
-                style = new FeatureStyle(selectedData.layer.getStyle());
-            }
-            switch (selectedData.feature.geometry.type) {
-            case Constants.GEOMETRY.LineString:
-            case Constants.GEOMETRY.MultiLineString:
-            case Constants.GEOMETRY.Polygon:
-            case Constants.GEOMETRY.MultiPolygon:
-                style.strokeColor = this.selectedStyle.strokeColor;
-                style.strokeWidth = style.strokeWidth + 1;
-                break;
-            case Constants.GEOMETRY.Point:
-                style.fillColor = this.selectedStyle.fillColor;
-                break;
-            default:
-                break;
-            }
-            style.zIndex = this.selectedStyle.zIndex;
-            selectedData.layer.modifyFeatureStyle(
-                selectedData.feature,
-                style
-            );
-        }
-        /*            for (var layerID in focusLayers) {
-                currentLayer = focusLayers[layerID];
-                currentLayer.layer.modifyFeatureStyles(
-                    currentLayer.focusFeatures,
-                    currentLayer.focusStyles
-                );
-            }
-        */
-    }
-
-    /**************************************************************************************************************/
-
-    /**
-     *    Clear selection
-     */
-    function clearSelection() {
-        this.blurSelection();
-        this.setSelection([]);
-    }
-
-    /**************************************************************************************************************/
-
-    /**
-     * Check if a geometry crosses the date line
-     * @param {Array} pickPoint
-     * @param {Array}coords
-     * @returns {Array} coords
-     */
-    function fixDateLine(pickPoint, coords) {
-        var crossDateLine = false;
-        var startLon = coords[0][0];
-        for (var i = 1; i < coords.length && !crossDateLine; i++) {
-            var deltaLon = Math.abs(coords[i][0] - startLon);
-            if (deltaLon > 180) {
-                // DateLine!
-                crossDateLine = true;
-            }
-        }
-        var n;
-        if (crossDateLine) {
-            var fixCoords = [];
-
-            if (pickPoint[0] < 0.0) {
-                // Ensure coordinates are always negative
-                for (n = 0; n < coords.length; n++) {
-                    if (coords[n][0] > 0) {
-                        fixCoords[n] = [coords[n][0] - 360, coords[n][1]];
-                    } else {
-                        fixCoords[n] = [coords[n][0], coords[n][1]];
-                    }
-                }
-            } else {
-                // Ensure coordinates are always positive
-                for (n = 0; n < coords.length; n++) {
-                    if (coords[n][0] < 0) {
-                        fixCoords[n] = [coords[n][0] + 360, coords[n][1]];
-                    } else {
-                        fixCoords[n] = [coords[n][0], coords[n][1]];
-                    }
-                }
-            }
-
-            return fixCoords;
-        } else {
-            return coords;
-        }
-    }
-
-    /**************************************************************************************************************/
-
-    /**
-     * Picking test for feature depending on its geometry type
-     * @param {Object} feature
-     * @param {Array} pickPoint
-     * @returns {Boolean} isPicked
-     */
-    function featureIsPicked(feature, pickPoint, pickingNoDEM, options) {
-        var i, j, p;
-        var feat, featNext, ring;
-        var sizeMultiplicator =
-            options && options.sizeMultiplicator
-                ? options.sizeMultiplicator
-                : DEFAULT_SIZE_MULTIPLICATOR;
-        switch (feature.geometry.type) {
-        case Constants.GEOMETRY.LineString:
-            if (!pickPoint) { return false; }
-            for (i = 0; i < feature.geometry.coordinates.length - 1; i++) {
-                feat = feature.geometry.coordinates[i];
-                featNext = feature.geometry.coordinates[i + 1];
-                if (UtilsIntersection.pointInLine(pickPoint, feat, featNext)) {
-                    return true;
-                }
-            }
-            //var ring = this.fixDateLine(pickPoint, feature['geometry']['coordinates'][0]);
-            break;
-        case Constants.GEOMETRY.MultiLineString:
-            if (!pickPoint) { return false; }
-            for (i = 0; i < feature.geometry.coordinates.length; i++) {
-                for (
-                    j = 0;
-                    j < feature.geometry.coordinates[i].length - 1;
-                    j++
-                ) {
-                    feat = feature.geometry.coordinates[i][j];
-                    featNext = feature.geometry.coordinates[i][j + 1];
-                    if (UtilsIntersection.pointInLine(pickPoint, feat, featNext)) {
-                        return true;
-                    }
-                }
-            }
-            break;
-        case Constants.GEOMETRY.Polygon:
-            if (!pickPoint) { return false; }
-            ring = this.fixDateLine(pickPoint, feature.geometry.coordinates[0]);
-            return UtilsIntersection.pointInRing(pickPoint, ring);
-        case Constants.GEOMETRY.MultiPolygon:
-            if (!pickPoint) { return false; }
-            for (p = 0; p < feature.geometry.coordinates.length; p++) {
-                ring = this.fixDateLine(pickPoint, feature.geometry.coordinates[p][0]);
-                if (UtilsIntersection.pointInRing(pickPoint, ring)) {
-                    return true;
-                }
-            }
-            return false;
-        case Constants.GEOMETRY.Point:
-            // Do not pick the labeled features
-            var isLabel = !options.allowLabelPicking && feature.properties && feature.properties.style && feature.properties.style.label;
-            if (isLabel) return false;
-
-            if (feature.properties && feature.properties.style &&
-                feature.properties.style.useMeterSize && feature.properties.style.meterSize) {
-                return UtilsIntersection.isInBillboard(pickPoint, feature.geometry, feature.properties.style.meterSize, options.eventPos);
-            } else if (feature.properties && feature.properties.style &&
-                feature.properties.style.useDegreeSize && feature.properties.style.degreeSize) {
-                return UtilsIntersection.isInBillboard(pickPoint, feature.geometry, feature.properties.style.degreeSize, options.eventPos);
-            } else {
-                const hasPickPoint = pickPoint !== null;
-                const hasElevation = (feature.geometry.coordinates.length >= 3) && (Math.abs(feature.geometry.coordinates[2]) > 1e-3);
-                const pickOnTerrain = (hasPickPoint && !hasElevation) || (hasPickPoint && pickingNoDEM);
-                if (pickOnTerrain) {
-                    var coord = feature.geometry.coordinates;
-                    var point;
-                    var pt = [pickPoint[0], pickPoint[1], pickPoint[2]];
-                    if (pickingNoDEM === true) {
-                        pt[2] = 0;
-                        point = [coord[0], coord[1], 0];
-                        sizeMultiplicator = 3;
-                    } else {
-                        point = coord;
-                    }
-                    return UtilsIntersection.pointInSphere(ctx, pt, point, feature.geometry._bucket.textureHeight * sizeMultiplicator);
-                } else {
-                    const { renderContext, coordinateSystem } = ctx.globe;
-
-                    const p3d = vec3.create();
-                    coordinateSystem.get3DFromWorld(feature.geometry.coordinates, p3d);
-
-                    if (pickingNoDEM) {
-                        p3d[2] = 0.0;
-                        sizeMultiplicator = 3;
-                    }
-
-                    const p2d = renderContext.getPixelFrom3D(p3d[0], p3d[1], p3d[2]);
-
-                    const distSq = vec3.squaredDist([p2d[0], p2d[1], 0], [options.eventPos[0], options.eventPos[1], 0]);
-
-                    const radius = feature.geometry._bucket.textureHeight * sizeMultiplicator;
-
-                    return distSq <= (radius * radius);
-                }
-            }
-        default:
-            ErrorDialog.open(Constants.LEVEL.DEBUG, "PickingManagerCore.js", "Picking for " + feature.geometry.type + " is not yet");
-            return false;
-        }
-    }
-
-    /**************************************************************************************************************/
-
-    /**
-     * @deprecated Please use computePickSelection
-     */
-    function computeFilterPickSelection(pickPoint, options) {
-        ErrorDialog.open(Constants.LEVEL.WARNING, "PickingManagerCore", "computeFilterPickSelection: This function is deprecated. Please use computePickSelection instead.");
-        var selection = this.computePickSelection(pickPoint, options);
-        var returnedSelection = [];
-        for (var i = 0; i < selection.length; i++) {
-            returnedSelection.push(selection[i]);
-        }
-        return returnedSelection;
-    }
-
-    /**
-     * Compute the selection at the picking point
-     * @param {Array} pickPoint
-     * @return {Array} newSelection
-     */
-    function computePickSelection(pickPoint, options) {
-        var i, j, feature;
-        var newSelection = [];
-
-        var selectedTile = pickPoint
-            ? globe.tileManager.getVisibleTile(pickPoint[0], pickPoint[1])
-            : undefined;
-
-        const tileData = selectedTile ? selectedTile.extension.renderer : null;
-
-        for (i = 0; i < this.getPickableLayers().length; i++) {
-            var pickableLayer = this.getPickableLayers()[i];
-            if (pickableLayer.isVisible() && pickableLayer.globe === globe) {
-                if (pickableLayer instanceof OpenSearchLayer) {
-                    if (!pickPoint) {
-                        return [];
-                    }
-
-                    // Extension using layer
-                    // Search for features in each tile
-                    if (!selectedTile) {
-                        ErrorDialog.open(Constants.LEVEL.DEBUG, "PickingManagerCore.js", "no tile found");
-                        continue;
-                    }
-
-                    if (!tileData) {
-                        ErrorDialog.open(Constants.LEVEL.DEBUG, "PickingManagerCore.js", "no tile data");
-                        continue;
-                    }
-
-                    //[pickableLayer.extId];
-                    /*if (!tileData || tileData.state !== OpenSearchLayer.TileState.LOADED) {
-                            while (tile.parent && (!tileData || tileData.state !== OpenSearchLayer.TileState.LOADED)) {
-                                tile = tile.parent;
-                                tileData = tile.extension[pickableLayer.extId];
-                            }
-                        }*/
-
-                    //for (j = 0; j < tileData.featureIds.length; j++) {
-                    for (j = 0; j < pickableLayer.features.length; j++) {
-                        //feature = pickableLayer.features[pickableLayer.featuresSet[tileData.featureIds[j]].index];
-                        feature = pickableLayer.features[j];
-
-                        // Allow label picking for opensearch texts
-                        var localOptions = JSON.parse(JSON.stringify(options));
-                        if (feature && feature.properties && feature.properties.style && feature.properties.style.label) {
-                            localOptions.allowLabelPicking = true;
-                            if (!localOptions.sizeMultiplicator) {
-                                localOptions.sizeMultiplicator = 3;
-                            }
-                        }
-
-                        if (this.featureIsPicked(feature, pickPoint, pickableLayer.pickingNoDEM, localOptions)) {
-                            feature.pickData = {
-                                picked: true,
-                                index: newSelection.length,
-                                pickSelection: newSelection
-                            };
-
-                            newSelection.push({
-                                feature: feature,
-                                layer: pickableLayer
-                            });
-                        }
-                    }
-                } else {
-                    // Vector layer
-                    // Search for picked features
-                    for (j = 0; j < pickableLayer.features.length; j++) {
-                        feature = pickableLayer.features[j];
-                        if (
-                            this.featureIsPicked(
-                                feature,
-                                pickPoint,
-                                pickableLayer.pickingNoDEM,
-                                options
-                            )
-                        ) {
-                            newSelection.push({
-                                feature: feature,
-                                layer: pickableLayer
-                            });
-                        }
-                    }
-                }
-            }
-        }
-
-        // Add selected tile to selection to be able to make the requests by tile
-        // (actually used for asteroids search)
-        newSelection.selectedTile = selectedTile;
-
-        return newSelection;
-    }
-
-    /**************************************************************************************************************/
-
-    /**
-     * Set selection list with passed selection
-     * @param {Array} sel selection
-     */
-    function setSelection(sel) {
-        selection = sel;
-        return selection;
-    }
-
-    /**************************************************************************************************************/
-
-    /**
-     *    Highlight the given feature
-     *
-     *    @param featureData
-     *        Feature data is an object composed by feature and its layer
-     *    @param options
-     *        Focus feature options(isExclusive and color)
-     *
-     *    // TODO : maybe it's more intelligent to store layer reference on feature ?
-     */
-    function highlightObservation(featureData, options) {
-        selection.push(featureData);
-        focusFeatureByIndex(selection - 1, options);
-    }
-
-    function updateContext(context) {
-        ctx = context;
-        globe = context.globe;
-    }
-
-    /**************************************************************************************************************/
-
-    return {
-        selectedStyle: selectedStyle,
-        highlightedSelectedStyle: highlightedSelectedStyle,
-        stackSelectionIndex: stackSelectionIndex,
-        init: function(context) {
-            ctx = context;
-            globe = context.globe;
-        },
-        addPickableLayer: addPickableLayer,
-        removePickableLayer: removePickableLayer,
-        getPickableLayers: getPickableLayers,
-        blurSelectedFeature: blurSelectedFeature,
-        focusFeatureByIndex: focusFeatureByIndex,
-        getSelection: getSelection,
-        blurSelection: blurSelection,
-        focusSelection: focusSelection,
-        clearSelection: clearSelection,
-        fixDateLine: fixDateLine,
-        featureIsPicked: featureIsPicked,
-        computePickSelection: computePickSelection,
-        computeFilterPickSelection: computeFilterPickSelection,
-        setSelection: setSelection,
-        highlightObservation: highlightObservation,
-        updateContext: updateContext
-    };
+var selectedStyle = new FeatureStyle({
+  strokeColor: [1.0, 0.0, 0.0, 1.0],
+  fillColor: [1.0, 1.0, 0.0, 1.0],
+  zIndex: Constants.DISPLAY.SELECTED_VECTOR
 });
+
+var highlightedSelectedStyle = new FeatureStyle({
+  strokeColor: [0.0, 0.0, 1.0, 1.0],
+  fillColor: [0.0, 0.0, 1.0, 1.0],
+  zIndex: Constants.DISPLAY.HIGHLIGHTED_VECTOR
+});
+
+/**************************************************************************************************************/
+
+/**
+ *    Add pickable layer to the pickableLayers list
+ *    @function addPickableLayer
+ *    @param {AbstractLayer} layer
+ */
+function addPickableLayer(layer) {
+  if (pickableLayers.indexOf(layer) === -1) {
+    pickableLayers.push(layer);
+  } else {
+    ErrorDialog.open(Constants.LEVEL.DEBUG, "PickingManagerCore.js", layer.name + " has been already added");
+  }
+}
+
+/**************************************************************************************************************/
+
+/**
+ *    Remove pickable layers
+ *    @param {AbstractLayer} layer
+ */
+function removePickableLayer(layer) {
+  for (var i = 0; i < pickableLayers.length; i++) {
+    if (layer.id === pickableLayers[i].id) {
+      pickableLayers.splice(i, 1);
+    }
+  }
+}
+
+/**************************************************************************************************************/
+
+/**
+ * Get the list of pickable layers
+ * @returns {Array} pickableLayers
+ */
+function getPickableLayers() {
+  return pickableLayers;
+}
+
+/**************************************************************************************************************/
+
+/**
+ *    Revert style of selected feature
+ */
+function blurSelectedFeature() {
+  var selectedData = getSelection()[stackSelectionIndex];
+  if (selectedData) {
+    var style = new FeatureStyle(selectedData.feature.properties.style);
+    switch (selectedData.feature.geometry.type) {
+      case Constants.GEOMETRY.LineString:
+      case Constants.GEOMETRY.MultiLineString:
+      case Constants.GEOMETRY.Polygon:
+      case Constants.GEOMETRY.MultiPolygon:
+        style.strokeColor = selectedStyle.strokeColor;
+        break;
+      case Constants.GEOMETRY.Point:
+        // Use stroke color while reverting
+        style.fillColor = selectedStyle.fillColor;
+        break;
+      default:
+        break;
+    }
+    style.zIndex = selectedStyle.zIndex;
+    selectedData.layer.modifyFeatureStyle(selectedData.feature, style);
+  }
+}
+
+/**************************************************************************************************************/
+
+/**
+ *    Apply selected style to the feature by the given index in selection array
+ *
+ *    @param index Index of feature in selection array
+ *    @param options
+ *        <li>isExclusive : Boolean indicating if the focus is exclusive</li>
+ *        <li>color : Highlight color</li>
+ */
+function focusFeatureByIndex(index, options) {
+  if (options.isExclusive) {
+    blurSelection();
+  }
+
+  // Update highlight color
+  var strokeColor = options.color
+    ? FeatureStyle.fromStringToColor(options.color)
+    : highlightedSelectedStyle.strokeColor;
+  var fillColor = options.color ? FeatureStyle.fromStringToColor(options.color) : highlightedSelectedStyle.fillColor;
+
+  var selectedData = getSelection()[index];
+  if (selectedData) {
+    stackSelectionIndex = index;
+    var style = new FeatureStyle(selectedData.feature.properties.style);
+    switch (selectedData.feature.geometry.type) {
+      case Constants.GEOMETRY.LineString:
+      case Constants.GEOMETRY.MultiLineString:
+      case Constants.GEOMETRY.Polygon:
+      case Constants.GEOMETRY.MultiPolygon:
+        style.strokeColor = strokeColor;
+        style.strokeWidth = style.strokeWidth + 2;
+        break;
+      case Constants.GEOMETRY.Point:
+        style.fillColor = fillColor;
+        break;
+      default:
+        break;
+    }
+    style.zIndex = highlightedSelectedStyle.zIndex;
+    selectedData.layer.modifyFeatureStyle(selectedData.feature, style);
+  }
+  globe.refresh();
+}
+
+/**************************************************************************************************************/
+
+/**
+ * Get the current selection
+ * @returns {Array}
+ */
+function getSelection() {
+  return selection;
+}
+
+/**************************************************************************************************************/
+
+/**
+ *    Revert style of selection
+ */
+function blurSelection() {
+  for (var i = 0; i < getSelection().length; i++) {
+    var selectedData = getSelection()[i];
+    var style = new FeatureStyle(selectedData.feature.properties.style);
+    switch (selectedData.feature.geometry.type) {
+      case Constants.GEOMETRY.LineString:
+      case Constants.GEOMETRY.MultiLineString:
+      case Constants.GEOMETRY.Polygon:
+      case Constants.GEOMETRY.MultiPolygon:
+        style.strokeColor = selectedData.layer.getStyle().strokeColor;
+        style.strokeWidth = selectedData.layer.getStyle().strokeWidth;
+        break;
+      case Constants.GEOMETRY.Point:
+        // Use stroke color while reverting
+        style.fillColor = selectedData.feature.properties.style.strokeColor;
+        break;
+      default:
+        break;
+    }
+    style.zIndex = selectedData.layer.getStyle().zIndex;
+
+    if (selectedData.layer.getGlobe()) {
+      // Layer is still attached to globe
+      selectedData.layer.modifyFeatureStyle(selectedData.feature, style);
+    }
+
+    if (selectedData.feature.pickData) {
+      delete selectedData.feature.pickData;
+    }
+  }
+}
+
+/**************************************************************************************************************/
+
+/**
+ *    Apply style to selection
+ *    @param {Array} newSelection selection of data
+ */
+function focusSelection(newSelection) {
+  var style;
+  //var focusLayers = {};
+  for (var i = 0; i < newSelection.length; i++) {
+    var selectedData = newSelection[i];
+    if (selectedData.feature.properties.style) {
+      style = new FeatureStyle(selectedData.feature.properties.style);
+    } else {
+      style = new FeatureStyle(selectedData.layer.getStyle());
+    }
+    switch (selectedData.feature.geometry.type) {
+      case Constants.GEOMETRY.LineString:
+      case Constants.GEOMETRY.MultiLineString:
+      case Constants.GEOMETRY.Polygon:
+      case Constants.GEOMETRY.MultiPolygon:
+        style.strokeColor = selectedStyle.strokeColor;
+        style.strokeWidth = style.strokeWidth + 1;
+        break;
+      case Constants.GEOMETRY.Point:
+        style.fillColor = selectedStyle.fillColor;
+        break;
+      default:
+        break;
+    }
+    style.zIndex = selectedStyle.zIndex;
+    selectedData.layer.modifyFeatureStyle(selectedData.feature, style);
+  }
+  /*            for (var layerID in focusLayers) {
+            currentLayer = focusLayers[layerID];
+            currentLayer.layer.modifyFeatureStyles(
+                currentLayer.focusFeatures,
+                currentLayer.focusStyles
+            );
+        }
+    */
+}
+
+/**************************************************************************************************************/
+
+/**
+ *    Clear selection
+ */
+function clearSelection() {
+  blurSelection();
+  setSelection([]);
+}
+
+/**************************************************************************************************************/
+
+/**
+ * Check if a geometry crosses the date line
+ * @param {Array} pickPoint
+ * @param {Array}coords
+ * @returns {Array} coords
+ */
+function fixDateLine(pickPoint, coords) {
+  var crossDateLine = false;
+  var startLon = coords[0][0];
+  for (var i = 1; i < coords.length && !crossDateLine; i++) {
+    var deltaLon = Math.abs(coords[i][0] - startLon);
+    if (deltaLon > 180) {
+      // DateLine!
+      crossDateLine = true;
+    }
+  }
+  var n;
+  if (crossDateLine) {
+    var fixCoords = [];
+
+    if (pickPoint[0] < 0.0) {
+      // Ensure coordinates are always negative
+      for (n = 0; n < coords.length; n++) {
+        if (coords[n][0] > 0) {
+          fixCoords[n] = [coords[n][0] - 360, coords[n][1]];
+        } else {
+          fixCoords[n] = [coords[n][0], coords[n][1]];
+        }
+      }
+    } else {
+      // Ensure coordinates are always positive
+      for (n = 0; n < coords.length; n++) {
+        if (coords[n][0] < 0) {
+          fixCoords[n] = [coords[n][0] + 360, coords[n][1]];
+        } else {
+          fixCoords[n] = [coords[n][0], coords[n][1]];
+        }
+      }
+    }
+
+    return fixCoords;
+  } else {
+    return coords;
+  }
+}
+
+/**************************************************************************************************************/
+
+/**
+ * Picking test for feature depending on its geometry type
+ * @param {Object} feature
+ * @param {Array} pickPoint
+ * @returns {Boolean} isPicked
+ */
+function featureIsPicked(feature, pickPoint, pickingNoDEM, options) {
+  var i, j, p;
+  var feat, featNext, ring;
+  var sizeMultiplicator = options && options.sizeMultiplicator ? options.sizeMultiplicator : DEFAULT_SIZE_MULTIPLICATOR;
+  switch (feature.geometry.type) {
+    case Constants.GEOMETRY.LineString:
+      if (!pickPoint) {
+        return false;
+      }
+      for (i = 0; i < feature.geometry.coordinates.length - 1; i++) {
+        feat = feature.geometry.coordinates[i];
+        featNext = feature.geometry.coordinates[i + 1];
+        if (UtilsIntersection.pointInLine(pickPoint, feat, featNext)) {
+          return true;
+        }
+      }
+      //var ring = fixDateLine(pickPoint, feature['geometry']['coordinates'][0]);
+      break;
+    case Constants.GEOMETRY.MultiLineString:
+      if (!pickPoint) {
+        return false;
+      }
+      for (i = 0; i < feature.geometry.coordinates.length; i++) {
+        for (j = 0; j < feature.geometry.coordinates[i].length - 1; j++) {
+          feat = feature.geometry.coordinates[i][j];
+          featNext = feature.geometry.coordinates[i][j + 1];
+          if (UtilsIntersection.pointInLine(pickPoint, feat, featNext)) {
+            return true;
+          }
+        }
+      }
+      break;
+    case Constants.GEOMETRY.Polygon:
+      if (!pickPoint) {
+        return false;
+      }
+      ring = fixDateLine(pickPoint, feature.geometry.coordinates[0]);
+      return UtilsIntersection.pointInRing(pickPoint, ring);
+    case Constants.GEOMETRY.MultiPolygon:
+      if (!pickPoint) {
+        return false;
+      }
+      for (p = 0; p < feature.geometry.coordinates.length; p++) {
+        ring = fixDateLine(pickPoint, feature.geometry.coordinates[p][0]);
+        if (UtilsIntersection.pointInRing(pickPoint, ring)) {
+          return true;
+        }
+      }
+      return false;
+    case Constants.GEOMETRY.Point:
+      // Do not pick the labeled features
+      var isLabel =
+        !options.allowLabelPicking && feature.properties && feature.properties.style && feature.properties.style.label;
+      if (isLabel) return false;
+
+      if (
+        feature.properties &&
+        feature.properties.style &&
+        feature.properties.style.useMeterSize &&
+        feature.properties.style.meterSize
+      ) {
+        return UtilsIntersection.isInBillboard(
+          pickPoint,
+          feature.geometry,
+          feature.properties.style.meterSize,
+          options.eventPos
+        );
+      } else if (
+        feature.properties &&
+        feature.properties.style &&
+        feature.properties.style.useDegreeSize &&
+        feature.properties.style.degreeSize
+      ) {
+        return UtilsIntersection.isInBillboard(
+          pickPoint,
+          feature.geometry,
+          feature.properties.style.degreeSize,
+          options.eventPos
+        );
+      } else {
+        if (!pickPoint) {
+          return false;
+        }
+        var coord = feature.geometry.coordinates;
+        var point;
+        var pt = [pickPoint[0], pickPoint[1], pickPoint[2]];
+        if (pickingNoDEM === true) {
+          pt[2] = 0;
+          point = [coord[0], coord[1], 0];
+          sizeMultiplicator = 3;
+        } else {
+          point = coord;
+        }
+        return UtilsIntersection.pointInSphere(
+          ctx,
+          pt,
+          point,
+          feature.geometry._bucket.textureHeight * sizeMultiplicator
+        );
+      }
+    default:
+      ErrorDialog.open(
+        Constants.LEVEL.DEBUG,
+        "PickingManagerCore.js",
+        "Picking for " + feature.geometry.type + " is not yet"
+      );
+      return false;
+  }
+}
+
+/**************************************************************************************************************/
+
+/**
+ * @deprecated Please use computePickSelection
+ */
+function computeFilterPickSelection(pickPoint, options) {
+  ErrorDialog.open(
+    Constants.LEVEL.WARNING,
+    "PickingManagerCore",
+    "computeFilterPickSelection: This function is deprecated. Please use computePickSelection instead."
+  );
+  var selection = computePickSelection(pickPoint, options);
+  var returnedSelection = [];
+  for (var i = 0; i < selection.length; i++) {
+    returnedSelection.push(selection[i]);
+  }
+  return returnedSelection;
+}
+
+/**
+ * Compute the selection at the picking point
+ * @param {Array} pickPoint
+ * @return {Array} newSelection
+ */
+function computePickSelection(pickPoint, options) {
+  var i, j, feature;
+  var newSelection = [];
+
+  var selectedTile = pickPoint ? globe.tileManager.getVisibleTile(pickPoint[0], pickPoint[1]) : undefined;
+
+  const tileData = selectedTile ? selectedTile.extension.renderer : null;
+
+  for (i = 0; i < getPickableLayers().length; i++) {
+    var pickableLayer = getPickableLayers()[i];
+    if (pickableLayer.isVisible() && pickableLayer.globe === globe) {
+      if (pickableLayer instanceof OpenSearchLayer) {
+        if (!pickPoint) {
+          return [];
+        }
+
+        // Extension using layer
+        // Search for features in each tile
+        if (!selectedTile) {
+          ErrorDialog.open(Constants.LEVEL.DEBUG, "PickingManagerCore.js", "no tile found");
+          continue;
+        }
+
+        if (!tileData) {
+          ErrorDialog.open(Constants.LEVEL.DEBUG, "PickingManagerCore.js", "no tile data");
+          continue;
+        }
+
+        //[pickableLayer.extId];
+        /*if (!tileData || tileData.state !== OpenSearchLayer.TileState.LOADED) {
+                        while (tile.parent && (!tileData || tileData.state !== OpenSearchLayer.TileState.LOADED)) {
+                            tile = tile.parent;
+                            tileData = tile.extension[pickableLayer.extId];
+                        }
+                    }*/
+
+        //for (j = 0; j < tileData.featureIds.length; j++) {
+        for (j = 0; j < pickableLayer.features.length; j++) {
+          //feature = pickableLayer.features[pickableLayer.featuresSet[tileData.featureIds[j]].index];
+          feature = pickableLayer.features[j];
+
+          // Allow label picking for opensearch texts
+          var localOptions = JSON.parse(JSON.stringify(options));
+          if (feature && feature.properties && feature.properties.style && feature.properties.style.label) {
+            localOptions.allowLabelPicking = true;
+            if (!localOptions.sizeMultiplicator) {
+              localOptions.sizeMultiplicator = 3;
+            }
+          }
+
+          if (featureIsPicked(feature, pickPoint, pickableLayer.pickingNoDEM, localOptions)) {
+            feature.pickData = {
+              picked: true,
+              index: newSelection.length,
+              pickSelection: newSelection
+            };
+
+            newSelection.push({
+              feature: feature,
+              layer: pickableLayer
+            });
+          }
+        }
+      } else {
+        // Vector layer
+        // Search for picked features
+        for (j = 0; j < pickableLayer.features.length; j++) {
+          feature = pickableLayer.features[j];
+          if (featureIsPicked(feature, pickPoint, pickableLayer.pickingNoDEM, options)) {
+            newSelection.push({
+              feature: feature,
+              layer: pickableLayer
+            });
+          }
+        }
+      }
+    }
+  }
+
+  // Add selected tile to selection to be able to make the requests by tile
+  // (actually used for asteroids search)
+  newSelection.selectedTile = selectedTile;
+
+  return newSelection;
+}
+
+/**************************************************************************************************************/
+
+/**
+ * Set selection list with passed selection
+ * @param {Array} sel selection
+ */
+function setSelection(sel) {
+  selection = sel;
+  return selection;
+}
+
+/**************************************************************************************************************/
+
+/**
+ *    Highlight the given feature
+ *
+ *    @param featureData
+ *        Feature data is an object composed by feature and its layer
+ *    @param options
+ *        Focus feature options(isExclusive and color)
+ *
+ *    // TODO : maybe it's more intelligent to store layer reference on feature ?
+ */
+function highlightObservation(featureData, options) {
+  selection.push(featureData);
+  focusFeatureByIndex(selection - 1, options);
+}
+
+function updateContext(context) {
+  ctx = context;
+  globe = context.globe;
+}
+
+/**************************************************************************************************************/
+
+export default {
+  selectedStyle: selectedStyle,
+  highlightedSelectedStyle: highlightedSelectedStyle,
+  stackSelectionIndex: stackSelectionIndex,
+  init: function (context) {
+    ctx = context;
+    globe = context.globe;
+  },
+  addPickableLayer: addPickableLayer,
+  removePickableLayer: removePickableLayer,
+  getPickableLayers: getPickableLayers,
+  blurSelectedFeature: blurSelectedFeature,
+  focusFeatureByIndex: focusFeatureByIndex,
+  getSelection: getSelection,
+  blurSelection: blurSelection,
+  focusSelection: focusSelection,
+  clearSelection: clearSelection,
+  fixDateLine: fixDateLine,
+  featureIsPicked: featureIsPicked,
+  computePickSelection: computePickSelection,
+  computeFilterPickSelection: computeFilterPickSelection,
+  setSelection: setSelection,
+  highlightObservation: highlightObservation,
+  updateContext: updateContext
+};

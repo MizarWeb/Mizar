@@ -35,111 +35,109 @@
  * along with GlobWeb. If not, see <http://www.gnu.org/licenses/>.
  ***************************************/
 
-define(function() {
-    /**
-     * @name AbstractAnimation
-     * @class
-     * AbstractAnimation is an abstract class for all animation contexts which allow
-     * an application to create an animation of the camera around the globe.
-     * @implements {Animation}
-     * @todo Describes here and link to the tutos about Animation
-     */
-    var AbstractAnimation = function() {
-        this.startTime = -1;
-        this.pauseTime = -1;
-        this.renderContext = null;
-    };
+/**
+ * @name AbstractAnimation
+ * @class
+ * AbstractAnimation is an abstract class for all animation contexts which allow
+ * an application to create an animation of the camera around the globe.
+ * @implements {Animation}
+ * @todo Describes here and link to the tutos about Animation
+ */
+var AbstractAnimation = function () {
+  this.startTime = -1;
+  this.pauseTime = -1;
+  this.renderContext = null;
+};
 
-    /**
-     * @function getRenderContext
-     * @memberof AbstractAnimation#
-     */
-    AbstractAnimation.prototype.getRenderContext = function() {
-        return this.renderContext;
-    };
+/**
+ * @function getRenderContext
+ * @memberof AbstractAnimation#
+ */
+AbstractAnimation.prototype.getRenderContext = function () {
+  return this.renderContext;
+};
 
-    /**
-     * Unregisters animation.
-     * @function _unregisterActive
-     * @memberof AbstractAnimation#
-     * @private
-     */
-    AbstractAnimation.prototype._unregisterActive = function() {
-        var index = this.renderContext.activeAnimations.indexOf(this);
-        if (index >= 0) {
-            this.renderContext.activeAnimations.splice(index, 1);
-        }
-    };
+/**
+ * Unregisters animation.
+ * @function _unregisterActive
+ * @memberof AbstractAnimation#
+ * @private
+ */
+AbstractAnimation.prototype._unregisterActive = function () {
+  var index = this.renderContext.activeAnimations.indexOf(this);
+  if (index >= 0) {
+    this.renderContext.activeAnimations.splice(index, 1);
+  }
+};
 
-    /**
-     * @function getStatus
-     * @memberof AbstractAnimation#
-     */
-    AbstractAnimation.prototype.getStatus = function() {
-        if (this.startTime === -1) {
-            return "STOPPED";
-        } else {
-            return this.pauseTime === -1 ? "RUNNING" : "PAUSED";
-        }
-    };
+/**
+ * @function getStatus
+ * @memberof AbstractAnimation#
+ */
+AbstractAnimation.prototype.getStatus = function () {
+  if (this.startTime === -1) {
+    return "STOPPED";
+  } else {
+    return this.pauseTime === -1 ? "RUNNING" : "PAUSED";
+  }
+};
 
-    /**
-     * @function start
-     * @memberof AbstractAnimation#
-     */
-    AbstractAnimation.prototype.start = function() {
-        if (!this.renderContext) {
-            return;
-        }
+/**
+ * @function start
+ * @memberof AbstractAnimation#
+ */
+AbstractAnimation.prototype.start = function () {
+  if (!this.renderContext) {
+    return;
+  }
 
-        if (this.startTime === -1 || this.pauseTime !== -1) {
-            var now = Date.now();
-            if (this.startTime === -1) {
-                this.startTime = now;
-            } else {
-                // resume after pause
-                this.startTime += now - this.pauseTime;
-                this.pauseTime = -1;
-            }
+  if (this.startTime === -1 || this.pauseTime !== -1) {
+    var now = Date.now();
+    if (this.startTime === -1) {
+      this.startTime = now;
+    } else {
+      // resume after pause
+      this.startTime += now - this.pauseTime;
+      this.pauseTime = -1;
+    }
 
-            // Register animation as active
-            this.renderContext.activeAnimations.push(this);
-            this.renderContext.requestFrame();
-        }
-    };
+    // Register animation as active
+    this.renderContext.activeAnimations.push(this);
+    this.renderContext.requestFrame();
+  }
+};
 
-    /**
-     * @function pause
-     * @memberof AbstractAnimation#
-     */
-    AbstractAnimation.prototype.pause = function() {
-        if (!this.renderContext) {
-            return;
-        }
+/**
+ * @function pause
+ * @memberof AbstractAnimation#
+ */
+AbstractAnimation.prototype.pause = function () {
+  if (!this.renderContext) {
+    return;
+  }
 
-        if (this.startTime !== -1 && this.pauseTime === -1) {
-            this.pauseTime = Date.now();
-            this._unregisterActive(this);
-        }
-    };
+  if (this.startTime !== -1 && this.pauseTime === -1) {
+    this.pauseTime = Date.now();
+    this._unregisterActive(this);
+  }
+};
 
-    /**
-     * @function stop
-     * @memberof AbstractAnimation#
-     */
-    AbstractAnimation.prototype.stop = function() {
-        this.startTime = -1;
-        this.pauseTime = -1;
+/**
+ * @function stop
+ * @memberof AbstractAnimation#
+ */
+AbstractAnimation.prototype.stop = function () {
+  this.startTime = -1;
+  this.pauseTime = -1;
 
-        if (this.onstop) {
-            this.onstop();
-        }
+  if (this.onstop) {
+    this.onstop();
+  }
 
-        // Unregister animation
-        this._unregisterActive(this);
-    };
+  // Unregister animation
+  this._unregisterActive(this);
+};
 
-    /**************************************************************************************************************/
+/**************************************************************************************************************/
 
-    return AbstractAnimation;
-});
+export default AbstractAnimation;

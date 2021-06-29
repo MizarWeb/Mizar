@@ -1,12 +1,13 @@
-<!doctype html>
+<!DOCTYPE html>
 <html>
-
-<head>
-    <title>Getting Started with Earth</title>
-    <link rel="icon" href="favicon.ico" />
-    <meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
-    <meta name="title" content="Getting Started with Earth">
-    <meta name="description" content='
+  <head>
+    <title>WMS time</title>
+    <link rel="icon" href="../static/favicon.ico" />
+    <meta http-equiv="content-type" content="text/html; charset=ISO-8859-1" />
+    <meta name="title" content="WMS time" />
+    <meta
+      name="description"
+      content="
     <h2>Introduction</h2>
     This tutorial explains how to use WMS-time
 
@@ -14,120 +15,141 @@
     <br/><br/>
     Look at the code and change it to test it.
     <br/>
-    '>
+    "
+    />
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.css"
+    />
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="https://cdn.jsdelivr.net/gh/wallynm/jquery-loadmask@master/jquery.loadmask.min.css"
+    />
     <style>
-        div#time {
-            position:absolute;
-            left:40px;
-            bottom:20px;
-            width:200px;
-        }
-        div#textTimeTravelDiv {
-            color : white;
-            vertical-align: middle;
-            text-align : right;
-            margin-top: 6px;
-        }
-        div#legendDiv {
-            position: absolute;
-            top:20px;
-            right:5px; 
-            background-color: white;  
-        }
-        div#attributions {
-            position:absolute;
-            left:40%;
-            bottom:10px;
-            color: white;
-            text-overflow:ellipsis;
-            width: 20%;
-            white-space: nowrap;
-            overflow: hidden;            
-        }        
-        #attributions div:hover {
-            text-overflow:clip;
-            width:auto;
-            white-space: normal;
-        }
+      div#time {
+        position: absolute;
+        left: 40px;
+        bottom: 20px;
+        width: 200px;
+      }
+      div#textTimeTravelDiv {
+        color: white;
+        vertical-align: middle;
+        text-align: right;
+        margin-top: 6px;
+      }
+      div#legendDiv {
+        position: absolute;
+        top: 20px;
+        right: 5px;
+        background-color: white;
+      }
+      div#attributions {
+        position: absolute;
+        left: 40%;
+        bottom: 10px;
+        color: white;
+        text-overflow: ellipsis;
+        width: 20%;
+        white-space: nowrap;
+        overflow: hidden;
+      }
+      #attributions div:hover {
+        text-overflow: clip;
+        width: auto;
+        white-space: normal;
+      }
 
-        div#calendar {
-            position:absolute;
-            top:40%;
-            left:40%;
-            display:none;
-            color:white;
-        }
-
+      div#calendar {
+        position: absolute;
+        top: 40%;
+        left: 40%;
+        display: none;
+        color: white;
+      }
     </style>
-</head>
+  </head>
 
-<body style="margin: 0; padding: 0; overflow: hidden;">
+  <body style="margin: 0; padding: 0; overflow: hidden;">
     <div>
-        <a href="https://www.cnes.fr" target="_blank"><img src="../logo-cnes.jpg" style="position:absolute;right:5px;bottom:10px;width:100px;"
-            /></a>
+      <a href="https://www.cnes.fr" target="_blank"
+        ><img src="../static/logo-cnes.jpg" style="position: absolute; right: 5px; bottom: 10px; width: 100px;"
+      /></a>
     </div>
     <div id="time">
-        <div id="timeTravelDiv"></div>
-        <div id="textTimeTravelDiv"></div>
-    </div>    
-    <div id="legendDiv" class="row">
+      <div id="timeTravelDiv"></div>
+      <div id="textTimeTravelDiv"></div>
     </div>
+    <div id="legendDiv" class="row"></div>
     <!-- define the position of the attributions in the page -->
     <div id="attributions">
-        <!-- This ID is given to Mizar. Then Mizar replaces this div by the attribution -->
-        <div id="myGlobeAttributions"></div>
-    </div>   
+      <!-- This ID is given to Mizar. Then Mizar replaces this div by the attribution -->
+      <div id="myGlobeAttributions"></div>
+    </div>
     <div id="calendar">
-        <div>Select a date:</div>
-        <select id="year" name="years" size="1">
-            <option value="1993">1993</option>
-            <option value="1994">1994</option>
-            <option value="1995">1995</option>
-            <option value="1996">1996</option>
-            <option value="1997">1997</option>
-            <option value="1998">1998</option>
-            <option value="1999">1999</option>
-            <option value="2000">2000</option>
-            <option value="2001">2001</option>
-            <option value="2002">2002</option>
-            <option value="2003">2003</option>
-            <option value="2004">2004</option>
-            <option value="2005">2005</option>
-            <option value="2006">2006</option>
-            <option value="2007">2007</option>
-            <option value="2008">2008</option>
-            <option value="2009">2009</option>
-            <option value="2010">2010</option>
-            <option value="2011">2011</option>
-            <option value="2012">2012</option>
-            <option value="2013">2013</option>
-            <option value="2014">2014</option>
-            <option value="2015">2015</option>
-            <option value="2016">2016</option>
-            <option value="2017">2017</option>
-        </select>
-        <select id="month" name="months" size="1">
-            <option value="01">January</option>
-            <option value="02">February</option>
-            <option value="03">March</option>
-            <option value="04">April</option>
-            <option value="05">May</option>
-            <option value="06">June</option>
-            <option value="07">July</option>
-            <option value="08">August</option>
-            <option value="09">September</option>
-            <option value="10">October</option>
-            <option value="11">November</option>
-            <option value="12">December</option>
-        </select>  
-        <select id="day" name="days" size="1">
-            <option value="01">01</option>
-        </select> 
-        <input type="button" value="submit" onclick="selectedDate();"/>                      
-    </div> 
+      <div>Select a date:</div>
+      <select id="year" name="years" size="1">
+        <option value="1993">1993</option>
+        <option value="1994">1994</option>
+        <option value="1995">1995</option>
+        <option value="1996">1996</option>
+        <option value="1997">1997</option>
+        <option value="1998">1998</option>
+        <option value="1999">1999</option>
+        <option value="2000">2000</option>
+        <option value="2001">2001</option>
+        <option value="2002">2002</option>
+        <option value="2003">2003</option>
+        <option value="2004">2004</option>
+        <option value="2005">2005</option>
+        <option value="2006">2006</option>
+        <option value="2007">2007</option>
+        <option value="2008">2008</option>
+        <option value="2009">2009</option>
+        <option value="2010">2010</option>
+        <option value="2011">2011</option>
+        <option value="2012">2012</option>
+        <option value="2013">2013</option>
+        <option value="2014">2014</option>
+        <option value="2015">2015</option>
+        <option value="2016">2016</option>
+        <option value="2017">2017</option>
+      </select>
+      <select id="month" name="months" size="1">
+        <option value="01">January</option>
+        <option value="02">February</option>
+        <option value="03">March</option>
+        <option value="04">April</option>
+        <option value="05">May</option>
+        <option value="06">June</option>
+        <option value="07">July</option>
+        <option value="08">August</option>
+        <option value="09">September</option>
+        <option value="10">October</option>
+        <option value="11">November</option>
+        <option value="12">December</option>
+      </select>
+      <select id="day" name="days" size="1">
+        <option value="01">01</option>
+      </select>
+      <input type="button" value="submit" onclick="selectedDate();" />
+    </div>
     <canvas id="MizarCanvas" style="border: none; margin: 0; padding: 0;"></canvas>
-    <script type="text/javascript" src="../Mizar.min.js"></script>
-    <script type="text/javascript" src="getting-started-layer-medit-time.js"></script>
-</body>
 
+    <script
+      type="text/javascript"
+      src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.1/moment-with-locales.min.js"
+    ></script>
+    <script type="text/javascript" src="https://code.jquery.com/jquery-3.x-git.min.js"></script>
+    <script
+      src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"
+      integrity="sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU="
+      crossorigin="anonymous"
+    ></script>
+
+    <script type="text/javascript" src="../dist/mizar.js"></script>
+    <script type="text/javascript" src="getting-started-layer-medit-time.js"></script>
+  </body>
 </html>

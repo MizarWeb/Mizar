@@ -1,0 +1,8 @@
+dist
+node_modules
+external
+src/external
+examples/data
+examples/resources
+*.min.*
+stats.html

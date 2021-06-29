@@ -17,93 +17,78 @@
  * along with GlobWeb. If not, see <http://www.gnu.org/licenses/>.
  ***************************************/
 
-define(["../Renderer/GeoBound"], function(GeoBound) {
-    /**
-     * Base projection configuration
-     * @typedef {Object} AbstractProjection.configuration
-     * @property {PROJECTION} projectionName - Name of the projection
-     */
+import GeoBound from "../Renderer/GeoBound";
+/**
+ * Base projection configuration
+ * @typedef {Object} AbstractProjection.configuration
+ * @property {PROJECTION} projectionName - Name of the projection
+ */
 
-    /**
-     * @name AbstractProjection
-     * @class
-     *   Abstract class for projections.
-     * A map projection is one of many methods used to represent the 3-dimensional surface of the earth or other round body
-     * on a 2-dimensional plane in cartography. The creation of a map projection involves two steps :
-     * <ul>
-     *     <li>selection of a model for the shape of the body (choosing between a sphere or ellipsoid),</li>
-     *     <li>transform planetographic coordinates to plane coordinates.</li>
-     * </ul>
-     * @param {float[]} projectionCenter - the projection center as (longitude, latitude)
-     * @param {float[]} geoBound - Geo boundary as [minLongitude, minLatitude, maxLongitude, maxLatitude]
-     * @param {AbstractProjection.configuration} options - Not used currently
-     * @constructor
-     * @implements {Projection}
-     */
-    var AbstractProjection = function(projectionCenter, geoBound, options) {
-        this.geoBound = new GeoBound(
-            geoBound[0],
-            geoBound[1],
-            geoBound[2],
-            geoBound[3]
-        );
-        this.projectionCenter = projectionCenter;
-        this.options = options || {};
-    };
+/**
+ * @name AbstractProjection
+ * @class
+ *   Abstract class for projections.
+ * A map projection is one of many methods used to represent the 3-dimensional surface of the earth or other round body
+ * on a 2-dimensional plane in cartography. The creation of a map projection involves two steps :
+ * <ul>
+ *     <li>selection of a model for the shape of the body (choosing between a sphere or ellipsoid),</li>
+ *     <li>transform planetographic coordinates to plane coordinates.</li>
+ * </ul>
+ * @param {float[]} projectionCenter - the projection center as (longitude, latitude)
+ * @param {float[]} geoBound - Geo boundary as [minLongitude, minLatitude, maxLongitude, maxLatitude]
+ * @param {AbstractProjection.configuration} options - Not used currently
+ * @constructor
+ * @implements {Projection}
+ */
+var AbstractProjection = function (projectionCenter, geoBound, options) {
+  this.geoBound = new GeoBound(geoBound[0], geoBound[1], geoBound[2], geoBound[3]);
+  this.projectionCenter = projectionCenter;
+  this.options = options || {};
+};
 
-    /**
-     * @function getProjectionCenter
-     * @memberof AbstractProjection#
-     */
-    AbstractProjection.prototype.getProjectionCenter = function() {
-        return this.projectionCenter;
-    };
+/**
+ * @function getProjectionCenter
+ * @memberof AbstractProjection#
+ */
+AbstractProjection.prototype.getProjectionCenter = function () {
+  return this.projectionCenter;
+};
 
-    /**
-     * @function getGeoBound
-     * @memberof AbstractProjection#
-     */
-    AbstractProjection.prototype.getGeoBound = function() {
-        return this.geoBound;
-    };
+/**
+ * @function getGeoBound
+ * @memberof AbstractProjection#
+ */
+AbstractProjection.prototype.getGeoBound = function () {
+  return this.geoBound;
+};
 
-    /**
-     * @function unProject
-     * @memberof AbstractProjection#
-     * @abstract
-     */
-    AbstractProjection.prototype.unProject = function(position3d, dest) {
-        throw new SyntaxError(
-            "unProject not implemented",
-            "AbstractProjection.js"
-        );
-    };
+/**
+ * @function unProject
+ * @memberof AbstractProjection#
+ * @abstract
+ */
+AbstractProjection.prototype.unProject = function (position3d, dest) {
+  throw new SyntaxError("AbstractNavigation.js: unProject not implemented");
+};
 
-    /**
-     * @function project
-     * @memberof AbstractProjection#
-     * @abstract
-     */
-    AbstractProjection.prototype.project = function(geoPos, dest) {
-        throw new SyntaxError(
-            "project not implemented",
-            "AbstractProjection.js"
-        );
-    };
+/**
+ * @function project
+ * @memberof AbstractProjection#
+ * @abstract
+ */
+AbstractProjection.prototype.project = function (geoPos, dest) {
+  throw new SyntaxError("AbstractNavigation.js: project not implemented");
+};
 
-    /**
-     * @function getName
-     * @memberof AbstractProjection#
-     * @abstract
-     */
-    AbstractProjection.prototype.getName = function() {
-        throw new SyntaxError(
-            "getName not implemented",
-            "AbstractProjection.js"
-        );
-    };
+/**
+ * @function getName
+ * @memberof AbstractProjection#
+ * @abstract
+ */
+AbstractProjection.prototype.getName = function () {
+  throw new SyntaxError("AbstractNavigation.js: getName not implemented");
+};
 
-    /**************************************************************************************************************/
+/**************************************************************************************************************/
 
-    return AbstractProjection;
-});
+export default AbstractProjection;

@@ -1,0 +1,8 @@
+{
+  "env": {
+    "test": {
+      // Transpile modules for Jest
+      "plugins": ["@babel/plugin-transform-modules-commonjs"]
+    }
+  }
+}

@@ -16,70 +16,62 @@
  * You should have received a copy of the GNU General Public License
  * along with MIZAR. If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
-define([
-    "../Utils/Utils",
-    "./AbstractRegistryHandler",
-    "../Utils/Constants"
-], function(Utils, AbstractRegistryHandler, Constants) {
-    /**
-     * Creates a pending layer handler
-     * @param {*} pendingLayers
-     * @param {*} layers
-     * @constructor
-     * @augments AbstractRegistryHandler
-     * @memberof module:Registry
-     * @constructor
-     */
-    var PendingLayersRegistryHandler = function(pendingLayers, layers) {
-        AbstractRegistryHandler.prototype.constructor.call();
-        this.layers = layers;
-        this.pendingLayers = pendingLayers;
-    };
+import Utils from "../Utils/Utils";
+import AbstractRegistryHandler from "./AbstractRegistryHandler";
+import Constants from "../Utils/Constants";
+/**
+ * Creates a pending layer handler
+ * @param {*} pendingLayers
+ * @param {*} layers
+ * @constructor
+ * @augments AbstractRegistryHandler
+ * @memberof module:Registry
+ * @constructor
+ */
+var PendingLayersRegistryHandler = function (pendingLayers, layers) {
+  AbstractRegistryHandler.prototype.constructor.call(this);
+  this.layers = layers;
+  this.pendingLayers = pendingLayers;
+};
 
-    /**************************************************************************************************************/
+/**************************************************************************************************************/
 
-    Utils.inherits(AbstractRegistryHandler, PendingLayersRegistryHandler);
+Utils.inherits(AbstractRegistryHandler, PendingLayersRegistryHandler);
 
-    /**************************************************************************************************************/
+/**************************************************************************************************************/
 
-    /**
-     * Check whether a layerbackground is already loaded.
-     * @returns {boolean} true when the layer background is already defined otherwise false
-     * @function hasLayerBackground
-     * @memberof PendingLayersRegistryHandler#
-     */
-    PendingLayersRegistryHandler.prototype.hasLayerBackground = function() {
-        var hasBackground = false;
-        for (var i = 0; i < this.layers.length; i++) {
-            var layer = this.layers[i];
-            if (layer.isBackground()) {
-                hasBackground = true;
-                break;
-            }
-        }
-        return hasBackground;
-    };
+/**
+ * Check whether a layerbackground is already loaded.
+ * @returns {boolean} true when the layer background is already defined otherwise false
+ * @function hasLayerBackground
+ * @memberof PendingLayersRegistryHandler#
+ */
+PendingLayersRegistryHandler.prototype.hasLayerBackground = function () {
+  var hasBackground = false;
+  for (var i = 0; i < this.layers.length; i++) {
+    var layer = this.layers[i];
+    if (layer.isBackground()) {
+      hasBackground = true;
+      break;
+    }
+  }
+  return hasBackground;
+};
 
-    /**
-     * @function handleRequest
-     * @memberof PendingLayersRegistryHandler#
-     */
+/**
+ * @function handleRequest
+ * @memberof PendingLayersRegistryHandler#
+ */
 
-    PendingLayersRegistryHandler.prototype.handleRequest = function(
-        layerDescription,
-        callback,
-        fallback
-    ) {
-        if (
-            (layerDescription.type === Constants.LAYER.Atmosphere ||
-                layerDescription.type === Constants.LAYER.TileWireframe) &&
-            !this.hasLayerBackground()
-        ) {
-            this.pendingLayers.push(layerDescription);
-        } else {
-            this.next.handleRequest(layerDescription, callback, fallback);
-        }
-    };
+PendingLayersRegistryHandler.prototype.handleRequest = function (layerDescription, callback, fallback) {
+  if (
+    (layerDescription.type === Constants.LAYER.Atmosphere || layerDescription.type === Constants.LAYER.TileWireframe) &&
+    !this.hasLayerBackground()
+  ) {
+    this.pendingLayers.push(layerDescription);
+  } else {
+    this.next.handleRequest(layerDescription, callback, fallback);
+  }
+};
 
-    return PendingLayersRegistryHandler;
-});
+export default PendingLayersRegistryHandler;

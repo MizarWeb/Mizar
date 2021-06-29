@@ -35,26 +35,26 @@ function Animation() {}
  * Returns the rendering context.
  * @return {RenderContext|null} the rendering context
  */
-Animation.prototype.getRenderContext = function() {};
+Animation.prototype.getRenderContext = function () {};
 
 /**
  * Returns the status of the animation.
  * @return {ANIMATION_STATUS}
  */
-Animation.prototype.getStatus = function() {};
+Animation.prototype.getStatus = function () {};
 
 /**
  * Starts the animation, records the start time in startTime member
  * and registers the animation.
  */
-Animation.prototype.start = function() {};
+Animation.prototype.start = function () {};
 
 /**
  * Pauses the animation.
  */
-Animation.prototype.pause = function() {};
+Animation.prototype.pause = function () {};
 
 /**
  * Stops the animation and unregisters the animation.
  */
-Animation.prototype.stop = function() {};
+Animation.prototype.stop = function () {};

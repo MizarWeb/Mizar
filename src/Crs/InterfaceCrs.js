@@ -75,14 +75,14 @@ function Crs() {}
  *
  * @returns true when the CRS is 2D otherwise false
  */
-Crs.prototype.isFlat = function() {};
+Crs.prototype.isFlat = function () {};
 
 /**
  * Computes the direction or vertical as a unit vector of the same direction as the provided pos.
  * @param {float[]} pos - the position as a 3D vector
  * @param {float[]} dest - the direction as a 3D vector
  */
-Crs.prototype.getVerticalAt3D = function(pos, dest) {};
+Crs.prototype.getVerticalAt3D = function (pos, dest) {};
 
 /**
  * Converts a geographic position to a 3D vector.
@@ -90,7 +90,7 @@ Crs.prototype.getVerticalAt3D = function(pos, dest) {};
  * @param {float[]} dest - 3D vector
  * @return {float[]} a 3D vector
  */
-Crs.prototype.fromGeoTo3D = function(geo, dest) {};
+Crs.prototype.fromGeoTo3D = function (geo, dest) {};
 
 /**
  * Converts a 3D vector to geographical position.
@@ -98,7 +98,7 @@ Crs.prototype.fromGeoTo3D = function(geo, dest) {};
  * @param {float[]} dest - geographical position [long, lat, distance from earth surface]
  * @return {float[]} geographical position [long, lat, distance from earth surface]
  */
-Crs.prototype.from3DToGeo = function(position3d, dest) {};
+Crs.prototype.from3DToGeo = function (position3d, dest) {};
 
 /**
  * Returns the local transformation.
@@ -106,7 +106,7 @@ Crs.prototype.from3DToGeo = function(position3d, dest) {};
  * @param {float[]} dest - Matrix as 16 values
  * @return {float[]} Matrix as 16 values
  */
-Crs.prototype.getLocalTransform = function(geo, dest) {};
+Crs.prototype.getLocalTransform = function (geo, dest) {};
 
 /**
  * Returns the LHV transformation.
@@ -114,7 +114,7 @@ Crs.prototype.getLocalTransform = function(geo, dest) {};
  * @param {float[]} dest - Matrix as 16 values
  * @return {float[]} Matrix as 16 values
  */
-Crs.prototype.getLHVTransform = function(geo, dest) {};
+Crs.prototype.getLHVTransform = function (geo, dest) {};
 
 /**
  * Returns the side (i.e. X) vector from a local transformation
@@ -122,7 +122,7 @@ Crs.prototype.getLHVTransform = function(geo, dest) {};
  * @param {float[]} v - Vector as 3 values
  * @return {float[]} Vector as 3 values
  */
-Crs.prototype.getSideVector = function(matrix, v) {};
+Crs.prototype.getSideVector = function (matrix, v) {};
 
 /**
  * Returns the front (i.e. Y) vector from a local transformation
@@ -130,7 +130,7 @@ Crs.prototype.getSideVector = function(matrix, v) {};
  * @param {float[]} v - Vector as 3 values
  * @return {float[]} Vector as 3 values
  */
-Crs.prototype.getFrontVector = function(matrix, v) {};
+Crs.prototype.getFrontVector = function (matrix, v) {};
 
 /**
  * Returns the up (i.e. Z) vector from a local transformation
@@ -138,31 +138,31 @@ Crs.prototype.getFrontVector = function(matrix, v) {};
  * @param {float[]} v - Vector as 3 values
  * @return {float[]} Vector as 3 values
  */
-Crs.prototype.getUpVector = function(matrix, v) {};
+Crs.prototype.getUpVector = function (matrix, v) {};
 
 /**
  * Formats the coordinates according to the coordinate reference system.
  * @param {string[]} geo - position on the globe in decimal degree
  */
-Crs.prototype.formatCoordinates = function(geo) {};
+Crs.prototype.formatCoordinates = function (geo) {};
 
 /**
  * Returns the geoide.
  * @return {Geoide} the geoide
  */
-Crs.prototype.getGeoide = function() {};
+Crs.prototype.getGeoide = function () {};
 
 /**
  * Returns the geoide name.
  * @return {string} the geoide name
  */
-Crs.prototype.getGeoideName = function() {};
+Crs.prototype.getGeoideName = function () {};
 
 /**
  * Returns the name of the coordinate reference system.
  * @return {CONTEXT} name of the coordinate reference system
  */
-Crs.prototype.getType = function() {};
+Crs.prototype.getType = function () {};
 
 /**
  * Returns the elevation in meters at a given position.
@@ -170,7 +170,7 @@ Crs.prototype.getType = function() {};
  * @param {float[]} geoPos - position on the globe in decimal degree
  * @return {float} the elevation in meters
  */
-Crs.prototype.getElevation = function(globe, geoPos) {};
+Crs.prototype.getElevation = function (globe, geoPos) {};
 
 /**
  * Returns the position in the defined CRS from a 3D position.
@@ -178,7 +178,7 @@ Crs.prototype.getElevation = function(globe, geoPos) {};
  * @param {float[]} dest - the position in the defined coordinate reference system
  * @return {float[]} the position in the defined coordinate reference system
  */
-Crs.prototype.getWorldFrom3D = function(position3d, dest) {};
+Crs.prototype.getWorldFrom3D = function (position3d, dest) {};
 
 /**
  * Returns the 3D position from the defined CRS.
@@ -186,7 +186,7 @@ Crs.prototype.getWorldFrom3D = function(position3d, dest) {};
  * @param {float[]} dest - the 3D position
  * @return {float[]} the 3D position
  */
-Crs.prototype.get3DFromWorld = function(posWorld, dest) {};
+Crs.prototype.get3DFromWorld = function (posWorld, dest) {};
 
 /**
  * Converts the 3D position from geo position in the current CRS to another CRS.
@@ -195,7 +195,7 @@ Crs.prototype.get3DFromWorld = function(posWorld, dest) {};
  * @param {float[]} dest - the 3D position
  * @return {float[]} the 3D position
  */
-Crs.prototype.get3DFromWorldInCrs = function(posWorld, posCrsID, dest) {};
+Crs.prototype.get3DFromWorldInCrs = function (posWorld, posCrsID, dest) {};
 
 /**
  * Returns the position in degree to sexagesimal format.
@@ -203,7 +203,7 @@ Crs.prototype.get3DFromWorldInCrs = function(posWorld, posCrsID, dest) {};
  * @param {string[]} dest - the angle in sexagesimal format
  * @return {string[]} the angle in sexagesimal format
  */
-Crs.prototype.getSexagesimalFromDeg = function(degPos, dest) {};
+Crs.prototype.getSexagesimalFromDeg = function (degPos, dest) {};
 
 /**
  * Returns the geo position in decimal degree from sexagesimal format.
@@ -211,7 +211,7 @@ Crs.prototype.getSexagesimalFromDeg = function(degPos, dest) {};
  * @param {float[]} dest - the geo position in decimal degree
  * @return {float[]} the geo position in decimal degree
  */
-Crs.prototype.getDecimalDegFromSexagesimal = function(sexagesimalPos, dest) {};
+Crs.prototype.getDecimalDegFromSexagesimal = function (sexagesimalPos, dest) {};
 
 /**
  * Converts a position from a CRS to another CRS.
@@ -220,21 +220,21 @@ Crs.prototype.getDecimalDegFromSexagesimal = function(sexagesimalPos, dest) {};
  * @param {CRS} to - the target CRS
  * @return {float[]} the position in the target CRS
  */
-Crs.prototype.convert = function(geo, from, to) {};
+Crs.prototype.convert = function (geo, from, to) {};
 
 /**
  * Converts an angle to HMS.
  * @param degree - an angle in decimal degree
  * @return {string} HMS
  */
-Crs.prototype.fromDegreesToHMS = function(degree) {};
+Crs.prototype.fromDegreesToHMS = function (degree) {};
 
 /**
  * Converts an angle to DMS
  * @param degree - an angle in decimal degree
  * @return {string} DMS
  */
-Crs.prototype.fromDegreesToDMS = function(degree) {};
+Crs.prototype.fromDegreesToDMS = function (degree) {};
 
 /**
  * Setups the position before the transformation.
@@ -242,7 +242,7 @@ Crs.prototype.fromDegreesToDMS = function(degree) {};
  * @param {float[]} posWorld
  * @protected
  */
-Crs.prototype._setupPosBeforeTrans = function(posWorld) {};
+Crs.prototype._setupPosBeforeTrans = function (posWorld) {};
 
 /**
  * Setups the position after the transformation.
@@ -250,40 +250,40 @@ Crs.prototype._setupPosBeforeTrans = function(posWorld) {};
  * @param {float[]} posWorld
  * @protected
  */
-Crs.prototype._setupPosAfterTrans = function(posWorld) {};
+Crs.prototype._setupPosAfterTrans = function (posWorld) {};
 
 /**
  * Returns the geo bound of the given coordinate reference system
  * @return {GeoBound} the geo bound
  */
-Crs.prototype.getGeoBound = function() {};
+Crs.prototype.getGeoBound = function () {};
 
 /**
  * Returns the CRS name
  * @return {CRS} the CRS name
  */
-Crs.prototype.getName = function() {};
+Crs.prototype.getName = function () {};
 
 /**
  * Returns the CRS description
  * @return {string} the CRS description
  */
-Crs.prototype.getDescription = function() {};
+Crs.prototype.getDescription = function () {};
 
 /**
  * Returns true when the CRS is bases on a projection otherwise false
  * @return {boolean} the CRS name
  */
-Crs.prototype.isProjected = function() {};
+Crs.prototype.isProjected = function () {};
 
 /**
  * Returns the longitude label.
  * @return {string} the longitude label
  */
-Crs.prototype.getLongitudeLabel = function() {};
+Crs.prototype.getLongitudeLabel = function () {};
 
 /**
  * Returns the latitude label.
  * @return {string} the latitude label
  */
-Crs.prototype.getLatitudeLabel = function() {};
+Crs.prototype.getLatitudeLabel = function () {};

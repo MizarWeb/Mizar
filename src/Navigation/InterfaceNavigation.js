@@ -71,68 +71,68 @@ function Navigation() {}
  * Returns the {@link NAVIGATION type} of navigation.
  * @return {NAVIGATION} the type of navigation
  */
-Navigation.prototype.getType = function() {};
+Navigation.prototype.getType = function () {};
 
 /**
  * Returns the navigation's options at the initialisation.
  * @return {Object} Options
  */
-Navigation.prototype.getOptions = function() {};
+Navigation.prototype.getOptions = function () {};
 
 /**
  * Starts the navigation.
  */
-Navigation.prototype.start = function() {};
+Navigation.prototype.start = function () {};
 
 /**
  * Stops the navigation.
  */
-Navigation.prototype.stop = function() {};
+Navigation.prototype.stop = function () {};
 
 /**
  * Stops the animations.
  */
-Navigation.prototype.stopAnimations = function() {};
+Navigation.prototype.stopAnimations = function () {};
 
 /**
  * Returns the field of view in decimal degree.
  * @return {float[]} the Field of view [fov along width, fov along height]
  */
-Navigation.prototype.getFov = function() {};
+Navigation.prototype.getFov = function () {};
 
 /**
  * Moves up vector.
  * @param {float[]} vec - 3D Vector
  * @param {int} [duration = 1000] - Duration of animation in milliseconds
  */
-Navigation.prototype.moveUpTo = function(vec, duration) {};
+Navigation.prototype.moveUpTo = function (vec, duration) {};
 
 /**
  * Returns the center of the field of view.
  * @return {float[]} the center in decimal degree of the field of view [longitude, latitude]
  */
-Navigation.prototype.getCenter = function() {};
+Navigation.prototype.getCenter = function () {};
 
 /**
  * Rotates the camera.
  * @param {float} dx Window delta x
  * @param {float} dy Window delta y
  */
-Navigation.prototype.rotate = function(dx, dy) {};
+Navigation.prototype.rotate = function (dx, dy) {};
 
 /**
  * Pans the camera to a direction up/down or left/right with the same distance from the object
  * @param {float} dx Window direction left/right
  * @param {float} dy Window direction up/down
  */
-Navigation.prototype.pan = function(dx, dy) {};
+Navigation.prototype.pan = function (dx, dy) {};
 
 /**
  * Applies zooming.
  * @param {float} delta Delta zoom
  * @param {float} scale Scale
  */
-Navigation.prototype.zoom = function(delta, scale) {};
+Navigation.prototype.zoom = function (delta, scale) {};
 
 /**
  * Zooms to a 2D position (longitude, latitude).
@@ -140,14 +140,14 @@ Navigation.prototype.zoom = function(delta, scale) {};
  * @param {Object} options - options for the selected navigation
  * @fires Context#navigation:changedDistance
  */
-Navigation.prototype.zoomTo = function(geoPos, options) {};
+Navigation.prototype.zoomTo = function (geoPos, options) {};
 
 /**
  * Computes the view matrix
  * @memberof Navigation#
  * @fires Context#modifiedNavigation
  */
-Navigation.prototype.computeViewMatrix = function() {};
+Navigation.prototype.computeViewMatrix = function () {};
 
 /**
  * Basic animation from current view matrix to the given one
@@ -156,21 +156,21 @@ Navigation.prototype.computeViewMatrix = function() {};
  * @param {int} duration Duration of animation in milliseconds
  * @param {Function} callback Callback on the end of animation
  */
-Navigation.prototype.toViewMatrix = function(mat, fov, duration, callback) {};
+Navigation.prototype.toViewMatrix = function (mat, fov, duration, callback) {};
 
 /**
  * Returns the rendering context.
  * @returns {RenderContext} the rendering context
  */
-Navigation.prototype.getRenderContext = function() {};
+Navigation.prototype.getRenderContext = function () {};
 
 /**
  * Sets the rendering context
  * @param {RenderContext} renderContext - the rendering context to set
  */
-Navigation.prototype.setRenderContext = function(renderContext) {};
+Navigation.prototype.setRenderContext = function (renderContext) {};
 
 /**
  * Destroys the navigation
  */
-Navigation.prototype.destroy = function() {};
+Navigation.prototype.destroy = function () {};

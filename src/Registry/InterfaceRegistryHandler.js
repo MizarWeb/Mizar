@@ -27,7 +27,7 @@ function RegistryHandler() {}
  * Sets the Next Server to make a list/chain of Handlers
  * @param {RegistryHandler} next Next handler
  */
-RegistryHandler.prototype.setNext = function(next) {};
+RegistryHandler.prototype.setNext = function (next) {};
 
 /**
  * This callback allows to process layers.
@@ -47,8 +47,4 @@ RegistryHandler.prototype.setNext = function(next) {};
  * @param {serverLayerCallback} callback
  * @param {serverLayerFallback} fallback
  */
-RegistryHandler.prototype.handleRequest = function(
-    layerDescription,
-    callback,
-    fallback
-) {};
+RegistryHandler.prototype.handleRequest = function (layerDescription, callback, fallback) {};

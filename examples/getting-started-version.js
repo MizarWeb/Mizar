@@ -1,1 +1,1 @@
-document.getElementById("version").innerHTML = "Mizar version : V"+Mizar.VERSION
+document.getElementById("version").innerHTML = "Mizar version : V" + Mizar.VERSION;

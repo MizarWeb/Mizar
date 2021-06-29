@@ -22,106 +22,87 @@
  * Factory to create a coordinate reference system
  * @memberof module:Crs
  */
-define([
-    "../Utils/Constants",
-    "./WGS84Crs",
-    "./Mars2000Crs",
-    "./Moon2000Crs",
-    "./EquatorialCrs",
-    "./GalacticCrs",
-    "./ProjectedCrs",
-    "./HorizontalLocalCrs",
-    "./SunCrs"
-], function(
-    Constants,
-    WGS84Crs,
-    Mars2000Crs,
-    Moon2000Crs,
-    EquatorialCrs,
-    GalacticCrs,
-    ProjectedCrs,
-    HorizontalLocalCrs,
-    SunCrs
-) {
-    /**
-     * Creates a coordinate reference system based on its geoide name and its options.
-     * @param {CRS} geoideName
-     * @param {AbstractCrs.crsFactory} options - options to create a coordinate reference system
-     * @returns {Crs} the created coordinate reference system
-     * @throws {RangeError} Will throw an error when geoideName  is not part of {@link CRS}
-     * @private
-     */
-    function _createCrs(geoideName, options) {
-        var cs;
-        switch (geoideName) {
-        case Constants.CRS.Equatorial:
-            cs = new EquatorialCrs(options);
-            break;
-        case Constants.CRS.Galactic:
-            cs = new GalacticCrs(options);
-            break;
-            // For Earth
-        case Constants.CRS.WGS84:
-            cs = new WGS84Crs(options);
-            break;
-            // For Mars
-        case Constants.CRS.Mars_2000_old:
-        case Constants.CRS.Mars_2000:
-            cs = new Mars2000Crs(options);
-            break;
-            // For Moon
-        case Constants.CRS.Moon_2000_old:
-        case Constants.CRS.Moon_2000:
-            cs = new Moon2000Crs(options);
-            break;
-            // For Ground
-        case Constants.CRS.HorizontalLocal:
-            cs = new HorizontalLocalCrs(options);
-            break;
-            // For Sun
-        case Constants.CRS.Sun:
-            cs = new SunCrs(options);
-            break;
-            // Unknown geoide name
-        default:
-            throw new RangeError(
-                "Datum " + geoideName + " not implemented",
-                "CoordinateSystemFactory.js"
-            );
-        }
-        return cs;
+import Constants from "../Utils/Constants";
+import WGS84Crs from "./WGS84Crs";
+import Mars2000Crs from "./Mars2000Crs";
+import Moon2000Crs from "./Moon2000Crs";
+import EquatorialCrs from "./EquatorialCrs";
+import GalacticCrs from "./GalacticCrs";
+import ProjectedCrs from "./ProjectedCrs";
+import HorizontalLocalCrs from "./HorizontalLocalCrs";
+import SunCrs from "./SunCrs";
+/**
+ * Creates a coordinate reference system based on its geoide name and its options.
+ * @param {CRS} geoideName
+ * @param {AbstractCrs.crsFactory} options - options to create a coordinate reference system
+ * @returns {Crs} the created coordinate reference system
+ * @throws {RangeError} Will throw an error when geoideName  is not part of {@link CRS}
+ * @private
+ */
+function _createCrs(geoideName, options) {
+  var cs;
+  switch (geoideName) {
+    case Constants.CRS.Equatorial:
+      cs = new EquatorialCrs(options);
+      break;
+    case Constants.CRS.Galactic:
+      cs = new GalacticCrs(options);
+      break;
+    // For Earth
+    case Constants.CRS.WGS84:
+      cs = new WGS84Crs(options);
+      break;
+    // For Mars
+    case Constants.CRS.Mars_2000_old:
+    case Constants.CRS.Mars_2000:
+      cs = new Mars2000Crs(options);
+      break;
+    // For Moon
+    case Constants.CRS.Moon_2000_old:
+    case Constants.CRS.Moon_2000:
+      cs = new Moon2000Crs(options);
+      break;
+    // For Ground
+    case Constants.CRS.HorizontalLocal:
+      cs = new HorizontalLocalCrs(options);
+      break;
+    // For Sun
+    case Constants.CRS.Sun:
+      cs = new SunCrs(options);
+      break;
+    // Unknown geoide name
+    default:
+      throw new RangeError("CoordinateSystemFactory.js: Datum " + geoideName + " not implemented");
+  }
+  return cs;
+}
+
+export default {
+  /**
+   * Data model to create a coordinate reference system through the factory
+   * @typedef {AbstractProjection.configuration|AbstractProjection.azimuth_configuration|AbstractProjection.mercator_configuration} AbstractCrs.crsFactory
+   * @property {CRS} options.geoideName - name of the geoide
+   */
+  /**
+   * Factory for CRS.
+   * @param {AbstractCrs.crsFactory} options - Options to create a coordinate reference system
+   * @return {Crs} Object to handle CRS
+   * @alias module:Crs.CoordinateSystemFactory.create
+   * @throws {ReferenceError} Will throw an error when options.geoideName is not defined
+   * @throws {RangeError} Will throw an error when options.geoideName  is not part of {@link CRS}
+   * @throws {RangeError} Will throw an error when options.projectionName is not part of {@link PROJECTION}
+   */
+  create: function (options) {
+    var cs;
+    if (options.geoideName) {
+      cs = _createCrs(options.geoideName, options);
+    } else {
+      throw new ReferenceError("geoideName not defined in " + JSON.stringify(options), "CoordinateSystemFactory.js");
     }
 
-    return {
-        /**
-         * Data model to create a coordinate reference system through the factory
-         * @typedef {AbstractProjection.configuration|AbstractProjection.azimuth_configuration|AbstractProjection.mercator_configuration} AbstractCrs.crsFactory
-         * @property {CRS} options.geoideName - name of the geoide
-         */
-        /**
-         * Factory for CRS.
-         * @param {AbstractCrs.crsFactory} options - Options to create a coordinate reference system
-         * @return {Crs} Object to handle CRS
-         * @alias module:Crs.CoordinateSystemFactory.create
-         * @throws {ReferenceError} Will throw an error when options.geoideName is not defined
-         * @throws {RangeError} Will throw an error when options.geoideName  is not part of {@link CRS}
-         * @throws {RangeError} Will throw an error when options.projectionName is not part of {@link PROJECTION}
-         */
-        create: function(options) {
-            var cs;
-            if (options.geoideName) {
-                cs = _createCrs(options.geoideName, options);
-            } else {
-                throw new ReferenceError(
-                    "geoideName not defined in " + JSON.stringify(options),
-                    "CoordinateSystemFactory.js"
-                );
-            }
-
-            if (options.projectionName) {
-                cs = new ProjectedCrs(cs, options);
-            }
-            return cs;
-        }
-    };
-});
+    if (options.projectionName) {
+      cs = new ProjectedCrs(cs, options);
+    }
+    return cs;
+  }
+};

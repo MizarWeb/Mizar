@@ -16,84 +16,68 @@
  * You should have received a copy of the GNU General Public License
  * along with MIZAR. If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
-define([
-    "../Layer/LayerFactory",
-    "../Utils/Constants",
-    "../Gui/dialog/ErrorDialog"
-], function(LayerFactory, Constants, ErrorDialog) {
-    /**
-     * @name AbstractRegistryHandler
-     * @class
-     *  Abstract Registry Handler
-     * @param {object} options
-     * @implements {RegistryHandler}
-     */
+import LayerFactory from "../Layer/LayerFactory";
+import Constants from "../Utils/Constants";
+import ErrorDialog from "../Gui/dialog/ErrorDialog";
+/**
+ * @name AbstractRegistryHandler
+ * @class
+ *  Abstract Registry Handler
+ * @param {object} options
+ * @implements {RegistryHandler}
+ */
 
-    var AbstractRegistryHandler = function() {
-        this.next = {
-            handleRequest: function(layerDescription, callback, fallback) {
-                ErrorDialog.open(
-                    Constants.LEVEL.DEBUG,
-                    "AbstractRegistryHandler.js",
-                    "All strategies exhausted."
-                );
-            }
-        };
-    };
+var AbstractRegistryHandler = function () {
+  this.next = {
+    handleRequest: function (layerDescription, callback, fallback) {
+      ErrorDialog.open(Constants.LEVEL.DEBUG, "AbstractRegistryHandler.js", "All strategies exhausted.");
+    }
+  };
+};
 
-    /**
-     * @function setNext
-     * @memberof AbstractRegistryHandler#
-     */
-    AbstractRegistryHandler.prototype.setNext = function(next) {
-        this.next = next;
-        return next;
-    };
+/**
+ * @function setNext
+ * @memberof AbstractRegistryHandler#
+ */
+AbstractRegistryHandler.prototype.setNext = function (next) {
+  this.next = next;
+  return next;
+};
 
-    /**
-     * @function handleRequest
-     * @memberof AbstractRegistryHandler#
-     */
+/**
+ * @function handleRequest
+ * @memberof AbstractRegistryHandler#
+ */
 
-    AbstractRegistryHandler.prototype.handleRequest = function(
-        layerDescription,
-        callback,
-        fallback
-    ) {};
+AbstractRegistryHandler.prototype.handleRequest = function (layerDescription, callback, fallback) {};
 
-    /**
-     * Handles pending layers.
-     * @function _handlePendingLayers
-     * @memberof AbstractRegistryHandler#
-     * @param {Layer[]} pendingLayers Pending layers
-     * @param {Layer[]} List pf layers
-     */
+/**
+ * Handles pending layers.
+ * @function _handlePendingLayers
+ * @memberof AbstractRegistryHandler#
+ * @param {Layer[]} pendingLayers Pending layers
+ * @param {Layer[]} List pf layers
+ */
 
-    AbstractRegistryHandler.prototype._handlePendingLayers = function(
-        pendingLayers,
-        layers
-    ) {
-        //TODO : I loose the callback of pendingLayers
-        for (var i = 0; i < layers.length && pendingLayers.length !== 0; i++) {
-            var layer = layers[i];
-            if (pendingLayers.length != 0 && layer.isBackground()) {
-                var j = pendingLayers.length;
-                while (j > 0) {
-                    j--;
-                    var pendingLayerDescription = pendingLayers[j];
-                    try {
-                        layers.push(
-                            LayerFactory.create(pendingLayerDescription)
-                        );
-                        pendingLayers.splice(j, 1);
-                    } catch (RangeError) {
-                        ErrorDialog.open(Constants.LEVEL.DEBUG, "Failed to create layer", RangeError.message);
-                    }
-                }
-                break;
-            }
+AbstractRegistryHandler.prototype._handlePendingLayers = function (pendingLayers, layers) {
+  //TODO : I loose the callback of pendingLayers
+  for (var i = 0; i < layers.length && pendingLayers.length !== 0; i++) {
+    var layer = layers[i];
+    if (pendingLayers.length != 0 && layer.isBackground()) {
+      var j = pendingLayers.length;
+      while (j > 0) {
+        j--;
+        var pendingLayerDescription = pendingLayers[j];
+        try {
+          layers.push(LayerFactory.create(pendingLayerDescription));
+          pendingLayers.splice(j, 1);
+        } catch (RangeError) {
+          ErrorDialog.open(Constants.LEVEL.DEBUG, "Failed to create layer", RangeError.message);
         }
-    };
+      }
+      break;
+    }
+  }
+};
 
-    return AbstractRegistryHandler;
-});
+export default AbstractRegistryHandler;

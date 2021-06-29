@@ -17,43 +17,37 @@
  * along with MIZAR. If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
 
-define([
-    "./Constants",
-    "./UtilsFits",
-    "./Numeric",
-    "./UtilsIntersection",
-    "./Utils",
-    "../Renderer/FeatureStyle"
-], function(Constants, UtilsFits, Numeric, UtilsIntersection, Utils, FeatureStyle) {
-    return {
-        create: function(type, options) {
-            var obj;
-            switch (type) {
-            case Constants.UTILITY.Fits:
-                obj = UtilsFits;
-                break;
-            case Constants.UTILITY.Intersection:
-                obj = UtilsIntersection;
-                break;
-            case Constants.UTILITY.Numeric:
-                obj = Numeric;
-                break;
-            case Constants.UTILITY.CreateStyle:
-                obj = new FeatureStyle(options);
-                break;
-            case Constants.UTILITY.FeatureStyle:
-                obj = FeatureStyle;
-                break;
-            case Constants.UTILITY.Utils:
-                obj = Utils;
-                break;
-            default:
-                throw new RangeError(
-                    "Cannot create the utility " + type,
-                    "UtilityFactory.js"
-                );
-            }
-            return obj;
-        }
-    };
-});
+import Constants from "./Constants";
+import UtilsFits from "./UtilsFits";
+import Numeric from "./Numeric";
+import UtilsIntersection from "./UtilsIntersection";
+import Utils from "./Utils";
+import FeatureStyle from "../Renderer/FeatureStyle";
+export default {
+  create: function (type, options) {
+    var obj;
+    switch (type) {
+      case Constants.UTILITY.Fits:
+        obj = UtilsFits;
+        break;
+      case Constants.UTILITY.Intersection:
+        obj = UtilsIntersection;
+        break;
+      case Constants.UTILITY.Numeric:
+        obj = Numeric;
+        break;
+      case Constants.UTILITY.CreateStyle:
+        obj = new FeatureStyle(options);
+        break;
+      case Constants.UTILITY.FeatureStyle:
+        obj = FeatureStyle;
+        break;
+      case Constants.UTILITY.Utils:
+        obj = Utils;
+        break;
+      default:
+        throw new RangeError("UtilityFactory.js: Cannot create the utility " + type);
+    }
+    return obj;
+  }
+};
