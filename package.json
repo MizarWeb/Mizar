@@ -91,7 +91,7 @@
     "jscsv": "^1.1.4",
     "jsvotable": "^2.0.2",
     "jszip": "^3.4.0",
-    "moment": "^2.22.1",
+    "moment": "^2.29.2",
     "pnltri": "^2.1.1",
     "underscore": "^1.8.3",
     "wms-capabilities": "^0.4.0",
